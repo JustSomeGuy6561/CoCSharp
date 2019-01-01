@@ -1,0 +1,6 @@
+C:\Users\Andrew\Documents\Visual Studio 2017\Projects\ConsoleApp1\ConsoleApp2\obj\Debug\CoC.csprojAssemblyReference.cache
+C:\Users\Andrew\Documents\Visual Studio 2017\Projects\ConsoleApp1\ConsoleApp2\obj\Debug\CoC.csproj.CoreCompileInputs.cache
+C:\Users\Andrew\Documents\Visual Studio 2017\Projects\ConsoleApp1\ConsoleApp2\bin\Debug\CoC.exe
+C:\Users\Andrew\Documents\Visual Studio 2017\Projects\ConsoleApp1\ConsoleApp2\bin\Debug\CoC.pdb
+C:\Users\Andrew\Documents\Visual Studio 2017\Projects\ConsoleApp1\ConsoleApp2\obj\Debug\CoC.exe
+C:\Users\Andrew\Documents\Visual Studio 2017\Projects\ConsoleApp1\ConsoleApp2\obj\Debug\CoC.pdb
