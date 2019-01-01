@@ -34,7 +34,24 @@ namespace CoC.Strings.BodyParts
 		//Hard exoskeleton for things like a turtle or spiders or whatever.
 		public static string CarapaceStr()
 		{
-			return "shell-like surface";
+			return "carapace";
+		}
+
+		public static string GooStr()
+		{
+			return "goo";
+		}
+		public static string WoolStr()
+		{
+			return "wool";
+		}
+		public static string BarkStr()
+		{
+			return "bark";
+		}
+		public static string ExoskeletonStr()
+		{
+			return "exoskeleton";
 		}
 	}
 }

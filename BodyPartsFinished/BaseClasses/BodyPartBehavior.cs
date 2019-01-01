@@ -40,6 +40,7 @@ namespace CoC.BodyParts
 		public abstract PlayerDescription<ContainerClass> playerDescription { get; protected set; }
 
 		public abstract ChangeType<ThisClass> transformFrom { get; protected set; }
+		public abstract ChangeType<ThisClass> restoreString { get; protected set; }
 
 	}
 }

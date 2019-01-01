@@ -3,18 +3,14 @@
 //Author: JustSomeGuy
 //12/26/2018, 8:49 PM
 using CoC.Items;
-using CoC.BodyPart.SpecialInteraction;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+using CoC.BodyParts.SpecialInteraction;
 
 namespace CoC.BodyParts
 {
 	//Can't use readonly, as beards aren't constant - they grow.
 	//NOT FULLY DONE. There's no way to check if you can groom to a certain type of beard based on existing hair. 
-	class FacialHair : BodyPartBehavior, IDyeable
+	class FacialHair : SimpleBodyPart, IDyeable
 	{
 		/*
 		 * Facial Hair can grow. This means styles may become other styles as they grow. for example, a van dyke may 

@@ -15,7 +15,7 @@ namespace CoC.Strings.BodyParts
 	{
 		public static string RemoveAntennaeStr(AntennaeType antennae, Player p)
 		{
-			return "your antennae shrink, and eventually receed into your head completely. <b> Your antennae are gone!</b>";
+			return antennae.restoreString(antennae, p);
 		}
 
 		public static string BeeAntennae()
@@ -68,6 +68,25 @@ namespace CoC.Strings.BodyParts
 				       + " side. While sturdy enough to support themselves these " + player.hair.color + " feathers flop daintily as you move."
 				       + " They seem to move with your eyebrows, helping convey your expressions.";
 			return retVal;
+		}
+
+		public static string CockatriceAntennaeRestore(AntennaeType originalType, Player player)
+		{
+			return "You feel your antennae like feathers shrivel at the root, the pair of soft quills falling softly to the"
+				+ " ground as your pores close.\n<b>You’ve lost your antennae like feathers!</b>";
+		}
+
+		public static string BeeAntennaeRestore(AntennaeType originalType, Player player)
+		{
+			return "Your " + player.hair.GetDescriptor() + " itches so you give it a scratch, only to have your antennae fall to the ground. What a relief."
+				+ "\n<b>You've lost your antennae!</b>";
+		}
+
+		//unused right now. was defined in vanilla as a fallback, which was never used.
+		public static string GenericAntennaeRestore(AntennaeType originalType, Player player)
+		{
+			return "The muscles in your brow clench tightly, and you feel a tremendous pressure on your upper forehead."
+				+ " When it passes, you touch yourself and discover <b>your antennae have vanished</b>!";
 		}
 	}
 }

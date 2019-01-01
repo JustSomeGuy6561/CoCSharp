@@ -9,7 +9,8 @@ using System.Text;
 
 namespace CoC.Wearables.Piercings
 {
-	class PiercingJewelry
+	public class PiercingJewelry
 	{
+		public readonly bool isSeamless;
 	}
 }

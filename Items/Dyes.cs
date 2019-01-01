@@ -21,5 +21,12 @@ namespace CoC.Items
 		}
 
 		public static readonly Dyes NO_FUR = new Dyes();
+		public static readonly Dyes BLACK = new Dyes();
+		public static readonly Dyes HUMAN_DEFAULT = BLACK;
+
+		public string AsString()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

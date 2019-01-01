@@ -128,7 +128,7 @@ namespace CoC.BodyParts
 		private readonly Epidermis _epidermis;
 
 		protected ArmType(Hands hnd, Epidermis skinType, string epiderisAdjective, GenericDescription shortDesc, CreatureDescription<Arms> creatureDesc,
-			PlayerDescription<Arms> playerDesc, ChangeType<ArmType> fromType)
+			PlayerDescription<Arms> playerDesc, ChangeType<ArmType> fromType, ChangeType<ArmType> revertToDefault)
 		{
 			_index = indexMaker++;
 			hands = hnd;
@@ -138,6 +138,7 @@ namespace CoC.BodyParts
 			creatureDescription = creatureDesc;
 			playerDescription = playerDesc;
 			transformFrom = fromType;
+			restoreString = revertToDefault;
 		}
 
 		public override int index => _index;
@@ -147,6 +148,7 @@ namespace CoC.BodyParts
 		public override CreatureDescription<Arms> creatureDescription {get; protected set;}
 		public override PlayerDescription<Arms> playerDescription {get; protected set;}
 		public override ChangeType<ArmType> transformFrom {get; protected set;}
+		public override ChangeType<ArmType> restoreString { get; protected set; }
 
 		public override bool canTone()
 		{
@@ -197,6 +199,8 @@ namespace CoC.BodyParts
 		public static readonly ArmType HARPY = new ArmType(Hands.HUMAN, Epidermis.FEATHERS);
 		public static readonly ArmType SPIDER = new ArmType(Hands.HUMAN, Epidermis.CARAPACE);
 		public static readonly ArmType BEE = new ArmType(Hands.HUMAN, Epidermis.FUR);
+		//I split the predator arms so i could have one handtype per armtype. no functionality has been lost.
+		//isPredatorArms has been added if you still need that check. 
 		public static readonly ArmType DRAGON = new ArmType(Hands.DRAGON, Epidermis.SCALES); //Custom?
 		public static readonly ArmType IMP = new ArmType(Hands.IMP, Epidermis.SCALES);
 		public static readonly ArmType LIZARD = new ArmType(Hands.LIZARD, Epidermis.SCALES); //Custom?
@@ -210,5 +214,9 @@ namespace CoC.BodyParts
 		public static readonly ArmType FOX = new ArmType(Hands.FOX, Epidermis.FUR);
 		//Add new Arm Types Here.
 
+		public bool isPredatorArms()
+		{
+			return this == DRAGON || this == IMP || this == LIZARD;
+		}
 	}
 }

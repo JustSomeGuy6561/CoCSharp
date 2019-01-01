@@ -66,10 +66,14 @@ namespace CoC.BodyParts
 		}
 
 		public static readonly Epidermis SKIN = new Epidermis(SkinStr);
-		public static readonly Epidermis SCALES = new Epidermis(ScalesStr);
 		public static readonly Epidermis FUR = new Epidermis(FurStr);
+		public static readonly Epidermis SCALES = new Epidermis(ScalesStr);
+		public static readonly Epidermis GOO = new Epidermis(GooStr);
+		public static readonly Epidermis WOOL = new Epidermis(WoolStr); //i'd like to merge this with fur but it's more trouble than it's worth
 		public static readonly Epidermis FEATHERS = new Epidermis(FeathersStr);
+		public static readonly Epidermis BARK = new Epidermis(BarkStr);
 		public static readonly Epidermis CARAPACE = new Epidermis(CarapaceStr);
+		public static readonly Epidermis EXOSKELETON = new Epidermis(ExoskeletonStr);
 
 	}
 }

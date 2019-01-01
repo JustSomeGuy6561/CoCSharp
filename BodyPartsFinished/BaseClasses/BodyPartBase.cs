@@ -41,5 +41,7 @@ namespace CoC.BodyParts
 		public virtual GenericDescription shortDescription => type.shortDescription;
 		public virtual ChangeType<ThisClass> transformFrom => (prevPart, player) => type.transformFrom(prevPart.type, player);
 
+		public virtual ChangeType<ThisClass> restoreString => (currentPart, player) => type.restoreString(currentPart.type, player);
+
 	}
 }

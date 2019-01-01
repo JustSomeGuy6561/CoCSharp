@@ -4,13 +4,61 @@
 //12/29/2018, 2:04 PM
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-
+using CoC.BodyParts;
 namespace CoC.Strings
 {
 	static class GlobalStrings
 	{
 		public static string None() { return ""; }
+
+		public static string RevertAsDefault<T>(T type, Player p)
+		{
+			#if DEBUG
+			return "Debug Warning: you've tried to change to the default " + type.GetType().Name + ", but you're already it!";
+			#else
+			return "";
+			#endif
+
+		}
+
+		public static string LengthInHalfInch(double lengthInInches)
+		{
+			double decimalPoint = lengthInInches % 1;
+			if (decimalPoint > .75)
+			{
+				decimalPoint = 1;
+			}
+			else if (decimalPoint > .25)
+			{
+				decimalPoint = 0.5f;
+			}
+			else
+			{
+				decimalPoint = 0f;
+			}
+			lengthInInches = Math.Floor(lengthInInches) + decimalPoint;
+
+			return lengthInInches.ToString() + " inch";
+		}
+		public static string LengthInHalfInches(double lengthInInches)
+		{
+			return LengthInHalfInch(lengthInInches) + "es";
+		}
+
+		public static string LengthInInch(double lengthInInches)
+		{
+			lengthInInches = Math.Round(lengthInInches, MidpointRounding.AwayFromZero);
+			return lengthInInches.ToString() + " inch";
+		}
+
+		public static string LengthInInches(double lengthInInches)
+		{
+			lengthInInches = Math.Round(lengthInInches, MidpointRounding.AwayFromZero);
+			return lengthInInches.ToString() + " inches";
+		}
 	}
+
 }

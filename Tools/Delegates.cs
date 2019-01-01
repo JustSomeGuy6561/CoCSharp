@@ -10,7 +10,7 @@ namespace CoC.Tools
 	public delegate string CreatureDescription<T>(T type, Gender gender);
 	//not designed for use with npcs, like when you tf rubi or katherine.
 	//though you probably should do those by case anyway.
-	public delegate string ChangeType<T>(T previousType, Player player); 
+	public delegate string ChangeType<T>(T originalType, Player player); 
 
 	public delegate string GenericDescriptorWithArg<T>(T arg);
 }
