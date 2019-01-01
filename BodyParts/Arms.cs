@@ -4,11 +4,13 @@
 //12/26/2018, 7:58 PM
 using CoC.Tools;
 using CoC.Items;
+using System.Collections.Generic;
+using static CoC.Strings.BodyParts.ArmsStrings;
 
 namespace CoC.BodyParts
 {
 	//TODO: add nice comparison shit for this class.
-	class Arms : EpidermalBodyPart<Arms, ArmType>
+	public class Arms : EpidermalBodyPart<Arms, ArmType>
 	{
 		public override ArmType type { get; protected set; }
 
@@ -17,17 +19,28 @@ namespace CoC.BodyParts
 
 		public override bool attemptToTone(Tones tone)
 		{
-			return type.tryToTone(ref currentTone, tone) || base.attemptToTone(tone);
+			return type.tryToTone(ref currentTone, tone);
 		}
 
 		public override bool attemptToDye(Dyes dye)
 		{
-			return type.tryToDye(ref currentDye, dye) || base.attemptToDye(dye);
+			return type.tryToDye(ref currentDye, dye);
 		}
 
 		protected Arms(ArmType arm)
 		{
 			type = arm;
+			currentTone = Tones.HUMAN_DEFAULT;
+			currentDye = Dyes.NO_FUR;
+		}
+
+		public static Arms Generate(ArmType type, Tones currentSkinTone, Dyes currentHairOrFurColor)
+		{
+			Arms retVal = new Arms(type);
+			//try to apply the tone and dye. 
+			retVal.attemptToDye(currentHairOrFurColor);
+			retVal.attemptToTone(currentSkinTone);
+			return retVal;
 		}
 
 		/*
@@ -42,38 +55,85 @@ namespace CoC.BodyParts
 		public string GetDescriptorWithHands()
 		{
 			return GetDescriptor() + " and " + hands.GetDescriptor();
-		}
-
-		protected Arms(string desc, Hands handType, Epidermis skinType)
-		{
-			hands = handType;
-			descriptor = desc;
-			epidermis = skinType;
-			index = indexMaker++;
-		}
-		*/
+		}*/
 
 		public override void Restore()
 		{
-			this.type = ArmType.HUMAN;
-			this.currentTone = Tones.HUMAN_DEFAULT;
-			this.currentDye = Dyes.NO_FUR;
+			type = ArmType.HUMAN;
+			currentTone = Tones.HUMAN_DEFAULT;
+			currentDye = Dyes.NO_FUR;
 		}
 
+		#region CompareConvenience
+		//Because of the convenience shit. Standard compares that need to be explicitly defined because
+		//the non-standard ones are too.
+		public bool Equals(Arms other)
+		{
+			return this == other;
+		}
+
+		public static bool operator ==(Arms first, Arms second)
+		{
+			return first.type == second.type && first.usesDye == second.usesDye && ((first.usesDye && first.currentDye == second.currentDye) || !first.usesDye) &&  first.usesTone == second.usesTone && ((first.usesTone && first.currentTone == second.currentTone) || !first.usesTone);
+		}
+
+		public static bool operator !=(Arms first, Arms second)
+		{
+			return first.type != second.type || first.usesDye != second.usesDye || first.usesTone != second.usesTone || (first.usesTone && first.currentTone != second.currentTone) || (first.usesDye && first.currentDye != second.currentDye);
+		}
+
+		//Convenience. Because everyone loves that shit
+		public bool Equals(ArmType other)
+		{
+			return type == other;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null || !this.GetType().Equals(obj.GetType()))
+			{
+				return false;
+			}
+			Arms arm = (Arms)obj;
+			return Equals(arm);
+		}
+
+		//default implementation. i ain't touching that lol.
+		//note that this will actually cause overlaps if the dye and tone isn't the same.
+		//the equals operators will take care of that. it's far too easy to accidently 
+		//create false negatives in a hash, because they may not be equal, but not active, which wouldn't matter for equality.
+		public override int GetHashCode()
+		{
+			return 34944597 + EqualityComparer<ArmType>.Default.GetHashCode(type);
+		}
+
+		public static bool operator ==(Arms first, ArmType second)
+		{
+			return first.type == second;
+		}
+
+		public static bool operator !=(Arms first, ArmType second)
+		{
+			return first.type != second;
+		}
+		#endregion
+
 	}
-	class ArmType : EpidermalBodyPartBehavior<ArmType, Arms>
+	public class ArmType : EpidermalBodyPartBehavior<ArmType, Arms>
 	{
 		private static int indexMaker = 0;
-		protected Hands hands;
-		public Epidermis epidermis {get; protected set;}
+		public Hands hands { get; protected set; }
 
-		protected ArmType(Hands hnd, Epidermis skinType, GenericDescription shortDesc, CreatureDescription<Arms> creatureDesc,
+		public override Epidermis epidermis => _epidermis;
+		private readonly Epidermis _epidermis;
+
+		protected ArmType(Hands hnd, Epidermis skinType, string epiderisAdjective, GenericDescription shortDesc, CreatureDescription<Arms> creatureDesc,
 			PlayerDescription<Arms> playerDesc, ChangeType<ArmType> fromType)
 		{
 			_index = indexMaker++;
 			hands = hnd;
-			epidermis = skinType;
-
+			_epidermis = skinType;
+			adjective = epiderisAdjective;
 			shortDescription = shortDesc;
 			creatureDescription = creatureDesc;
 			playerDescription = playerDesc;
@@ -81,6 +141,7 @@ namespace CoC.BodyParts
 		}
 
 		public override int index => _index;
+		protected readonly string adjective = "";
 		private readonly int _index;
 		public override GenericDescription shortDescription {get; protected set;}
 		public override CreatureDescription<Arms> creatureDescription {get; protected set;}
@@ -126,8 +187,13 @@ namespace CoC.BodyParts
 			return false;
 		}
 
+		public override string defaultEpidermalAdjective()
+		{
+			return adjective;
+		}
+
 		//DO NOT REORDER THESE (Under penalty of death lol)
-		public static readonly ArmType HUMAN = new ArmType(Hands.HUMAN, Epidermis.HUMAN, Arm);
+		public static readonly ArmType HUMAN = new ArmType(Hands.HUMAN, Epidermis.SKIN, "", );
 		public static readonly ArmType HARPY = new ArmType(Hands.HUMAN, Epidermis.FEATHERS);
 		public static readonly ArmType SPIDER = new ArmType(Hands.HUMAN, Epidermis.CARAPACE);
 		public static readonly ArmType BEE = new ArmType(Hands.HUMAN, Epidermis.FUR);

@@ -47,7 +47,7 @@ public static class ParsingMagic
 				Console.WriteLine("  Your face is an adorable cross between human and ferret features, complete with a wet nose and whiskers."
 						  + "  The only oddity is your lack of fur, leaving only [skin] visible on your ferret-like face.");
 			else
-				Console.WriteLine("  Your face has mustelid muzzle, with a ferret-like visage and a cute pink nose. Itâ€™s covered by a layer of soft,"
+				Console.WriteLine("  Your face has mustelid muzzle, with a ferret-like visage and a cute pink nose. It's covered by a layer of soft,"
 						  + " [furColor] colored fur, with patches of white on your muzzle and cheeks."
 						  + " A noticeable mask of [furColor] fur is shaped around your eyes.");
 		}
@@ -248,9 +248,9 @@ public static class ParsingMagic
 		if (player.face.type == Face.COCKATRICE)
 		{
 			if (player.underBody.skin.type == Skin.FEATHERED)
-				Console.WriteLine("  You have a cockatriceâ€™s face, complete with [furColor] feathered skin and a muzzle like beak.");
+				Console.WriteLine("  You have a cockatrice's face, complete with [furColor] feathered skin and a muzzle like beak.");
 			else
-				Console.WriteLine("  You have a cockatriceâ€™s face, complete with [skinFurScales] and a muzzle like beak.");
+				Console.WriteLine("  You have a cockatrice's face, complete with [skinFurScales] and a muzzle like beak.");
 		}
 		if (player.face.type == Face.RED_PANDA)
 		{
@@ -669,7 +669,7 @@ public static class ParsingMagic
 		// <mod name="BodyParts.UnderBody" author="Stadler76">
 		if (player.hasCockatriceSkin())
 		{
-			Console.WriteLine("  Youâ€™ve got a thick layer of [furColor] feathers covering your body, while [skinFurScales] coat you from"
+			Console.WriteLine("  You've got a thick layer of [furColor] feathers covering your body, while [skinFurScales] coat you from"
 					  + " chest to groin.");
 		}
 		else if (player.hasDifferentUnderBody())
@@ -848,7 +848,7 @@ public static class ParsingMagic
 				Console.WriteLine("  A long [hairColor] horsetail hangs from your [butt], smooth and shiny.");
 				break;
 			case Tail.FERRET:
-				Console.WriteLine("  Sprouting from your backside, you have a long, bushy tail. Itâ€™s covered in a fluffy layer of [hairOrFurColor] fur."
+				Console.WriteLine("  Sprouting from your backside, you have a long, bushy tail. It's covered in a fluffy layer of [hairOrFurColor] fur."
 						  + " It twitches and moves happily with your body when you are excited.");
 				break;
 			case Tail.SHEEP:
@@ -1221,10 +1221,10 @@ public static class ParsingMagic
 			{ //Belly size remains constant throughout the pregnancy
 				Console.WriteLine("<b>Your belly remains swollen like a watermelon. ");
 				if (player.pregnancyIncubation <= 100)
-					Console.WriteLine("It's full of liquid, though unlike a normal pregnancy the passenger youâ€™re carrying is tiny.</b>");
+					Console.WriteLine("It's full of liquid, though unlike a normal pregnancy the passenger you're carrying is tiny.</b>");
 				else if (player.pregnancyIncubation <= 140)
-					Console.WriteLine("It feels like itâ€™s full of thick syrup or jelly.</b>");
-				else Console.WriteLine("It still feels like thereâ€™s a solid ball inside your womb.</b>");
+					Console.WriteLine("It feels like it's full of thick syrup or jelly.</b>");
+				else Console.WriteLine("It still feels like there's a solid ball inside your womb.</b>");
 			}
 			else
 			{
@@ -1376,7 +1376,7 @@ public static class ParsingMagic
 					case CockTypesEnum.ANEMONE: Console.WriteLine("  The crown is surrounded by tiny tentacles with a venomous, aphrodisiac payload.  At its base a number of similar, longer tentacles have formed, guaranteeing that pleasure will be forced upon your partners."); break;
 					case CockTypesEnum.KANGAROO: Console.WriteLine("  It usually lies coiled inside a sheath, but undulates gently and tapers to a point when erect, somewhat like a taproot."); break;
 					case CockTypesEnum.DRAGON: Console.WriteLine("  With its tapered tip, there are few holes you wouldn't be able to get into.  It has a strange, knot-like bulb at its base, but doesn't usually flare during arousal as a dog's knot would."); break;
-					case CockTypesEnum.BEE: Console.WriteLine("  It's a long, smooth black shaft that's rigid to the touch.  Its base is ringed with a layer of " + shortSuffix(4) + " long soft bee hair.  The tip has a much finer layer of short yellow hairs.  The tip is very sensitive, and it hurts constantly if you donâ€™t have bee honey on it."); break;
+					case CockTypesEnum.BEE: Console.WriteLine("  It's a long, smooth black shaft that's rigid to the touch.  Its base is ringed with a layer of " + shortSuffix(4) + " long soft bee hair.  The tip has a much finer layer of short yellow hairs.  The tip is very sensitive, and it hurts constantly if you don't have bee honey on it."); break;
 					case CockTypesEnum.PIG: Console.WriteLine("  It's bright pinkish red, ending in a prominent corkscrew shape at the tip."); break;
 					case CockTypesEnum.AVIAN: Console.WriteLine("  It's a red, tapered cock that ends in a tip.  It rests nicely in a sheath."); break;
 					case CockTypesEnum.RHINO: Console.WriteLine("  It's a smooth, tough pink colored and takes on a long and narrow shape with an oval shaped bulge along the center."); break;

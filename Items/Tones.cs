@@ -12,5 +12,12 @@ namespace CoC.Items
 	public class Tones : EpidermalColors
 	{
 		public static readonly Tones HUMAN_DEFAULT = new Tones();
+
+		public string AsString()
+		{
+			throw new NotImplementedException("TBD");
+		}
+
+		public static readonly Tones BLACK = new Tones();
 	}
 }

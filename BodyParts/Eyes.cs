@@ -98,7 +98,7 @@ namespace CoC.BodyParts
 				rightIrisColor = EYE_COLOR.GRAY;
 			}
 		}
-
+		#region CompareConvenience
 		//Because of the convenience shit. Standard compares that need to be explicitly defined because
 		//the non-standard ones are too.
 		public bool Equals(Eyes other)
@@ -141,7 +141,7 @@ namespace CoC.BodyParts
 		{
 			return first.eyeType != second;
 		}
-
+		#endregion
 		//Testing
 		public static readonly Eyes batman = new Eyes(EYE_COLOR.BLUE, EyeType.HUMAN);
 		public static readonly Eyes robin = new Eyes(EYE_COLOR.BLUE, EyeType.HUMAN);
