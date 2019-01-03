@@ -22,7 +22,7 @@ namespace CoC.BodyParts
 			return type.tryToTone(ref currentTone, tone);
 		}
 
-		public override bool attemptToDye(Dyes dye)
+		public override bool attemptToDye(HairFurColors dye)
 		{
 			return type.tryToDye(ref currentDye, dye);
 		}
@@ -31,10 +31,10 @@ namespace CoC.BodyParts
 		{
 			type = arm;
 			currentTone = Tones.HUMAN_DEFAULT;
-			currentDye = Dyes.NO_FUR;
+			currentDye = HairFurColors.NO_FUR;
 		}
 
-		public static Arms Generate(ArmType type, Tones currentSkinTone, Dyes currentHairOrFurColor)
+		public static Arms Generate(ArmType type, Tones currentSkinTone, HairFurColors currentHairOrFurColor)
 		{
 			Arms retVal = new Arms(type);
 			//try to apply the tone and dye. 
@@ -61,7 +61,7 @@ namespace CoC.BodyParts
 		{
 			type = ArmType.HUMAN;
 			currentTone = Tones.HUMAN_DEFAULT;
-			currentDye = Dyes.NO_FUR;
+			currentDye = HairFurColors.NO_FUR;
 		}
 
 		#region CompareConvenience
@@ -180,7 +180,7 @@ namespace CoC.BodyParts
 			return epidermis.canDye();
 		}
 
-		public override bool tryToDye(ref Dyes currentColor, Dyes newColor)
+		public override bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
 		{
 			if (epidermis.canDye())
 			{
@@ -195,10 +195,10 @@ namespace CoC.BodyParts
 		}
 
 		//DO NOT REORDER THESE (Under penalty of death lol)
-		public static readonly ArmType HUMAN = new ArmType(Hands.HUMAN, Epidermis.SKIN, "", );
+		public static readonly ArmType HUMAN = new ArmType(Hands.HUMAN, Epidermis.SKIN, "smooth", );
 		public static readonly ArmType HARPY = new ArmType(Hands.HUMAN, Epidermis.FEATHERS);
 		public static readonly ArmType SPIDER = new ArmType(Hands.HUMAN, Epidermis.CARAPACE);
-		public static readonly ArmType BEE = new ArmType(Hands.HUMAN, Epidermis.FUR);
+		public static readonly ArmType BEE = new ArmType(Hands.HUMAN, Epidermis.FUR, "shiny",);
 		//I split the predator arms so i could have one handtype per armtype. no functionality has been lost.
 		//isPredatorArms has been added if you still need that check. 
 		public static readonly ArmType DRAGON = new ArmType(Hands.DRAGON, Epidermis.SCALES); //Custom?

@@ -47,7 +47,7 @@ namespace CoC.BodyParts
 			return epidermis.canTone();
 		}
 
-		public override bool tryToDye(ref Dyes currentColor, Dyes newColor)
+		public override bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
 		{
 			return epidermis.tryToDye(ref currentColor, newColor);
 		}

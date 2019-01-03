@@ -4,6 +4,7 @@
 //12/26/2018, 7:56 PM
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -74,6 +75,14 @@ namespace CoC.Tools
 		{
 			if (val.CompareTo(min) < 0) val = min;
 			else if (val.CompareTo(max) > 0) val = max;
+		}
+
+
+		public static double weightedColorCompare(Color first, Color second)
+		{
+			return Math.Pow(((second.R - first.R) * 0.30), 2)
+				+ Math.Pow(((second.G - first.G) * 0.59), 2)
+				+ Math.Pow(((second.B - first.B) * 0.11), 2);
 		}
 	}
 }

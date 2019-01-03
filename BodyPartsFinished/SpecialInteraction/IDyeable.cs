@@ -10,6 +10,6 @@ namespace CoC.BodyParts.SpecialInteraction
 	{
 		bool canDye();
 
-		bool attemptToDye(Dyes dye);
+		bool attemptToDye(HairFurColors dye);
 	}
 }

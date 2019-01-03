@@ -19,8 +19,8 @@ namespace CoC.Strings.BodyParts
 			{
 				case HAIR_STYLE.MESSY:
 					return "messy";
-				case HAIR_STYLE.MANGEY:
-					return "mangey";
+				case HAIR_STYLE.BRAIDED:
+					return "braided";
 				case HAIR_STYLE.STRAIGHT:
 					return "straight";
 				case HAIR_STYLE.WAVY:
@@ -40,19 +40,36 @@ namespace CoC.Strings.BodyParts
 		//your head is adorned with [length] of flowing [type], its [color] color glowing [if semitransparent : semi-transparently] in the sun.
 		// you can do that. 
 
-		//Ex: fur, not transparent, black: black fur.
-		public static string ColoredHairDesc(Hair hair)
-		{
-			return SemiTransparentStr(hair.isSemiTransparent) +  hair.color.AsString() + " " +  hair.hairType.shortDescription();
-		}
-
 		//Ex: goo, transparent: semi-transparent gooey hair.
 		public static string HairDesc(Hair hair)
 		{
 			return SemiTransparentStr(hair.isSemiTransparent) + hair.hairType.shortDescription();
 		}
 
-		//Ex: normal, transparent, red: 11 inch [semi-transparent] red hair.
+		//Ex: fur, not transparent, black: black fur.
+		public static string ColoredHairDesc(Hair hair)
+		{
+			return SemiTransparentStr(hair.isSemiTransparent) + hair.color.AsString() + " " + hair.hairType.shortDescription();
+		}
+
+		//Ex: wavy style, not transparent:
+		public static string ColoredStyledHairDescript(Hair hair)
+		{
+			string retVal = "";
+			if (hair.style != HAIR_STYLE.NOT_APPLICABLE)
+			{
+				retVal += hair.style.asString();
+				if (hair.isSemiTransparent)
+				{
+					retVal += ",";
+				}
+				retVal += " ";
+			}
+			return retVal + SemiTransparentStr(hair.isSemiTransparent) + hair.color.AsString() + " " + hair.hairType.shortDescription();
+		}
+
+		//Who gives a Fuck about an Oxford Comma?
+		//Ex: normal, curly transparent, red: 11 inch curly, semi-transparent red hair.
 		public static string FullDesc(Hair hair)
 		{
 			string retVal = GlobalStrings.LengthInHalfInch(hair.lengthInInches);

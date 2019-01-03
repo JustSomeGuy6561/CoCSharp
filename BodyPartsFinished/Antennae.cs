@@ -6,7 +6,7 @@ using System;
 using CoC.Tools;
 using CoC.Strings;
 using CoC.Strings.BodyParts;
-
+using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
 {
 	public class Antennae : BodyPartBase<Antennae, AntennaeType>
@@ -17,6 +17,24 @@ namespace CoC.BodyParts
 		{
 			type = AntennaeType.NONE;
 		}
+
+		public override void RestoreAndDisplayMessage(Player p)
+		{
+			OutputText(restoreString(this, p));
+			Restore();
+		}
+
+		public void UpdateType(AntennaeType newType)
+		{
+			type = newType;
+		}
+
+		public void UpdateTypeAndDisplayMessage(AntennaeType newType, Player player)
+		{
+			OutputText(transformFrom(this, player));
+			type = newType;
+		}
+
 	}
 
 	public class AntennaeType : BodyPartBehavior<AntennaeType, Antennae>

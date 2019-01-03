@@ -23,7 +23,7 @@ namespace CoC.Strings.BodyParts
 		}
 
 		//we have carapace. if you want to make these colorable, we can do that!
-		public static string SPIDERPlayerStr(Arms arms) { return arms.epidermis.FullDescript(Tones.BLACK) + " covers your arms from the biceps down, resembling a pair of long black gloves from a distance."; }
+		public static string SPIDERPlayerStr(Arms arms) { return arms.epidermis.FullDescript(Tones.BLACK,) + " covers your arms from the biceps down, resembling a pair of long black gloves from a distance."; }
 		//
 		public static string BEEPlayerStr(Arms arms) { return arms.epidermis.FullDescript(Tones.BLACK) + " covers your arms from the biceps down, resembling a pair of long black gloves that end with a yellow fuzz from a distance."; }
 

@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //12/29/2018, 11:03 AM
 
+using CoC.Items;
+
 namespace CoC.Tools
 {
 	public delegate string GenericDescription();
@@ -13,4 +15,6 @@ namespace CoC.Tools
 	public delegate string ChangeType<T>(T originalType, Player player); 
 
 	public delegate string GenericDescriptorWithArg<T>(T arg);
+
+	public delegate string AdjColorDescriptor(string adj, EpidermalColors color);
 }

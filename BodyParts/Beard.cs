@@ -41,7 +41,7 @@ namespace CoC.BodyParts
 			}
 		}
 
-		public Dyes color { get; private set; }
+		public HairFurColors color { get; private set; }
 
 		private BeardStyle _style;
 
@@ -52,7 +52,7 @@ namespace CoC.BodyParts
 		//Constructor
 		private FacialHair(bool active = true)
 		{
-			color = Dyes.BLACK;
+			color = HairFurColors.BLACK;
 			isActive = active;
 			if (isActive)
 			{
@@ -205,7 +205,7 @@ namespace CoC.BodyParts
 			return isActive;
 		}
 
-		public bool attemptToDye(Dyes dye)
+		public bool attemptToDye(HairFurColors dye)
 		{
 			if (!this.isActive || this.color == dye)
 			{

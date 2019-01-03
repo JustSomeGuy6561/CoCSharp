@@ -13,9 +13,10 @@ using static CoC.Strings.BodyParts.HairStrings;
 
 namespace CoC.BodyParts
 {
-	public enum HAIR_STYLE {NOT_APPLICABLE, MANGEY, MESSY, STRAIGHT, WAVY, CURLY, COILED }
-	//Can't use readonly, as beards aren't constant - they grow.
-	//NOT FULLY DONE. There's no way to check if you can groom to a certain type of beard based on existing hair. 
+
+
+	public enum HAIR_STYLE {NOT_APPLICABLE, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED }
+
 	public class Hair : SimpleBodyPart, IDyeable
 	{
 		/*
@@ -38,6 +39,12 @@ namespace CoC.BodyParts
 		{
 			return ColoredHairDesc(this);
 		}
+
+		public string ColoredStyledDescription()
+		{
+			return ColoredStyledHairDescript(this);
+		}
+
 		public string fullDescription()
 		{
 			return FullDesc(this);
@@ -45,19 +52,86 @@ namespace CoC.BodyParts
 
 		#endregion
 		//Constructor
-		private Hair()
+		protected Hair()
 		{
 			lengthInInches = 0.0f;
 			hairType = HairType.NO_HAIR;
 			isGrowing = false;
-			color = Dyes.HUMAN_DEFAULT;
+			color = HairFurColors.HUMAN_DEFAULT;
 			isSemiTransparent = false;
 			shortDescription = () => HairDesc(this);
 		}
 
+		public void Restore()
+		{
+			hairType = HairType.NORMAL;
+		}
+
+		public void Reset()
+		{
+			lengthInInches = 0.0f;
+			hairType = HairType.NO_HAIR;
+			isGrowing = false;
+			color = HairFurColors.HUMAN_DEFAULT;
+			isSemiTransparent = false;
+		}
+
+		public static Hair Generate()
+		{
+			return new Hair();
+		}
+
+		public bool StyleHair(HAIR_STYLE newStyle)
+		{
+			if (this.style == HAIR_STYLE.NOT_APPLICABLE)
+			{
+				return false;
+			}
+			style = newStyle;
+			return lengthInInches != 0 && style == newStyle;
+		}
+
+		public bool GrowAndStyle(HAIR_STYLE newStyle, int deltaLength, bool activateIfPossible = false)
+		{
+			if (this.)
+			if (this.hairType.preventHairGrowth)
+			{
+				return false;
+			}
+			if (style == HAIR_STYLE.NOT_APPLICABLE && !this.isGrowing)
+			{
+				return false;
+			}
+			style = newStyle;
+			//delta length?
+			//return isGrowing && style == newStyle;
+		}
+
+		public bool CutLong(HAIR_STYLE newStyle)
+		{
+
+		}
+		public bool CutMedium(HAIR_STYLE newStyle)
+		{
+
+		}
+		public bool CutShort(HAIR_STYLE newStyle)
+		{
+
+		}
+
+		public bool ShaveOff(HAIR_STYLE newStyle, bool disableHairGrowth = false)
+		{
+
+		}
+
+		public bool ShaveOffAndDeactivateGrowth()
+		{
+		}
+
 		#region Dyeable
 
-		public Dyes color { get; private set; }
+		public HairFurColors color { get; private set; }
 
 		public override int index => hairType.index;
 
@@ -68,7 +142,7 @@ namespace CoC.BodyParts
 			return hairType.canDye();
 		}
 
-		public bool attemptToDye(Dyes dye)
+		public bool attemptToDye(HairFurColors dye)
 		{
 			if (!canDye() || dye == color)
 			{
@@ -161,29 +235,119 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public virtual bool tryToDye(ref Dyes currentColor, Dyes newColor)
+		public virtual bool canCut()
+		{
+			return true;
+		}
+
+		public virtual bool canLengthen()
+		{
+			return true;
+		}
+
+		public virtual bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
 		{
 			currentColor = newColor;
 			return currentColor == newColor;
 		}
 
-		protected HairType(GenericDescription desc, bool canGrow = true)
+
+		protected HairType(GenericDescription desc)
 		{
 			_index = indexMaker++;
 			shortDescription = desc;
-			preventHairGrowth = !canGrow;
+			preventHairGrowth = false;
 		}
 
-		public static readonly HairType NO_HAIR = new HairType(NoHairStr, false);
+		public static readonly HairType NO_HAIR = new NoHair();
 		public static readonly HairType NORMAL = new HairType(NormalStr);
         public static readonly HairType FEATHER = new HairType(FeatherStr);
         public static readonly HairType GOO = new HairType(GooStr);
-        public static readonly HairType ANEMONE = new HairType(AnemoneStr);
+        public static readonly HairType ANEMONE = new AnemoneHair();
         public static readonly HairType QUILL = new HairType(QuillStr);
-        public static readonly HairType BASILISK_SPINES = new HairType(BasiliskSpinesStr);
+		//Spines are a huge dick - they break the format that hair actually is hair (or hair-like)
+		
+		//Solution: Spines take the hair color of the original and convert it to the closest lizard tone
+		//you can say something like "the spines clash with the rest of your scales, hinting at their unnatural origins"
+		//then if you really want to, the next TF you can force the spines in line by dyeing them with a lizard related dye closest to their current tone. 
+		//at that point you can then say "the spines 
+		public static readonly HairType BASILISK_SPINES = new HairType(BasiliskSpinesStr); 
+		//end complain
         public static readonly HairType BASILISK_PLUME = new HairType(BasiliskPlumesStr);
         public static readonly HairType WOOL = new HairType(WoolStr);
         public static readonly HairType LEAF = new HairType(LeafStr);
+
+		private class NoHair : HairType
+		{
+			public NoHair() : base(NoHairStr) { }
+
+			public override bool canCut()
+			{
+				return false;
+			}
+
+			public override bool canLengthen()
+			{
+				return false;
+			}
+
+			public override bool canDye()
+			{
+				return false;
+			}
+
+			public override bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
+			{
+				return false;
+			}
+
+		}
+
+
+		private class AnemoneHair : HairType
+		{
+			public AnemoneHair() : base(AnemoneStr) {}
+
+			public override bool canCut()
+			{
+				return false;
+			}
+
+			public override bool canLengthen()
+			{
+				return false;
+			}
+
+		}
+
+		private class BasiliskSpines : HairType
+		{
+			protected BasiliskSpines() : base(BasiliskSpinesStr)
+			{
+				
+			}
+
+			public override bool canCut()
+			{
+				return false;
+			}
+
+			public override bool canLengthen()
+			{
+				return false;
+			}
+
+			public override bool canDye()
+			{
+				return false;
+			}
+
+			public override bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
+			{
+				return false;
+			}
+		}
+
 	}
 
 }

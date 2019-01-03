@@ -12,7 +12,7 @@ namespace CoC.BodyParts
 		public abstract string defaultEpidermalAdjective();
 		public abstract bool canDye();
 		public abstract bool canTone();
-		public abstract bool tryToDye(ref Dyes currentColor, Dyes newColor);
+		public abstract bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor);
 		public abstract bool tryToTone(ref Tones currentTone, Tones newTone);
 		public abstract Epidermis epidermis { get; }
 	}

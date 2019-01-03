@@ -33,7 +33,9 @@ namespace CoC.BodyParts
 		public override int index => _index;
 
 		public override GenericDescription shortDescription { get; protected set; }
-		public GenericDescriptorWithArg<Tones> shortDescriptionWithColor => (x) => { return (canTone() ? x.AsString() : "") + shortDescription(); };
+		public GenericDescriptorWithArg<Tones> shortDescriptionWithColor => (x) => { return (canTone() ? x.AsString() + " " : "") + shortDescription(); };
+
+		public GenericDescriptorWithArg<Tones> shortDescriptionWithColor => (x) => { return (canTone() ? x.AsString() + " " : "") + shortDescription(); };
 
 		protected readonly int _index;
 
@@ -55,7 +57,7 @@ namespace CoC.BodyParts
 		{
 			return dyeable;
 		}
-		public virtual bool tryToDye(ref Dyes currentColor, Dyes newColor)
+		public virtual bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
 		{
 			if (canDye())
 			{
@@ -63,6 +65,26 @@ namespace CoC.BodyParts
 				return currentColor == newColor;
 			}
 			return false;
+		}
+
+		bool IImmutableDyeable.tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
+		{
+			return false;
+		}
+
+		AdjColorDescriptor IImmutableDyeable.DescriptorWithColor(HairFurColors currentColor)
+		{
+			throw new NotImplementedException();
+		}
+
+		bool IImmutableToneable.tryToTone(ref Tones currentTone, Tones newTone)
+		{
+			return false;
+		}
+
+		AdjColorDescriptor IImmutableToneable.DescriptorWithTone(Tones currentTone)
+		{
+			return 
 		}
 
 		public static readonly Epidermis SKIN = new Epidermis(SkinStr);

@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/31/2018, 1:23 AM
 using CoC.Items;
+using CoC.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,8 @@ namespace CoC.BodyParts.SpecialInteraction
 	{
 		bool canTone();
 		bool tryToTone(ref Tones currentTone, Tones newTone);
+
+		AdjColorDescriptor DescriptorWithTone(Tones currentTone);
+
 	}
 }

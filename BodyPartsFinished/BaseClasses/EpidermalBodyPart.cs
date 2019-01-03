@@ -23,7 +23,7 @@ namespace CoC.BodyParts
 		public bool usesTone => epidermis.canTone() && !usesDye;
 
 
-		public bool UpdateType(U newType, Tones currentSkinTone, Dyes currentHairOrFurColor, string adj, bool forceUpdateToneAndDye = false)
+		public bool UpdateType(U newType, Tones currentSkinTone, HairFurColors currentHairOrFurColor, string adj, bool forceUpdateToneAndDye = false)
 		{
 			bool retVal = UpdateType(newType, currentSkinTone, currentHairOrFurColor, forceUpdateToneAndDye);
 			if (retVal)
@@ -33,10 +33,10 @@ namespace CoC.BodyParts
 			return retVal;
 		}
 
-		public bool UpdateType(U newType, Tones currentSkinTone, Dyes currentHairOrFurColor , bool forceUpdateToneAndDye = false)
+		public bool UpdateType(U newType, Tones currentSkinTone, HairFurColors currentHairOrFurColor , bool forceUpdateToneAndDye = false)
 		{
 			Tones oldTone = currentTone;
-			Dyes oldDye = currentDye;
+			HairFurColors oldDye = currentDye;
 
 			bool passAlongTone = usesTone && newType.canTone() && !forceUpdateToneAndDye;
 			bool passAlongDye = usesDye && newType.canDye() && !forceUpdateToneAndDye;
@@ -96,7 +96,7 @@ namespace CoC.BodyParts
 			}
 			return false;
 		}
-		public virtual bool attemptToDye(Dyes dye)
+		public virtual bool attemptToDye(HairFurColors dye)
 		{
 			if (canDye())
 			{
@@ -120,12 +120,12 @@ namespace CoC.BodyParts
 				return currentTone;
 			}
 		}
-		protected Dyes currentDye;
+		protected HairFurColors currentDye;
 		protected Tones currentTone;
 
-		public Dyes furColor()
+		public HairFurColors furColor()
 		{
-			return usesDye ? currentDye : Dyes.NO_FUR;
+			return usesDye ? currentDye : HairFurColors.NO_FUR;
 		}
 
 		public Tones toneColor()
