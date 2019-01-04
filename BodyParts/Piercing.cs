@@ -13,35 +13,8 @@ namespace CoC.BodyParts
 {
 	//Piercing revamp.
 	//Ceraph, eat your heart out.
-	public abstract class PiercableBodyPart : BodyPartBehavior
+	public abstract class DeleteMe
 	{
-		//Note that this is by no means an exhaustive list of all piercings available ever.
-		//But it's all i'm going to implement. Frankly it's already too much effort lol.
-
-		//Here's to looking half of this shit up.
-		public const byte EAR_LOBE_1     =  0;
-		public const byte EAR_LOBE_2     =  1;
-		public const byte EAR_LOBE_3     =  2;
-		public const byte EAR_UPPER_LOBE =  3;
-		//thin rim of your ear.
-		public const byte EAR_AURICAL_1  =  4;
-		public const byte EAR_AURICAL_2  =  5;
-		public const byte EAR_AURICAL_3  =  6;
-		public const byte EAR_AURICAL_4  =  7;
-		//upper part
-		public const byte EAR_HELIX_1    =  8;
-		public const byte EAR_HELIX_2    =  9;
-		public const byte EAR_HELIX_3    = 10;
-		public const byte EAR_HELIX_4    = 11;
-		//close to head, where an industrial (bar) usually goes
-		public const byte EAR_ANTI_HELIX = 12;
-		//inner ridge by the upper ear.
-		public const byte EAR_ROOK       = 13;
-		//migraine cure, apparently. innermost part of ear
-		public const byte EAR_DAITH      = 14;
-		//flap of skin covering your ear canal
-		public const byte EAR_TRAGUS     = 15;
-
 		public const byte EYEBROW_LEFT_1  = 0;
 		public const byte EYEBROW_LEFT_2  = 1;
 		public const byte EYEBROW_RIGHT_1 = 2;
@@ -93,19 +66,6 @@ namespace CoC.BodyParts
 		public const byte LABIA_RIGHT_4 =  9;
 		public const byte LABIA_RIGHT_5 = 10;
 		public const byte LABIA_RIGHT_6 = 11;
-
-		public const byte COCK_ALBERT         =  0;
-		public const byte COCK_REVERSE_ALBERT =  1;
-		public const byte COCK_LEFT_ALBERT    =  2;
-		public const byte COCK_RIGHT_ALBERT   =  3;
-		public const byte COCK_FRENUM_1       =  4;
-		public const byte COCK_FRENUM_2       =  5;
-		public const byte COCK_FRENUM_3       =  6;
-		public const byte COCK_FRENUM_4       =  7;
-		public const byte COCK_FRENUM_5       =  8;
-		public const byte COCK_FRENUM_6       =  9;
-		public const byte COCK_FRENUM_7       = 10;
-		public const byte COCK_FRENUM_8       = 11;
 
 
 		//technically this could be an array, or even an int/long.

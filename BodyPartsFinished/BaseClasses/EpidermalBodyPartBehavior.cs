@@ -4,15 +4,14 @@
 //12/30/2018, 11:32 PM
 using CoC.BodyParts.SpecialInteraction;
 using CoC.Items;
+using CoC.Tools;
 
 namespace CoC.BodyParts
 {
-	public abstract class EpidermalBodyPartBehavior<ThisClass, ContainerClass> : BodyPartBehavior<ThisClass, ContainerClass>, IImmutableDyeable, IImmutableToneable where ThisClass : EpidermalBodyPartBehavior<ThisClass, ContainerClass> where ContainerClass : EpidermalBodyPart<ContainerClass, ThisClass>
+	public abstract class EpidermalBodyPartBehavior<ThisClass, ContainerClass> : BodyPartBehavior<ThisClass, ContainerClass>
+		where ThisClass : EpidermalBodyPartBehavior<ThisClass, ContainerClass> where ContainerClass : EpidermalBodyPart<ContainerClass, ThisClass>
 	{
-		public abstract string defaultEpidermalAdjective();
-		public abstract bool canDye();
-		public abstract bool canTone();
-		public abstract bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor);
-		public abstract bool tryToTone(ref Tones currentTone, Tones newTone);
-		public abstract Epidermis epidermis { get; }
+		protected EpidermalBodyPartBehavior(GenericDescription shortDesc, CreatureDescription<ContainerClass> creatureDesc, PlayerDescription<ContainerClass> playerDesc,
+			ChangeType<ThisClass> transform, ChangeType<ThisClass> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)	{}
 	}
+}

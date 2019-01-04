@@ -7,8 +7,8 @@ namespace CoC.BodyParts.SpecialInteraction
 {
 	interface IToneable
 	{
-		bool canTone();
+		bool canToneLotion();
 
-		bool attemptToTone(Tones tone);
+		bool attemptToUseLotion(Tones tone);
 	}
 }

@@ -17,7 +17,7 @@ namespace CoC.BodyParts
 
 	public enum HAIR_STYLE {NOT_APPLICABLE, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED }
 
-	public class Hair : SimpleBodyPart, IDyeable
+	public class Hair : SimpleBodyPartType, IDyeable
 	{
 		/*
 		 * Hair can grow. if used on a creature where this isn't an issue (basically everyone but the player)
@@ -216,7 +216,7 @@ namespace CoC.BodyParts
 		#endregion 
 	}
 
-	public class HairType : SimpleBodyPart, IImmutableDyeable
+	public class HairType : SimpleBodyPartType, IImmutableHairDye
 	{
 		private static int indexMaker = 0;
 

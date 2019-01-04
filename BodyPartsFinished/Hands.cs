@@ -13,7 +13,21 @@ using System.Text;
 
 namespace CoC.BodyParts
 {
-	public class Hands : SimpleBodyPart, IImmutableToneable
+	public class Hands : SimpleBodyPart<HandType>, IToneAware
+	{
+		public Tones clawTone { get; protected set; }
+		public void reactToChangeInSkinTone(Tones newTone)
+		{
+			if (type.canTone())
+			{
+				Tones claw = clawTone;
+				type.tryToTone(ref claw, newTone);
+				clawTone = claw;
+			}
+		}
+	}
+
+	public class HandType : SimpleBodyPartType
 	{
 		private static int indexMaker = 0;
 		public override int index => _index;
@@ -25,32 +39,35 @@ namespace CoC.BodyParts
 
 		public virtual bool tryToTone(ref Tones currentTone, Tones newTone)
 		{
+			if (canTone())
+			{
+				currentTone = newTone;
+				return currentTone == newTone;
+			}
 			return false;
 		}
 
-		protected Hands(GenericDescription desc)
+		protected HandType(GenericDescription shortDesc) : base(shortDesc)
 		{
 			_index = indexMaker++;
-			shortDescription = desc;
 		}
 
-		public override GenericDescription shortDescription { get; protected set; }
-
-		public static readonly Hands HUMAN = new Hands(HumanShort);
-		public static readonly Hands LIZARD = new LizardClaws();
-		public static readonly Hands DRAGON = new Hands(DragonShort);
-		public static readonly Hands SALAMANDER = new Hands(SalamanderShort);
-		public static readonly Hands CAT = new Hands(CatShort);
-		public static readonly Hands DOG = new Hands(DogShort);
-		public static readonly Hands FOX = new Hands(FoxShort);
-		public static readonly Hands IMP = new ImpClaws();
-		public static readonly Hands COCKATRICE = new Hands(CockatriceShort);
-		public static readonly Hands RED_PANDA = new Hands(RedPandaShort);
-		public static readonly Hands FERRET = new Hands(FerretShort);
+		public static readonly HandType HUMAN = new HandType(HumanShort);
+		public static readonly HandType LIZARD = new LizardClaws();
+		public static readonly HandType DRAGON = new HandType(DragonShort);
+		public static readonly HandType SALAMANDER = new HandType(SalamanderShort);
+		public static readonly HandType CAT = new HandType(CatShort);
+		public static readonly HandType DOG = new HandType(DogShort);
+		public static readonly HandType FOX = new HandType(FoxShort);
+		public static readonly HandType IMP = new ImpClaws();
+		public static readonly HandType COCKATRICE = new HandType(CockatriceShort);
+		public static readonly HandType RED_PANDA = new HandType(RedPandaShort);
+		public static readonly HandType FERRET = new HandType(FerretShort);
 		//public static readonly Hands MANTIS = new Hands(MantisShort);
 
-		private class LizardClaws : Hands
+		private class LizardClaws : HandType
 		{
+
 			public LizardClaws() : base(LizardShort) { }
 
 			public override bool canTone()
@@ -60,6 +77,7 @@ namespace CoC.BodyParts
 
 			public override bool tryToTone(ref Tones currentTone, Tones newTone)
 			{
+				//do some magic to the tone to make it lizard claw compatible
 				currentTone = newTone;
 				//maybe implement the switch here? imo it's just easier to create a helper
 				//that outputs the correct -ish or -y when asked for the claw color.
@@ -67,7 +85,7 @@ namespace CoC.BodyParts
 			}
 		}
 
-		private class ImpClaws : Hands
+		private class ImpClaws : HandType
 		{
 			public ImpClaws() : base(ImpShort) { }
 
@@ -78,6 +96,7 @@ namespace CoC.BodyParts
 
 			public override bool tryToTone(ref Tones currentTone, Tones newTone)
 			{
+				//do some magic to the tone to make it imp claw compatible
 				currentTone = newTone;
 				return true;
 			}

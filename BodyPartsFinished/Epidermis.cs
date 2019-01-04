@@ -1,101 +1,123 @@
-﻿//Epidermis.cs
-//Description: Epidermis Sub-Body Part class. used in other body parts. 
+﻿//EpidermisType.cs
+//Description: EpidermisType Sub-Body Part class. used in other body parts. 
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
 using CoC.BodyParts.SpecialInteraction;
 using CoC.Tools;
 using CoC.Items;
 using static CoC.Strings.BodyParts.EpidermisString;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CoC.BodyParts
 {
-	//Epidermis: outer-most layer of human skin.
-	//I'm using it to represent this type of thing
-	//on the various species. So: skin, scales, fur, etc.
+	//Epidermis represents the equivalent to skin on all species.
 
-	//IMMUTABLE
-	public class Epidermis : SimpleBodyPart, IImmutableDyeable, IImmutableToneable
+	/*
+	 * NOTES: Epidermis can be attached to things that make use of it, like arms, core, etc.
+	 * It is up to you to update it. This is done because it is more useful that way - the epidermis
+	 * will always allow you to change its tone or fur color, to allow the most use for it.
+	 * if you don't want this behavior for your body part, (for example, bee exoskeleton is always black)
+	 * don't call these functions when you take care of updating your body part. so, if your arms react to
+	 * changes in skin tone because your claws match the body color, but you don't want your arm scales or 
+	 * whatever the epidermis is used for to update, simply dont call epidermis.reactToChangeInSkinColor
+	 */
+
+	public class Epidermis : SimpleBodyPart<EpidermisType>, IDyeable, IToneable, IToneAware, IFurAware
 	{
-		private static int indexMaker = 0;
-
-		protected readonly bool dyeable;
-		protected readonly bool toneable;
-
-		protected Epidermis(GenericDescription desc)
+		protected Epidermis(EpidermisType type) : base(type)
 		{
-			_index = indexMaker++;
-			shortDescription = desc;
+			fur = FurColor.NO_FUR;
+			tone = Tones.HUMAN_DEFAULT;
 		}
-		public override int index => _index;
 
-		public override GenericDescription shortDescription { get; protected set; }
-		public GenericDescriptorWithArg<Tones> shortDescriptionWithColor => (x) => { return (canTone() ? x.AsString() + " " : "") + shortDescription(); };
-
-		public GenericDescriptorWithArg<Tones> shortDescriptionWithColor => (x) => { return (canTone() ? x.AsString() + " " : "") + shortDescription(); };
-
-		protected readonly int _index;
-
-		public virtual bool canTone()
+		public static Epidermis Generate(EpidermisType type)
 		{
-			return toneable;
+			return new Epidermis(type);
 		}
-		//if you want this to fail for some reason based on 
-		public virtual bool tryToTone(ref Tones currentTone, Tones newTone)
+
+		public FurColor fur { get; protected set; }
+		public Tones tone { get; protected set; }
+
+		public virtual GenericDescription descriptionWithColor => () => { return (type.usesTone ? tone.AsString() : fur.AsString()) + " " + shortDescription(); };
+		public virtual GenericDescription justColor => () => { return type.usesTone ? tone.AsString() : fur.AsString(); };
+
+		public override EpidermisType type { get; protected set; }
+
+		public bool canDye()
 		{
-			if (canTone())
-			{
-				currentTone = newTone;
-				return currentTone == newTone;
-			}
-			return false;
+			return type.usesFur && type.hairMutable;
 		}
-		public virtual bool canDye()
-		{
-			return dyeable;
-		}
-		public virtual bool tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
+
+		public bool attemptToDye(HairFurColors dye)
 		{
 			if (canDye())
 			{
-				currentColor = newColor;
-				return currentColor == newColor;
+				fur.UpdateFurColor(dye);
+				return true;
 			}
 			return false;
 		}
 
-		bool IImmutableDyeable.tryToDye(ref HairFurColors currentColor, HairFurColors newColor)
+		public bool canToneLotion()
 		{
+			return type.usesTone && type.toneMutable;
+		}
+
+		public bool attemptToUseLotion(Tones newTone)
+		{
+			if (canDye())
+			{
+				tone = newTone;
+				return true;
+			}
 			return false;
 		}
-
-		AdjColorDescriptor IImmutableDyeable.DescriptorWithColor(HairFurColors currentColor)
+		public void reactToChangeInSkinTone(Tones newTone)
 		{
-			throw new NotImplementedException();
+			tone = newTone;
 		}
 
-		bool IImmutableToneable.tryToTone(ref Tones currentTone, Tones newTone)
+		public void reactToChangeInFurColor(FurColor furColor)
 		{
-			return false;
+			if (fur != furColor)
+			{
+				fur.UpdateFurColor(furColor);
+			}
 		}
+	}
 
-		AdjColorDescriptor IImmutableToneable.DescriptorWithTone(Tones currentTone)
+
+	//IMMUTABLE
+	public class EpidermisType : SimpleBodyPartType
+	{
+		private static int indexMaker = 0;
+
+		public readonly bool usesTone;
+		public bool usesFur => !usesTone;
+
+		protected readonly bool updateable;
+		protected readonly int _index;
+
+		public bool hairMutable => usesFur && updateable;
+		public bool toneMutable => usesTone && updateable;
+
+		protected EpidermisType(GenericDescription desc, bool isTone, bool canChange) : base(desc)
 		{
-			return 
+			_index = indexMaker++;
+			usesTone = isTone;
+			updateable = canChange;
 		}
+		public override int index => _index;
 
-		public static readonly Epidermis SKIN = new Epidermis(SkinStr);
-		public static readonly Epidermis FUR = new Epidermis(FurStr);
-		public static readonly Epidermis SCALES = new Epidermis(ScalesStr);
-		public static readonly Epidermis GOO = new Epidermis(GooStr);
-		public static readonly Epidermis WOOL = new Epidermis(WoolStr); //i'd like to merge this with fur but it's more trouble than it's worth
-		public static readonly Epidermis FEATHERS = new Epidermis(FeathersStr);
-		public static readonly Epidermis BARK = new Epidermis(BarkStr);
-		public static readonly Epidermis CARAPACE = new Epidermis(CarapaceStr);
-		public static readonly Epidermis EXOSKELETON = new Epidermis(ExoskeletonStr);
+		public static readonly EpidermisType SKIN = new EpidermisType(SkinStr, true, true);
+		public static readonly EpidermisType FUR = new EpidermisType(FurStr, false, true);
+		public static readonly EpidermisType SCALES = new EpidermisType(ScalesStr, true, true);
+		public static readonly EpidermisType GOO = new EpidermisType(GooStr, true, true);
+		public static readonly EpidermisType WOOL = new EpidermisType(WoolStr, false, true); //i'd like to merge this with fur but it's more trouble than it's worth
+		public static readonly EpidermisType FEATHERS = new EpidermisType(FeathersStr, false, true);
+		public static readonly EpidermisType BARK = new EpidermisType(BarkStr, true, true); //do you want the bark to change colors? idk? maybe make that false.
+		public static readonly EpidermisType CARAPACE = new EpidermisType(CarapaceStr, true, true);
+		//cannot be changed by lotion.
+		public static readonly EpidermisType EXOSKELETON = new EpidermisType(ExoskeletonStr, true, false);
 
 	}
 }

@@ -29,18 +29,28 @@ namespace CoC.BodyParts
 		//Function pointers. Wooo!
 		//but they make the code significantly shorter and at the same time way more
 		//functional. with these, it's possible (and easier) to support language packs.
-		
+
 		//a short description saying the race and type. ex: Hands.CAT: "cat paws"
-		public abstract GenericDescription shortDescription { get; protected set; }
+		public readonly GenericDescription shortDescription;
 		//a description of this part. Any creature who has this part could call this and
 		//it could be used in a sentence. No "you have/are/etc"
-		public abstract CreatureDescription<ContainerClass> creatureDescription { get; protected set; }
+		public readonly CreatureDescription<ContainerClass> creatureDescription;
 		//a description of this part, unique to the player. It should be completely self-contained
 		//
-		public abstract PlayerDescription<ContainerClass> playerDescription { get; protected set; }
+		public readonly PlayerDescription<ContainerClass> playerDescription;
 
-		public abstract ChangeType<ThisClass> transformFrom { get; protected set; }
-		public abstract ChangeType<ThisClass> restoreString { get; protected set; }
+		public readonly ChangeType<ThisClass> transformFrom;
+		public readonly ChangeType<ThisClass> restoreString;
+
+		protected BodyPartBehavior(GenericDescription shortDesc, CreatureDescription<ContainerClass> creatureDesc,
+			PlayerDescription<ContainerClass> playerDesc, ChangeType<ThisClass> transform, ChangeType<ThisClass> restore)
+		{
+			shortDescription = shortDesc;
+			creatureDescription = creatureDesc;
+			playerDescription = playerDesc;
+			transformFrom = transform;
+			restoreString = restore;
+		}
 
 	}
 }

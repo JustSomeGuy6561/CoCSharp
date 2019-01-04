@@ -10,14 +10,21 @@ using CoC.Tools;
 
 namespace CoC.BodyParts
 {
-	class Cock : BodyPartBehavior<CockType>
+	public enum COCK_PIERCING
 	{
-		public override int index => throw new NotImplementedException();
-		public CockType cockType { get; protected set; }
-		public override GenericDescription shortDescription {get; protected set;}
-		public override CreatureDescription creatureDescription {get; protected set;}
-		public override PlayerDescription playerDescription {get; protected set;}
-		public override ChangeType<CockType> transformFrom {get; protected set;}
+		ALBERT,
+		FRENUM_1, FRENUM_2, FRENUM_3, FRENUM_4,
+		FRENUM_5, FRENUM_6, FRENUM_7, FRENUM_8
+	}
+	class Cock : PiercableBodyPart<Cock, CockType, COCK_PIERCING>
+	{
+		protected Cock(CockType type, PiercingFlags flags)
+		{
+			this.type = type;
+		}
+
+		protected override PiercingFlags piercingFlags { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public override CockType type { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
 
 		#region Compare stuff
 		//---------------------------------------------
@@ -54,6 +61,21 @@ namespace CoC.BodyParts
 			return this == other;
 		}
 
+		public override bool canPierceAtLocation(COCK_PIERCING piercingLocation)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Restore()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void RestoreAndDisplayMessage(Player player)
+		{
+			throw new NotImplementedException();
+		}
+
 		public static bool operator ==(Cock first, CockType second)
 		{
 			return first.cockType == second;
@@ -66,14 +88,14 @@ namespace CoC.BodyParts
 		#endregion
 	}
 
-	class CockType : BodyPartBehavior<CockType>
+	class CockType : PiercableBodyPartBehavior<CockType, Cock, COCK_PIERCING>
 	{
 		public override int index => throw new NotImplementedException();
 
-		public override GenericDescription shortDescription {get; protected set;}
-		public override CreatureDescription creatureDescription {get; protected set;}
-		public override PlayerDescription playerDescription {get; protected set;}
-		public override ChangeType<CockType> transformFrom {get; protected set;}
+		public override GenericDescription shortDescription { get; protected set; }
+		public override CreatureDescription creatureDescription { get; protected set; }
+		public override PlayerDescription playerDescription { get; protected set; }
+		public override ChangeType<CockType> transformFrom { get; protected set; }
 
 		public static readonly CockType DISPLACER = new CockType();
 	}

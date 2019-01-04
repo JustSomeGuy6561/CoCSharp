@@ -12,6 +12,12 @@ namespace CoC.BodyParts
 	//TODO: add nice comparison shit for this class.
 	public class Arms : EpidermalBodyPart<Arms, ArmType>
 	{
+		protected Arms(ArmType arm)
+		{
+			type = arm;
+			currentTone = arm.DefaultTone;
+			currentFur = HairFurColors.NO_HAIR_FUR;
+		}
 		public override ArmType type { get; protected set; }
 
 		//really clean getter. niceuuu
@@ -24,15 +30,10 @@ namespace CoC.BodyParts
 
 		public override bool attemptToDye(HairFurColors dye)
 		{
-			return type.tryToDye(ref currentDye, dye);
+			return type.tryToDye(ref currentFur, dye);
 		}
 
-		protected Arms(ArmType arm)
-		{
-			type = arm;
-			currentTone = Tones.HUMAN_DEFAULT;
-			currentDye = HairFurColors.NO_FUR;
-		}
+
 
 		public static Arms Generate(ArmType type, Tones currentSkinTone, HairFurColors currentHairOrFurColor)
 		{
@@ -43,25 +44,27 @@ namespace CoC.BodyParts
 			return retVal;
 		}
 
-		/*
-
-		public override string GetDescriptor()
-		{
-			string retVal = epidermis.GetDescriptor();
-			retVal = String.IsNullOrWhiteSpace(retVal) ? "" : retVal + " ";
-			retVal += descriptor + " arms";
-			return retVal;
-		}
-		public string GetDescriptorWithHands()
-		{
-			return GetDescriptor() + " and " + hands.GetDescriptor();
-		}*/
-
 		public override void Restore()
 		{
 			type = ArmType.HUMAN;
 			currentTone = Tones.HUMAN_DEFAULT;
-			currentDye = HairFurColors.NO_FUR;
+			currentFur = HairFurColors.NO_HAIR_FUR;
+		}
+
+		//Updates the arms. Since arms cannot be dyed individually (that would just be an extension of the body color)
+		//requires the current fur color (hair color is to be used if no hair is available) and current skin tone.
+		//will update the arm color or tone based on internal ruleset, if applicable. generally this is the same value(s) passed in.
+		public bool UpdateArms(ArmType newType, HairFurColors currentHairFurColor, Tones currentTone)
+		{
+
+		}
+
+		//used to notify the arms that there was a change in colors or tones. 
+		//internally, sets the color for the arms based on the designed behavior
+		//(generally, this means it will be the same value passed in, if applicable).
+		public bool NotifyHairSkinFurColorChange(HairFurColors color, Tones currentTone)
+		{
+
 		}
 
 		#region CompareConvenience
@@ -74,12 +77,12 @@ namespace CoC.BodyParts
 
 		public static bool operator ==(Arms first, Arms second)
 		{
-			return first.type == second.type && first.usesDye == second.usesDye && ((first.usesDye && first.currentDye == second.currentDye) || !first.usesDye) &&  first.usesTone == second.usesTone && ((first.usesTone && first.currentTone == second.currentTone) || !first.usesTone);
+			return first.type == second.type && first.usesDye == second.usesDye && ((first.usesDye && first.currentFur == second.currentFur) || !first.usesDye) &&  first.usesTone == second.usesTone && ((first.usesTone && first.currentTone == second.currentTone) || !first.usesTone);
 		}
 
 		public static bool operator !=(Arms first, Arms second)
 		{
-			return first.type != second.type || first.usesDye != second.usesDye || first.usesTone != second.usesTone || (first.usesTone && first.currentTone != second.currentTone) || (first.usesDye && first.currentDye != second.currentDye);
+			return first.type != second.type || first.usesDye != second.usesDye || first.usesTone != second.usesTone || (first.usesTone && first.currentTone != second.currentTone) || (first.usesDye && first.currentFur != second.currentFur);
 		}
 
 		//Convenience. Because everyone loves that shit
@@ -122,18 +125,26 @@ namespace CoC.BodyParts
 	public class ArmType : EpidermalBodyPartBehavior<ArmType, Arms>
 	{
 		private static int indexMaker = 0;
-		public Hands hands { get; protected set; }
 
-		public override Epidermis epidermis => _epidermis;
+		public readonly HandType hands;
+
 		private readonly Epidermis _epidermis;
+		protected readonly string adjective = "";
+		private readonly int _index;
+		public readonly Tones defaultTone;
+		public readonly HairFurColors defaultFurColor;
 
-		protected ArmType(Hands hnd, Epidermis skinType, string epiderisAdjective, GenericDescription shortDesc, CreatureDescription<Arms> creatureDesc,
-			PlayerDescription<Arms> playerDesc, ChangeType<ArmType> fromType, ChangeType<ArmType> revertToDefault)
+
+		protected ArmType(Hands hnd, Epidermis skinType, string epiderisAdjective, Tones defaultSkinScaleTone, HairFurColors defaultFurCol, GenericDescription shortDesc, 
+			CreatureDescription<Arms> creatureDesc, PlayerDescription<Arms> playerDesc, ChangeType<ArmType> fromType, ChangeType<ArmType> revertToDefault)
 		{
 			_index = indexMaker++;
 			hands = hnd;
 			_epidermis = skinType;
 			adjective = epiderisAdjective;
+			defaultTone = defaultSkinScaleTone;
+			defaultFurColor = defaultFurCol;
+		
 			shortDescription = shortDesc;
 			creatureDescription = creatureDesc;
 			playerDescription = playerDesc;
@@ -142,8 +153,8 @@ namespace CoC.BodyParts
 		}
 
 		public override int index => _index;
-		protected readonly string adjective = "";
-		private readonly int _index;
+		public override Epidermis epidermis => _epidermis;
+
 		public override GenericDescription shortDescription {get; protected set;}
 		public override CreatureDescription<Arms> creatureDescription {get; protected set;}
 		public override PlayerDescription<Arms> playerDescription {get; protected set;}
@@ -157,22 +168,26 @@ namespace CoC.BodyParts
 
 		public override bool tryToTone(ref Tones currentTone, Tones newTone)
 		{
+			bool retVal = false;
 			//first try the hands.
 			if (hands.canTone())
 			{
-				//but only return if they succeed.
+				//mark flag if they succeed
 				if (hands.tryToTone(ref currentTone, newTone))
 				{
-					return true;
+					retVal = true;
 				}
 			}
-			//if they can't or they fail, fallback to the epidermis.
+			//then do epidermis.
 			if (epidermis.canTone())
 			{
-				return (epidermis.tryToTone(ref currentTone, newTone));
+				if (epidermis.tryToTone(ref currentTone, newTone))
+				{
+					retVal = true;
+				}
 			}
 			//if they all fail return false
-			return false;
+			return retVal;
 		}
 
 		public override bool canDye()
@@ -195,23 +210,23 @@ namespace CoC.BodyParts
 		}
 
 		//DO NOT REORDER THESE (Under penalty of death lol)
-		public static readonly ArmType HUMAN = new ArmType(Hands.HUMAN, Epidermis.SKIN, "smooth", );
-		public static readonly ArmType HARPY = new ArmType(Hands.HUMAN, Epidermis.FEATHERS);
-		public static readonly ArmType SPIDER = new ArmType(Hands.HUMAN, Epidermis.CARAPACE);
-		public static readonly ArmType BEE = new ArmType(Hands.HUMAN, Epidermis.FUR, "shiny",);
+		public static readonly ArmType HUMAN = new ArmType(HandType.HUMAN, Epidermis.SKIN, "smooth", );
+		public static readonly ArmType HARPY = new ArmType(HandType.HUMAN, Epidermis.FEATHERS);
+		public static readonly ArmType SPIDER = new ArmType(HandType.HUMAN, Epidermis.CARAPACE);
+		public static readonly ArmType BEE = new ArmType(HandType.HUMAN, Epidermis.FUR, "shiny",); //MUST OVERRIDE. It uses black exoskeleton which requires tone. 
 		//I split the predator arms so i could have one handtype per armtype. no functionality has been lost.
 		//isPredatorArms has been added if you still need that check. 
-		public static readonly ArmType DRAGON = new ArmType(Hands.DRAGON, Epidermis.SCALES); //Custom?
-		public static readonly ArmType IMP = new ArmType(Hands.IMP, Epidermis.SCALES);
-		public static readonly ArmType LIZARD = new ArmType(Hands.LIZARD, Epidermis.SCALES); //Custom?
-		public static readonly ArmType SALAMANDER = new ArmType(Hands.SALAMANDER, Epidermis.SCALES); //Custom?
-		public static readonly ArmType WOLF = new ArmType(Hands.DOG, Epidermis.FUR); //Custom. Updates fur. 
-		public static readonly ArmType COCKATRICE = new ArmType(Hands.COCKATRICE, Epidermis.SCALES); 
-		public static readonly ArmType RED_PANDA = new ArmType(Hands.RED_PANDA, Epidermis.FUR); // Custom
-		public static readonly ArmType FERRET = new ArmType(Hands.FERRET, Epidermis.FUR);
-		public static readonly ArmType CAT = new ArmType(Hands.CAT, Epidermis.FUR);
-		public static readonly ArmType DOG = new ArmType(Hands.DOG, Epidermis.FUR);
-		public static readonly ArmType FOX = new ArmType(Hands.FOX, Epidermis.FUR);
+		public static readonly ArmType DRAGON = new ArmType(HandType.DRAGON, Epidermis.SCALES); //Custom?
+		public static readonly ArmType IMP = new ArmType(HandType.IMP, Epidermis.SCALES);
+		public static readonly ArmType LIZARD = new ArmType(HandType.LIZARD, Epidermis.SCALES); //Custom?
+		public static readonly ArmType SALAMANDER = new ArmType(HandType.SALAMANDER, Epidermis.SCALES); //Custom?
+		public static readonly ArmType WOLF = new ArmType(HandType.DOG, Epidermis.FUR); //Custom. Updates fur. 
+		public static readonly ArmType COCKATRICE = new ArmType(HandType.COCKATRICE, Epidermis.SCALES); 
+		public static readonly ArmType RED_PANDA = new ArmType(HandType.RED_PANDA, Epidermis.FUR); // Custom
+		public static readonly ArmType FERRET = new ArmType(HandType.FERRET, Epidermis.FUR);
+		public static readonly ArmType CAT = new ArmType(HandType.CAT, Epidermis.FUR);
+		public static readonly ArmType DOG = new ArmType(HandType.DOG, Epidermis.FUR);
+		public static readonly ArmType FOX = new ArmType(HandType.FOX, Epidermis.FUR);
 		//Add new Arm Types Here.
 
 		public bool isPredatorArms()
