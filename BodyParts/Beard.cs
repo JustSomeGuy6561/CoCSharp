@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/26/2018, 8:49 PM
-using CoC.Items;
+using CoC.EpidermalColors;
 using System;
 using CoC.BodyParts.SpecialInteraction;
 

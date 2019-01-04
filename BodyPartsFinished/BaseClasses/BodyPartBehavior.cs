@@ -39,11 +39,11 @@ namespace CoC.BodyParts
 		//
 		public readonly PlayerDescription<ContainerClass> playerDescription;
 
-		public readonly ChangeType<ThisClass> transformFrom;
-		public readonly ChangeType<ThisClass> restoreString;
+		public readonly ChangeType<ContainerClass> transformFrom;
+		public readonly ChangeType<ContainerClass> restoreString;
 
 		protected BodyPartBehavior(GenericDescription shortDesc, CreatureDescription<ContainerClass> creatureDesc,
-			PlayerDescription<ContainerClass> playerDesc, ChangeType<ThisClass> transform, ChangeType<ThisClass> restore)
+			PlayerDescription<ContainerClass> playerDesc, ChangeType<ContainerClass> transform, ChangeType<ContainerClass> restore)
 		{
 			shortDescription = shortDesc;
 			creatureDescription = creatureDesc;

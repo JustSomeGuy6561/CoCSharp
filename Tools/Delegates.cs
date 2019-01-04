@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //12/29/2018, 11:03 AM
 
-using CoC.Items;
+using CoC.EpidermalColors;
 
 namespace CoC.Tools
 {
@@ -16,5 +16,5 @@ namespace CoC.Tools
 
 	public delegate string GenericDescriptorWithArg<T>(T arg);
 
-	public delegate string AdjColorDescriptor(string adj, EpidermalColors color);
+	public delegate string AdjColorDescriptor(string adj, EpidermalColors.EpidermalColors color);
 }

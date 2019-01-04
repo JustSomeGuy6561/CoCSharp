@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //12/30/2018, 11:32 PM
 using CoC.BodyParts.SpecialInteraction;
-using CoC.Items;
+using CoC.EpidermalColors;
 using CoC.Tools;
 
 namespace CoC.BodyParts
@@ -12,6 +12,6 @@ namespace CoC.BodyParts
 		where ThisClass : EpidermalBodyPartBehavior<ThisClass, ContainerClass> where ContainerClass : EpidermalBodyPart<ContainerClass, ThisClass>
 	{
 		protected EpidermalBodyPartBehavior(GenericDescription shortDesc, CreatureDescription<ContainerClass> creatureDesc, PlayerDescription<ContainerClass> playerDesc,
-			ChangeType<ThisClass> transform, ChangeType<ThisClass> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)	{}
+			ChangeType<ContainerClass> transform, ChangeType<ContainerClass> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)	{}
 	}
 }

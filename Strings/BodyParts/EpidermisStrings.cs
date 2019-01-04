@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/31/2018, 8:44 PM
-using CoC.Items;
+using CoC.EpidermalColors;
 using CoC.Tools;
 using System;
 using System.Collections.Generic;
@@ -13,11 +13,26 @@ namespace CoC.Strings.BodyParts
 {
 	public static class EpidermisString
 	{
-		public static string ColoredStr(EpidermalColors color, GenericDescription descriptor)
+
+		public static string fullStr(string adj, Tones tone, GenericDescription descriptor)
 		{
-			return color.AsString();
+			return adj + (String.IsNullOrWhiteSpace(adj) ? "" : " ") + tone.AsString() + " " + descriptor();
 		}
 
+		public static string fullStr(string adj, FurColor fur, GenericDescription descriptor)
+		{
+			return adj + (String.IsNullOrWhiteSpace(adj) ? "" : " ") + fur.AsString() + " " + descriptor();
+		}
+
+
+		public static string ColoredStr(FurColor color, GenericDescription descriptor)
+		{
+			return color.AsString() + " " + descriptor();
+		}
+		public static string ColoredStr(Tones color, GenericDescription descriptor)
+		{
+			return color.AsString() + " " + descriptor();
+		}
 		public static string SkinStr()
 		{
 			return "skin";

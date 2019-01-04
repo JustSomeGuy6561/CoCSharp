@@ -40,9 +40,9 @@ namespace CoC.BodyParts
 
 		public virtual PlayerDescription<ThisClass> playerDescription => (bodyPart, player) => type.playerDescription(bodyPart, player);
 		public virtual GenericDescription shortDescription => type.shortDescription;
-		public virtual ChangeType<ThisClass> transformFrom => (prevPart, player) => type.transformFrom(prevPart.type, player);
+		public virtual ChangeType<ThisClass> transformFrom => (prevPart, player) => type.transformFrom(prevPart, player);
 
-		public virtual ChangeType<ThisClass> restoreString => (currentPart, player) => type.restoreString(currentPart.type, player);
+		public virtual ChangeType<ThisClass> restoreString => (currentPart, player) => type.restoreString(currentPart, player);
 
 	}
 }

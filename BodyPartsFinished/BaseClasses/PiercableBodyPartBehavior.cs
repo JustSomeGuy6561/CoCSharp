@@ -4,7 +4,7 @@
 //1/1/2019, 9:09 AM
 
 using CoC.BodyParts.SpecialInteraction;
-using CoC.Items;
+using CoC.EpidermalColors;
 using CoC.Tools;
 
 namespace CoC.BodyParts

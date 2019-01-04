@@ -24,15 +24,17 @@ namespace CoC.BodyParts
 			Restore();
 		}
 
-		public void UpdateType(AntennaeType newType)
+		public bool UpdateAntennae(AntennaeType newType)
 		{
 			type = newType;
+			return type == newType;
 		}
 
-		public void UpdateTypeAndDisplayMessage(AntennaeType newType, Player player)
+		public bool UpdateAntennaeAndDisplayMessage(AntennaeType newType, Player player)
 		{
 			OutputText(transformFrom(this, player));
 			type = newType;
+			return type == newType;
 		}
 
 	}
@@ -43,7 +45,7 @@ namespace CoC.BodyParts
 
 
 		protected AntennaeType(GenericDescription desc, CreatureDescription<Antennae> creatureDesc, PlayerDescription<Antennae> playerDesc,
-			ChangeType<AntennaeType> transformMessage, ChangeType<AntennaeType> revertToDefault) : base(desc, creatureDesc, playerDesc, transformMessage, revertToDefault)
+			ChangeType<Antennae> transformMessage, ChangeType<Antennae> revertToDefault) : base(desc, creatureDesc, playerDesc, transformMessage, revertToDefault)
 		{
 			_index = indexMaker++;
 		}

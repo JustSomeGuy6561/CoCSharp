@@ -13,7 +13,7 @@ namespace CoC.Strings.BodyParts
 {
 	static class AntennaeStrings
 	{
-		public static string RemoveAntennaeStr(AntennaeType antennae, Player p)
+		public static string RemoveAntennaeStr(Antennae antennae, Player p)
 		{
 			return antennae.restoreString(antennae, p);
 		}
@@ -32,7 +32,7 @@ namespace CoC.Strings.BodyParts
 			return "Floppy antennae also appear on your skull, bouncing and swaying in the breeze.";
 		}
 
-		public static string BeeAntennaeTransform(AntennaeType antennae, Player player)
+		public static string BeeAntennaeTransform(Antennae antennae, Player player)
 		{
 			return "Your head itches momentarily as two floppy antennae sprout from your " + player.hair.shortDescription() + ". <b>You now have bee antennae!</b>";
 		}
@@ -52,11 +52,11 @@ namespace CoC.Strings.BodyParts
 				   "They move with every expression, making even the most mundane action seem dramatic.";
 		}
 
-		public static string CockatriceAntennaeTransform(AntennaeType antennae, Player player)
+		public static string CockatriceAntennaeTransform(Antennae antennae, Player player)
 		{
 			//doesn't
 			string retVal = "Your forehead suddenly itches, your fingers instantly there to relieve the stress.";
-			if (antennae != AntennaeType.NONE)
+			if (antennae.type != AntennaeType.NONE)
 			{
 				retVal += " Your antennae feel weird, shifting uncomfortably, until they receed into your hairline. But the feeling doesn't fade "
 				       +"- in fact, it seems to be getting stronger.";
@@ -70,20 +70,20 @@ namespace CoC.Strings.BodyParts
 			return retVal;
 		}
 
-		public static string CockatriceAntennaeRestore(AntennaeType originalType, Player player)
+		public static string CockatriceAntennaeRestore(Antennae originalType, Player player)
 		{
 			return "You feel your antennae like feathers shrivel at the root, the pair of soft quills falling softly to the"
 				+ " ground as your pores close.\n<b>You’ve lost your antennae like feathers!</b>";
 		}
 
-		public static string BeeAntennaeRestore(AntennaeType originalType, Player player)
+		public static string BeeAntennaeRestore(Antennae originalType, Player player)
 		{
-			return "Your " + player.hair.GetDescriptor() + " itches so you give it a scratch, only to have your antennae fall to the ground. What a relief."
+			return "Your " + player.hair.fullDescription() + " itches so you give it a scratch, only to have your antennae fall to the ground. What a relief."
 				+ "\n<b>You've lost your antennae!</b>";
 		}
 
 		//unused right now. was defined in vanilla as a fallback, which was never used.
-		public static string GenericAntennaeRestore(AntennaeType originalType, Player player)
+		public static string GenericAntennaeRestore(Antennae originalType, Player player)
 		{
 			return "The muscles in your brow clench tightly, and you feel a tremendous pressure on your upper forehead."
 				+ " When it passes, you touch yourself and discover <b>your antennae have vanished</b>!";

@@ -4,7 +4,7 @@
 //12/26/2018, 7:58 PM
 using CoC.BodyParts.SpecialInteraction;
 using static CoC.Strings.BodyParts.HandStrings;
-using CoC.Items;
+using CoC.EpidermalColors;
 using CoC.Tools;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,29 @@ namespace CoC.BodyParts
 {
 	public class Hands : SimpleBodyPart<HandType>, IToneAware
 	{
+		public override HandType type { get; protected set; }
+
+		public Hands(HandType type, Tones currentTone) : base (type)
+		{
+			this.clawTone = currentTone;
+		}
+
+		public static Hands Generate(HandType handType, Tones currentTone)
+		{
+			return new Hands(handType, currentTone);
+		}
+
+		public void UpdateHands(HandType newType)
+		{
+			type = newType;
+			if (!type.canTone())
+			{
+				clawTone = Tones.NOT_APPLICABLE;
+			}
+		}
+
 		public Tones clawTone { get; protected set; }
+
 		public void reactToChangeInSkinTone(Tones newTone)
 		{
 			if (type.canTone())

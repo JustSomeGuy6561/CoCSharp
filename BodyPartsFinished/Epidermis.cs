@@ -4,8 +4,9 @@
 //12/26/2018, 7:58 PM
 using CoC.BodyParts.SpecialInteraction;
 using CoC.Tools;
-using CoC.Items;
+using CoC.EpidermalColors;
 using static CoC.Strings.BodyParts.EpidermisString;
+using System;
 
 namespace CoC.BodyParts
 {
@@ -23,22 +24,69 @@ namespace CoC.BodyParts
 
 	public class Epidermis : SimpleBodyPart<EpidermisType>, IDyeable, IToneable, IToneAware, IFurAware
 	{
+		public string epidermisAdjective;
+
 		protected Epidermis(EpidermisType type) : base(type)
 		{
-			fur = FurColor.NO_FUR;
-			tone = Tones.HUMAN_DEFAULT;
+			fur = FurColor.GenerateEmpty();
+			tone = Tones.NOT_APPLICABLE;
+			epidermisAdjective = "";
 		}
 
-		public static Epidermis Generate(EpidermisType type)
+		public static Epidermis Generate(EpidermisType type, Tones initialTone)
 		{
-			return new Epidermis(type);
+			return new Epidermis(type) { tone = initialTone };
+		}
+		public static Epidermis Generate(EpidermisType type, FurColor initialFur)
+		{
+			return new Epidermis(type) { fur = initialFur };
+		}
+
+		public bool UpdateEpidermis(EpidermisType newType, Tones currentTone, FurColor currentFur, string adjective = "")
+		{
+			if (newType == type)
+			{
+				#if DEBUG
+				if (currentTone != this.tone || currentFur != this.fur)
+				{
+					CoC.UI.TextOutput.OutputText("You called update Epidermis, but while the epidermis hasn't changed, but your skin and fur have. \n" +
+						"if your goal was to update the skin and fur, use the reactTo functions for this.");
+				}
+				#endif
+				return false;
+			}
+			if (newType.usesTone)
+			{
+				tone = currentTone;
+				fur.Reset();
+			}
+			else
+			{
+				fur = currentFur;
+				tone = Tones.NOT_APPLICABLE;
+			}
+			epidermisAdjective = adjective;
+			return true;
+
 		}
 
 		public FurColor fur { get; protected set; }
 		public Tones tone { get; protected set; }
 
-		public virtual GenericDescription descriptionWithColor => () => { return (type.usesTone ? tone.AsString() : fur.AsString()) + " " + shortDescription(); };
-		public virtual GenericDescription justColor => () => { return type.usesTone ? tone.AsString() : fur.AsString(); };
+		public virtual string FullDescription()
+		{
+			if (type.usesTone) return fullStr(epidermisAdjective, tone, shortDescription);
+			else return fullStr(epidermisAdjective, fur, shortDescription);
+		}
+
+		public virtual string descriptionWithColor()
+		{
+			if (type.usesTone) return ColoredStr(tone, shortDescription);
+			else return ColoredStr(fur, shortDescription);
+		}
+		public virtual string justColor() {
+			return type.usesTone ? tone.AsString() : fur.AsString();
+		}
 
 		public override EpidermisType type { get; protected set; }
 

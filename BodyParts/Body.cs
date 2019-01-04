@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CoC.Items;
+using CoC.EpidermalColors;
 using CoC.Tools;
 
 namespace CoC.BodyParts

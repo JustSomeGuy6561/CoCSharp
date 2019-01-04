@@ -4,10 +4,11 @@
 //1/3/2019, 1:53 PM
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace CoC.Items
+namespace CoC.EpidermalColors
 {
 	public enum FurMulticolorPattern { STRIPED, SPOTTED, MIXED, NO_PATTERN }
 	public class FurColor
@@ -19,19 +20,28 @@ namespace CoC.Items
 
 		protected FurColor()
 		{
-			isMultiColored = false;
-			multiColorPattern = FurMulticolorPattern.NO_PATTERN;
-			primaryColor = HairFurColors.NO_HAIR_FUR;
-			secondaryColor = HairFurColors.NO_HAIR_FUR;
+			Reset();
 		}
-
+		public static FurColor GenerateEmpty()
+		{
+			return new FurColor();
+		}
 		public static FurColor Generate(HairFurColors primary)
 		{
-			FurColor retVal = new FurColor
+			return new FurColor
 			{
 				primaryColor = primary
 			};
-			return retVal;
+		}
+
+		public static FurColor Generate(HairFurColors primary, HairFurColors secondary, FurMulticolorPattern pattern)
+		{
+			return new FurColor
+			{
+				primaryColor = primary,
+				secondaryColor = secondary,
+				multiColorPattern = pattern
+			};
 		}
 
 		public void UpdateFurColor(FurColor other)
@@ -56,7 +66,18 @@ namespace CoC.Items
 			multiColorPattern = pattern;
 		}
 
-		public static readonly FurColor NO_FUR = new FurColor();
+		public void Reset()
+		{
+			isMultiColored = false;
+			multiColorPattern = FurMulticolorPattern.NO_PATTERN;
+			primaryColor = HairFurColors.NO_HAIR_FUR;
+			secondaryColor = HairFurColors.NO_HAIR_FUR;
+		}
+
+		public bool isNoFur()
+		{
+			return primaryColor.rgbValue == Color.Transparent && secondaryColor.rgbValue == Color.Transparent;
+		}
 
 		//ToDo: move these strings to a strings class.
 		public string AsString()
@@ -69,7 +90,7 @@ namespace CoC.Items
 			{
 				switch (multiColorPattern)
 				{
-					
+
 					case FurMulticolorPattern.SPOTTED:
 						return primaryColor.AsString() + " with " + secondaryColor.AsString() + " spots";
 					case FurMulticolorPattern.STRIPED:
@@ -82,6 +103,15 @@ namespace CoC.Items
 				}
 			}
 		}
+
+
+		public static FurColor HARPY_DEFAULT => throw new System.NotImplementedException();
+		public static FurColor DOG_DEFAULT => throw new System.NotImplementedException();
+		public static FurColor RED_PANDA_DEFAULT => throw new System.NotImplementedException();
+		public static FurColor FERRET_DEFAULT => throw new System.NotImplementedException();
+		public static FurColor CAT_DEFAULT => throw new System.NotImplementedException();
+
+
 
 	}
 

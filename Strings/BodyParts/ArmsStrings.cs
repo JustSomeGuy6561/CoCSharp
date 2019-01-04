@@ -1,5 +1,6 @@
 ﻿using CoC.BodyParts;
-using CoC.Items;
+using CoC.EpidermalColors;
+using CoC.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,5 +60,307 @@ namespace CoC.Strings.BodyParts
 		}
 
 		public static string CatFoxPlayerStr() { return "Soft, [hairOrFurColor] fluff covers your arms. Your paw-like hands have cute, pink paw pads and [claws]."; }
+
+		public static string HumanDescStr()
+		{
+
+		}
+		public static string HumanCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string HumanPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string HumanTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string HumanRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string HarpyDescStr()
+		{
+
+		}
+		public static string HarpyCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string HarpyPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string HarpyTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string HarpyRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string SpiderDescStr()
+		{
+
+		}
+		public static string SpiderCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string SpiderPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string SpiderTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string SpiderRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string BeeDescStr()
+		{
+
+		}
+		public static string BeeCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string BeePlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string BeeTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string BeeRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string DragonDescStr()
+		{
+
+		}
+		public static string DragonCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string DragonPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string DragonTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string DragonRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string ImpDescStr()
+		{
+
+		}
+		public static string ImpCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string ImpPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string ImpTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string ImpRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string LizardDescStr()
+		{
+
+		}
+		public static string LizardCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string LizardPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string LizardTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string LizardRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string SalamanderDescStr()
+		{
+
+		}
+		public static string SalamanderCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string SalamanderPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string SalamanderTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string SalamanderRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string WolfDescStr()
+		{
+
+		}
+		public static string WolfCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string WolfPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string WolfTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string WolfRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string CockatriceDescStr()
+		{
+
+		}
+		public static string CockatriceCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string CockatricePlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string CockatriceTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string CockatriceRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string Red_pandaDescStr()
+		{
+
+		}
+		public static string Red_PandaCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string Red_PandaPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string Red_PandaTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string Red_PandaRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string FerretDescStr()
+		{
+
+		}
+		public static string FerretCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string FerretPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string FerretTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string FerretRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string CatDescStr()
+		{
+
+		}
+		public static string CatCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string CatPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string CatTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string CatRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string DogDescStr()
+		{
+
+		}
+		public static string DogCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string DogPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string DogTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string DogRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+		public static string FoxDescStr()
+		{
+
+		}
+		public static string FoxCreatureStr(Arms arm, Gender gender)
+		{
+
+		}
+		public static string FoxPlayerStr(Arms arm, Player player)
+		{
+
+		}
+		public static string FoxTransformStr(Arms oldArms, Player player)
+		{
+
+		}
+		public static string FoxRestoreStr(Arms currentArms, Player player)
+		{
+
+		}
+
 	}
 }

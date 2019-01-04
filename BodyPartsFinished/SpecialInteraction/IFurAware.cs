@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/3/2019, 7:31 PM
-using CoC.Items;
+using CoC.EpidermalColors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
