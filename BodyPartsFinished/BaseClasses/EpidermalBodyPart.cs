@@ -13,14 +13,9 @@ namespace CoC.BodyParts
 	{
 		public Epidermis epidermis { get; protected set; }
 
-		protected EpidermalBodyPart(EpidermisType type, Tones currentTone)
+		protected EpidermalBodyPart(EpidermisType type, Tones currentTone, FurColor currentFur)
 		{
-			epidermis = Epidermis.Generate(type, currentTone);
-		}
-
-		protected EpidermalBodyPart(EpidermisType type, FurColor currentFur)
-		{
-			epidermis = Epidermis.Generate(type, currentFur);
+			epidermis = Epidermis.Generate(type, currentTone, currentFur);
 		}
 
 		public virtual void reactToChangeInFurColor(FurColor furColor)

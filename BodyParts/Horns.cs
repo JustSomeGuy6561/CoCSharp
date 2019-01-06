@@ -3,40 +3,24 @@
 //Author: JustSomeGuy
 //12/28/2018, 1:50 AM
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CoC.Tools;
-using CoC.BodyPart.SpecialInteraction;
+using CoC.BodyParts.SpecialInteraction;
+using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
 {
 	//Strictly the facial structure. it doesn't include ears or eyes or hair.
 	//They're done seperately. if a tf affects all of them, just call each one.
 
 	//This class is so much harder to implement than i thought it'd be.
-	public class Horns : BodyPartBehavior, IGrowShrinkable
+	public class Horns : BodyPartBase<Horns, HornType>, IGrowShrinkable, IMasculinityChangeAware
 	{
-		#region Members
-		public HornType hornType
-		{
-			get
-			{
-				return _hornType;
-			}
-			protected set
-			{
-				_hornType = value;
-				handleHornSet(hornType.SetHornsToDefault);
-				index = _hornType.index;
-			}
-		}
-		protected HornType _hornType = HornType.NONE;
+		public override HornType type { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
 
+		public int significantHornSize { get; protected set; }
 		public int numHorns { get; protected set; }
-		public int largestHornLength { get; protected set; }
-		#endregion
 
-		#region Initializers
+		protected int hornMasculinity = 50;
+
 		protected Horns()
 		{
 			Restore();
@@ -45,178 +29,63 @@ namespace CoC.BodyParts
 		{
 			return new Horns();
 		}
-		#endregion
 
-		#region BodyPartBase and Related
-		public override string GetDescriptor()
+		public override bool Restore()
 		{
-			return hornType.GetDescriptor(numHorns, largestHornLength);
-		}
-
-		//made ref for consistancy, but it's not necessary.
-		public static void Restore(ref Horns horn)
-		{
-			horn.Restore();
-		}
-
-		public void Restore()
-		{
-			hornType = HornType.NONE;
+			if (type == HornType.NONE)
+			{
+				return false;
+			}
+			type = HornType.NONE;
 			numHorns = 0;
-			largestHornLength = 0;
+			significantHornSize = 0;
+			return true;
 		}
-		#endregion
+
+		public override bool RestoreAndDisplayMessage(Player player)
+		{
+			if (type == HornType.NONE)
+			{
+				return false;
+			}
+			OutputText(restoreString(this, player));
+			Restore();
+			return true;
+		}
 
 		#region IGrowShrinkable
 		public bool CanReducto()
 		{
-			return hornType.CanShrink(largestHornLength);
+			return type.CanShrink(significantHornSize);
 		}
 
-		public int UseReducto()
+		public float UseReducto()
 		{
-			int len = largestHornLength;
-			handleHornSet(hornType.ReductoHorns);
-			return len - largestHornLength;
+			int len = significantHornSize;
+			handleHornSet(type.ReductoHorns);
+			return len - significantHornSize;
 		}
 
 		public bool CanGrowPlus()
 		{
-			return hornType.CanGrow(largestHornLength);
+			return type.CanGrow(significantHornSize);
 		}
 
-		public int UseGroPlus()
+		public float UseGroPlus()
 		{
-			int len = largestHornLength;
-			handleHornSet(hornType.GroPlusHorns);
-			return largestHornLength - len;
+			int len = significantHornSize;
+			handleHornSet(type.GroPlusHorns);
+			return significantHornSize - len;
 		}
 		#endregion
-
-		#region Class Functions
-
-		public bool ChangeHorns(HornType newHorns)
-		{
-			if (newHorns == hornType)
-			{
-				return false;
-			}
-			hornType = newHorns;
-			return true;
-		}
-
-		/// <summary>
-		/// Attempt to change horns, failing if it is already this type. if successful,
-		/// resets the number of horns to this type's default, then grows or adds horns 
-		/// according to this type's strengthening rules. it will do so (amount) times.
-		/// </summary>
-		/// <param name="newHorns">the type of horns we should change to.</param>
-		/// <param name="masculine">is the creature these horns belong to masculine?</param>
-		/// <param name="amount">number of times it will be strengthened, according to type behavior</param>
-		/// <returns>whether or not it changed types.</returns>
-		public bool ChangeAndStrengthenHorns(HornType newHorns, bool masculine, uint amount)
-		{
-			if (newHorns == hornType)
-			{
-				return false;
-			}
-			hornType = newHorns;
-			if (amount > 0)
-			{
-				StrengthenTransform(masculine, amount);
-			}
-			hornType = newHorns;
-			return true;
-		}
-
-		/// <summary>
-		/// Lengthens or Adds horns, according to how these horns behave. This behavior is
-		/// dependant on the horn type. for your convenience, you can provide this with an
-		/// amount, instead of calling this multiple times.
-		/// </summary>
-		/// <param name="masculine"></param>
-		/// <param name="numberOfTimes">number of times to strengthen these horns</param>
-		/// <returns></returns>
-		public bool StrengthenTransform(bool masculine, uint numberOfTimes = 1)
-		{
-			return handleHornTransforms(numberOfTimes, masculine, hornType.StrengthenTransform);
-		}
-		public bool WeakenTransform(bool male, uint byAmount = 1)
-		{
-			//because i can't pass a property by reference. delegates ftw!
-			bool removeHorns = handleHornTransforms(byAmount, male, hornType.WeakenTransform);
-			if (removeHorns && hornType != HornType.NONE)
-			{
-				Restore();
-			}
-			else //remove horns is false or it's true but we already have no horns.
-			{
-				removeHorns = false;
-			}
-			return removeHorns;
-		}
-		#endregion
-
-		#region Compare stuff
-		//---------------------------------------------
-		//Because of the convenience shit. Standard compares that need to be explicitly defined because
-		//the non-standard ones are too.
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-
-		public bool Equals(Horns other)
-		{
-			return this == other;
-		}
-
-		public static bool operator ==(Horns first, Horns second)
-		{
-			return first.numHorns == second.numHorns && first.largestHornLength == second.largestHornLength && first._hornType == second._hornType;
-		}
-
-		public static bool operator !=(Horns first, Horns second)
-		{
-			return first.numHorns != second.numHorns || first.largestHornLength != second.largestHornLength || first._hornType != second._hornType;
-		}
-
-		//Convenience. Because everyone loves that shit
-		public bool Equals(HornType other)
-		{
-			return hornType == other;
-		}
-
-		public static bool operator ==(Horns first, HornType second)
-		{
-			return first.hornType == second;
-		}
-
-		public static bool operator !=(Horns first, HornType second)
-		{
-			return first.hornType != second;
-		}
-		#endregion
-
-		#region Helpers
-		//I was writing the same thing all the time, so i thought "turn it into a function"
-		//turns out function pointers are a pain in c#, when dealing with "ref". CLR nonsense.
-		//Takes a uint, bool, and function. copies the properties (which can't be passed by 
-		//reference), then executes the function. the return value is stored, the properties
-		//set to the new values, and then the function's return is returned.
 		private T handleHornTransforms<T>(uint byAmount, bool male, TransformDelegate<T> handle)
 		{
 			int hornCount, hornSize;
 			hornCount = numHorns;
-			hornSize = largestHornLength;
+			hornSize = significantHornSize;
 			T retVal = handle(byAmount, ref hornCount, ref hornSize, male);
 			numHorns = hornCount;
-			largestHornLength = hornSize;
+			significantHornSize = hornSize;
 			return retVal;
 		}
 
@@ -227,20 +96,119 @@ namespace CoC.BodyParts
 		{
 			int hornCount, hornSize;
 			hornCount = numHorns;
-			hornSize = largestHornLength;
+			hornSize = significantHornSize;
 			T retVal = handle(ref hornCount, ref hornSize);
 			numHorns = hornCount;
-			largestHornLength = hornSize;
+			significantHornSize = hornSize;
 			return retVal;
 		}
 
-		//generic function pointer taking uint, int, int, bool. return type can be specified manually.
 		private delegate T SetHornDelegate<T>(ref int ct, ref int sz);
+		/*
 
-		#endregion
+#region Class Functions
+
+public bool UpdateHorns(HornType newHorns)
+{
+	if (newHorns == type)
+	{
+		return false;
+	}
+	type = newHorns;
+	return true;
+}
+
+/// <summary>
+/// Attempt to change horns, failing if it is already this type. if successful,
+/// resets the number of horns to this type's default, then grows or adds horns 
+/// according to this type's strengthening rules. it will do so (amount) times.
+/// </summary>
+/// <param name="newHorns">the type of horns we should change to.</param>
+/// <param name="masculine">is the creature these horns belong to masculine?</param>
+/// <param name="amount">number of times it will be strengthened, according to type behavior</param>
+/// <returns>whether or not it changed types.</returns>
+public bool ChangeAndStrengthenHorns(HornType newHorns, bool masculine, uint amount)
+{
+	if (newHorns == type)
+	{
+		return false;
+	}
+	type = newHorns;
+	if (amount > 0)
+	{
+		StrengthenTransform(masculine, amount);
+	}
+	type = newHorns;
+	return true;
+}
+
+/// <summary>
+/// Lengthens or Adds horns, according to how these horns behave. This behavior is
+/// dependant on the horn type. for your convenience, you can provide this with an
+/// amount, instead of calling this multiple times.
+/// </summary>
+/// <param name="masculine"></param>
+/// <param name="numberOfTimes">number of times to strengthen these horns</param>
+/// <returns></returns>
+public bool StrengthenTransform(bool masculine, uint numberOfTimes = 1)
+{
+	return handleHornTransforms(numberOfTimes, masculine, type.StrengthenTransform);
+}
+public bool WeakenTransform(bool male, uint byAmount = 1)
+{
+	//because i can't pass a property by reference. delegates ftw!
+	bool removeHorns = handleHornTransforms(byAmount, male, type.WeakenTransform);
+	if (removeHorns && type != HornType.NONE)
+	{
+		Restore();
+	}
+	else //remove horns is false or it's true but we already have no horns.
+	{
+		removeHorns = false;
+	}
+	return removeHorns;
+}
+#endregion
+
+#region Helpers
+//I was writing the same thing all the time, so i thought "turn it into a function"
+//turns out function pointers are a pain in c#, when dealing with "ref". CLR nonsense.
+//Takes a uint, bool, and function. copies the properties (which can't be passed by 
+//reference), then executes the function. the return value is stored, the properties
+//set to the new values, and then the function's return is returned.
+private T handleHornTransforms<T>(uint byAmount, bool male, TransformDelegate<T> handle)
+{
+	int hornCount, hornSize;
+	hornCount = numHorns;
+	hornSize = largestHornLength;
+	T retVal = handle(byAmount, ref hornCount, ref hornSize, male);
+	numHorns = hornCount;
+	largestHornLength = hornSize;
+	return retVal;
+}
+
+//generic function pointer taking uint, int, int, bool. return type can be specified manually.
+private delegate T TransformDelegate<T>(uint amt, ref int ct, ref int sz, bool isTrue);
+
+private T handleHornSet<T>(SetHornDelegate<T> handle)
+{
+	int hornCount, hornSize;
+	hornCount = numHorns;
+	hornSize = largestHornLength;
+	T retVal = handle(ref hornCount, ref hornSize);
+	numHorns = hornCount;
+	largestHornLength = hornSize;
+	return retVal;
+}
+
+//generic function pointer taking uint, int, int, bool. return type can be specified manually.
+private delegate T SetHornDelegate<T>(ref int ct, ref int sz);
+
+#endregion*/
+
 	}
 
-	public abstract class HornType
+	public abstract class HornType : BodyPartBehavior<HornType, Horns>
 	{
 		#region variables
 		//private vars
@@ -249,13 +217,41 @@ namespace CoC.BodyParts
 		private static int indexMaker = 0;
 
 		//members
-		public readonly int index;
+		private readonly int _index;
 		public readonly int maxHorns;
 		public readonly int minHorns;
 		public readonly int defaultHorns;
 		public readonly int defaultLength;
 		public readonly int maxHornLength;
 		public readonly int minHornLength;
+
+		//call the other constructor with defaults set to min.
+		protected HornType(int minHorns, int maximumHorns, int minLength, int maxLength,
+			GenericDescription shortDesc, CreatureDescription<Horns> creatureDesc, PlayerDescription<Horns> playerDesc, ChangeType<Horns> transform, ChangeType<Horns> restore) 
+			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, creatureDesc, playerDesc, transform, restore) {}
+
+		protected HornType(int minimumHorns, int maximumHorns, int minLength, int maxLength, int defaultHornCount, int defaultHornLength,
+			GenericDescription shortDesc, CreatureDescription<Horns> creatureDesc, PlayerDescription<Horns> playerDesc,
+			ChangeType<Horns> transform, ChangeType<Horns> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+		{
+			//Woo data cleanup.
+			Utils.Clamp(ref maximumHorns, 0, int.MaxValue);
+			Utils.Clamp(ref minimumHorns, 0, maximumHorns);
+			Utils.Clamp(ref maxLength, 0, MAX_HORN_LENGTH);
+			Utils.Clamp(ref minLength, 0, maxLength);
+			Utils.Clamp(ref defaultHornCount, minHorns, maxHorns);
+			Utils.Clamp(ref defaultHornLength, minLength, maxLength);
+			//and now set them. finally
+			maxHorns = maximumHorns;
+			minHorns = minimumHorns;
+			maxHornLength = maxLength;
+			minHornLength = minLength;
+			defaultHorns = defaultHornCount;
+			defaultLength = defaultHornLength;
+			//and the static magic.
+			_index = indexMaker++;
+		}
+
 		//properties
 		public bool allowsHorns
 		{
@@ -266,9 +262,13 @@ namespace CoC.BodyParts
 		}
 		#endregion
 
+		public override int index => _index;
+
+		/*
 		#region Constructors
 
 		//Overload for laziness. Default amount is the min amount.
+		
 		protected HornType(int minHorns, int maximumHorns, int minLength, int maxLength) : this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength) { }
 		protected HornType(int minimumHorns, int maximumHorns, int minLength, int maxLength, int defaultHornCount, int defaultHornLength)
 		{
@@ -293,45 +293,16 @@ namespace CoC.BodyParts
 
 		#region Abstracts
 
-		//Pseudo-body part
-		internal abstract string GetDescriptor(int numHorns, int hornLength);
-
 		//Reducto/Gro+ related	
 		internal abstract bool CanShrink(int largestHornLength);
 		public abstract bool ReductoHorns(ref int numHorns, ref int hornLength);
 		internal abstract bool CanGrow(int largestHornLength);
 		public abstract bool GroPlusHorns(ref int numHorns, ref int hornLength);
 
-		/// <summary>
-		/// Lengthens or adds horns, when something like hummus or another tf that doesn't completely remove horts.
-		/// Behavior is determined internally (hence abstract). If the strengthening behavior causes more horns to grow
-		/// or horns to grow longer, return true. if it cannot grow or lengthen any more, return false.
-		/// </summary>
-		/// <param name="byAmount">how strong the strengthening effect is</param>
-		/// <param name="numHorns">a reference to the number of horns right now. if this changes, it must be updated</param>
-		/// <param name="largestHornLength">a reference to the length of the largest horn. if this changes, it must be updated</param>
-		/// <param name="male">"is the owner of these horns male (or masculine)?"</param>
-		/// <returns>true, unless horns didn't change at all, then false</returns>
 		public abstract bool StrengthenTransform(uint byAmount, ref int numHorns, ref int largestHornLength, bool male);
-		/// <summary>
-		/// Shortens or removes horns, when something like hummus or another tf that doesn't completely remove horns.
-		/// Behavior is determined internally (hence abstract). If the weakening effect causes the horns to be removed completely,
-		/// returns true. otherwise returns false.
-		/// </summary>
-		/// <param name="byAmount">how strong the weakening effect is</param>
-		/// <param name="numHorns">a reference to the number of horns right now. if this changes, it must be updated</param>
-		/// <param name="largestHornLength">a reference to the length of the largest horn. if this changes, it must be updated</param>
-		/// <param name="masculine">"is the owner of these horns masculine?"</param>
-		/// <returns>true if transformation causes horns to be COMPLETELY removed. false otherwise</returns>
+
 		public abstract bool WeakenTransform(uint byAmount, ref int numHorns, ref int largestHornLength, bool masculine);
 
-		/// <summary>
-		/// sets the passed in numHorns and maxHornLength to the default values for this type. should be called whenever 
-		/// the horn type changes. 
-		/// </summary>
-		/// <param name="numHorns"></param>
-		/// <param name="maxHornLength"></param>
-		/// <returns></returns>
 		internal bool SetHornsToDefault(ref int numHorns, ref int maxHornLength)
 		{
 			if (numHorns == defaultHorns && maxHornLength == defaultLength)
@@ -347,9 +318,9 @@ namespace CoC.BodyParts
 
 		#endregion
 		#region TYPES
-		public static readonly HornType NONE = new GenericHorns(0,0,"");
+		public static readonly HornType NONE = new GenericHorns(0, 0, "");
 		public static readonly HornType DEMON = new DemonHorns();
-		public static readonly HornType BULL_LIKE = new BullHorns(); 
+		public static readonly HornType BULL_LIKE = new BullHorns();
 		public static readonly HornType DRACONIC = new DragonHorns();
 
 		//Fun fact: female reindeer (aka caribou in North America) grow horns.
@@ -359,12 +330,12 @@ namespace CoC.BodyParts
 		public static readonly HornType DEER_ANTLERS = new Antlers(false);
 		public static readonly HornType REINDEER_ANTLERS = new Antlers(true);
 
-		public static readonly HornType SATYR = new GoatHorns(); 
-		public static readonly HornType UNICORN = new UniHorn(); 
-		public static readonly HornType RHINO = new RhinoHorn(); 
+		public static readonly HornType SATYR = new GoatHorns();
+		public static readonly HornType UNICORN = new UniHorn();
+		public static readonly HornType RHINO = new RhinoHorn();
 		public static readonly HornType SHEEP = new SheepHorns();
 
-		public static readonly HornType IMP = new GenericHorns(2,3, "a pair of short, imp-like horns");
+		public static readonly HornType IMP = new GenericHorns(2, 3, "a pair of short, imp-like horns");
 		#endregion
 
 		#region Implementations
@@ -716,7 +687,7 @@ namespace CoC.BodyParts
 
 			internal override bool CanGrow(int hornLength)
 			{
-				return isReindeer && hornLength < maxHornLength ;
+				return isReindeer && hornLength < maxHornLength;
 			}
 
 			public override bool GroPlusHorns(ref int numHorns, ref int hornLength)
@@ -772,7 +743,7 @@ namespace CoC.BodyParts
 				{
 					hornLength = hornCount + 4;
 				}
-				else if( hornCount >= 16 )
+				else if (hornCount >= 16)
 				{
 					hornLength = hornCount + 16;
 				}
@@ -790,7 +761,7 @@ namespace CoC.BodyParts
 
 		private class GoatHorns : HornType
 		{
-			public GoatHorns() : base(2, 2, 1, 6) {}
+			public GoatHorns() : base(2, 2, 1, 6) { }
 
 			internal override string GetDescriptor(int numHorns, int hornLength)
 			{
@@ -1031,7 +1002,7 @@ namespace CoC.BodyParts
 				{
 					if (!masculine)
 					{
-						if (hornLength + 3  >=  maxLength)
+						if (hornLength + 3 >= maxLength)
 						{
 							hornLength = maxLength;
 						}
@@ -1075,5 +1046,6 @@ namespace CoC.BodyParts
 		}
 
 		#endregion
+		*/
 	}
 }

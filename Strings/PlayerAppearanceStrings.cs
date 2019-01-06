@@ -67,10 +67,13 @@ namespace CoC.Strings
 			OutputText(player.horns.playerDescription(player));
 			//neck
 			OutputText(player.neck.playerDescription(player));
+			//gills
+			OutputText(player.gills.playerDescription());
 			//arms
 			OutputText(player.arms.playerDescription(player));
 			//core. Now includes gills!
-			OutputText(player.core.playerDescription());
+			OutputText(player.gills.playerDescription(player.gills, player));
+			OutputText(player.core.playerDescription(player.core, player));
 			//wings
 			OutputText(player.wings.playerDescription(player));
 			//back/spine

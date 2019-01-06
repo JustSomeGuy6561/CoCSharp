@@ -15,6 +15,6 @@ namespace CoC.BodyParts
 		where ContainerClass : PiercableBodyPart<ContainerClass, ThisClass, PiercingEnum> where PiercingEnum : System.Enum
 	{
 		protected PiercableBodyPartBehavior(GenericDescription shortDesc, CreatureDescription<ContainerClass> creatureDesc, PlayerDescription<ContainerClass> playerDesc,
-			ChangeType<ThisClass> transform, ChangeType<ThisClass> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore) { }
+			ChangeType<ContainerClass> transform, ChangeType<ContainerClass> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore) { }
 	}
 }

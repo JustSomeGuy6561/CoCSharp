@@ -219,7 +219,7 @@ namespace CoC.BodyParts
 			protected string descriptor;
 			public Generic_Face(string desc) : base(1)
 			{
-				descriptor = desc;
+				returndesc;
 			}
 
 			public override string GetDescriptor(int level)

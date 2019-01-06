@@ -33,13 +33,18 @@ namespace CoC.BodyParts
 			epidermisAdjective = "";
 		}
 
-		public static Epidermis Generate(EpidermisType type, Tones initialTone)
+		public static Epidermis Generate(EpidermisType type, Tones initialTone, FurColor furColor)
 		{
-			return new Epidermis(type) { tone = initialTone };
-		}
-		public static Epidermis Generate(EpidermisType type, FurColor initialFur)
-		{
-			return new Epidermis(type) { fur = initialFur };
+			Epidermis retVal = new Epidermis(type);
+			if (type.usesFur)
+			{
+				retVal.fur.UpdateFurColor(furColor);
+			}
+			else
+			{
+				retVal.tone = initialTone;
+			}
+			return retVal;
 		}
 
 		public bool UpdateEpidermis(EpidermisType newType, Tones currentTone, FurColor currentFur, string adjective = "")

@@ -28,8 +28,8 @@ namespace CoC.BodyParts
 	
 	public abstract class BodyPartBase<ThisClass,BehaviorClass> where ThisClass : BodyPartBase<ThisClass, BehaviorClass> where BehaviorClass : BodyPartBehavior<BehaviorClass, ThisClass>
 	{
-		public abstract void Restore();
-		public abstract void RestoreAndDisplayMessage(Player player);
+		public abstract bool Restore();
+		public abstract bool RestoreAndDisplayMessage(Player player);
 
 		public abstract BehaviorClass type { get; protected set; }
 

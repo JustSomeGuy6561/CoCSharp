@@ -12,9 +12,9 @@ namespace CoC.BodyParts.SpecialInteraction
 	interface IGrowShrinkable
 	{
 		bool CanReducto();
-		int UseReducto();
+		float UseReducto();
 		bool CanGrowPlus();
-		int UseGroPlus();
+		float UseGroPlus();
 
 	}
 }

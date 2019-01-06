@@ -1,0 +1,204 @@
+﻿//Eyes.cs
+//Description:
+//Author: JustSomeGuy
+//12/27/2018, 1:32 AM
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using CoC.Tools;
+using static CoC.Strings.BodyParts.EyesStrings;
+using static CoC.UI.TextOutput;
+namespace CoC.BodyParts
+{
+	public enum EYE_COLOR
+	{
+		AMBER, BLUE, BROWN, GRAY, GREEN, HAZEL, RED, VIOLET,
+		//AND NOW THE CRAZY COLORS - WHY NOT?
+		YELLOW, PINK, ORANGE, INDIGO, TAN
+	}
+	public class Eyes : BodyPartBase<Eyes, EyeType>
+	{
+		protected EyeType _eyeType = EyeType.HUMAN; 
+
+		EYE_COLOR leftIrisColor;
+		//People really like heterochromia in PCs.
+		EYE_COLOR rightIrisColor;
+
+		public override EyeType type { get; protected set; }
+
+		protected Eyes(EYE_COLOR color, EyeType eyetype)
+		{
+			type = eyetype;
+			leftIrisColor = color;
+			rightIrisColor = color;
+		}
+		protected Eyes(EYE_COLOR leftEye, EYE_COLOR rightEye, EyeType eyetype)
+		{
+			type = eyetype;
+			leftIrisColor = leftEye;
+			rightIrisColor = rightEye;
+		}
+
+		public static Eyes GenerateEyes(EYE_COLOR color = EYE_COLOR.GRAY)
+		{
+			return new Eyes(color, EyeType.HUMAN);
+		}
+
+		public static Eyes GenerateEyes(EYE_COLOR leftEye, EYE_COLOR rightEye)
+		{
+			return new Eyes(leftEye, rightEye, EyeType.HUMAN);
+		}
+		public static Eyes GenerateNonHumanEyes(EyeType type, EYE_COLOR leftEye, EYE_COLOR rightEye)
+		{
+			return new Eyes(leftEye, rightEye, type);
+		}
+
+		public bool UpdateEyeColor(EYE_COLOR color)
+		{
+			if (leftIrisColor == color && rightIrisColor == color)
+			{
+				return false;
+			}
+			leftIrisColor = color;
+			rightIrisColor = color;
+			return true;
+		}
+		public bool UpdateEyeColors(EYE_COLOR leftEye, EYE_COLOR rightEye)
+		{
+			if (leftIrisColor == leftEye && rightIrisColor == rightEye)
+			{
+				return false;
+			}
+			leftIrisColor = leftEye;
+			rightIrisColor = rightEye;
+			return true;
+		}
+
+		public bool UpdateEyeType(EyeType newtype)
+		{
+			if (type == newtype)
+			{
+				return false;
+			}
+			type = newtype;
+			return true;
+		}
+
+		public bool UpdateEyeTypeAndDisplayMessage(EyeType newtype, Player player)
+		{
+			if (type == newtype)
+			{
+				return false;
+			}
+			OutputText(transformFrom(this, player));
+			type = newtype;
+			return true;
+		}
+
+		public bool UpdateEyeColorsAndDisplayMessage(EYE_COLOR leftEye, EYE_COLOR rightEye)
+		{
+			if (leftIrisColor == leftEye && rightIrisColor == rightEye)
+			{
+				return false;
+			}
+			OutputText(ChangeEyeColorStr(this, leftEye, rightEye));
+			UpdateEyeColors(leftEye, rightEye);
+			return true;
+		}
+
+		public string ChangeEyeColorStr(Eyes currentEyes, EYE_COLOR leftEye, EYE_COLOR rightEye)
+		{
+			return EyeChangeStr(currentEyes, leftEye, rightEye);
+		}
+
+		public void Reset()
+		{
+			type = EyeType.HUMAN;
+			leftIrisColor = EYE_COLOR.GRAY;
+			rightIrisColor = EYE_COLOR.GRAY;
+		}
+
+		public override bool Restore()
+		{
+			if (type == EyeType.HUMAN)
+			{
+				return false;
+			}
+			type = EyeType.HUMAN;
+			return true;
+		}
+
+		public override bool RestoreAndDisplayMessage(Player player)
+		{
+			if (type == EyeType.HUMAN)
+			{
+				return false;
+			}
+			OutputText(restoreString(this, player));
+			type = EyeType.HUMAN;
+			return true;
+		}
+	}
+	public enum SCLERA_COLOR
+	{
+		WHITE, //Human/Anthropomorphic
+		BLACK, //Sand Trap
+		CLEAR//, //Everything else
+		//RED   //Vampires? (silly mode, i guess)
+	}
+	public class EyeType : BodyPartBehavior<EyeType,Eyes>
+	{
+		private const string SCLERA_BLACK = "black";
+		private const string SCLERA_WHITE = "white";
+		//private string SCLERA_RED = "red";
+		private const string SCLERA_CLEAR = "clear";
+
+		//Normally the white of the human eye
+		//Generally, animals' sclera are nearly invisible
+		//Thanks, Sand Traps.
+		public readonly SCLERA_COLOR scleraColor;
+
+		public readonly int eyeCount;
+		private static int indexMaker = 0;
+		private readonly int _index;
+
+
+		protected EyeType(GenericDescription shortDesc, CreatureDescription<Eyes> creatureDesc, PlayerDescription<Eyes> playerDesc, ChangeType<Eyes> transform, 
+			ChangeType<Eyes> restore, int numEyes = 2, SCLERA_COLOR color = SCLERA_COLOR.CLEAR) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+		{
+			eyeCount = numEyes;
+			_index = indexMaker++;
+			scleraColor = color;
+		}
+
+		/*
+		
+		public override string GetDescriptor()
+		{
+			string retVal = eyeCount.ToString() + " " + descriptor + "eyes";
+			//written this way to allow for more colors proccing this
+			switch (scleraColor)
+			{
+				case SCLERA_COLOR.BLACK:
+					retVal += " surrounded by a dark " + SCLERA_BLACK + " film";
+					break;
+				default:
+					break;
+			}
+			return retVal;
+		}
+		*/
+		public static EyeType HUMAN = new EyeType(HumanShortStr, HumanCreatureStr, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: SCLERA_COLOR.WHITE);
+		public static EyeType SPIDER = new EyeType(SpiderShortStr, SpiderCreatureStr, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
+		public static EyeType SAND_TRAP = new EyeType(SandTrapShortStr, SandTrapCreatureStr, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: SCLERA_COLOR.BLACK);
+		public static EyeType LIZARD = new EyeType(LizardShortStr, LizardCreatureStr, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static EyeType DRAGON = new EyeType(DragonShortStr, DragonCreatureStr, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static EyeType BASILISK = new EyeType(BasiliskShortStr, BasiliskCreatureStr, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
+		public static EyeType WOLF = new EyeType(WolfShortStr, WolfCreatureStr, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static EyeType COCKATRICE = new EyeType(CockatriceShortStr, CockatriceCreatureStr, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static EyeType CAT = new EyeType(CatShortStr, CatCreatureStr, CatPlayerStr, CatTransformStr, CatRestoreStr);
+
+		public override int index => _index;
+	}
+}

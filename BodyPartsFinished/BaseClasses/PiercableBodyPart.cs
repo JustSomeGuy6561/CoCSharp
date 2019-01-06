@@ -12,17 +12,25 @@ using System.Linq;
 
 namespace CoC.BodyParts
 {
-	public abstract class PiercableBodyPart<T, U, V> : BodyPartBase<T, U>, IPiercable<V> where T : PiercableBodyPart<T, U, V> where U : PiercableBodyPartBehavior<U, T, V> where V : System.Enum
+	public abstract class PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> : BodyPartBase<ThisClass, TypeClass>, IPiercable<PiercingEnum> 
+		where ThisClass : PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> 
+		where TypeClass : PiercableBodyPartBehavior<TypeClass, ThisClass, PiercingEnum> where PiercingEnum : System.Enum
 	{
-		protected abstract PiercingFlags piercingFlags { get; set; }
+		//do not copy constructor this. shallow copy allows it to stay up to date with source.
+		protected readonly PiercingFlags piercingFlags;
 
-		public int maxPiercingCount => Enum.GetNames(typeof(V)).Length;
+		protected PiercableBodyPart(PiercingFlags flags)
+		{
+			piercingFlags = flags;
+		}
+
+		public int maxPiercingCount => System.Enum.GetNames(typeof(PiercingEnum)).Length;
 		//functional programming ftw!
 		//counts the number of trues, and returns it. uses a "fold" function. fold iterates over a list, doing an action for each element, then returning the result
 		public int currentPiercingCount => piercingLookup.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
 		public int currentJewelryCount => jewelryLookup.Values.Count;
 
-		public bool EquipPiercingJewelry(V piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
+		public bool EquipPiercingJewelry(PiercingEnum piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
 			if (!canPierce(piercingLocation))
 			{
@@ -59,7 +67,7 @@ namespace CoC.BodyParts
 		/// <param name="piercingLocation">location of the piercing to remove.</param>
 		/// <param name="forceRemove"></param>
 		/// <returns>The jewelry removed, or null if no jewelry was removed.</returns>
-		public PiercingJewelry RemovePiercingJewelry(V piercingLocation, bool forceRemove = false)
+		public PiercingJewelry RemovePiercingJewelry(PiercingEnum piercingLocation, bool forceRemove = false)
 		{
 			if (!jewelryLookup.ContainsKey(piercingLocation))
 			{
@@ -78,15 +86,15 @@ namespace CoC.BodyParts
 
 		}
 
-		public bool HasJewelry(V piercingLocation)
+		public bool HasJewelry(PiercingEnum piercingLocation)
 		{
 			return jewelryLookup.ContainsKey(piercingLocation);
 		}
-		public bool IsPierced(V piercingLocation)
+		public bool IsPierced(PiercingEnum piercingLocation)
 		{
 			return piercingLookup.ContainsKey(piercingLocation) && piercingLookup[piercingLocation];
 		}
-		public bool Pierce(V piercingLocation, PiercingJewelry jewelry)
+		public bool Pierce(PiercingEnum piercingLocation, PiercingJewelry jewelry)
 		{
 			if (!canPierce(piercingLocation))
 			{
@@ -108,7 +116,7 @@ namespace CoC.BodyParts
 			}
 		}
 
-		public bool EquipPiercingJewelryAndPierceIfNotPierced(V piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
+		public bool EquipPiercingJewelryAndPierceIfNotPierced(PiercingEnum piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
 			if (!IsPierced(piercingLocation))
 			{
@@ -120,19 +128,19 @@ namespace CoC.BodyParts
 			}
 		}
 
-		public abstract bool canPierceAtLocation(V piercingLocation);
+		protected abstract bool PiercingLocationUnlocked(PiercingEnum piercingLocation);
 
-		public bool canPierce(V piercingLocation)
+		public bool canPierce(PiercingEnum piercingLocation)
 		{
 			if (!piercingFlags.enabled)
 			{
 				return false;
 			}
-			return canPierceAtLocation(piercingLocation);
+			return PiercingLocationUnlocked(piercingLocation);
 		}
 
-		protected Dictionary<V, bool> piercingLookup;
-		protected Dictionary<V, PiercingJewelry> jewelryLookup;
+		protected Dictionary<PiercingEnum, bool> piercingLookup;
+		protected Dictionary<PiercingEnum, PiercingJewelry> jewelryLookup;
 
 	}
 }

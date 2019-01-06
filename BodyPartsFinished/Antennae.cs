@@ -13,30 +13,47 @@ namespace CoC.BodyParts
 	{
 		public override AntennaeType type { get; protected set; }
 
-		public override void Restore()
+		public override bool Restore()
 		{
+			if (type == AntennaeType.NONE)
+			{
+				return false;
+			}
 			type = AntennaeType.NONE;
+			return type == AntennaeType.NONE;
 		}
 
-		public override void RestoreAndDisplayMessage(Player p)
+		public override bool RestoreAndDisplayMessage(Player p)
 		{
+			if (type == AntennaeType.NONE)
+			{
+				return false;
+			}
 			OutputText(restoreString(this, p));
-			Restore();
+			type = AntennaeType.NONE;
+			return type == AntennaeType.NONE;
 		}
 
 		public bool UpdateAntennae(AntennaeType newType)
 		{
+			if (type == newType)
+			{
+				return false;
+			}
 			type = newType;
 			return type == newType;
 		}
 
 		public bool UpdateAntennaeAndDisplayMessage(AntennaeType newType, Player player)
 		{
+			if (type == newType)
+			{
+				return false;
+			}
 			OutputText(transformFrom(this, player));
 			type = newType;
 			return type == newType;
 		}
-
 	}
 
 	public class AntennaeType : BodyPartBehavior<AntennaeType, Antennae>

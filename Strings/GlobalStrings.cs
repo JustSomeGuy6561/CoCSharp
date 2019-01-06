@@ -14,6 +14,11 @@ namespace CoC.Strings
 	{
 		public static string None() { return ""; }
 
+		public static string TransformToDefault<T, Y>(T type, Player p) where T : BodyPartBase<T, Y> where Y : BodyPartBehavior<Y,T>
+		{
+			return type.restoreString(type, p);
+		}
+
 		public static string RevertAsDefault<T>(T type, Player p)
 		{
 			#if DEBUG
