@@ -33,7 +33,7 @@ namespace CoC.BodyParts
 		public override int index => throw new NotImplementedException();
 
 		public override GenericDescription shortDescription {get; protected set;}
-		public override CreatureDescription<Face> creatureDescription {get; protected set;}
+		public override FullDescription<Face> fullDescription {get; protected set;}
 		public override PlayerDescription<Face> playerDescription {get; protected set;}
 		public override ChangeType<Face> transformFrom {get; protected set;}
 

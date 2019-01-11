@@ -21,7 +21,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string HumanCreatureStr(Eyes eyes, Gender gender)
+		public static string HumanFullDesc(Eyes eyes)
 		{
 
 		}
@@ -41,7 +41,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string SpiderCreatureStr(Eyes eyes, Gender gender)
+		public static string SpiderFullDesc(Eyes eyes)
 		{
 
 		}
@@ -62,7 +62,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string SandTrapCreatureStr(Eyes eyes, Gender gender)
+		public static string SandTrapFullDesc(Eyes eyes)
 		{
 
 		}
@@ -82,7 +82,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string LizardCreatureStr(Eyes eyes, Gender gender)
+		public static string LizardFullDesc(Eyes eyes)
 		{
 
 		}
@@ -103,7 +103,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string DragonCreatureStr(Eyes eyes, Gender gender)
+		public static string DragonFullDesc(Eyes eyes)
 		{
 
 		}
@@ -124,7 +124,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string BasiliskCreatureStr(Eyes eyes, Gender gender)
+		public static string BasiliskFullDesc(Eyes eyes)
 		{
 
 		}
@@ -145,7 +145,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string WolfCreatureStr(Eyes eyes, Gender gender)
+		public static string WolfFullDesc(Eyes eyes)
 		{
 
 		}
@@ -166,7 +166,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CockatriceCreatureStr(Eyes eyes, Gender gender)
+		public static string CockatriceFullDesc(Eyes eyes)
 		{
 
 		}
@@ -187,7 +187,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CatCreatureStr(Eyes eyes, Gender gender)
+		public static string CatFullDesc(Eyes eyes)
 		{
 
 		}

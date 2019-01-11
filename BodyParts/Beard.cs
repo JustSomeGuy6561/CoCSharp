@@ -5,12 +5,13 @@
 using CoC.EpidermalColors;
 using System;
 using CoC.BodyParts.SpecialInteraction;
+using CoC.Engine;
 
 namespace CoC.BodyParts
 {
 	//Can't use readonly, as beards aren't constant - they grow.
 	//NOT FULLY DONE. There's no way to check if you can groom to a certain type of beard based on existing hair. 
-	class FacialHair : SimpleBodyPartType, IDyeable
+	class FacialHair : SimpleBodyPartType, IDyeable, ITimeAware
 	{
 		/*
 		 * Facial Hair can grow. This means styles may become other styles as they grow. for example, a van dyke may 
@@ -28,6 +29,7 @@ namespace CoC.BodyParts
 		private readonly bool isActive;
 		protected float lengthInInches;
 		protected int hoursSinceTrimmed;
+		private int hoursCounter = 0;
 		public BeardStyle style
 		{
 			get
@@ -213,6 +215,16 @@ namespace CoC.BodyParts
 			}
 			color = dye;
 			return true;
+		}
+
+		public void ReactToTimePassing(uint hoursPassed)
+		{
+			this.hoursCounter += (int)hoursPassed;
+			if (hoursCounter >= 12)
+			{
+				GrowBeard(hoursCounter / 12);
+				hoursCounter %= 12;
+			}
 		}
 	}
 

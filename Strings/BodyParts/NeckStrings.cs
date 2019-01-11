@@ -18,7 +18,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string HumanCreatureStr(Neck neck, Gender gender)
+		public static string HumanFullDesc(Neck neck)
 		{
 
 		}
@@ -30,7 +30,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string DragonCreatureStr(Neck neck, Gender gender)
+		public static string DragonFullDesc(Neck neck)
 		{
 
 		}
@@ -50,7 +50,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CockatriceCreatureStr(Neck neck, Gender gender)
+		public static string CockatriceFullDesc(Neck neck)
 		{
 
 		}

@@ -227,12 +227,12 @@ private delegate T SetHornDelegate<T>(ref int ct, ref int sz);
 
 		//call the other constructor with defaults set to min.
 		protected HornType(int minHorns, int maximumHorns, int minLength, int maxLength,
-			GenericDescription shortDesc, CreatureDescription<Horns> creatureDesc, PlayerDescription<Horns> playerDesc, ChangeType<Horns> transform, ChangeType<Horns> restore) 
-			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, creatureDesc, playerDesc, transform, restore) {}
+			GenericDescription shortDesc, FullDescription<Horns> fullDesc, PlayerDescription<Horns> playerDesc, ChangeType<Horns> transform, ChangeType<Horns> restore) 
+			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, fullDesc, playerDesc, transform, restore) {}
 
 		protected HornType(int minimumHorns, int maximumHorns, int minLength, int maxLength, int defaultHornCount, int defaultHornLength,
-			GenericDescription shortDesc, CreatureDescription<Horns> creatureDesc, PlayerDescription<Horns> playerDesc,
-			ChangeType<Horns> transform, ChangeType<Horns> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+			GenericDescription shortDesc, FullDescription<Horns> fullDesc, PlayerDescription<Horns> playerDesc,
+			ChangeType<Horns> transform, ChangeType<Horns> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			//Woo data cleanup.
 			Utils.Clamp(ref maximumHorns, 0, int.MaxValue);

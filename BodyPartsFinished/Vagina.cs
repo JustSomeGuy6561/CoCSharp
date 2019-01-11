@@ -42,11 +42,31 @@ namespace CoC.BodyParts
 			};
 		}
 
+		public static Vagina Generate(PiercingFlags flags, VaginaType vaginaType, float clitLength)
+		{
+			Vagina retVal = new Vagina(flags)
+			{
+				type = vaginaType,
+			};
+			retVal.clit.growClit(clitLength - retVal.clit.length);
+			return retVal;
+		}
+
 		public static Vagina GenerateOmnibus(PiercingFlags flags)
 		{
 			Vagina retVal = new Vagina(flags);
 			retVal.ActivateOmnibusClit();
 			return retVal;
+		}
+
+		public bool Deflower()
+		{
+			if (!virgin)
+			{
+				return false;
+			}
+			virgin = false;
+			return true;
 		}
 
 		public bool Update(VaginaType newType)
@@ -129,8 +149,8 @@ namespace CoC.BodyParts
 		private static int indexMaker = 0;
 		public readonly int typeCapacityBonus;
 		protected VaginaType(int capacityBonus,
-			GenericDescription shortDesc, CreatureDescription<Vagina> creatureDesc, PlayerDescription<Vagina> playerDesc, 
-			ChangeType<Vagina> transform, ChangeType<Vagina> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+			GenericDescription shortDesc, FullDescription<Vagina> fullDesc, PlayerDescription<Vagina> playerDesc, 
+			ChangeType<Vagina> transform, ChangeType<Vagina> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			typeCapacityBonus = capacityBonus;
@@ -139,9 +159,9 @@ namespace CoC.BodyParts
 		public override int index => _index;
 		protected readonly int _index;
 
-		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanCreatureStr, VagHumanPlayerStr, GlobalStrings.TransformToDefault<Vagina, VaginaType>, GlobalStrings.RevertAsDefault<Vagina>);
-		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineCreatureStr, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
-		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapCreatureStr, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
+		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanFullDesc, VagHumanPlayerStr, GlobalStrings.TransformToDefault<Vagina, VaginaType>, GlobalStrings.RevertAsDefault<Vagina>);
+		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineFullDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
+		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapFullDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
 
 	}
 

@@ -4,3 +4,19 @@ should be there anyway, because it resets when you lose them.
 
 the same needs to be done for ass, though, again, that gets weird with anemone asshole - do we reset like with vag?
 i think that some of that would have to persist, right?
+
+probably should add a function pointer to attack body part interface that defines the attack behavior. alternatively, could move 
+all that data to a "special attack" class and require a reference to it. 
+
+
+
+GIACOMO, WORMS, and TENTACLE BEAST must be removed from the game. period. full stop. that license is cancer and i ain't having it
+
+replace Giacomo with a "caravan," create tonics for all 4 stats. add a wise old man who teaches the player about dangers and such.
+his daughter is a herm and rather pent-up, but because of caravan never really gets any, so has plenty of toys as a result.
+may add sexy scene later.
+
+removes worms outright. i'm sure the three people who used them can manage. 
+
+tentacle beast can be removed. corrupted glades are separate of them, and that is where the more interesting stuff is anyway.
+could possibly make the glades sentient, and attack/attempt to rape the player if the player leaves, though only part of the time.

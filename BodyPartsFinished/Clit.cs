@@ -6,6 +6,7 @@ using CoC.BodyParts.SpecialInteraction;
 using CoC.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -48,7 +49,7 @@ namespace CoC.BodyParts
 
 		public static Clit GenerateOmnibusClit(PiercingFlags flags)
 		{
-			return new Clit(flags, 4.0f)
+			return new Clit(flags, 5.0f)
 			{
 				omnibusClit = true
 			};
@@ -56,15 +57,31 @@ namespace CoC.BodyParts
 
 		protected override bool PiercingLocationUnlocked(ClitPiercing piercingLocation)
 		{
-			if (piercingFlags.piercingFetishEnabled)
+
+			if (!requiresFetish.Contains(piercingLocation))
 			{
 				return true;
 			}
-			else if (requiresFetish.Contains(piercingLocation))
+			else if (!piercingFlags.piercingFetishEnabled)
 			{
 				return false;
 			}
-			return true;
+			else if (piercingLocation == ClitPiercing.LARGE_CLIT_1)
+			{
+				return length >= 3;
+			}
+			else if (piercingLocation == ClitPiercing.LARGE_CLIT_2)
+			{
+				return length >= 5;
+			}
+			else if (piercingLocation == ClitPiercing.LARGE_CLIT_3)
+			{
+				return length >= 7;
+			}
+			#if DEBUG
+			Debug.WriteLine("Hit some edge case. probably should fix this as it always returns false.");
+			#endif
+			return false;
 		}
 
 		public Cock AsCock()

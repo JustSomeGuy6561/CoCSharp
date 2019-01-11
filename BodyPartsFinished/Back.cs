@@ -10,9 +10,13 @@ using CoC.BodyParts.SpecialInteraction;
 using CoC.EpidermalColors;
 using CoC.Tools;
 using static CoC.UI.TextOutput;
+using static CoC.Strings.BodyParts.BackStrings;
 namespace CoC.BodyParts
 {
-	class Back : BodyPartBase<Back, BackType>, IDyeable
+	//implement i fur aware if you want it to update with the player.
+	//note that if you do so you'll need some sort of logic to deal with if it 
+	//was dyed recently/ ever.
+	class Back : BodyPartBase<Back, BackType>, IDyeable//, IFurAware
 	{
 		public override BackType type
 		{
@@ -87,6 +91,23 @@ namespace CoC.BodyParts
 			return true;
 		}
 
+		public bool canDye()
+		{
+			return type.usesHair;
+		}
+
+		public bool attemptToDye(HairFurColors dye)
+		{
+			if (!canDye() || dye == hairFur)
+			{
+				return false;
+			}
+			else
+			{ 
+				hairFur = dye;
+				return true;
+			}
+		}
 	}
 
 	class BackType : BodyPartBehavior<BackType, Back>
@@ -97,16 +118,16 @@ namespace CoC.BodyParts
 		public readonly HairFurColors defaultColor;
 		public readonly bool usesHair;
 
-		protected BackType(GenericDescription shortDesc, CreatureDescription<Back> creatureDesc, PlayerDescription<Back> playerDesc,
-			ChangeType<Back> transform, ChangeType<Back> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+		protected BackType(GenericDescription shortDesc, FullDescription<Back> fullDesc, PlayerDescription<Back> playerDesc,
+			ChangeType<Back> transform, ChangeType<Back> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			defaultColor = HairFurColors.NO_HAIR_FUR;
 			usesHair = false;
 		}
 		protected BackType(HairFurColors defaultHairFur,
-			GenericDescription shortDesc, CreatureDescription<Back> creatureDesc, PlayerDescription<Back> playerDesc,
-			ChangeType<Back> transform, ChangeType<Back> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+			GenericDescription shortDesc, FullDescription<Back> fullDesc, PlayerDescription<Back> playerDesc,
+			ChangeType<Back> transform, ChangeType<Back> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			defaultColor = defaultHairFur;
@@ -114,9 +135,9 @@ namespace CoC.BodyParts
 		}
 		//i'd love to combine these, but they're actually entirely dependant on if the player used hair serum on Ember. 
 		//it's such a specific check i can't realistically do it in here. 
-		public static readonly BackType NORMAL = new BackType(NormalDesc, NormalCreatureStr, NormalPlayerStr, NormalTransformStr, NormalRestoreStr);
-		public static readonly BackType DRACONIC_MANE = new BackType(HairFurColors.GREEN, DraconicManeDesc, DraconicManeCreatureStr, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr);
-		public static readonly BackType DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesCreatureStr, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
-		public static readonly BackType SHARK_FIN = new BackType(SharkFinDesc, SharkFinCreatureStr, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
+		public static readonly BackType NORMAL = new BackType(NormalDesc, NormalFullDesc, NormalPlayerStr, NormalTransformStr, NormalRestoreStr);
+		public static readonly BackType DRACONIC_MANE = new BackType(HairFurColors.GREEN, DraconicManeDesc, DraconicManeFullDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr);
+		public static readonly BackType DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesFullDesc, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
+		public static readonly BackType SHARK_FIN = new BackType(SharkFinDesc, SharkFinFullDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
 	}
 }

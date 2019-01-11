@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 2:12 PM
+using CoC.BodyParts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,43 @@ namespace CoC.Tools
 				default:
 					return "its";
 			}
+		}
+
+		public static int asInt(this CupSize cupSize)
+		{
+			return (int)cupSize;
+		}
+
+		public static float ToNearestQuarter(float value)
+		{
+			double decimalPoint = value % 1;
+			if (decimalPoint > .875)
+			{
+				decimalPoint = 1;
+			}
+			else if (decimalPoint > .625)
+			{
+				decimalPoint = 0.75;
+			}
+			else if (decimalPoint > .375)
+			{
+				decimalPoint = 0.5;
+			}
+			else if (decimalPoint > .125)
+			{
+				decimalPoint = 0.25;
+			}
+			else
+			{
+				decimalPoint = 0f;
+			}
+			value = (float)(Math.Floor(value) + decimalPoint);
+			return value;
+		}
+
+		public static bool IsInverted(this NippleStatus nippleStatus)
+		{
+			return nippleStatus == NippleStatus.FULLY_INVERTED || nippleStatus == NippleStatus.SLIGHTLY_INVERTED;
 		}
 	}
 }

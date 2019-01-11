@@ -18,7 +18,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string AnemoneCreatureStr(Gills gills, Gender gender)
+		public static string AnemoneFullDesc(Gills gills)
 		{
 
 		}
@@ -39,7 +39,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string FishCreatureStr(Gills gills, Gender gender)
+		public static string FishFullDesc(Gills gills)
 		{
 
 		}

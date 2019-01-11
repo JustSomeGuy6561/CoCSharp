@@ -102,17 +102,17 @@ namespace CoC.BodyParts
 	{
 		public override int index => epidermisType.index;
 
-		protected CoreType(EpidermisType epidermis, GenericDescription shortDesc, CreatureDescription<Core> creatureDesc, PlayerDescription<Core> playerDesc,
-			ChangeType<Core> transform, ChangeType<Core> restore) : base(epidermis, shortDesc, creatureDesc, playerDesc, transform, restore) { }
+		protected CoreType(EpidermisType epidermis, GenericDescription shortDesc, FullDescription<Core> fullDesc, PlayerDescription<Core> playerDesc,
+			ChangeType<Core> transform, ChangeType<Core> restore) : base(epidermis, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
-		public static CoreType SKIN = new CoreType(EpidermisType.SKIN, SkinStr, SkinCreatureStr, SkinPlayerStr, SkinTransformStr, SkinRestoreStr);
-		public static CoreType FUR = new CoreType(EpidermisType.FUR, FurStr, FurCreatureStr, FurPlayerStr, FurTransformStr, FurRestoreStr);
-		public static CoreType SCALES = new CoreType(EpidermisType.SCALES, ScalesStr, ScalesCreatureStr, ScalesPlayerStr, ScalesTransformStr, ScalesRestoreStr);
-		public static CoreType GOO = new CoreType(EpidermisType.GOO, GooStr, GooCreatureStr, GooPlayerStr, GooTransformStr, GooRestoreStr);
-		public static CoreType WOOL = new CoreType(EpidermisType.WOOL, WoolStr, WoolCreatureStr, WoolPlayerStr, WoolTransformStr, WoolRestoreStr);
-		public static CoreType FEATHERS = new CoreType(EpidermisType.FEATHERS, FeatherStr, FeatherCreatureStr, FeatherPlayerStr, FeatherTransformStr, FeatherRestoreStr);
-		public static CoreType BARK = new CoreType(EpidermisType.BARK, BarkStr, BarkCreatureStr, BarkPlayerStr, BarkTransformStr, BarkRestoreStr);
-		public static CoreType CARAPACE = new CoreType(EpidermisType.CARAPACE, CarapaceStr, CarapaceCreatureStr, CarapacePlayerStr, CarapaceTransformStr, CarapaceRestoreStr);
-		public static CoreType EXOSKELETON = new CoreType(EpidermisType.EXOSKELETON, ExoskeletonStr, ExoskeletonCreatureStr, ExoskeletonPlayerStr, ExoskeletonTransformStr, ExoskeletonRestoreStr);
+		public static CoreType SKIN = new CoreType(EpidermisType.SKIN, SkinStr, SkinFullDesc, SkinPlayerStr, SkinTransformStr, SkinRestoreStr);
+		public static CoreType FUR = new CoreType(EpidermisType.FUR, FurStr, FurFullDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
+		public static CoreType SCALES = new CoreType(EpidermisType.SCALES, ScalesStr, ScalesFullDesc, ScalesPlayerStr, ScalesTransformStr, ScalesRestoreStr);
+		public static CoreType GOO = new CoreType(EpidermisType.GOO, GooStr, GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+		public static CoreType WOOL = new CoreType(EpidermisType.WOOL, WoolStr, WoolFullDesc, WoolPlayerStr, WoolTransformStr, WoolRestoreStr);
+		public static CoreType FEATHERS = new CoreType(EpidermisType.FEATHERS, FeatherStr, FeatherFullDesc, FeatherPlayerStr, FeatherTransformStr, FeatherRestoreStr);
+		public static CoreType BARK = new CoreType(EpidermisType.BARK, BarkStr, BarkFullDesc, BarkPlayerStr, BarkTransformStr, BarkRestoreStr);
+		public static CoreType CARAPACE = new CoreType(EpidermisType.CARAPACE, CarapaceStr, CarapaceFullDesc, CarapacePlayerStr, CarapaceTransformStr, CarapaceRestoreStr);
+		public static CoreType EXOSKELETON = new CoreType(EpidermisType.EXOSKELETON, ExoskeletonStr, ExoskeletonFullDesc, ExoskeletonPlayerStr, ExoskeletonTransformStr, ExoskeletonRestoreStr);
 	}
 }

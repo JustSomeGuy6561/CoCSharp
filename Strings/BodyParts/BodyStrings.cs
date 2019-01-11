@@ -18,7 +18,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string SkinCreatureStr(Core core, Gender gender)
+		public static string SkinFullDesc(Core core)
 		{
 
 		}
@@ -38,7 +38,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string FurCreatureStr(Core core, Gender gender)
+		public static string FurFullDesc(Core core)
 		{
 
 		}
@@ -58,7 +58,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string ScalesCreatureStr(Core core, Gender gender)
+		public static string ScalesFullDesc(Core core)
 		{
 
 		}
@@ -78,7 +78,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string GooCreatureStr(Core core, Gender gender)
+		public static string GooFullDesc(Core core)
 		{
 
 		}
@@ -98,7 +98,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string WoolCreatureStr(Core core, Gender gender)
+		public static string WoolFullDesc(Core core)
 		{
 
 		}
@@ -118,7 +118,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string FeatherCreatureStr(Core core, Gender gender)
+		public static string FeatherFullDesc(Core core)
 		{
 
 		}
@@ -138,7 +138,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string BarkCreatureStr(Core core, Gender gender)
+		public static string BarkFullDesc(Core core)
 		{
 
 		}
@@ -158,7 +158,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CarapaceCreatureStr(Core core, Gender gender)
+		public static string CarapaceFullDesc(Core core)
 		{
 
 		}
@@ -178,7 +178,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string ExoskeletonCreatureStr(Core core, Gender gender)
+		public static string ExoskeletonFullDesc(Core core)
 		{
 
 		}

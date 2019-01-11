@@ -12,8 +12,8 @@ namespace CoC.BodyParts
 		where ThisClass : EpidermalBodyPartBehavior<ThisClass, ContainerClass> where ContainerClass : EpidermalBodyPart<ContainerClass, ThisClass>
 	{
 		public readonly EpidermisType epidermisType;
-		protected EpidermalBodyPartBehavior(EpidermisType type, GenericDescription shortDesc, CreatureDescription<ContainerClass> creatureDesc, PlayerDescription<ContainerClass> playerDesc,
-			ChangeType<ContainerClass> transform, ChangeType<ContainerClass> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+		protected EpidermalBodyPartBehavior(EpidermisType type, GenericDescription shortDesc, FullDescription<ContainerClass> fullDesc, PlayerDescription<ContainerClass> playerDesc,
+			ChangeType<ContainerClass> transform, ChangeType<ContainerClass> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			epidermisType = type;
 		}

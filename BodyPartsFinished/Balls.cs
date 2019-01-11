@@ -17,7 +17,7 @@ namespace CoC.BodyParts
 	//maxing at 8. 
 	//though this probably needs more thought - is it two per sack, and multiple sacks? or is it all one sack?
 
-	class Balls: IGrowShrinkable
+	public class Balls: IGrowShrinkable
 	{
 		public const int MAX_BALLS_SIZE = 30;
 		public const int MIN_BALLS_SIZE = 1;
@@ -86,7 +86,7 @@ namespace CoC.BodyParts
 			else return GlobalStrings.None();
 		}
 
-		public CreatureDescription<Balls> creatureDescription => BallsCreatureStr;
+		public FullDescription<Balls> fullDescription => BallsFullDesc;
 		public PlayerDescription<Balls> playerDescription => BallsPlayerStr;
 
 		//Grows a pair of balls. returns false if it already has balls. 

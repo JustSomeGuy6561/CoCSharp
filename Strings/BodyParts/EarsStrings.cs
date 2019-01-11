@@ -17,7 +17,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string HumanCreatureStr(Ears ears, Gender gender)
+		public static string HumanFullDesc(Ears ears)
 		{
 
 		}
@@ -37,7 +37,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string HorseCreatureStr(Ears ears, Gender gender)
+		public static string HorseFullDesc(Ears ears)
 		{
 
 		}
@@ -57,7 +57,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string DogCreatureStr(Ears ears, Gender gender)
+		public static string DogFullDesc(Ears ears)
 		{
 
 		}
@@ -77,7 +77,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CowCreatureStr(Ears ears, Gender gender)
+		public static string CowFullDesc(Ears ears)
 		{
 
 		}
@@ -97,7 +97,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string ElfinCreatureStr(Ears ears, Gender gender)
+		public static string ElfinFullDesc(Ears ears)
 		{
 
 		}
@@ -117,7 +117,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CatCreatureStr(Ears ears, Gender gender)
+		public static string CatFullDesc(Ears ears)
 		{
 
 		}
@@ -137,7 +137,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string LizardCreatureStr(Ears ears, Gender gender)
+		public static string LizardFullDesc(Ears ears)
 		{
 
 		}
@@ -157,7 +157,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string BunnyCreatureStr(Ears ears, Gender gender)
+		public static string BunnyFullDesc(Ears ears)
 		{
 
 		}
@@ -177,7 +177,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string KangarooCreatureStr(Ears ears, Gender gender)
+		public static string KangarooFullDesc(Ears ears)
 		{
 
 		}
@@ -197,7 +197,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string FoxCreatureStr(Ears ears, Gender gender)
+		public static string FoxFullDesc(Ears ears)
 		{
 
 		}
@@ -217,7 +217,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string DragonCreatureStr(Ears ears, Gender gender)
+		public static string DragonFullDesc(Ears ears)
 		{
 
 		}
@@ -237,7 +237,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string RaccoonCreatureStr(Ears ears, Gender gender)
+		public static string RaccoonFullDesc(Ears ears)
 		{
 
 		}
@@ -257,7 +257,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string MouseCreatureStr(Ears ears, Gender gender)
+		public static string MouseFullDesc(Ears ears)
 		{
 
 		}
@@ -277,7 +277,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string FerretCreatureStr(Ears ears, Gender gender)
+		public static string FerretFullDesc(Ears ears)
 		{
 
 		}
@@ -297,7 +297,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string PigCreatureStr(Ears ears, Gender gender)
+		public static string PigFullDesc(Ears ears)
 		{
 
 		}
@@ -317,7 +317,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string RhinoCreatureStr(Ears ears, Gender gender)
+		public static string RhinoFullDesc(Ears ears)
 		{
 
 		}
@@ -337,7 +337,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string EchidnaCreatureStr(Ears ears, Gender gender)
+		public static string EchidnaFullDesc(Ears ears)
 		{
 
 		}
@@ -357,7 +357,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string DeerCreatureStr(Ears ears, Gender gender)
+		public static string DeerFullDesc(Ears ears)
 		{
 
 		}
@@ -377,7 +377,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string WolfCreatureStr(Ears ears, Gender gender)
+		public static string WolfFullDesc(Ears ears)
 		{
 
 		}
@@ -397,7 +397,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string SheepCreatureStr(Ears ears, Gender gender)
+		public static string SheepFullDesc(Ears ears)
 		{
 
 		}
@@ -417,7 +417,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string ImpCreatureStr(Ears ears, Gender gender)
+		public static string ImpFullDesc(Ears ears)
 		{
 
 		}
@@ -437,7 +437,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CockatriceCreatureStr(Ears ears, Gender gender)
+		public static string CockatriceFullDesc(Ears ears)
 		{
 
 		}
@@ -457,7 +457,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string RedPandaCreatureStr(Ears ears, Gender gender)
+		public static string RedPandaFullDesc(Ears ears)
 		{
 
 		}

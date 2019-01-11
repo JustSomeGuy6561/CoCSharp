@@ -54,9 +54,9 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public string CreatureDescription(Gender gender)
+		public string fullDescription(Gender gender)
 		{
-			return AssButtHipStrings.assCreatureDescription(this, gender);
+			return AssButtHipStrings.assfullDescription(this, gender);
 		}
 
 		public string PlayerDescription(Player player)

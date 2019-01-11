@@ -36,7 +36,7 @@ namespace CoC.BodyParts
 		//there may be cases where you need to know the length of the hair or something - something not stored 
 		//not stored in the immutable part. you can override these to do so.
 		public virtual int index => type.index;
-		public virtual CreatureDescription<ThisClass> creatureDescription => (bodyPart, gender) => type.creatureDescription(bodyPart, gender);
+		public virtual FullDescription<ThisClass> fullDescription => (bodyPart) => type.fullDescription(bodyPart);
 
 		public virtual PlayerDescription<ThisClass> playerDescription => (bodyPart, player) => type.playerDescription(bodyPart, player);
 		public virtual GenericDescription shortDescription => type.shortDescription;

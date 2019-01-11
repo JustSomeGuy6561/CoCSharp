@@ -14,7 +14,7 @@ namespace CoC.Strings
 	{
 		public static string None() { return ""; }
 
-		public static string TransformToDefault<T, Y>(T type, Player p) where T : BodyPartBase<T, Y> where Y : BodyPartBehavior<Y,T>
+		public static string TransformToDefault<T, Y>(T type, Player p) where T : BodyPartBase<T, Y> where Y : BodyPartBehavior<Y, T>
 		{
 			return type.restoreString(type, p);
 		}
@@ -64,6 +64,25 @@ namespace CoC.Strings
 			lengthInInches = Math.Round(lengthInInches, MidpointRounding.AwayFromZero);
 			return lengthInInches.ToString() + " inches";
 		}
+
+		public static string CantAttackName<T>(T type)
+		{
+			#if DEBUG
+			return "Warning: you called an attack name, but cannot attack with this body part! Type: " + type.GetType().Name;
+			#else
+			return "";
+			#endif
+		}
+
+		public static string CantAttackWith<T, U>(T type, Player player) where T : BodyPartBase<T, U> where U : BodyPartBehavior<U,T>
+		{
+			#if DEBUG
+			return "Warning: you called an attack hint, but cannot attack with this body part! Type: " + type.GetType().Name;
+			#else
+			return "";
+			#endif
+		}
+
 	}
 
 }

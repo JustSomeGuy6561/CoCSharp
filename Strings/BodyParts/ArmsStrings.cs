@@ -65,7 +65,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string HumanCreatureStr(Arms arm, Gender gender)
+		public static string HumanFullDesc(Arms arm)
 		{
 
 		}
@@ -85,7 +85,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string HarpyCreatureStr(Arms arm, Gender gender)
+		public static string HarpyFullDesc(Arms arm)
 		{
 
 		}
@@ -105,7 +105,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string SpiderCreatureStr(Arms arm, Gender gender)
+		public static string SpiderFullDesc(Arms arm)
 		{
 
 		}
@@ -125,7 +125,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string BeeCreatureStr(Arms arm, Gender gender)
+		public static string BeeFullDesc(Arms arm)
 		{
 
 		}
@@ -145,7 +145,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string DragonCreatureStr(Arms arm, Gender gender)
+		public static string DragonFullDesc(Arms arm)
 		{
 
 		}
@@ -165,7 +165,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string ImpCreatureStr(Arms arm, Gender gender)
+		public static string ImpFullDesc(Arms arm)
 		{
 
 		}
@@ -185,7 +185,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string LizardCreatureStr(Arms arm, Gender gender)
+		public static string LizardFullDesc(Arms arm)
 		{
 
 		}
@@ -205,7 +205,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string SalamanderCreatureStr(Arms arm, Gender gender)
+		public static string SalamanderFullDesc(Arms arm)
 		{
 
 		}
@@ -225,7 +225,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string WolfCreatureStr(Arms arm, Gender gender)
+		public static string WolfFullDesc(Arms arm)
 		{
 
 		}
@@ -245,7 +245,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CockatriceCreatureStr(Arms arm, Gender gender)
+		public static string CockatriceFullDesc(Arms arm)
 		{
 
 		}
@@ -265,7 +265,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string Red_PandaCreatureStr(Arms arm, Gender gender)
+		public static string Red_PandaFullDesc(Arms arm)
 		{
 
 		}
@@ -285,7 +285,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string FerretCreatureStr(Arms arm, Gender gender)
+		public static string FerretFullDesc(Arms arm)
 		{
 
 		}
@@ -305,7 +305,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string CatCreatureStr(Arms arm, Gender gender)
+		public static string CatFullDesc(Arms arm)
 		{
 
 		}
@@ -325,7 +325,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string DogCreatureStr(Arms arm, Gender gender)
+		public static string DogFullDesc(Arms arm)
 		{
 
 		}
@@ -345,7 +345,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string FoxCreatureStr(Arms arm, Gender gender)
+		public static string FoxFullDesc(Arms arm)
 		{
 
 		}

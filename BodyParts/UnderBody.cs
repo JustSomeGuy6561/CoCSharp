@@ -10,14 +10,36 @@ using CoC.Tools;
 
 namespace CoC.BodyParts
 {
-	class UnderBody : BodyPartBehavior<UnderBody>
+	class UnderBody : BodyPartBase<UnderBody, UnderBodyType>
 	{
-		public override int index => throw new NotImplementedException();
-		protected Epidermis underbody;
+		protected UnderBody()
+		{
+		}
 
-		public override GenericDescription shortDescription {get; protected set;}
-		public override CreatureDescription creatureDescription {get; protected set;}
-		public override PlayerDescription playerDescription {get; protected set;}
-		public override ChangeType<UnderBody> transformFrom {get; protected set;}
+		public override UnderBodyType type { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+
+		public override bool Restore()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override bool RestoreAndDisplayMessage(Player player)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+	class UnderBodyType : BodyPartBehavior<UnderBodyType, UnderBody>
+	{
+		private static int indexMaker = 0;
+		protected UnderBodyType(//class specific stuff here.
+			GenericDescription shortDesc, FullDescription<UnderBody> fullDesc, PlayerDescription<UnderBody> playerDesc, 
+			ChangeType<UnderBody> transform, ChangeType<UnderBody> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		{
+			_index = indexMaker++;
+		}
+
+		private readonly int _index;
+		public override int index => _index;
 	}
 }

@@ -17,7 +17,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string VagHumanCreatureStr(Vagina vagina, Gender gender)
+		public static string VagHumanFullDesc(Vagina vagina)
 		{
 
 		}
@@ -29,7 +29,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string VagEquineCreatureStr(Vagina vagina, Gender gender)
+		public static string VagEquineFullDesc(Vagina vagina)
 		{
 
 		}
@@ -49,7 +49,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string VagSandTrapCreatureStr(Vagina vagina, Gender gender)
+		public static string VagSandTrapFullDesc(Vagina vagina)
 		{
 
 		}

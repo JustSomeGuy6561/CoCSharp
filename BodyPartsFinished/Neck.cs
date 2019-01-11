@@ -130,7 +130,7 @@ namespace CoC.BodyParts
 
 		/*
 		public override GenericDescription shortDescription {get; protected set;}
-		public override CreatureDescription creatureDescription {get; protected set;}
+		public override fullDescription fullDescription {get; protected set;}
 		public override PlayerDescription playerDescription {get; protected set;}
 		public override ChangeType<Neck> transformFrom {get; protected set;}
 
@@ -167,8 +167,8 @@ namespace CoC.BodyParts
 		public readonly HairFurColors defaultColor;
 
 		protected NeckType(int maxLength,
-			GenericDescription shortDesc, CreatureDescription<Neck> creatureDesc, PlayerDescription<Neck> playerDesc, ChangeType<Neck> transform, 
-			ChangeType<Neck> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+			GenericDescription shortDesc, FullDescription<Neck> fullDesc, PlayerDescription<Neck> playerDesc, ChangeType<Neck> transform, 
+			ChangeType<Neck> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			maxNeckLength = maxLength;
@@ -177,8 +177,8 @@ namespace CoC.BodyParts
 		}
 
 		protected NeckType(int maxLength, HairFurColors defaultHairFur,
-			GenericDescription shortDesc, CreatureDescription<Neck> creatureDesc, PlayerDescription<Neck> playerDesc, ChangeType<Neck> transform,
-			ChangeType<Neck> restore) : base(shortDesc, creatureDesc, playerDesc, transform, restore)
+			GenericDescription shortDesc, FullDescription<Neck> fullDesc, PlayerDescription<Neck> playerDesc, ChangeType<Neck> transform,
+			ChangeType<Neck> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			maxNeckLength = maxLength;
@@ -242,9 +242,9 @@ namespace CoC.BodyParts
 		protected const int MAX_DRAGON_LENGTH = 30;
 		protected const int MAX_COCKATRICE_LENGTH = 2;
 
-		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanCreatureStr, HumanPlayerStr, GlobalStrings.TransformToDefault<Neck, NeckType>, GlobalStrings.RevertAsDefault);
-		public static readonly NeckType DRACONIC = new NeckType(MAX_DRAGON_LENGTH, DragonDesc, DragonCreatureStr, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly NeckType COCKATRICE = new NeckType(MAX_COCKATRICE_LENGTH, HairFurColors.GREEN, CockatriceDesc, CockatriceCreatureStr, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanFullDesc, HumanPlayerStr, GlobalStrings.TransformToDefault<Neck, NeckType>, GlobalStrings.RevertAsDefault);
+		public static readonly NeckType DRACONIC = new NeckType(MAX_DRAGON_LENGTH, DragonDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static readonly NeckType COCKATRICE = new NeckType(MAX_COCKATRICE_LENGTH, HairFurColors.GREEN, CockatriceDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
 
 		private double percentTowardsMaxLength(int length, int max)
 		{

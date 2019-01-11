@@ -29,7 +29,7 @@ namespace CoC.BodyParts
 
 		readonly GenericDescriptorWithArg<LowerBody> lowerBodyDescriptor;
 
-		public LowerBody(GenericDescription shortdesc, GenericDescriptorWithArg<LowerBody> descriptor, CreatureDescription creatureDesc, GenericDescription playerDesc, ChangeType<LowerBody> transformFunc)
+		public LowerBody(GenericDescription shortdesc, GenericDescriptorWithArg<LowerBody> descriptor, FullDescription fullDesc, GenericDescription playerDesc, ChangeType<LowerBody> transformFunc)
 		{
 			butt = Butt.NewButt();
 			hips = Hips.NewHips();
@@ -37,7 +37,7 @@ namespace CoC.BodyParts
 			underBody = underBody.NONE;
 			lowerBodyDescriptor = descriptor;
 			shortDescription = shortdesc;
-			creatureDescription = creatureDesc;
+			fullDescription = fullDesc;
 			playerDescription = playerDesc;
 			transformFrom = transformFunc;
 		}
@@ -65,7 +65,7 @@ namespace CoC.BodyParts
 		public override int index => legs.index;
 
 		public override GenericDescription shortDescription { get; protected set; }
-		public override CreatureDescription creatureDescription {get; protected set;}
+		public override FullDescription fullDescription {get; protected set;}
 		public override PlayerDescription playerDescription { get; protected set; }
 		public override ChangeType<LowerBody> transformFrom {get; protected set;}
 	}

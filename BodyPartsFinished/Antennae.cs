@@ -61,8 +61,8 @@ namespace CoC.BodyParts
 		private static int indexMaker = 0;
 
 
-		protected AntennaeType(GenericDescription desc, CreatureDescription<Antennae> creatureDesc, PlayerDescription<Antennae> playerDesc,
-			ChangeType<Antennae> transformMessage, ChangeType<Antennae> revertToDefault) : base(desc, creatureDesc, playerDesc, transformMessage, revertToDefault)
+		protected AntennaeType(GenericDescription desc, FullDescription<Antennae> fullDesc, PlayerDescription<Antennae> playerDesc,
+			ChangeType<Antennae> transformMessage, ChangeType<Antennae> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
 		{
 			_index = indexMaker++;
 		}
@@ -75,14 +75,13 @@ namespace CoC.BodyParts
 
 		//Don't do this to this level lol. I just used lambdas everywhere because i changed the signature in the base to make things behave better globally, and didn't want to deal 
 		//with doing that to everything in here. do use lambdas if you need something not there or you want to use the empty string. 
-		public static readonly AntennaeType NONE = new AntennaeType(GlobalStrings.None, (x, y) => { return GlobalStrings.None(); },
-			(x, y) => { return GlobalStrings.None(); }, AntennaeStrings.RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
+		public static readonly AntennaeType NONE = new AntennaeType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), AntennaeStrings.RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
 
-		public static readonly AntennaeType BEE = new AntennaeType(AntennaeStrings.BeeAntennae, (x, y) => { return AntennaeStrings.BeeAntennaCreature(y); },
-			(x, y) => { return AntennaeStrings.BeeAntennaePlayer(y); }, AntennaeStrings.BeeAntennaeTransform, AntennaeStrings.BeeAntennaeRestore);
+		public static readonly AntennaeType BEE = new AntennaeType(AntennaeStrings.BeeDesc, AntennaeStrings.BeeFullDesc,
+			(x, y) => AntennaeStrings.BeePlayer(y), AntennaeStrings.BeeTransform, AntennaeStrings.BeeRestore);
 
-		public static readonly AntennaeType COCKATRICE = new AntennaeType(AntennaeStrings.CockatriceAntennae, (x, y) => { return AntennaeStrings.CockatriceAntennaCreature(y); },
-			(x, y) => { return AntennaeStrings.CockatriceAntennaePlayer(y); }, AntennaeStrings.CockatriceAntennaeTransform, AntennaeStrings.CockatriceAntennaeRestore);
+		public static readonly AntennaeType COCKATRICE = new AntennaeType(AntennaeStrings.CockatriceDesc, AntennaeStrings.CockatriceFullDesc,
+			(x, y) => AntennaeStrings.CockatricePlayer(y), AntennaeStrings.CockatriceTransform, AntennaeStrings.CockatriceRestore);
 	}
 }
 

@@ -12,7 +12,7 @@ namespace CoC.Strings.BodyParts
 {
 	public static class AssButtHipStrings
 	{
-		public static string assCreatureDescription(Ass ass, Gender gender)
+		public static string assfullDescription(Ass ass)
 		{
 
 		}

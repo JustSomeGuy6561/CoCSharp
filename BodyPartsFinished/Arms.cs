@@ -123,8 +123,8 @@ namespace CoC.BodyParts
 		public readonly bool epidermisCanChangeTone;
 
 		protected ArmType(HandType hand, EpidermisType epidermis, Tones defTone, bool canChange, string epidermisAdjective,
-			GenericDescription shortDesc, CreatureDescription<Arms> creatureDesc, PlayerDescription<Arms> playerDesc,
-			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(epidermis, shortDesc, creatureDesc, playerDesc, transform, restore)
+			GenericDescription shortDesc, FullDescription<Arms> fullDesc, PlayerDescription<Arms> playerDesc,
+			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(epidermis, shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			handType = hand;
@@ -136,8 +136,8 @@ namespace CoC.BodyParts
 		}
 
 		protected ArmType(HandType hand, EpidermisType epidermis, FurColor defaultFur, bool canChange, string epidermisAdjective,
-			GenericDescription shortDesc, CreatureDescription<Arms> creatureDesc, PlayerDescription<Arms> playerDesc,
-			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(epidermis, shortDesc, creatureDesc, playerDesc, transform, restore)
+			GenericDescription shortDesc, FullDescription<Arms> fullDesc, PlayerDescription<Arms> playerDesc,
+			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(epidermis, shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			handType = hand;
@@ -150,23 +150,23 @@ namespace CoC.BodyParts
 
 
 		//DO NOT REORDER THESE (Under penalty of death lol)
-		public static readonly ArmType HUMAN = new ArmType(HandType.HUMAN, EpidermisType.SKIN, Tones.HUMAN_DEFAULT, true, "smooth", HumanDescStr, HumanCreatureStr, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly ArmType HARPY = new ArmType(HandType.HUMAN, EpidermisType.FEATHERS, FurColor.HARPY_DEFAULT, true, "", HarpyDescStr, HarpyCreatureStr, HarpyPlayerStr, HarpyTransformStr, HarpyRestoreStr);
-		public static readonly ArmType SPIDER = new ArmType(HandType.HUMAN, EpidermisType.CARAPACE, Tones.BLACK, false, "", SpiderDescStr, SpiderCreatureStr, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr);
-		public static readonly ArmType BEE = new ArmType(HandType.HUMAN, EpidermisType.FUR, Tones.BLACK, false, "shiny", BeeDescStr, BeeCreatureStr, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
+		public static readonly ArmType HUMAN = new ArmType(HandType.HUMAN, EpidermisType.SKIN, Tones.HUMAN_DEFAULT, true, "smooth", HumanDescStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly ArmType HARPY = new ArmType(HandType.HUMAN, EpidermisType.FEATHERS, FurColor.HARPY_DEFAULT, true, "", HarpyDescStr, HarpyFullDesc, HarpyPlayerStr, HarpyTransformStr, HarpyRestoreStr);
+		public static readonly ArmType SPIDER = new ArmType(HandType.HUMAN, EpidermisType.CARAPACE, Tones.BLACK, false, "", SpiderDescStr, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr);
+		public static readonly ArmType BEE = new ArmType(HandType.HUMAN, EpidermisType.FUR, Tones.BLACK, false, "shiny", BeeDescStr, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
 		//I broke up predator arms to make the logic here easier. now all arms have one hand/claw type.
 		//you still have the ability to check for predator arms via a function below. no functionality has been lost.
-		public static readonly ArmType DRAGON = new ArmType(HandType.DRAGON, EpidermisType.SCALES, Tones.DRAGON_DEFAULT, true, "", DragonDescStr, DragonCreatureStr, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly ArmType IMP = new ArmType(HandType.IMP, EpidermisType.SCALES, Tones.IMP_DEFAULT, true, "", ImpDescStr, ImpCreatureStr, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
-		public static readonly ArmType LIZARD = new ArmType(HandType.LIZARD, EpidermisType.SCALES, Tones.LIZARD_DEFAULT, true, "", LizardDescStr, LizardCreatureStr, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly ArmType SALAMANDER = new ArmType(HandType.SALAMANDER, EpidermisType.SCALES, Tones.DARK_RED, false, "", SalamanderDescStr, SalamanderCreatureStr, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
-		public static readonly ArmType WOLF = new ArmType(HandType.DOG, EpidermisType.FUR, FurColor.DOG_DEFAULT, true, "", WolfDescStr, WolfCreatureStr, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static readonly ArmType COCKATRICE = new ArmType(HandType.COCKATRICE, EpidermisType.SCALES, Tones.COCKATRICE_DEFAULT, true, "", CockatriceDescStr, CockatriceCreatureStr, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
-		public static readonly ArmType RED_PANDA = new ArmType(HandType.RED_PANDA, EpidermisType.FUR, FurColor.RED_PANDA_DEFAULT, true, "", Red_pandaDescStr, Red_PandaCreatureStr, Red_PandaPlayerStr, Red_PandaTransformStr, Red_PandaRestoreStr);
-		public static readonly ArmType FERRET = new ArmType(HandType.FERRET, EpidermisType.FUR, FurColor.FERRET_DEFAULT, true, "", FerretDescStr, FerretCreatureStr, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
-		public static readonly ArmType CAT = new ArmType(HandType.CAT, EpidermisType.FUR, FurColor.CAT_DEFAULT, true, "", CatDescStr, CatCreatureStr, CatPlayerStr, CatTransformStr, CatRestoreStr);
-		public static readonly ArmType DOG = new ArmType(HandType.DOG, EpidermisType.FUR, FurColor.DOG_DEFAULT, true, "", DogDescStr, DogCreatureStr, DogPlayerStr, DogTransformStr, DogRestoreStr);
-		public static readonly ArmType FOX = new ArmType(HandType.FOX, EpidermisType.FUR, FurColor.CAT_DEFAULT, true, "", FoxDescStr, FoxCreatureStr, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
+		public static readonly ArmType DRAGON = new ArmType(HandType.DRAGON, EpidermisType.SCALES, Tones.DRAGON_DEFAULT, true, "", DragonDescStr, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static readonly ArmType IMP = new ArmType(HandType.IMP, EpidermisType.SCALES, Tones.IMP_DEFAULT, true, "", ImpDescStr, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+		public static readonly ArmType LIZARD = new ArmType(HandType.LIZARD, EpidermisType.SCALES, Tones.LIZARD_DEFAULT, true, "", LizardDescStr, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static readonly ArmType SALAMANDER = new ArmType(HandType.SALAMANDER, EpidermisType.SCALES, Tones.DARK_RED, false, "", SalamanderDescStr, SalamanderFullDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
+		public static readonly ArmType WOLF = new ArmType(HandType.DOG, EpidermisType.FUR, FurColor.DOG_DEFAULT, true, "", WolfDescStr, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static readonly ArmType COCKATRICE = new ArmType(HandType.COCKATRICE, EpidermisType.SCALES, Tones.COCKATRICE_DEFAULT, true, "", CockatriceDescStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static readonly ArmType RED_PANDA = new ArmType(HandType.RED_PANDA, EpidermisType.FUR, FurColor.RED_PANDA_DEFAULT, true, "", Red_pandaDescStr, Red_PandaFullDesc, Red_PandaPlayerStr, Red_PandaTransformStr, Red_PandaRestoreStr);
+		public static readonly ArmType FERRET = new ArmType(HandType.FERRET, EpidermisType.FUR, FurColor.FERRET_DEFAULT, true, "", FerretDescStr, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
+		public static readonly ArmType CAT = new ArmType(HandType.CAT, EpidermisType.FUR, FurColor.CAT_DEFAULT, true, "", CatDescStr, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly ArmType DOG = new ArmType(HandType.DOG, EpidermisType.FUR, FurColor.DOG_DEFAULT, true, "", DogDescStr, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
+		public static readonly ArmType FOX = new ArmType(HandType.FOX, EpidermisType.FUR, FurColor.CAT_DEFAULT, true, "", FoxDescStr, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
 		//Add new Arm Types Here.
 
 		public bool isPredatorArms()

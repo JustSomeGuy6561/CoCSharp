@@ -84,8 +84,5 @@ namespace CoC.Tools
 				+ Math.Pow(((second.G - first.G) * 0.59), 2)
 				+ Math.Pow(((second.B - first.B) * 0.11), 2);
 		}
-
-		
-
 	}
 }

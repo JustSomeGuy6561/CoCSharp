@@ -1,0 +1,24 @@
+﻿All code in this project will be marked under GPL-3 License, unless otherwise stated. note that this may potentially use copyrighted and/or trademarked material, which thus requires the following additional terms.
+These additional terms only exist under Section 7, Subsection E. If these rights can be determined to not fit under this category, they may be removed as per GPL-3 regulations.
+
+I: ORIGINAL CHARACTERS
+Original Characters (henceforth OC or OCs) do not fall under GPL-3, as they are owned by their respective authors. HOWEVER, these authors have agreed to grant Perpetual access to their OCs in "good faith",
+legally, this requires that their characters cannot be innaccurately represented, nor can their ownership be misrepresented in any way. if a breach of this occurs, modifications responsible for this breach 
+must be reverted. Note that this does not require the reversal of all modifications to the project, just the ones that caused the breach. if such a breach occurs and all parties involved cannot reach agreement,
+the author may request the character be removed, and and further works released must respect that. Note that it would be a breach of this contract for this author to release a derivative work that once again
+includes their character, as that would violate Section 5 Subsection C. Further, Section 10 does not require this to be retroactively applied to previous versions.
+
+A: Exceptions to Clause I:
+	i) Porting Clause: A derived work can include characters who have been removed from this project so long as the original version existed before removal, and the entire work is being converted to a new 
+	source format, for archival purposes. note that this must be verbatim to the extent the language allows - all functionality must be kept and no additional functionality can be added. any further works 
+	that cause active development past this archival state would require the removal of this character. 
+
+II: OFFICIAL CREDIT:
+Contributions to this project are welcome so long as they are licensed under GPL-3. you must mark all modifications, though you may do so anonymously. you may modify the work to include credits to yourself, though
+you must do so in a manner that does not overstate your work, in compliance with Section 7 Subsection C. locations have been provided to take credit for creating scenes. you may not modify them, though if you do 
+create additional scenes, you may add your own credit there. a document has been provided with this source code listing all authors that have made changes to this work, you may add your name, or request your name 
+be removed if it is already there.
+
+Additional Notes:
+This project is completely open-source. No author can claim ownership of this project, nor can they limit derivative works. it can, however, be maintained by certain individuals. these individuals have no obligation
+to maintain the project, nor modify their works to include changes anyone else has made. these individuals cannot accept modifications that would violate GPL-3 or any of these additional terms.
