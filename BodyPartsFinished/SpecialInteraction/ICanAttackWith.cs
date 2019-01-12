@@ -12,6 +12,7 @@ namespace CoC.BodyParts.SpecialInteraction
 {
 	interface ICanAttackWith<T>
 	{
+#warning TODO: Change this to use a CombatAttack class. just assign it to the body part, and then use it.
 		//Standard attack for this type - be it kick/punch/whatever
 		bool canAttackWith();
 		bool hasStandardAttackForThisPart();

@@ -6,46 +6,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CoC.Strings;
 using CoC.Tools;
-
+using static CoC.UI.TextOutput;
+using static CoC.Strings.BodyParts.FaceStrings;
 namespace CoC.BodyParts
 {
 	//Strictly the facial structure. it doesn't include ears or eyes or hair.
 	//They're done seperately. if a tf affects all of them, just call each one.
-	public class Face : BodyPartBehavior<Face>
+	public class Face : BodyPartBase<Face, FaceType>
 	{
-		public Facial_Feature feature
+#warning add update and update with display messages.
+#warning add messages for strengthening?
+		public bool secondLevel
 		{
-			get
-			{
-				return _feature;
-			}
+			get => _secondLevel;
 			protected set
 			{
-				_feature = value;
-				index = _feature.index;
+				_secondLevel = type.hasSecondLevel ? value : false;
 			}
 		}
-		protected Facial_Feature _feature = Facial_Feature.HUMAN;
+		private bool _secondLevel;
 
-		public int currentLevel { get; protected set; }
+		public bool humanoidFace => type.isHumanoid(secondLevel);
 
-		public override int index => throw new NotImplementedException();
-
-		public override GenericDescription shortDescription {get; protected set;}
-		public override FullDescription<Face> fullDescription {get; protected set;}
-		public override PlayerDescription<Face> playerDescription {get; protected set;}
-		public override ChangeType<Face> transformFrom {get; protected set;}
+		public override FaceType type { get; protected set; }
 
 		protected Face()
 		{
-			feature = Facial_Feature.HUMAN;
-			currentLevel = 0;
-		}
-
-		public override string GetDescriptor()
-		{
-			return feature.GetDescriptor(currentLevel);
+			type = FaceType.HUMAN;
+			secondLevel = false;
 		}
 
 		public static Face GenerateFace()
@@ -53,257 +43,173 @@ namespace CoC.BodyParts
 			return new Face();
 		}
 
-		public static void Restore(ref Face face)
+		public static Face GenerateNonStandardFace(FaceType faceType, bool fullMorph = false)
 		{
-			face.feature = Facial_Feature.HUMAN;
-			face.currentLevel = 0;
+			return new Face()
+			{
+				type = faceType,
+				secondLevel = fullMorph
+			};
 		}
 
-		public void Restore()
+		public override bool Restore()
 		{
-			feature = Facial_Feature.HUMAN;
-			currentLevel = 0;
+			if (type == FaceType.HUMAN)
+			{
+				return false;
+			}
+			type = FaceType.HUMAN;
+			secondLevel = false ;
+			return true;
 		}
 
-		public bool UpdateFace(Facial_Feature newFeatures, uint level = 1)
+		public override bool RestoreAndDisplayMessage(Player player)
 		{
-			if (newFeatures == feature)
+			if (type == FaceType.HUMAN)
+			{
+				return false;
+			}
+			OutputText(restoreString(this, player));
+			return Restore();
+		}
+
+		public override GenericDescription shortDescription => type.hasSecondLevel && secondLevel ? type.secondLevelShortDescription : type.shortDescription;
+
+		public bool UpdateFace(FaceType newFeatures, bool fullMorph = false)
+		{
+			if (type == newFeatures)
 			{
 				return false;
 			}
 			else
 			{
-				feature = newFeatures;
-				Tools.Utils.Clamp<uint>(ref level, 0, int.MaxValue);
-				currentLevel = (feature == Facial_Feature.HUMAN) ? 0 : (int)level;
+				type = newFeatures;
+				secondLevel = fullMorph;
 				return true;
 			}
 		}
 
-		public bool LessenTransform(uint byAmount = 1)
+		public bool LessenTransform()
 		{
-			//should never procc, but is here in case somebody edited values or some shenanigans.
-			if (currentLevel == 0 && feature != Facial_Feature.HUMAN)
-			{
-				feature = Facial_Feature.HUMAN;
-				return true;
-			}
-			else if (byAmount == 0)
+			if(!secondLevel)
 			{
 				return false;
 			}
-
-			//clamps uint to range of positive integer, prevents weird errors
-			Tools.Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
-			currentLevel -= (int)byAmount;
-			if (currentLevel <= 0)
-			{
-				currentLevel = 0;
-				feature = Facial_Feature.HUMAN;
-			}
+			secondLevel = false;
 			return true;
 		}
-		public bool StrengthenTransform(uint byAmount = 1)
+		public bool StrengthenTransform()
 		{
-			if (currentLevel == feature.numLevels || byAmount == 0)
+			if (secondLevel)
 			{
 				return false;
 			}
-			else if (currentLevel == 0 && feature == Facial_Feature.HUMAN)
-			{
-					return false;
-			}
-			//Clamps uint to range of positive integer.
-			Tools.Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
-			currentLevel += (int)byAmount;
-			currentLevel = currentLevel > feature.numLevels ? feature.numLevels : currentLevel;
+			secondLevel = true;
 			return true;
 		}
-
-		//---------------------------------------------
-		//Because of the convenience shit. Standard compares that need to be explicitly defined because
-		//the non-standard ones are too.
-		public bool Equals(Face other)
-		{
-			return this == other;
-		}
-
-		public static bool operator ==(Face first, Face second)
-		{
-			return first.currentLevel == second.currentLevel && first.feature == second.feature;
-		}
-
-		public static bool operator !=(Face first, Face second)
-		{
-			return first.currentLevel != second.currentLevel || first.feature != second.feature;
-		}
-
-		//Convenience. Because everyone loves that shit
-		public bool Equals(Facial_Feature other)
-		{
-			return feature == other;
-		}
-
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
-		public static bool operator ==(Face first, Facial_Feature second)
-		{
-			return first.feature == second;
-		}
-
-		public static bool operator !=(Face first, Facial_Feature second)
-		{
-			return first.feature != second;
-		}
-		//---------------------------------------------
 	}
 
-	public abstract class Facial_Feature
+	//by default, any face that doesn't have two levels is treated as non-humanoid.
+	//if it does, the first level is assumed to be humanoid.
+	//this behavior can be overridden, and is for pig, etc.
+	public class FaceType : BodyPartBehavior<FaceType, Face>
 	{
-		public bool multiLeveled
-		{
-			get
-			{
-				return numLevels > 1;
-			}
-		}
-		public readonly int numLevels;
+		public readonly bool hasSecondLevel;
 
-		public readonly int index;
+		//first
+		public virtual bool isHumanoid(bool isSecondLevel)
+		{
+			if (hasSecondLevel)
+			{
+				return isSecondLevel;
+			}
+			return false;
+		}
 		private static int indexMaker = 0;
 
-		protected Facial_Feature(int maxLevel = 1)
+		public readonly GenericDescription secondLevelShortDescription;
+
+		public override int index => _index;
+		private readonly int _index;
+
+
+		protected FaceType(GenericDescription firstLevelShortDesc, GenericDescription secondLevelShortDesc, //short Desc for two levels.
+			FullDescription<Face> fullDesc, PlayerDescription<Face> playerStr, ChangeType<Face> transform, 
+			ChangeType<Face> restore) : base(firstLevelShortDesc, fullDesc, playerStr, transform, restore)
 		{
-			//forces maxlevel to be 1 or more. because that'd break things.
-			Tools.Utils.Clamp(ref maxLevel, 1, int.MaxValue);
-			numLevels = maxLevel;
-			index = indexMaker++;
+			_index = indexMaker++;
+			secondLevelShortDescription = secondLevelShortDesc;
 		}
 
-		public abstract string GetDescriptor(int level);
-
-		public static readonly Facial_Feature HUMAN = new Generic_Face("Human Face");
-		public static readonly Facial_Feature HORSE = new Generic_Face("Horse Face");
-		public static readonly Facial_Feature DOG = new Generic_Face("Dog Face");
-		public static readonly Facial_Feature COW_MINOTAUR = new Generic_Face("Bull Face");
-		public static readonly Facial_Feature SHARK_TEETH = new Generic_Face("Shark Teeth");
-		public static readonly Facial_Feature SNAKE_FANGS = new Generic_Face("Snake Fangs");
-		public static readonly Facial_Feature CAT = new Cat_Face();
-		public static readonly Facial_Feature LIZARD = new Generic_Face("Lizard Face");
-		public static readonly Facial_Feature BUNNY = new Bunny_Face();
-		public static readonly Facial_Feature KANGAROO = new Generic_Face("Kangaroo Face");
-		public static readonly Facial_Feature SPIDER_FANGS = new Generic_Face("Spider Fangs");
-		public static readonly Facial_Feature FOX = new Fox_Face(); //Level 1: Kitsune. Level 2: Full fox
-		public static readonly Facial_Feature DRAGON = new Generic_Face("Dragon Face");
-		public static readonly Facial_Feature RACCOON = new Raccoon_Face();
-		public static readonly Facial_Feature MOUSE = new Mouse_Face();
-		public static readonly Facial_Feature FERRET = new Ferret_Face();
-		public static readonly Facial_Feature PIG = new Pig_Face(); //Level 1: Pig. Level 2: Boar
-		public static readonly Facial_Feature RHINO = new Generic_Face("Rhino Face");
-		public static readonly Facial_Feature ECHIDNA = new Generic_Face("Echidna Face");
-		public static readonly Facial_Feature DEER = new Generic_Face("Deer Face");
-		public static readonly Facial_Feature WOLF = new Generic_Face("Wolf Face"); //Maybe combine with dog?
-		public static readonly Facial_Feature COCKATRICE = new Generic_Face("Cockatrice Face"); 
-		public static readonly Facial_Feature BEAK = new Generic_Face("PlaceHolder Beak Face"); // This is a placeholder for the next beaked face type, so feel free to refactor (rename)
-		public static readonly Facial_Feature RED_PANDA = new Generic_Face("Red Panda Face");
-		private class Generic_Face : Facial_Feature
+		protected FaceType(//only one level short desc
+			GenericDescription shortDesc, FullDescription<Face> fullDesc, PlayerDescription<Face> playerStr, 
+			ChangeType<Face> transform, ChangeType<Face> restore) : base(shortDesc, fullDesc, playerStr, transform, restore)
 		{
-			protected string descriptor;
-			public Generic_Face(string desc) : base(1)
-			{
-				returndesc;
-			}
-
-			public override string GetDescriptor(int level)
-			{
-				return descriptor;
-			}
+			_index = indexMaker++;
+			secondLevelShortDescription = GlobalStrings.None;
 		}
 
-		private class Cat_Face : Facial_Feature
-		{
-			protected readonly string[] descriptors = { "Cat-girl Face", "Feline Face" };
-			public Cat_Face() : base(2) {}
+		public static readonly FaceType HUMAN = new FaceType(HumanShortDesc, HumanFullDesc,HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly FaceType HORSE = new FaceType(HorseShortDesc, HorseFullDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
+		public static readonly FaceType DOG = new FaceType(DogShortDesc, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
+		public static readonly FaceType COW_MINOTAUR = new FaceType(CowShortDesc, MinotaurShortDesc, MinotaurFullDesc, MinotaurPlayerStr, MinotaurTransformStr, MinotaurRestoreStr);
+		public static readonly FaceType SHARK = new SharkFace();
+		public static readonly FaceType SNAKE = new SnakeFace();
+		public static readonly FaceType CAT = new FaceType(CatGirlShortDesc, CatMorphShortDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly FaceType LIZARD = new FaceType(LizardShortDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static readonly FaceType BUNNY = new FaceType(BunnyFirstLevelShortDesc, BunnySecondLevelShortDesc, BunnyFullDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
+		public static readonly FaceType KANGAROO = new FaceType(KangarooShortDesc, KangarooFullDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
+		public static readonly FaceType SPIDER = new SpiderFace();
+		public static readonly FaceType FOX = new FaceType(KitsuneShortDesc, FoxShortDesc, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
+		public static readonly FaceType DRAGON = new FaceType(DragonShortDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static readonly FaceType RACCOON = new FaceType(RaccoonMaskShortDesc, RaccoonFaceShortDesc, RaccoonFullDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
+		public static readonly FaceType MOUSE = new FaceType(MouseTeethShortDesc, MouseFaceShortDesc, MouseFullDesc, MousePlayerStr, MouseTransformStr, MouseRestoreStr);
+		public static readonly FaceType FERRET = new FaceType(FerretMaskShortDesc, FerretFaceShortDesc, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
+		public static readonly FaceType PIG = new PigFace(); //both pig and boar are not humanoid.
+		public static readonly FaceType RHINO = new FaceType(RhinoShortDesc, RhinoFullDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
+		public static readonly FaceType ECHIDNA = new FaceType(EchidnaShortDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
+		public static readonly FaceType DEER = new FaceType(DeerShortDesc, DeerFullDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
+		public static readonly FaceType WOLF = new FaceType(WolfShortDesc, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static readonly FaceType COCKATRICE = new FaceType(CockatriceShortDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static readonly FaceType BEAK = new FaceType(BeakShortDesc, BeakFullDesc, BeakPlayerStr, BeakTransformStr, BeakRestoreStr);
+		public static readonly FaceType RED_PANDA = new FaceType(PandaShortDesc, PandaFullDesc, PandaPlayerStr, PandaTransformStr, PandaRestoreStr);
 
-			public override string GetDescriptor(int level)
+		private class PigFace : FaceType
+		{
+			public PigFace() : base(PigShortDesc, BoarShortDesc, PigFullDesc, PigPlayerStr, PigTransformStr, PigRestoreStr) { }
+
+			public override bool isHumanoid(bool isSecondLevel)
 			{
-				Tools.Utils.Clamp(ref level, 1, numLevels);
-				return descriptors[level-1];
+				return false;
 			}
 		}
-		private class Bunny_Face : Facial_Feature
+		//Yes, i'm aware spider, snake, and shark all use the same format. there may come a time when one or all of these get a second level.
+		//so i'm leaving them separate.
+		private class SpiderFace : FaceType
 		{
-			protected readonly string[] descriptors = { "Bunny-like Teeth", "Bunny Face" };
+			public SpiderFace() : base(SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr) { }
 
-			public Bunny_Face() : base(2) { }
-
-			public override string GetDescriptor(int level)
+			public override bool isHumanoid(bool isSecondLevel)
 			{
-				Tools.Utils.Clamp(ref level, 1, numLevels);
-				return descriptors[level-1];
+				return true;
 			}
 		}
-		private class Fox_Face : Facial_Feature
+		private class SharkFace : FaceType
 		{
-			protected readonly string[] descriptors = { "Kitsune Face", "Fox Face" };
-			public Fox_Face() : base(2) { }
+			public SharkFace() : base(SharkShortDesc, SharkFullDesc, SharkPlayerStr, SharkTransformStr, SharkRestoreStr) { }
 
-			public override string GetDescriptor(int level)
+			public override bool isHumanoid(bool isSecondLevel)
 			{
-				Tools.Utils.Clamp(ref level, 1, numLevels);
-				return descriptors[level - 1];
+				return true;
 			}
 		}
-		private class Raccoon_Face : Facial_Feature
+		private class SnakeFace : FaceType
 		{
-			protected readonly string[] descriptors = { "Raccoon Mask", "Raccoon Face" };
-			public Raccoon_Face() : base(2) { }
+			public SnakeFace() : base(SnakeShortDesc, SnakeFullDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr) { }
 
-			public override string GetDescriptor(int level)
+			public override bool isHumanoid(bool isSecondLevel)
 			{
-				Tools.Utils.Clamp(ref level, 1, numLevels);
-				return descriptors[level - 1];
-			}
-		}
-		private class Mouse_Face : Facial_Feature
-		{
-			protected readonly string[] descriptors = { "Mouse-like Teeth", "Mouse Face" };
-			public Mouse_Face() : base(2) { }
-
-			public override string GetDescriptor(int level)
-			{
-				Tools.Utils.Clamp(ref level, 1, numLevels);
-				return descriptors[level - 1];
-			}
-		}
-		private class Ferret_Face : Facial_Feature
-		{
-			protected readonly string[] descriptors = { "Ferret Mask", "Ferret Face" };
-			public Ferret_Face() : base(2) { }
-
-			public override string GetDescriptor(int level)
-			{
-				Tools.Utils.Clamp(ref level, 1, numLevels);
-				return descriptors[level - 1];
-			}
-		}
-		private class Pig_Face : Facial_Feature
-		{
-			protected readonly string[] descriptors = { "Pig Face", "Boar Face" };
-			public Pig_Face() : base(2) { }
-
-			public override string GetDescriptor(int level)
-			{
-				Tools.Utils.Clamp(ref level, 1, numLevels);
-				return descriptors[level - 1];
+				return true;
 			}
 		}
 	}

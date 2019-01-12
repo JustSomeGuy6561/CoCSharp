@@ -18,6 +18,7 @@ namespace CoC.BodyParts
 
 	public class Clit : SimplePiercing<ClitPiercing>, IGrowShrinkable
 	{
+#warning add more descriptors.
 		protected readonly ClitPiercing[] requiresFetish = { ClitPiercing.LARGE_CLIT_1, ClitPiercing.LARGE_CLIT_2, ClitPiercing.LARGE_CLIT_3 };
 
 		public const float MIN_CLIT_SIZE = 0.25f;

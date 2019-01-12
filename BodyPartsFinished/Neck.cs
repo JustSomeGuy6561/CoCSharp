@@ -93,14 +93,14 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public bool UpdateNeckAndDisplayMessage(NeckType neckType, Player player)
+		public bool UpdateNeckAndDisplayMessage(NeckType newType, Player player)
 		{
-			if (type == neckType)
+			if (type == newType)
 			{
 				return false;
 			}
-			OutputText(transformFrom(this, player));
-			type = neckType;
+			OutputText(transformInto(newType, player));
+			type = newType;
 			return true;
 		}
 

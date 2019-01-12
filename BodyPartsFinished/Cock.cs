@@ -33,7 +33,9 @@ namespace CoC.BodyParts
 		public const float MIN_COCK_LENGTH = 3.0f;
 
 		public const float DEFAULT_COCK_LENGTH = 5.5f;
+		public const float DEFAULT_BIG_COCK_LENGTH = 8f;
 		public const float DEFAULT_COCK_GIRTH = 1.25f;
+		public const float DEFAULT_BIG_COCK_GIRTH = 1.5f;
 
 
 		public float cockArea => cockGirth * cockLength;
@@ -87,24 +89,35 @@ namespace CoC.BodyParts
 		}
 		private CockType _type = CockType.HUMAN;
 
-		protected Cock(PiercingFlags flags) : base(flags)
+		private readonly bool hasBigCockPerk;
+
+		protected Cock(PiercingFlags flags, bool bigCockPerk) : base(flags)
 		{	
 			type = CockType.HUMAN;
-			cockLength = DEFAULT_COCK_LENGTH;
-			cockGirth = DEFAULT_COCK_GIRTH;
+			hasBigCockPerk = bigCockPerk;
+			if (hasBigCockPerk)
+			{
+				_cockLength = DEFAULT_BIG_COCK_LENGTH;
+				_cockGirth = DEFAULT_BIG_COCK_GIRTH;
+			}
+			else
+			{
+				_cockLength = DEFAULT_COCK_LENGTH;
+				_cockGirth = DEFAULT_COCK_GIRTH;
+			}
 		}
 
-		public static Cock Generate(CockType cockType, PiercingFlags piercingFlags)
+		public static Cock Generate(CockType cockType, PiercingFlags piercingFlags, bool bigCockPerk)
 		{
-			return new Cock(piercingFlags)
+			return new Cock(piercingFlags, bigCockPerk)
 			{
 				type = cockType,
 			};
 		}
 
-		public static Cock Generate(CockType cockType, PiercingFlags piercingFlags, float length, float girth)
+		public static Cock Generate(CockType cockType, PiercingFlags piercingFlags, bool bigCockPerk, float length, float girth)
 		{
-			return new Cock(piercingFlags)
+			return new Cock(piercingFlags, bigCockPerk)
 			{
 				type = cockType,
 				cockLength = length,
@@ -171,7 +184,14 @@ namespace CoC.BodyParts
 				return 0;
 			}
 			float oldCockLength = cockLength;
-			cockLength += 1 + Utils.Rand(4) / 4.0f;
+			if (hasBigCockPerk)
+			{
+				cockLength += 1 + Utils.Rand(9) / 4.0f;
+			}
+			else
+			{
+				cockLength += 1 + Utils.Rand(4) / 4.0f;
+			}
 			if ((cockGirth + 0.5f) < maxGirth)
 			{
 				cockGirth += 0.5f;

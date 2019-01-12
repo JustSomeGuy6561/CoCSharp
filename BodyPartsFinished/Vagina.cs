@@ -20,6 +20,7 @@ namespace CoC.BodyParts
 
 	public class Vagina : PiercableBodyPart<Vagina, VaginaType, LabiaPiercings>
 	{
+#warning add all the helpers.
 		public readonly Clit clit;
 		public bool virgin { get; protected set; }
 		protected Vagina(PiercingFlags flags) : base(flags)
@@ -85,7 +86,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(newType.transformFrom(this, player));
+			OutputText(transformInto(newType, player));
 			type = newType;
 			return true;
 		}

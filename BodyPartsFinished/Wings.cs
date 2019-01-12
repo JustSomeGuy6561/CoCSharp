@@ -77,14 +77,14 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public bool UpdateWingsAndDisplayMessage(WingType wingType, HairFurColors hairColor, Tones tone, Player player)
+		public bool UpdateWingsAndDisplayMessage(WingType newType, HairFurColors hairColor, Tones tone, Player player)
 		{
-			if (type == wingType)
+			if (type == newType)
 			{
 				return false;
 			}
-			OutputText(transformFrom(this, player));
-			return UpdateWings(wingType, hairColor, tone);
+			OutputText(transformInto(newType, player));
+			return UpdateWings(newType, hairColor, tone);
 		}
 
 		public bool UpdateWingsForceSize(WingType wingType, HairFurColors hairColor, Tones tone, bool large)
@@ -101,14 +101,14 @@ namespace CoC.BodyParts
 			return retVal;
 		}
 
-		public bool UpdateWingsForceSizeAndDisplayMessage(WingType wingType, HairFurColors hairColor, Tones tone, bool large, Player player)
+		public bool UpdateWingsForceSizeAndDisplayMessage(WingType newType, HairFurColors hairColor, Tones tone, bool large, Player player)
 		{
-			if (type == wingType)
+			if (type == newType)
 			{
 				return false;
 			}
-			OutputText(transformFrom(this, player));
-			return UpdateWingsForceSize(wingType, hairColor, tone, large);
+			OutputText(transformInto(newType, player));
+			return UpdateWingsForceSize(newType, hairColor, tone, large);
 		}
 
 		public bool GrowLarge()

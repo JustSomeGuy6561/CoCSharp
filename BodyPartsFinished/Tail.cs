@@ -17,6 +17,7 @@ namespace CoC.BodyParts
 	public enum TailPiercings { SUCCUBUS_SPADE }
 	public class Tail : PiercableBodyPart<Tail, TailType, TailPiercings>, ITimeAware, ICanAttackWith<Tail>
 	{
+#warning add tail update and update with message functions
 		public const int MAX_ATTACK_CHARGES = 100;
 		public int tailCount
 		{

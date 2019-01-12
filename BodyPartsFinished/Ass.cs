@@ -14,6 +14,7 @@ namespace CoC.BodyParts
 	public enum AssLocation { BUTT, MOUTH, NOT_APPLICABLE }
 	class Ass
 	{
+#warning Implement analwetness/looseness. add descriptors.
 		public AssLocation assLocation { get; protected set; }
 
 		protected Ass()

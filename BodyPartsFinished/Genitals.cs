@@ -32,6 +32,8 @@ namespace CoC.BodyParts
 		int vaginaCount = 0;
 		int breastRowCount = 0;
 		private readonly PiercingFlags flags;
+		private readonly bool hasBigTitsPerk;
+		private readonly bool hasBigCockPerk;
 
 		public Gender gender
 		{
@@ -74,36 +76,43 @@ namespace CoC.BodyParts
 			}
 		}
 
-
-		protected Genitals(PiercingFlags piercingFlags, Gender gender)
+		//note: Constructor treats HERM as full-package futa.
+		//if you want a ball-less herm, do female, then add a cock.
+		//in the same vein, if you want a male with no balls, do genderless and add a cock.
+		protected Genitals(PiercingFlags piercingFlags, Gender gender, bool bigTitsPerk, bool bigCockPerk)
 		{
 			flags = piercingFlags;
+			hasBigCockPerk = bigCockPerk;
+			hasBigTitsPerk = bigTitsPerk;
 			//Female or Herm:
 			if ((gender & Gender.FEMALE) != Gender.GENDERLESS)
 			{
 				AddVagina(VaginaType.HUMAN);
-				//MUST BE IN THE END RESULT IN SOME WAY.
-				breasts[breastRowCount++] = Breasts.GenerateFemale(flags);
+				breasts[breastRowCount++] = Breasts.GenerateFemale(flags, bigTitsPerk);
 			}
 			//Male or Genderless
 			else
 			{
-				//SEE ABOVE
-				breasts[breastRowCount++] = Breasts.GenerateMale(flags);
+				breasts[breastRowCount++] = Breasts.GenerateMale(flags, bigTitsPerk);
 			}
 			//Male or Herm.
 			if ((gender & Gender.MALE) != Gender.GENDERLESS)
 			{
 				AddCock(CockType.HUMAN);
+				balls = Balls.GenerateBalls();
+			}
+			else
+			{
+				balls = Balls.GenerateNoBalls();
 			}
 		}
 
-		public static Genitals Generate(PiercingFlags flags, Gender gender)
+		public static Genitals Generate(PiercingFlags flags, Gender gender, bool bigTitsPerk, bool bigCockPerk)
 		{
-			return new Genitals(flags, gender);
+			return new Genitals(flags, gender, bigTitsPerk, bigCockPerk);
 		}
 
-#error Add Message Helpers or Something, idk
+#warning Add Message Helpers or Something, idk
 
 		/// <summary>
 		/// Evens out all breast rows so they are closer to the average nipple length and cup size, rounding up.
@@ -127,16 +136,19 @@ namespace CoC.BodyParts
 		//Everything else keeps the size.
 		//Nipple status and blackness vary.
 		//new behavior is that's uniform between all breasts.
-		
+
 		//nipple length will be the size of the average of all the other nipples.
 		public bool AddBreastRow()
 		{
 #warning May want to make this use previous row size, idk.
 			if (breastRowCount < MAX_BREAST_ROWS)
 			{
-				double? avgLength = breasts.Average((x) => (double?)(x?.nipples.length));
-				double length = avgLength == null ? 0.25 : (double)avgLength;
-				breasts[breastRowCount++] = Breasts.GenerateFemale(flags, (float)length);
+				//linq ftw!
+				//i find it funny that linq was created for databases, but it really is used for functional programming.
+				double avgLength = breasts.Take(breastRowCount).Average((x) => (double)(x?.nipples.length));
+				double avgCup = breasts.Take(breastRowCount).Average((x) => (double)x.cupSize.asInt());
+				int cup = (int)Math.Ceiling(avgCup);
+				breasts[breastRowCount++] = Breasts.GenerateFemale(flags, hasBigTitsPerk, (CupSize)cup, (float)avgLength);
 				return true;
 			}
 			return false;
@@ -148,7 +160,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			cocks[cockCount++] = Cock.Generate(newCockType, flags);
+			cocks[cockCount++] = Cock.Generate(newCockType, flags, hasBigCockPerk);
 			return true;
 		}
 
@@ -158,7 +170,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			cocks[cockCount++] = Cock.Generate(newCockType, flags, length, girth);
+			cocks[cockCount++] = Cock.Generate(newCockType, flags, hasBigCockPerk, length, girth);
 			return true;
 		}
 

@@ -86,7 +86,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(transformFrom(this, player));
+			OutputText(transformInto(newType, player));
 			type = newType;
 			return true;
 		}

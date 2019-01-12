@@ -19,6 +19,8 @@ namespace CoC.BodyParts
 
 	public class Balls: IGrowShrinkable
 	{
+#warning Uniball implementation needed, probably as a bool.
+#warning add display descriptors.
 		public const int MAX_BALLS_SIZE = 30;
 		public const int MIN_BALLS_SIZE = 1;
 		public const int DEFAULT_BALLS_SIZE = 2;
@@ -128,6 +130,7 @@ namespace CoC.BodyParts
 		//as uniballs require that in this game. will do when i can find it.
 		public bool makeUniBall()
 		{
+#warning add check here for uniballs instead of 9999. will need to also make sure size is tiny.
 			if (hasBalls && count == MIN_BALLS_COUNT && 9999==9999)
 			{
 				return false;
@@ -137,12 +140,14 @@ namespace CoC.BodyParts
 				hasBalls = true;
 				count = MIN_BALLS_COUNT;
 				size = MIN_BALLS_SIZE;
+#warning add uniball set here. idk if it's a perk or something. probably done internally with a bool.
 				return true;
 			}
 		}
 
 		public int addBalls(int addAmount)
 		{
+#warning add check for uniballs. either revert to duo balls then add, or just revert, idk.
 			Utils.Clamp(ref addAmount, 0, MAX_BALLS_COUNT);
 			if ((hasBalls && count == MAX_BALLS_COUNT) || addAmount == 0)
 			{
@@ -163,6 +168,7 @@ namespace CoC.BodyParts
 
 		public int removeBalls(int removeAmount)
 		{
+#warning if uniball, make sure to remove perk/reset flag or whatever.
 			Utils.Clamp(ref removeAmount, 0, MAX_BALLS_COUNT);
 			if (!hasBalls || removeAmount == 0)
 			{
@@ -183,6 +189,7 @@ namespace CoC.BodyParts
 		}
 		public bool removeAllBalls()
 		{
+#warning if uniball, make sure to remove perk/reset flag or whatever.
 			if (!hasBalls)
 			{
 				return false;
@@ -195,6 +202,7 @@ namespace CoC.BodyParts
 
 		public int EnlargeBalls(int amount)
 		{
+#warning add check for uniballs. remove it if they grow, pretty much at all.
 			if (!hasBalls || size == MAX_BALLS_SIZE)
 			{
 				return 0;

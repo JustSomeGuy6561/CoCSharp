@@ -33,15 +33,15 @@ namespace CoC.BodyParts
 
 		}
 
-		public bool UpdateTypeAndDisplayMessage(GillType gillType, Player player)
+		public bool UpdateTypeAndDisplayMessage(GillType newType, Player player)
 		{
-			if (type == gillType)
+			if (type == newType)
 			{
 				return false;
 			}
-			OutputText(transformFrom(this, player));
-			type = gillType;
-			return type == gillType;
+			OutputText(transformInto(newType, player));
+			type = newType;
+			return type == newType;
 		}
 
 		public override bool Restore()

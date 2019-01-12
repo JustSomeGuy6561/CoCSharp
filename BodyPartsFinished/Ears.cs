@@ -84,14 +84,14 @@ namespace CoC.BodyParts
 			type = earType;
 			return true;
 		}
-		public bool UpdateEarsAndDisplayMessage(EarType earType, Player player)
+		public bool UpdateEarsAndDisplayMessage(EarType newType, Player player)
 		{
-			if (type == earType)
+			if (type == newType)
 			{
 				return false;
 			}
-			OutputText(transformFrom(this, player));
-			type = earType;
+			OutputText(transformInto(newType, player));
+			type = newType;
 			return true;
 		}
 	}

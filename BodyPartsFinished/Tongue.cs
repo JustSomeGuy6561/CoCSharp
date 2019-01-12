@@ -14,6 +14,7 @@ namespace CoC.BodyParts
 	public enum TonguePiercings { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
 	public class Tongue : PiercableBodyPart<Tongue, TongueType, TonguePiercings>
 	{
+#warning add update and update with message functions
 		protected Tongue(PiercingFlags flags) : base(flags)
 		{
 

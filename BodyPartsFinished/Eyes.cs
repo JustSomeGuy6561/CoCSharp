@@ -85,14 +85,14 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public bool UpdateEyeTypeAndDisplayMessage(EyeType newtype, Player player)
+		public bool UpdateEyeTypeAndDisplayMessage(EyeType newType, Player player)
 		{
-			if (type == newtype)
+			if (type == newType)
 			{
 				return false;
 			}
-			OutputText(transformFrom(this, player));
-			type = newtype;
+			OutputText(transformInto(newType, player));
+			type = newType;
 			return true;
 		}
 

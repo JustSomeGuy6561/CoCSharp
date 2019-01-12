@@ -57,14 +57,14 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public bool UpdateCoreAndDisplayMessage(CoreType coreType, Tones currentTone, FurColor furColor, Player player)
+		public bool UpdateCoreAndDisplayMessage(CoreType newType, Tones currentTone, FurColor furColor, Player player)
 		{
-			if (type == coreType)
+			if (type == newType)
 			{
 				return false;
 			}
-			OutputText(transformFrom(this, player));
-			return UpdateCore(coreType, currentTone, furColor);
+			OutputText(transformInto(newType, player));
+			return UpdateCore(newType, currentTone, furColor);
 		}
 		#endregion
 

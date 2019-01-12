@@ -79,7 +79,7 @@ namespace CoC.BodyParts
 			return new Nipples(flags);
 		}
 
-		public static Nipples GenerateWithLength(PiercingFlags flags, int nippleLength)
+		public static Nipples GenerateWithLength(PiercingFlags flags, float nippleLength)
 		{
 			return new Nipples(flags)
 			{
@@ -87,7 +87,7 @@ namespace CoC.BodyParts
 			};
 		}
 
-		public static Nipples GenerateForceType(PiercingFlags flags, int nippleLength, NippleStatus status)
+		public static Nipples GenerateForceType(PiercingFlags flags, float nippleLength, NippleStatus status)
 		{
 			return new Nipples(flags)
 			{
