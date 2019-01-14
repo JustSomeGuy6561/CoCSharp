@@ -261,23 +261,23 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string Red_pandaDescStr()
+		public static string RedPandaDescStr()
 		{
 
 		}
-		public static string Red_PandaFullDesc(Arms arm)
+		public static string RedPandaFullDesc(Arms arm)
 		{
 
 		}
-		public static string Red_PandaPlayerStr(Arms arm, Player player)
+		public static string RedPandaPlayerStr(Arms arm, Player player)
 		{
 
 		}
-		public static string Red_PandaTransformStr(Arms oldArms, Player player)
+		public static string RedPandaTransformStr(Arms oldArms, Player player)
 		{
 
 		}
-		public static string Red_PandaRestoreStr(Arms currentArms, Player player)
+		public static string RedPandaRestoreStr(Arms currentArms, Player player)
 		{
 
 		}

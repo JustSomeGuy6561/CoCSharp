@@ -25,7 +25,7 @@ namespace CoC.BodyParts
 		Butt butt;
 		Hips hips;
 		QuoteUnquoteLegs legs;
-		UnderBody underBody;
+		UnderBelly underBody;
 
 		readonly GenericDescriptorWithArg<LowerBody> lowerBodyDescriptor;
 

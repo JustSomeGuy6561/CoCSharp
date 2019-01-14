@@ -4,16 +4,18 @@
 //12/26/2018, 7:58 PM
 using CoC.Tools;
 using CoC.EpidermalColors;
-using System.Collections.Generic;
 using static CoC.Strings.BodyParts.ArmsStrings;
 using static CoC.UI.TextOutput;
+using CoC.BodyParts.SpecialInteraction;
+
 namespace CoC.BodyParts
 {
 	//TODO: add nice comparison shit for this class.
-	public class Arms : EpidermalBodyPart<Arms, ArmType>
+	public class Arms : BodyPartBase<Arms, ArmType>, IToneAware, IFurAware
 	{
 		public readonly Hands hands;
-		public Arms(ArmType type) : base(type.epidermisType, type.defaultTone, type.defaultFurColor)
+		public Epidermis epidermis { get; protected set; }
+		public Arms(ArmType type)
 		{
 			_type = type;
 			hands = Hands.Generate(type.handType, type.defaultTone);
@@ -38,8 +40,8 @@ namespace CoC.BodyParts
 		public static Arms Generate(ArmType type, Tones tones, FurColor fur)
 		{
 			Arms retVal = new Arms(type);
-			retVal.reactToChangeInFurColor(fur);
-			retVal.reactToChangeInSkinTone(tones);
+			retVal.reactToChangeInFurColor(fur, FurColor.GenerateEmpty());
+			retVal.reactToChangeInSkinTone(tones, Tones.NOT_APPLICABLE);
 			return retVal;
 		}
 
@@ -60,11 +62,8 @@ namespace CoC.BodyParts
 				return false;
 			}
 			type = newType;
-			//set the epidermis to the default, 
-			epidermis.UpdateEpidermis(type.epidermisType, type.defaultTone, type.defaultFurColor, type.defaultEpidermisAdjective);
-			//then try to update the color passed in.
-			reactToChangeInFurColor(currentHairFurColor);
-			reactToChangeInSkinTone(currentTone);
+			//let the type do it. 
+			type.UpdateEpidermis(epidermis, currentTone, Tones.NOT_APPLICABLE, currentHairFurColor, null);
 			return true;
 		}
 
@@ -89,30 +88,24 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public override void reactToChangeInSkinTone(Tones newTone)
+		public void reactToChangeInSkinTone(Tones primaryTone, Tones secondaryTone)
 		{
-			hands.reactToChangeInSkinTone(newTone);
-			if (type.epidermisCanChangeTone)
-			{
-				base.reactToChangeInSkinTone(newTone);
-			}
+			hands.reactToChangeInSkinTone(primaryTone, secondaryTone);
+			type.UpdateEpidermis(epidermis, primaryTone, secondaryTone, null, null);
 		}
 
-		public override void reactToChangeInFurColor(FurColor furColor)
+		public void reactToChangeInFurColor(FurColor primaryColor, FurColor secondaryColor)
 		{
-			if (type.epidermisCanChangeFur)
-			{
-				base.reactToChangeInFurColor(furColor);
-			}
+			type.UpdateEpidermis(epidermis, Tones.NOT_APPLICABLE, Tones.NOT_APPLICABLE, primaryColor, secondaryColor);
 		}
 	}
 
-	public class ArmType : EpidermalBodyPartBehavior<ArmType, Arms>
+	public class ArmType : BodyPartBehavior<ArmType, Arms>
 	{
 		private static int indexMaker = 0;
 
 		public readonly HandType handType;
-
+		public readonly EpidermisType epidermisType;
 		protected readonly string adjective = "";
 		private readonly int _index;
 		public readonly Tones defaultTone;
@@ -122,12 +115,27 @@ namespace CoC.BodyParts
 		public readonly bool epidermisCanChangeFur;
 		public readonly bool epidermisCanChangeTone;
 
+		//we assume that they use the primary color. not all do.
+		public virtual void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
+		{
+			//basically, if we can change it and it's valid.
+			if (epidermisCanChangeFur && epidermisType.usesFur && primaryFurColor != null && !primaryFurColor.isNoFur())
+			{
+				epidermis.UpdateFur(primaryFurColor);
+			}
+			else if (epidermisCanChangeTone && epidermisType.usesTone && primaryTone != null && primaryTone != Tones.NOT_APPLICABLE)
+			{
+				epidermis.UpdateTone(primaryTone);
+			}
+		}
+
 		protected ArmType(HandType hand, EpidermisType epidermis, Tones defTone, bool canChange, string epidermisAdjective,
 			GenericDescription shortDesc, FullDescription<Arms> fullDesc, PlayerDescription<Arms> playerDesc,
-			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(epidermis, shortDesc, fullDesc, playerDesc, transform, restore)
+			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			handType = hand;
+			epidermisType = epidermis;
 			defaultTone = defTone;
 			defaultFurColor.Reset();
 			epidermisCanChangeFur = false;
@@ -137,10 +145,11 @@ namespace CoC.BodyParts
 
 		protected ArmType(HandType hand, EpidermisType epidermis, FurColor defaultFur, bool canChange, string epidermisAdjective,
 			GenericDescription shortDesc, FullDescription<Arms> fullDesc, PlayerDescription<Arms> playerDesc,
-			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(epidermis, shortDesc, fullDesc, playerDesc, transform, restore)
+			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			handType = hand;
+			epidermisType = epidermis;
 			defaultTone = Tones.NOT_APPLICABLE;
 			defaultFurColor.UpdateFurColor(defaultFur);
 			epidermisCanChangeTone = false;
@@ -162,13 +171,38 @@ namespace CoC.BodyParts
 		public static readonly ArmType SALAMANDER = new ArmType(HandType.SALAMANDER, EpidermisType.SCALES, Tones.DARK_RED, false, "", SalamanderDescStr, SalamanderFullDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
 		public static readonly ArmType WOLF = new ArmType(HandType.DOG, EpidermisType.FUR, FurColor.DOG_DEFAULT, true, "", WolfDescStr, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
 		public static readonly ArmType COCKATRICE = new ArmType(HandType.COCKATRICE, EpidermisType.SCALES, Tones.COCKATRICE_DEFAULT, true, "", CockatriceDescStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
-		public static readonly ArmType RED_PANDA = new ArmType(HandType.RED_PANDA, EpidermisType.FUR, FurColor.RED_PANDA_DEFAULT, true, "", Red_pandaDescStr, Red_PandaFullDesc, Red_PandaPlayerStr, Red_PandaTransformStr, Red_PandaRestoreStr);
-		public static readonly ArmType FERRET = new ArmType(HandType.FERRET, EpidermisType.FUR, FurColor.FERRET_DEFAULT, true, "", FerretDescStr, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
+		public static readonly ArmType RED_PANDA = new RedPandaArms();
+		public static readonly ArmType FERRET = new FerretArms();
 		public static readonly ArmType CAT = new ArmType(HandType.CAT, EpidermisType.FUR, FurColor.CAT_DEFAULT, true, "", CatDescStr, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 		public static readonly ArmType DOG = new ArmType(HandType.DOG, EpidermisType.FUR, FurColor.DOG_DEFAULT, true, "", DogDescStr, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
 		public static readonly ArmType FOX = new ArmType(HandType.FOX, EpidermisType.FUR, FurColor.CAT_DEFAULT, true, "", FoxDescStr, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
 		//Add new Arm Types Here.
 
+		private class FerretArms : ArmType
+		{
+			public FerretArms() : base(HandType.FERRET, EpidermisType.FUR, FurColor.FERRET_DEFAULT, true, "", FerretDescStr, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr) {}
+
+			public override void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
+			{
+				if (secondaryFurColor != null && !secondaryFurColor.isNoFur())
+				{
+					epidermis.UpdateFur(secondaryFurColor);
+				}
+			}
+		}
+
+		private class RedPandaArms : ArmType
+		{
+			public RedPandaArms() : base(HandType.RED_PANDA, EpidermisType.FUR, FurColor.RED_PANDA_DEFAULT, true, "", RedPandaDescStr, RedPandaFullDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr) { }
+
+			public override void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
+			{
+				if (secondaryFurColor != null && !secondaryFurColor.isNoFur())
+				{
+					epidermis.UpdateFur(secondaryFurColor);
+				}
+			}
+		}
 		public bool isPredatorArms()
 		{
 			return this == DRAGON || this == IMP || this == LIZARD;

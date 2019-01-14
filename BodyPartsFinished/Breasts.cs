@@ -19,10 +19,12 @@ namespace CoC.BodyParts
 
 	public class Breasts : IGrowShrinkable
 	{
-		public CupSize cupSize {
+		public CupSize cupSize
+		{
 			get => _cupSize;
 			protected set
 			{
+				//weird workaround because enums aren't actually icomparabale. they do allow < or > though. idk.
 				int val = value.asInt();
 				//force the value to be valid. only really applies with enum arithmatic.
 				Utils.Clamp(ref val, CupSize.FLAT.asInt(), CupSize.JACQUES00.asInt());
@@ -67,7 +69,32 @@ namespace CoC.BodyParts
 		{
 			return new Breasts(flags, bigTitPerk, false);
 		}
-#warning add grow and shrink breast functions
+
+		public int GrowBreasts(uint byAmount)
+		{
+			if (cupSize >= CupSize.JACQUES00)
+			{
+				return 0;
+			}
+			Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
+			int amount = (int)byAmount;
+			CupSize oldSize = cupSize;
+			cupSize += amount;
+			return cupSize - oldSize;
+		}
+
+		public int ShrinkBreasts(uint byAmount)
+		{
+			if (cupSize <= CupSize.FLAT)
+			{
+				return 0;
+			}
+			Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
+			int amount = (int)byAmount;
+			CupSize oldSize = cupSize;
+			cupSize -= amount;
+			return cupSize - oldSize;
+		}
 
 		public bool CanGrowPlus()
 		{

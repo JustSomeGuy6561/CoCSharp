@@ -2,28 +2,31 @@
 //Description: EpidermisType Sub-Body Part class. used in other body parts. 
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
-using CoC.BodyParts.SpecialInteraction;
 using CoC.Tools;
 using CoC.EpidermalColors;
 using static CoC.Strings.BodyParts.EpidermisString;
-using System;
 
 namespace CoC.BodyParts
 {
 	//Epidermis represents the equivalent to skin on all species.
 
 	/*
-	 * NOTES: Epidermis can be attached to things that make use of it, like arms, core, etc.
-	 * It is up to you to update it. This is done because it is more useful that way - the epidermis
-	 * will always allow you to change its tone or fur color, to allow the most use for it.
-	 * if you don't want this behavior for your body part, (for example, bee exoskeleton is always black)
-	 * don't call these functions when you take care of updating your body part. so, if your arms react to
-	 * changes in skin tone because your claws match the body color, but you don't want your arm scales or 
-	 * whatever the epidermis is used for to update, simply dont call epidermis.reactToChangeInSkinColor
+	 * NOTES: Epidermis is a simple part. That means it should not be attached to a creature directly
+	 * instead, it should be part of another. it can either use skin tone, or fur color, not both.
+	 * it will store both values passed into it, but if you query for one and it's not in use, it will
+	 * return not applicable/no fur. 
 	 */
-
-	public class Epidermis : SimpleBodyPart<EpidermisType>, IDyeable, IToneable, IToneAware, IFurAware
+	public class Epidermis : SimpleBodyPart<EpidermisType>
 	{
+		protected FurColor fur;
+		protected Tones tone;
+		public override EpidermisType type { get; protected set; }
+
+		public EpidermalData GetEpidermalData()
+		{
+			return new EpidermalData(type, fur, tone);
+		}
+
 		public string epidermisAdjective;
 
 		protected Epidermis(EpidermisType type) : base(type)
@@ -36,14 +39,8 @@ namespace CoC.BodyParts
 		public static Epidermis Generate(EpidermisType type, Tones initialTone, FurColor furColor)
 		{
 			Epidermis retVal = new Epidermis(type);
-			if (type.usesFur)
-			{
-				retVal.fur.UpdateFurColor(furColor);
-			}
-			else
-			{
-				retVal.tone = initialTone;
-			}
+			retVal.fur.UpdateFurColor(furColor);
+			retVal.tone = initialTone;
 			return retVal;
 		}
 
@@ -51,32 +48,14 @@ namespace CoC.BodyParts
 		{
 			if (newType == type)
 			{
-				#if DEBUG
-				if (currentTone != this.tone || currentFur != this.fur)
-				{
-					CoC.UI.TextOutput.OutputText("You called update Epidermis, but while the epidermis hasn't changed, but your skin and fur have. \n" +
-						"if your goal was to update the skin and fur, use the reactTo functions for this.");
-				}
-				#endif
 				return false;
 			}
-			if (newType.usesTone)
-			{
-				tone = currentTone;
-				fur.Reset();
-			}
-			else
-			{
-				fur = currentFur;
-				tone = Tones.NOT_APPLICABLE;
-			}
+			tone = currentTone;
+			fur = currentFur;
 			epidermisAdjective = adjective;
 			return true;
 
 		}
-
-		public FurColor fur { get; protected set; }
-		public Tones tone { get; protected set; }
 
 		public virtual string FullDescription()
 		{
@@ -89,52 +68,29 @@ namespace CoC.BodyParts
 			if (type.usesTone) return ColoredStr(tone, shortDescription);
 			else return ColoredStr(fur, shortDescription);
 		}
-		public virtual string justColor() {
+		public virtual string justColor()
+		{
 			return type.usesTone ? tone.AsString() : fur.AsString();
 		}
 
-		public override EpidermisType type { get; protected set; }
-
-		public bool canDye()
+		public bool UpdateTone(Tones newTone)
 		{
-			return type.usesFur && type.hairMutable;
-		}
-
-		public bool attemptToDye(HairFurColors dye)
-		{
-			if (canDye())
-			{
-				fur.UpdateFurColor(dye);
-				return true;
-			}
-			return false;
-		}
-
-		public bool canToneLotion()
-		{
-			return type.usesTone && type.toneMutable;
-		}
-
-		public bool attemptToUseLotion(Tones newTone)
-		{
-			if (canDye())
+			if (type.toneMutable && tone != newTone)
 			{
 				tone = newTone;
 				return true;
 			}
 			return false;
 		}
-		public void reactToChangeInSkinTone(Tones newTone)
-		{
-			tone = newTone;
-		}
 
-		public void reactToChangeInFurColor(FurColor furColor)
+		public bool UpdateFur(FurColor furColor)
 		{
-			if (fur != furColor)
+			if (fur != furColor && type.hairMutable)
 			{
 				fur.UpdateFurColor(furColor);
+				return true;
 			}
+			return false;
 		}
 	}
 
@@ -171,6 +127,24 @@ namespace CoC.BodyParts
 		public static readonly EpidermisType CARAPACE = new EpidermisType(CarapaceStr, true, true);
 		//cannot be changed by lotion.
 		public static readonly EpidermisType EXOSKELETON = new EpidermisType(ExoskeletonStr, true, false);
+		public static readonly EpidermisType RUBBER = new EpidermisType(ExoskeletonStr, true, false); //now its own type. it's simpler this way imo.
 
+	}
+
+	public class EpidermalData
+	{
+		public EpidermisType epidermisType { get; private set; }
+		private readonly FurColor _fur;
+		private Tones _tone;
+
+		public EpidermalData(EpidermisType type, FurColor furColor, Tones tones)
+		{
+			epidermisType = type;
+			_fur = FurColor.GenerateFromOther(furColor);
+			_tone = tones;
+		}
+
+		public FurColor fur => (epidermisType.usesFur) ? _fur : FurColor.GenerateEmpty();
+		public Tones tone => (epidermisType.usesTone) ? _tone : Tones.NOT_APPLICABLE;
 	}
 }

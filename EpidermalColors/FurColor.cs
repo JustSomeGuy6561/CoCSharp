@@ -34,13 +34,25 @@ namespace CoC.EpidermalColors
 			};
 		}
 
+		public static FurColor GenerateFromOther(FurColor other)
+		{
+			return new FurColor
+			{
+				primaryColor = other.primaryColor,
+				secondaryColor = other.secondaryColor,
+				isMultiColored = other.isMultiColored,
+				multiColorPattern = other.multiColorPattern
+			};
+		}
+
 		public static FurColor Generate(HairFurColors primary, HairFurColors secondary, FurMulticolorPattern pattern)
 		{
 			return new FurColor
 			{
 				primaryColor = primary,
 				secondaryColor = secondary,
-				multiColorPattern = pattern
+				multiColorPattern = pattern,
+				isMultiColored = true
 			};
 		}
 

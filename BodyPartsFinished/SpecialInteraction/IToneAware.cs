@@ -10,8 +10,8 @@ using System.Text;
 
 namespace CoC.BodyParts.SpecialInteraction
 {
-	interface IToneAware
+	public interface IToneAware
 	{
-		void reactToChangeInSkinTone(Tones newTone);
+		void reactToChangeInSkinTone(Tones newPrimary, Tones newSecondary);
 	}
 }

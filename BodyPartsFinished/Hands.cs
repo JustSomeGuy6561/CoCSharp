@@ -38,12 +38,12 @@ namespace CoC.BodyParts
 
 		public Tones clawTone { get; protected set; }
 
-		public void reactToChangeInSkinTone(Tones newTone)
+		public void reactToChangeInSkinTone(Tones primaryTone, Tones secondaryTone)
 		{
 			if (type.canTone())
 			{
 				Tones claw = clawTone;
-				type.tryToTone(ref claw, newTone);
+				type.tryToTone(ref claw, primaryTone, secondaryTone);
 				clawTone = claw;
 			}
 		}
@@ -59,12 +59,12 @@ namespace CoC.BodyParts
 			return false;
 		}
 
-		public virtual bool tryToTone(ref Tones currentTone, Tones newTone)
+		public virtual bool tryToTone(ref Tones currentTone, Tones primaryTone, Tones secondaryTone)
 		{
 			if (canTone())
 			{
-				currentTone = newTone;
-				return currentTone == newTone;
+				currentTone = primaryTone;
+				return currentTone == primaryTone;
 			}
 			return false;
 		}
@@ -97,10 +97,10 @@ namespace CoC.BodyParts
 				return true;
 			}
 
-			public override bool tryToTone(ref Tones currentTone, Tones newTone)
+			public override bool tryToTone(ref Tones currentTone, Tones primaryTone, Tones secondaryTone)
 			{
 				//do some magic to the tone to make it lizard claw compatible
-				currentTone = newTone;
+				currentTone = primaryTone;
 				//maybe implement the switch here? imo it's just easier to create a helper
 				//that outputs the correct -ish or -y when asked for the claw color.
 				return true;
@@ -116,10 +116,10 @@ namespace CoC.BodyParts
 				return true;
 			}
 
-			public override bool tryToTone(ref Tones currentTone, Tones newTone)
+			public override bool tryToTone(ref Tones currentTone, Tones primaryTone, Tones secondaryTone)
 			{
 				//do some magic to the tone to make it imp claw compatible
-				currentTone = newTone;
+				currentTone = primaryTone;
 				return true;
 			}
 		}
