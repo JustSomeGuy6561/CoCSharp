@@ -13,6 +13,13 @@ namespace CoC.BodyParts
 	//NOT FULLY DONE. There's no way to check if you can groom to a certain type of beard based on existing hair. 
 	class FacialHair : SimpleBodyPartType, IDyeable, ITimeAware
 	{
+
+		/*
+		 * New Idea: length for sideburns, moustache, and beard. determine style from it. need enums for each then, or something. 
+		 * 
+		 * /
+
+
 		/*
 		 * Facial Hair can grow. This means styles may become other styles as they grow. for example, a van dyke may 
 		 * connect if left alone, becoming a circle beard. Sideburns can become muttonchops; 
@@ -222,7 +229,10 @@ namespace CoC.BodyParts
 			this.hoursCounter += (int)hoursPassed;
 			if (hoursCounter >= 12)
 			{
-				GrowBeard(hoursCounter / 12);
+				if (this != NONE)
+				{
+					GrowBeard(hoursCounter / 12);
+				}
 				hoursCounter %= 12;
 			}
 		}

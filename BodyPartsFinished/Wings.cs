@@ -15,7 +15,7 @@ namespace CoC.BodyParts
 {
 	//note: add itoneaware if you want some wing to update with skin tone. just add a var to the type class enabling or disabling this by type, then implement it
 	//for the love of god, don't do typeof checks. that's just ugly. you will also need to add wings to the list of things subscribing to the skin tone. 
-	public class Wings : BodyPartBase<Wings, WingType>, IDyeable //IToneAware
+	public class Wings : BodyPartBase<Wings, WingType>, IDyeable, IToneable
 	{
 		//add to creature. 
 		//public bool hasWings => wings.type != WingType.NONE;
@@ -38,15 +38,12 @@ namespace CoC.BodyParts
 		{
 			type = WingType.NONE;
 		}
-		private bool wasDyed;
+
 		public bool isLarge { get; protected set; }
 		public bool canFly => type != WingType.NONE && isLarge;
 
-		private HairFurColors hairColorStorage = HairFurColors.NO_HAIR_FUR;
-		private Tones toneStorage = Tones.NOT_APPLICABLE;
-
-		public HairFurColors hairColor => type.usesHair ? hairColorStorage : HairFurColors.NO_HAIR_FUR;
-		public Tones tone => type.usesTone ? toneStorage : Tones.NOT_APPLICABLE;
+		public HairFurColors hairColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
+		public Tones wingTone { get; private set; } = Tones.NOT_APPLICABLE;
 
 		public static Wings Generate()
 		{
@@ -65,51 +62,145 @@ namespace CoC.BodyParts
 		//base hair color or skin tone. afaik, it'd only used by special characters
 		//but w/e. i could have prevented this with itoneaware and ifuraware, but 
 		//frankly, i'm fine with them doing this. this applies to all of these.
-		public bool UpdateWings(WingType wingType, HairFurColors hairColor, Tones tone)
+		public bool UpdateWings(WingType wingType)
 		{
 			if (type == wingType)
 			{
 				return false;
 			}
 			type = wingType;
-			hairColorStorage = type.usesHair ? hairColor : HairFurColors.NO_HAIR_FUR;
-			toneStorage = type.usesTone ? tone : Tones.NOT_APPLICABLE;
+
+			wingTone = Tones.NOT_APPLICABLE;
+			hairColor = HairFurColors.NO_HAIR_FUR;
+
+			if (type is FeatheredWings)
+			{
+				hairColor = type.defaultHair;
+			}
+			else if (type is TonableWings)
+			{
+				wingTone = type.defaultTone;
+			}
 			return true;
 		}
 
-		public bool UpdateWingsAndDisplayMessage(WingType newType, HairFurColors hairColor, Tones tone, Player player)
+		public bool UpdateWingsAndDisplayMessage(WingType newType, Player player)
 		{
 			if (type == newType)
 			{
 				return false;
 			}
 			OutputText(transformInto(newType, player));
-			return UpdateWings(newType, hairColor, tone);
+			return UpdateWings(newType);
 		}
 
-		public bool UpdateWingsForceSize(WingType wingType, HairFurColors hairColor, Tones tone, bool large)
+		public bool UpdateWingsAndChangeColor(FeatheredWings featheredWings, HairFurColors featherCol)
+		{
+			if (type == featheredWings)
+			{
+				return false;
+			}
+			type = featheredWings;
+			hairColor = featherCol;
+			return true;
+		}
+
+		public bool UpdateWingsAndChangeColor(TonableWings toneWings, Tones tone)
+		{
+			if (type == toneWings)
+			{
+				return false;
+			}
+			type = toneWings;
+			this.wingTone = tone;
+			return true;
+		}
+
+		public bool UpdateWingsChangeColorAndDisplayMessage(FeatheredWings featheredWings, HairFurColors featherCol, Player player)
+		{
+			if (type == featheredWings)
+			{
+				return false;
+			}
+			OutputText(transformInto(type, player));
+			return UpdateWingsAndChangeColor(featheredWings, featherCol);
+		}
+
+		public bool UpdateWingsChangeColorAndDisplayMessage(TonableWings toneWings, Tones tone, Player player)
+		{
+			if (type == toneWings)
+			{
+				return false;
+			}
+			OutputText(transformInto(type, player));
+			return UpdateWingsAndChangeColor(toneWings, tone);
+		}
+
+
+		public bool UpdateWingsForceSize(WingType wingType, bool large)
 		{
 			if (type == wingType)
 			{
 				return false;
 			}
-			bool retVal = UpdateWings(wingType, hairColor, tone);
-			if (retVal)
-			{
-				isLarge = large;
-			}
+			bool retVal = UpdateWings(wingType);
+			isLarge = large;
 			return retVal;
 		}
 
-		public bool UpdateWingsForceSizeAndDisplayMessage(WingType newType, HairFurColors hairColor, Tones tone, bool large, Player player)
+		public bool UpdateWingsForceSizeAndDisplayMessage(WingType newType, bool large, Player player)
 		{
 			if (type == newType)
 			{
 				return false;
 			}
 			OutputText(transformInto(newType, player));
-			return UpdateWingsForceSize(newType, hairColor, tone, large);
+			return UpdateWingsForceSize(newType, large);
 		}
+
+
+		public bool UpdateWingsForceSizeChangeColor(FeatheredWings featheredWing, HairFurColors featherColor, bool large)
+		{
+			if (type == featheredWing)
+			{
+				return false;
+			}
+			bool retVal = UpdateWingsAndChangeColor(featheredWing, featherColor);
+			isLarge = large;
+			return retVal;
+		}
+
+		public bool UpdateWingsForceSizeChangeColorAndDisplayMessage(FeatheredWings featheredWing, HairFurColors featherColor, bool large, Player player)
+		{
+			if (type == featheredWing)
+			{
+				return false;
+			}
+			OutputText(transformInto(featheredWing, player));
+			return UpdateWingsForceSizeChangeColor(featheredWing, featherColor, large);
+		}
+
+		public bool UpdateWingsForceSizeChangeColor(TonableWings toneWings, Tones wingTone, bool large)
+		{
+			if (type == toneWings)
+			{
+				return false;
+			}
+			bool retVal = UpdateWingsAndChangeColor(toneWings, wingTone);
+			isLarge = large;
+			return retVal;
+		}
+
+		public bool UpdateWingsForceSizeChangeColorAndDisplayMessage(TonableWings toneWings, Tones wingTone, bool large, Player player)
+		{
+			if (type == toneWings)
+			{
+				return false;
+			}
+			OutputText(transformInto(toneWings, player));
+			return UpdateWingsForceSizeChangeColor(toneWings, wingTone, large);
+		}
+
 
 		public bool GrowLarge()
 		{
@@ -153,15 +244,29 @@ namespace CoC.BodyParts
 
 		public bool canDye()
 		{
-			return type.usesHair;
+			return type.usesHair && type.canChangeColor;
 		}
 
 		public bool attemptToDye(HairFurColors dye)
 		{
-			if (canDye() && dye != HairFurColors.NO_HAIR_FUR && dye != hairColorStorage)
+			if (canDye() && dye != HairFurColors.NO_HAIR_FUR && dye != hairColor)
 			{
-				hairColorStorage = dye;
+				hairColor = dye;
 				return true;
+			}
+			return false;
+		}
+
+		public bool canToneLotion()
+		{
+			return type.usesTone && type.canChangeColor;
+		}
+
+		public bool attemptToUseLotion(Tones tone)
+		{
+			if (canToneLotion() && tone != Tones.NOT_APPLICABLE && tone != this.wingTone)
+			{
+				wingTone = tone;
 			}
 			return false;
 		}
@@ -169,20 +274,22 @@ namespace CoC.BodyParts
 
 	public class WingType : BodyPartBehavior<WingType, Wings>
 	{
-		protected enum BehaviorOnTransform { CONVERT_TO_SMALL, KEEP_SIZE, CONVERT_TO_LARGE }
+		public enum BehaviorOnTransform { CONVERT_TO_SMALL, KEEP_SIZE, CONVERT_TO_LARGE }
 
 		private static int indexMaker = 0;
 		private readonly int _index;
 
 		protected readonly BehaviorOnTransform transformBehavior;
 
-		public readonly bool usesHair;
-		public readonly bool usesTone;
-
-
+		public virtual Tones defaultTone => Tones.NOT_APPLICABLE;
+		public virtual HairFurColors defaultHair => HairFurColors.NO_HAIR_FUR;
+		public bool usesTone => defaultTone != Tones.NOT_APPLICABLE;
+		public bool usesHair => defaultHair != HairFurColors.NO_HAIR_FUR;
 		public readonly bool canGrow;
-		//wings that support large wings need to define a behavior on transform - do they keep the large wings?
-		protected WingType(bool canFly, bool dyeable, bool toneAware,
+		public virtual bool canChangeColor => defaultTone != Tones.NOT_APPLICABLE || defaultHair != HairFurColors.NO_HAIR_FUR;
+
+
+		protected WingType(bool canFly,
 			GenericDescription shortDesc, FullDescription<Wings> fullDesc, PlayerDescription<Wings> playerDesc,
 			ChangeType<Wings> transform, ChangeType<Wings> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
@@ -190,8 +297,8 @@ namespace CoC.BodyParts
 			transformBehavior = BehaviorOnTransform.CONVERT_TO_SMALL;
 			canGrow = false;
 		}
-
-		protected WingType(BehaviorOnTransform behaviorOnTransform, bool dyeable, bool toneAware,
+		//wings that support large wings need to define a behavior on transform - do they keep the large wings?
+		protected WingType(BehaviorOnTransform behaviorOnTransform,
 			GenericDescription shortDesc, FullDescription<Wings> fullDesc, PlayerDescription<Wings> playerDesc,
 			ChangeType<Wings> transform, ChangeType<Wings> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
@@ -218,14 +325,52 @@ namespace CoC.BodyParts
 			}
 		}
 
-		public static readonly WingType NONE = new WingType(false, false, false, NoneDesc, NoneFullDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
-		public static readonly WingType BEE_LIKE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, false, false, BeeLikeDesc, BeeLikeFullDesc, BeeLikePlayerStr, BeeLikeTransformStr, BeeLikeRestoreStr);
+		public static readonly WingType NONE = new WingType(false, NoneDesc, NoneFullDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
+		public static readonly WingType BEE_LIKE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, BeeLikeDesc, BeeLikeFullDesc, BeeLikePlayerStr, BeeLikeTransformStr, BeeLikeRestoreStr);
 		//player always has larged feathered wings. small feathered wings are the new harpy wings. player can't get them naturally as of now.
-		public static readonly WingType FEATHERED = new WingType(BehaviorOnTransform.CONVERT_TO_LARGE, true, false, FeatheredDesc, FeatheredFullDesc, FeatheredPlayerStr, FeatheredTransformStr, FeatheredRestoreStr);
-		public static readonly WingType BAT_LIKE = new WingType(BehaviorOnTransform.KEEP_SIZE, false, false, BatLikeDesc, BatLikeFullDesc, BatLikePlayerStr, BatLikeTransformStr, BatLikeRestoreStr);
-		public static readonly WingType DRACONIC = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, false, true, DraconicDesc, DraconicFullDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
-		public static readonly WingType FAERIE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, false, true, FaerieDesc, FaerieFullDesc, FaeriePlayerStr, FaerieTransformStr, FaerieRestoreStr);
-		public static readonly WingType DRAGONFLY = new WingType(true, false, true, DragonflyDesc, DragonflyFullDesc, DragonflyPlayerStr, DragonflyTransformStr, DragonflyRestoreStr);
-		public static readonly WingType IMP = new WingType(BehaviorOnTransform.KEEP_SIZE, false, false, ImpDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+		public static readonly FeatheredWings FEATHERED = new FeatheredWings(HairFurColors.WHITE, BehaviorOnTransform.CONVERT_TO_LARGE, FeatheredDesc, FeatheredFullDesc, FeatheredPlayerStr, FeatheredTransformStr, FeatheredRestoreStr);
+		public static readonly WingType BAT_LIKE = new WingType(BehaviorOnTransform.KEEP_SIZE, BatLikeDesc, BatLikeFullDesc, BatLikePlayerStr, BatLikeTransformStr, BatLikeRestoreStr);
+		public static readonly TonableWings DRACONIC = new TonableWings(Tones.DARK_RED, BehaviorOnTransform.CONVERT_TO_SMALL, DraconicDesc, DraconicFullDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
+		public static readonly WingType FAERIE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, FaerieDesc, FaerieFullDesc, FaeriePlayerStr, FaerieTransformStr, FaerieRestoreStr);
+		public static readonly WingType DRAGONFLY = new WingType(true, DragonflyDesc, DragonflyFullDesc, DragonflyPlayerStr, DragonflyTransformStr, DragonflyRestoreStr);
+		public static readonly WingType IMP = new WingType(BehaviorOnTransform.KEEP_SIZE, ImpDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+
+
+	}
+
+	public class FeatheredWings : WingType
+	{
+		private readonly HairFurColors _defaultHair;
+		public FeatheredWings(HairFurColors defaultHair, bool canFly, GenericDescription shortDesc, FullDescription<Wings> fullDesc, PlayerDescription<Wings> playerDesc,
+			ChangeType<Wings> transform, ChangeType<Wings> restore) : base(canFly, shortDesc, fullDesc, playerDesc, transform, restore)
+		{
+			_defaultHair = defaultHair;
+		}
+
+		public FeatheredWings(HairFurColors defaultHair, BehaviorOnTransform behaviorOnTransform, GenericDescription shortDesc, FullDescription<Wings> fullDesc,
+			PlayerDescription<Wings> playerDesc, ChangeType<Wings> transform, ChangeType<Wings> restore) : base(behaviorOnTransform, shortDesc, fullDesc, playerDesc, transform, restore)
+		{
+			_defaultHair = defaultHair;
+		}
+
+		public override HairFurColors defaultHair => _defaultHair;
+	}
+
+	public class TonableWings : WingType
+	{
+		private readonly Tones _defaultTone;
+		public TonableWings(Tones defaultTone, bool canFly, GenericDescription shortDesc, FullDescription<Wings> fullDesc, PlayerDescription<Wings> playerDesc,
+			ChangeType<Wings> transform, ChangeType<Wings> restore) : base(canFly, shortDesc, fullDesc, playerDesc, transform, restore)
+		{
+			_defaultTone = defaultTone;
+		}
+
+		public TonableWings(Tones defaultTone, BehaviorOnTransform behaviorOnTransform, GenericDescription shortDesc, FullDescription<Wings> fullDesc,
+			PlayerDescription<Wings> playerDesc, ChangeType<Wings> transform, ChangeType<Wings> restore) : base(behaviorOnTransform, shortDesc, fullDesc, playerDesc, transform, restore)
+		{
+			_defaultTone = defaultTone;
+		}
+
+		public override Tones defaultTone => _defaultTone;
 	}
 }

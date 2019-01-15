@@ -28,6 +28,11 @@ namespace CoC.BodyParts
 			{
 				_type = value;
 				hands.UpdateHands(value.handType);
+				//keep the epidermis up to date.
+				if (epidermis.type != value.epidermisType)
+				{
+					epidermis.UpdateEpidermis(value.epidermisType, value.defaultTone, value.defaultFurColor, value.defaultEpidermisAdjective);
+				}
 			}
 		}
 		private ArmType _type;
@@ -41,7 +46,7 @@ namespace CoC.BodyParts
 		{
 			Arms retVal = new Arms(type);
 			retVal.reactToChangeInFurColor(fur, FurColor.GenerateEmpty());
-			retVal.reactToChangeInSkinTone(tones, Tones.NOT_APPLICABLE);
+			retVal.reactToChangeInSkinTone(tones, true, Tones.NOT_APPLICABLE);
 			return retVal;
 		}
 
@@ -63,7 +68,7 @@ namespace CoC.BodyParts
 			}
 			type = newType;
 			//let the type do it. 
-			type.UpdateEpidermis(epidermis, currentTone, Tones.NOT_APPLICABLE, currentHairFurColor, null);
+			type.UpdateEpidermis(epidermis, currentTone, true, Tones.NOT_APPLICABLE, currentHairFurColor, null);
 			return true;
 		}
 
@@ -88,15 +93,15 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public void reactToChangeInSkinTone(Tones primaryTone, Tones secondaryTone)
+		public void reactToChangeInSkinTone(Tones primaryTone, bool primaryActive, Tones secondaryTone)
 		{
 			hands.reactToChangeInSkinTone(primaryTone, secondaryTone);
-			type.UpdateEpidermis(epidermis, primaryTone, secondaryTone, null, null);
+			type.UpdateEpidermis(epidermis, primaryTone, primaryActive, secondaryTone, null, null);
 		}
 
 		public void reactToChangeInFurColor(FurColor primaryColor, FurColor secondaryColor)
 		{
-			type.UpdateEpidermis(epidermis, Tones.NOT_APPLICABLE, Tones.NOT_APPLICABLE, primaryColor, secondaryColor);
+			type.UpdateEpidermis(epidermis, Tones.NOT_APPLICABLE, false, Tones.NOT_APPLICABLE, primaryColor, secondaryColor);
 		}
 	}
 
@@ -116,14 +121,14 @@ namespace CoC.BodyParts
 		public readonly bool epidermisCanChangeTone;
 
 		//we assume that they use the primary color. not all do.
-		public virtual void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
+		public virtual void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, bool primaryToneActive, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
 		{
 			//basically, if we can change it and it's valid.
 			if (epidermisCanChangeFur && epidermisType.usesFur && primaryFurColor != null && !primaryFurColor.isNoFur())
 			{
 				epidermis.UpdateFur(primaryFurColor);
 			}
-			else if (epidermisCanChangeTone && epidermisType.usesTone && primaryTone != null && primaryTone != Tones.NOT_APPLICABLE)
+			else if (epidermisCanChangeTone && epidermisType.usesTone && primaryTone != null && primaryTone != Tones.NOT_APPLICABLE && primaryToneActive)
 			{
 				epidermis.UpdateTone(primaryTone);
 			}
@@ -182,7 +187,7 @@ namespace CoC.BodyParts
 		{
 			public FerretArms() : base(HandType.FERRET, EpidermisType.FUR, FurColor.FERRET_DEFAULT, true, "", FerretDescStr, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr) {}
 
-			public override void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
+			public override void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, bool primaryToneActive, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
 			{
 				if (secondaryFurColor != null && !secondaryFurColor.isNoFur())
 				{
@@ -195,7 +200,7 @@ namespace CoC.BodyParts
 		{
 			public RedPandaArms() : base(HandType.RED_PANDA, EpidermisType.FUR, FurColor.RED_PANDA_DEFAULT, true, "", RedPandaDescStr, RedPandaFullDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr) { }
 
-			public override void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
+			public override void UpdateEpidermis(Epidermis epidermis, Tones primaryTone, bool primaryToneActive, Tones secondaryTone, FurColor primaryFurColor, FurColor secondaryFurColor)
 			{
 				if (secondaryFurColor != null && !secondaryFurColor.isNoFur())
 				{

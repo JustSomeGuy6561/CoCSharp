@@ -75,5 +75,10 @@ namespace CoC.Strings.BodyParts
 		{
 			return "exoskeleton";
 		}
+
+		public static string RubberStr()
+		{
+			return "rubbery skin";
+		}
 	}
 }

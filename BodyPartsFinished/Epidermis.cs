@@ -50,6 +50,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
+			type = newType;
 			tone = currentTone;
 			fur = currentFur;
 			epidermisAdjective = adjective;
@@ -127,7 +128,7 @@ namespace CoC.BodyParts
 		public static readonly EpidermisType CARAPACE = new EpidermisType(CarapaceStr, true, true);
 		//cannot be changed by lotion.
 		public static readonly EpidermisType EXOSKELETON = new EpidermisType(ExoskeletonStr, true, false);
-		public static readonly EpidermisType RUBBER = new EpidermisType(ExoskeletonStr, true, false); //now its own type. it's simpler this way imo.
+		public static readonly EpidermisType RUBBER = new EpidermisType(RubberStr, true, false); //now its own type. it's simpler this way imo.
 
 	}
 
