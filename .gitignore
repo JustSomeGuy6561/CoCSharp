@@ -1,7 +1,0 @@
-*.csproj
-bin
-Properties
-obj
-*.licenseheader
-*.cache
-*.sln
