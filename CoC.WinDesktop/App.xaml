@@ -1,7 +1,7 @@
-﻿<Application x:Class="CoC.WinDesktop.App"
+﻿<Application x:Class="CoCWinDesktop.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:CoC.WinDesktop"
+             xmlns:local="clr-namespace:CoCWinDesktop"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
