@@ -79,7 +79,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			return Restore();
 		}
 
@@ -131,7 +131,7 @@ namespace CoC.BodyParts
 		/*
 		public override GenericDescription shortDescription {get; protected set;}
 		public override fullDescription fullDescription {get; protected set;}
-		public override PlayerDescription playerDescription {get; protected set;}
+		public override TypeAndPlayerDelegate TypeAndPlayerDelegate {get; protected set;}
 		public override ChangeType<Neck> transformFrom {get; protected set;}
 
 		protected string neckDescription()
@@ -167,8 +167,8 @@ namespace CoC.BodyParts
 		public readonly HairFurColors defaultColor;
 
 		protected NeckType(int maxLength,
-			GenericDescription shortDesc, FullDescription<Neck> fullDesc, PlayerDescription<Neck> playerDesc, ChangeType<Neck> transform, 
-			ChangeType<Neck> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> fullDesc, TypeAndPlayerDelegate<Neck> playerDesc, ChangeType<Neck> transform, 
+			RestoreType<Neck> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			maxNeckLength = maxLength;
@@ -177,8 +177,8 @@ namespace CoC.BodyParts
 		}
 
 		protected NeckType(int maxLength, HairFurColors defaultHairFur,
-			GenericDescription shortDesc, FullDescription<Neck> fullDesc, PlayerDescription<Neck> playerDesc, ChangeType<Neck> transform,
-			ChangeType<Neck> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> fullDesc, TypeAndPlayerDelegate<Neck> playerDesc, ChangeType<Neck> transform,
+			RestoreType<Neck> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			maxNeckLength = maxLength;

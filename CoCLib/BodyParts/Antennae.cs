@@ -35,7 +35,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, p));
+			OutputText(restoreString(p));
 			type = AntennaeType.NONE;
 			return type == AntennaeType.NONE;
 		}
@@ -72,8 +72,8 @@ namespace CoC.BodyParts
 		private static int indexMaker = 0;
 
 
-		protected AntennaeType(GenericDescription desc, FullDescription<Antennae> fullDesc, PlayerDescription<Antennae> playerDesc,
-			ChangeType<Antennae> transformMessage, ChangeType<Antennae> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
+		protected AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,
+			ChangeType<Antennae> transformMessage, RestoreType<Antennae> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
 		{
 			_index = indexMaker++;
 		}

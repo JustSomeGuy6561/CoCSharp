@@ -41,49 +41,49 @@ namespace CoC.Strings
 
 			if (player.Accessories.hasHeadPiece)
 			{
-				OutputText(player.Accesories.headPiece.playerDescription());
+				OutputText(player.Accesories.headPiece.TypeAndPlayerDelegate());
 			}
 			if (player.Accessories.hasNeckAccessory)
 			{
-				OutputText(player.Accesories.neckPiece.playerDescription());
+				OutputText(player.Accesories.neckPiece.TypeAndPlayerDelegate());
 			}
 			if (player.Accessories.hasArmOrHandJewelry)
 			{
-				OutputText(player.Accesories.handPiece.playerDescription());
+				OutputText(player.Accesories.handPiece.TypeAndPlayerDelegate());
 			}
 			//Face. Face class.
-			OutputText(player.face.playerDescription(player));
+			OutputText(player.face.TypeAndPlayerDelegate(player));
 			//Feminine/Masculine description. In the character class.
 			OutputText(facialFeaturesString(player));
 			//eyes
-			OutputText(player.eyes.playerDescription(player));
+			OutputText(player.eyes.TypeAndPlayerDelegate(player));
 			//hair and ears.
-			OutputText(player.hair.playerDescription(player));
+			OutputText(player.hair.TypeAndPlayerDelegate(player));
 			//beards
-			OutputText(player.beard.playerDescription(player));
+			OutputText(player.beard.TypeAndPlayerDelegate(player));
 			//Tongue
-			OutputText(player.tongue.playerDescription(player));
+			OutputText(player.tongue.TypeAndPlayerDelegate(player));
 			//Horns
-			OutputText(player.horns.playerDescription(player));
+			OutputText(player.horns.TypeAndPlayerDelegate(player));
 			//neck
-			OutputText(player.neck.playerDescription(player));
+			OutputText(player.neck.TypeAndPlayerDelegate(player));
 			//gills
-			OutputText(player.gills.playerDescription());
+			OutputText(player.gills.TypeAndPlayerDelegate());
 			//arms
-			OutputText(player.arms.playerDescription(player));
+			OutputText(player.arms.TypeAndPlayerDelegate(player));
 			//core. Now includes gills!
-			OutputText(player.gills.playerDescription(player.gills, player));
-			OutputText(player.core.playerDescription(player.core, player));
+			OutputText(player.gills.TypeAndPlayerDelegate(player.gills, player));
+			OutputText(player.core.TypeAndPlayerDelegate(player.core, player));
 			//wings
-			OutputText(player.wings.playerDescription(player));
+			OutputText(player.wings.TypeAndPlayerDelegate(player));
 			//back/spine
-			OutputText(player.back.playerDescription(player));
+			OutputText(player.back.TypeAndPlayerDelegate(player));
 			//butt/hips/legs
-			OutputText(player.lowerBody.playerDescription(player));
+			OutputText(player.lowerBody.TypeAndPlayerDelegate(player));
 			//incorporeal? no idea how i'll add this.
-			OutputText(player.perk.incorporeal.playerDescription());
+			OutputText(player.perk.incorporeal.TypeAndPlayerDelegate());
 			//tail
-			OutputText(player.tail.playerDescription(player));
+			OutputText(player.tail.TypeAndPlayerDelegate(player));
 			//pregnancy
 			if (player.buttpregnant && player.normalpregnant)
 			{
@@ -91,11 +91,11 @@ namespace CoC.Strings
 			}
 			else if (player.buttpregnant)
 			{
-				OutputText(player.buttPregnancy.playerDescription());
+				OutputText(player.buttPregnancy.TypeAndPlayerDelegate());
 			}
 			else
 			{
-				OutputText(player.normalPregnancy.playerDescription());
+				OutputText(player.normalPregnancy.TypeAndPlayerDelegate());
 			}
 			//"Chesticles..I mean bewbz" - original author. credit where it's due.
 			OutputText(player.describeAllBoobs());
@@ -105,7 +105,7 @@ namespace CoC.Strings
 			//_ALL_ the dicks.
 			OutputText(player.describeAllCocks());
 			//same as incorporeal. 
-			OutputText(player.perk.infested.playerDescription());
+			OutputText(player.perk.infested.TypeAndPlayerDelegate());
 			//Balls
 			OutputText(player.describeAllBalls());
 			//VAGOOZ - author unknown

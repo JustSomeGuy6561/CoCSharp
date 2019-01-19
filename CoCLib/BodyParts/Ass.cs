@@ -60,9 +60,9 @@ namespace CoC.BodyParts
 			return AssButtHipStrings.assfullDescription(this, gender);
 		}
 
-		public string PlayerDescription(Player player)
+		public string TypeAndPlayerDelegate(Player player)
 		{
-			return AssButtHipStrings.assPlayerDescription(this, player);
+			return AssButtHipStrings.assTypeAndPlayerDelegate(this, player);
 		}
 	}
 }

@@ -73,7 +73,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			type = EarType.HUMAN;
 			return true;
 		}
@@ -112,8 +112,8 @@ namespace CoC.BodyParts
 
 		private readonly int _index;
 
-		protected EarType(GenericDescription shortDesc, FullDescription<Ears> fullDesc, PlayerDescription<Ears> playerDesc, 
-			ChangeType<Ears> transform, ChangeType<Ears> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, TypeAndPlayerDelegate<Ears> playerDesc, 
+			ChangeType<Ears> transform, RestoreType<Ears> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 		}

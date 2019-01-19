@@ -14,22 +14,22 @@ namespace CoC.Strings.BodyParts
 	public static class EpidermisString
 	{
 
-		public static string fullStr(string adj, Tones tone, GenericDescription descriptor)
+		public static string fullStr(string adj, Tones tone, SimpleDescriptor descriptor)
 		{
 			return adj + (String.IsNullOrWhiteSpace(adj) ? "" : " ") + tone.AsString() + " " + descriptor();
 		}
 
-		public static string fullStr(string adj, FurColor fur, GenericDescription descriptor)
+		public static string fullStr(string adj, FurColor fur, SimpleDescriptor descriptor)
 		{
 			return adj + (String.IsNullOrWhiteSpace(adj) ? "" : " ") + fur.AsString() + " " + descriptor();
 		}
 
 
-		public static string ColoredStr(FurColor color, GenericDescription descriptor)
+		public static string ColoredStr(FurColor color, SimpleDescriptor descriptor)
 		{
 			return color.AsString() + " " + descriptor();
 		}
-		public static string ColoredStr(Tones color, GenericDescription descriptor)
+		public static string ColoredStr(Tones color, SimpleDescriptor descriptor)
 		{
 			return color.AsString() + " " + descriptor();
 		}

@@ -80,7 +80,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			Restore();
 			return true;
 		}
@@ -151,8 +151,8 @@ namespace CoC.BodyParts
 		public override int index => _index;
 		public bool usesHair => this is DragonBackMane;
 
-		protected BackType(GenericDescription shortDesc, FullDescription<Back> fullDesc, PlayerDescription<Back> playerDesc,
-			ChangeType<Back> transform, ChangeType<Back> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, TypeAndPlayerDelegate<Back> playerDesc,
+			ChangeType<Back> transform, RestoreType<Back> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 		}

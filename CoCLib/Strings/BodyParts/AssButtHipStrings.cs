@@ -16,7 +16,7 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string assPlayerDescription(Ass ass, Player player)
+		public static string assTypeAndPlayerDelegate(Ass ass, Player player)
 		{
 
 		}

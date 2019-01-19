@@ -87,7 +87,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			return Restore();
 		}
 
@@ -126,8 +126,8 @@ namespace CoC.BodyParts
 
 		public readonly int legCount;
 		protected LowerBodyType(int numLegs,
-			GenericDescription shortDesc, FullDescription<LowerBody> fullDesc, PlayerDescription<LowerBody> playerDesc,
-			ChangeType<LowerBody> transform, ChangeType<LowerBody> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc,
+			ChangeType<LowerBody> transform, RestoreType<LowerBody> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			legCount = numLegs;

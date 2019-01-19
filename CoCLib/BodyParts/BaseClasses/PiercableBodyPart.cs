@@ -14,7 +14,7 @@ namespace CoC.BodyParts
 {
 	public abstract class PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> : BodyPartBase<ThisClass, TypeClass>, IPiercable<PiercingEnum> 
 		where ThisClass : PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> 
-		where TypeClass : PiercableBodyPartBehavior<TypeClass, ThisClass, PiercingEnum> where PiercingEnum : System.Enum
+		where TypeClass : PiercableBodyPartBehavior<TypeClass, ThisClass, PiercingEnum> where PiercingEnum : Enum
 	{
 		//do not copy constructor this. shallow copy allows it to stay up to date with source.
 		protected readonly PiercingFlags piercingFlags;
@@ -24,7 +24,7 @@ namespace CoC.BodyParts
 			piercingFlags = flags;
 		}
 
-		public int maxPiercingCount => System.Enum.GetNames(typeof(PiercingEnum)).Length;
+		public int maxPiercingCount => Enum.GetNames(typeof(PiercingEnum)).Length;
 		//functional programming ftw!
 		//counts the number of trues, and returns it. uses a "fold" function. fold iterates over a list, doing an action for each element, then returning the result
 		public int currentPiercingCount => piercingLookup.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });

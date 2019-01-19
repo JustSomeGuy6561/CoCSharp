@@ -133,14 +133,14 @@ namespace CoC
 
 
 		//OutputText("You are a " + player.height.toString() + " tall " + player.gender.asText() + " " + player.race.toString() + ", with " + player.bodyTypeString() + ".");
-		public GenericDescription generalDescription;
+		public SimpleDescriptor generalDescription;
 
 		//
-		public GenericDescription describeFacialFeatures;
+		public SimpleDescriptor describeFacialFeatures;
 
-		public GenericDescription/*WithArg<BoobStack>*/ describeAllBoobs;
-		public GenericDescription/*WithArg<CockStack>*/ describeAllCocks;
-		public GenericDescription/*WithArg<CockStack>*/ describePiercings;
+		public SimpleDescriptor/*WithArg<BoobStack>*/ describeAllBoobs;
+		public SimpleDescriptor/*WithArg<CockStack>*/ describeAllCocks;
+		public SimpleDescriptor/*WithArg<CockStack>*/ describePiercings;
 
 		public FurColor GetFurColor()
 		{

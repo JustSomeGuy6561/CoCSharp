@@ -69,7 +69,7 @@ namespace CoC.BodyParts
 			return false;
 		}
 
-		protected HandType(GenericDescription shortDesc) : base(shortDesc)
+		protected HandType(SimpleDescriptor shortDesc) : base(shortDesc)
 		{
 			_index = indexMaker++;
 		}

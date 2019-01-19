@@ -87,14 +87,14 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			type = ArmType.HUMAN;
 			return true;
 		}
 
 		public void reactToChangeInSkinTone(object sender, ToneAwareEventArg e)
 		{
-			hands.reactToChangeInSkinTone(e.primaryTone, e.secondaryTone);
+			hands.reactToChangeInSkinTone(sender, e);
 			type.UpdateEpidermis(epidermis, e.primaryTone, e.primaryToneActive, e.secondaryTone, null, null);
 		}
 
@@ -134,8 +134,8 @@ namespace CoC.BodyParts
 		}
 
 		protected ArmType(HandType hand, EpidermisType epidermis, Tones defTone, bool canChange, string epidermisAdjective,
-			GenericDescription shortDesc, FullDescription<Arms> fullDesc, PlayerDescription<Arms> playerDesc,
-			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, TypeAndPlayerDelegate<Arms> playerDesc,
+			ChangeType<Arms> transform, RestoreType<Arms> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			handType = hand;
@@ -148,8 +148,8 @@ namespace CoC.BodyParts
 		}
 
 		protected ArmType(HandType hand, EpidermisType epidermis, FurColor defaultFur, bool canChange, string epidermisAdjective,
-			GenericDescription shortDesc, FullDescription<Arms> fullDesc, PlayerDescription<Arms> playerDesc,
-			ChangeType<Arms> transform, ChangeType<Arms> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, TypeAndPlayerDelegate<Arms> playerDesc,
+			ChangeType<Arms> transform, RestoreType<Arms> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			handType = hand;

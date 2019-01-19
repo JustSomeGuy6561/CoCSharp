@@ -11,6 +11,7 @@ using CoC.Engine;
 using CoC.BodyParts.SpecialInteraction;
 using CoC.Strings;
 using static CoC.Strings.BodyParts.TailStrings;
+using static CoC.UI.TextOutput;
 using CoC.Engine.Combat.Attacks;
 using CoC.EpidermalColors;
 
@@ -107,7 +108,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			restoreString(this, player);
+			OutputText(restoreString(player));
 			return Restore();
 		}
 
@@ -146,8 +147,8 @@ namespace CoC.BodyParts
 	{
 		public static int indexMaker = 0;
 
-		public GenericDescription tailWhipAttackName;
-		public GenericDescription tailWhipAttackHint;
+		public SimpleDescriptor tailWhipAttackName;
+		public SimpleDescriptor tailWhipAttackHint;
 
 		public readonly AttackBase attack;
 
@@ -163,8 +164,8 @@ namespace CoC.BodyParts
 
 		//tail constructor that uses venom
 		protected TailType(
-			GenericDescription shortDesc, FullDescription<Tail> fullDesc, PlayerDescription<Tail> playerDesc, ChangeType<Tail> transform,
-			ChangeType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
+			RestoreType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			supportsTailPiercing = false;
@@ -175,8 +176,8 @@ namespace CoC.BodyParts
 
 		//a tail that you can special attack with
 		protected TailType(AttackBase attackData,
-			GenericDescription shortDesc, FullDescription<Tail> fullDesc, PlayerDescription<Tail> playerDesc, ChangeType<Tail> transform,
-			ChangeType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
+			RestoreType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			supportsTailPiercing = false;
@@ -188,8 +189,8 @@ namespace CoC.BodyParts
 
 		//multi-tail constructor - no attack. create a new one if you need that shit.
 		protected TailType(uint initialCount, uint maxCount,
-			GenericDescription shortDesc, FullDescription<Tail> fullDesc, PlayerDescription<Tail> playerDesc, ChangeType<Tail> transform,
-			ChangeType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
+			RestoreType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			supportsTailPiercing = false;
@@ -203,8 +204,8 @@ namespace CoC.BodyParts
 
 		//constructor for a single delicate tail.
 		protected TailType(bool canPierce,
-			GenericDescription shortDesc, FullDescription<Tail> fullDesc, PlayerDescription<Tail> playerDesc, ChangeType<Tail> transform,
-			ChangeType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
+			RestoreType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			supportsTailPiercing = canPierce;

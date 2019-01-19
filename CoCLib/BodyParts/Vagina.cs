@@ -138,7 +138,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			type = VaginaType.HUMAN;
 			return true;
 		}
@@ -150,8 +150,8 @@ namespace CoC.BodyParts
 		private static int indexMaker = 0;
 		public readonly int typeCapacityBonus;
 		protected VaginaType(int capacityBonus,
-			GenericDescription shortDesc, FullDescription<Vagina> fullDesc, PlayerDescription<Vagina> playerDesc, 
-			ChangeType<Vagina> transform, ChangeType<Vagina> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Vagina> fullDesc, TypeAndPlayerDelegate<Vagina> playerDesc, 
+			ChangeType<Vagina> transform, RestoreType<Vagina> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			typeCapacityBonus = capacityBonus;

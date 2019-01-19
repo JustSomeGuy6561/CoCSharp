@@ -31,17 +31,17 @@ namespace CoC.BodyParts
 		//functional. with these, it's possible (and easier) to support language packs.
 
 		//a short description saying the race and type. ex: Hands.CAT: "cat paws"
-		public readonly GenericDescription shortDescription;
+		public readonly SimpleDescriptor shortDescription;
 		//The full description of this part. 
-		public readonly FullDescription<ContainerClass> fullDescription;
+		public readonly DescriptorWithArg<ContainerClass> fullDescription;
 		//a full description of this part, with flavor text. it will be called whenever the player asks for their description.
-		public readonly PlayerDescription<ContainerClass> playerDescription;
+		public readonly TypeAndPlayerDelegate<ContainerClass> playerDescription;
 
 		public readonly ChangeType<ContainerClass> transformFrom;
-		public readonly ChangeType<ContainerClass> restoreString;
+		public readonly RestoreType<ContainerClass> restoreString;
 
-		protected BodyPartBehavior(GenericDescription shortDesc, FullDescription<ContainerClass> fullDesc,
-			PlayerDescription<ContainerClass> playerDesc, ChangeType<ContainerClass> transform, ChangeType<ContainerClass> restore)
+		protected BodyPartBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc,
+			TypeAndPlayerDelegate<ContainerClass> playerDesc, ChangeType<ContainerClass> transform, RestoreType<ContainerClass> restore)
 		{
 			shortDescription = shortDesc;
 			fullDescription = fullDesc;

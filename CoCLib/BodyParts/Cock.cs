@@ -143,7 +143,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			return Restore();
 		}
 
@@ -246,8 +246,8 @@ namespace CoC.BodyParts
 
 
 		protected CockType(CockGroup cockGroup,
-			GenericDescription shortDesc, FullDescription<Cock> fullDesc, PlayerDescription<Cock> playerDesc,
-			ChangeType<Cock> transform, ChangeType<Cock> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,
+			ChangeType<Cock> transform, RestoreType<Cock> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			baseKnotMultiplier = 0;
@@ -255,8 +255,8 @@ namespace CoC.BodyParts
 		}
 
 		protected CockType(CockGroup cockGroup, float initialKnotMultiplier, //any cocktype specific values.
-			GenericDescription shortDesc, FullDescription<Cock> fullDesc, PlayerDescription<Cock> playerDesc,
-			ChangeType<Cock> transform, ChangeType<Cock> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,
+			ChangeType<Cock> transform, RestoreType<Cock> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			Utils.Clamp(ref initialKnotMultiplier, 1.1f, 2.5f);

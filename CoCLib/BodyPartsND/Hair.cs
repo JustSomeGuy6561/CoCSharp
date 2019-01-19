@@ -145,7 +145,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			return Restore();
 		}
 
@@ -155,7 +155,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			return RestoreKeepTransparency();
 		}
 		#endregion
@@ -358,8 +358,8 @@ namespace CoC.BodyParts
 		//or to conditionally allow dyeing, implement a subclass of Hairtype and 
 		//override canDye and possibly tryToDye with the new rules.
 		protected HairType(float defaultLength,
-			GenericDescription shortDesc, FullDescription<Hair> fullDesc, PlayerDescription<Hair> playerDesc,
-			ChangeType<Hair> transform, ChangeType<Hair> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, TypeAndPlayerDelegate<Hair> playerDesc,
+			ChangeType<Hair> transform, RestoreType<Hair> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			defaultHairLength = defaultLength;

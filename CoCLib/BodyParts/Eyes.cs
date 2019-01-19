@@ -135,7 +135,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			type = EyeType.HUMAN;
 			return true;
 		}
@@ -164,8 +164,8 @@ namespace CoC.BodyParts
 		private readonly int _index;
 
 
-		protected EyeType(GenericDescription shortDesc, FullDescription<Eyes> fullDesc, PlayerDescription<Eyes> playerDesc, ChangeType<Eyes> transform, 
-			ChangeType<Eyes> restore, int numEyes = 2, SCLERA_COLOR color = SCLERA_COLOR.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected EyeType(SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc, ChangeType<Eyes> transform, 
+			RestoreType<Eyes> restore, int numEyes = 2, SCLERA_COLOR color = SCLERA_COLOR.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			eyeCount = numEyes;
 			_index = indexMaker++;

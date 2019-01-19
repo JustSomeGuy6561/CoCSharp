@@ -70,9 +70,9 @@ namespace CoC.BodyParts
 			quadNipples = false;
 		}
 
-		public GenericDescription ShortDescription => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleShortDescription(this);
-		public GenericDescription Description => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleDescription(this);
-		public GenericDescription DescriptionWithLength => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleDescriptionWithLength(this);
+		public SimpleDescriptor ShortDescription => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleShortDescription(this);
+		public SimpleDescriptor Description => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleDescription(this);
+		public SimpleDescriptor DescriptionWithLength => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleDescriptionWithLength(this);
 
 		public static Nipples Generate(PiercingFlags flags)
 		{

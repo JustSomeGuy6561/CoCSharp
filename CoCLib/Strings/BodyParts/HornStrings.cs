@@ -20,15 +20,15 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string NoHornsPlayerDesc()
+		public static string NoHornsPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string NoHornsTransformDesc()
+		public static string NoHornsTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string NoHornsRestoreDesc()
+		public static string NoHornsRestoreStr(Horns horns, Player player)
 		{
 
 		}
@@ -220,15 +220,15 @@ namespace CoC.Strings.BodyParts
 		{
 
 		}
-		public static string ImpPlayerDesc()
+		public static string ImpPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string ImpTransformDesc()
+		public static string ImpTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string ImpRestoreDesc()
+		public static string ImpRestoreStr(Horns horns, Player player)
 		{
 
 		}

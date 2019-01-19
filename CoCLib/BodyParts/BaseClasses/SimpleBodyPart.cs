@@ -27,7 +27,7 @@ namespace CoC.BodyParts
 		public abstract U type { get; protected set; }
 		public int index => type.index;
 
-		public virtual GenericDescription shortDescription => type.shortDescription;
+		public virtual SimpleDescriptor shortDescription => type.shortDescription;
 
 		protected SimpleBodyPart(U value)
 		{
@@ -41,10 +41,10 @@ namespace CoC.BodyParts
 	{
 		public abstract int index { get; }
 
-		protected SimpleBodyPartType(GenericDescription shortDesc)
+		protected SimpleBodyPartType(SimpleDescriptor shortDesc)
 		{
 			shortDescription = shortDesc;
 		}
-		public readonly GenericDescription shortDescription;
+		public readonly SimpleDescriptor shortDescription;
 	}
 }

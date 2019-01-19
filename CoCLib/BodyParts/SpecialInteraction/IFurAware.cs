@@ -9,6 +9,6 @@ namespace CoC.BodyParts.SpecialInteraction
 	public interface IFurAware
 	{
 		//stores current fur color. 
-		void reactToChangeInFurColor(FurColor primaryFur, FurColor secondaryFur);
+		void reactToChangeInFurColor(object sender, FurAwareEventArg e);
 	}
 }

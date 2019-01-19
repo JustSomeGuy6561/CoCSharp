@@ -698,7 +698,7 @@ wet cloth - restored
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			return Restore();
 		}
 
@@ -720,7 +720,12 @@ wet cloth - restored
 
 		public bool DetachIToneAware(IToneAware item)
 		{
-			return toneAwares.Remove(item);
+			bool retVal = toneAwares.Remove(item);
+			if (retVal)
+			{
+				ToneAware -= item.reactToChangeInSkinTone;
+			}
+			return retVal;
 		}
 
 		public bool AttachIFurAware(IFurAware item)
@@ -806,16 +811,16 @@ wet cloth - restored
 		private static int indexMaker = 0;
 
 		public readonly bool hasUnderBody;
-		public readonly GenericDescription underBodyDescription;
+		public readonly SimpleDescriptor underBodyDescription;
 		public readonly EpidermisType epidermisType;
 		public override int index => _index;
 		private readonly int _index;
 
 		public virtual EpidermisType secondaryEpidermisType => epidermisType;
 
-		protected BodyType(EpidermisType type, GenericDescription underbodyDescript,
-			GenericDescription shortDesc, FullDescription<Body> fullDesc, PlayerDescription<Body> playerDesc,
-			ChangeType<Body> transform, ChangeType<Body> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected BodyType(EpidermisType type, SimpleDescriptor underbodyDescript,
+			SimpleDescriptor shortDesc, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
+			ChangeType<Body> transform, RestoreType<Body> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			epidermisType = type;
@@ -824,8 +829,8 @@ wet cloth - restored
 		}
 
 		protected BodyType(EpidermisType type,
-			GenericDescription shortDesc, FullDescription<Body> fullDesc, PlayerDescription<Body> playerDesc,
-			ChangeType<Body> transform, ChangeType<Body> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
+			ChangeType<Body> transform, RestoreType<Body> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			epidermisType = type;
@@ -863,15 +868,15 @@ wet cloth - restored
 	{
 		public readonly FurColor defaultFurColor;
 		public FurBodyType(EpidermisType type, FurColor defFur,
-			GenericDescription shortDesc, FullDescription<Body> fullDesc, PlayerDescription<Body> playerDesc,
-			ChangeType<Body> transform, ChangeType<Body> restore) : base(type, shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
+			ChangeType<Body> transform, RestoreType<Body> restore) : base(type, shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			defaultFurColor = FurColor.GenerateFromOther(defFur);
 		}
 
-		public FurBodyType(EpidermisType type, FurColor defFur, GenericDescription underbodyDesc,
-			GenericDescription shortDesc, FullDescription<Body> fullDesc, PlayerDescription<Body> playerDesc,
-			ChangeType<Body> transform, ChangeType<Body> restore) : base(type, underbodyDesc, shortDesc, fullDesc, playerDesc, transform, restore)
+		public FurBodyType(EpidermisType type, FurColor defFur, SimpleDescriptor underbodyDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
+			ChangeType<Body> transform, RestoreType<Body> restore) : base(type, underbodyDesc, shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			defaultFurColor = FurColor.GenerateFromOther(defFur);
 		}
@@ -881,15 +886,15 @@ wet cloth - restored
 	{
 		public readonly Tones defaultTone;
 		public ToneBodyType(EpidermisType type, Tones defTone,
-			GenericDescription shortDesc, FullDescription<Body> fullDesc, PlayerDescription<Body> playerDesc,
-			ChangeType<Body> transform, ChangeType<Body> restore) : base(type, shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
+			ChangeType<Body> transform, RestoreType<Body> restore) : base(type, shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			defaultTone = defTone;
 		}
 
-		public ToneBodyType(EpidermisType type, Tones defTone, GenericDescription underbodyDesc,
-			GenericDescription shortDesc, FullDescription<Body> fullDesc, PlayerDescription<Body> playerDesc,
-			ChangeType<Body> transform, ChangeType<Body> restore) : base(type, underbodyDesc, shortDesc, fullDesc, playerDesc, transform, restore)
+		public ToneBodyType(EpidermisType type, Tones defTone, SimpleDescriptor underbodyDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
+			ChangeType<Body> transform, RestoreType<Body> restore) : base(type, underbodyDesc, shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			defaultTone = defTone;
 		}

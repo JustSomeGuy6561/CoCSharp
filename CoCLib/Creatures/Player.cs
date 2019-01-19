@@ -179,7 +179,7 @@ namespace CoC
 			#endregion
 		}
 
-		public CoC.Tools.GenericDescription gemsString { get; private set; }
+		public CoC.Tools.SimpleDescriptor gemsString { get; private set; }
 
 		public override void InitBody(out Antennae antennae, out Arms arms, out Back back, out Body body, out Ears ears, out Face face, out Genitals genitals, out Gills gills, out Horns horns, out LowerBody lowerBody, out Neck neck, out Tail tail, out Tongue tongue, out Wings wings, out FacialHair facialHair, PiercingFlags piercingFlags)
 		{

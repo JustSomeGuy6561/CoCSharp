@@ -110,7 +110,7 @@ namespace CoC.BodyParts
 		public bool hairMutable => usesFur && updateable;
 		public bool toneMutable => usesTone && updateable;
 
-		protected EpidermisType(GenericDescription desc, bool isTone, bool canChange) : base(desc)
+		protected EpidermisType(SimpleDescriptor desc, bool isTone, bool canChange) : base(desc)
 		{
 			_index = indexMaker++;
 			usesTone = isTone;
@@ -136,7 +136,7 @@ namespace CoC.BodyParts
 	{
 		public EpidermisType epidermisType { get; private set; }
 		private readonly FurColor _fur;
-		private Tones _tone;
+		private readonly Tones _tone;
 
 		public EpidermalData(EpidermisType type, FurColor furColor, Tones tones)
 		{

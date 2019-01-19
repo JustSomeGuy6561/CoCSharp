@@ -20,7 +20,7 @@ namespace CoC.BodyParts
 		public int significantHornSize { get; protected set; }
 		public int numHorns { get; protected set; }
 
-		protected int hornMasculinity = 50;
+		protected FemininityData hornMasculinity = new FemininityData(50);
 
 		protected Horns()
 		{
@@ -51,7 +51,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			Restore();
 			return true;
 		}
@@ -164,9 +164,9 @@ namespace CoC.BodyParts
 		}
 		#endregion
 		#region Masculinity
-		public void reactToChangesInMasculinity(int masculinity)
+		public void reactToChangesInMasculinity(object sender, FemininityData femininity)
 		{
-			hornMasculinity = masculinity;
+			hornMasculinity = femininity;
 			handleHornSet(makeBoolReturn);
 		}
 		#endregion
@@ -182,7 +182,7 @@ namespace CoC.BodyParts
 		}
 
 		//generic function pointer taking uint, int, int, bool. return type can be specified manually.
-		private delegate T TransformDelegate<T>(uint amt, ref int ct, ref int sz, int masc);
+		private delegate T TransformDelegate<T>(uint amt, ref int ct, ref int sz, FemininityData masc);
 
 		private T handleHornSet<T>(SetHornDelegate<T> handle)
 		{
@@ -195,86 +195,20 @@ namespace CoC.BodyParts
 			return retVal;
 		}
 
-		private bool makeBoolReturn(ref int ct, ref int sz, int masc)
+		private bool makeBoolReturn(ref int ct, ref int sz, FemininityData masc)
 		{
 			type.reactToChangesInMasculinity(ref ct, ref sz, masc);
 			return true;
 		}
 
-		private delegate T SetHornDelegate<T>(ref int ct, ref int sz, int masc);
-		/*
-
-#region Class Functions
-
-public bool UpdateHorns(HornType newHorns)
-{
-	if (newHorns == type)
-	{
-		return false;
-	}
-	type = newHorns;
-	return true;
-}
-
-/// <summary>
-/// Attempt to change horns, failing if it is already this type. if successful,
-/// resets the number of horns to this type's default, then grows or adds horns 
-/// according to this type's strengthening rules. it will do so (amount) times.
-/// </summary>
-/// <param name="newHorns">the type of horns we should change to.</param>
-/// <param name="masculine">is the creature these horns belong to masculine?</param>
-/// <param name="amount">number of times it will be strengthened, according to type behavior</param>
-/// <returns>whether or not it changed types.</returns>
-public bool ChangeAndStrengthenHorns(HornType newHorns, bool masculine, uint amount)
-{
-	if (newHorns == type)
-	{
-		return false;
-	}
-	type = newHorns;
-	if (amount > 0)
-	{
-		StrengthenTransform(masculine, amount);
-	}
-	type = newHorns;
-	return true;
-}
-
-/// <summary>
-/// Lengthens or Adds horns, according to how these horns behave. This behavior is
-/// dependant on the horn type. for your convenience, you can provide this with an
-/// amount, instead of calling this multiple times.
-/// </summary>
-/// <param name="masculine"></param>
-/// <param name="numberOfTimes">number of times to strengthen these horns</param>
-/// <returns></returns>
-public bool StrengthenTransform(bool masculine, uint numberOfTimes = 1)
-{
-	return handleHornTransforms(numberOfTimes, masculine, type.StrengthenTransform);
-}
-public bool WeakenTransform(bool male, uint byAmount = 1)
-{
-	//because i can't pass a property by reference. delegates ftw!
-	bool removeHorns = handleHornTransforms(byAmount, male, type.WeakenTransform);
-	if (removeHorns && type != HornType.NONE)
-	{
-		Restore();
-	}
-	else //remove horns is false or it's true but we already have no horns.
-	{
-		removeHorns = false;
-	}
-	return removeHorns;
-}
-#endregion
-
-#endregion*/
-
+		private delegate T SetHornDelegate<T>(ref int ct, ref int sz, FemininityData masc);
 	}
 
 	//i could go with function pointers throughout this, but frankly it's complicated enough that it might as well just be abstract.
+
 	public abstract class HornType : BodyPartBehavior<HornType, Horns>
 	{
+		#region HornType
 		#region variables
 		//private vars
 		private const int MAX_HORN_LENGTH = 40;
@@ -297,12 +231,12 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 		#endregion
 		//call the other constructor with defaults set to min.
 		protected HornType(int minHorns, int maximumHorns, int minLength, int maxLength,
-			GenericDescription shortDesc, FullDescription<Horns> fullDesc, PlayerDescription<Horns> playerDesc, ChangeType<Horns> transform, ChangeType<Horns> restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc, ChangeType<Horns> transform, RestoreType<Horns> restore)
 			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
 		protected HornType(int minimumHorns, int maximumHorns, int minLength, int maxLength, int defaultHornCount, int defaultHornLength,
-			GenericDescription shortDesc, FullDescription<Horns> fullDesc, PlayerDescription<Horns> playerDesc,
-			ChangeType<Horns> transform, ChangeType<Horns> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc,
+			ChangeType<Horns> transform, RestoreType<Horns> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			//Woo data cleanup.
 			Utils.Clamp(ref maximumHorns, 0, int.MaxValue);
@@ -322,22 +256,22 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 			_index = indexMaker++;
 		}
 
-		public virtual void reactToChangesInMasculinity(ref int hornCount, ref int hornLength, int masculinity) { } // do nothing. 
-		public virtual bool CanShrink(int largestHornLength, int masculinity)
+		public virtual void reactToChangesInMasculinity(ref int hornCount, ref int hornLength, FemininityData masculinity) { } // do nothing. 
+		public virtual bool CanShrink(int largestHornLength, FemininityData masculinity)
 		{
 			return false;
 		}
-		public virtual bool ReductoHorns(ref int numHorns, ref int maxHornLength, int masculinity)
-		{
-			return false;
-		}
-
-		public virtual bool CanGrow(int largestHornLength, int masculinity)
+		public virtual bool ReductoHorns(ref int numHorns, ref int maxHornLength, FemininityData masculinity)
 		{
 			return false;
 		}
 
-		public virtual bool GroPlusHorns(ref int numHorns, ref int maxHornLength, int masculinity)
+		public virtual bool CanGrow(int largestHornLength, FemininityData masculinity)
+		{
+			return false;
+		}
+
+		public virtual bool GroPlusHorns(ref int numHorns, ref int maxHornLength, FemininityData masculinity)
 		{
 			return false;
 		}
@@ -350,7 +284,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 		/// <param name="significantHornLength">length of the current significant horn. it may be updated with a new amount</param>
 		/// <param name="masculinity">0-100 integer value that represents the masculinity or femininity of the creature.</param>
 		/// <returns>true if any changes were made to the horn length and/or count. false otherwise.</returns>
-		public virtual bool StrengthenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, int masculinity)
+		public virtual bool StrengthenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, FemininityData masculinity)
 		{
 			return false;
 		}
@@ -363,7 +297,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 		/// <param name="significantHornLength">length of current significant horns. may be updated with new amount</param>
 		/// <param name="masculinity">0-100 integer value that represents the masculinity or femininity of the creature.</param>
 		/// <returns>true if all horns were removed. false otherwise.</returns>
-		public virtual bool WeakenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, int masculinity)
+		public virtual bool WeakenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, FemininityData masculinity)
 		{
 			numHorns = 0;
 			significantHornLength = 0;
@@ -386,22 +320,22 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 		public static readonly HornType SHEEP = new SheepHorns(); //female aware. see above.
 
 		public static readonly HornType IMP = new SimpleOrNoHorns(2, 3, ImpShortDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);//"a pair of short, imp-like horns");
-
+		#endregion
 		//these horns are immutable - if you have them, they do not grow or shrink, and you can't get any more of them.
 		private class SimpleOrNoHorns : HornType
 		{
 			public SimpleOrNoHorns(int hornCount, int hornLength,
-				GenericDescription shortDesc, FullDescription<Horns> fullDesc, PlayerDescription<Horns> playerDesc, ChangeType<Horns> transform,
-				ChangeType<Horns> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
+				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc, ChangeType<Horns> transform,
+				RestoreType<Horns> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
 		}
 
 		private class DemonHorns : HornType
 		{
 			public DemonHorns() : base(2, 12, 2, 10, DemonShortDesc, DemonFullDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr) { }
 
-			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
-				Tools.Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
+				Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
 				if (numHorns >= maxHorns || byAmount == 0)
 				{
 					return false;
@@ -411,7 +345,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				return true;
 			}
 			//Lose 4-6 horns. if that makes it 0 horns, return true
-			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (byAmount == 0)
 				{
@@ -442,48 +376,45 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 			{
 				if (minHornLength > MAX_FEMININE_HORN_LENGTH)
 				{
-					throw new System.ArgumentException("minimum horn length must be less than the max feminine length. should never procc.");
+					throw new ArgumentException("minimum horn length must be less than the max feminine length. should never procc.");
 				}
 			}
 
-			public override void reactToChangesInMasculinity(ref int hornCount, ref int hornLength, int masculinity)
+			public override void reactToChangesInMasculinity(ref int hornCount, ref int hornLength, FemininityData femininity)
 			{
-				if (isHyperFeminine(masculinity))
+				if (femininity.isHyperFeminine)
 				{
 					int x = 2;
 					feminizeHorns(ref x, ref hornLength);
 				}
-				else if (isSlightlyFeminine(masculinity))
+				else if (femininity.isFemale)
 				{
 					int x = 1;
 					feminizeHorns(ref x, ref hornLength);
 				}
-				else if (isAndrogenous(masculinity))
-				{
-					//do nothing
-				}
-				else if (isSlightlyMasculine(masculinity))
-				{
-					if (hornLength < 12)
-					{
-						hornLength++;
-					}
-				}
-				else //hyper masculine.
+				else if (femininity.isHyperMasculine) //hyper masculine.
 				{
 					if (hornLength < 24)
 					{
 						hornLength += 2;
 					}
 				}
+				else if (femininity.isMale)
+				{
+					if (hornLength < 12)
+					{
+						hornLength++;
+					}
+				}
+
 			}
 
-			public override bool CanShrink(int largestHornLength, int masculinity)
+			public override bool CanShrink(int largestHornLength, FemininityData masculinity)
 			{
 				return largestHornLength > minHornLength;
 			}
 
-			public override bool ReductoHorns(ref int numHorns, ref int hornLength, int masculinity)
+			public override bool ReductoHorns(ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (!CanShrink(hornLength, masculinity))
 				{
@@ -491,22 +422,22 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				}
 				int reduceAmount = 0;
 				//large horns and female? remove a lot.
-				if (isFeminine(masculinity) && hornLength > 18)
+				if (masculinity.isFemale && hornLength > 18)
 				{
 					reduceAmount = 12;
 				}
 				//less large, but still large, and female? remove some.
-				else if (isFeminine(masculinity) && hornLength > 10)
+				else if (masculinity.isFemale && hornLength > 10)
 				{
 					reduceAmount = 6;
 				}
 				//smaller, but still above female max, and female? make female max.
-				else if (isFeminine(masculinity) && hornLength > MAX_FEMININE_HORN_LENGTH)
+				else if (masculinity.isFemale && hornLength > MAX_FEMININE_HORN_LENGTH)
 				{
 					reduceAmount = hornLength - MAX_FEMININE_HORN_LENGTH;
 				}
 				//female and female horns above min size? make them min size
-				else if (isFeminine(masculinity) && hornLength > minHornLength)
+				else if (masculinity.isFemale && hornLength > minHornLength)
 				{
 					reduceAmount = hornLength - minHornLength;
 				}
@@ -529,13 +460,13 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				return reduceAmount != 0;
 			}
 
-			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
-				if (byAmount == 0 || (!isFeminine(masculinity) && hornLength >= maxHornLength)
+				if (byAmount == 0 || (!masculinity.isFemale && hornLength >= maxHornLength))
 				{
 					return false;
 				}
-				else if (isFeminine(masculinity))
+				else if (masculinity.isFemale)
 				{
 					Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
 					int amount = (int)byAmount;
@@ -555,7 +486,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 			}
 			//Lose half of the length, down to 5inches. at that point, revert to nubs if female
 			//or lose the rest if male. after that, lose them regardless.
-			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				//early exit: no amount
 				if (byAmount == 0)
@@ -564,14 +495,14 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				}
 				Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
 				//early exit, non-zero count and at minimum.
-				if (hornLength == minHornLength || (hornLength <= MAX_FEMININE_HORN_LENGTH && isMasculine(masculinity)))
+				if (hornLength == minHornLength || (hornLength <= MAX_FEMININE_HORN_LENGTH && masculinity.isMale))
 				{
 					numHorns = 0;
 					hornLength = 0;
 					return true;
 				}
 				//feminine and horns are at or above max length for feminine characters.
-				else if (isFeminine(masculinity) && hornLength >= MAX_FEMININE_HORN_LENGTH)
+				else if (masculinity.isFemale && hornLength >= MAX_FEMININE_HORN_LENGTH)
 				{
 					int amount = (int)byAmount;
 					feminizeHorns(ref amount, ref hornLength);
@@ -588,7 +519,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 					return false;
 				}
 				//feminine and horns are less than max. 
-				else if (isFeminine(masculinity) && hornLength < MAX_FEMININE_HORN_LENGTH)
+				else if (masculinity.isFemale && hornLength < MAX_FEMININE_HORN_LENGTH)
 				{
 					if (byAmount > 1)
 					{
@@ -658,11 +589,11 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 			public DragonHorns() : base(2, 4, 4, 12, DragonShortDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr) { }
 
 			//Executive decision: second pair of dragon horns can't be shrunk. 
-			public override bool CanShrink(int hornLength, int masculinity)
+			public override bool CanShrink(int hornLength, FemininityData masculinity)
 			{
 				return hornLength > minHornLength;
 			}
-			public override bool ReductoHorns(ref int numHorns, ref int hornLength, int masculinity)
+			public override bool ReductoHorns(ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				int reductoVal = 2;
 				int oldHornLength = hornLength;
@@ -670,12 +601,12 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				return oldHornLength != hornLength;
 			}
 
-			public override bool CanGrow(int hornLength, int masculinity)
+			public override bool CanGrow(int hornLength, FemininityData masculinity)
 			{
 				return hornLength < maxHornLength;
 			}
 
-			public override bool GroPlusHorns(ref int numHorns, ref int hornLength, int masculinity)
+			public override bool GroPlusHorns(ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				int groVal = 2;
 				int oldHornLength = hornLength;
@@ -683,7 +614,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				return oldHornLength != hornLength;
 			}
 
-			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if ((hornLength >= maxHornLength && numHorns >= maxHorns) || byAmount == 0)
 				{
@@ -705,7 +636,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 
 			}
 			//if 4 horns, become 2 horns. then shrink horns to 6in. then remove them completely.
-			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				while (byAmount > 0 && hornLength > 0)
 				{
@@ -733,17 +664,17 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 		{
 			private readonly bool isReindeer;
 			public Antlers(bool reindeer, int maxLength,
-				GenericDescription shortDesc, FullDescription<Horns> fullDesc, PlayerDescription<Horns> playerDesc,
-				ChangeType<Horns> transform, ChangeType<Horns> restore) : base(2, 20, 6, maxLength, shortDesc, fullDesc, playerDesc, transform, restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc,
+				ChangeType<Horns> transform, RestoreType<Horns> restore) : base(2, 20, 6, maxLength, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				isReindeer = reindeer;
 			}
 
-			public override bool CanShrink(int hornLength, int masculinity)
+			public override bool CanShrink(int hornLength, FemininityData masculinity)
 			{
 				return hornLength > minHornLength;
 			}
-			public override bool ReductoHorns(ref int numHorns, ref int hornLength, int masculinity)
+			public override bool ReductoHorns(ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				int reductoVal = 4;
 				int oldHornCount = numHorns;
@@ -752,12 +683,12 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				return oldHornCount != numHorns;
 			}
 
-			public override bool CanGrow(int hornLength, int masculinity)
+			public override bool CanGrow(int hornLength, FemininityData masculinity)
 			{
 				return isReindeer && hornLength < maxHornLength;
 			}
 
-			public override bool GroPlusHorns(ref int numHorns, ref int hornLength, int masculinitiy)
+			public override bool GroPlusHorns(ref int numHorns, ref int hornLength, FemininityData masculinitiy)
 			{
 				if (!isReindeer || numHorns >= maxHorns)
 				{
@@ -771,7 +702,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				return oldHornCount != numHorns;
 			}
 
-			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (numHorns >= maxHorns || byAmount == 0)
 				{
@@ -790,7 +721,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 
 			}
 			//if 4 horns, become 2 horns. then shrink horns to 6in. then remove them completely.
-			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				//get value, then decrement. if you're not familiar with this, it's confusing, i know. but i always
 				//forget to decrement the loop at the end, and infinite loops are worse.
@@ -830,11 +761,11 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 		{
 			public GoatHorns() : base(2, 2, 1, 6, GoatShortDesc, GoatFullDesc, GoatPlayerStr, GoatTransformStr, GoatRestoreStr) { }
 
-			public override bool CanShrink(int hornLength, int masculinity)
+			public override bool CanShrink(int hornLength, FemininityData masculinity)
 			{
 				return hornLength > minHornLength;
 			}
-			public override bool ReductoHorns(ref int numHorns, ref int hornLength, int masculinity)
+			public override bool ReductoHorns(ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (hornLength <= minHornLength)
 					return false;
@@ -846,12 +777,12 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				return true;
 			}
 
-			public override bool CanGrow(int hornLength, int masculinity)
+			public override bool CanGrow(int hornLength, FemininityData masculinity)
 			{
 				return hornLength < maxHornLength;
 			}
 
-			public override bool GroPlusHorns(ref int numHorns, ref int hornLength, int masculinity)
+			public override bool GroPlusHorns(ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (hornLength >= maxHornLength)
 					return false;
@@ -862,7 +793,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				return true;
 			}
 
-			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (hornLength >= maxHornLength || byAmount == 0)
 				{
@@ -881,7 +812,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 
 			}
 			//nope.avi. they're so small there's just no point. you just lose them.
-			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				hornLength = 0;
 				return true;
@@ -893,11 +824,11 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 		{
 			public UniHorn() : base(1, 1, 6, 12, UniHornShortDesc, UniHornFullDesc, UniHornPlayerStr, UniHornTransformStr, UniHornRestoreStr) { }
 
-			public override bool CanShrink(int hornLength, int masculinity)
+			public override bool CanShrink(int hornLength, FemininityData masculinity)
 			{
 				return hornLength > minHornLength;
 			}
-			public override bool ReductoHorns(ref int numHorns, ref int hornLength, int masculinity)
+			public override bool ReductoHorns(ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (hornLength <= minHornLength)
 					return false;
@@ -908,12 +839,12 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				}
 			}
 
-			public override bool CanGrow(int hornLength, int masculinity)
+			public override bool CanGrow(int hornLength, FemininityData masculinity)
 			{
 				return hornLength < maxHornLength;
 			}
 
-			public override bool GroPlusHorns(ref int numHorns, ref int hornLength, int masculinity)
+			public override bool GroPlusHorns(ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (hornLength >= maxHornLength)
 					return false;
@@ -924,7 +855,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				}
 			}
 
-			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculine)
+			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculine)
 			{
 				if (hornLength >= maxHornLength || byAmount == 0)
 				{
@@ -938,7 +869,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 
 			}
 			//Just lose it (ah aah aah)
-			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculine)
+			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculine)
 			{
 				hornLength = minHornLength;
 				return true;
@@ -949,7 +880,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 		{
 			public RhinoHorn() : base(1, 2, 6, 12, RhinoShortDesc, RhinoFullDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr) { }
 
-			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, int masculinity)
+			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, FemininityData masculinity)
 			{
 				if (numHorns >= maxHorns || byAmount == 0)
 				{
@@ -963,7 +894,7 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				}
 
 			}
-			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				if (numHorns == maxHorns)
 				{
@@ -992,11 +923,11 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 				}
 			}
 
-			public override bool CanShrink(int hornLength, int masculinity)
+			public override bool CanShrink(int hornLength, FemininityData masculinity)
 			{
 				return hornLength > minHornLength;
 			}
-			public override bool ReductoHorns(ref int numHorns, ref int largestHornLength, int masculinity)
+			public override bool ReductoHorns(ref int numHorns, ref int largestHornLength, FemininityData masculinity)
 			{
 
 				int reduceAmount = 0;
@@ -1011,9 +942,9 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 			}
 
 
-			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
-				bool feminine = IsFeminine(masculinity);
+				bool feminine = masculinity.isFemale;
 				if (byAmount == 0 || feminine && hornLength >= maxHornLength)
 				{
 					return false;
@@ -1049,11 +980,11 @@ public bool WeakenTransform(bool male, uint byAmount = 1)
 			//if masculine, Lose third of length, down to max feminine length. 
 			//if feminine, go to max feminine length immediately
 			//after that go to min, then lose horns entirely.
-			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, int masculinity)
+			public override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, FemininityData masculinity)
 			{
 				while (byAmount-- > 0 && hornLength > minHornLength)
 				{
-					if (hornLength >= 12 && !isFeminine(masculinity))
+					if (hornLength >= 12 && !masculinity.isFemale)
 					{
 						hornLength = (int)Math.Floor(hornLength * 2.0 / 3);
 					}

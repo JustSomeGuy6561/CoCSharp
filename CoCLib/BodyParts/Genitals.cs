@@ -4,9 +4,7 @@
 //1/5/2019, 3:16 AM
 using CoC.Tools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoC.BodyParts
 {
@@ -35,6 +33,9 @@ namespace CoC.BodyParts
 		private readonly bool hasBigTitsPerk;
 		private readonly bool hasBigCockPerk;
 
+		public readonly Femininity masculinity;
+
+		//normal gender check, based on your junk.
 		public Gender gender
 		{
 			get
@@ -46,13 +47,10 @@ namespace CoC.BodyParts
 			}
 		}
 
-		//allows players with clit-dicks (an omnibus trait granted by ceraph or something, idk - NYI.
-		//to appear female, and do female scenes. 
+		//allows players with clit-dicks (a hard-to-obtain omnibus trait) to appear female, and do female scenes. 
 		//NYI, but also allows players to "surprise" NPCs expecting lesbian sex (or males expecting straight sex)
-		//Not to be confused with a "traps" check - this is a check for your junk. a femininity/masculinity check is for that
-		//though it should probably also take into account what you're packing and how visible it is. i.e. - you can't appear male
-		//when packing huge tits, and you can't appear female if your dick is hanging out. 
-		public Gender appearsAs
+		//Not to be confused with the "traps" check - this is a check for your junk.
+		public Gender genderWithoutOmnibusClit
 		{
 			get
 			{
@@ -61,6 +59,48 @@ namespace CoC.BodyParts
 					return Gender.FEMALE;
 				}
 				return gender;
+			}
+		}
+
+		/* Trap check. use this where player appearance is more important than actual assets, or for trappy sex, idk.
+		 * 
+		 * Female: C-cup breasts and >35 masculinity OR <6in Dick and >65 masculinity
+		 * Male: 6in+ Dick and <65 masculinity OR B-Cup or smaller breasts and <35 masculinity
+		 * Genderless: <6in Dick, B-cup or smaller breasts, and 35-65 masculinity.
+		 * Herm: everything else.
+		 * 
+		 * How you deal with androgenous and herm is up to you. Note that b/c this is a trap check, something may appear
+		 * to be a herm, but not be (large breasts and a dick, for example, but no vag).
+		 * 
+		*/
+		public Gender appearsAs
+		{
+			get
+			{
+				//noticable bulge and breasts
+				if (biggestTitSize > CupSize.B && biggestCockSize >= 6)
+				{
+					return Gender.HERM;
+				}
+				//noticable breasts and sufficiently female
+				else if (biggestTitSize > CupSize.B && !masculinity.atLeastSlightlyMasculine)
+				{
+					return Gender.FEMALE;
+				}
+				//noticable dick and sufficiently male
+				else if (biggestCockSize >= 6 && !masculinity.atLeastSlightlyFeminine)
+				{
+					return Gender.MALE;
+				}
+				//not noticable assets - go by appearance
+				else if (biggestCockSize < 6 && biggestTitSize <= CupSize.B)
+				{
+					if (masculinity.atLeastSlightlyFeminine) return Gender.FEMALE;
+					else if (masculinity.atLeastSlightlyMasculine) return Gender.MALE;
+					return Gender.GENDERLESS;
+				}
+				//noticable breasts or dick, but too masculine or feminine. 
+				return Gender.HERM;
 			}
 		}
 
@@ -276,5 +316,127 @@ namespace CoC.BodyParts
 			RemoveBreastRow(breastRowCount);
 			return true;
 		}
+	}
+
+	public class Femininity
+	{
+		public const int MIN_ANDROGENOUS = 35;
+		public const int ANDROGENOUS = 50;
+		public const int MAX_ANDROGENOUS = 65;
+
+		public const int SLIGHTLY_FEMININE = 60;
+		public const int FEMININE = 70;
+		public const int HYPER_FEMININE = 90;
+
+		public const int SLIGHTLY_MASCULINE = 40;
+		public const int MASCULINE = 30;
+		public const int HYPER_MASCULINE = 10;
+
+		public int femininity
+		{
+			get => _femininity;
+			private set
+			{
+				Utils.Clamp(ref value, 0, 100);
+				_femininity = value;
+			}
+		}
+		private int _femininity;
+
+		protected Femininity(int fem)
+		{
+			femininity = fem;
+		}
+
+		public static Femininity Generate(Gender gender)
+		{
+			int fem = 50;
+			switch (gender)
+			{
+				case Gender.MALE:
+					fem = 30;
+					break;
+				case Gender.FEMALE:
+					fem = 70;
+					break;
+				case Gender.HERM:
+					fem = 60;
+					break;
+				case Gender.GENDERLESS:
+				default:
+					fem = 50;
+					break;
+			}
+			return new Femininity(fem);
+		}
+		public static Femininity Generate(int fem)
+		{
+			return new Femininity(fem);
+		}
+
+		public static implicit operator int(Femininity femininity)
+		{
+			return femininity.femininity;
+		}
+		public int feminize(uint amount)
+		{
+			if (femininity == 100)
+			{
+				return 0;
+			}
+			int oldFemininity = femininity;
+			femininity += (int)amount;
+			return femininity - oldFemininity;
+		}
+
+		public int masculinize(uint amount)
+		{
+			if (femininity == 0)
+			{
+				return 0;
+			}
+			int oldFemininity = femininity;
+			femininity -= (int)amount;
+			return oldFemininity - femininity;
+		}
+
+		public bool isAndrogenous => femininity >= Femininity.MIN_ANDROGENOUS && femininity <= Femininity.MAX_ANDROGENOUS;
+
+		public bool isSlightlyFeminine => femininity >= Femininity.SLIGHTLY_FEMININE && femininity < Femininity.FEMININE;
+		public bool atLeastSlightlyFeminine => femininity >= Femininity.SLIGHTLY_FEMININE && femininity < Femininity.FEMININE;
+		public bool isFeminine => femininity >= Femininity.FEMININE && femininity < Femininity.HYPER_FEMININE;
+		public bool atLeastFeminine => femininity >= Femininity.FEMININE;
+		public bool isHyperFeminine => femininity >= Femininity.HYPER_FEMININE;
+		public bool isSlightlyMasculine => femininity <= Femininity.SLIGHTLY_MASCULINE && femininity > Femininity.MASCULINE;
+		public bool atLeastSlightlyMasculine => femininity <= Femininity.SLIGHTLY_MASCULINE;
+		public bool isMasculine => femininity <= Femininity.MASCULINE && femininity > Femininity.HYPER_MASCULINE;
+		public bool atLeastMasculine => femininity <= Femininity.MASCULINE;
+		public bool isHyperMasculine => femininity <= Femininity.HYPER_MASCULINE;
+	}
+
+	public class FemininityData : EventArgs
+	{
+		public readonly int femininity;
+
+		public FemininityData(int fem)
+		{
+			femininity = fem;
+		}
+
+		public bool isFemale => atLeastSlightlyFeminine;
+		public bool isMale => atLeastSlightlyMasculine;
+
+		public bool isAndrogenous => femininity >= Femininity.MIN_ANDROGENOUS && femininity <= Femininity.MAX_ANDROGENOUS;
+
+		public bool isSlightlyFeminine => femininity >= Femininity.SLIGHTLY_FEMININE && femininity < Femininity.FEMININE;
+		public bool atLeastSlightlyFeminine => femininity >= Femininity.SLIGHTLY_FEMININE && femininity < Femininity.FEMININE;
+		public bool isFeminine => femininity >= Femininity.FEMININE && femininity < Femininity.HYPER_FEMININE;
+		public bool atLeastFeminine => femininity >= Femininity.FEMININE;
+		public bool isHyperFeminine => femininity >= Femininity.HYPER_FEMININE;
+		public bool isSlightlyMasculine => femininity <= Femininity.SLIGHTLY_MASCULINE && femininity > Femininity.MASCULINE;
+		public bool atLeastSlightlyMasculine => femininity <= Femininity.SLIGHTLY_MASCULINE;
+		public bool isMasculine => femininity <= Femininity.MASCULINE && femininity > Femininity.HYPER_MASCULINE;
+		public bool atLeastMasculine => femininity <= Femininity.MASCULINE;
+		public bool isHyperMasculine => femininity <= Femininity.HYPER_MASCULINE;
 	}
 }

@@ -80,11 +80,11 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			return Restore();
 		}
 
-		public override GenericDescription shortDescription => type.hasSecondLevel && secondLevel ? type.secondLevelShortDescription : type.shortDescription;
+		public override SimpleDescriptor shortDescription => type.hasSecondLevel && secondLevel ? type.secondLevelShortDescription : type.shortDescription;
 
 		public bool UpdateFace(FaceType newFeatures, bool fullMorph = false)
 		{
@@ -148,23 +148,23 @@ namespace CoC.BodyParts
 		}
 		private static int indexMaker = 0;
 
-		public readonly GenericDescription secondLevelShortDescription;
+		public readonly SimpleDescriptor secondLevelShortDescription;
 
 		public override int index => _index;
 		private readonly int _index;
 
 
-		protected FaceType(GenericDescription firstLevelShortDesc, GenericDescription secondLevelShortDesc, //short Desc for two levels.
-			FullDescription<Face> fullDesc, PlayerDescription<Face> playerStr, ChangeType<Face> transform, 
-			ChangeType<Face> restore) : base(firstLevelShortDesc, fullDesc, playerStr, transform, restore)
+		protected FaceType(SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, //short Desc for two levels.
+			DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr, ChangeType<Face> transform, 
+			RestoreType<Face> restore) : base(firstLevelShortDesc, fullDesc, playerStr, transform, restore)
 		{
 			_index = indexMaker++;
 			secondLevelShortDescription = secondLevelShortDesc;
 		}
 
 		protected FaceType(//only one level short desc
-			GenericDescription shortDesc, FullDescription<Face> fullDesc, PlayerDescription<Face> playerStr, 
-			ChangeType<Face> transform, ChangeType<Face> restore) : base(shortDesc, fullDesc, playerStr, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr, 
+			ChangeType<Face> transform, RestoreType<Face> restore) : base(shortDesc, fullDesc, playerStr, transform, restore)
 		{
 			_index = indexMaker++;
 			secondLevelShortDescription = GlobalStrings.None;

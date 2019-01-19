@@ -71,7 +71,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			type = GillType.NONE;
 			return type == GillType.NONE;
 		}
@@ -81,8 +81,8 @@ namespace CoC.BodyParts
 	{
 		private static int indexMaker = 0;
 
-		protected GillType(GenericDescription shortDesc, FullDescription<Gills> fullDesc, PlayerDescription<Gills> playerDesc, 
-			ChangeType<Gills> transform, ChangeType<Gills> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<Gills> fullDesc, TypeAndPlayerDelegate<Gills> playerDesc, 
+			ChangeType<Gills> transform, RestoreType<Gills> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 		}

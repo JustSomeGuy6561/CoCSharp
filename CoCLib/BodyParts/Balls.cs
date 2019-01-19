@@ -88,8 +88,8 @@ namespace CoC.BodyParts
 			else return GlobalStrings.None();
 		}
 
-		public FullDescription<Balls> fullDescription => BallsFullDesc;
-		public PlayerDescription<Balls> playerDescription => BallsPlayerStr;
+		public DescriptorWithArg<Balls> fullDescription => BallsFullDesc;
+		public TypeAndPlayerDelegate<Balls> TypeAndPlayerDelegate => BallsPlayerStr;
 
 		//Grows a pair of balls. returns false if it already has balls. 
 		public bool growBalls()

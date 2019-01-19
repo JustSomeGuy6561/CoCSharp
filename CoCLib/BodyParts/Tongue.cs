@@ -52,7 +52,7 @@ namespace CoC.BodyParts
 			{
 				return false;
 			}
-			OutputText(restoreString(this, player));
+			OutputText(restoreString(player));
 			return Restore();
 		}
 
@@ -76,7 +76,7 @@ namespace CoC.BodyParts
 		private static int indexMaker = 0;
 		private readonly int _index;
 
-		protected TongueType(GenericDescription shortDesc, FullDescription<Tongue> fullDesc, PlayerDescription<Tongue> playerDesc, ChangeType<Tongue> transform, ChangeType<Tongue> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected TongueType(SimpleDescriptor shortDesc, DescriptorWithArg<Tongue> fullDesc, TypeAndPlayerDelegate<Tongue> playerDesc, ChangeType<Tongue> transform, RestoreType<Tongue> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 		}
