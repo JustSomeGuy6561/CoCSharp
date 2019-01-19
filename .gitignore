@@ -269,8 +269,10 @@ __pycache__/
 /Temp/
 [Ll]ibrary
 /obj/
-
-
+/Testing/
+[Tt]esting
+/Properties/
+[Pp]roperties
 *.csproj
 *.sln
 *.settings
