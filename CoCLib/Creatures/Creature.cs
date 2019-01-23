@@ -6,8 +6,10 @@ using CoC.BodyParts;
 using CoC.EpidermalColors;
 using CoC.Tools;
 
-namespace CoC
+namespace CoC.Creatures
 {
+	//base class for all creatures that deign to use it. allows NPCs to be built out of parts like mosters and the PC
+	//as of now no NPCs use it. there's evidence this may not have always been the case or plans were to use it, idk.
 	public abstract class Creature
 	{
 		protected readonly Tones defaultTone = Tones.LIGHT;
@@ -123,11 +125,6 @@ namespace CoC
 		//simple assign somethihg to whatever values you want to change from their default. 
 		public abstract void InitBody(out Antennae antennae, out Arms arms, out Back back, out Body body, out Ears ears, out Face face, out Genitals genitals, out Gills gills, 
 			out Horns horns, out LowerBody lowerBody, out Neck neck, out Tail tail, out Tongue tongue, out Wings wings, out FacialHair facialHair, PiercingFlags piercingFlags);
-
-		//NYI
-		public abstract void InitCombat(out int level, out int experience, out Weapon weapon, out Armor armor, out Shield shield, out Jewelry jewelry, out UpperGarment upperGarment, out LowerGarment lowerGarment);
-		//NYI
-		public abstract void InitStats(out int strength, out int toughness, out int speed, out int intelligence, out int lust, out int sensitivity, out int libido, out int corruption, out int money);
 
 		//public abstract void InitInventory
 

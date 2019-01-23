@@ -3,9 +3,6 @@
 //Author: JustSomeGuy
 //12/26/2018, 11:10 PM
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CoC.Tools;
 using CoC.BodyParts.SpecialInteraction;
 using CoC.Strings.BodyParts;

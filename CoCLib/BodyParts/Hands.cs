@@ -3,13 +3,9 @@
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
 using CoC.BodyParts.SpecialInteraction;
-using static CoC.Strings.BodyParts.HandStrings;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using static CoC.Strings.BodyParts.HandStrings;
 
 namespace CoC.BodyParts
 {
@@ -17,7 +13,7 @@ namespace CoC.BodyParts
 	{
 		public override HandType type { get; protected set; }
 
-		public Hands(HandType type, Tones currentTone) : base (type)
+		public Hands(HandType type, Tones currentTone) : base(type)
 		{
 			this.clawTone = currentTone;
 		}
@@ -51,6 +47,7 @@ namespace CoC.BodyParts
 
 	public class HandType : SimpleBodyPartType
 	{
+		protected enum HandStyle { HANDS, CLAWS, PAWS }
 		private static int indexMaker = 0;
 		public override int index => _index;
 		protected readonly int _index;
@@ -58,7 +55,11 @@ namespace CoC.BodyParts
 		{
 			return false;
 		}
+		public bool isClaws => handStyle == HandStyle.CLAWS;
+		public bool isPaws => handStyle == HandStyle.PAWS;
+		public bool isHands => handStyle == HandStyle.HANDS;
 
+		protected readonly HandStyle handStyle;
 		public virtual bool tryToTone(ref Tones currentTone, Tones primaryTone, Tones secondaryTone)
 		{
 			if (canTone())
@@ -69,28 +70,29 @@ namespace CoC.BodyParts
 			return false;
 		}
 
-		protected HandType(SimpleDescriptor shortDesc) : base(shortDesc)
+		protected HandType(HandStyle style, SimpleDescriptor shortDesc) : base(shortDesc)
 		{
 			_index = indexMaker++;
+			handStyle = style;
 		}
 
-		public static readonly HandType HUMAN = new HandType(HumanShort);
+		public static readonly HandType HUMAN = new HandType(HandStyle.HANDS, HumanShort);
 		public static readonly HandType LIZARD = new LizardClaws();
-		public static readonly HandType DRAGON = new HandType(DragonShort);
-		public static readonly HandType SALAMANDER = new HandType(SalamanderShort);
-		public static readonly HandType CAT = new HandType(CatShort);
-		public static readonly HandType DOG = new HandType(DogShort);
-		public static readonly HandType FOX = new HandType(FoxShort);
+		public static readonly HandType DRAGON = new HandType(HandStyle.CLAWS, DragonShort);
+		public static readonly HandType SALAMANDER = new HandType(HandStyle.CLAWS, SalamanderShort);
+		public static readonly HandType CAT = new HandType(HandStyle.PAWS, CatShort);
+		public static readonly HandType DOG = new HandType(HandStyle.PAWS, DogShort);
+		public static readonly HandType FOX = new HandType(HandStyle.PAWS, FoxShort);
 		public static readonly HandType IMP = new ImpClaws();
-		public static readonly HandType COCKATRICE = new HandType(CockatriceShort);
-		public static readonly HandType RED_PANDA = new HandType(RedPandaShort);
-		public static readonly HandType FERRET = new HandType(FerretShort);
+		public static readonly HandType COCKATRICE = new HandType(HandStyle.CLAWS, CockatriceShort);
+		public static readonly HandType RED_PANDA = new HandType(HandStyle.PAWS, RedPandaShort);
+		public static readonly HandType FERRET = new HandType(HandStyle.PAWS, FerretShort);
 		//public static readonly Hands MANTIS = new Hands(MantisShort);
 
 		private class LizardClaws : HandType
 		{
 
-			public LizardClaws() : base(LizardShort) { }
+			public LizardClaws() : base(HandStyle.CLAWS, LizardShort) { }
 
 			public override bool canTone()
 			{
@@ -109,7 +111,7 @@ namespace CoC.BodyParts
 
 		private class ImpClaws : HandType
 		{
-			public ImpClaws() : base(ImpShort) { }
+			public ImpClaws() : base(HandStyle.CLAWS, ImpShort) { }
 
 			public override bool canTone()
 			{

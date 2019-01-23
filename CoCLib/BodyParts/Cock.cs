@@ -2,12 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 10:55 PM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CoC.BodyParts.SpecialInteraction;
+using CoC.Creatures;
 using CoC.Tools;
+using CoC.BodyParts.SpecialInteraction;
 using static CoC.Strings.BodyParts.CockNBallzStrings;
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts

@@ -3,10 +3,7 @@
 //Author: JustSomeGuy
 //12/29/2018, 8:21 PM
 using CoC.BodyParts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoC.Creatures;
 
 namespace CoC.Strings.BodyParts
 {

@@ -2,11 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 11:35 PM
-using CoC.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoC.Creatures;
 using static CoC.UI.TextOutput; // Output text. right now it points to Console.WriteLine.
 namespace CoC.Strings
 {
@@ -41,49 +37,48 @@ namespace CoC.Strings
 
 			if (player.Accessories.hasHeadPiece)
 			{
-				OutputText(player.Accesories.headPiece.TypeAndPlayerDelegate());
+				OutputText(player.Accesories.headPiece.playerDescription(player));
 			}
 			if (player.Accessories.hasNeckAccessory)
 			{
-				OutputText(player.Accesories.neckPiece.TypeAndPlayerDelegate());
+				OutputText(player.Accesories.neckPiece.playerDescription(player));
 			}
 			if (player.Accessories.hasArmOrHandJewelry)
 			{
-				OutputText(player.Accesories.handPiece.TypeAndPlayerDelegate());
+				OutputText(player.Accesories.handPiece.playerDescription(player));
 			}
 			//Face. Face class.
-			OutputText(player.face.TypeAndPlayerDelegate(player));
+			OutputText(player.face.playerDescription(player));
 			//Feminine/Masculine description. In the character class.
 			OutputText(facialFeaturesString(player));
 			//eyes
-			OutputText(player.eyes.TypeAndPlayerDelegate(player));
+			OutputText(player.eyes.playerDescription(player));
 			//hair and ears.
-			OutputText(player.hair.TypeAndPlayerDelegate(player));
+			OutputText(player.hair.playerDescription(player));
 			//beards
-			OutputText(player.beard.TypeAndPlayerDelegate(player));
+			OutputText(player.beard.playerDescription(player));
 			//Tongue
-			OutputText(player.tongue.TypeAndPlayerDelegate(player));
+			OutputText(player.tongue.playerDescription(player));
 			//Horns
-			OutputText(player.horns.TypeAndPlayerDelegate(player));
+			OutputText(player.horns.playerDescription(player));
 			//neck
-			OutputText(player.neck.TypeAndPlayerDelegate(player));
+			OutputText(player.neck.playerDescription(player));
 			//gills
-			OutputText(player.gills.TypeAndPlayerDelegate());
+			OutputText(player.gills.playerDescription(player));
 			//arms
-			OutputText(player.arms.TypeAndPlayerDelegate(player));
-			//core. Now includes gills!
-			OutputText(player.gills.TypeAndPlayerDelegate(player.gills, player));
-			OutputText(player.core.TypeAndPlayerDelegate(player.core, player));
+			OutputText(player.arms.playerDescription(player));
+			//core.
+			OutputText(player.body.playerDescription(player));
 			//wings
-			OutputText(player.wings.TypeAndPlayerDelegate(player));
+			OutputText(player.wings.playerDescription(player));
 			//back/spine
-			OutputText(player.back.TypeAndPlayerDelegate(player));
+			OutputText(player.back.playerDescription(player));
 			//butt/hips/legs
-			OutputText(player.lowerBody.TypeAndPlayerDelegate(player));
+			OutputText(player.lowerBody.playerDescription(player));
 			//incorporeal? no idea how i'll add this.
-			OutputText(player.perk.incorporeal.TypeAndPlayerDelegate());
+			OutputText(player.perk.incorporeal.playerDescription());
 			//tail
-			OutputText(player.tail.TypeAndPlayerDelegate(player));
+			OutputText(player.tail.playerDescription(player));
 			//pregnancy
 			if (player.buttpregnant && player.normalpregnant)
 			{
@@ -91,11 +86,11 @@ namespace CoC.Strings
 			}
 			else if (player.buttpregnant)
 			{
-				OutputText(player.buttPregnancy.TypeAndPlayerDelegate());
+				OutputText(player.buttPregnancy.playerDescription());
 			}
 			else
 			{
-				OutputText(player.normalPregnancy.TypeAndPlayerDelegate());
+				OutputText(player.normalPregnancy.playerDescription());
 			}
 			//"Chesticles..I mean bewbz" - original author. credit where it's due.
 			OutputText(player.describeAllBoobs());
@@ -104,14 +99,12 @@ namespace CoC.Strings
 			OutputText(player.genitals.describeLocation());
 			//_ALL_ the dicks.
 			OutputText(player.describeAllCocks());
-			//same as incorporeal. 
-			OutputText(player.perk.infested.TypeAndPlayerDelegate());
 			//Balls
 			OutputText(player.describeAllBalls());
 			//VAGOOZ - author unknown
 			OutputText(player.describeAllVags());
 
-			OutputText(player.lowerbody.assDescript());
+			OutputText(player.lowerBody.assDescript());
 
 			OutputText(player.describePiercings());
 

@@ -23,5 +23,20 @@ namespace CoCWinDesktop
 		{
 			InitializeComponent();
 		}
+
+		private void OnLoad(object sender, RoutedEventArgs e)
+		{
+			container.Background = new ImageBrush(Settings.GetBackground());
+		}
+
+		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+		{
+			System.Diagnostics.Process.Start(e.Uri.ToString());
+		}
+
+		private void ContinueBtn_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
 	}
 }

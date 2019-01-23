@@ -3,10 +3,7 @@
 //Author: JustSomeGuy
 //12/29/2018, 2:04 PM
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using CoC.Creatures;
 using CoC.BodyParts;
 namespace CoC.Strings
 {
@@ -16,7 +13,7 @@ namespace CoC.Strings
 
 		public static string TransformToDefault<T, Y>(T type, Player p) where T : BodyPartBase<T, Y> where Y : BodyPartBehavior<Y, T>
 		{
-			return type.restoreString(type, p);
+			return type.restoreString(p);
 		}
 
 		public static string RevertAsDefault<T>(T type, Player p)

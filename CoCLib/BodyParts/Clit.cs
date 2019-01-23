@@ -2,13 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 6:03 PM
-using CoC.BodyParts.SpecialInteraction;
 using CoC.Tools;
-using System;
-using System.Collections.Generic;
+using CoC.BodyParts.SpecialInteraction;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace CoC.BodyParts
 {

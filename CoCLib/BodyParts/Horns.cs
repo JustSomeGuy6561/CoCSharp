@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/28/2018, 1:50 AM
 using System;
+using CoC.Creatures;
 using CoC.Tools;
 using CoC.BodyParts.SpecialInteraction;
 using static CoC.UI.TextOutput;

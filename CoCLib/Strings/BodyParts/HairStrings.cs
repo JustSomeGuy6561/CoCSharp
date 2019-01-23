@@ -3,10 +3,6 @@
 //Author: JustSomeGuy
 //1/1/2019, 12:21 PM
 using CoC.BodyParts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CoC.Strings.BodyParts
 {

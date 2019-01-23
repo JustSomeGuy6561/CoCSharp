@@ -1,8 +1,7 @@
-﻿using CoC.BodyParts;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿//IHairAware.cs
+//Description:
+//Author: JustSomeGuy
+//1/19/2019, 12:00 AM
 namespace CoC.BodyParts.SpecialInteraction
 {
 	public interface IHairAware

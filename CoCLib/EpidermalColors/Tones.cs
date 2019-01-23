@@ -2,11 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //12/31/2018, 1:02 AM
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 
 namespace CoC.EpidermalColors
 {

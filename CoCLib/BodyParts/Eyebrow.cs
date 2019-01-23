@@ -1,16 +1,7 @@
-﻿//Lip - Copy.cs
+﻿//Eyebrow.cs
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:50 PM
-
-//Lip.cs
-//Description:
-//Author: JustSomeGuy
-//1/5/2019, 5:47 PM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CoC.BodyParts
 {

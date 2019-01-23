@@ -1,0 +1,50 @@
+﻿<Window x:Class="CoCWinDesktop.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CoCWinDesktop"
+        mc:Ignorable="d"
+		Title="Corruption of Champions" Height="831" Width="1008">
+	<Window.Background>
+		<SolidColorBrush Color="Black"></SolidColorBrush>
+	</Window.Background>
+	<Window.Resources>
+		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}"/>
+		<Style x:Key="CreditText" TargetType="{x:Type TextBlock}">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="Width" Value="1000" />
+			<Setter Property="TextAlignment" Value="Center" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<Setter Property="FontFamily" Value="Palatino Linotype" />
+		</Style>
+		<Style TargetType="{x:Type Hyperlink}">
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True" />
+			</Style.Triggers>
+			<Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
+		</Style>
+	</Window.Resources>
+	<Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" StretchDirection="Both">
+		<!--`
+		<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="800" Width="1000">
+			<DockPanel.Background>
+				<ImageBrush ImageSource="resources/background1.jpg" />
+			</DockPanel.Background>
+			<Image Height="400" DockPanel.Dock="Top" Source="resources/CoCLogo.png"/>
+			
+		</DockPanel>-->
+		<Canvas Height="800" Width="1000">
+			<Canvas.Background>
+				<ImageBrush ImageSource="resources/background1.jpg" />
+			</Canvas.Background>
+			<TextBlock Name="LoadText" Style="{StaticResource TextZone}">
+				<TextBlock.Background>
+					<SolidColorBrush Color="White" Opacity="0.4" />
+				</TextBlock.Background>
+				Lorem ipsum
+			</TextBlock>
+		</Canvas>
+	</Viewbox>
+</Window>

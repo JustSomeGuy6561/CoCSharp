@@ -2,10 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 1:32 AM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoC.Creatures;
 using CoC.Tools;
 using static CoC.Strings.BodyParts.EyesStrings;
 using static CoC.UI.TextOutput;

@@ -8,7 +8,7 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 using CoC.Tools;
-using System.ComponentModel;
+using CoC.Creatures;
 
 namespace CoC.BodyParts
 {
@@ -25,7 +25,7 @@ namespace CoC.BodyParts
 	//example: 
 	//public class Arms : BodyPartBase<Arms, ArmType>
 	//public class ArmType : BodyPartBehavior<ArmType, Arms>
-	
+
 	public abstract class BodyPartBase<ThisClass,BehaviorClass> where ThisClass : BodyPartBase<ThisClass, BehaviorClass> where BehaviorClass : BodyPartBehavior<BehaviorClass, ThisClass>
 	{
 		public abstract bool Restore();

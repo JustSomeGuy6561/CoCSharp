@@ -2,10 +2,6 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 12:30 AM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CoC.Tools
 {

@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 using CoC.Tools;
+
 namespace CoC.BodyParts
 {
 	/* Behavior or ruleset base class.

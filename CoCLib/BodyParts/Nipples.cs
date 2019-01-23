@@ -2,13 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
-using CoC.BodyParts.SpecialInteraction;
 using CoC.Engine;
 using CoC.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoC.BodyParts.SpecialInteraction;
+using static CoC.Strings.BodyParts.BreastNippleStrings;
 
 namespace CoC.BodyParts
 {
@@ -70,9 +67,9 @@ namespace CoC.BodyParts
 			quadNipples = false;
 		}
 
-		public SimpleDescriptor ShortDescription => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleShortDescription(this);
-		public SimpleDescriptor Description => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleDescription(this);
-		public SimpleDescriptor DescriptionWithLength => () => CoC.Strings.BodyParts.BreastNippleStrings.NippleDescriptionWithLength(this);
+		public SimpleDescriptor ShortDescription => () => NippleShortDescription(this);
+		public SimpleDescriptor Description => () => NippleDescription(this);
+		public SimpleDescriptor DescriptionWithLength => () => NippleDescriptionWithLength(this);
 
 		public static Nipples Generate(PiercingFlags flags)
 		{

@@ -2,10 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
-using System;
 using CoC.Tools;
 using CoC.Strings;
+using CoC.Creatures;
 using CoC.Strings.BodyParts;
+
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
 {

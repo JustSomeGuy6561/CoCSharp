@@ -12,6 +12,7 @@ using CoC.Tools;
 using static CoC.Strings.BodyParts.HairStrings;
 using static CoC.UI.TextOutput;
 using CoC.Engine;
+using CoC.Creatures;
 
 namespace CoC.BodyParts
 {

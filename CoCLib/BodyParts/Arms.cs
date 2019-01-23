@@ -7,6 +7,7 @@ using CoC.EpidermalColors;
 using static CoC.Strings.BodyParts.ArmsStrings;
 using static CoC.UI.TextOutput;
 using CoC.BodyParts.SpecialInteraction;
+using CoC.Creatures;
 
 namespace CoC.BodyParts
 {

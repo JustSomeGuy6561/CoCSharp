@@ -2,13 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 12:22 AM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CoC.BodyParts.SpecialInteraction;
+
+using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Tools;
+using CoC.BodyParts.SpecialInteraction;
 using static CoC.Strings.BodyParts.EarsStrings;
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts

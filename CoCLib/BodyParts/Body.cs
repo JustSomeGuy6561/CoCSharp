@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using CoC.BodyParts.SpecialInteraction;
+using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Strings;
 using CoC.Tools;
+using CoC.BodyParts.SpecialInteraction;
+
 using static CoC.Strings.BodyParts.BodyStrings;
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
@@ -854,10 +854,8 @@ wet cloth - restored
 		public static readonly ToneBodyType GOO = new ToneBodyType(EpidermisType.GOO, Tones.CERULEAN, GooDesc, GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 		//cleaner - we don't need umpteen checks to see if it's "rubbery"
 		public static readonly ToneBodyType RUBBER = new ToneBodyType(EpidermisType.RUBBER, Tones.GRAY, RubberDesc, RubberFullDesc, RubberPlayerStr, RubberTransformStr, RubberRestoreStr);
-		//like a turtle shell
+		//like a turtle shell or bee exoskeleton.
 		public static readonly ToneBodyType CARAPACE = new ToneBodyType(EpidermisType.CARAPACE, Tones.BLACK, CarapaceStr, CarapaceFullDesc, CarapacePlayerStr, CarapaceTransformStr, CarapaceRestoreStr);
-		//or chitin, if you prefer.
-		public static readonly ToneBodyType EXOSKELETON = new ToneBodyType(EpidermisType.EXOSKELETON, Tones.BLACK, ExoskeletonStr, ExoskeletonFullDesc, ExoskeletonPlayerStr, ExoskeletonTransformStr, ExoskeletonRestoreStr);
 
 		public bool isFurry => this is FurBodyType;
 		public bool isTone => this is ToneBodyType;

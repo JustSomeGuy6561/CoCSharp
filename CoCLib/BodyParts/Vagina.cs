@@ -2,10 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:57 PM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoC.Creatures;
 using CoC.Strings;
 using CoC.Tools;
 using static CoC.Strings.BodyParts.ClitVaginaStrings;

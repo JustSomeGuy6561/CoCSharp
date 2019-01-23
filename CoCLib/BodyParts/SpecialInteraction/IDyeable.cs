@@ -3,7 +3,6 @@
 //Author: JustSomeGuy
 //12/30/2018, 12:28 AM
 using CoC.EpidermalColors;
-using CoC.Tools;
 
 namespace CoC.BodyParts.SpecialInteraction
 {

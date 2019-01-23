@@ -45,7 +45,7 @@ namespace CoC.Strings.BodyParts
 
 		public static string FeathersStr()
 		{
-			return "feathers";
+			return "feather";
 		}
 
 		public static string FurStr()
@@ -78,7 +78,7 @@ namespace CoC.Strings.BodyParts
 
 		public static string RubberStr()
 		{
-			return "rubbery skin";
+			return "rubber-skin";
 		}
 	}
 }

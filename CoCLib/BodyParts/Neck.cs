@@ -3,13 +3,11 @@
 //Author: JustSomeGuy
 //12/29/2018, 10:12 PM
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CoC.BodyParts.SpecialInteraction;
+using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Strings;
 using CoC.Tools;
+using CoC.BodyParts.SpecialInteraction;
 using static CoC.Strings.BodyParts.NeckStrings;
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts

@@ -3,10 +3,7 @@
 //Author: JustSomeGuy
 //12/26/2018, 7:56 PM
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 //IK Utils is generally frowned upon, but there's a bunch of useful tools, so.
 namespace CoC.Tools

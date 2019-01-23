@@ -2,12 +2,8 @@
 //Description:
 //Author: JustSomeGuy
 //12/28/2018, 1:35 AM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CoC.Strings.BodyParts;
 using CoC.Tools;
+using CoC.Strings.BodyParts;
 
 namespace CoC.BodyParts
 {

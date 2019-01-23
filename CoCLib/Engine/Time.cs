@@ -21,6 +21,8 @@ namespace CoC.Engine
 
 		public static bool isHalloween => (now.Month == 10 && now.Day >= 28) || (now.Month == 11 && now.Day == 1); //Oct 28 - Nov 1
 		public static bool isChrismas => now.Month == 12 && now.Day >= 25; //Dec 25 - Dec 31
+		public static bool isChrismasDay => now.Month == 12 && now.Day == 25; //Dec 25 - Dec 31
+		public static bool isNewYearsDay => now.Month == 1 && now.Day == 1; //Dec 25 - Dec 31
 		public static bool isValentines => now.Month == 2 && now.Day >= 13 && now.Day <= 15; //Feb 13 - Feb 15
 		public static bool isStPattysDay => now.Month == 3 && now.Day == 17; //Mar 17
 		public static bool isAprilFools => now.Month == 4 && now.Day == 1; //Apr 1

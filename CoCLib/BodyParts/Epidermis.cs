@@ -127,7 +127,6 @@ namespace CoC.BodyParts
 		public static readonly EpidermisType BARK = new EpidermisType(BarkStr, true, true); //do you want the bark to change colors? idk? maybe make that false.
 		public static readonly EpidermisType CARAPACE = new EpidermisType(CarapaceStr, true, true);
 		//cannot be changed by lotion.
-		public static readonly EpidermisType EXOSKELETON = new EpidermisType(ExoskeletonStr, true, false);
 		public static readonly EpidermisType RUBBER = new EpidermisType(RubberStr, true, false); //now its own type. it's simpler this way imo.
 
 	}

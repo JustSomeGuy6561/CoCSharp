@@ -4,6 +4,7 @@
 //1/5/2019, 5:21 PM
 using CoC.Strings.BodyParts;
 using CoC.Tools;
+using CoC.Creatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;

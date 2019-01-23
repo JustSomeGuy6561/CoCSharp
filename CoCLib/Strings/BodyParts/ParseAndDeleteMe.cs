@@ -373,65 +373,7 @@ public static class ParsingMagic
 		// </mod>
 
 		// arms
-		switch (player.arms.type)
-		{
-			case Arms.HARPY:
-				Console.WriteLine("  Feathers hang off your arms from shoulder to wrist, giving them a slightly wing-like look.");
-				break;
 
-			case Arms.WOLF:
-				Console.WriteLine("  Your arms are shaped like a wolf's, overly muscular at your shoulders and biceps before quickly slimming down."
-						  + " They're covered in [furColor] fur and end in paws with just enough flexibility to be used as hands."
-						  + " They're rather difficult to move in directions besides back and forth.");
-				break;
-
-			case Arms.SPIDER:
-				Console.WriteLine("  Shining black exoskeleton covers your arms from the biceps down, resembling a pair of long black gloves from a distance.");
-				break;
-
-			case Arms.BEE:
-				Console.WriteLine("  Shining black exoskeleton covers your arms from the biceps down, resembling a pair of long black gloves ended with a yellow fuzz from a distance.");
-				break;
-
-			case Arms.SALAMANDER:
-				Console.WriteLine("  Shining thick, leathery red scales cover your arms from the biceps down and your fingernails are now short, fiery-red curved claws.");
-				break;
-
-			case Arms.PREDATOR:
-				Console.WriteLine("  Your arms are covered by [skinFurScales] and your fingernails are now [claws].");
-				break;
-
-			case Arms.COCKATRICE:
-				Console.WriteLine("  Your arms are covered in " + (player.hasCockatriceSkin() ? player.skin.furColor : player.hair.color) + " feathers"
-						  + " from the shoulder down to the elbow where they stop in a fluffy cuff. A handful of long feathers grow from your"
-						  + " elbow in the form of vestigial wings, and while they may not let you fly, they certainly help you jump. Your lower"
-						  + " arm is coated in leathery [skinTone] scales and your fingertips terminate in deadly looking avian talons.");
-				break;
-
-			case Arms.RED_PANDA:
-				Console.WriteLine("  Soft, black-brown fluff cover your arms. Your paws have cute, pink paw pads and short claws.");
-				break;
-
-			case Arms.FERRET:
-				Console.WriteLine("  Soft, [hairOrFurColor] fluff covers your arms, turning into"
-						  + " [if (hasFurryUnderBody)[underBody.furColor]|brown-black] fur from elbows to paws."
-						  + " The latter have cute, pink paw pads and short claws.");
-				break;
-
-			case Arms.DOG:
-				Console.WriteLine("  Soft, [hairOrFurColor] fluff covers your arms. Your paw-like hands have cute, pink paw pads and short claws."
-						  + " They should assist you walking on all [if (isTaur)sixs|fours]"
-						  + " just like the hellhounds you saw lurking in the mountains.");
-				break;
-
-			case Arms.CAT:
-			case Arms.FOX:
-				Console.WriteLine("  Soft, [hairOrFurColor] fluff covers your arms. Your paw-like hands have cute, pink paw pads and [claws].");
-				break;
-
-			default:
-				//Nothing here, move along!
-		}
 		//Done with head bits. Move on to body stuff
 		// <mod name="BodyParts.UnderBody" author="Stadler76">
 		if (player.hasCockatriceSkin())

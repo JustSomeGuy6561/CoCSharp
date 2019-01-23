@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/29/2018, 11:03 AM
 
+using CoC.Creatures;
 using CoC.EpidermalColors;
 namespace CoC.Tools
 {
@@ -22,4 +23,7 @@ namespace CoC.Tools
 	//these may be changed or removed.
 	public delegate string AdjColorDescriptor(string adj, EpidermalColors.EpidermalColors color);
 	public delegate void CombatDelegate(Creature player, Creature enemy);
+
+	//every function that uses a button will follow this format. note that with lambdas they can take virtually anything.
+	public delegate void PlayerFunction(Player player);
 }

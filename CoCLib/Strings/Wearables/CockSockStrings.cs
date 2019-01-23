@@ -35,8 +35,8 @@ namespace CoC.Strings.Wearables
 		}
 		public static string amaranthinePlayer(Cock cock)
 		{
-			String retVal = "It's covered by a lacey purple cock-sock";
-			if (cock != CockType.DISPLACER)
+			string retVal = "It's covered by a lacey purple cock-sock";
+			if (cock.type != CockType.DISPLACER)
 				retVal += " that fits somewhat awkwardly on your member";
 			else
 				retVal += " that fits your coeurl cock perfectly";

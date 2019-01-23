@@ -2,12 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 7:29 PM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CoC.Tools;
+using CoC.Creatures;
 using CoC.Strings;
+using CoC.Tools;
 using static CoC.Strings.BodyParts.GillStrings;
 using static CoC.UI.TextOutput;
 //using CoC.

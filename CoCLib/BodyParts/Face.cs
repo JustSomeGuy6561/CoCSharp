@@ -2,15 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 3:04 AM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoC.Creatures;
 using CoC.Strings;
 using CoC.Tools;
 using static CoC.UI.TextOutput;
 using static CoC.Strings.BodyParts.FaceStrings;
-using CoC.BodyParts.SpecialInteraction;
 
 namespace CoC.BodyParts
 {

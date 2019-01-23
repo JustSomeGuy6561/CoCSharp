@@ -3,11 +3,7 @@
 //Author: JustSomeGuy
 //12/29/2018, 2:02 PM
 using CoC.BodyParts;
-using CoC.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoC.Creatures;
 
 namespace CoC.Strings.BodyParts
 {
@@ -15,7 +11,7 @@ namespace CoC.Strings.BodyParts
 	{
 		public static string RemoveAntennaeStr(Antennae antennae, Player p)
 		{
-			return antennae.restoreString(antennae, p);
+			return antennae.restoreString(p);
 		}
 
 		public static string BeeDesc()

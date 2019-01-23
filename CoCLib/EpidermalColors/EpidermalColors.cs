@@ -2,10 +2,6 @@
 //Description:
 //Author: JustSomeGuy
 //12/31/2018, 2:35 AM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 
 namespace CoC.EpidermalColors

@@ -3,9 +3,6 @@
 //Author: JustSomeGuy
 //12/29/2018, 2:06 PM
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CoC.Tools
 {

@@ -2,17 +2,17 @@
 //Description:
 //Author: JustSomeGuy
 //12/30/2018, 10:36 PM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CoC.BodyParts;
 using CoC.BodyParts.SpecialInteraction;
+using CoC.UI;
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
-namespace CoC
+namespace CoC.Creatures
 {
 
-	public class Player : Creature
+	public class Player : CombatCreature, INotifyPropertyChanged
 	{
 		public Player(string creatureName) : base(creatureName)
 		{
@@ -191,9 +191,120 @@ namespace CoC
 			throw new NotImplementedException();
 		}
 
-		public override void InitStats(out int strength, out int toughness, out int speed, out int intelligence, out int lust, out int sensitivity, out int libido, out int corruption, out int money)
+		public override void InitStats(out float strength, out float toughness, out float speed, out float intelligence, out float lust, out float sensitivity, out float libido, out float corruption, out float money)
 		{
 			throw new NotImplementedException();
+		}
+
+		//The following are overridden so controller item can be easily updated. allows communication with UI without UI needing to know what's going on here.
+		public override float level
+		{
+			get => base.level;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.level, value);
+				base.level = value;
+			}
+		}
+		public override float experience
+		{
+			get => base.experience;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.experience, value);
+				base.experience = value;
+			}
+		}
+		public override float strength
+		{
+			get => base.strength;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.strength, value);
+				base.strength = value;
+			}
+		}
+		public override float toughness
+		{
+			get => base.toughness;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.toughness, value);
+				base.toughness = value;
+			}
+		}
+		public override float speed
+		{
+			get => base.speed;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.speed, value);
+				base.speed = value;
+			}
+		}
+		public override float intelligence
+		{
+			get => base.intelligence;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.intelligence, value);
+				base.intelligence = value;
+			}
+		}
+		public override float corruption
+		{
+			get => base.corruption;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.corruption, value);
+				base.corruption = value;
+			}
+		}
+		public override float hp
+		{
+			get => base.hp;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.hp, value);
+				base.hp = value;
+			}
+		}
+		public override float lust
+		{
+			get => base.lust;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.lust, value);
+				base.lust = value;
+			}
+		}
+		public override float fatigue
+		{
+			get => base.fatigue;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.fatigue, value);
+				base.fatigue = value;
+			}
+		}
+		public override float satiety
+		{
+			get => base.satiety;
+			protected set
+			{
+				NotifyPropertyIfChanged(base.satiety, value);
+				base.satiety = value;
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void NotifyPropertyIfChanged<T>(T item, T newValue, [CallerMemberName] string propertyName = "")
+		{
+			if (!item.Equals(newValue))
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
 	}
 }
