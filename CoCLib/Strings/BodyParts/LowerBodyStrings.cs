@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 8:21 PM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	static class LowerBodyStrings
 	{

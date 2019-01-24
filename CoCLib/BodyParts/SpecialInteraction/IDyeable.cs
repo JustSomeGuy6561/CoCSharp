@@ -4,7 +4,7 @@
 //12/30/2018, 12:28 AM
 using CoC.EpidermalColors;
 
-namespace CoC.BodyParts.SpecialInteraction
+namespace  CoC.BodyParts.SpecialInteraction
 {
 	interface IDyeable
 	{

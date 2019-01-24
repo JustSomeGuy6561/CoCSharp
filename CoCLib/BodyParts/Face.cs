@@ -6,9 +6,9 @@ using CoC.Creatures;
 using CoC.Strings;
 using CoC.Tools;
 using static CoC.UI.TextOutput;
-using static CoC.Strings.BodyParts.FaceStrings;
+using static   CoC.BodyParts.FaceStrings;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//Strictly the facial structure. it doesn't include ears or eyes or hair.
 	//They're done seperately. if a tf affects all of them, just call each one.

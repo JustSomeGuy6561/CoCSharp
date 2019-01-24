@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //12/30/2018, 12:28 AM
 
-namespace CoC.BodyParts.SpecialInteraction
+namespace  CoC.BodyParts.SpecialInteraction
 {
 	interface IGrowShrinkable
 	{

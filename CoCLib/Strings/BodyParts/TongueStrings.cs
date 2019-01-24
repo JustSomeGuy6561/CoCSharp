@@ -2,12 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //1/7/2019, 12:52 AM
-using CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace CoC.BodyParts
 {
-	class TongueStrings
+	public partial class TongueType
 	{
 		public static string HumanDesc()
 		{

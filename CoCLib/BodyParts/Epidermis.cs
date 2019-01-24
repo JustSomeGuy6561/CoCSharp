@@ -4,9 +4,9 @@
 //12/26/2018, 7:58 PM
 using CoC.Tools;
 using CoC.EpidermalColors;
-using static CoC.Strings.BodyParts.EpidermisString;
+using static   CoC.BodyParts.EpidermisString;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//Epidermis represents the equivalent to skin on all species.
 

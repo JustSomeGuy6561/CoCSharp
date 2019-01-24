@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:11 PM
 using CoC.EpidermalColors;
-namespace CoC.BodyParts.SpecialInteraction
+namespace  CoC.BodyParts.SpecialInteraction
 {
 	interface IToneable
 	{

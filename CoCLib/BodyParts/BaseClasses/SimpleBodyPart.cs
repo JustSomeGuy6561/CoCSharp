@@ -1,5 +1,5 @@
 ﻿using CoC.Tools;
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	/*
 	 * Simple body parts are different from standard ones in that they do not exist on their own -

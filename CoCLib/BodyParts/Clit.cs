@@ -3,11 +3,11 @@
 //Author: JustSomeGuy
 //1/5/2019, 6:03 PM
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using System.Diagnostics;
 using System.Linq;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 
 

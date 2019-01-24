@@ -2,9 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //1/1/2019, 12:21 PM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class HairStrings
 	{

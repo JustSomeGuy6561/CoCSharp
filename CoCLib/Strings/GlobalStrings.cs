@@ -4,7 +4,7 @@
 //12/29/2018, 2:04 PM
 using System;
 using CoC.Creatures;
-using CoC.BodyParts;
+using  CoC.BodyParts;
 namespace CoC.Strings
 {
 	static class GlobalStrings

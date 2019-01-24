@@ -7,10 +7,10 @@ using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Strings;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
-using static CoC.Strings.BodyParts.NeckStrings;
+using  CoC.BodyParts.SpecialInteraction;
+using static   CoC.BodyParts.NeckStrings;
 using static CoC.UI.TextOutput;
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public class Neck : BodyPartBase<Neck, NeckType>, IDyeable
 	{

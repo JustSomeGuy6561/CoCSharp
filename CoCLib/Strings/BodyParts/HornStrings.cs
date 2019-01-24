@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/12/2019, 3:34 AM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class HornStrings
 	{

@@ -2,9 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 3:05 AM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using CoC.Creatures;
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class AssButtHipStrings
 	{

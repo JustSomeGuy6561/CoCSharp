@@ -10,7 +10,7 @@
 using CoC.Tools;
 using CoC.Creatures;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	/*
 	 * base class for all body parts. a new instance of this class will exist for every creature.

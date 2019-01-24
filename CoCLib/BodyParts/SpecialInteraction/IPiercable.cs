@@ -5,7 +5,7 @@
 
 using CoC.Wearables.Piercings;
 
-namespace CoC.BodyParts.SpecialInteraction
+namespace  CoC.BodyParts.SpecialInteraction
 {
 	//Quick clarification: piercings are permanent in that it remains pierced even if no
 	//jewelry is in this piercing. thus, once pierced, isPierced will return true.

@@ -4,10 +4,10 @@
 //1/6/2019, 1:27 AM
 using CoC.Engine;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
-using static CoC.Strings.BodyParts.BreastNippleStrings;
+using  CoC.BodyParts.SpecialInteraction;
+using static   CoC.BodyParts.BreastNippleStrings;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 
 	/*

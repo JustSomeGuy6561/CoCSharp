@@ -5,10 +5,10 @@
 using System;
 using CoC.Creatures;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using static CoC.UI.TextOutput;
-using static CoC.Strings.BodyParts.HornStrings;
-namespace CoC.BodyParts
+using static   CoC.BodyParts.HornStrings;
+namespace  CoC.BodyParts
 {
 	//Strictly the facial structure. it doesn't include ears or eyes or hair.
 	//They're done seperately. if a tf affects all of them, just call each one.

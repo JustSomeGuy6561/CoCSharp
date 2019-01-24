@@ -4,12 +4,12 @@
 //12/26/2018, 7:58 PM
 using CoC.Tools;
 using CoC.EpidermalColors;
-using static CoC.Strings.BodyParts.ArmsStrings;
+using static   CoC.BodyParts.ArmsStrings;
 using static CoC.UI.TextOutput;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//TODO: add nice comparison shit for this class.
 	public class Arms : BodyPartBase<Arms, ArmType>, IToneAware, IFurAware

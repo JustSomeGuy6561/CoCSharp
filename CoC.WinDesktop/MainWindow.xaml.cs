@@ -24,11 +24,6 @@ namespace CoCWinDesktop
 			InitializeComponent();
 		}
 
-		private void OnLoad(object sender, RoutedEventArgs e)
-		{
-			container.Background = new ImageBrush(Settings.GetBackground());
-		}
-
 		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
 			System.Diagnostics.Process.Start(e.Uri.ToString());
@@ -37,6 +32,16 @@ namespace CoCWinDesktop
 		private void ContinueBtn_Click(object sender, RoutedEventArgs e)
 		{
 
+		}
+
+		private void DataBtn_Click(object sender, RoutedEventArgs e)
+		{
+			Settings.SetBackgroundImage((Settings.currBackground+1) % 6);
+		}
+
+		private void ModThreadBtn_Click(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Process.Start("https://forum.fenoxo.com/threads/coc-revamp-mod.3/");
 		}
 	}
 }

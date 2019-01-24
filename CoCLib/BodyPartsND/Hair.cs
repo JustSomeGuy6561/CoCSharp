@@ -4,17 +4,15 @@
 //12/27/2018, 9:50 PM
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CoC.EpidermalColors;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.Tools;
-using static CoC.Strings.BodyParts.HairStrings;
+using static  CoC.BodyParts.HairStrings;
 using static CoC.UI.TextOutput;
 using CoC.Engine;
 using CoC.Creatures;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 
 

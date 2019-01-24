@@ -3,9 +3,9 @@
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 
 #warning Consider moving black nipples and quad nipples here. 

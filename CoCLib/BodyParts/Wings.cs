@@ -5,10 +5,10 @@
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
-using static CoC.Strings.BodyParts.WingStrings;
+using  CoC.BodyParts.SpecialInteraction;
+using static   CoC.BodyParts.WingStrings;
 using static CoC.UI.TextOutput;
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//note: add itoneaware if you want some wing to update with skin tone. just add a var to the type class enabling or disabling this by type, then implement it
 	//for the love of god, don't do typeof checks. that's just ugly. you will also need to add wings to the list of things subscribing to the skin tone. 
@@ -269,7 +269,7 @@ namespace CoC.BodyParts
 		}
 	}
 
-	public class WingType : BodyPartBehavior<WingType, Wings>
+	public partial class WingType : BodyPartBehavior<WingType, Wings>
 	{
 		public enum BehaviorOnTransform { CONVERT_TO_SMALL, KEEP_SIZE, CONVERT_TO_LARGE }
 

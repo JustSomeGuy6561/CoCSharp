@@ -2,14 +2,14 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:41 PM
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.Wearables.Piercings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public abstract class SimplePiercing<PiercingEnum> : IPiercable<PiercingEnum> where PiercingEnum : System.Enum
 	{

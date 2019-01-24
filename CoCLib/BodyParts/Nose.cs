@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //1/5/2019, 5:54 PM
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public enum NosePiercings {LEFT_NOSTRIL, RIGHT_NOSTRIL, SEPTIMUS, BRIDGE}
 

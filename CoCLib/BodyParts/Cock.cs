@@ -4,10 +4,10 @@
 //12/29/2018, 10:55 PM
 using CoC.Creatures;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
-using static CoC.Strings.BodyParts.CockNBallzStrings;
+using  CoC.BodyParts.SpecialInteraction;
+using static   CoC.BodyParts.CockNBallzStrings;
 using static CoC.UI.TextOutput;
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public enum CockGroup { HUMAN, MAMMALIAN, CORRUPTED, AQUATIC, REPTILIAN, FLYING, OTHER }
 

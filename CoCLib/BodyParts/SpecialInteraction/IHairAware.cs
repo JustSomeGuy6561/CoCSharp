@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/19/2019, 12:00 AM
-namespace CoC.BodyParts.SpecialInteraction
+namespace  CoC.BodyParts.SpecialInteraction
 {
 	public interface IHairAware
 	{

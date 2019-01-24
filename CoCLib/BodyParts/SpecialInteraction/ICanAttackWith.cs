@@ -4,7 +4,7 @@
 //1/7/2019, 2:58 AM
 using CoC.Engine.Combat.Attacks;
 
-namespace CoC.BodyParts.SpecialInteraction
+namespace  CoC.BodyParts.SpecialInteraction
 {
 	public interface ICanAttackWith
 	{

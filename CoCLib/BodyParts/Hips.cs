@@ -3,9 +3,9 @@
 //Author: JustSomeGuy
 //12/28/2018, 1:35 AM
 using CoC.Tools;
-using CoC.Strings.BodyParts;
+using   CoC.BodyParts;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public class Hips
 	{

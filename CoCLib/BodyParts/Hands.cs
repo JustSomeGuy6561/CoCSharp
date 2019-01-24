@@ -2,12 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using static CoC.Strings.BodyParts.HandStrings;
+using static   CoC.BodyParts.HandStrings;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public class Hands : SimpleBodyPart<HandType>, IToneAware
 	{

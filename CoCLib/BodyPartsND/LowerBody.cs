@@ -3,18 +3,15 @@
 //Author: JustSomeGuy
 //12/28/2018, 10:09 PM
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CoC.Tools;
 using static CoC.UI.TextOutput;
-using static CoC.Strings.BodyParts.LowerBodyStrings;
+using static  CoC.BodyParts.LowerBodyStrings;
 using CoC.Strings;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.EpidermalColors;
 using CoC.Creatures;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public class LowerBody : BodyPartBase<LowerBody, LowerBodyType>, IFurAware, IToneAware
 	{

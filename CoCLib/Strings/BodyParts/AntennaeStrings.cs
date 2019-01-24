@@ -2,53 +2,52 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 2:02 PM
-using CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace  CoC.BodyParts
 {
-	static class AntennaeStrings
+	public partial class AntennaeType
 	{
-		public static string RemoveAntennaeStr(Antennae antennae, Player p)
+		private static string RemoveAntennaeStr(Antennae antennae, Player p)
 		{
 			return antennae.restoreString(p);
 		}
 
-		public static string BeeDesc()
+		private static string BeeDesc()
 		{
 			return "bee antennae";
 		}
-		public static string BeeFullDesc(Antennae antennae)
+		private static string BeeFullDesc(Antennae antennae)
 		{
 			return "a pair of cute bee antennae";
 		}
 
-		public static string BeePlayer(Player player)
+		private static string BeePlayer(Player player)
 		{
 			return "Floppy antennae also appear on your skull, bouncing and swaying in the breeze.";
 		}
 
-		public static string BeeTransform(Antennae antennae, Player player)
+		private static string BeeTransform(Antennae antennae, Player player)
 		{
 			return "Your head itches momentarily as two floppy antennae sprout from your " + player.hair.shortDescription() + ". <b>You now have bee antennae!</b>";
 		}
 
-		public static string CockatriceDesc()
+		private static string CockatriceDesc()
 		{
 			return "cockatrice antennae";
 		}
-		public static string CockatriceFullDesc(Antennae antennae)
+		private static string CockatriceFullDesc(Antennae antennae)
 		{
 			return "a pair of quill-like feathers atop the eyes";
 		}
 
-		public static string CockatricePlayer(Player player)
+		private static string CockatricePlayer(Player player)
 		{
 			return "Two long antennae like feathers sit on your hairline, curling over the shape of your head. " +
 				   "They move with every expression, making even the most mundane action seem dramatic.";
 		}
 
-		public static string CockatriceTransform(Antennae antennae, Player player)
+		private static string CockatriceTransform(Antennae antennae, Player player)
 		{
 			//doesn't
 			string retVal = "Your forehead suddenly itches, your fingers instantly there to relieve the stress.";
@@ -66,20 +65,20 @@ namespace CoC.Strings.BodyParts
 			return retVal;
 		}
 
-		public static string CockatriceRestore(Antennae originalType, Player player)
+		private static string CockatriceRestore(Antennae originalType, Player player)
 		{
 			return "You feel your antennae like feathers shrivel at the root, the pair of soft quills falling softly to the"
 				+ " ground as your pores close.\n<b>You’ve lost your antennae like feathers!</b>";
 		}
 
-		public static string BeeRestore(Antennae originalType, Player player)
+		private static string BeeRestore(Antennae originalType, Player player)
 		{
 			return "Your " + player.hair.fullDescription() + " itches so you give it a scratch, only to have your antennae fall to the ground. What a relief."
 				+ "\n<b>You've lost your antennae!</b>";
 		}
 
 		//unused right now. was defined in vanilla as a fallback, which was never used.
-		public static string GenericRestore(Antennae originalType, Player player)
+		private static string GenericRestore(Antennae originalType, Player player)
 		{
 			return "The muscles in your brow clench tightly, and you feel a tremendous pressure on your upper forehead."
 				+ " When it passes, you touch yourself and discover <b>your antennae have vanished</b>!";

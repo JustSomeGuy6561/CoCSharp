@@ -5,7 +5,6 @@
 using CoC.Creatures;
 using CoC.Tools;
 using static CoC.UI.TextOutput;
-using static CoC.Strings.BodyParts.TongueStrings;
 namespace CoC.BodyParts
 {
 	public enum TonguePiercings { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
@@ -68,7 +67,7 @@ namespace CoC.BodyParts
 			else return true;
 		}
 	}
-	public class TongueType : PiercableBodyPartBehavior<TongueType, Tongue, TonguePiercings>
+	public partial class TongueType : PiercableBodyPartBehavior<TongueType, Tongue, TonguePiercings>
 	{
 		private static int indexMaker = 0;
 		private readonly int _index;

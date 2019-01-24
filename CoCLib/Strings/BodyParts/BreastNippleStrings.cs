@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/10/2019, 9:07 PM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using CoC.Tools;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class BreastNippleStrings
 	{

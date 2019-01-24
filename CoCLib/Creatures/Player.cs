@@ -2,8 +2,8 @@
 //Description:
 //Author: JustSomeGuy
 //12/30/2018, 10:36 PM
-using CoC.BodyParts;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.UI;
 using System;
 using System.ComponentModel;

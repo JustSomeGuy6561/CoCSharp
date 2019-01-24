@@ -5,12 +5,12 @@
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.Engine.Combat.Attacks;
-using static CoC.Strings.BodyParts.TailStrings;
+using static   CoC.BodyParts.TailStrings;
 using static CoC.UI.TextOutput;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public enum TailPiercings { SUCCUBUS_SPADE }
 	public class Tail : PiercableBodyPart<Tail, TailType, TailPiercings>, ICanAttackWith, IFurAware, IToneAware

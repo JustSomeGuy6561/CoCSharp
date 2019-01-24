@@ -27,18 +27,7 @@
 		</Style>
 	</Window.Resources>
 	<Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" StretchDirection="Both">
-		<!--`
-		<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="800" Width="1000">
-			<DockPanel.Background>
-				<ImageBrush ImageSource="resources/background1.jpg" />
-			</DockPanel.Background>
-			<Image Height="400" DockPanel.Dock="Top" Source="resources/CoCLogo.png"/>
-			
-		</DockPanel>-->
-		<Canvas Height="800" Width="1000">
-			<Canvas.Background>
-				<ImageBrush ImageSource="resources/background1.jpg" />
-			</Canvas.Background>
+		<Canvas Style="{StaticResource CoCCanvas}">
 			<TextBlock Name="LoadText" Style="{StaticResource TextZone}">
 				<TextBlock.Background>
 					<SolidColorBrush Color="White" Opacity="0.4" />

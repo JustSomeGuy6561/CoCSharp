@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/7/2019, 1:29 AM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class BackStrings
 	{

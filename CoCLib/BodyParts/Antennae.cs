@@ -5,10 +5,10 @@
 using CoC.Tools;
 using CoC.Strings;
 using CoC.Creatures;
-using CoC.Strings.BodyParts;
+using   CoC.BodyParts;
 
 using static CoC.UI.TextOutput;
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public class Antennae : BodyPartBase<Antennae, AntennaeType>
 	{
@@ -68,7 +68,7 @@ namespace CoC.BodyParts
 		}
 	}
 
-	public class AntennaeType : BodyPartBehavior<AntennaeType, Antennae>
+	public partial class AntennaeType : BodyPartBehavior<AntennaeType, Antennae>
 	{
 		private static int indexMaker = 0;
 
@@ -87,13 +87,13 @@ namespace CoC.BodyParts
 
 		//Don't do this to this level lol. I just used lambdas everywhere because i changed the signature in the base to make things behave better globally, and didn't want to deal 
 		//with doing that to everything in here. do use lambdas if you need something not there or you want to use the empty string. 
-		public static readonly AntennaeType NONE = new AntennaeType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), AntennaeStrings.RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
+		public static readonly AntennaeType NONE = new AntennaeType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
 
-		public static readonly AntennaeType BEE = new AntennaeType(AntennaeStrings.BeeDesc, AntennaeStrings.BeeFullDesc,
-			(x, y) => AntennaeStrings.BeePlayer(y), AntennaeStrings.BeeTransform, AntennaeStrings.BeeRestore);
+		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeFullDesc,
+			(x, y) => BeePlayer(y), BeeTransform, BeeRestore);
 
-		public static readonly AntennaeType COCKATRICE = new AntennaeType(AntennaeStrings.CockatriceDesc, AntennaeStrings.CockatriceFullDesc,
-			(x, y) => AntennaeStrings.CockatricePlayer(y), AntennaeStrings.CockatriceTransform, AntennaeStrings.CockatriceRestore);
+		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceFullDesc,
+			(x, y) => CockatricePlayer(y), CockatriceTransform, CockatriceRestore);
 	}
 }
 

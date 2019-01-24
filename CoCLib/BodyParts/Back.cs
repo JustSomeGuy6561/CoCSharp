@@ -5,11 +5,11 @@
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 
 using static CoC.UI.TextOutput;
-using static CoC.Strings.BodyParts.BackStrings;
-namespace CoC.BodyParts
+using static   CoC.BodyParts.BackStrings;
+namespace  CoC.BodyParts
 {
 	//implement i fur aware if you want it to update with the player.
 	//note that if you do so you'll need some sort of logic to deal with if it 

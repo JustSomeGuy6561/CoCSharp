@@ -4,7 +4,7 @@
 //12/30/2018, 10:08 PM
 using CoC.Tools;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	/* Behavior or ruleset base class.
 	 * All body parts are made up of two things: a "ruleset", and then variables

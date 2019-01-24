@@ -1,21 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace CoCWinDesktop
 {
-	public class Settings: INotifyPropertyChanged
+	internal static class Settings
 	{
-		private static readonly string[] backgrounds = { "resources\background0.jpg", "resources\background1.png", "resrouces\background2.png", "resrouces\background3.png", "resrouces\background4.png" };
+		private static readonly string[] backgrounds = { Path.Combine("resources", "background1.jpg"), Path.Combine("resources", "background2.png"), Path.Combine("resources", "background3.png"), Path.Combine("resources", "background4.png"), null, Path.Combine("resources", "backgroundKaizo.png") };
+		private static readonly SolidColorBrush[] textBgs = { newSolidColorWithTransparency(Colors.White, 0.4), new SolidColorBrush(Colors.White), new SolidColorBrush(Color.FromRgb(0xEB, 0xD5, 0xA6)), new SolidColorBrush(Colors.Transparent) };
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
+		private static SolidColorBrush newSolidColorWithTransparency(Color color, double opacity)
+		{
+			return new SolidColorBrush(color)
+			{
+				Opacity = opacity
+			};
+		}
 		public static int currBackground { get; private set; } = 0;
-		public static BitmapImage UpdateBackgroundImage(int index)
+		public static int currentTextBackground { get; private set; } = 0;
+		public static void SetBackgroundImage(int index)
 		{
 			if (index < 0)
 			{
@@ -25,13 +29,46 @@ namespace CoCWinDesktop
 			{
 				index = backgrounds.Length - 1;
 			}
-			currBackground = index;
-			return new BitmapImage(new Uri(backgrounds[index], UriKind.Relative));
+			else if (index != currBackground)
+			{
+				bool wasNightMode = NightMode;
+				currBackground = index;
+				OnBackgroundChanged();
+				if (wasNightMode != NightMode)
+				{
+					OnFontColorChanged();
+				}
+			}
+		}
+		public static string BackgroundImage => backgrounds[currBackground];
+		public static Brush FontColor => NightMode ? (TanBg ? Brushes.White : nightModeBrush ): Brushes.Black;
+		private static readonly Brush nightModeBrush = new SolidColorBrush(Color.FromRgb(0xC0, 0xC0, 0xC0));
+		private static bool NightMode => backgrounds[currBackground] == null;
+		private static bool TanBg => currentTextBackground == 2;
+		public static SolidColorBrush TextBackground => textBgs[currentTextBackground]; 
+		public static event EventHandler BackgroundImageChanged;
+		public static event EventHandler FontColorChanged;
+		public static event EventHandler TextBackgroundChanged;
+
+
+		private static void OnFontColorChanged()
+		{
+			FontColorChanged?.Invoke(null, EventArgs.Empty);
+		}
+		private static void OnBackgroundChanged()
+		{
+			BackgroundImageChanged?.Invoke(null, EventArgs.Empty);
+		}
+		private static void OnTextBackgroundChanged()
+		{
+			TextBackgroundChanged?.Invoke(null, EventArgs.Empty);
 		}
 
-		public static BitmapImage GetBackground()
+		static Settings()
 		{
-			return new BitmapImage(new Uri(backgrounds[currBackground], UriKind.Relative));
+			BackgroundImageChanged += (x, y) => {return; };
+			FontColorChanged += (x, y) => {return; };
+			TextBackgroundChanged += (x, y) => {return; };
 		}
 	}
 }

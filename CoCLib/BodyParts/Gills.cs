@@ -5,10 +5,10 @@
 using CoC.Creatures;
 using CoC.Strings;
 using CoC.Tools;
-using static CoC.Strings.BodyParts.GillStrings;
+using static   CoC.BodyParts.GillStrings;
 using static CoC.UI.TextOutput;
 //using CoC.
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public class Gills : BodyPartBase<Gills, GillType>
 	{

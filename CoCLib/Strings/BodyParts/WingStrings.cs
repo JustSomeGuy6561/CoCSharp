@@ -2,12 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019,A 10:27 PM
-using CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace CoC.BodyParts
 {
-	public static class WingStrings
+	public partial class WingType
 	{
 		public static string NoneDesc()
 		{

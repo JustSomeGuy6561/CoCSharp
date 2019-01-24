@@ -6,7 +6,7 @@ using CoC.Tools;
 using System;
 using System.Linq;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//Container class for all cocks and vags the creature has. why? because it's easier this way.
 	//I can do all the logic in here instead of in creature.

@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //1/5/2019, 5:50 PM
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public enum EyebrowPiercings { LEFT_1, LEFT_2, RIGHT_1, RIGHT_2}
 

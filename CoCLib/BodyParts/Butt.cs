@@ -4,10 +4,10 @@
 //12/26/2018, 11:10 PM
 using System;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
-using CoC.Strings.BodyParts;
+using  CoC.BodyParts.SpecialInteraction;
+using   CoC.BodyParts;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//it's literally just a wrapper for an int.
 	//but now it has validation! woo!

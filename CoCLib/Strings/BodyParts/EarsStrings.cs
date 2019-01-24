@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //01/04/2019, 6:09 PM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class EarsStrings
 	{

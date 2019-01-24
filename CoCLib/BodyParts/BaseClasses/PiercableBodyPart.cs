@@ -3,14 +3,14 @@
 //Author: JustSomeGuy
 //1/1/2019, 9:09 AM
 
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.EpidermalColors;
 using CoC.Wearables.Piercings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public abstract class PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> : BodyPartBase<ThisClass, TypeClass>, IPiercable<PiercingEnum> 
 		where ThisClass : PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> 

@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:21 PM
-using CoC.Strings.BodyParts;
+using   CoC.BodyParts;
 using CoC.Tools;
 using CoC.Creatures;
 using System;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public enum AssLocation { BUTT, MOUTH, NOT_APPLICABLE }
 	public class Ass

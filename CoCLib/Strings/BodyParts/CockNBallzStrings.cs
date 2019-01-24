@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 4:08 PM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class CockNBallzStrings
 	{

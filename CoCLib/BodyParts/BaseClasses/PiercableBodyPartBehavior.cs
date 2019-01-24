@@ -3,11 +3,11 @@
 //Author: JustSomeGuy
 //1/1/2019, 9:09 AM
 
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.EpidermalColors;
 using CoC.Tools;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//i suppose you could prevent piercings if the body type doesn't support it - dragon ears (which are just slits iirc) might not support earrings for example.
 	//but i'm not implementing that. if you want to, you have the option using this class and rewriting the implementations accordingly.

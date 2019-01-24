@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //1/1/2019, 8:41 AM
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//place this in creature. 
 	//all piercing classes are passed a reference to this when initialized. they use it to determine if the creature supports them

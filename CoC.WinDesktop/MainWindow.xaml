@@ -11,7 +11,8 @@
 	</Window.Background>
 	<Window.Resources>
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}"/>
-		<Style x:Key="CreditText" TargetType="{x:Type TextBlock}">
+		<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}" />
+		<Style x:Key="CreditText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}">
 			<Setter Property="FontSize" Value="16" />
 			<Setter Property="Width" Value="1000" />
 			<Setter Property="TextAlignment" Value="Center" />
@@ -27,12 +28,9 @@
 		</Style>
 	</Window.Resources>
 	<Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" StretchDirection="Both">
-		<Canvas Name="container" Height="800" Width="1000">
-			<Canvas.Background>
-				<ImageBrush ImageSource="resources/background1.jpg" />
-			</Canvas.Background>
+		<Canvas Style="{StaticResource CoCCanvas}">
 			<Image Height="400" HorizontalAlignment="Center" Canvas.Left="208.5" Canvas.Top="0" Source="resources/CoCLogo.png"/>
-			<Label Name="revampText" Grid.Row="0" Content="CSharp Rewrite" FontSize="20"  HorizontalAlignment="Center" FontFamily="/CoCWinDesktop;component/resources/#Shrewsbury-Titling" Canvas.Left="638" Canvas.Top="372"/>
+			<TextBlock Name="revampText" Text="CSharp Rewrite" FontSize="20"  HorizontalAlignment="Center" FontFamily="/CoCWinDesktop;component/resources/#Shrewsbury-Titling" Canvas.Left="638" Canvas.Top="372"/>
 			<TextBlock Name="creatorString" Style="{StaticResource CreditText}" Canvas.Top="400">Created by Fenoxo, modded by Kitteh6660.</TextBlock>
 			<TextBlock Name="rewriteString" Style="{StaticResource CreditText}" Canvas.Top="422">Ported to C# by JustSomeGuy.</TextBlock>
 			<TextBlock Name="editString"    Style="{StaticResource CreditText}" Canvas.Top="444"><Bold>Edited By:</Bold> Ashi, SoS, Prisoner 416, Zeikfreid, et. al.</TextBlock>
@@ -42,7 +40,7 @@
 					<ImageBrush ImageSource="resources/disclaimer-bg.png"/>
 				</Canvas.Background>
 				<Image Canvas.Left="10" Canvas.Top="15" Height="60" Width="60" Source="resources/warning.png" />
-				<TextBlock x:Name="warningText" Canvas.Left="80" TextWrapping="Wrap" FontSize="16" Width="540" FontFamily="Palatino Linotype">
+				<TextBlock x:Name="warningText" Canvas.Left="80" TextWrapping="Wrap" FontSize="16" Width="540" Foreground="Black" FontFamily="Palatino Linotype">
 					This is an adult game meant to be played by adults.<LineBreak />
 					Please don't play this game if you're under the age of 18 and certainly don't play if strange and exotic fetishes disgust you.<LineBreak/>
 					<Bold>You have been warned!</Bold>
@@ -58,7 +56,7 @@
 					<ImageBrush ImageSource="resources/button0.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button x:Name="DataBtn" ToolTip="Robin" Canvas.Left="502" Canvas.Top="588" IsEnabled="True" Content="Data">
+			<Button x:Name="DataBtn" ToolTip="Robin" Canvas.Left="502" Canvas.Top="588" IsEnabled="True" Content="Data" Click="DataBtn_Click">
 				<Button.Background>
 					<ImageBrush ImageSource="resources/button0.jpg"/>
 				</Button.Background>
@@ -83,7 +81,7 @@
 					<ImageBrush ImageSource="resources/button0.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button x:Name="ModThreadBtn" ToolTip="Robin" Canvas.Left="659" Canvas.Top="633" IsEnabled="True" Content="Mod Thread">
+			<Button x:Name="ModThreadBtn" ToolTip="Robin" Canvas.Left="659" Canvas.Top="633" IsEnabled="True" Content="Mod Thread" Click="ModThreadBtn_Click">
 				<Button.Background>
 					<ImageBrush ImageSource="resources/button0.jpg"/>
 				</Button.Background>
@@ -91,7 +89,7 @@
 			<TextBlock Name="website" Style="{StaticResource CreditText}" Height="40" FontSize="20" FontWeight="Bold" Canvas.Top="678">
 				<Hyperlink FontSize="20" Foreground="Black" NavigateUri="http://www.fenoxo.com" RequestNavigate="Hyperlink_RequestNavigate">www.fenoxo.com</Hyperlink>
 			</TextBlock>
-			<TextBlock Name="Version" TextAlignment="Right" Width="600" Height="112" Canvas.Left="390" Canvas.Top="678" FontFamily="Palatino Linotype" FontSize="20">
+			<TextBlock Name="Version" TextAlignment="Right" Width="600" Canvas.Right="10" Canvas.Bottom="5" FontFamily="Palatino Linotype" FontSize="16">
 				C# Version 0.1 PreAlpha <LineBreak />
 				Original Game By Fenoxo. <LineBreak />
 				Modded By Kitteh6660. <LineBreak />

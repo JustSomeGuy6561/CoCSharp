@@ -6,10 +6,10 @@
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
-using static CoC.Strings.BodyParts.EarsStrings;
+using  CoC.BodyParts.SpecialInteraction;
+using static   CoC.BodyParts.EarsStrings;
 using static CoC.UI.TextOutput;
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	/*
 	 * Here's to looking half of this shit up. Following your ear from bottom up around the edge:

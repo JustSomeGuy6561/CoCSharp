@@ -5,11 +5,11 @@ using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Strings;
 using CoC.Tools;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 
-using static CoC.Strings.BodyParts.BodyStrings;
+using static   CoC.BodyParts.BodyStrings;
 using static CoC.UI.TextOutput;
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 
 	/*

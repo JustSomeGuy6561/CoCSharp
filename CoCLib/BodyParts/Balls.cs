@@ -2,11 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 10:57 PM
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.Strings;
 using CoC.Tools;
-using static CoC.Strings.BodyParts.CockNBallzStrings;
-namespace CoC.BodyParts
+using static   CoC.BodyParts.CockNBallzStrings;
+namespace  CoC.BodyParts
 {
 	//As of this writing, you can't get more than one set of balls unless you start with more.
 	//this is not my decision - it's simply how the game is rn. i've provided options to remove or add balls,

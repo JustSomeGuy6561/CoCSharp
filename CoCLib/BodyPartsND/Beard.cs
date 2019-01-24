@@ -4,10 +4,10 @@
 //12/26/2018, 8:49 PM
 using CoC.EpidermalColors;
 using System;
-using CoC.BodyParts.SpecialInteraction;
+using  CoC.BodyParts.SpecialInteraction;
 using CoC.Engine;
 
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	//Can't use readonly, as beards aren't constant - they grow.
 	//NOT FULLY DONE. There's no way to check if you can groom to a certain type of beard based on existing hair. 

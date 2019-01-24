@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/11/2019, 6:58 PM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class FaceStrings
 	{

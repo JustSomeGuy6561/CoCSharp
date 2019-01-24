@@ -1,9 +1,9 @@
-﻿using CoC.BodyParts;
+﻿using  CoC.BodyParts;
 using CoC.Creatures;
 
 using System.Text;
 
-namespace CoC.Strings.BodyParts
+namespace   CoC.BodyParts
 {
 	public static class ArmsStrings
 	{

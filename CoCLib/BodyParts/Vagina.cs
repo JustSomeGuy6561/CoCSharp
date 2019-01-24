@@ -5,9 +5,9 @@
 using CoC.Creatures;
 using CoC.Strings;
 using CoC.Tools;
-using static CoC.Strings.BodyParts.ClitVaginaStrings;
+using static   CoC.BodyParts.ClitVaginaStrings;
 using static CoC.UI.TextOutput;
-namespace CoC.BodyParts
+namespace  CoC.BodyParts
 {
 	public enum LabiaPiercings
 	{

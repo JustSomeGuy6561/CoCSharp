@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 10:53 PM
-using CoC.BodyParts;
+using  CoC.BodyParts;
 using System;
 
 namespace CoC.Strings.Wearables
