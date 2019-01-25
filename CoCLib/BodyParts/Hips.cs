@@ -7,7 +7,7 @@ using   CoC.BodyParts;
 
 namespace  CoC.BodyParts
 {
-	public class Hips
+	internal class Hips
 	{
 		public const int BOYISH         =   0;
         public const int SLENDER        =   2;

@@ -11,7 +11,7 @@ namespace  CoC.BodyParts
 	//Container class for all cocks and vags the creature has. why? because it's easier this way.
 	//I can do all the logic in here instead of in creature.
 	//nearly everything here will get a courtesy alias in the creature class so you can be lazy.
-	public class Genitals
+	internal class Genitals
 	{
 		public const int MAX_COCKS = 10;
 		public const int MAX_VAGINAS = 2;
@@ -318,7 +318,7 @@ namespace  CoC.BodyParts
 		}
 	}
 
-	public class Femininity
+	internal class Femininity
 	{
 		public const int MIN_ANDROGENOUS = 35;
 		public const int ANDROGENOUS = 50;
@@ -414,7 +414,7 @@ namespace  CoC.BodyParts
 		public bool isHyperMasculine => femininity <= Femininity.HYPER_MASCULINE;
 	}
 
-	public class FemininityData : EventArgs
+	internal class FemininityData : EventArgs
 	{
 		public readonly int femininity;
 

@@ -2,12 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Engine;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
-using static   CoC.BodyParts.BreastNippleStrings;
 
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 
 	/*
@@ -20,7 +19,7 @@ namespace  CoC.BodyParts
 	 */
 	public enum NippleStatus { NORMAL, FULLY_INVERTED, SLIGHTLY_INVERTED, FUCKABLE, DICK_NIPPLE }
 	public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
-	public class Nipples : SimplePiercing<NipplePiercings>, IGrowShrinkable, ITimeAware
+	internal partial class Nipples : SimplePiercing<NipplePiercings>, IGrowShrinkable, ITimeAware
 	{
 		public const float MIN_NIPPLE_LENGTH = 0.25f;
 		public const float MAX_NIPPLE_LENGTH = 50f;
@@ -221,7 +220,7 @@ namespace  CoC.BodyParts
 			//if it's slightly inverted, pierced, and the countdown is > 0, decrement the counter
 			else if (nippleStatus.IsInverted() && currentJewelryCount > 0 && invertedNippleCountDown > 0)
 			{
-				invertedNippleCountDown-= (short)hoursPassed;
+				invertedNippleCountDown -= (short)hoursPassed;
 				if (invertedNippleCountDown < 0)
 				{
 					invertedNippleCountDown = 0;
@@ -236,7 +235,7 @@ namespace  CoC.BodyParts
 			//if slightly inverted, countdown started, but it's no longer pierced, increment the count.
 			else if (nippleStatus.IsInverted() && currentJewelryCount == 0 && invertedNippleCountDown < INVERTED_COUNTDOWN_TIMER)
 			{
-				invertedNippleCountDown+= (short)hoursPassed;
+				invertedNippleCountDown += (short)hoursPassed;
 				if (invertedNippleCountDown > INVERTED_COUNTDOWN_TIMER)
 				{
 					invertedNippleCountDown = INVERTED_COUNTDOWN_TIMER;

@@ -5,9 +5,8 @@
 using CoC.Creatures;
 using CoC.Strings;
 using CoC.Tools;
-using static   CoC.BodyParts.ClitVaginaStrings;
 using static CoC.UI.TextOutput;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	public enum LabiaPiercings
 	{
@@ -15,7 +14,7 @@ namespace  CoC.BodyParts
 		RIGHT_1, RIGHT_2, RIGHT_3, RIGHT_4, RIGHT_5, RIGHT_6
 	}
 
-	public class Vagina : PiercableBodyPart<Vagina, VaginaType, LabiaPiercings>
+	internal class Vagina : PiercableBodyPart<Vagina, VaginaType, LabiaPiercings>
 	{
 #warning add all the helpers.
 		public readonly Clit clit;
@@ -27,7 +26,7 @@ namespace  CoC.BodyParts
 			type = VaginaType.HUMAN;
 		}
 
-		public static  Vagina GenerateDefault(PiercingFlags flags)
+		public static Vagina GenerateDefault(PiercingFlags flags)
 		{
 			return new Vagina(flags);
 		}
@@ -142,12 +141,12 @@ namespace  CoC.BodyParts
 		#endregion
 	}
 
-	public class VaginaType : PiercableBodyPartBehavior<VaginaType, Vagina, LabiaPiercings>
+	internal partial class VaginaType : PiercableBodyPartBehavior<VaginaType, Vagina, LabiaPiercings>
 	{
 		private static int indexMaker = 0;
 		public readonly int typeCapacityBonus;
 		protected VaginaType(int capacityBonus,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Vagina> fullDesc, TypeAndPlayerDelegate<Vagina> playerDesc, 
+			SimpleDescriptor shortDesc, DescriptorWithArg<Vagina> fullDesc, TypeAndPlayerDelegate<Vagina> playerDesc,
 			ChangeType<Vagina> transform, RestoreType<Vagina> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;

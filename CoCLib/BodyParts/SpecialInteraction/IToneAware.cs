@@ -6,7 +6,7 @@ using CoC.EpidermalColors;
 
 namespace  CoC.BodyParts.SpecialInteraction
 {
-	public interface IToneAware
+	internal interface IToneAware
 	{
 		void reactToChangeInSkinTone(object sender, ToneAwareEventArg e);
 	}

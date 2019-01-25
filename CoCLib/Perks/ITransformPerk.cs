@@ -12,6 +12,6 @@ namespace CoC.Perks
 	interface ITransformPerk
 	{
 		int deltaTransformCount { get; }
-		int delta
+		//int delta
 	}
 }

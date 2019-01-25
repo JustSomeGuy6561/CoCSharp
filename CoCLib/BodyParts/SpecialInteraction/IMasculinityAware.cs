@@ -7,7 +7,7 @@ namespace  CoC.BodyParts.SpecialInteraction
 {
 	//marks a body part as aware of changes in masculinity or femininity.
 	//they may act differently if the player appears feminine or masculine. 
-	public interface IMasculinityChangeAware
+	internal interface IMasculinityChangeAware
 	{
 		void reactToChangesInMasculinity(object sender, FemininityData masculinity);
 	}

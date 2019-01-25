@@ -7,7 +7,7 @@ namespace  CoC.BodyParts
 {
 	public enum NosePiercings {LEFT_NOSTRIL, RIGHT_NOSTRIL, SEPTIMUS, BRIDGE}
 
-	public class Nose : SimplePiercing<NosePiercings>
+	internal class Nose : SimplePiercing<NosePiercings>
 	{
 		protected Nose(PiercingFlags flags) : base(flags) {}
 

@@ -7,58 +7,58 @@ using CoC.Creatures;
 
 namespace   CoC.BodyParts
 {
-	public static class NeckStrings
+	internal partial class NeckType
 	{
 
-		public static string HumanDesc()
+		private static string HumanDesc()
 		{
 
 		}
-		public static string HumanFullDesc(Neck neck)
+		private static string HumanFullDesc(Neck neck)
 		{
 
 		}
-		public static string HumanPlayerStr(Neck neck, Player player)
+		private static string HumanPlayerStr(Neck neck, Player player)
 		{
 
 		}
-		public static string DragonDesc()
+		private static string DragonDesc()
 		{
 
 		}
-		public static string DragonFullDesc(Neck neck)
+		private static string DragonFullDesc(Neck neck)
 		{
 
 		}
-		public static string DragonPlayerStr(Neck neck, Player player)
+		private static string DragonPlayerStr(Neck neck, Player player)
 		{
 
 		}
-		public static string DragonTransformStr(Neck neck, Player player)
+		private static string DragonTransformStr(Neck neck, Player player)
 		{
 
 		}
-		public static string DragonRestoreStr(Neck neck, Player player)
+		private static string DragonRestoreStr(Neck neck, Player player)
 		{
 
 		}
-		public static string CockatriceDesc()
+		private static string CockatriceDesc()
 		{
 
 		}
-		public static string CockatriceFullDesc(Neck neck)
+		private static string CockatriceFullDesc(Neck neck)
 		{
 
 		}
-		public static string CockatricePlayerStr(Neck neck, Player player)
+		private static string CockatricePlayerStr(Neck neck, Player player)
 		{
 
 		}
-		public static string CockatriceTransformStr(Neck neck, Player player)
+		private static string CockatriceTransformStr(Neck neck, Player player)
 		{
 
 		}
-		public static string CockatriceRestoreStr(Neck neck, Player player)
+		private static string CockatriceRestoreStr(Neck neck, Player player)
 		{
 
 		}

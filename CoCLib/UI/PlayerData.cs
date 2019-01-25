@@ -6,8 +6,8 @@ namespace CoC.UI
 	public class PlayerData
 	{
 		private readonly Player player;
-		internal bool playerChangedThisFrame { get; private set; } = false;
-		public PlayerData(Player p)
+		public bool playerChangedThisFrame { get; private set; } = false;
+		internal PlayerData(Player p)
 		{
 			player = p;
 			player.PropertyChanged += Player_PropertyChanged;

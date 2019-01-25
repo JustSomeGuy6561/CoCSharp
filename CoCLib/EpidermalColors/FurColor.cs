@@ -7,7 +7,7 @@ using System.Drawing;
 namespace CoC.EpidermalColors
 {
 	public enum FurMulticolorPattern { STRIPED, SPOTTED, MIXED, NO_PATTERN }
-	public class FurColor
+	internal class FurColor
 	{
 		protected FurMulticolorPattern multiColorPattern;
 		public HairFurColors primaryColor { get; protected set; }

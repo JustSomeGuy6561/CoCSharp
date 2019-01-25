@@ -4,9 +4,10 @@
 //12/29/2018, 11:35 PM
 using CoC.Creatures;
 using static CoC.UI.TextOutput; // Output text. right now it points to Console.WriteLine.
+
 namespace CoC.Strings
 {
-	public static class PlayerAppearanceStrings
+	internal static class PlayerAppearanceStrings
 	{
 		private static string startingRaceString(Player player)
 		{

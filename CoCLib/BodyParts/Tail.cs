@@ -2,18 +2,17 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:26 AM
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
+using CoC.Engine.Combat.Attacks;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
-using CoC.Engine.Combat.Attacks;
-using static   CoC.BodyParts.TailStrings;
 using static CoC.UI.TextOutput;
 
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	public enum TailPiercings { SUCCUBUS_SPADE }
-	public class Tail : PiercableBodyPart<Tail, TailType, TailPiercings>, ICanAttackWith, IFurAware, IToneAware
+	internal class Tail : PiercableBodyPart<Tail, TailType, TailPiercings>, ICanAttackWith, IFurAware, IToneAware
 	{
 		//these are here. i haven't done any restrictions on them, which would be implemented in the type.
 		//updating and reading these would depend on the type. as of now, these only update if the body is using it.
@@ -138,7 +137,7 @@ namespace  CoC.BodyParts
 
 	}
 
-	public class TailType : PiercableBodyPartBehavior<TailType, Tail, TailPiercings>
+	internal partial class TailType : PiercableBodyPartBehavior<TailType, Tail, TailPiercings>
 	{
 		public static int indexMaker = 0;
 

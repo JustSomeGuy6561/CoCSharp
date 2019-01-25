@@ -22,7 +22,7 @@ namespace  CoC.BodyParts
 	 * 3) it then sets your neck length, and returns.
 	 */
 
-	public abstract class BodyPartBehavior<ThisClass, ContainerClass> where ThisClass : BodyPartBehavior<ThisClass, ContainerClass> where ContainerClass : BodyPartBase<ContainerClass, ThisClass>
+	internal abstract class BodyPartBehavior<ThisClass, ContainerClass> where ThisClass : BodyPartBehavior<ThisClass, ContainerClass> where ContainerClass : BodyPartBase<ContainerClass, ThisClass>
 	{
 		
 		public abstract int index { get; }

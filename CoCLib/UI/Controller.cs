@@ -10,19 +10,24 @@ namespace CoC.UI
 {
 
 	//consider firing custom events instead of INotifyPropertyChanged. 
-	public class Controller : INotifyPropertyChanged
+	public sealed class Controller : INotifyPropertyChanged
 	{
 
 		public PlayerData playerData { get; }
 		public List<ButtonData> uiData { get; }
 
 		public CombatData combatData;
-		private readonly Player player;
+		private Player player;
 
-		private Controller(Player p)
+		internal Controller(Player p)
 		{
 			uiData = new List<ButtonData>();
 			playerData = new PlayerData(p);
+			player = p;
+		}
+
+		internal void UpdatePlayer(Player p)
+		{
 			player = p;
 		}
 
@@ -34,19 +39,21 @@ namespace CoC.UI
 		{
 
 		}
+
 		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
-		public bool AddButton(int index, string name, string hint, PlayerFunction callback)
+
+		internal bool AddButton(int index, string name, string hint, PlayerFunction callback)
 		{
 			if (buttonData[index] != null)
 				return false;
-			buttonData[index] = new ButtonData(index, name, hint, callback);
+			buttonData[index] = new ButtonData(index, name, hint, this, callback);
 			return true;
 		}
 
-		public void Call(PlayerFunction callback)
+		internal void Call(PlayerFunction callback)
 		{
 			//clear the old data.
 			uiData.Clear();

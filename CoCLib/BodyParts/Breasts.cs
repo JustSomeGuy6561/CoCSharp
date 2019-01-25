@@ -13,7 +13,7 @@ namespace  CoC.BodyParts
 	//black nipples were a "perk/status effect"
 	//quads behavior varies.
 
-	public class Breasts : IGrowShrinkable
+	internal class Breasts : IGrowShrinkable
 	{
 		public CupSize cupSize
 		{

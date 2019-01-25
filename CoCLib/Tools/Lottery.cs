@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CoC.Tools
 {
-	public class Lottery<T> : IRandom<T>
+	internal class Lottery<T> : IRandom<T>
 	{
 		private List<T> data = new List<T>();
 

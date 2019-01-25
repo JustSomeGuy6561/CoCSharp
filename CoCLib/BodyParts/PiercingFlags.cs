@@ -8,7 +8,7 @@ namespace  CoC.BodyParts
 	//place this in creature. 
 	//all piercing classes are passed a reference to this when initialized. they use it to determine if the creature supports them
 	//it's simpler than having them all aware of an event and reacting to it that way.
-	public class PiercingFlags
+	internal class PiercingFlags
 	{
 		//disables piercings globally for this creature. probably useless unless we implement a Turn Off Piercings a la worms/watersports.
 		public bool enabled;

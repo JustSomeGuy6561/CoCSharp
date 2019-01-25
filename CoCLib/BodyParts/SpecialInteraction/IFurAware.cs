@@ -6,7 +6,7 @@ using CoC.EpidermalColors;
 
 namespace  CoC.BodyParts.SpecialInteraction
 {
-	public interface IFurAware
+	internal interface IFurAware
 	{
 		//stores current fur color. 
 		void reactToChangeInFurColor(object sender, FurAwareEventArg e);

@@ -14,7 +14,7 @@ namespace CoC.Engine
 	//this is useful when dealing with body parts on enemies, who frankly won't exist in memory long enough to matter
 	//so why bother even adding them to the list of things to update every hour?
 	//but it also means NPCs who have pregnancies or whatever need to subsribe. 
-	public interface ITimeAware
+	internal interface ITimeAware
 	{
 		//generally will be called every hour, but certain actions can cause more than one hour
 		//to progress before the player can be made aware of it (generally sex or combat loss)

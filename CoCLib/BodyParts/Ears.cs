@@ -3,13 +3,12 @@
 //Author: JustSomeGuy
 //12/27/2018, 12:22 AM
 
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
-using static   CoC.BodyParts.EarsStrings;
 using static CoC.UI.TextOutput;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	/*
 	 * Here's to looking half of this shit up. Following your ear from bottom up around the edge:
@@ -21,17 +20,17 @@ namespace  CoC.BodyParts
 	 * (which i suppose is also true for elfin ears); i did what i could, sue me. 
 	 */
 	public enum EAR_PIERCING
-	{    
+	{
 		LEFT_LOBE_1, LEFT_LOBE_2, LEFT_LOBE_3, LEFT_UPPER_LOBE,
 		LEFT_AURICAL_1, LEFT_AURICAL_2, LEFT_AURICAL_3, LEFT_AURICAL_4,
-		LEFT_HELIX_1, LEFT_HELIX_2,	LEFT_HELIX_3, LEFT_HELIX_4,
+		LEFT_HELIX_1, LEFT_HELIX_2, LEFT_HELIX_3, LEFT_HELIX_4,
 		LEFT_ANTI_HELIX,
 		RIGHT_LOBE_1, RIGHT_LOBE_2, RIGHT_LOBE_3, RIGHT_UPPER_LOBE,
 		RIGHT_AURICAL_1, RIGHT_AURICAL_2, RIGHT_AURICAL_3, RIGHT_AURICAL_4,
 		RIGHT_HELIX_1, RIGHT_HELIX_2, RIGHT_HELIX_3, RIGHT_HELIX_4,
 		RIGHT_ANTI_HELIX
 	}
-	public class Ears : PiercableBodyPart<Ears, EarType, EAR_PIERCING>, IFurAware
+	internal class Ears : PiercableBodyPart<Ears, EarType, EAR_PIERCING>, IFurAware
 	{
 		public FurColor furColor { get; protected set; } = FurColor.Generate(HairFurColors.BLACK);
 		protected Ears(PiercingFlags flags) : base(flags)
@@ -104,13 +103,13 @@ namespace  CoC.BodyParts
 			}
 		}
 	}
-	public class EarType : PiercableBodyPartBehavior<EarType, Ears, EAR_PIERCING>
+	internal partial class EarType : PiercableBodyPartBehavior<EarType, Ears, EAR_PIERCING>
 	{
 		private static int indexMaker = 0;
 
 		private readonly int _index;
 
-		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, TypeAndPlayerDelegate<Ears> playerDesc, 
+		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, TypeAndPlayerDelegate<Ears> playerDesc,
 			ChangeType<Ears> transform, RestoreType<Ears> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;

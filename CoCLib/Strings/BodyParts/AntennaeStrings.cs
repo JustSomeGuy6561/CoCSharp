@@ -6,7 +6,7 @@ using CoC.Creatures;
 
 namespace  CoC.BodyParts
 {
-	public partial class AntennaeType
+	internal partial class AntennaeType
 	{
 		private static string RemoveAntennaeStr(Antennae antennae, Player p)
 		{

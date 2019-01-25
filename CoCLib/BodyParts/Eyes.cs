@@ -4,9 +4,8 @@
 //12/27/2018, 1:32 AM
 using CoC.Creatures;
 using CoC.Tools;
-using static   CoC.BodyParts.EyesStrings;
 using static CoC.UI.TextOutput;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	public enum EYE_COLOR
 	{
@@ -14,9 +13,9 @@ namespace  CoC.BodyParts
 		//AND NOW THE CRAZY COLORS - WHY NOT?
 		YELLOW, PINK, ORANGE, INDIGO, TAN
 	}
-	public class Eyes : BodyPartBase<Eyes, EyeType>
+	internal partial class Eyes : BodyPartBase<Eyes, EyeType>
 	{
-		protected EyeType _eyeType = EyeType.HUMAN; 
+		protected EyeType _eyeType = EyeType.HUMAN;
 
 		EYE_COLOR leftIrisColor;
 		//People really like heterochromia in PCs.
@@ -142,9 +141,9 @@ namespace  CoC.BodyParts
 		WHITE, //Human/Anthropomorphic
 		BLACK, //Sand Trap
 		CLEAR//, //Everything else
-		//RED   //Vampires? (silly mode, i guess)
+			 //RED   //Vampires? (silly mode, i guess)
 	}
-	public class EyeType : BodyPartBehavior<EyeType,Eyes>
+	internal partial class EyeType : BodyPartBehavior<EyeType, Eyes>
 	{
 		private const string SCLERA_BLACK = "black";
 		private const string SCLERA_WHITE = "white";
@@ -161,7 +160,7 @@ namespace  CoC.BodyParts
 		private readonly int _index;
 
 
-		protected EyeType(SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc, ChangeType<Eyes> transform, 
+		protected EyeType(SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc, ChangeType<Eyes> transform,
 			RestoreType<Eyes> restore, int numEyes = 2, SCLERA_COLOR color = SCLERA_COLOR.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			eyeCount = numEyes;

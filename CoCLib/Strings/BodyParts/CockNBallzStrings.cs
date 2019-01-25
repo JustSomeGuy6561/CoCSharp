@@ -2,425 +2,427 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 4:08 PM
-using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace   CoC.BodyParts
+namespace CoC.BodyParts
 {
-	public static class CockNBallzStrings
+	internal partial class CockType
 	{
-		public static string BallsDescript(int ballcount, int size)
+		private static string HumanDesc()
 		{
 
 		}
-
-		public static string BallsFullDesc(Balls balls)
+		private static string HumanFullDesc(Cock cock)
 		{
 
 		}
-
-		public static string BallsPlayerStr(Balls balls, Player player)
+		private static string HumanPlayerStr(Cock cock, Player player)
 		{
 
 		}
-
-		public static string HumanDesc()
+		private static string HumanTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string HumanFullDesc(Cock cock)
+		private static string HumanRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string HumanPlayerStr(Cock cock, Player player)
+		private static string HorseDesc()
 		{
 
 		}
-		public static string HumanTransformStr(Cock cock, Player player)
+		private static string HorseFullDesc(Cock cock)
 		{
 
 		}
-		public static string HumanRestoreStr(Cock cock, Player player)
+		private static string HorsePlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string HorseDesc()
+		private static string HorseTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string HorseFullDesc(Cock cock)
+		private static string HorseRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string HorsePlayerStr(Cock cock, Player player)
+		private static string DogDesc()
 		{
 
 		}
-		public static string HorseTransformStr(Cock cock, Player player)
+		private static string DogFullDesc(Cock cock)
 		{
 
 		}
-		public static string HorseRestoreStr(Cock cock, Player player)
+		private static string DogPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DogDesc()
+		private static string DogTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DogFullDesc(Cock cock)
+		private static string DogRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DogPlayerStr(Cock cock, Player player)
+		private static string DemonDesc()
 		{
 
 		}
-		public static string DogTransformStr(Cock cock, Player player)
+		private static string DemonFullDesc(Cock cock)
 		{
 
 		}
-		public static string DogRestoreStr(Cock cock, Player player)
+		private static string DemonPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DemonDesc()
+		private static string DemonTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DemonFullDesc(Cock cock)
+		private static string DemonRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DemonPlayerStr(Cock cock, Player player)
+		private static string TentacleDesc()
 		{
 
 		}
-		public static string DemonTransformStr(Cock cock, Player player)
+		private static string TentacleFullDesc(Cock cock)
 		{
 
 		}
-		public static string DemonRestoreStr(Cock cock, Player player)
+		private static string TentaclePlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string TentacleDesc()
+		private static string TentacleTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string TentacleFullDesc(Cock cock)
+		private static string TentacleRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string TentaclePlayerStr(Cock cock, Player player)
+		private static string CatDesc()
 		{
 
 		}
-		public static string TentacleTransformStr(Cock cock, Player player)
+		private static string CatFullDesc(Cock cock)
 		{
 
 		}
-		public static string TentacleRestoreStr(Cock cock, Player player)
+		private static string CatPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string CatDesc()
+		private static string CatTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string CatFullDesc(Cock cock)
+		private static string CatRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string CatPlayerStr(Cock cock, Player player)
+		private static string LizardDesc()
 		{
 
 		}
-		public static string CatTransformStr(Cock cock, Player player)
+		private static string LizardFullDesc(Cock cock)
 		{
 
 		}
-		public static string CatRestoreStr(Cock cock, Player player)
+		private static string LizardPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string LizardDesc()
+		private static string LizardTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string LizardFullDesc(Cock cock)
+		private static string LizardRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string LizardPlayerStr(Cock cock, Player player)
+		private static string AnemoneDesc()
 		{
 
 		}
-		public static string LizardTransformStr(Cock cock, Player player)
+		private static string AnemoneFullDesc(Cock cock)
 		{
 
 		}
-		public static string LizardRestoreStr(Cock cock, Player player)
+		private static string AnemonePlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string AnemoneDesc()
+		private static string AnemoneTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string AnemoneFullDesc(Cock cock)
+		private static string AnemoneRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string AnemonePlayerStr(Cock cock, Player player)
+		private static string KangarooDesc()
 		{
 
 		}
-		public static string AnemoneTransformStr(Cock cock, Player player)
+		private static string KangarooFullDesc(Cock cock)
 		{
 
 		}
-		public static string AnemoneRestoreStr(Cock cock, Player player)
+		private static string KangarooPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string KangarooDesc()
+		private static string KangarooTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string KangarooFullDesc(Cock cock)
+		private static string KangarooRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string KangarooPlayerStr(Cock cock, Player player)
+		private static string DragonDesc()
 		{
 
 		}
-		public static string KangarooTransformStr(Cock cock, Player player)
+		private static string DragonFullDesc(Cock cock)
 		{
 
 		}
-		public static string KangarooRestoreStr(Cock cock, Player player)
+		private static string DragonPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DragonDesc()
+		private static string DragonTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DragonFullDesc(Cock cock)
+		private static string DragonRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DragonPlayerStr(Cock cock, Player player)
+		private static string DisplacerDesc()
 		{
 
 		}
-		public static string DragonTransformStr(Cock cock, Player player)
+		private static string DisplacerFullDesc(Cock cock)
 		{
 
 		}
-		public static string DragonRestoreStr(Cock cock, Player player)
+		private static string DisplacerPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DisplacerDesc()
+		private static string DisplacerTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DisplacerFullDesc(Cock cock)
+		private static string DisplacerRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string DisplacerPlayerStr(Cock cock, Player player)
+		private static string FoxDesc()
 		{
 
 		}
-		public static string DisplacerTransformStr(Cock cock, Player player)
+		private static string FoxFullDesc(Cock cock)
 		{
 
 		}
-		public static string DisplacerRestoreStr(Cock cock, Player player)
+		private static string FoxPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string FoxDesc()
+		private static string FoxTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string FoxFullDesc(Cock cock)
+		private static string FoxRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string FoxPlayerStr(Cock cock, Player player)
+		private static string BeeDesc()
 		{
 
 		}
-		public static string FoxTransformStr(Cock cock, Player player)
+		private static string BeeFullDesc(Cock cock)
 		{
 
 		}
-		public static string FoxRestoreStr(Cock cock, Player player)
+		private static string BeePlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string BeeDesc()
+		private static string BeeTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string BeeFullDesc(Cock cock)
+		private static string BeeRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string BeePlayerStr(Cock cock, Player player)
+		private static string PigDesc()
 		{
 
 		}
-		public static string BeeTransformStr(Cock cock, Player player)
+		private static string PigFullDesc(Cock cock)
 		{
 
 		}
-		public static string BeeRestoreStr(Cock cock, Player player)
+		private static string PigPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string PigDesc()
+		private static string PigTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string PigFullDesc(Cock cock)
+		private static string PigRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string PigPlayerStr(Cock cock, Player player)
+		private static string AvianDesc()
 		{
 
 		}
-		public static string PigTransformStr(Cock cock, Player player)
+		private static string AvianFullDesc(Cock cock)
 		{
 
 		}
-		public static string PigRestoreStr(Cock cock, Player player)
+		private static string AvianPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string AvianDesc()
+		private static string AvianTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string AvianFullDesc(Cock cock)
+		private static string AvianRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string AvianPlayerStr(Cock cock, Player player)
+		private static string RhinoDesc()
 		{
 
 		}
-		public static string AvianTransformStr(Cock cock, Player player)
+		private static string RhinoFullDesc(Cock cock)
 		{
 
 		}
-		public static string AvianRestoreStr(Cock cock, Player player)
+		private static string RhinoPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string RhinoDesc()
+		private static string RhinoTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string RhinoFullDesc(Cock cock)
+		private static string RhinoRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string RhinoPlayerStr(Cock cock, Player player)
+		private static string EchidnaDesc()
 		{
 
 		}
-		public static string RhinoTransformStr(Cock cock, Player player)
+		private static string EchidnaFullDesc(Cock cock)
 		{
 
 		}
-		public static string RhinoRestoreStr(Cock cock, Player player)
+		private static string EchidnaPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string EchidnaDesc()
+		private static string EchidnaTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string EchidnaFullDesc(Cock cock)
+		private static string EchidnaRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string EchidnaPlayerStr(Cock cock, Player player)
+		private static string WolfDesc()
 		{
 
 		}
-		public static string EchidnaTransformStr(Cock cock, Player player)
+		private static string WolfFullDesc(Cock cock)
 		{
 
 		}
-		public static string EchidnaRestoreStr(Cock cock, Player player)
+		private static string WolfPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string WolfDesc()
+		private static string WolfTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string WolfFullDesc(Cock cock)
+		private static string WolfRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string WolfPlayerStr(Cock cock, Player player)
+		private static string RedPandaDesc()
 		{
 
 		}
-		public static string WolfTransformStr(Cock cock, Player player)
+		private static string RedPandaFullDesc(Cock cock)
 		{
 
 		}
-		public static string WolfRestoreStr(Cock cock, Player player)
+		private static string RedPandaPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string RedPandaDesc()
+		private static string RedPandaTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string RedPandaFullDesc(Cock cock)
+		private static string RedPandaRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string RedPandaPlayerStr(Cock cock, Player player)
+		private static string FerretDesc()
 		{
 
 		}
-		public static string RedPandaTransformStr(Cock cock, Player player)
+		private static string FerretFullDesc(Cock cock)
 		{
 
 		}
-		public static string RedPandaRestoreStr(Cock cock, Player player)
+		private static string FerretPlayerStr(Cock cock, Player player)
 		{
 
 		}
-		public static string FerretDesc()
+		private static string FerretTransformStr(Cock cock, Player player)
 		{
 
 		}
-		public static string FerretFullDesc(Cock cock)
+		private static string FerretRestoreStr(Cock cock, Player player)
 		{
 
 		}
-		public static string FerretPlayerStr(Cock cock, Player player)
+	}
+
+	internal partial class Balls
+	{
+		private static string BallsDescript(int ballcount, int size)
 		{
 
 		}
-		public static string FerretTransformStr(Cock cock, Player player)
+
+		private static string BallsFullDesc(Balls balls)
 		{
 
 		}
-		public static string FerretRestoreStr(Cock cock, Player player)
+
+		private static string BallsPlayerStr(Balls balls, Player player)
 		{
 
 		}

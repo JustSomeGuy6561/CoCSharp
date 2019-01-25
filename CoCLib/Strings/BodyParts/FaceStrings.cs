@@ -7,521 +7,521 @@ using CoC.Creatures;
 
 namespace   CoC.BodyParts
 {
-	public static class FaceStrings
+	internal partial class FaceType
 	{
-		public static string HumanShortDesc()
+		private static string HumanShortDesc()
 		{
 			return "human face";
 		}
-		public static string HumanFullDesc(Face face)
+		private static string HumanFullDesc(Face face)
 		{
 
 		}
-		public static string HumanPlayerStr(Face face, Player player)
+		private static string HumanPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string HumanTransformStr(Face face, Player player)
+		private static string HumanTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string HumanRestoreStr(Face face, Player player)
+		private static string HumanRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string HorseShortDesc()
+		private static string HorseShortDesc()
 		{
 			return "horse face";
 		}
-		public static string HorseFullDesc(Face face)
+		private static string HorseFullDesc(Face face)
 		{
 
 		}
-		public static string HorsePlayerStr(Face face, Player player)
+		private static string HorsePlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string HorseTransformStr(Face face, Player player)
+		private static string HorseTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string HorseRestoreStr(Face face, Player player)
+		private static string HorseRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string DogShortDesc()
+		private static string DogShortDesc()
 		{
 			return "dog face";
 		}
-		public static string DogFullDesc(Face face)
+		private static string DogFullDesc(Face face)
 		{
 
 		}
-		public static string DogPlayerStr(Face face, Player player)
+		private static string DogPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string DogTransformStr(Face face, Player player)
+		private static string DogTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string DogRestoreStr(Face face, Player player)
+		private static string DogRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string CowShortDesc()
+		private static string CowShortDesc()
 		{
 			return "cow-like face";
 		}
-		public static string MinotaurShortDesc()
+		private static string MinotaurShortDesc()
 		{
 			return "bull face";
 		}
-		public static string MinotaurFullDesc(Face face)
+		private static string MinotaurFullDesc(Face face)
 		{
 
 		}
-		public static string MinotaurPlayerStr(Face face, Player player)
+		private static string MinotaurPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string MinotaurTransformStr(Face face, Player player)
+		private static string MinotaurTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string MinotaurRestoreStr(Face face, Player player)
+		private static string MinotaurRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string SharkShortDesc()
+		private static string SharkShortDesc()
 		{
 			return "shark teeth";
 		}
-		public static string SharkFullDesc(Face face)
+		private static string SharkFullDesc(Face face)
 		{
 
 		}
-		public static string SharkPlayerStr(Face face, Player player)
+		private static string SharkPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string SharkTransformStr(Face face, Player player)
+		private static string SharkTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string SharkRestoreStr(Face face, Player player)
+		private static string SharkRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string SnakeShortDesc()
+		private static string SnakeShortDesc()
 		{
 			return "snake fangs";
 		}
-		public static string SnakeFullDesc(Face face)
+		private static string SnakeFullDesc(Face face)
 		{
 
 		}
-		public static string SnakePlayerStr(Face face, Player player)
+		private static string SnakePlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string SnakeTransformStr(Face face, Player player)
+		private static string SnakeTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string SnakeRestoreStr(Face face, Player player)
+		private static string SnakeRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string CatGirlShortDesc()
+		private static string CatGirlShortDesc()
 		{
 			return "cat-girl face";
 
 		}
-		public static string CatMorphShortDesc()
+		private static string CatMorphShortDesc()
 		{
 			return "feline face";
 		}
-		public static string CatFullDesc(Face face)
+		private static string CatFullDesc(Face face)
 		{
 
 		}
-		public static string CatPlayerStr(Face face, Player player)
+		private static string CatPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string CatTransformStr(Face face, Player player)
+		private static string CatTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string CatRestoreStr(Face face, Player player)
+		private static string CatRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string LizardShortDesc()
+		private static string LizardShortDesc()
 		{
 			return "lizard face";
 		}
-		public static string LizardFullDesc(Face face)
+		private static string LizardFullDesc(Face face)
 		{
 
 		}
-		public static string LizardPlayerStr(Face face, Player player)
+		private static string LizardPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string LizardTransformStr(Face face, Player player)
+		private static string LizardTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string LizardRestoreStr(Face face, Player player)
+		private static string LizardRestoreStr(Face face, Player player)
 		{
 
 		}
 
-		public static string BunnyFirstLevelShortDesc()
+		private static string BunnyFirstLevelShortDesc()
 		{
 			return "bunny-like teeth";
 		}
-		public static string BunnySecondLevelShortDesc()
+		private static string BunnySecondLevelShortDesc()
 		{
 			return "bunny face";
 		}
-		public static string BunnyFullDesc(Face face)
+		private static string BunnyFullDesc(Face face)
 		{
 
 		}
-		public static string BunnyPlayerStr(Face face, Player player)
+		private static string BunnyPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string BunnyTransformStr(Face face, Player player)
+		private static string BunnyTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string BunnyRestoreStr(Face face, Player player)
+		private static string BunnyRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string KangarooShortDesc()
+		private static string KangarooShortDesc()
 		{
 			return "kangaroo face";
 		}
-		public static string KangarooFullDesc(Face face)
+		private static string KangarooFullDesc(Face face)
 		{
 
 		}
-		public static string KangarooPlayerStr(Face face, Player player)
+		private static string KangarooPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string KangarooTransformStr(Face face, Player player)
+		private static string KangarooTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string KangarooRestoreStr(Face face, Player player)
+		private static string KangarooRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string SpiderShortDesc()
+		private static string SpiderShortDesc()
 		{
 			return "spider fangs";
 		}
-		public static string SpiderFullDesc(Face face)
+		private static string SpiderFullDesc(Face face)
 		{
 
 		}
-		public static string SpiderPlayerStr(Face face, Player player)
+		private static string SpiderPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string SpiderTransformStr(Face face, Player player)
+		private static string SpiderTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string SpiderRestoreStr(Face face, Player player)
+		private static string SpiderRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string KitsuneShortDesc()
+		private static string KitsuneShortDesc()
 		{
 			return "kitsune face";
 		}
-		public static string FoxShortDesc()
+		private static string FoxShortDesc()
 		{
 			return "fox face";
 		}
-		public static string FoxFullDesc(Face face)
+		private static string FoxFullDesc(Face face)
 		{
 
 		}
-		public static string FoxPlayerStr(Face face, Player player)
+		private static string FoxPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string FoxTransformStr(Face face, Player player)
+		private static string FoxTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string FoxRestoreStr(Face face, Player player)
+		private static string FoxRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string DragonShortDesc()
+		private static string DragonShortDesc()
 		{
 			return "dragon face";
 		}
-		public static string DragonFullDesc(Face face)
+		private static string DragonFullDesc(Face face)
 		{
 
 		}
-		public static string DragonPlayerStr(Face face, Player player)
+		private static string DragonPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string DragonTransformStr(Face face, Player player)
+		private static string DragonTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string DragonRestoreStr(Face face, Player player)
+		private static string DragonRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string RaccoonMaskShortDesc()
+		private static string RaccoonMaskShortDesc()
 		{
 			return "raccoon mask";
 		}
-		public static string RaccoonFaceShortDesc()
+		private static string RaccoonFaceShortDesc()
 		{
 			return "raccoon face";
 		}
-		public static string RaccoonFullDesc(Face face)
+		private static string RaccoonFullDesc(Face face)
 		{
 
 		}
-		public static string RaccoonPlayerStr(Face face, Player player)
+		private static string RaccoonPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string RaccoonTransformStr(Face face, Player player)
+		private static string RaccoonTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string RaccoonRestoreStr(Face face, Player player)
+		private static string RaccoonRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string MouseTeethShortDesc()
+		private static string MouseTeethShortDesc()
 		{
 			return "mouse-like teeth";
 		}
-		public static string MouseFaceShortDesc()
+		private static string MouseFaceShortDesc()
 		{
 			return "mouse face";
 		}
-		public static string MouseFullDesc(Face face)
+		private static string MouseFullDesc(Face face)
 		{
 
 		}
-		public static string MousePlayerStr(Face face, Player player)
+		private static string MousePlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string MouseTransformStr(Face face, Player player)
+		private static string MouseTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string MouseRestoreStr(Face face, Player player)
+		private static string MouseRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string FerretMaskShortDesc()
+		private static string FerretMaskShortDesc()
 		{
 			return "ferret mask";
 
 		}
-		public static string FerretFaceShortDesc()
+		private static string FerretFaceShortDesc()
 		{
 			return "ferret face";
 		}
-		public static string FerretFullDesc(Face face)
+		private static string FerretFullDesc(Face face)
 		{
 
 		}
-		public static string FerretPlayerStr(Face face, Player player)
+		private static string FerretPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string FerretTransformStr(Face face, Player player)
+		private static string FerretTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string FerretRestoreStr(Face face, Player player)
+		private static string FerretRestoreStr(Face face, Player player)
 		{
 
 		}
 
-		public static string PigShortDesc()
+		private static string PigShortDesc()
 		{
 			return "pig face";
 		}
-		public static string BoarShortDesc()
+		private static string BoarShortDesc()
 		{
 			return "boar face";
 		}
-		public static string PigFullDesc(Face face)
+		private static string PigFullDesc(Face face)
 		{
 
 		}
-		public static string PigPlayerStr(Face face, Player player)
+		private static string PigPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string PigTransformStr(Face face, Player player)
+		private static string PigTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string PigRestoreStr(Face face, Player player)
+		private static string PigRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string RhinoShortDesc()
+		private static string RhinoShortDesc()
 		{
 			return "rhino face";
 		}
-		public static string RhinoFullDesc(Face face)
+		private static string RhinoFullDesc(Face face)
 		{
 
 		}
-		public static string RhinoPlayerStr(Face face, Player player)
+		private static string RhinoPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string RhinoTransformStr(Face face, Player player)
+		private static string RhinoTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string RhinoRestoreStr(Face face, Player player)
+		private static string RhinoRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string EchidnaShortDesc()
+		private static string EchidnaShortDesc()
 		{
 			return "echidna face";
 		}
-		public static string EchidnaFullDesc(Face face)
+		private static string EchidnaFullDesc(Face face)
 		{
 
 		}
-		public static string EchidnaPlayerStr(Face face, Player player)
+		private static string EchidnaPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string EchidnaTransformStr(Face face, Player player)
+		private static string EchidnaTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string EchidnaRestoreStr(Face face, Player player)
+		private static string EchidnaRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string DeerShortDesc()
+		private static string DeerShortDesc()
 		{
 			return "deer face";
 		}
-		public static string DeerFullDesc(Face face)
+		private static string DeerFullDesc(Face face)
 		{
 
 		}
-		public static string DeerPlayerStr(Face face, Player player)
+		private static string DeerPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string DeerTransformStr(Face face, Player player)
+		private static string DeerTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string DeerRestoreStr(Face face, Player player)
+		private static string DeerRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string WolfShortDesc()
+		private static string WolfShortDesc()
 		{
 			return "wolf face";
 		}
-		public static string WolfFullDesc(Face face)
+		private static string WolfFullDesc(Face face)
 		{
 
 		}
-		public static string WolfPlayerStr(Face face, Player player)
+		private static string WolfPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string WolfTransformStr(Face face, Player player)
+		private static string WolfTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string WolfRestoreStr(Face face, Player player)
+		private static string WolfRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string CockatriceShortDesc()
+		private static string CockatriceShortDesc()
 		{
 			return "cockatrice face";
 		}
-		public static string CockatriceFullDesc(Face face)
+		private static string CockatriceFullDesc(Face face)
 		{
 
 		}
-		public static string CockatricePlayerStr(Face face, Player player)
+		private static string CockatricePlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string CockatriceTransformStr(Face face, Player player)
+		private static string CockatriceTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string CockatriceRestoreStr(Face face, Player player)
+		private static string CockatriceRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string BeakShortDesc()
+		private static string BeakShortDesc()
 		{
 			return "placeholder beak face"; // This is a placeholder for the next beaked face type, so feel free to refactor (rename)
 		}
-		public static string BeakFullDesc(Face face)
+		private static string BeakFullDesc(Face face)
 		{
 
 		}
-		public static string BeakPlayerStr(Face face, Player player)
+		private static string BeakPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string BeakTransformStr(Face face, Player player)
+		private static string BeakTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string BeakRestoreStr(Face face, Player player)
+		private static string BeakRestoreStr(Face face, Player player)
 		{
 
 		}
-		public static string PandaShortDesc()
+		private static string PandaShortDesc()
 		{
 			return "red panda face";
 		}
-		public static string PandaFullDesc(Face face)
+		private static string PandaFullDesc(Face face)
 		{
 
 		}
-		public static string PandaPlayerStr(Face face, Player player)
+		private static string PandaPlayerStr(Face face, Player player)
 		{
 
 		}
-		public static string PandaTransformStr(Face face, Player player)
+		private static string PandaTransformStr(Face face, Player player)
 		{
 
 		}
-		public static string PandaRestoreStr(Face face, Player player)
+		private static string PandaRestoreStr(Face face, Player player)
 		{
 
 		}

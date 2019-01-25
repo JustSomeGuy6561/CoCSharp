@@ -6,145 +6,145 @@ using CoC.Creatures;
 
 namespace CoC.BodyParts
 {
-	public partial class TongueType
+	internal partial class TongueType
 	{
-		public static string HumanDesc()
+		private static string HumanDesc()
 		{
 
 		}
-		public static string HumanFullDesc(Tongue tongue)
+		private static string HumanFullDesc(Tongue tongue)
 		{
 
 		}
-		public static string HumanPlayerStr(Tongue tongue, Player player)
+		private static string HumanPlayerStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string HumanTransformStr(Tongue tongue, Player player)
+		private static string HumanTransformStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string HumanRestoreStr(Tongue tongue, Player player)
+		private static string HumanRestoreStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string SnakeDesc()
+		private static string SnakeDesc()
 		{
 
 		}
-		public static string SnakeFullDesc(Tongue tongue)
+		private static string SnakeFullDesc(Tongue tongue)
 		{
 
 		}
-		public static string SnakePlayerStr(Tongue tongue, Player player)
+		private static string SnakePlayerStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string SnakeTransformStr(Tongue tongue, Player player)
+		private static string SnakeTransformStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string SnakeRestoreStr(Tongue tongue, Player player)
+		private static string SnakeRestoreStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string DemonicDesc()
+		private static string DemonicDesc()
 		{
 
 		}
-		public static string DemonicFullDesc(Tongue tongue)
+		private static string DemonicFullDesc(Tongue tongue)
 		{
 
 		}
-		public static string DemonicPlayerStr(Tongue tongue, Player player)
+		private static string DemonicPlayerStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string DemonicTransformStr(Tongue tongue, Player player)
+		private static string DemonicTransformStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string DemonicRestoreStr(Tongue tongue, Player player)
+		private static string DemonicRestoreStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string DraconicDesc()
+		private static string DraconicDesc()
 		{
 
 		}
-		public static string DraconicFullDesc(Tongue tongue)
+		private static string DraconicFullDesc(Tongue tongue)
 		{
 
 		}
-		public static string DraconicPlayerStr(Tongue tongue, Player player)
+		private static string DraconicPlayerStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string DraconicTransformStr(Tongue tongue, Player player)
+		private static string DraconicTransformStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string DraconicRestoreStr(Tongue tongue, Player player)
+		private static string DraconicRestoreStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string EchidnaDesc()
+		private static string EchidnaDesc()
 		{
 
 		}
-		public static string EchidnaFullDesc(Tongue tongue)
+		private static string EchidnaFullDesc(Tongue tongue)
 		{
 
 		}
-		public static string EchidnaPlayerStr(Tongue tongue, Player player)
+		private static string EchidnaPlayerStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string EchidnaTransformStr(Tongue tongue, Player player)
+		private static string EchidnaTransformStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string EchidnaRestoreStr(Tongue tongue, Player player)
+		private static string EchidnaRestoreStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string LizardDesc()
+		private static string LizardDesc()
 		{
 
 		}
-		public static string LizardFullDesc(Tongue tongue)
+		private static string LizardFullDesc(Tongue tongue)
 		{
 
 		}
-		public static string LizardPlayerStr(Tongue tongue, Player player)
+		private static string LizardPlayerStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string LizardTransformStr(Tongue tongue, Player player)
+		private static string LizardTransformStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string LizardRestoreStr(Tongue tongue, Player player)
+		private static string LizardRestoreStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string CatDesc()
+		private static string CatDesc()
 		{
 
 		}
-		public static string CatFullDesc(Tongue tongue)
+		private static string CatFullDesc(Tongue tongue)
 		{
 
 		}
-		public static string CatPlayerStr(Tongue tongue, Player player)
+		private static string CatPlayerStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string CatTransformStr(Tongue tongue, Player player)
+		private static string CatTransformStr(Tongue tongue, Player player)
 		{
 
 		}
-		public static string CatRestoreStr(Tongue tongue Player player)
+		private static string CatRestoreStr(Tongue tongue, Player player)
 		{
 
 		}

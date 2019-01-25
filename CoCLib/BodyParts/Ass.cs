@@ -2,18 +2,13 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:21 PM
-using   CoC.BodyParts;
-using CoC.Tools;
 using CoC.Creatures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoC.Tools;
 
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	public enum AssLocation { BUTT, MOUTH, NOT_APPLICABLE }
-	public class Ass
+	internal partial class Ass
 	{
 #warning Implement analwetness/looseness. add descriptors.
 		public AssLocation assLocation { get; protected set; }
@@ -56,14 +51,14 @@ namespace  CoC.BodyParts
 			return true;
 		}
 
-		public string fullDescription(Gender gender)
+		public string fullDescription()
 		{
-			return AssButtHipStrings.assfullDescription(this, gender);
+			return assFullDescription();
 		}
 
 		public string TypeAndPlayerDelegate(Player player)
 		{
-			return AssButtHipStrings.assTypeAndPlayerDelegate(this, player);
+			return assPlayerStr(player);
 		}
 	}
 }

@@ -10,7 +10,7 @@ using   CoC.BodyParts;
 using static CoC.UI.TextOutput;
 namespace  CoC.BodyParts
 {
-	public class Antennae : BodyPartBase<Antennae, AntennaeType>
+	internal class Antennae : BodyPartBase<Antennae, AntennaeType>
 	{
 		public override AntennaeType type { get; protected set; }
 
@@ -68,7 +68,7 @@ namespace  CoC.BodyParts
 		}
 	}
 
-	public partial class AntennaeType : BodyPartBehavior<AntennaeType, Antennae>
+	internal partial class AntennaeType : BodyPartBehavior<AntennaeType, Antennae>
 	{
 		private static int indexMaker = 0;
 

@@ -2,18 +2,17 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 10:57 PM
-using  CoC.BodyParts.SpecialInteraction;
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Strings;
 using CoC.Tools;
-using static   CoC.BodyParts.CockNBallzStrings;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	//As of this writing, you can't get more than one set of balls unless you start with more.
 	//this is not my decision - it's simply how the game is rn. i've provided options to remove or add balls,
 	//maxing at 8. 
 	//though this probably needs more thought - is it two per sack, and multiple sacks? or is it all one sack?
 
-	public class Balls: IGrowShrinkable
+	internal partial class Balls : IGrowShrinkable
 	{
 #warning Uniball implementation needed, probably as a bool.
 #warning add display descriptors.
@@ -103,7 +102,7 @@ namespace  CoC.BodyParts
 			return true;
 		}
 
-		public bool growBalls(int numBalls, int  newSize = DEFAULT_BALLS_SIZE)
+		public bool growBalls(int numBalls, int newSize = DEFAULT_BALLS_SIZE)
 		{
 
 			if (hasBalls)
@@ -127,7 +126,7 @@ namespace  CoC.BodyParts
 		public bool makeUniBall()
 		{
 #warning add check here for uniballs instead of 9999. will need to also make sure size is tiny.
-			if (hasBalls && count == MIN_BALLS_COUNT && 9999==9999)
+			if (hasBalls && count == MIN_BALLS_COUNT && 9999 == 9999)
 			{
 				return false;
 			}

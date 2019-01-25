@@ -22,7 +22,7 @@ namespace  CoC.BodyParts
 	//Stores a reference to the simple body part, and any unique variables to that type, like skin tone or fur color for epidermis, etc.
 	//so you can attach epidermis to any body part that needs it and not need to deal with anything past keeping it updated. 
 	//learned this the hard way after having to deal with it in arms. woo!
-	public abstract class SimpleBodyPart<U> where U : SimpleBodyPartType
+	internal abstract class SimpleBodyPart<U> where U : SimpleBodyPartType
 	{
 		public abstract U type { get; protected set; }
 		public int index => type.index;
@@ -37,7 +37,7 @@ namespace  CoC.BodyParts
 	}
 
 	//Stores a simple body part. if any rules need to apply, add the logic here. 
-	public abstract class SimpleBodyPartType
+	internal abstract class SimpleBodyPartType
 	{
 		public abstract int index { get; }
 

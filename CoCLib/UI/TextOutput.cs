@@ -9,7 +9,7 @@ using System.Text;
 
 namespace CoC.UI
 {
-	public static class TextOutput
+	internal static class TextOutput
 	{
 		private delegate void StringWriter(string data);
 		private static readonly StringWriter stringWriter;
@@ -31,6 +31,6 @@ namespace CoC.UI
 			outputData.Clear();
 		}
 
-		public 
+		//public 
 	}
 }

@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace  CoC.BodyParts
 {
-	public abstract class PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> : BodyPartBase<ThisClass, TypeClass>, IPiercable<PiercingEnum> 
+	internal abstract class PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> : BodyPartBase<ThisClass, TypeClass>, IPiercable<PiercingEnum> 
 		where ThisClass : PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> 
 		where TypeClass : PiercableBodyPartBehavior<TypeClass, ThisClass, PiercingEnum> where PiercingEnum : Enum
 	{

@@ -7,12 +7,11 @@ using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Strings;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
-using static   CoC.BodyParts.NeckStrings;
+using CoC.BodyParts.SpecialInteraction;
 using static CoC.UI.TextOutput;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
-	public class Neck : BodyPartBase<Neck, NeckType>, IDyeable
+	internal class Neck : BodyPartBase<Neck, NeckType>, IDyeable
 	{
 		public int length { get; protected set; }
 		public override NeckType type
@@ -129,7 +128,7 @@ namespace  CoC.BodyParts
 		/*
 		public override GenericDescription shortDescription {get; protected set;}
 		public override fullDescription fullDescription {get; protected set;}
-		public override TypeAndPlayerDelegate TypeAndPlayerDelegate {get; protected set;}
+		public override TypeAndPlayerDelegate typeAndPlayerDelegate {get; protected set;}
 		public override ChangeType<Neck> transformFrom {get; protected set;}
 
 		protected string neckDescription()
@@ -155,7 +154,7 @@ namespace  CoC.BodyParts
 		*/
 	}
 
-	public class NeckType : BodyPartBehavior<NeckType, Neck>
+	internal partial class NeckType : BodyPartBehavior<NeckType, Neck>
 	{
 		private static int indexMaker = 0;
 		public const int MIN_NECK_LENGTH = 2;

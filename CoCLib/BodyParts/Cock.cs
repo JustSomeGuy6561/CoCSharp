@@ -2,12 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 10:55 PM
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
-using static   CoC.BodyParts.CockNBallzStrings;
 using static CoC.UI.TextOutput;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	public enum CockGroup { HUMAN, MAMMALIAN, CORRUPTED, AQUATIC, REPTILIAN, FLYING, OTHER }
 
@@ -20,7 +19,7 @@ namespace  CoC.BodyParts
 	//whoever wrote the AS version of cock, thank you. your cock was awesome.
 	//i didn't have to search everywhere for the things that were part of it.
 	//well, mostly. knots were still a pain.
-	public class Cock : PiercableBodyPart<Cock, CockType, CockPiercing>, IGrowShrinkable
+	internal class Cock : PiercableBodyPart<Cock, CockType, CockPiercing>, IGrowShrinkable
 	{
 		public const float MAX_COCK_LENGTH = 240f;
 		public const float MAX_COCK_THICKNESS = 50f;
@@ -89,7 +88,7 @@ namespace  CoC.BodyParts
 		private readonly bool hasBigCockPerk;
 
 		protected Cock(PiercingFlags flags, bool bigCockPerk) : base(flags)
-		{	
+		{
 			type = CockType.HUMAN;
 			hasBigCockPerk = bigCockPerk;
 			if (hasBigCockPerk)
@@ -223,7 +222,7 @@ namespace  CoC.BodyParts
 
 
 
-	public class CockType : PiercableBodyPartBehavior<CockType, Cock, CockPiercing>
+	internal partial class CockType : PiercableBodyPartBehavior<CockType, Cock, CockPiercing>
 	{
 
 		private static int indexMaker = 0;

@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/17/2019, 2:34 AM
+using CoC.Creatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace CoC.Engine.Combat.Attacks
 {
-	public static class TailAttack
+	internal static class TailAttack
 	{
 		private class SalamanderWhip : AttackBase
 		{

@@ -5,6 +5,7 @@
 using System;
 using CoC.Creatures;
 using  CoC.BodyParts;
+
 namespace CoC.Strings
 {
 	static class GlobalStrings

@@ -11,7 +11,7 @@ Variables should use camelCase. int count, otherCount;
 Functions and Delegates should use TitleCase. I admit i sometimes fail at this, I learned to do camel case for everything but classes and it's a hard habit to break. 
 Classes use TitleCase So: class Batman{ ...}
 Enums use TitleCase. enum values use CAPITALS so enum Foo {BAR, BAZ, HELLO}
-Constants and Public Readonly values use CAPITALS. again, see naming convention. ex: public const int NUM_DAYS_IN_WEEK = 7;
+Constants and public readonly values use CAPITALS. again, see naming convention. ex: public const int NUM_DAYS_IN_WEEK = 7;
 
 Brackets on new lines. We aren't monsters. It's easier to read. 
 --Exception: anonymous functions, empty constructors or classes, and getters/setters. these can remain on one line if they are short.
@@ -112,7 +112,7 @@ it stores a reference to the immutable type that defines it. to change types, li
 Side Effect:
 A bit of context: C# stores objects by reference - so if you assign one instance of a class to another, it will not be a new object, just a reference to the other one. this is also known as a "shallow copy."
 if you know how this works, skip below. otherwise, consider this simple example:
-public class CustomNumber
+internal class CustomNumber
 {
 	public int x;
 	public CustomNumber(int value)

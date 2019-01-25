@@ -2,688 +2,687 @@
 //Description:
 //Author: JustSomeGuy
 //1/7/2019, 9:33 PM
-using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace   CoC.BodyParts
+namespace CoC.BodyParts
 {
-	public static class TailStrings
+	internal partial class TailType
 	{
-		public static string NoTailShortDesc()
+		private static string NoTailShortDesc()
 		{
 
 		}
-		public static string NoTailFullDesc(Tail tail)
+		private static string NoTailFullDesc(Tail tail)
 		{
 
 		}
-		public static string NoTailPlayerStr(Tail tail, Player player)
+		private static string NoTailPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string NoTailTransformStr(Tail tail, Player player)
+		private static string NoTailTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string NoTailRestoreStr(Tail tail, Player player)
+		private static string NoTailRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string HorseShortDesc()
+		private static string HorseShortDesc()
 		{
 
 		}
-		public static string HorseFullDesc(Tail tail)
+		private static string HorseFullDesc(Tail tail)
 		{
 
 		}
-		public static string HorsePlayerStr(Tail tail, Player player)
+		private static string HorsePlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string HorseTransformStr(Tail tail, Player player)
+		private static string HorseTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string HorseRestoreStr(Tail tail, Player player)
+		private static string HorseRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DogShortDesc()
+		private static string DogShortDesc()
 		{
 
 		}
-		public static string DogFullDesc(Tail tail)
+		private static string DogFullDesc(Tail tail)
 		{
 
 		}
-		public static string DogPlayerStr(Tail tail, Player player)
+		private static string DogPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DogTransformStr(Tail tail, Player player)
+		private static string DogTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DogRestoreStr(Tail tail, Player player)
+		private static string DogRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DemonShortDesc()
+		private static string DemonShortDesc()
 		{
 
 		}
-		public static string DemonFullDesc(Tail tail)
+		private static string DemonFullDesc(Tail tail)
 		{
 
 		}
-		public static string DemonPlayerStr(Tail tail, Player player)
+		private static string DemonPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DemonTransformStr(Tail tail, Player player)
+		private static string DemonTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DemonRestoreStr(Tail tail, Player player)
+		private static string DemonRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CowShortDesc()
+		private static string CowShortDesc()
 		{
 
 		}
-		public static string CowFullDesc(Tail tail)
+		private static string CowFullDesc(Tail tail)
 		{
 
 		}
-		public static string CowPlayerStr(Tail tail, Player player)
+		private static string CowPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CowTransformStr(Tail tail, Player player)
+		private static string CowTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CowRestoreStr(Tail tail, Player player)
+		private static string CowRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SpecialWebName()
+		private static string SpecialWebName()
 		{
 
 		}
-		public static string SpecialWebHint(Tail tail, Player player)
+		private static string SpecialWebHint(Tail tail, Player player)
 		{
 
 		}
-		public static string SpiderShortDesc()
+		private static string SpiderShortDesc()
 		{
 
 		}
-		public static string SpiderFullDesc(Tail tail)
+		private static string SpiderFullDesc(Tail tail)
 		{
 
 		}
-		public static string SpiderPlayerStr(Tail tail, Player player)
+		private static string SpiderPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SpiderTransformStr(Tail tail, Player player)
+		private static string SpiderTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SpiderRestoreStr(Tail tail, Player player)
+		private static string SpiderRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SpecialStingName()
+		private static string SpecialStingName()
 		{
 
 		}
-		public static string SpecialStingHint(Tail tail, Player player)
+		private static string SpecialStingHint(Tail tail, Player player)
 		{
 
 		}
-		public static string BeeShortDesc()
+		private static string BeeShortDesc()
 		{
 
 		}
-		public static string BeeFullDesc(Tail tail)
+		private static string BeeFullDesc(Tail tail)
 		{
 
 		}
-		public static string BeePlayerStr(Tail tail, Player player)
+		private static string BeePlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string BeeTransformStr(Tail tail, Player player)
+		private static string BeeTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string BeeRestoreStr(Tail tail, Player player)
+		private static string BeeRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SharkShortDesc()
+		private static string SharkShortDesc()
 		{
 
 		}
-		public static string SharkFullDesc(Tail tail)
+		private static string SharkFullDesc(Tail tail)
 		{
 
 		}
-		public static string SharkPlayerStr(Tail tail, Player player)
+		private static string SharkPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SharkTransformStr(Tail tail, Player player)
+		private static string SharkTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SharkRestoreStr(Tail tail, Player player)
+		private static string SharkRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CatShortDesc()
+		private static string CatShortDesc()
 		{
 
 		}
-		public static string CatFullDesc(Tail tail)
+		private static string CatFullDesc(Tail tail)
 		{
 
 		}
-		public static string CatPlayerStr(Tail tail, Player player)
+		private static string CatPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CatTransformStr(Tail tail, Player player)
+		private static string CatTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CatRestoreStr(Tail tail, Player player)
+		private static string CatRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string LizardShortDesc()
+		private static string LizardShortDesc()
 		{
 
 		}
-		public static string LizardFullDesc(Tail tail)
+		private static string LizardFullDesc(Tail tail)
 		{
 
 		}
-		public static string LizardPlayerStr(Tail tail, Player player)
+		private static string LizardPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string LizardTransformStr(Tail tail, Player player)
+		private static string LizardTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string LizardRestoreStr(Tail tail, Player player)
+		private static string LizardRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RabbitShortDesc()
+		private static string RabbitShortDesc()
 		{
 
 		}
-		public static string RabbitFullDesc(Tail tail)
+		private static string RabbitFullDesc(Tail tail)
 		{
 
 		}
-		public static string RabbitPlayerStr(Tail tail, Player player)
+		private static string RabbitPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RabbitTransformStr(Tail tail, Player player)
+		private static string RabbitTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RabbitRestoreStr(Tail tail, Player player)
+		private static string RabbitRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string HarpyShortDesc()
+		private static string HarpyShortDesc()
 		{
 
 		}
-		public static string HarpyFullDesc(Tail tail)
+		private static string HarpyFullDesc(Tail tail)
 		{
 
 		}
-		public static string HarpyPlayerStr(Tail tail, Player player)
+		private static string HarpyPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string HarpyTransformStr(Tail tail, Player player)
+		private static string HarpyTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string HarpyRestoreStr(Tail tail, Player player)
+		private static string HarpyRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string KangarooShortDesc()
+		private static string KangarooShortDesc()
 		{
 
 		}
-		public static string KangarooFullDesc(Tail tail)
+		private static string KangarooFullDesc(Tail tail)
 		{
 
 		}
-		public static string KangarooPlayerStr(Tail tail, Player player)
+		private static string KangarooPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string KangarooTransformStr(Tail tail, Player player)
+		private static string KangarooTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string KangarooRestoreStr(Tail tail, Player player)
+		private static string KangarooRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string FoxShortDesc()
+		private static string FoxShortDesc()
 		{
 
 		}
-		public static string FoxFullDesc(Tail tail)
+		private static string FoxFullDesc(Tail tail)
 		{
 
 		}
-		public static string FoxPlayerStr(Tail tail, Player player)
+		private static string FoxPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string FoxTransformStr(Tail tail, Player player)
+		private static string FoxTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string FoxRestoreStr(Tail tail, Player player)
+		private static string FoxRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SpecialDraconicSlamName()
+		private static string SpecialDraconicSlamName()
 		{
 
 		}
-		public static string SpecialDraconicSlamHint(Tail tail, Player player)
+		private static string SpecialDraconicSlamHint(Tail tail, Player player)
 		{
 
 		}
-		public static string DragonShortDesc()
+		private static string DragonShortDesc()
 		{
 
 		}
-		public static string DragonFullDesc(Tail tail)
+		private static string DragonFullDesc(Tail tail)
 		{
 
 		}
-		public static string DragonPlayerStr(Tail tail, Player player)
+		private static string DragonPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DragonTransformStr(Tail tail, Player player)
+		private static string DragonTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DragonRestoreStr(Tail tail, Player player)
+		private static string DragonRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RaccoonShortDesc()
+		private static string RaccoonShortDesc()
 		{
 
 		}
-		public static string RaccoonFullDesc(Tail tail)
+		private static string RaccoonFullDesc(Tail tail)
 		{
 
 		}
-		public static string RaccoonPlayerStr(Tail tail, Player player)
+		private static string RaccoonPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RaccoonTransformStr(Tail tail, Player player)
+		private static string RaccoonTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RaccoonRestoreStr(Tail tail, Player player)
+		private static string RaccoonRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string MouseShortDesc()
+		private static string MouseShortDesc()
 		{
 
 		}
-		public static string MouseFullDesc(Tail tail)
+		private static string MouseFullDesc(Tail tail)
 		{
 
 		}
-		public static string MousePlayerStr(Tail tail, Player player)
+		private static string MousePlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string MouseTransformStr(Tail tail, Player player)
+		private static string MouseTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string MouseRestoreStr(Tail tail, Player player)
+		private static string MouseRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string FerretShortDesc()
+		private static string FerretShortDesc()
 		{
 
 		}
-		public static string FerretFullDesc(Tail tail)
+		private static string FerretFullDesc(Tail tail)
 		{
 
 		}
-		public static string FerretPlayerStr(Tail tail, Player player)
+		private static string FerretPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string FerretTransformStr(Tail tail, Player player)
+		private static string FerretTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string FerretRestoreStr(Tail tail, Player player)
+		private static string FerretRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SpecialSlamName()
+		private static string SpecialSlamName()
 		{
 
 		}
-		public static string SpecialSlamHint(Tail tail, Player player)
+		private static string SpecialSlamHint(Tail tail, Player player)
 		{
 
 		}
-		public static string BehemothShortDesc()
+		private static string BehemothShortDesc()
 		{
 
 		}
-		public static string BehemothFullDesc(Tail tail)
+		private static string BehemothFullDesc(Tail tail)
 		{
 
 		}
-		public static string BehemothPlayerStr(Tail tail, Player player)
+		private static string BehemothPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string BehemothTransformStr(Tail tail, Player player)
+		private static string BehemothTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string BehemothRestoreStr(Tail tail, Player player)
+		private static string BehemothRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string PigShortDesc()
+		private static string PigShortDesc()
 		{
 
 		}
-		public static string PigFullDesc(Tail tail)
+		private static string PigFullDesc(Tail tail)
 		{
 
 		}
-		public static string PigPlayerStr(Tail tail, Player player)
+		private static string PigPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string PigTransformStr(Tail tail, Player player)
+		private static string PigTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string PigRestoreStr(Tail tail, Player player)
+		private static string PigRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string ScorpionStingName()
+		private static string ScorpionStingName()
 		{
 
 		}
-		public static string ScorpionStingHint(Tail tail, Player player)
+		private static string ScorpionStingHint(Tail tail, Player player)
 		{
 
 		}
-		public static string ScorpionShortDesc()
+		private static string ScorpionShortDesc()
 		{
 
 		}
-		public static string ScorpionFullDesc(Tail tail)
+		private static string ScorpionFullDesc(Tail tail)
 		{
 
 		}
-		public static string ScorpionPlayerStr(Tail tail, Player player)
+		private static string ScorpionPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string ScorpionTransformStr(Tail tail, Player player)
+		private static string ScorpionTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string ScorpionRestoreStr(Tail tail, Player player)
+		private static string ScorpionRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string GoatShortDesc()
+		private static string GoatShortDesc()
 		{
 
 		}
-		public static string GoatFullDesc(Tail tail)
+		private static string GoatFullDesc(Tail tail)
 		{
 
 		}
-		public static string GoatPlayerStr(Tail tail, Player player)
+		private static string GoatPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string GoatTransformStr(Tail tail, Player player)
+		private static string GoatTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string GoatRestoreStr(Tail tail, Player player)
+		private static string GoatRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RhinoShortDesc()
+		private static string RhinoShortDesc()
 		{
 
 		}
-		public static string RhinoFullDesc(Tail tail)
+		private static string RhinoFullDesc(Tail tail)
 		{
 
 		}
-		public static string RhinoPlayerStr(Tail tail, Player player)
+		private static string RhinoPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RhinoTransformStr(Tail tail, Player player)
+		private static string RhinoTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RhinoRestoreStr(Tail tail, Player player)
+		private static string RhinoRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string EchidnaShortDesc()
+		private static string EchidnaShortDesc()
 		{
 
 		}
-		public static string EchidnaFullDesc(Tail tail)
+		private static string EchidnaFullDesc(Tail tail)
 		{
 
 		}
-		public static string EchidnaPlayerStr(Tail tail, Player player)
+		private static string EchidnaPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string EchidnaTransformStr(Tail tail, Player player)
+		private static string EchidnaTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string EchidnaRestoreStr(Tail tail, Player player)
+		private static string EchidnaRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DeerShortDesc()
+		private static string DeerShortDesc()
 		{
 
 		}
-		public static string DeerFullDesc(Tail tail)
+		private static string DeerFullDesc(Tail tail)
 		{
 
 		}
-		public static string DeerPlayerStr(Tail tail, Player player)
+		private static string DeerPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DeerTransformStr(Tail tail, Player player)
+		private static string DeerTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string DeerRestoreStr(Tail tail, Player player)
+		private static string DeerRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SalamanderSlapName()
+		private static string SalamanderSlapName()
 		{
 
 		}
-		public static string SalamanderSlapHint(Tail tail, Player player)
+		private static string SalamanderSlapHint(Tail tail, Player player)
 		{
 
 		}
-		public static string SalamanderShortDesc()
+		private static string SalamanderShortDesc()
 		{
 
 		}
-		public static string SalamanderFullDesc(Tail tail)
+		private static string SalamanderFullDesc(Tail tail)
 		{
 
 		}
-		public static string SalamanderPlayerStr(Tail tail, Player player)
+		private static string SalamanderPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SalamanderTransformStr(Tail tail, Player player)
+		private static string SalamanderTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SalamanderRestoreStr(Tail tail, Player player)
+		private static string SalamanderRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string WolfShortDesc()
+		private static string WolfShortDesc()
 		{
 
 		}
-		public static string WolfFullDesc(Tail tail)
+		private static string WolfFullDesc(Tail tail)
 		{
 
 		}
-		public static string WolfPlayerStr(Tail tail, Player player)
+		private static string WolfPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string WolfTransformStr(Tail tail, Player player)
+		private static string WolfTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string WolfRestoreStr(Tail tail, Player player)
+		private static string WolfRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SheepShortDesc()
+		private static string SheepShortDesc()
 		{
 
 		}
-		public static string SheepFullDesc(Tail tail)
+		private static string SheepFullDesc(Tail tail)
 		{
 
 		}
-		public static string SheepPlayerStr(Tail tail, Player player)
+		private static string SheepPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SheepTransformStr(Tail tail, Player player)
+		private static string SheepTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string SheepRestoreStr(Tail tail, Player player)
+		private static string SheepRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string ImpShortDesc()
+		private static string ImpShortDesc()
 		{
 
 		}
-		public static string ImpFullDesc(Tail tail)
+		private static string ImpFullDesc(Tail tail)
 		{
 
 		}
-		public static string ImpPlayerStr(Tail tail, Player player)
+		private static string ImpPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string ImpTransformStr(Tail tail, Player player)
+		private static string ImpTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string ImpRestoreStr(Tail tail, Player player)
+		private static string ImpRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CockatriceShortDesc()
+		private static string CockatriceShortDesc()
 		{
 
 		}
-		public static string CockatriceFullDesc(Tail tail)
+		private static string CockatriceFullDesc(Tail tail)
 		{
 
 		}
-		public static string CockatricePlayerStr(Tail tail, Player player)
+		private static string CockatricePlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CockatriceTransformStr(Tail tail, Player player)
+		private static string CockatriceTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string CockatriceRestoreStr(Tail tail, Player player)
+		private static string CockatriceRestoreStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RedPandaShortDesc()
+		private static string RedPandaShortDesc()
 		{
 
 		}
-		public static string RedPandaFullDesc(Tail tail)
+		private static string RedPandaFullDesc(Tail tail)
 		{
 
 		}
-		public static string RedPandaPlayerStr(Tail tail, Player player)
+		private static string RedPandaPlayerStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RedPandaTransformStr(Tail tail, Player player)
+		private static string RedPandaTransformStr(Tail tail, Player player)
 		{
 
 		}
-		public static string RedPandaRestoreStr(Tail tail, Player player)
+		private static string RedPandaRestoreStr(Tail tail, Player player)
 		{
 
 		}
 
-		public static string TailWhipName()
+		private static string TailWhipName()
 		{
 
 		}
 
-		public static string TailWhipHint(Tail tail, Player player)
+		private static string TailWhipHint(Tail tail, Player player)
 		{
 
 		}

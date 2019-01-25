@@ -2,20 +2,18 @@
 //Description:
 //Author: JustSomeGuy
 //1/8/2019, 4:45 PM
-using System;
-using System.Collections.Generic;
+using CoC.Creatures;
 using System.Linq;
-using System.Text;
 
 namespace CoC.Engine.Combat
 {
 	//pseudo code for now.
 
-	public class Combat
+	internal class Combat
 	{
 		private static double damageModifier, lustResistanceModifier, lustAttackModifier, foo;
 
-		public static void engageInCombat(Player player, Creature enemy)
+		public static void engageInCombat(Player player, CombatCreature enemy)
 		{
 			double[] data = new double[2];
 			double playerDamageModifier = player.perks.combatPerks.Aggregate((a, b) => a.damageModifier * b.damageModifier);
@@ -31,12 +29,12 @@ namespace CoC.Engine.Combat
 			}
 		}
 
-		private static bool combatContinues(Player player, Creature enemy)
+		private static bool combatContinues(Player player, CombatCreature enemy)
 		{
 			return player.hp > 0 && player.lust100 < 100 && enemy.hp > 0 && enemy.lust100 < 100;
 		}
 
-		private static void CombatRoundStart(Player player, Creature enemy)
+		private static void CombatRoundStart(Player player, CombatCreature enemy)
 		{
 			foreach (CombatRoundStartPerk perk in player.perks.combatRoundStartPerks)
 			{
@@ -48,7 +46,7 @@ namespace CoC.Engine.Combat
 			}
 		}
 
-		private static void PlayerPhaseStart(Player player, Creature enemy)
+		private static void PlayerPhaseStart(Player player, CombatCreature enemy)
 		{
 			CombatAttack combatAttack = player.ChooseAttack();
 			combatAttack(player, enemy);
@@ -62,7 +60,7 @@ namespace CoC.Engine.Combat
 			}
 		}
 
-		private static void EnemyPhaseStart(Player player, Creature enemy)
+		private static void EnemyPhaseStart(Player player, CombatCreature enemy)
 		{
 			CombatAttack combatAttack = enemy.ChooseAttack();
 			combatAttack(enemy, player);

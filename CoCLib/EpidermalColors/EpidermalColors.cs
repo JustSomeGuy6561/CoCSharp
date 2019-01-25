@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace CoC.EpidermalColors
 {
-	public abstract class EpidermalColors
+	internal abstract class EpidermalColors
 	{
 		//RGB is used for comparing colors. it factors in when trying to convert one color to something else 
 		protected EpidermalColors(Color rgb, string colorName)

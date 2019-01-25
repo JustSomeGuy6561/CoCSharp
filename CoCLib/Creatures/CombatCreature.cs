@@ -5,15 +5,15 @@ using System.Text;
 namespace CoC.Creatures
 {
 	//class defining combat traits for creatures that do combat. 
-	public abstract class CombatCreature : Creature
+	internal abstract class CombatCreature : Creature
 	{
 		protected CombatCreature(string creatureName) : base(creatureName)
 		{
 
 		}
 
-		public abstract void InitCombat(out int level, out int experience, out Weapon weapon, out Armor armor, out Shield shield, out Jewelry jewelry, out UpperGarment upperGarment, out LowerGarment lowerGarment);
-		public abstract void InitStats(out float strength, out float toughness, out float speed, out float intelligence, out float lust, out float sensitivity, out float libido, out float corruption, out float money);
+		internal abstract void InitCombat(out int level, out int experience, out Weapon weapon, out Armor armor, out Shield shield, out Jewelry jewelry, out UpperGarment upperGarment, out LowerGarment lowerGarment);
+		internal abstract void InitStats(out float strength, out float toughness, out float speed, out float intelligence, out float lust, out float sensitivity, out float libido, out float corruption, out float money);
 
 		public virtual float level { get; protected set; }
 		public virtual float experience { get; protected set; }

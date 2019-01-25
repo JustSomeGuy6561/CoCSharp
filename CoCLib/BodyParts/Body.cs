@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Strings;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
-
-using static   CoC.BodyParts.BodyStrings;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using static CoC.UI.TextOutput;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 
 	/*
@@ -139,7 +137,7 @@ wet cloth - restored
 	 * TL;DR: when you call any update or restore function, this will automatically update body parts that implement itoneaware or ifuraware before returning. if you want to get data from these body parts 
 	 * before they are altered, you must do so before calling an update or restore. 
 	 */
-	public class Body : PiercableBodyPart<Body, BodyType, NavelPiercings>, IHairAware
+	internal class Body : PiercableBodyPart<Body, BodyType, NavelPiercings>, IHairAware
 	{
 		HashSet<IToneAware> toneAwares = new HashSet<IToneAware>();
 		HashSet<IFurAware> furAwares = new HashSet<IFurAware>();
@@ -272,7 +270,7 @@ wet cloth - restored
 			}
 			return retVal;
 		}
-		
+
 		public bool UpdateBody(CockatriceBodyType cockatriceBodyType, FurColor featherColor, Tones scaleTone)
 		{
 			if (type == cockatriceBodyType)
@@ -793,7 +791,7 @@ wet cloth - restored
 		{
 			FurAware?.Invoke(this, e);
 		}
-		
+
 		private event EventHandler<FurAwareEventArg> FurAware;
 		private readonly FurAwareEventArg furEventArg = new FurAwareEventArg(FurColor.GenerateEmpty(), FurColor.GenerateEmpty());
 
@@ -806,7 +804,7 @@ wet cloth - restored
 		private readonly ToneAwareEventArg toneEventArg = new ToneAwareEventArg();
 	}
 
-	public abstract class BodyType : PiercableBodyPartBehavior<BodyType, Body, NavelPiercings>
+	internal abstract partial class BodyType : PiercableBodyPartBehavior<BodyType, Body, NavelPiercings>
 	{
 		private static int indexMaker = 0;
 
@@ -862,7 +860,7 @@ wet cloth - restored
 		public bool isCockatrice => this is CockatriceBodyType;
 	}
 
-	public class FurBodyType : BodyType
+	internal class FurBodyType : BodyType
 	{
 		public readonly FurColor defaultFurColor;
 		public FurBodyType(EpidermisType type, FurColor defFur,
@@ -880,7 +878,7 @@ wet cloth - restored
 		}
 	}
 
-	public class ToneBodyType : BodyType
+	internal class ToneBodyType : BodyType
 	{
 		public readonly Tones defaultTone;
 		public ToneBodyType(EpidermisType type, Tones defTone,
@@ -898,7 +896,7 @@ wet cloth - restored
 		}
 	}
 
-	public class CockatriceBodyType : BodyType
+	internal class CockatriceBodyType : BodyType
 	{
 		public readonly FurColor defaultFur;
 		public readonly Tones defaultScales;
@@ -911,7 +909,7 @@ wet cloth - restored
 		public override EpidermisType secondaryEpidermisType => EpidermisType.SCALES;
 	}
 
-	public class FurAwareEventArg : EventArgs
+	internal class FurAwareEventArg : EventArgs
 	{
 		public readonly FurColor primaryColor;
 		public readonly FurColor secondaryColor;
@@ -923,7 +921,7 @@ wet cloth - restored
 		}
 	}
 
-	public class ToneAwareEventArg : EventArgs
+	internal class ToneAwareEventArg : EventArgs
 	{
 		public Tones primaryTone, secondaryTone;
 		public bool primaryToneActive;

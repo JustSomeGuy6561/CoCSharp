@@ -23,10 +23,10 @@ namespace  CoC.BodyParts
 	//super confusing generics ftw! Basically, you have to define what it is, and what it's behavior is.
 	//TL;DR: [BodyPart]<[Body Part], [BodyPartType]> 
 	//example: 
-	//public class Arms : BodyPartBase<Arms, ArmType>
-	//public class ArmType : BodyPartBehavior<ArmType, Arms>
+	//internal class Arms : BodyPartBase<Arms, ArmType>
+	//internal class ArmType : BodyPartBehavior<ArmType, Arms>
 
-	public abstract class BodyPartBase<ThisClass,BehaviorClass> where ThisClass : BodyPartBase<ThisClass, BehaviorClass> where BehaviorClass : BodyPartBehavior<BehaviorClass, ThisClass>
+	internal abstract class BodyPartBase<ThisClass,BehaviorClass> where ThisClass : BodyPartBase<ThisClass, BehaviorClass> where BehaviorClass : BodyPartBehavior<BehaviorClass, ThisClass>
 	{
 		public abstract bool Restore();
 		public abstract bool RestoreAndDisplayMessage(Player player);

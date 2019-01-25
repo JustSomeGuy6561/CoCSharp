@@ -13,7 +13,7 @@ namespace  CoC.BodyParts
 
 	public enum ClitPiercing { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
-	public class Clit : SimplePiercing<ClitPiercing>, IGrowShrinkable
+	internal class Clit : SimplePiercing<ClitPiercing>, IGrowShrinkable
 	{
 #warning add more descriptors.
 		protected readonly ClitPiercing[] requiresFetish = { ClitPiercing.LARGE_CLIT_1, ClitPiercing.LARGE_CLIT_2, ClitPiercing.LARGE_CLIT_3 };

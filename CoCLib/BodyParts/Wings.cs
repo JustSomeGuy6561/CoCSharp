@@ -2,17 +2,16 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:36 AM
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
-using static   CoC.BodyParts.WingStrings;
 using static CoC.UI.TextOutput;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	//note: add itoneaware if you want some wing to update with skin tone. just add a var to the type class enabling or disabling this by type, then implement it
 	//for the love of god, don't do typeof checks. that's just ugly. you will also need to add wings to the list of things subscribing to the skin tone. 
-	public class Wings : BodyPartBase<Wings, WingType>, IDyeable, IToneable
+	internal class Wings : BodyPartBase<Wings, WingType>, IDyeable, IToneable
 	{
 		//add to creature. 
 		//public bool hasWings => wings.type != WingType.NONE;
@@ -39,8 +38,8 @@ namespace  CoC.BodyParts
 		public bool isLarge { get; protected set; }
 		public bool canFly => type != WingType.NONE && isLarge;
 
-		public HairFurColors hairColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
-		public Tones wingTone { get; private set; } = Tones.NOT_APPLICABLE;
+		internal HairFurColors hairColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
+		internal Tones wingTone { get; private set; } = Tones.NOT_APPLICABLE;
 
 		public static Wings Generate()
 		{
@@ -269,7 +268,7 @@ namespace  CoC.BodyParts
 		}
 	}
 
-	public partial class WingType : BodyPartBehavior<WingType, Wings>
+	internal partial class WingType : BodyPartBehavior<WingType, Wings>
 	{
 		public enum BehaviorOnTransform { CONVERT_TO_SMALL, KEEP_SIZE, CONVERT_TO_LARGE }
 
@@ -335,7 +334,7 @@ namespace  CoC.BodyParts
 
 	}
 
-	public class FeatheredWings : WingType
+	internal class FeatheredWings : WingType
 	{
 		private readonly HairFurColors _defaultHair;
 		public FeatheredWings(HairFurColors defaultHair, bool canFly, SimpleDescriptor shortDesc, DescriptorWithArg<Wings> fullDesc, TypeAndPlayerDelegate<Wings> playerDesc,
@@ -353,7 +352,7 @@ namespace  CoC.BodyParts
 		public override HairFurColors defaultHair => _defaultHair;
 	}
 
-	public class TonableWings : WingType
+	internal class TonableWings : WingType
 	{
 		private readonly Tones _defaultTone;
 		public TonableWings(Tones defaultTone, bool canFly, SimpleDescriptor shortDesc, DescriptorWithArg<Wings> fullDesc, TypeAndPlayerDelegate<Wings> playerDesc,

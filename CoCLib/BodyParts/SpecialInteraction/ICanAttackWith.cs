@@ -6,7 +6,7 @@ using CoC.Engine.Combat.Attacks;
 
 namespace  CoC.BodyParts.SpecialInteraction
 {
-	public interface ICanAttackWith
+	internal interface ICanAttackWith
 	{
 		AttackBase attack { get; }
 		bool canAttackWith();

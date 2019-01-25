@@ -2,26 +2,24 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 1:58 AM
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
-
 using static CoC.UI.TextOutput;
-using static   CoC.BodyParts.BackStrings;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	//implement i fur aware if you want it to update with the player.
 	//note that if you do so you'll need some sort of logic to deal with if it 
 	//was dyed recently/ ever.
-	public class Back : BodyPartBase<Back, BackType>, IDyeable//, IFurAware
+	internal class Back : BodyPartBase<Back, BackType>, IDyeable//, IFurAware
 	{
 		public override BackType type
 		{
 			get => _type;
 			protected set
 			{
-				if (value.usesHair != type.usesHair )
+				if (value.usesHair != type.usesHair)
 				{
 					if (value.usesHair && hairFur == HairFurColors.NO_HAIR_FUR)
 					{
@@ -135,14 +133,14 @@ namespace  CoC.BodyParts
 				return false;
 			}
 			else
-			{ 
+			{
 				hairFur = dye;
 				return true;
 			}
 		}
 	}
 
-	public class BackType : BodyPartBehavior<BackType, Back>
+	internal partial class BackType : BodyPartBehavior<BackType, Back>
 	{
 		private static int indexMaker = 0;
 		private readonly int _index;
@@ -163,7 +161,7 @@ namespace  CoC.BodyParts
 		public static readonly BackType SHARK_FIN = new BackType(SharkFinDesc, SharkFinFullDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
 
 	}
-	public class DragonBackMane : BackType
+	internal class DragonBackMane : BackType
 	{
 		public readonly HairFurColors defaultColor;
 		public DragonBackMane() : base(DraconicManeDesc, DraconicManeFullDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr)

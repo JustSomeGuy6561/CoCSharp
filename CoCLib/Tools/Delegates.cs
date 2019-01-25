@@ -4,26 +4,25 @@
 //12/29/2018, 11:03 AM
 
 using CoC.Creatures;
-using CoC.EpidermalColors;
 namespace CoC.Tools
 {
-	
-	public delegate string SimpleDescriptor();
-	public delegate string DescriptorWithArg<T>(T arg);
 
-	public delegate string PlayerStr(Player player);
-	public delegate string ChangeStr<T>(T newBehavior, Player player);
-	public delegate string RestoreStr(Player player);
+	internal delegate string SimpleDescriptor();
+	internal delegate string DescriptorWithArg<T>(T arg);
+
+	internal delegate string PlayerStr(Player player);
+	internal delegate string ChangeStr<T>(T newBehavior, Player player);
+	internal delegate string RestoreStr(Player player);
 
 
-	public delegate string TypeAndPlayerDelegate<T>(T type, Player player);
-	public delegate string ChangeType<T>(T newType, Player player);
-	public delegate string RestoreType<T>(T originalType, Player player);
+	internal delegate string TypeAndPlayerDelegate<T>(T type, Player player);
+	internal delegate string ChangeType<T>(T newType, Player player);
+	internal delegate string RestoreType<T>(T originalType, Player player);
 
 	//these may be changed or removed.
-	public delegate string AdjColorDescriptor(string adj, EpidermalColors.EpidermalColors color);
-	public delegate void CombatDelegate(Creature player, Creature enemy);
+	internal delegate string AdjColorDescriptor(string adj, EpidermalColors.EpidermalColors color);
+	internal delegate void CombatDelegate(Creature player, Creature enemy);
 
 	//every function that uses a button will follow this format. note that with lambdas they can take virtually anything.
-	public delegate void PlayerFunction(Player player);
+	internal delegate void PlayerFunction(Player player);
 }

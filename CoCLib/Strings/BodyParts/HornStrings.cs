@@ -7,225 +7,225 @@ using CoC.Creatures;
 
 namespace   CoC.BodyParts
 {
-	public static class HornStrings
+	internal partial class HornType
 	{
-		public static string NoHornsShortDesc()
+		private static string NoHornsShortDesc()
 		{
 
 		}
-		public static string NoHornsFullDesc(Horns horns)
+		private static string NoHornsFullDesc(Horns horns)
 		{
 
 		}
-		public static string NoHornsPlayerStr(Horns horns, Player player)
+		private static string NoHornsPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string NoHornsTransformStr(Horns horns, Player player)
+		private static string NoHornsTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string NoHornsRestoreStr(Horns horns, Player player)
+		private static string NoHornsRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DemonShortDesc()
+		private static string DemonShortDesc()
 		{
 
 		}
-		public static string DemonFullDesc(Horns horns)
+		private static string DemonFullDesc(Horns horns)
 		{
 
 		}
-		public static string DemonPlayerStr(Horns horns, Player player)
+		private static string DemonPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DemonTransformStr(Horns horns, Player player)
+		private static string DemonTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DemonRestoreStr(Horns horns, Player player)
+		private static string DemonRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string BullShortDesc()
+		private static string BullShortDesc()
 		{
 
 		}
-		public static string BullFullDesc(Horns horns)
+		private static string BullFullDesc(Horns horns)
 		{
 
 		}
-		public static string BullPlayerStr(Horns horns, Player player)
+		private static string BullPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string BullTransformStr(Horns horns, Player player)
+		private static string BullTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string BullRestoreStr(Horns horns, Player player)
+		private static string BullRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DragonShortDesc()
+		private static string DragonShortDesc()
 		{
 
 		}
-		public static string DragonFullDesc(Horns horns)
+		private static string DragonFullDesc(Horns horns)
 		{
 
 		}
-		public static string DragonPlayerStr(Horns horns, Player player)
+		private static string DragonPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DragonTransformStr(Horns horns, Player player)
+		private static string DragonTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DragonRestoreStr(Horns horns, Player player)
+		private static string DragonRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DeerShortDesc()
+		private static string DeerShortDesc()
 		{
 
 		}
-		public static string DeerFullDesc(Horns horns)
+		private static string DeerFullDesc(Horns horns)
 		{
 
 		}
-		public static string DeerPlayerStr(Horns horns, Player player)
+		private static string DeerPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DeerTransformStr(Horns horns, Player player)
+		private static string DeerTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string DeerRestoreStr(Horns horns, Player player)
+		private static string DeerRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string ReindeerShortDesc()
+		private static string ReindeerShortDesc()
 		{
 
 		}
-		public static string ReindeerFullDesc(Horns horns)
+		private static string ReindeerFullDesc(Horns horns)
 		{
 
 		}
-		public static string ReindeerPlayerStr(Horns horns, Player player)
+		private static string ReindeerPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string ReindeerTransformStr(Horns horns, Player player)
+		private static string ReindeerTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string ReindeerRestoreStr(Horns horns, Player player)
+		private static string ReindeerRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string GoatShortDesc()
+		private static string GoatShortDesc()
 		{
 
 		}
-		public static string GoatFullDesc(Horns horns)
+		private static string GoatFullDesc(Horns horns)
 		{
 
 		}
-		public static string GoatPlayerStr(Horns horns, Player player)
+		private static string GoatPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string GoatTransformStr(Horns horns, Player player)
+		private static string GoatTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string GoatRestoreStr(Horns horns, Player player)
+		private static string GoatRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string UniHornShortDesc()
+		private static string UniHornShortDesc()
 		{
 
 		}
-		public static string UniHornFullDesc(Horns horns)
+		private static string UniHornFullDesc(Horns horns)
 		{
 
 		}
-		public static string UniHornPlayerStr(Horns horns, Player player)
+		private static string UniHornPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string UniHornTransformStr(Horns horns, Player player)
+		private static string UniHornTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string UniHornRestoreStr(Horns horns, Player player)
+		private static string UniHornRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string RhinoShortDesc()
+		private static string RhinoShortDesc()
 		{
 
 		}
-		public static string RhinoFullDesc(Horns horns)
+		private static string RhinoFullDesc(Horns horns)
 		{
 
 		}
-		public static string RhinoPlayerStr(Horns horns, Player player)
+		private static string RhinoPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string RhinoTransformStr(Horns horns, Player player)
+		private static string RhinoTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string RhinoRestoreStr(Horns horns, Player player)
+		private static string RhinoRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string SheepShortDesc()
+		private static string SheepShortDesc()
 		{
 
 		}
-		public static string SheepFullDesc(Horns horns)
+		private static string SheepFullDesc(Horns horns)
 		{
 
 		}
-		public static string SheepPlayerStr(Horns horns, Player player)
+		private static string SheepPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string SheepTransformStr(Horns horns, Player player)
+		private static string SheepTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string SheepRestoreStr(Horns horns, Player player)
+		private static string SheepRestoreStr(Horns horns, Player player)
 		{
 
 		}
-		public static string ImpShortDesc()
+		private static string ImpShortDesc()
 		{
 
 		}
-		public static string ImpFullDesc(Horns horns)
+		private static string ImpFullDesc(Horns horns)
 		{
 
 		}
-		public static string ImpPlayerStr(Horns horns, Player player)
+		private static string ImpPlayerStr(Horns horns, Player player)
 		{
 
 		}
-		public static string ImpTransformStr(Horns horns, Player player)
+		private static string ImpTransformStr(Horns horns, Player player)
 		{
 
 		}
-		public static string ImpRestoreStr(Horns horns, Player player)
+		private static string ImpRestoreStr(Horns horns, Player player)
 		{
 
 		}

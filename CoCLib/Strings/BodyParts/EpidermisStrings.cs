@@ -5,78 +5,108 @@
 using CoC.EpidermalColors;
 using CoC.Tools;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace   CoC.BodyParts
+namespace CoC.BodyParts
 {
-	public static class EpidermisString
+	internal static class EpidermisHelper
 	{
-
-		public static string fullStr(string adj, Tones tone, SimpleDescriptor descriptor)
+		public static string AsString(this FurTexture furTexture)
 		{
-			return adj + (String.IsNullOrWhiteSpace(adj) ? "" : " ") + tone.AsString() + " " + descriptor();
+			switch (furTexture)
+			{
+				case FurTexture.MANGEY: return "mangey";
+				case FurTexture.SHINY: return "shiny";
+				case FurTexture.SMOOTH: return "smooth";
+				case FurTexture.SOFT: return "soft";
+				case FurTexture.NONDESCRIPT:
+				default: return "";
+			}
 		}
 
-		public static string fullStr(string adj, FurColor fur, SimpleDescriptor descriptor)
+		public static string AsString(this SkinTexture skinTexture)
 		{
-			return adj + (String.IsNullOrWhiteSpace(adj) ? "" : " ") + fur.AsString() + " " + descriptor();
+			switch (skinTexture)
+			{
+				case SkinTexture.SEXY: return "sexy";
+				case SkinTexture.ROUGH: return "rough";
+				case SkinTexture.FRECKLED: return "freckled";
+				case SkinTexture.THICK: return "thick";
+				case SkinTexture.SMOOTH: return "smooth";
+				case SkinTexture.SOFT: return "soft";
+				case SkinTexture.NONDESCRIPT:
+				default: return "";
+			}
+		}
+	}
+	internal partial class Epidermis
+	{
+		private static string fullStr(string adj, Tones tone, SimpleDescriptor descriptor)
+		{
+			return adj + (string.IsNullOrWhiteSpace(adj) ? "" : " ") + tone.AsString() + " " + descriptor();
+		}
+
+		private static string fullStr(string adj, FurColor fur, SimpleDescriptor descriptor)
+		{
+			return adj + (string.IsNullOrWhiteSpace(adj) ? "" : " ") + fur.AsString() + " " + descriptor();
 		}
 
 
-		public static string ColoredStr(FurColor color, SimpleDescriptor descriptor)
+		private static string ColoredStr(FurColor color, SimpleDescriptor descriptor)
 		{
 			return color.AsString() + " " + descriptor();
 		}
-		public static string ColoredStr(Tones color, SimpleDescriptor descriptor)
+		private static string ColoredStr(Tones color, SimpleDescriptor descriptor)
 		{
 			return color.AsString() + " " + descriptor();
 		}
-		public static string SkinStr()
+	}
+
+	internal partial class EpidermisType
+	{
+		private static string SkinStr()
 		{
 			return "skin";
 		}
 
-		public static string ScalesStr()
+		private static string ScalesStr()
 		{
 			return "scales";
 		}
 
-		public static string FeathersStr()
+		private static string FeathersStr()
 		{
 			return "feather";
 		}
 
-		public static string FurStr()
+		private static string FurStr()
 		{
 			return "fur";
 		}
 
 		//Hard exoskeleton for things like a turtle or spiders or whatever.
-		public static string CarapaceStr()
+		private static string CarapaceStr()
 		{
 			return "carapace";
 		}
 
-		public static string GooStr()
+		private static string GooStr()
 		{
 			return "goo";
 		}
-		public static string WoolStr()
+		private static string WoolStr()
 		{
 			return "wool";
 		}
-		public static string BarkStr()
+		private static string BarkStr()
 		{
 			return "bark";
 		}
-		public static string ExoskeletonStr()
+		private static string ExoskeletonStr()
 		{
 			return "exoskeleton";
 		}
 
-		public static string RubberStr()
+		private static string RubberStr()
 		{
 			return "rubber-skin";
 		}

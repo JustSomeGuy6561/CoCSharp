@@ -5,12 +5,11 @@
 using CoC.Creatures;
 using CoC.Strings;
 using CoC.Tools;
-using static   CoC.BodyParts.GillStrings;
 using static CoC.UI.TextOutput;
 //using CoC.
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
-	public class Gills : BodyPartBase<Gills, GillType>
+	internal class Gills : BodyPartBase<Gills, GillType>
 	{
 		protected Gills()
 		{
@@ -74,11 +73,11 @@ namespace  CoC.BodyParts
 		}
 	}
 
-	public class GillType : BodyPartBehavior<GillType, Gills>
+	internal partial class GillType : BodyPartBehavior<GillType, Gills>
 	{
 		private static int indexMaker = 0;
 
-		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<Gills> fullDesc, TypeAndPlayerDelegate<Gills> playerDesc, 
+		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<Gills> fullDesc, TypeAndPlayerDelegate<Gills> playerDesc,
 			ChangeType<Gills> transform, RestoreType<Gills> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -89,7 +88,7 @@ namespace  CoC.BodyParts
 		protected readonly int _index;
 		public override int index => _index;
 
-		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x,y) => GlobalStrings.None(), GlobalStrings.TransformToDefault<Gills, GillType>, GlobalStrings.RevertAsDefault);
+		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), GlobalStrings.TransformToDefault<Gills, GillType>, GlobalStrings.RevertAsDefault);
 		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneFullDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
 		public static readonly GillType FISH = new GillType(FishDescStr, FishFullDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
 	}

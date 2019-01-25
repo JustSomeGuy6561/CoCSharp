@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 namespace CoC.Creatures
 {
 
-	public class Player : CombatCreature, INotifyPropertyChanged
+	internal class Player : CombatCreature, INotifyPropertyChanged
 	{
 		public Player(string creatureName) : base(creatureName)
 		{

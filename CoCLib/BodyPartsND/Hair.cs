@@ -2,23 +2,22 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 9:50 PM
+using CoC.BodyParts.SpecialInteraction;
+using CoC.Creatures;
+using CoC.Engine;
+using CoC.EpidermalColors;
+using CoC.Tools;
 using System;
 using System.Collections.Generic;
-using CoC.EpidermalColors;
-using  CoC.BodyParts.SpecialInteraction;
-using CoC.Tools;
-using static  CoC.BodyParts.HairStrings;
 using static CoC.UI.TextOutput;
-using CoC.Engine;
-using CoC.Creatures;
 
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 
 
-	public enum HairStyle { NORMAL, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED }
+	public enum HairStyle { NO_STYLE, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED }
 
-	public class Hair : BodyPartBase<Hair, HairType>, IDyeable, ITimeAware
+	internal partial class Hair : BodyPartBase<Hair, HairType>, IDyeable, ITimeAware
 	{
 		private static readonly HairFurColors HUMAN_DEFAULT = HairFurColors.BLACK;
 
@@ -67,7 +66,7 @@ namespace  CoC.BodyParts
 			isGrowing = false;
 			color = HUMAN_DEFAULT;
 			isSemiTransparent = false;
-			style = HairStyle.NORMAL;
+			style = HairStyle.NO_STYLE;
 		}
 
 		protected Hair(HairType hairType)
@@ -77,7 +76,7 @@ namespace  CoC.BodyParts
 			isGrowing = hairType != HairType.NO_HAIR;
 			color = HUMAN_DEFAULT;
 			isSemiTransparent = false;
-			style = HairStyle.NORMAL;
+			style = HairStyle.NO_STYLE;
 		}
 		#endregion
 		#region Custom Descriptions
@@ -97,7 +96,7 @@ namespace  CoC.BodyParts
 			return new Hair(hairType);
 		}
 
-		public static Hair Generate(HairType hairType, float length, HairFurColors hairColor, HairStyle hairStyle = HairStyle.NORMAL, bool growing = true, bool transparent = false)
+		public static Hair Generate(HairType hairType, float length, HairFurColors hairColor, HairStyle hairStyle = HairStyle.NO_STYLE, bool growing = true, bool transparent = false)
 		{
 			if (hairType == HairType.NO_HAIR) return new Hair();
 			else
@@ -159,6 +158,9 @@ namespace  CoC.BodyParts
 		}
 		#endregion
 
+		#region Updates
+#warning add updates to hair
+		#endregion
 
 		#region Activate/Deactivate Growth
 		//If hair can grow, sets it to grow and returns true. returns true if 
@@ -210,39 +212,37 @@ namespace  CoC.BodyParts
 
 		public bool GrowAndStyle(HairStyle newStyle, int deltaLength, bool activateIfPossible = false)
 		{
-			if (type == HairType.NO_HAIR )
-			{
-				return false;
-			}
-			if (style == HairStyle.NOT_APPLICABLE && !this.isGrowing)
+			if (type == HairType.NO_HAIR)
 			{
 				return false;
 			}
 			style = newStyle;
 			//delta length?
-			//return isGrowing && style == newStyle;
+			return isGrowing && style == newStyle;
 		}
 
 		public bool CutLong(HairStyle newStyle)
 		{
-
+			throw new NotImplementedException();
 		}
 		public bool CutMedium(HairStyle newStyle)
 		{
+			throw new NotImplementedException();
 
 		}
 		public bool CutShort(HairStyle newStyle)
 		{
-
+			throw new NotImplementedException();
 		}
 
 		public bool ShaveOff(HairStyle newStyle, bool disableHairGrowth = false)
 		{
-
+			throw new NotImplementedException();
 		}
 
 		public bool ShaveOffAndDeactivateGrowth()
 		{
+			throw new NotImplementedException();
 		}
 		#endregion
 		#region Dyeable
@@ -338,12 +338,12 @@ namespace  CoC.BodyParts
 		#endregion
 	}
 
-	public class HairType : BodyPartBehavior<HairType, Hair>
+	internal partial class HairType : BodyPartBehavior<HairType, Hair>
 	{
 		private static int indexMaker = 0;
 
 		public override int index => _index;
-		private int _index;
+		private readonly int _index;
 		public virtual bool preventHairGrowth => false;
 
 		public virtual bool canDye => true;
@@ -351,17 +351,21 @@ namespace  CoC.BodyParts
 		public virtual bool canCut => true;
 		public virtual bool canLengthen => true;
 
+		public readonly bool setLengthToDefaultOnChange;
+		//
 		public readonly float defaultHairLength;
 		//Worth noting: As of vanilla, all hair (even basilisk plumes) can be dyed.
 		//It can now be disabled, but default behavior is to allow it. to disable,
 		//or to conditionally allow dyeing, implement a subclass of Hairtype and 
 		//override canDye and possibly tryToDye with the new rules.
-		protected HairType(float defaultLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, TypeAndPlayerDelegate<Hair> playerDesc,
+
+		protected HairType(float defaultLengthForBaldies, bool typeChangeUsesBaldLength,
+			SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, TypeAndPlayerDelegate<Hair> playerDesc, PlayerStr growFromBaldStr,
 			ChangeType<Hair> transform, RestoreType<Hair> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
-			defaultHairLength = defaultLength;
+			defaultHairLength = defaultLengthForBaldies;
+			setLengthToDefaultOnChange = typeChangeUsesBaldLength;
 		}
 
 
@@ -375,27 +379,28 @@ namespace  CoC.BodyParts
 			return false;
 		}
 
-		public static readonly HairType NO_HAIR = new NoHair();
-		public static readonly HairType NORMAL = new HairType(NormalStr);
-		public static readonly HairType FEATHER = new HairType(FeatherStr);
-		public static readonly HairType GOO = new HairType(GooStr);
+		//default l
+		public static readonly HairType NO_HAIR = new NoHair(); //0.0
+		public static readonly HairType NORMAL = new HairType(0.0f, false, NormalDesc, NormalFullDesc, NormalPlayerStr, NormalGrowStr, NormalTransformStr, NormalRestoreStr);
+		public static readonly HairType FEATHER = new HairType(5.0f, false, FeatherDesc, FeatherFullDesc, FeatherPlayerStr, FeatherGrowStr, FeatherTransformStr, FeatherRestoreStr);
+		public static readonly HairType GOO = new HairType(5.0f, false, GooDesc, GooFullDesc, GooPlayerStr, GooGrowStr, GooTransformStr, GooRestoreStr); //5 in if bald. updating behavior to <5 or bald to 5 inch. just say your old type 
 		public static readonly HairType ANEMONE = new AnemoneHair();
-		public static readonly HairType QUILL = new HairType(QuillStr);
+		public static readonly HairType QUILL = new HairType(12.0f, true, QuillDesc, QuillFullDesc, QuillPlayerStr, QuillGrowStr, QuillTransformStr, QuillRestoreStr); //shoulder length. not set though. whoops.
 		//Spines are a huge dick - they break the format that hair actually is hair (or hair-like)
 
 		//Solution: Spines take the hair color of the original and convert it to the closest lizard tone
 		//you can say something like "the spines clash with the rest of your scales, hinting at their unnatural origins"
 		//then if you really want to, the next TF you can force the spines in line by dyeing them with a lizard related dye closest to their current tone. 
 		//at that point you can then say "the spines 
-		public static readonly HairType BASILISK_SPINES = new BasiliskSpines()
+		public static readonly HairType BASILISK_SPINES = new BasiliskSpines(); //2. Set regardless.
 		//end complain
-		public static readonly HairType BASILISK_PLUME = new HairType(BasiliskPlumesStr);
-		public static readonly HairType WOOL = new HairType(WoolStr);
-		public static readonly HairType LEAF = new HairType(LeafStr);
+		public static readonly HairType BASILISK_PLUME = new HairType(2.0f, true, PlumeDesc, PlumeFullDesc, PlumePlayerStr, PlumeGrowStr, PlumeTransformStr, PlumeRestoreStr); //2
+		public static readonly HairType WOOL = new HairType(1.0f, false, WoolDesc, WoolFullDesc, WoolPlayerStr, WoolGrowStr, WoolTransformStr, WoolRestoreStr); //not defined. 
+		public static readonly HairType LEAF = new Vines(); //not defined. not fully implemented imo.
 
 		private class NoHair : HairType
 		{
-			public NoHair() : base(NoHairStr) { }
+			public NoHair() : base(0.0f, true, NoHairDesc, NoHairFullDesc, NoHairPlayerStr, NoHairGrowStr, NoHairTransformStr, NoHairRestoreStr) { }
 
 			public override bool preventHairGrowth => true;
 			public override bool canCut => false;
@@ -412,7 +417,17 @@ namespace  CoC.BodyParts
 
 		private class AnemoneHair : HairType
 		{
-			public AnemoneHair() : base(AnemoneStr) { }
+			public AnemoneHair() : base(8.0f, true, AnemoneDesc, AnemoneFullDesc, AnemonePlayerStr, AnemoneGrowStr, AnemoneTransformStr, AnemoneRestoreStr) { }
+
+			public override bool canCut => false;
+
+			public override bool canLengthen => false;
+
+		}
+
+		private class Vines : HairType
+		{
+			public Vines() : base(12.0f, true, VineDesc, VineFullDesc, VinePlayerStr, VineGrowStr, VineTransformStr, VineRestoreStr) { }
 
 			public override bool canCut => false;
 
@@ -422,7 +437,7 @@ namespace  CoC.BodyParts
 
 		private class BasiliskSpines : HairType
 		{
-			public BasiliskSpines() : base(BasiliskSpinesStr)
+			public BasiliskSpines() : base(2.0f, true, SpineDesc, SpineFullDesc, SpinePlayerStr, SpineGrowStr, SpineTransformStr, SpineRestoreStr)
 			{
 
 			}
@@ -443,8 +458,7 @@ namespace  CoC.BodyParts
 
 	}
 
-
-	public class HairColorEventArg : EventArgs
+	internal class HairColorEventArg : EventArgs
 	{
 		public readonly HairFurColors hairColor;
 

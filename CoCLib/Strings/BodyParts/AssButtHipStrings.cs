@@ -2,22 +2,26 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 3:05 AM
-using  CoC.BodyParts;
 using CoC.Creatures;
-namespace   CoC.BodyParts
+using CoC.Tools;
+
+namespace CoC.BodyParts
 {
-	public static class AssButtHipStrings
+	internal partial class Ass
 	{
-		public static string assfullDescription(Ass ass)
+		private string assFullDescription()
 		{
 
 		}
-		public static string assTypeAndPlayerDelegate(Ass ass, Player player)
+		private string assPlayerStr(Player player)
 		{
 
 		}
+	}
+	public static class AssButtHipType
+	{
 
-		public static string buttDescription(int buttSize)
+		private static string buttDescription(int buttSize)
 		{
 
 			if (buttSize == Butt.BUTTLESS)
@@ -62,7 +66,7 @@ namespace   CoC.BodyParts
 			}
 		}
 
-		public static string hipDescription(int hipSize)
+		private static string hipDescription(int hipSize)
 		{
 			if (hipSize <= Hips.BOYISH)
 			{

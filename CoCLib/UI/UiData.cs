@@ -7,27 +7,28 @@ using System.Windows.Input;
 
 namespace CoC.UI
 {
-	public class UiData : ObservableCollection<ButtonData>
-	{
-		public UiData() : base() {}
-		public UiData(List<ButtonData> list) : base(list) {}
+	//public class UiData : ObservableCollection<ButtonData>
+	//{
+	//	internal UiData() : base() {}
+	//	internal UiData(List<ButtonData> list) : base(list) {}
 
-		public UiData(IEnumerable<ButtonData> collection) : base(collection) {}
-	}
+	//	internal UiData(IEnumerable<ButtonData> collection) : base(collection) {}
+	//}
 
-	public class ButtonData : ICommand
+	public sealed class ButtonData : ICommand
 	{
 		public readonly int index;
 		public readonly string buttonText;
 		public readonly string buttonHint;
 		private readonly PlayerFunction callback;
-
-		public ButtonData(int ind, string buttonTxt, string buttonHnt, PlayerFunction function)
+		private readonly Controller controller;
+		internal ButtonData(int ind, string buttonTxt, string buttonHnt, Controller cont, PlayerFunction function)
 		{
 			index = ind;
 			buttonText = buttonTxt;
 			buttonHint = buttonHnt;
 			callback = function;
+			controller = cont;
 		}
 
 		public event EventHandler CanExecuteChanged;
@@ -39,7 +40,7 @@ namespace CoC.UI
 
 		public void Execute(object parameter)
 		{
-			Controller.Call(callback);
+			controller.Call(callback);
 		}
 	}
 }

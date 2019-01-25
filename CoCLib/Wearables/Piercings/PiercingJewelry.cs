@@ -10,7 +10,7 @@ using System.Text;
 namespace CoC.Wearables.Piercings
 {
 	public enum PiercingJewelryType { RING, BARBELL_STUD, DANGLER}
-	public class PiercingJewelry
+	internal class PiercingJewelry
 	{
 		public readonly bool isSeamless;
 		public readonly PiercingJewelryType jewelryType;

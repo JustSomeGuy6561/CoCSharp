@@ -6,7 +6,7 @@
 namespace  CoC.BodyParts
 {
 	public enum LipPiercings {LABRET, MEDUSA, MONROE_LEFT, MONROE_RIGHT, LOWER_LEFT_1,	LOWER_LEFT_2, LOWER_RIGHT_1, LOWER_RIGHT_2 }
-	public class Lip : SimplePiercing<LipPiercings>
+	internal class Lip : SimplePiercing<LipPiercings>
 	{
 		protected Lip(PiercingFlags flags) : base(flags) {}
 

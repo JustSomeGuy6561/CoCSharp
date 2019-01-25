@@ -7,13 +7,14 @@ using CoC.Tools;
 
 namespace   CoC.BodyParts
 {
-	public static class BreastNippleStrings
+
+	internal partial class Nipples
 	{
-		public static string NippleShortDescription(Nipples nipples)
+		private static string NippleShortDescription(Nipples nipples)
 		{
 			return "nipples";
 		}
-		public static string NippleDescription(Nipples nipples)
+		private static string NippleDescription(Nipples nipples)
 		{
 			string retVal = "";
 			retVal += nipples.blackNipples ? "black" : "";
@@ -41,7 +42,7 @@ namespace   CoC.BodyParts
 			return retVal;
 		}
 
-		public static string NippleDescriptionWithLength(Nipples nipples)
+		private static string NippleDescriptionWithLength(Nipples nipples)
 		{
 			return Helpers.ToNearestQuarter(nipples.length).ToString() + " inch " + NippleDescription(nipples);
 		}

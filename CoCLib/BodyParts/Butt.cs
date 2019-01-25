@@ -12,7 +12,7 @@ namespace  CoC.BodyParts
 	//it's literally just a wrapper for an int.
 	//but now it has validation! woo!
 	//oh, and a descriptor.
-	public class Butt : IGrowShrinkable
+	internal class Butt : IGrowShrinkable
 	{
 #warning add descriptors
 		public const int BUTTLESS = 0;

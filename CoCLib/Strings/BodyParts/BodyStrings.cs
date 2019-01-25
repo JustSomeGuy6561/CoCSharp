@@ -7,266 +7,266 @@ using CoC.Creatures;
 
 namespace   CoC.BodyParts
 {
-	public static class BodyStrings
+	internal partial class BodyType
 	{
 		#region Skin
-		public static string SkinDesc()
+		private static string SkinDesc()
 		{
 
 		}
-		public static string SkinFullDesc(Body body)
+		private static string SkinFullDesc(Body body)
 		{
 
 		}
-		public static string SkinPlayerStr(Body body, Player player)
+		private static string SkinPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string SkinTransformStr(Body body, Player player)
+		private static string SkinTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string SkinRestoreStr(Body body, Player player)
+		private static string SkinRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Scales
-		public static string ScalesDesc()
+		private static string ScalesDesc()
 		{
 
 		}
-		public static string ScalesUnderbodyDesc()
+		private static string ScalesUnderbodyDesc()
 		{
 
 		}
-		public static string ScalesFullDesc(Body body)
+		private static string ScalesFullDesc(Body body)
 		{
 
 		}
-		public static string ScalesPlayerStr(Body body, Player player)
+		private static string ScalesPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string ScalesTransformStr(Body body, Player player)
+		private static string ScalesTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string ScalesRestoreStr(Body body, Player player)
+		private static string ScalesRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Naga
-		public static string NagaDesc()
+		private static string NagaDesc()
 		{
 
 		}
-		public static string NagaUnderbodyDesc()
+		private static string NagaUnderbodyDesc()
 		{
 
 		}
-		public static string NagaFullDesc(Body body)
+		private static string NagaFullDesc(Body body)
 		{
 
 		}
-		public static string NagaPlayerStr(Body body, Player player)
+		private static string NagaPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string NagaTransformStr(Body body, Player player)
+		private static string NagaTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string NagaRestoreStr(Body body, Player player)
+		private static string NagaRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Feather
-		public static string FeatherDesc()
+		private static string FeatherDesc()
 		{
 
 		}
-		public static string FeatherUnderbodyDesc()
+		private static string FeatherUnderbodyDesc()
 		{
 
 		}
-		public static string FeatherFullDesc(Body body)
+		private static string FeatherFullDesc(Body body)
 		{
 
 		}
-		public static string FeatherPlayerStr(Body body, Player player)
+		private static string FeatherPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string FeatherTransformStr(Body body, Player player)
+		private static string FeatherTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string FeatherRestoreStr(Body body, Player player)
+		private static string FeatherRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Bark
-		public static string BarkDesc()
+		private static string BarkDesc()
 		{
 
 		}
-		public static string BarkFullDesc(Body body)
+		private static string BarkFullDesc(Body body)
 		{
 
 		}
-		public static string BarkPlayerStr(Body body, Player player)
+		private static string BarkPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string BarkTransformStr(Body body, Player player)
+		private static string BarkTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string BarkRestoreStr(Body body, Player player)
+		private static string BarkRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Fur
-		public static string FurDesc()
+		private static string FurDesc()
 		{
 
 		}
-		public static string FurUnderbodyDesc()
+		private static string FurUnderbodyDesc()
 		{
 
 		}
-		public static string FurFullDesc(Body body)
+		private static string FurFullDesc(Body body)
 		{
 
 		}
-		public static string FurPlayerStr(Body body, Player player)
+		private static string FurPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string FurTransformStr(Body body, Player player)
+		private static string FurTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string FurRestoreStr(Body body, Player player)
+		private static string FurRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Wool
-		public static string WoolDesc()
+		private static string WoolDesc()
 		{
 
 		}
-		public static string WoolUnderbodyDesc()
+		private static string WoolUnderbodyDesc()
 		{
 
 		}
-		public static string WoolFullDesc(Body body)
+		private static string WoolFullDesc(Body body)
 		{
 
 		}
-		public static string WoolPlayerStr(Body body, Player player)
+		private static string WoolPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string WoolTransformStr(Body body, Player player)
+		private static string WoolTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string WoolRestoreStr(Body body, Player player)
+		private static string WoolRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Goo
-		public static string GooDesc()
+		private static string GooDesc()
 		{
 
 		}
-		public static string GooFullDesc(Body body)
+		private static string GooFullDesc(Body body)
 		{
 
 		}
-		public static string GooPlayerStr(Body body, Player player)
+		private static string GooPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string GooTransformStr(Body body, Player player)
+		private static string GooTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string GooRestoreStr(Body body, Player player)
+		private static string GooRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Rubber
-		public static string RubberDesc()
+		private static string RubberDesc()
 		{
 
 		}
-		public static string RubberFullDesc(Body body)
+		private static string RubberFullDesc(Body body)
 		{
 
 		}
-		public static string RubberPlayerStr(Body body, Player player)
+		private static string RubberPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string RubberTransformStr(Body body, Player player)
+		private static string RubberTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string RubberRestoreStr(Body body, Player player)
+		private static string RubberRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Carapace
-		public static string CarapaceStr()
+		private static string CarapaceStr()
 		{
 
 		}
-		public static string CarapaceFullDesc(Body body)
+		private static string CarapaceFullDesc(Body body)
 		{
 
 		}
-		public static string CarapacePlayerStr(Body body, Player player)
+		private static string CarapacePlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string CarapaceTransformStr(Body body, Player player)
+		private static string CarapaceTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string CarapaceRestoreStr(Body body, Player player)
+		private static string CarapaceRestoreStr(Body body, Player player)
 		{
 
 		}
 		#endregion
 		#region Exoskeleton
-		public static string ExoskeletonStr()
+		private static string ExoskeletonStr()
 		{
 
 		}
-		public static string ExoskeletonFullDesc(Body body)
+		private static string ExoskeletonFullDesc(Body body)
 		{
 
 		}
-		public static string ExoskeletonPlayerStr(Body body, Player player)
+		private static string ExoskeletonPlayerStr(Body body, Player player)
 		{
 
 		}
-		public static string ExoskeletonTransformStr(Body body, Player player)
+		private static string ExoskeletonTransformStr(Body body, Player player)
 		{
 
 		}
-		public static string ExoskeletonRestoreStr(Body body, Player player)
+		private static string ExoskeletonRestoreStr(Body body, Player player)
 		{
 
 		}

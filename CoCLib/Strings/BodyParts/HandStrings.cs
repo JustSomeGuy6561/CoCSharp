@@ -2,27 +2,69 @@
 //Description:
 //Author: JustSomeGuy
 //12/31/2018, 1:35 AM
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace   CoC.BodyParts
+namespace CoC.BodyParts
 {
-	static class HandStrings
+	internal partial class HandType
 	{
-		public static string HumanShort() { return "normal hands"; }
-		public static string LizardShort() { return "lizard claws"; }
-		public static string DragonShort() { return "dragon claws"; }
-		public static string SalamanderShort() { return "salamander claws"; }
-		public static string CatShort() { return "cat paws"; }
-		public static string DogShort() { return "dog paws"; }
-		public static string FoxShort() { return "fox paws"; }
-		public static string ImpShort() { return "imp claws"; }
-		public static string CockatriceShort() { return "cockatrice claws"; }
-		public static string RedPandaShort() { return "panda paws"; }
-		public static string FerretShort() { return "ferret paws"; }
+		private static string HumanShort() { return "normal hands"; }
+		public static string HumanFullDesc(Hands hands)
+		{
+			return "normal hands, fingers, and nails.";
+		}
+		private static string LizardShort() { return "lizard claws"; }
 
-		//public static string MantisShort() { return "mantis scythes"};
+		private static string LizardFullDesc(Hands hands)
+		{
+			return hands.clawTone.AsString() + "ish " + LizardShort();
+		}
+
+		private static string DragonShort() { return "dragon claws"; }
+		private static string DragonFullDesc(Hands hands)
+		{
+
+		}
+		private static string SalamanderShort() { return "salamander claws"; }
+		private static string SalamanderFullDesc(Hands hands)
+		{
+
+		}
+		private static string CatShort() { return "cat paws"; }
+		private static string CatFullDesc(Hands hands)
+		{
+
+		}
+		private static string DogShort() { return "dog paws"; }
+		private static string DogFullDesc(Hands hands)
+		{
+
+		}
+		private static string FoxShort() { return "fox paws"; }
+		private static string FoxFullDesc(Hands hands)
+		{
+
+		}
+		private static string ImpShort() { return "imp claws"; }
+		private static string ImpFullDesc(Hands hands)
+		{
+
+		}
+		private static string CockatriceShort() { return "cockatrice claws"; }
+		private static string CockatriceFullDesc(Hands hands)
+		{
+
+		}
+		private static string RedPandaShort() { return "panda paws"; }
+		private static string RedPandaFullDesc(Hands hands)
+		{
+
+		}
+		private static string FerretShort() { return "ferret paws"; }
+		private static string FerretFullDesc(Hands hands)
+		{
+
+		}
+		//private static string MantisShort() { return "mantis scythes"};
+		//private static string MantisFullDesc(Hands hands) { return "mantis scythes"};
 	}
 }

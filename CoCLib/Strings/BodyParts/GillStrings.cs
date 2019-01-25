@@ -7,47 +7,47 @@ using CoC.Creatures;
 
 namespace   CoC.BodyParts
 {
-	public static class GillStrings
+	internal partial class GillType
 	{
 
-		public static string AnemoneDescStr()
+		private static string AnemoneDescStr()
 		{
 
 		}
-		public static string AnemoneFullDesc(Gills gills)
+		private static string AnemoneFullDesc(Gills gills)
 		{
 
 		}
-		public static string AnemonePlayerStr(Gills gills, Player player)
+		private static string AnemonePlayerStr(Gills gills, Player player)
 		{
 
 		}
-		public static string AnemoneTransformStr(Gills gills, Player player)
+		private static string AnemoneTransformStr(Gills gills, Player player)
 		{
 
 		}
-		public static string AnemoneRestoreStr(Gills gills, Player player)
+		private static string AnemoneRestoreStr(Gills gills, Player player)
 		{
 
 		}
 
-		public static string FishDescStr()
+		private static string FishDescStr()
 		{
 
 		}
-		public static string FishFullDesc(Gills gills)
+		private static string FishFullDesc(Gills gills)
 		{
 
 		}
-		public static string FishPlayerStr(Gills gills, Player player)
+		private static string FishPlayerStr(Gills gills, Player player)
 		{
 
 		}
-		public static string FishTransformStr(Gills gills, Player player)
+		private static string FishTransformStr(Gills gills, Player player)
 		{
 
 		}
-		public static string FishRestoreStr(Gills gills, Player player)
+		private static string FishRestoreStr(Gills gills, Player player)
 		{
 
 		}

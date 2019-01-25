@@ -7,7 +7,7 @@ namespace  CoC.BodyParts
 {
 	public enum EyebrowPiercings { LEFT_1, LEFT_2, RIGHT_1, RIGHT_2}
 
-	public class Eyebrow : SimplePiercing<EyebrowPiercings>
+	internal class Eyebrow : SimplePiercing<EyebrowPiercings>
 	{
 		protected Eyebrow(PiercingFlags flags) : base(flags) {}
 

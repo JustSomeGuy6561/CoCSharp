@@ -18,7 +18,7 @@ TL;DR Version: they just work (TM). trust me. A new body part looks like this
 for the full version, here's what they do:
 
 Let's look at the header for the BodyPartBase :
-public abstract class BodyPartBase<ThisClass, BehaviorClass> where ThisClass : BodyPartBase<ThisClass, BehaviorClass> where BehaviorClass : BodyPartBehavior<BehaviorClass, ThisClass>
+internal abstract class BodyPartBase<ThisClass, BehaviorClass> where ThisClass : BodyPartBase<ThisClass, BehaviorClass> where BehaviorClass : BodyPartBehavior<BehaviorClass, ThisClass>
 
 This is a generic class, because it has <ThisClass, BehaviorClass>. Basically, we need to define functions that use variables, but the type they are depends on what this class is. Similarly, we need to know where our behaviors are defined, and that's different for each body part class. 
 BUT, generics are tricky if you're not familiar with theim. We could plug anything in and C# wouldn't care. we could tell C# our behavior class is an int (which is okay because Integer is a class), and that's not what we want. Imagine, for example, we told our arms class it's behaviors were defined as an integer. 
@@ -45,7 +45,7 @@ AKA another base type that inherits these and adds functionality, but is still a
 
 Good news - you can do that! 
 TL;DR Version. Again, it just works (TM) - like this.
-public abstract class SubBodyPart<ThisClass, BehaviorClass> : BodyPartBase<ThisClass, BehaviorClass> [, any additional interfaces] where ThisClass : SubBodyPart<ThisClass, BehaviorClass> where BehaviorClass : SubClassBehavior<BehaviorClass, ThisClass>
+internal abstract class SubBodyPart<ThisClass, BehaviorClass> : BodyPartBase<ThisClass, BehaviorClass> [, any additional interfaces] where ThisClass : SubBodyPart<ThisClass, BehaviorClass> where BehaviorClass : SubClassBehavior<BehaviorClass, ThisClass>
 {
 	//Subclass related variables
 	//implement any basebodypart stuff that is handled here. note that you can leave it for the child class to implement

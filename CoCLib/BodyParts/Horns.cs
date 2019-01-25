@@ -2,19 +2,18 @@
 //Description:
 //Author: JustSomeGuy
 //12/28/2018, 1:50 AM
-using System;
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
+using System;
 using static CoC.UI.TextOutput;
-using static   CoC.BodyParts.HornStrings;
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
 	//Strictly the facial structure. it doesn't include ears or eyes or hair.
 	//They're done seperately. if a tf affects all of them, just call each one.
 
 	//This class is so much harder to implement than i thought it'd be.
-	public class Horns : BodyPartBase<Horns, HornType>, IGrowShrinkable, IMasculinityChangeAware
+	internal class Horns : BodyPartBase<Horns, HornType>, IGrowShrinkable, IMasculinityChangeAware
 	{
 		public override HornType type { get; protected set; }
 
@@ -207,7 +206,7 @@ namespace  CoC.BodyParts
 
 	//i could go with function pointers throughout this, but frankly it's complicated enough that it might as well just be abstract.
 
-	public abstract class HornType : BodyPartBehavior<HornType, Horns>
+	internal abstract partial class HornType : BodyPartBehavior<HornType, Horns>
 	{
 		#region HornType
 		#region variables
@@ -1013,7 +1012,7 @@ namespace  CoC.BodyParts
 		
 
 		IMP: "a pair of short, imp-like horns"
-		BULL: internal override string GetDescriptor(int numHorns, int hornLength)
+		BULL: public override string GetDescriptor(int numHorns, int hornLength)
 		{
 				if (hornLength < 3)
 					return "a pair of small nubs, like those on a young bovine";
@@ -1026,20 +1025,20 @@ namespace  CoC.BodyParts
 				else //if (player.horns.value >= 20)
 					return "two huge horns, curving outward at first, then forwards. They reach at least " + hornLength.ToString() + "inches and end in sharp points. They look incredibly dangerous";
 		}
-		RHINO internal override string GetDescriptor(int numHorns, int hornLength)
+		RHINO public override string GetDescriptor(int numHorns, int hornLength)
 		{
 			return hornLength < maxHornLength ? "a single sharp horn" : "a single foot-long unicorn horn, complete with a spiral";
 		}
-		GOAT: internal override string GetDescriptor(int numHorns, int hornLength)
+		GOAT: public override string GetDescriptor(int numHorns, int hornLength)
 		{
 			return hornLength > minHornLength ? "a pair of " + hornLength + " inch goat horns. They are curved and patterned in ridges." : "a pair of short, nubby goat horns";
 		}
 
-		UNICORN: internal override string GetDescriptor(int numHorns, int hornLength)
+		UNICORN: public override string GetDescriptor(int numHorns, int hornLength)
 		{
 			return hornLength < maxHornLength ? "a single sharp horn" : "a single foot-long unicorn horn, complete with a spiral";
 		}
-		DRAGON: internal override string GetDescriptor(int numHorns, int hornLength)
+		DRAGON: public override string GetDescriptor(int numHorns, int hornLength)
 		{
 			if (numHorns == maxHorns)
 				return "four draconic horns. The first pair of horns are " + hornLength + " inches. The second pair sits behind them and reaches one foot in length";
@@ -1048,11 +1047,11 @@ namespace  CoC.BodyParts
 			else
 				return "a pair of " + hornLength.ToString() + " inch horns - relatively short for a dragon";
 		}
-		ANTLERS: internal override string GetDescriptor(int numHorns, int hornLength)
+		ANTLERS: public override string GetDescriptor(int numHorns, int hornLength)
 		{
 			return "a rack of " + (numHorns % 2 == 1 ? "asymmetric " : "") + "antlers, with a total of" + numHorns.ToString() + " points.";
 		}
-		SHEEP: internal override string GetDescriptor(int numHorns, int hornLength)
+		SHEEP: public override string GetDescriptor(int numHorns, int hornLength)
 		{
 			if (hornLength < 3)
 				return "a pair of small sheep horns";

@@ -2,62 +2,61 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 10:11 PM
-using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace   CoC.BodyParts
+namespace CoC.BodyParts
 {
-	public static class ClitVaginaStrings
+	internal partial class VaginaType
 	{
-		public static string VagHumanDesc()
+		private static string VagHumanDesc()
 		{
 
 		}
-		public static string VagHumanFullDesc(Vagina vagina)
+		private static string VagHumanFullDesc(Vagina vagina)
 		{
 
 		}
-		public static string VagHumanPlayerStr(Vagina vagina, Player player)
+		private static string VagHumanPlayerStr(Vagina vagina, Player player)
 		{
 
 		}
-		public static string VagEquineDesc()
+		private static string VagEquineDesc()
 		{
 
 		}
-		public static string VagEquineFullDesc(Vagina vagina)
+		private static string VagEquineFullDesc(Vagina vagina)
 		{
 
 		}
-		public static string VagEquinePlayerStr(Vagina vagina, Player player)
+		private static string VagEquinePlayerStr(Vagina vagina, Player player)
 		{
 
 		}
-		public static string VagEquineTransformStr(Vagina vagina, Player player)
+		private static string VagEquineTransformStr(Vagina vagina, Player player)
 		{
 
 		}
-		public static string VagEquineRestoreStr(Vagina vagina, Player player)
+		private static string VagEquineRestoreStr(Vagina vagina, Player player)
 		{
 
 		}
-		public static string VagSandTrapDesc()
+		private static string VagSandTrapDesc()
 		{
 
 		}
-		public static string VagSandTrapFullDesc(Vagina vagina)
+		private static string VagSandTrapFullDesc(Vagina vagina)
 		{
 
 		}
-		public static string VagSandTrapPlayerStr(Vagina vagina, Player player)
+		private static string VagSandTrapPlayerStr(Vagina vagina, Player player)
 		{
 
 		}
-		public static string VagSandTrapTransformStr(Vagina vagina, Player player)
+		private static string VagSandTrapTransformStr(Vagina vagina, Player player)
 		{
 
 		}
-		public static string VagSandTrapRestoreStr(Vagina vagina, Player player)
+		private static string VagSandTrapRestoreStr(Vagina vagina, Player player)
 		{
 
 		}

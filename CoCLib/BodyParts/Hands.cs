@@ -2,21 +2,22 @@
 //Description:
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
-using  CoC.BodyParts.SpecialInteraction;
+using CoC.BodyParts.SpecialInteraction;
 using CoC.EpidermalColors;
 using CoC.Tools;
-using static   CoC.BodyParts.HandStrings;
 
-namespace  CoC.BodyParts
+namespace CoC.BodyParts
 {
-	public class Hands : SimpleBodyPart<HandType>, IToneAware
+	internal class Hands : SimpleBodyPart<HandType>, IToneAware
 	{
 		public override HandType type { get; protected set; }
 
-		public Hands(HandType type, Tones currentTone) : base(type)
+		protected Hands(HandType type, Tones currentTone) : base(type)
 		{
 			this.clawTone = currentTone;
 		}
+
+		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
 
 		public static Hands Generate(HandType handType, Tones currentTone)
 		{
@@ -45,12 +46,16 @@ namespace  CoC.BodyParts
 		}
 	}
 
-	public class HandType : SimpleBodyPartType
+	internal partial class HandType : SimpleBodyPartType
 	{
-		protected enum HandStyle { HANDS, CLAWS, PAWS }
 		private static int indexMaker = 0;
+
+		protected enum HandStyle { HANDS, CLAWS, PAWS /*, OTHER*/}
+
+		public DescriptorWithArg<Hands> fullDescription;
 		public override int index => _index;
 		protected readonly int _index;
+
 		public virtual bool canTone()
 		{
 			return false;
@@ -58,6 +63,8 @@ namespace  CoC.BodyParts
 		public bool isClaws => handStyle == HandStyle.CLAWS;
 		public bool isPaws => handStyle == HandStyle.PAWS;
 		public bool isHands => handStyle == HandStyle.HANDS;
+		//default case. never procs, though that may change in the future, idk.
+		public bool isOther => !(isClaws || isHands || isPaws);
 
 		protected readonly HandStyle handStyle;
 		public virtual bool tryToTone(ref Tones currentTone, Tones primaryTone, Tones secondaryTone)
@@ -70,29 +77,30 @@ namespace  CoC.BodyParts
 			return false;
 		}
 
-		protected HandType(HandStyle style, SimpleDescriptor shortDesc) : base(shortDesc)
+		protected HandType(HandStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<Hands> fullDesc) : base(shortDesc)
 		{
 			_index = indexMaker++;
+			fullDescription = fullDesc;
 			handStyle = style;
 		}
 
-		public static readonly HandType HUMAN = new HandType(HandStyle.HANDS, HumanShort);
+		public static readonly HandType HUMAN = new HandType(HandStyle.HANDS, HumanShort, HumanFullDesc);
 		public static readonly HandType LIZARD = new LizardClaws();
-		public static readonly HandType DRAGON = new HandType(HandStyle.CLAWS, DragonShort);
-		public static readonly HandType SALAMANDER = new HandType(HandStyle.CLAWS, SalamanderShort);
-		public static readonly HandType CAT = new HandType(HandStyle.PAWS, CatShort);
-		public static readonly HandType DOG = new HandType(HandStyle.PAWS, DogShort);
-		public static readonly HandType FOX = new HandType(HandStyle.PAWS, FoxShort);
+		public static readonly HandType DRAGON = new HandType(HandStyle.CLAWS, DragonShort, DragonFullDesc);
+		public static readonly HandType SALAMANDER = new HandType(HandStyle.CLAWS, SalamanderShort, SalamanderFullDesc);
+		public static readonly HandType CAT = new HandType(HandStyle.PAWS, CatShort, CatFullDesc);
+		public static readonly HandType DOG = new HandType(HandStyle.PAWS, DogShort, DogFullDesc);
+		public static readonly HandType FOX = new HandType(HandStyle.PAWS, FoxShort, FoxFullDesc);
 		public static readonly HandType IMP = new ImpClaws();
-		public static readonly HandType COCKATRICE = new HandType(HandStyle.CLAWS, CockatriceShort);
-		public static readonly HandType RED_PANDA = new HandType(HandStyle.PAWS, RedPandaShort);
-		public static readonly HandType FERRET = new HandType(HandStyle.PAWS, FerretShort);
-		//public static readonly Hands MANTIS = new Hands(MantisShort);
+		public static readonly HandType COCKATRICE = new HandType(HandStyle.CLAWS, CockatriceShort, CockatriceFullDesc);
+		public static readonly HandType RED_PANDA = new HandType(HandStyle.PAWS, RedPandaShort, RedPandaFullDesc);
+		public static readonly HandType FERRET = new HandType(HandStyle.PAWS, FerretShort, FerretFullDesc);
+		//public static readonly Hands MANTIS = new Hands(HandStyle.OTHER, MantisShort MantisFullDesc); //Not even remotely implemented.
 
 		private class LizardClaws : HandType
 		{
 
-			public LizardClaws() : base(HandStyle.CLAWS, LizardShort) { }
+			public LizardClaws() : base(HandStyle.CLAWS, LizardShort, LizardFullDesc) { }
 
 			public override bool canTone()
 			{
@@ -111,7 +119,7 @@ namespace  CoC.BodyParts
 
 		private class ImpClaws : HandType
 		{
-			public ImpClaws() : base(HandStyle.CLAWS, ImpShort) { }
+			public ImpClaws() : base(HandStyle.CLAWS, ImpShort, ImpFullDesc) { }
 
 			public override bool canTone()
 			{

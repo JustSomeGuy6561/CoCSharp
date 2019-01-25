@@ -8,7 +8,7 @@ using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
 {
 	public enum TonguePiercings { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
-	public class Tongue : PiercableBodyPart<Tongue, TongueType, TonguePiercings>
+	internal class Tongue : PiercableBodyPart<Tongue, TongueType, TonguePiercings>
 	{
 #warning add update and update with message functions
 		protected Tongue(PiercingFlags flags) : base(flags)
@@ -67,7 +67,7 @@ namespace CoC.BodyParts
 			else return true;
 		}
 	}
-	public partial class TongueType : PiercableBodyPartBehavior<TongueType, Tongue, TonguePiercings>
+	internal partial class TongueType : PiercableBodyPartBehavior<TongueType, Tongue, TonguePiercings>
 	{
 		private static int indexMaker = 0;
 		private readonly int _index;

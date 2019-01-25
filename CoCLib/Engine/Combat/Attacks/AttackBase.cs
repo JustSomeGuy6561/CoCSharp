@@ -2,18 +2,14 @@
 //Description:
 //Author: JustSomeGuy
 //1/17/2019, 2:12 AM
+using CoC.Creatures;
 using CoC.Strings;
-using CoC.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CoC.Engine.Combat.Attacks
 {
-	public abstract class AttackBase
+	internal abstract class AttackBase
 	{
-		public abstract void UseAttack (Creature attacker, Creature Defender);
+		public abstract void UseAttack(Creature attacker, Creature Defender);
 
 		public abstract string attackName();
 		public abstract string attackHint();
@@ -38,5 +34,5 @@ namespace CoC.Engine.Combat.Attacks
 		}
 	}
 
-	
+
 }

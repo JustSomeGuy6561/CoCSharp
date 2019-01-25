@@ -9,7 +9,7 @@ using System.Text;
 
 namespace CoC.Engine
 {
-	public static class Time
+	internal static class Time
 	{
 		private static HashSet<ITimeAware> timeAwares = new HashSet<ITimeAware>();
 		public static DateTime now => DateTime.Now;

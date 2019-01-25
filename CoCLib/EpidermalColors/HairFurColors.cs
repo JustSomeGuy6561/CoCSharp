@@ -13,7 +13,7 @@ namespace CoC.EpidermalColors
 	//"Why do this - we had strings. strings were fine! why overdesign the wheel?"
 	//well, because we had several switch statements manually parse a string to find a close color.
 	//which you can do with RGB values automatically. and adding a color here is (relatively) painless.
-	public class HairFurColors : EpidermalColors
+	internal class HairFurColors : EpidermalColors
 	{
 		private static List<HairFurColors> supportedColors;
 

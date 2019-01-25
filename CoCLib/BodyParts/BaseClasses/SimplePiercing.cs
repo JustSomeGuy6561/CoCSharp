@@ -11,7 +11,7 @@ using System.Text;
 
 namespace  CoC.BodyParts
 {
-	public abstract class SimplePiercing<PiercingEnum> : IPiercable<PiercingEnum> where PiercingEnum : System.Enum
+	internal abstract class SimplePiercing<PiercingEnum> : IPiercable<PiercingEnum> where PiercingEnum : System.Enum
 	{
 		protected readonly PiercingFlags piercingFlags;
 
