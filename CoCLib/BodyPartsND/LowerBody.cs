@@ -36,7 +36,6 @@ namespace CoC.BodyParts
 			get => _type;
 			protected set
 			{
-				epidermis.UpdateEpidermis(value.epidermisType);
 				if (value.isFurry)
 				{
 					//epidermis.UpdateFur
@@ -49,7 +48,7 @@ namespace CoC.BodyParts
 		{
 			butt = Butt.Generate_NoButt();
 			hips = Hips.GenerateHips(0);
-			epidermis = Epidermis.Generate(EpidermisType.SKIN, Tones.LIGHT, FurColor.Generate(HairFurColors.BLACK));
+			epidermis = Epidermis.GenerateDefault(EpidermisType.SKIN);
 			type = LowerBodyType.NO_LEG_MONSTERS;
 		}
 
@@ -63,6 +62,11 @@ namespace CoC.BodyParts
 		public static LowerBody GenerateNoLowerBody()
 		{
 			return new LowerBody();
+		}
+
+		public static LowerBody GenerateDefault(LowerBodyType lowerBody)
+		{
+			return Generate(lowerBody);
 		}
 
 		public static LowerBody Generate(LowerBodyType lowerBody, AssLocation assLocation = AssLocation.BUTT, int ButtSize = Butt.AVERAGE, int HipSize = Hips.AVERAGE)

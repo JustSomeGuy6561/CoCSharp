@@ -4,6 +4,7 @@
 //12/30/2018, 10:36 PM
 using  CoC.BodyParts;
 using  CoC.BodyParts.SpecialInteraction;
+using CoC.Tools;
 using CoC.UI;
 using System;
 using System.ComponentModel;
@@ -180,6 +181,9 @@ namespace CoC.Creatures
 		}
 
 		public CoC.Tools.SimpleDescriptor gemsString { get; private set; }
+
+		public Species race;
+		public Species startingRace;
 
 		public override void InitBody(out Antennae antennae, out Arms arms, out Back back, out Body body, out Ears ears, out Face face, out Genitals genitals, out Gills gills, out Horns horns, out LowerBody lowerBody, out Neck neck, out Tail tail, out Tongue tongue, out Wings wings, out FacialHair facialHair, PiercingFlags piercingFlags)
 		{

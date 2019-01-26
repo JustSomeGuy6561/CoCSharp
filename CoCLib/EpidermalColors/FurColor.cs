@@ -119,7 +119,7 @@ namespace CoC.EpidermalColors
 		public static FurColor FERRET_DEFAULT => throw new System.NotImplementedException();
 		public static FurColor CAT_DEFAULT => throw new System.NotImplementedException();
 
-
+		public static FurColor COCKATRICE_DEFAULT => throw new System.NotImplementedException();
 
 	}
 

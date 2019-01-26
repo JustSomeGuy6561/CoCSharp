@@ -23,16 +23,20 @@ namespace CoC.BodyParts
 	 */
 
 	//feel free to add more of these. i just did these because they were there, and i didn't want to use a string.
-	internal enum SkinTexture { NONDESCRIPT, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED}
+	internal enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED}
 	internal enum FurTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, MANGEY }
 
 	internal partial class Epidermis : SimpleBodyPart<EpidermisType>
 	{
-		protected FurColor fur;
-		protected Tones tone;
+		public FurColor fur { get; protected set; }
+		public Tones tone { get; protected set; }
 
 		protected SkinTexture skinTexture;
 		protected FurTexture furTexture;
+
+		public bool usesFur => type.usesFur;
+		public bool usesTone => type.usesTone;
+
 		public override EpidermisType type { get; protected set; }
 
 		public EpidermalData GetEpidermalData()
@@ -79,30 +83,109 @@ namespace CoC.BodyParts
 			retVal.fur.UpdateFurColor(furColor);
 			return retVal;
 		}
+		public void copyTo(Epidermis other)
+		{
+			other.fur.UpdateFurColor(this.fur);
+			other.furTexture = this.furTexture;
+			other.skinTexture = this.skinTexture;
+			other.tone = tone;
+		}
 
-		public bool UpdateEpidermis(FurBasedEpidermisType furType, FurColor fallbackColor, bool replaceCurrentColorWithFallback = false)
+		public void Reset(EpidermisType epidermisType)
+		{
+			type = epidermisType;
+			fur.Reset();
+			tone = Tones.NOT_APPLICABLE;
+			furTexture = FurTexture.NONDESCRIPT;
+			skinTexture = SkinTexture.NONDESCRIPT;
+		}
+
+		public bool UpdateEpidermis(EpidermisType epidermisType, bool resetOther = false)
+		{
+			if (type == epidermisType)
+			{
+				return false;
+			}
+			type = epidermisType;
+			if (epidermisType is ToneBasedEpidermisType && tone == Tones.NOT_APPLICABLE)
+			{
+				tone = ((ToneBasedEpidermisType)type).defaultTone;
+				if (resetOther)
+				{
+					fur.Reset();
+				}
+			}
+			else if (epidermisType is FurBasedEpidermisType && fur.isNoFur())
+			{
+				fur.UpdateFurColor(((FurBasedEpidermisType)type).defaultFur);
+				if (resetOther)
+				{
+					tone = Tones.NOT_APPLICABLE;
+				}
+			}
+			return true;
+		}
+
+		public bool UpdateEpidermis(FurBasedEpidermisType furType, FurColor overrideColor, bool resetTone = false)
+		{
+			return UpdateEpidermis(furType, overrideColor, furTexture, resetTone);
+		}
+		public bool UpdateEpidermis(ToneBasedEpidermisType toneType, Tones overrideTone, bool resetFur = false)
+		{
+			return UpdateEpidermis(toneType, overrideTone, skinTexture, resetFur);
+		}
+
+		public bool UpdateEpidermis(FurBasedEpidermisType furType, FurTexture texture, bool resetTone = false)
+		{
+			return UpdateEpidermis(furType, fur, texture, resetTone);
+		}
+		public bool UpdateEpidermis(ToneBasedEpidermisType toneType, SkinTexture texture, bool resetFur = false)
+		{
+			return UpdateEpidermis(toneType, tone, texture, resetFur);
+		}
+
+		public bool UpdateEpidermis(FurBasedEpidermisType furType, FurColor overrideColor, FurTexture texture, bool resetTone = false)
 		{
 			if (type == furType)
 			{
 				return false;
 			}
-			if (replaceCurrentColorWithFallback || fur.isNoFur())
+			type = furType;
+			if (!overrideColor.isNoFur())
 			{
-				fur.UpdateFurColor(fallbackColor);
+				fur.UpdateFurColor(overrideColor);
 			}
+			else if (fur.isNoFur())
+			{
+				fur.UpdateFurColor(furType.defaultFur);
+			}
+			if (resetTone)
+			{
+				tone = Tones.NOT_APPLICABLE;
+			}
+			furTexture = texture;
 			return true;
 		}
-
-		public bool UpdateEpidermis(ToneBasedEpidermisType toneType, Tones fallbackTone, bool replaceCurrentColorWithFallback = false)
+		public bool UpdateEpidermis(ToneBasedEpidermisType toneType, Tones overrideTone, SkinTexture texture, bool resetFur = false)
 		{
 			if (type == toneType)
 			{
 				return false;
 			}
-			if (replaceCurrentColorWithFallback || tone == Tones.NOT_APPLICABLE)
+			type = toneType;
+			if (overrideTone != Tones.NOT_APPLICABLE)
 			{
-				tone = fallbackTone;
+				tone = overrideTone;
 			}
+			else if (tone == Tones.NOT_APPLICABLE)
+			{
+				tone = toneType.defaultTone;
+			}
+			if (resetFur)
+			{
+				fur.Reset();
+			}
+			skinTexture = texture;
 			return true;
 		}
 
@@ -122,9 +205,13 @@ namespace CoC.BodyParts
 			return type.usesTone ? tone.AsString() : fur.AsString();
 		}
 
-		public bool UpdateTone(Tones newTone)
+		public bool UpdateTone(Tones newTone, bool resetFur = false)
 		{
-			if (type.toneMutable && tone != newTone)
+			if (resetFur)
+			{
+				fur.Reset();
+			}
+			if (type.toneMutable && tone != newTone && newTone != Tones.NOT_APPLICABLE)
 			{
 				tone = newTone;
 				return true;
@@ -132,9 +219,13 @@ namespace CoC.BodyParts
 			return false;
 		}
 
-		public bool UpdateFur(FurColor furColor)
+		public bool UpdateFur(FurColor furColor, bool resetTone = false)
 		{
-			if (fur != furColor && type.hairMutable)
+			if (resetTone)
+			{
+				tone = Tones.NOT_APPLICABLE;
+			}
+			if (fur != furColor && type.hairMutable && !furColor.isNoFur())
 			{
 				fur.UpdateFurColor(furColor);
 				return true;

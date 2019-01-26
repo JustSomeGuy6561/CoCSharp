@@ -32,6 +32,7 @@ namespace CoC.BodyParts
 				case SkinTexture.FRECKLED: return "freckled";
 				case SkinTexture.THICK: return "thick";
 				case SkinTexture.SMOOTH: return "smooth";
+				case SkinTexture.SHINY: return "shiny";
 				case SkinTexture.SOFT: return "soft";
 				case SkinTexture.NONDESCRIPT:
 				default: return "";

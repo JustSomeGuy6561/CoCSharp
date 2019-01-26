@@ -86,9 +86,16 @@ namespace CoC.BodyParts
 			{
 				retVal.Append("The feathers covering your arms fall away, leaving them to return to a far more human appearance. ");
 			}
-			retVal.Append("You watch, spellbound, while your forearms gradually become shiny. The entire outer structure of your arms tingles while it divides into segments, " +
-				"<b>turning the " + player.arms.epidermis.shortDescription() + " into a shiny black carapace</b>. You touch the onyx exoskeleton and discover to your delight that " +
-				"you can still feel through it as naturally as your own skin.");
+			retVal.Append("You watch, spellbound, while your forearms gradually become shiny. The entire outer structure of your arms tingles while it divides into segments");
+			if (oldArms.type != HUMAN && oldArms.type != HARPY)
+			{
+				retVal.Append(", <b>turning the " + oldArms.epidermis.shortDescription() + " into a shiny black carapace</b>. ");
+			}
+			else
+			{
+				retVal.Append("unti it becomes a shiny black carapace. ")
+			}
+			retVal.Append("You touch the onyx exoskeleton and discover to your delight that you can still feel through it as naturally as your own skin.");
 			return retVal.ToString();
 		}
 		private static string SpiderRestoreStr(Arms currentArms, Player player)
@@ -114,7 +121,7 @@ namespace CoC.BodyParts
 			StringBuilder sb = new StringBuilder("\n\n");
 			if (oldArms.type == ArmType.SPIDER)
 			{
-				sb.Append("On your upper arms slowly starting to grown yellow fuzz making them looks more like those of bee.");
+				sb.Append("The " + oldArms.epidermis.shortDescription() + "on your upper arms slowly starting to grown yellow fuzz, making them looks more like those of bee.");
 			}
 			else
 			{
@@ -123,10 +130,17 @@ namespace CoC.BodyParts
 				{
 					sb.Append("The feathers covering your arms fall away, leaving them to return to a far more human appearance. ");
 				}
-				sb.Append("You watch, spellbound, while your forearms gradually become shiny. The entire outer structure of your arms tingles"
-						  + " while it divides into segments, <b>turning the [skinFurScales] into a shiny black carapace</b>. A moment later the"
-						  + " pain fades and you are able to turn your gaze down to your beautiful new arms, covered in shining black chitin from"
-						  + " the upper arm down, and downy yellow fuzz along your upper arm.");
+				sb.Append("You watch, spellbound, while your forearms gradually become shiny. The entire outer structure of your arms tingles while it divides into segments");
+				if (oldArms.type == HARPY || oldArms.type == HUMAN)
+				{
+					sb.Append("<b>until it resembles a shiny black exoskeleton</b>");
+				}
+				else
+				{
+					sb.Append(", <b>turning the " + oldArms.epidermis.shortDescription() + " into a shiny black carapace</b>. ");
+				}
+				sb.Append("A moment later the pain fades and you are able to turn your gaze down to your beautiful new arms, covered in " +
+					"shining black chitin from the upper arm down, and downy yellow fuzz along your upper arm.");
 			}
 			return sb.ToString();
 		}
@@ -153,7 +167,7 @@ namespace CoC.BodyParts
 			if (oldArms.type.isPredatorArms())
 			{
 				return "\n\nYour " + oldArms.hands.shortDescription() + " change a little to become more dragon-like." +
-					" <b>You now have " + HandType.DRAGON.fullDescription(oldArms.hands) + ".</b>";
+					" <b>Your arms and claws are like those of a dragon.</b>";
 			}
 			return "\n\nYou scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. " +
 				"After a longer moment of ignoring it you finally glance down in irritation, only to discover that your arms former " +
@@ -179,14 +193,14 @@ namespace CoC.BodyParts
 		private static string ImpTransformStr(Arms oldArms, Player player)
 		{
 			StringBuilder sb = new StringBuilder();
-			if (player.arms.type != ArmType.HUMAN)
+			if (player.arms.type != HUMAN)
 			{
 				sb.Append("\n\nYour arms twist and mangle, warping back into human-like arms. But that, you realize, is just the beginning."
 					+ "The skin on your arms visibly thicken, then segment into a hybrid between scales and skin.");
 			}
 			if (!oldArms.hands.type.isClaws)
 			{
-				sb.Append("\n\nYour " + (oldArms.hands.type.isPaws ? "paws" : "hands") + " suddenly ache in pain, and all you can do is curl " +
+				sb.Append("\n\nYour " + oldArms.hands.shortDescription() + " suddenly ache in pain, and all you can do is curl " +
 					"them up to you. Against your body, you feel them form into three long claws, with a smaller one replacing your thumb but " +
 					"just as versatile. <b>You have imp claws!</b>");
 			}
@@ -216,7 +230,12 @@ namespace CoC.BodyParts
 		}
 		private static string LizardTransformStr(Arms oldArms, Player player)
 		{
-			return "\n\nYou scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. After a longer"
+			if (oldArms.type.isPredatorArms())
+			{
+				return "\n\nYour " + oldArms.hands.shortDescription() + " change a little to become more lizard-like." +
+					" <b>You now have lizard-like claws.</b>";
+			}
+			else return "\n\nYou scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. After a longer"
 				+ " moment of ignoring it you finally glance down in irritation, only to discover that your arms' former appearance has changed into "
 				+ "those of some reptilian killer, complete with scales and claws in place of fingernails. Strangely, your claws seem to match the "
 				+ "tone of your arms.\n<b>You now have reptilian arms.</b>";
@@ -245,7 +264,8 @@ namespace CoC.BodyParts
 		{
 			return "\n\nYou scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
 				+ "Glancing down in irritation, you discover that your once scaly arms are shedding their scales and that"
-				+ " your claws become normal human fingernails again.";
+				+ " your claws become normal human fingernails again. <b>You have normal human arms again.</b>";
+
 		}
 		private static string WolfDescStr()
 		{
@@ -323,7 +343,7 @@ namespace CoC.BodyParts
 		private static string FerretPlayerStr(Arms arm, Player player)
 		{
 			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms, turning into "
-				+ arm.secondaryEpidermis.fullDescript() + " from elbows to paws."
+				+ arm.secondaryEpidermis.shortDescription() + " from elbows to paws."
 				+ " The latter have cute, pink paw pads and short claws.";
 		}
 		private static string FerretTransformStr(Arms oldArms, Player player)

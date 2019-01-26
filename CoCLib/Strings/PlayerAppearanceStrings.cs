@@ -13,7 +13,7 @@ namespace CoC.Strings
 		{
 			if (player.startingRace != player.race)
 			{
-				return "You began your journey as a " + player.startingRace + ", but gave that up as you explored the dangers of this realm.";
+				return "You began your journey as a " + player.startingRace.race + ", but gave that up as you explored the dangers of this realm.";
 			}
 			return "";
 		}

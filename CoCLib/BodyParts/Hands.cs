@@ -19,6 +19,10 @@ namespace CoC.BodyParts
 
 		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
 
+		public static Hands Generate(HandType handType)
+		{
+			return new Hands(handType, Tones.IVORY);
+		}
 		public static Hands Generate(HandType handType, Tones currentTone)
 		{
 			return new Hands(handType, currentTone);
