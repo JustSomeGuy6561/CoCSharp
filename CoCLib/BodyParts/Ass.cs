@@ -18,12 +18,12 @@ namespace CoC.BodyParts
 			assLocation = AssLocation.BUTT;
 		}
 
-		public static Ass GenerateNormalAssHole()
+		public static Ass GenerateDefault()
 		{
 			return new Ass();
 		}
 
-		public static Ass GenerateAbnormalAssHole(AssLocation location)
+		public static Ass Generate(AssLocation location)
 		{
 			return new Ass()
 			{

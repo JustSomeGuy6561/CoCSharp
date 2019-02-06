@@ -9,11 +9,11 @@ namespace  CoC.BodyParts
 
 	internal class Eyebrow : SimplePiercing<EyebrowPiercings>
 	{
-		protected Eyebrow(PiercingFlags flags) : base(flags) {}
+		protected Eyebrow() {}
 
-		public static Eyebrow Generate(PiercingFlags flags)
+		public static Eyebrow Generate()
 		{
-			return new Eyebrow(flags);
+			return new Eyebrow();
 		}
 
 

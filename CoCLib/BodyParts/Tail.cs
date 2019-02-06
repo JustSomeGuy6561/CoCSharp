@@ -36,7 +36,7 @@ namespace CoC.BodyParts
 		}
 		private int _tailCount = 0;
 
-		protected Tail(PiercingFlags flags) : base(flags)
+		protected Tail()
 		{
 			type = TailType.NONE;
 			furColor = FurColor.GenerateEmpty();
@@ -61,14 +61,14 @@ namespace CoC.BodyParts
 		private TailType _type;
 
 
-		public static Tail GenerateNoTail(PiercingFlags flags)
+		public static Tail GenerateDefault()
 		{
-			return new Tail(flags);
+			return new Tail();
 		}
 
-		public static Tail GenerateTail(PiercingFlags flags, TailType tailType)
+		public static Tail GenerateDefaultOfType(TailType tailType)
 		{
-			return new Tail(flags)
+			return new Tail()
 			{
 				type = tailType
 			};

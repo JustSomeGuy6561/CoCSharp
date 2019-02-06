@@ -1,4 +1,4 @@
-﻿//Class1.cs
+﻿//EpidermisStrings.cs
 //Description:
 //Author: JustSomeGuy
 //12/31/2018, 8:44 PM

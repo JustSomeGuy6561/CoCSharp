@@ -2,20 +2,47 @@
 //Description:
 //Author: JustSomeGuy
 //12/30/2018, 10:36 PM
-using  CoC.BodyParts;
-using  CoC.BodyParts.SpecialInteraction;
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Tools;
-using CoC.UI;
-using System;
+//list
+using System.Collections.Generic;
+//saveable
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+//serialization
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace CoC.Creatures
 {
-
-	internal class Player : CombatCreature, INotifyPropertyChanged
+	internal class Player : CombatCreature, INotifyPropertyChanged, ISerializable
 	{
-		public Player(string creatureName) : base(creatureName)
+		public Player(string playerName, Gender gender, Species startingRace) : base(playerName, startingRace)
+		{
+			Init();
+		}
+
+		//
+		protected Player(SerializationInfo info, StreamingContext context) : base(info.GetString(nameof(name)), Species.Dereference(info.GetInt32(nameof(startingRace))))
+		{
+			List<PropertyInfo> propertySaveables = saveableProperties();
+			foreach (PropertyInfo saveable in propertySaveables)
+			{
+				saveable.SetValue(this, info.GetValue(saveable.Name, saveable.PropertyType));
+			}
+			List<FieldInfo> fieldSaveables = saveableFields();
+			foreach (FieldInfo saveable in fieldSaveables)
+			{
+				saveable.SetValue(this, info.GetValue(saveable.Name, saveable.FieldType));
+			}
+			//custom deserialization here
+
+			//
+			Init();
+		}
+
+		protected void Init()
 		{
 			#region attach all the shit
 			if (antennae is IFurAware)
@@ -180,28 +207,56 @@ namespace CoC.Creatures
 			#endregion
 		}
 
-		public CoC.Tools.SimpleDescriptor gemsString { get; private set; }
-
-		public Species race;
-		public Species startingRace;
-
-		public override void InitBody(out Antennae antennae, out Arms arms, out Back back, out Body body, out Ears ears, out Face face, out Genitals genitals, out Gills gills, out Horns horns, out LowerBody lowerBody, out Neck neck, out Tail tail, out Tongue tongue, out Wings wings, out FacialHair facialHair, PiercingFlags piercingFlags)
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			throw new NotImplementedException();
+			List<PropertyInfo> propertySaveables = saveableProperties();
+			foreach (PropertyInfo saveable in propertySaveables)
+			{
+				info.AddValue(saveable.Name, saveable.GetValue(this), saveable.PropertyType);
+			}
+			List<FieldInfo> fieldSaveables = saveableFields();
+			foreach (FieldInfo saveable in fieldSaveables)
+			{
+				info.AddValue(saveable.Name, saveable.GetValue(this), saveable.FieldType);
+			}
 		}
 
-		public override void InitCombat(out int level, out int experience, out Weapon weapon, out Armor armor, out Shield shield, out Jewelry jewelry, out UpperGarment upperGarment, out LowerGarment lowerGarment)
+		private List<PropertyInfo> saveableProperties()
 		{
-			throw new NotImplementedException();
+			List<PropertyInfo> saveables = new List<PropertyInfo>();
+			PropertyInfo[] props = typeof(Player).GetProperties();
+			foreach (PropertyInfo prop in props)
+			{
+				SaveAttribute attrs = prop.GetCustomAttribute<SaveAttribute>();
+				if (attrs != null)
+				{
+					saveables.Add(prop);
+				}
+			}
+			return saveables;
 		}
 
-		public override void InitStats(out float strength, out float toughness, out float speed, out float intelligence, out float lust, out float sensitivity, out float libido, out float corruption, out float money)
+		private List<FieldInfo> saveableFields()
 		{
-			throw new NotImplementedException();
+			List<FieldInfo> saveables = new List<FieldInfo>();
+			FieldInfo[] fields = typeof(Player).GetFields();
+			foreach (FieldInfo field in fields)
+			{
+				SaveAttribute attrs = field.GetCustomAttribute<SaveAttribute>();
+				if (attrs != null)
+				{
+					saveables.Add(field);
+				}
+			}
+			return saveables;
 		}
+
+		public SimpleDescriptor gemsString { get; private set; }
 
 		//The following are overridden so controller item can be easily updated. allows communication with UI without UI needing to know what's going on here.
-		public override float level
+		[Save]
+		public override int level
 		{
 			get => base.level;
 			protected set
@@ -210,6 +265,7 @@ namespace CoC.Creatures
 				base.level = value;
 			}
 		}
+		[Save]
 		public override float experience
 		{
 			get => base.experience;
@@ -219,6 +275,7 @@ namespace CoC.Creatures
 				base.experience = value;
 			}
 		}
+		[Save]
 		public override float strength
 		{
 			get => base.strength;
@@ -228,6 +285,7 @@ namespace CoC.Creatures
 				base.strength = value;
 			}
 		}
+		[Save]
 		public override float toughness
 		{
 			get => base.toughness;
@@ -237,6 +295,7 @@ namespace CoC.Creatures
 				base.toughness = value;
 			}
 		}
+		[Save]
 		public override float speed
 		{
 			get => base.speed;
@@ -246,6 +305,7 @@ namespace CoC.Creatures
 				base.speed = value;
 			}
 		}
+		[Save]
 		public override float intelligence
 		{
 			get => base.intelligence;
@@ -255,6 +315,7 @@ namespace CoC.Creatures
 				base.intelligence = value;
 			}
 		}
+		[Save]
 		public override float corruption
 		{
 			get => base.corruption;
@@ -264,7 +325,8 @@ namespace CoC.Creatures
 				base.corruption = value;
 			}
 		}
-		public override float hp
+		[Save]
+		public override int hp
 		{
 			get => base.hp;
 			protected set
@@ -273,6 +335,7 @@ namespace CoC.Creatures
 				base.hp = value;
 			}
 		}
+		[Save]
 		public override float lust
 		{
 			get => base.lust;
@@ -282,6 +345,7 @@ namespace CoC.Creatures
 				base.lust = value;
 			}
 		}
+		[Save]
 		public override float fatigue
 		{
 			get => base.fatigue;
@@ -291,6 +355,7 @@ namespace CoC.Creatures
 				base.fatigue = value;
 			}
 		}
+		[Save]
 		public override float satiety
 		{
 			get => base.satiety;
@@ -311,4 +376,6 @@ namespace CoC.Creatures
 			}
 		}
 	}
+
+
 }

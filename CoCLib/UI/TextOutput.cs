@@ -1,4 +1,4 @@
-﻿//TextOutPut.cs
+﻿//TextOutput.cs
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 11:38 PM

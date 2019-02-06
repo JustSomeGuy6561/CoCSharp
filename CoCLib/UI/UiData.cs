@@ -1,4 +1,8 @@
-﻿using CoC.Tools;
+﻿//UiData.cs
+//Description:
+//Author: JustSomeGuy
+//1/21/2019, 10:49 PM
+using CoC.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,8 +25,8 @@ namespace CoC.UI
 		public readonly string buttonText;
 		public readonly string buttonHint;
 		private readonly PlayerFunction callback;
-		private readonly Controller controller;
-		internal ButtonData(int ind, string buttonTxt, string buttonHnt, Controller cont, PlayerFunction function)
+		private readonly ModelView controller;
+		internal ButtonData(int ind, string buttonTxt, string buttonHnt, ModelView cont, PlayerFunction function)
 		{
 			index = ind;
 			buttonText = buttonTxt;

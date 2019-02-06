@@ -4,13 +4,14 @@
 //12/29/2018, 10:55 PM
 using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
+using CoC.Engine;
 using CoC.Tools;
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
 {
 	public enum CockGroup { HUMAN, MAMMALIAN, CORRUPTED, AQUATIC, REPTILIAN, FLYING, OTHER }
 
-	public enum CockPiercing
+	public enum CockPiercings
 	{
 		ALBERT,
 		FRENUM_UPPER_1, FRENUM_UPPER_2, FRENUM_MIDDLE_1, FRENUM_MIDDLE_2,
@@ -19,7 +20,7 @@ namespace CoC.BodyParts
 	//whoever wrote the AS version of cock, thank you. your cock was awesome.
 	//i didn't have to search everywhere for the things that were part of it.
 	//well, mostly. knots were still a pain.
-	internal class Cock : PiercableBodyPart<Cock, CockType, CockPiercing>, IGrowShrinkable
+	internal class Cock : PiercableBodyPart<Cock, CockType, CockPiercings>, IGrowShrinkable, IPerkAware<BigCockPerk>
 	{
 		public const float MAX_COCK_LENGTH = 240f;
 		public const float MAX_COCK_THICKNESS = 50f;
@@ -85,12 +86,11 @@ namespace CoC.BodyParts
 		}
 		private CockType _type = CockType.HUMAN;
 
-		private readonly bool hasBigCockPerk;
+		private bool hasBigCockPerk => 
 
-		protected Cock(PiercingFlags flags, bool bigCockPerk) : base(flags)
+		protected Cock()
 		{
 			type = CockType.HUMAN;
-			hasBigCockPerk = bigCockPerk;
 			if (hasBigCockPerk)
 			{
 				_cockLength = DEFAULT_BIG_COCK_LENGTH;
@@ -103,17 +103,17 @@ namespace CoC.BodyParts
 			}
 		}
 
-		public static Cock Generate(CockType cockType, PiercingFlags piercingFlags, bool bigCockPerk)
+		public static Cock Generate(CockType cockType)
 		{
-			return new Cock(piercingFlags, bigCockPerk)
+			return new Cock()
 			{
 				type = cockType,
 			};
 		}
 
-		public static Cock Generate(CockType cockType, PiercingFlags piercingFlags, bool bigCockPerk, float length, float girth)
+		public static Cock Generate(CockType cockType, float length, float girth)
 		{
-			return new Cock(piercingFlags, bigCockPerk)
+			return new Cock()
 			{
 				type = cockType,
 				cockLength = length,
@@ -143,7 +143,7 @@ namespace CoC.BodyParts
 			return Restore();
 		}
 
-		protected override bool PiercingLocationUnlocked(CockPiercing piercingLocation)
+		protected override bool PiercingLocationUnlocked(CockPiercings piercingLocation)
 		{
 			return true;
 		}
@@ -222,7 +222,7 @@ namespace CoC.BodyParts
 
 
 
-	internal partial class CockType : PiercableBodyPartBehavior<CockType, Cock, CockPiercing>
+	internal partial class CockType : PiercableBodyPartBehavior<CockType, Cock, CockPiercings>
 	{
 
 		private static int indexMaker = 0;

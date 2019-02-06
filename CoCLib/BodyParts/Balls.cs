@@ -3,8 +3,12 @@
 //Author: JustSomeGuy
 //12/29/2018, 10:57 PM
 using CoC.BodyParts.SpecialInteraction;
+using CoC.Serialization;
 using CoC.Strings;
 using CoC.Tools;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
+
 namespace CoC.BodyParts
 {
 	//As of this writing, you can't get more than one set of balls unless you start with more.
@@ -12,7 +16,8 @@ namespace CoC.BodyParts
 	//maxing at 8. 
 	//though this probably needs more thought - is it two per sack, and multiple sacks? or is it all one sack?
 
-	internal partial class Balls : IGrowShrinkable
+	[DataContract]
+	internal partial class Balls : IGrowShrinkable, ISerializable
 	{
 #warning Uniball implementation needed, probably as a bool.
 #warning add display descriptors.
@@ -25,8 +30,13 @@ namespace CoC.BodyParts
 		public const int DEFAULT_BALLS_COUNT = 2;
 		public int index => size;
 
+		[Save]
 		public bool hasBalls { get; protected set; }
 
+		[Save]
+		public bool uniBall { get; protected set; } = false;
+
+		[Save]
 		public int size
 		{
 			get => hasBalls ? _size : 0;
@@ -38,6 +48,7 @@ namespace CoC.BodyParts
 		}
 		private int _size;
 
+		[Save]
 		public int count
 		{
 			get => hasBalls ? _count : 0;
@@ -56,14 +67,15 @@ namespace CoC.BodyParts
 			size = DEFAULT_BALLS_SIZE;
 		}
 		//use this to initialize the balls object when the creature has balls.
-		public static Balls GenerateBalls()
+		public static Balls GenerateDefault(Gender gender)
 		{
 			return new Balls()
 			{
-				hasBalls = true
+				hasBalls = gender.HasFlag(Gender.MALE)
 			};
 		}
-		public static Balls GenerateBalls(int ballCount, int ballSize)
+
+		public static Balls GenerateBalls(int ballCount = DEFAULT_BALLS_COUNT, int ballSize = DEFAULT_BALLS_SIZE)
 		{
 			return new Balls()
 			{
@@ -72,11 +84,7 @@ namespace CoC.BodyParts
 				hasBalls = true
 			};
 		}
-		//use this to initialize the balls object when the creature doesn't have balls
-		public static Balls GenerateNoBalls()
-		{
-			return new Balls();
-		}
+
 		public string shortDescription()
 		{
 			if (hasBalls) return BallsDescript(count, size);
@@ -253,6 +261,22 @@ namespace CoC.BodyParts
 				else size += 5;
 			}
 			return size - startVal;
+		}
+		protected Balls(SerializationInfo info, StreamingContext context)
+		{
+			count = info.GetInt32(nameof(count));
+			size = info.GetInt32(nameof(size));
+			hasBalls = info.GetBoolean(nameof(hasBalls));
+			uniBall = info.GetBoolean(nameof(uniBall));
+		}
+
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue(nameof(count), count);
+			info.AddValue(nameof(size), size);
+			info.AddValue(nameof(hasBalls), hasBalls);
+			info.AddValue(nameof(uniBall), uniBall);
 		}
 	}
 }

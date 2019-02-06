@@ -1,4 +1,8 @@
-﻿namespace CoC.Creatures
+﻿//SpeciesStrings.cs
+//Description:
+//Author: JustSomeGuy
+//1/25/2019, 8:41 PM
+namespace CoC.Creatures
 {
 	internal partial class Species
 	{

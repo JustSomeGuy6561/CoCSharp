@@ -4,6 +4,7 @@
 //1/1/2019, 9:09 AM
 
 using  CoC.BodyParts.SpecialInteraction;
+using CoC.Engine;
 using CoC.EpidermalColors;
 using CoC.Wearables.Piercings;
 using System;
@@ -16,13 +17,7 @@ namespace  CoC.BodyParts
 		where ThisClass : PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> 
 		where TypeClass : PiercableBodyPartBehavior<TypeClass, ThisClass, PiercingEnum> where PiercingEnum : Enum
 	{
-		//do not copy constructor this. shallow copy allows it to stay up to date with source.
-		protected readonly PiercingFlags piercingFlags;
-
-		protected PiercableBodyPart(PiercingFlags flags)
-		{
-			piercingFlags = flags;
-		}
+		protected PiercingFlags piercingFlags => Program.sessionSettings.piercingFlags;
 
 		public int maxPiercingCount => Enum.GetNames(typeof(PiercingEnum)).Length;
 		//functional programming ftw!

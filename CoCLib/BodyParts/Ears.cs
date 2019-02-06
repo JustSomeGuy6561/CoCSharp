@@ -19,7 +19,7 @@ namespace CoC.BodyParts
 	 * I am aware everyone's ears are different and you may have tiny lobes and long-ass helix bits
 	 * (which i suppose is also true for elfin ears); i did what i could, sue me. 
 	 */
-	public enum EAR_PIERCING
+	public enum EarPiercings
 	{
 		LEFT_LOBE_1, LEFT_LOBE_2, LEFT_LOBE_3, LEFT_UPPER_LOBE,
 		LEFT_AURICAL_1, LEFT_AURICAL_2, LEFT_AURICAL_3, LEFT_AURICAL_4,
@@ -30,26 +30,26 @@ namespace CoC.BodyParts
 		RIGHT_HELIX_1, RIGHT_HELIX_2, RIGHT_HELIX_3, RIGHT_HELIX_4,
 		RIGHT_ANTI_HELIX
 	}
-	internal class Ears : PiercableBodyPart<Ears, EarType, EAR_PIERCING>, IFurAware
+	internal class Ears : PiercableBodyPart<Ears, EarType, EarPiercings>, IFurAware
 	{
 		public FurColor furColor { get; protected set; } = FurColor.Generate(HairFurColors.BLACK);
-		protected Ears(PiercingFlags flags) : base(flags)
+		protected Ears()
 		{
 			type = EarType.HUMAN;
 		}
 
 		public override EarType type { get; protected set; }
 
-		public static Ears Generate(PiercingFlags flags)
+		public static Ears Generate()
 		{
-			return new Ears(flags);
+			return new Ears();
 		}
-		public static Ears Generate(EarType earType, PiercingFlags flags)
+		public static Ears Generate(EarType earType)
 		{
-			return new Ears(flags) { type = earType };
+			return new Ears() { type = earType };
 		}
 
-		protected override bool PiercingLocationUnlocked(EAR_PIERCING piercingLocation)
+		protected override bool PiercingLocationUnlocked(EarPiercings piercingLocation)
 		{
 			return true;
 		}
@@ -103,7 +103,7 @@ namespace CoC.BodyParts
 			}
 		}
 	}
-	internal partial class EarType : PiercableBodyPartBehavior<EarType, Ears, EAR_PIERCING>
+	internal partial class EarType : PiercableBodyPartBehavior<EarType, Ears, EarPiercings>
 	{
 		private static int indexMaker = 0;
 

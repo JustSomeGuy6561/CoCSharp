@@ -9,11 +9,11 @@ namespace  CoC.BodyParts
 
 	internal class Nose : SimplePiercing<NosePiercings>
 	{
-		protected Nose(PiercingFlags flags) : base(flags) {}
+		protected Nose() {}
 
-		public static Nose Generate(PiercingFlags flags)
+		public static Nose Generate()
 		{
-			return new Nose(flags);
+			return new Nose();
 		}
 
 		protected override bool PiercingLocationUnlocked(NosePiercings piercingLocation)

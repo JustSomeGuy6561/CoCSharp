@@ -1,11 +1,6 @@
 ﻿//BodyPartBase.cs
 //Description: base class for all body parts. it must have a ruleset attached.
 //Author: JustSomeGuy
-//12/31/2018, 12:35 AM
-
-//BodyPartBase.cs
-//Description:
-//Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 using CoC.Tools;
 using CoC.Creatures;

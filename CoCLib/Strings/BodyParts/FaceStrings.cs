@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/11/2019, 6:58 PM
-using  CoC.BodyParts;
+
 using CoC.Creatures;
 
 namespace   CoC.BodyParts
@@ -19,7 +19,7 @@ namespace   CoC.BodyParts
 		}
 		private static string HumanPlayerStr(Face face, Player player)
 		{
-
+			return "Your face is human in shape and structure, with [skin].";
 		}
 		private static string HumanTransformStr(Face face, Player player)
 		{

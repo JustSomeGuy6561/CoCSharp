@@ -1,8 +1,9 @@
-﻿//EyeBrow.cs
+﻿//SimplePiercing.cs
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:41 PM
 using  CoC.BodyParts.SpecialInteraction;
+using CoC.Engine;
 using CoC.Wearables.Piercings;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,7 @@ namespace  CoC.BodyParts
 {
 	internal abstract class SimplePiercing<PiercingEnum> : IPiercable<PiercingEnum> where PiercingEnum : System.Enum
 	{
-		protected readonly PiercingFlags piercingFlags;
-
-		protected SimplePiercing(PiercingFlags flags)
-		{
-			piercingFlags = flags;
-		}
+		protected PiercingFlags piercingFlags => Program.sessionSettings.piercingFlags;
 
 		public int maxPiercingCount => Enum.GetNames(typeof(PiercingEnum)).Length;
 		//functional programming ftw!

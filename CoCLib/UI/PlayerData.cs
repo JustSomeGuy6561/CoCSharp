@@ -1,4 +1,8 @@
-﻿using CoC.Creatures;
+﻿//PlayerData.cs
+//Description:
+//Author: JustSomeGuy
+//1/22/2019, 1:00 AM
+using CoC.Creatures;
 using System.ComponentModel;
 
 namespace CoC.UI

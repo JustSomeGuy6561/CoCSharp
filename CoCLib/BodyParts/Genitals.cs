@@ -29,9 +29,6 @@ namespace  CoC.BodyParts
 		int cockCount = 0;
 		int vaginaCount = 0;
 		int breastRowCount = 0;
-		private readonly PiercingFlags flags;
-		private readonly bool hasBigTitsPerk;
-		private readonly bool hasBigCockPerk;
 
 		public readonly Femininity masculinity;
 
@@ -119,37 +116,30 @@ namespace  CoC.BodyParts
 		//note: Constructor treats HERM as full-package futa.
 		//if you want a ball-less herm, do female, then add a cock.
 		//in the same vein, if you want a male with no balls, do genderless and add a cock.
-		protected Genitals(PiercingFlags piercingFlags, Gender gender, bool bigTitsPerk, bool bigCockPerk)
+		protected Genitals()
 		{
-			flags = piercingFlags;
-			hasBigCockPerk = bigCockPerk;
-			hasBigTitsPerk = bigTitsPerk;
 			//Female or Herm:
-			if ((gender & Gender.FEMALE) != Gender.GENDERLESS)
+			if (gender.HasFlag(Gender.FEMALE))
 			{
 				AddVagina(VaginaType.HUMAN);
-				breasts[breastRowCount++] = Breasts.GenerateFemale(flags, bigTitsPerk);
+				breasts[breastRowCount++] = Breasts.GenerateFemale();
 			}
 			//Male or Genderless
 			else
 			{
-				breasts[breastRowCount++] = Breasts.GenerateMale(flags, bigTitsPerk);
+				breasts[breastRowCount++] = Breasts.GenerateMale();
 			}
 			//Male or Herm.
-			if ((gender & Gender.MALE) != Gender.GENDERLESS)
+			if (gender.HasFlag(Gender.MALE))
 			{
 				AddCock(CockType.HUMAN);
-				balls = Balls.GenerateBalls();
 			}
-			else
-			{
-				balls = Balls.GenerateNoBalls();
-			}
+			balls = Balls.GenerateDefault(gender);
 		}
 
-		public static Genitals Generate(PiercingFlags flags, Gender gender, bool bigTitsPerk, bool bigCockPerk)
+		public static Genitals Generate()
 		{
-			return new Genitals(flags, gender, bigTitsPerk, bigCockPerk);
+			return new Genitals();
 		}
 
 #warning Add Message Helpers or Something, idk
@@ -188,7 +178,7 @@ namespace  CoC.BodyParts
 				double avgLength = breasts.Take(breastRowCount).Average((x) => (double)(x?.nipples.length));
 				double avgCup = breasts.Take(breastRowCount).Average((x) => (double)x.cupSize.asInt());
 				int cup = (int)Math.Ceiling(avgCup);
-				breasts[breastRowCount++] = Breasts.GenerateFemale(flags, hasBigTitsPerk, (CupSize)cup, (float)avgLength);
+				breasts[breastRowCount++] = Breasts.GenerateFemale((CupSize)cup, (float)avgLength);
 				return true;
 			}
 			return false;
@@ -200,7 +190,7 @@ namespace  CoC.BodyParts
 			{
 				return false;
 			}
-			cocks[cockCount++] = Cock.Generate(newCockType, flags, hasBigCockPerk);
+			cocks[cockCount++] = Cock.Generate(newCockType);
 			return true;
 		}
 
@@ -210,7 +200,7 @@ namespace  CoC.BodyParts
 			{
 				return false;
 			}
-			cocks[cockCount++] = Cock.Generate(newCockType, flags, hasBigCockPerk, length, girth);
+			cocks[cockCount++] = Cock.Generate(newCockType, length, girth);
 			return true;
 		}
 
@@ -220,7 +210,7 @@ namespace  CoC.BodyParts
 			{
 				return false;
 			}
-			vaginas[vaginaCount++] = Vagina.Generate(flags, newVaginaType);
+			vaginas[vaginaCount++] = Vagina.Generate(newVaginaType);
 			return true;
 		}
 

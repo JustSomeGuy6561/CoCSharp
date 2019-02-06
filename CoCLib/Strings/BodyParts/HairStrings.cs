@@ -9,6 +9,8 @@ using System.Text;
 
 namespace CoC.BodyParts
 {
+	//Note that harpy hair uses [claws]. replace it with short description, not full description.
+
 	internal static class HairHelpers
 	{
 		public static string asString(this HairStyle style)

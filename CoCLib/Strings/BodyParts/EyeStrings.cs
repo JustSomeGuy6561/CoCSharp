@@ -2,10 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //1/4/2019, 3:16 PM
-using  CoC.BodyParts;
 using CoC.Creatures;
 
-namespace   CoC.BodyParts
+namespace CoC.BodyParts
 {
 	internal partial class Eyes
 	{

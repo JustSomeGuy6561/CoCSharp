@@ -1,4 +1,8 @@
-﻿using CoC.Tools;
+﻿//SimpleBodyPart.cs
+//Description:
+//Author: JustSomeGuy
+//1/18/2019, 9:56 PM
+using CoC.Tools;
 namespace  CoC.BodyParts
 {
 	/*
@@ -22,14 +26,14 @@ namespace  CoC.BodyParts
 	//Stores a reference to the simple body part, and any unique variables to that type, like skin tone or fur color for epidermis, etc.
 	//so you can attach epidermis to any body part that needs it and not need to deal with anything past keeping it updated. 
 	//learned this the hard way after having to deal with it in arms. woo!
-	internal abstract class SimpleBodyPart<U> where U : SimpleBodyPartType
+	internal abstract class SimpleBodyPart<BehaviorClass> where BehaviorClass : SimpleBodyPartType
 	{
-		public abstract U type { get; protected set; }
+		public abstract BehaviorClass type { get; protected set; }
 		public int index => type.index;
 
 		public virtual SimpleDescriptor shortDescription => type.shortDescription;
 
-		protected SimpleBodyPart(U value)
+		protected SimpleBodyPart(BehaviorClass value)
 		{
 			type = value;
 		}

@@ -124,6 +124,10 @@ namespace CoC.BodyParts
 		//			 + " in case you need to escape from something.";
 		//}
 
+		private static string GenericButtHipsPlayerDesc(LowerBody lowerBody, Player player)
+		{
+
+		}
 
 
 		private static string HumanDesc()

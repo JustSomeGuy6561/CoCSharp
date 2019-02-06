@@ -1,4 +1,8 @@
-﻿using CoC.Creatures;
+﻿//ArmStrings.cs
+//Description: Implements the strings for the arm and armtype. separation of concerns.
+//Author: JustSomeGuy
+//1/18/2019, 9:30 PM
+using CoC.Creatures;
 using CoC.Strings;
 using System.Text;
 
@@ -254,7 +258,7 @@ namespace CoC.BodyParts
 		}
 		private static string SalamanderPlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermis.FullDescription() + "cover your arms from the biceps down, and your fingernails are now " + arm.hands.shortDescription();
+			return arm.epidermis.FullDescription() + "cover your arms from the biceps down, and your fingernails are now " + arm.hands.fullDescription();
 		}
 		private static string SalamanderTransformStr(Arms oldArms, Player player)
 		{
@@ -302,7 +306,7 @@ namespace CoC.BodyParts
 			return "Your arms are covered in " + arm.epidermis.FullDescription()
 		  + " from the shoulder down to the elbow where they stop in a fluffy cuff. A handful of long feathers grow from your"
 		  + " elbow in the form of vestigial wings, and while they may not let you fly, they certainly help you jump. Your lower"
-		  + " arm is coated in " + arm.secondaryEpidermis.FullDescription() + " and your fingertips terminate in deadly looking avian talons.";
+		  + " arm is coated in " + arm.secondaryEpidermis.FullDescription() + " and your fingertips terminate in " + arm.hands.shortDescription() + ".";
 		}
 		private static string CockatriceTransformStr(Arms oldArms, Player player)
 		{
@@ -322,7 +326,7 @@ namespace CoC.BodyParts
 		}
 		private static string RedPandaPlayerStr(Arms arm, Player player)
 		{
-			return "Soft, " + arm.epidermis.justColor() + " fluff cover your arms. Your paws have cute, pink paw pads and short claws.";
+			return "Soft, " + arm.epidermis.justColor() + " fluff cover your arms. Your paws have " + arm.hands.fullDescription() + ".";
 		}
 		private static string RedPandaTransformStr(Arms oldArms, Player player)
 		{
@@ -343,8 +347,8 @@ namespace CoC.BodyParts
 		private static string FerretPlayerStr(Arms arm, Player player)
 		{
 			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms, turning into "
-				+ arm.secondaryEpidermis.shortDescription() + " from elbows to paws."
-				+ " The latter have cute, pink paw pads and short claws.";
+				+ arm.secondaryEpidermis.FullDescription() + " from elbows to paws."
+				+ " The latter have " + arm.hands.fullDescription();
 		}
 		private static string FerretTransformStr(Arms oldArms, Player player)
 		{
@@ -384,9 +388,8 @@ namespace CoC.BodyParts
 		}
 		private static string DogPlayerStr(Arms arm, Player player)
 		{
-			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms. Your paw-like hands have cute, pink paw "
-				+ "pads and short claws. With the right legs (and the right motivation), you could run with them, much like "
-				+ "the hellounds you see in the mountains.";
+			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms. Your paw-like hands have " + arm.hands.fullDescription()
+				+ ". With the right legs (and the right motivation), you could run with them, much like the hellounds you see in the mountains.";
 		}
 		private static string DogTransformStr(Arms oldArms, Player player)
 		{
@@ -420,12 +423,12 @@ namespace CoC.BodyParts
 
 		private static string CatFoxPlayerStr(Arms arms, Player player)
 		{
-			return "Soft, " + arms.epidermis.justColor() + " fluff covers your arms. Your paw-like hands have cute, pink paw pads and " + arms.hands.shortDescription() + ".";
+			return "Soft, " + arms.epidermis.justColor() + " fluff covers your arms. Your paw-like hands have " + arms.hands.fullDescription() + ".";
 		}
 
 		private static string PredatorPlayerStr(Arms arms, Player player)
 		{
-			return "Your arms are covered by " + arms.epidermis.shortDescription() + " and your fingernails are now " + arms.hands.shortDescription() + ".";
+			return "Your arms are covered by " + arms.epidermis.shortDescription() + " and your hands are noew " + arms.hands.fullDescription() + ".";
 		}
 
 		private static string PredatorRestoreStr(Arms arms, Player player)

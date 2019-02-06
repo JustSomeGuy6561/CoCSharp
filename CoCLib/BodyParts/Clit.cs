@@ -11,12 +11,12 @@ namespace  CoC.BodyParts
 {
 
 
-	public enum ClitPiercing { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
+	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
-	internal class Clit : SimplePiercing<ClitPiercing>, IGrowShrinkable
+	internal class Clit : SimplePiercing<ClitPiercings>, IGrowShrinkable
 	{
 #warning add more descriptors.
-		protected readonly ClitPiercing[] requiresFetish = { ClitPiercing.LARGE_CLIT_1, ClitPiercing.LARGE_CLIT_2, ClitPiercing.LARGE_CLIT_3 };
+		protected readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
 
 		public const float MIN_CLIT_SIZE = 0.25f;
 		public const float DEFAULT_CLIT_SIZE = 0.25f;
@@ -34,26 +34,26 @@ namespace  CoC.BodyParts
 
 		public bool omnibusClit { get; protected set; }
 
-		protected Clit(PiercingFlags flags, float clitSize = DEFAULT_CLIT_SIZE) : base(flags)
+		protected Clit(float clitSize = DEFAULT_CLIT_SIZE)
 		{
 			length = clitSize;
 			omnibusClit = false;
 		}
 
-		public static Clit Generate(PiercingFlags flags)
+		public static Clit Generate()
 		{
-			return new Clit(flags);
+			return new Clit();
 		}
 
-		public static Clit GenerateOmnibusClit(PiercingFlags flags)
+		public static Clit GenerateOmnibusClit()
 		{
-			return new Clit(flags, 5.0f)
+			return new Clit(5.0f)
 			{
 				omnibusClit = true
 			};
 		}
 
-		protected override bool PiercingLocationUnlocked(ClitPiercing piercingLocation)
+		protected override bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
 		{
 
 			if (!requiresFetish.Contains(piercingLocation))
@@ -64,15 +64,15 @@ namespace  CoC.BodyParts
 			{
 				return false;
 			}
-			else if (piercingLocation == ClitPiercing.LARGE_CLIT_1)
+			else if (piercingLocation == ClitPiercings.LARGE_CLIT_1)
 			{
 				return length >= 3;
 			}
-			else if (piercingLocation == ClitPiercing.LARGE_CLIT_2)
+			else if (piercingLocation == ClitPiercings.LARGE_CLIT_2)
 			{
 				return length >= 5;
 			}
-			else if (piercingLocation == ClitPiercing.LARGE_CLIT_3)
+			else if (piercingLocation == ClitPiercings.LARGE_CLIT_3)
 			{
 				return length >= 7;
 			}

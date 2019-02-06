@@ -11,7 +11,7 @@ namespace CoC.BodyParts
 	internal class Tongue : PiercableBodyPart<Tongue, TongueType, TonguePiercings>
 	{
 #warning add update and update with message functions
-		protected Tongue(PiercingFlags flags) : base(flags)
+		protected Tongue()
 		{
 			type = TongueType.HUMAN;
 		}
@@ -19,14 +19,14 @@ namespace CoC.BodyParts
 		public override TongueType type { get; protected set; }
 
 
-		public static Tongue Generate(PiercingFlags flags)
+		public static Tongue Generate()
 		{
-			return new Tongue(flags);
+			return new Tongue();
 		}
 
-		public static Tongue Generate(TongueType tongueType, PiercingFlags flags)
+		public static Tongue Generate(TongueType tongueType)
 		{
-			return new Tongue(flags)
+			return new Tongue()
 			{
 				type = tongueType
 			};

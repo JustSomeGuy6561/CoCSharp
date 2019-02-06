@@ -4,6 +4,8 @@
 //1/6/2019, 1:27 AM
 using CoC.Tools;
 using  CoC.BodyParts.SpecialInteraction;
+using System.Runtime.Serialization;
+using CoC.Serialization;
 
 namespace  CoC.BodyParts
 {
@@ -12,9 +14,10 @@ namespace  CoC.BodyParts
 	//they need to persist when i reset the nipples.
 	//black nipples were a "perk/status effect"
 	//quads behavior varies.
-
+	[DataContract]
 	internal class Breasts : IGrowShrinkable
 	{
+		[Save]
 		public CupSize cupSize
 		{
 			get => _cupSize;
@@ -28,42 +31,41 @@ namespace  CoC.BodyParts
 			}
 		}
 		private CupSize _cupSize;
+		[Save]
 		public Nipples nipples;
 		private readonly bool hasBigTitsPerk;
 		public bool isMale => cupSize == CupSize.FLAT && nipples.length <= .5f;
 
-		protected Breasts(PiercingFlags flags, bool bigTitPerk, bool female)
+		protected Breasts(bool female)
 		{
-			hasBigTitsPerk = bigTitPerk;
 			if (female)
 			{
-				nipples = Nipples.GenerateWithLength(flags, 0.5f);
+				nipples = Nipples.GenerateWithLength(0.5f);
 				cupSize = CupSize.C;
 			}
 			else
 			{
-				nipples = Nipples.Generate(flags);
+				nipples = Nipples.Generate();
 				cupSize = CupSize.FLAT;
 			}
 		}
-		protected Breasts(PiercingFlags flags, bool bigTitPerk, CupSize cup, float nippleLength)
+		protected Breasts(CupSize cup, float nippleLength)
 		{
-			hasBigTitsPerk = bigTitPerk;
-			nipples = Nipples.GenerateWithLength(flags, nippleLength);
+			nipples = Nipples.GenerateWithLength(nippleLength);
 			cupSize = cup;
 		}
-		public static Breasts GenerateFemale(PiercingFlags flags, bool bigTitPerk)
+		public static Breasts GenerateFemale()
 		{
-			return new Breasts(flags, bigTitPerk, true);
+			return new Breasts(true);
 		}
 
-		public static Breasts GenerateFemale(PiercingFlags flags, bool bigTitPerk, CupSize cup, float nippleLength)
+		public static Breasts GenerateFemale(CupSize cup, float nippleLength)
 		{
-			return new Breasts(flags, bigTitPerk, cup, nippleLength);
+			return new Breasts(cup, nippleLength);
 		}
-		public static Breasts GenerateMale(PiercingFlags flags, bool bigTitPerk)
+		public static Breasts GenerateMale()
 		{
-			return new Breasts(flags, bigTitPerk, false);
+			return new Breasts(false);
 		}
 
 		public int GrowBreasts(uint byAmount)

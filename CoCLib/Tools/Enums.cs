@@ -33,4 +33,12 @@ namespace CoC.Tools
 		HYPER_VV_LARGE, HYPER_W, HYPER_W_LARGE, HYPER_WW, HYPER_WW_LARGE, HYPER_X, HYPER_X_LARGE, HYPER_XX, HYPER_XX_LARGE, HYPER_Y,
 		HYPER_Y_LARGE, HYPER_YY, HYPER_YY_LARGE, HYPER_Z, HYPER_Z_LARGE, HYPER_ZZ, HYPER_ZZ_LARGE, HYPER_ZZZ, HYPER_ZZZ_LARGE, JACQUES00
 	}
+
+	public static class EnumHelper
+	{
+		public static int Length<T>() where T : System.Enum
+		{
+			return Enum.GetNames(typeof(T)).Length;
+		}
+	}
 }

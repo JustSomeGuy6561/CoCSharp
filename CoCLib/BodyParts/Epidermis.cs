@@ -1,5 +1,5 @@
-﻿//EpidermisType.cs
-//Description: EpidermisType Sub-Body Part class. used in other body parts. 
+﻿//Epidermis.cs
+//Description: Epidermis Sub-part. it is used in pther parts to determine their tone, fur color, etc.
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
 using CoC.EpidermalColors;

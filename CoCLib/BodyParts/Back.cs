@@ -5,15 +5,21 @@
 using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 using CoC.EpidermalColors;
+using CoC.Serialization;
 using CoC.Tools;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
 {
 	//implement i fur aware if you want it to update with the player.
 	//note that if you do so you'll need some sort of logic to deal with if it 
 	//was dyed recently/ ever.
-	internal class Back : BodyPartBase<Back, BackType>, IDyeable//, IFurAware
+	[DataContract]
+	internal class Back : BodyPartBase<Back, BackType>, IDyeable, ISerializable//, IFurAware
 	{
+		//save attributes used for clarity. they don't actually do anything, as i've hardcoded them.
+
 		public override BackType type
 		{
 			get => _type;
@@ -34,24 +40,31 @@ namespace CoC.BodyParts
 			}
 
 		}
+		[Save]
 		private BackType _type;
-		public HairFurColors hairFur { get; protected set; }
+		public HairFurColors hairFur
+		{
+			get => type.usesHair ? _hairFur : HairFurColors.NO_HAIR_FUR;
+			protected set => _hairFur = value;
+		}
+		[Save]
+		private HairFurColors _hairFur;
 
 		protected Back(BackType backType)
 		{
 			type = backType;
+			_hairFur = (backType as DragonBackMane)?.defaultColor ?? HairFurColors.NO_HAIR_FUR;
 		}
 
-		public static Back Generate()
+		public static Back GenerateDefault()
 		{
-			return GenerateNonStandard(BackType.NORMAL);
+			return new Back(BackType.NORMAL);
 		}
 
-		public static Back GenerateNonStandard(BackType backType)
+		public static Back GenerateDefaultOfType(BackType backType)
 		{
 			return new Back(backType);
 		}
-
 		public static Back GenerateDraconicMane(DragonBackMane dragonMane, HairFurColors maneColor)
 		{
 			return new Back(dragonMane)
@@ -88,6 +101,7 @@ namespace CoC.BodyParts
 				return false;
 			}
 			type = newType;
+			hairFur = (type as DragonBackMane)?.defaultColor ?? HairFurColors.NO_HAIR_FUR;
 			return true;
 		}
 
@@ -98,6 +112,7 @@ namespace CoC.BodyParts
 				return false;
 			}
 			type = dragonMane;
+			hairFur = maneColor;
 			return true;
 		}
 
@@ -138,6 +153,19 @@ namespace CoC.BodyParts
 				return true;
 			}
 		}
+
+		protected Back(SerializationInfo info, StreamingContext context)
+		{
+			_hairFur = (HairFurColors)info.GetValue(nameof(_hairFur), typeof(HairFurColors));
+			_type = (BackType)info.GetValue(nameof(_type), typeof(BackType));
+		}
+
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue(nameof(_hairFur), _hairFur, typeof(HairFurColors));
+			info.AddValue(nameof(_type), _type, typeof(BackType));
+		}
 	}
 
 	internal partial class BackType : BodyPartBehavior<BackType, Back>
@@ -169,5 +197,4 @@ namespace CoC.BodyParts
 			defaultColor = HairFurColors.GREEN;
 		}
 	}
-
 }

@@ -35,23 +35,23 @@ namespace CoC.BodyParts
 
 		public override FaceType type { get; protected set; }
 
-		protected Face(PiercingFlags flags)
+		protected Face()
 		{
 			type = FaceType.HUMAN;
 			secondLevel = false;
-			lip = Lip.Generate(flags);
-			nose = Nose.Generate(flags);
-			eyebrow = Eyebrow.Generate(flags);
+			lip = Lip.Generate();
+			nose = Nose.Generate();
+			eyebrow = Eyebrow.Generate();
 		}
 
-		public static Face Generate(PiercingFlags flags)
+		public static Face Generate()
 		{
-			return new Face(flags);
+			return new Face();
 		}
 
-		public static Face GenerateNonStandardFace(PiercingFlags flags, FaceType faceType, bool fullMorph = false)
+		public static Face GenerateNonStandardFace(FaceType faceType, bool fullMorph = false)
 		{
-			return new Face(flags)
+			return new Face()
 			{
 				type = faceType,
 				secondLevel = fullMorph

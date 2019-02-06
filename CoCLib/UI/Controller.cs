@@ -1,4 +1,8 @@
-﻿using CoC.Creatures;
+﻿//Controller.cs
+//Description:
+//Author: JustSomeGuy
+//1/19/2019, 8:01 PM
+using CoC.Creatures;
 using CoC.Tools;
 using System;
 using System.Collections.Generic;
@@ -10,16 +14,19 @@ namespace CoC.UI
 {
 
 	//consider firing custom events instead of INotifyPropertyChanged. 
-	public sealed class Controller : INotifyPropertyChanged
+	public sealed class ModelView : INotifyPropertyChanged
 	{
 
 		public PlayerData playerData { get; }
 		public List<ButtonData> uiData { get; }
 
+		public string fileLoadPath { get; set; }
+		public GameData saveData { get; }
+
 		public CombatData combatData;
 		private Player player;
 
-		internal Controller(Player p)
+		internal ModelView(Player p)
 		{
 			uiData = new List<ButtonData>();
 			playerData = new PlayerData(p);
@@ -63,7 +70,7 @@ namespace CoC.UI
 			callback(player);
 			//check if the callback changed anything. if it did, notify the UI.
 			//update ui data. it's now changed.
-			if (buttonData.Count(x=> x != null) > 0)
+			if (buttonData.Count(x => x != null) > 0)
 			{
 				uiData.AddRange(buttonData);
 				NotifyPropertyChanged(nameof(uiData));

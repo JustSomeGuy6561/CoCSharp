@@ -1,14 +1,11 @@
-﻿//EnumStrings.cs
+﻿//IPerkAware.cs
 //Description:
 //Author: JustSomeGuy
-//1/25/2019, 8:34 PM
+//2/1/2019, 5:58 PM
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Strings
+namespace CoC.Perks
 {
-	internal static class EnumStrings
-	{
-	}
 }

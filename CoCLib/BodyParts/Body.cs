@@ -1,4 +1,9 @@
-﻿using CoC.BodyParts.SpecialInteraction;
+﻿//Body.cs
+//Description:
+//Author: JustSomeGuy
+//1/18/2019, 9:56 PM
+
+using CoC.BodyParts.SpecialInteraction;
 using CoC.Creatures;
 using CoC.EpidermalColors;
 using CoC.Strings;
@@ -6,6 +11,8 @@ using CoC.Tools;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
 {
@@ -136,7 +143,9 @@ wet cloth - restored
 	 * TL;DR: when you call any update or restore function, this will automatically update body parts that implement itoneaware or ifuraware before returning. if you want to get data from these body parts 
 	 * before they are altered, you must do so before calling an update or restore. 
 	 */
-	internal class Body : PiercableBodyPart<Body, BodyType, NavelPiercings>, IHairAware
+
+	[DataContract]
+	internal class Body : PiercableBodyPart<Body, BodyType, NavelPiercings>, IHairAware, ISerializable
 	{
 		HashSet<IToneAware> toneAwares = new HashSet<IToneAware>();
 		HashSet<IFurAware> furAwares = new HashSet<IFurAware>();
@@ -175,7 +184,7 @@ wet cloth - restored
 		public bool isTone => type.isTone;
 		public bool isCockatrice => type.isCockatrice;
 
-		protected Body(BodyType bodyType, PiercingFlags flags) : base(flags)
+		protected Body(BodyType bodyType)
 		{
 			this.type = bodyType;
 			this.hairColor = HairFurColors.BLACK;
@@ -209,23 +218,26 @@ wet cloth - restored
 			}
 		}
 
-		//Default initializer. all values are set to species default, if applicable. 
-		public static Body GenerateDefault(PiercingFlags flags, BodyType bodyType)
+		public static Body GenerateDefault()
 		{
-			return new Body(bodyType, flags);
+			return new Body(BodyType.HUMANOID);
+		}
+		public static Body GenerateDefaultOfType(BodyType bodyType)
+		{
+			return new Body(bodyType);
 		}
 
-		public static Body GenerateHumanoid(PiercingFlags flags, Tones skinTone)
+		public static Body GenerateHumanoid(Tones skinTone)
 		{
-			Body retVal = new Body(BodyType.HUMANOID, flags);
+			Body retVal = new Body(BodyType.HUMANOID);
 			retVal.updatePrimaryEpidermis(skinTone);
 			return retVal;
 		}
 
 		//i hate you so much.
-		public static Body GenerateCockatrice(PiercingFlags flags, FurColor featherColor, Tones scaleColor)
+		public static Body GenerateCockatrice(FurColor featherColor, Tones scaleColor)
 		{
-			Body retVal = new Body(BodyType.COCKATRICE, flags);
+			Body retVal = new Body(BodyType.COCKATRICE);
 			if (!featherColor.isNoFur())
 			{
 				retVal.updatePrimaryEpidermis(featherColor);
@@ -237,18 +249,18 @@ wet cloth - restored
 			return retVal;
 		}
 
-		public static Body GenerateTonedNoUnderbody(PiercingFlags flags, ToneBodyType toneBody, Tones primaryTone)
+		public static Body GenerateTonedNoUnderbody(ToneBodyType toneBody, Tones primaryTone)
 		{
-			Body retVal = new Body(toneBody, flags);
+			Body retVal = new Body(toneBody);
 			if (primaryTone != Tones.NOT_APPLICABLE)
 			{
 				retVal.updatePrimaryEpidermis(primaryTone);
 			}
 			return retVal;
 		}
-		public static Body GenerateToneWithUnderbody(PiercingFlags flags, ToneBodyType toneBody, Tones primaryTone, Tones secondaryTone)
+		public static Body GenerateToneWithUnderbody(ToneBodyType toneBody, Tones primaryTone, Tones secondaryTone)
 		{
-			Body retVal = new Body(toneBody, flags);
+			Body retVal = new Body(toneBody);
 			if (primaryTone != Tones.NOT_APPLICABLE)
 			{
 				retVal.updatePrimaryEpidermis(primaryTone);
@@ -260,18 +272,18 @@ wet cloth - restored
 			return retVal;
 		}
 
-		public static Body GenerateFurredNoUnderbody(PiercingFlags flags, FurBodyType furryBody, FurColor primaryFur)
+		public static Body GenerateFurredNoUnderbody(FurBodyType furryBody, FurColor primaryFur)
 		{
-			Body retVal = new Body(furryBody, flags);
+			Body retVal = new Body(furryBody);
 			if (!primaryFur.isNoFur())
 			{
 				retVal.updatePrimaryEpidermis(primaryFur);
 			}
 			return retVal;
 		}
-		public static Body GenerateFurredWithUnderbody(PiercingFlags flags, FurBodyType furryBody, FurColor primaryFur, FurColor secondaryFur)
+		public static Body GenerateFurredWithUnderbody(FurBodyType furryBody, FurColor primaryFur, FurColor secondaryFur)
 		{
-			Body retVal = new Body(furryBody, flags);
+			Body retVal = new Body(furryBody);
 			if (!primaryFur.isNoFur())
 			{
 				retVal.updatePrimaryEpidermis(primaryFur);
@@ -851,6 +863,17 @@ wet cloth - restored
 		private void updateSecondaryEpidermis(FurColor fur)
 		{
 			_secondaryEpidermis.UpdateFur(fur, true);
+		}
+
+		protected Body(SerializationInfo info, StreamingContext context)
+		{
+
+		}
+
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

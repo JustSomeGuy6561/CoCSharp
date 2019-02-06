@@ -19,39 +19,39 @@ namespace CoC.BodyParts
 #warning add all the helpers.
 		public readonly Clit clit;
 		public bool virgin { get; protected set; }
-		protected Vagina(PiercingFlags flags) : base(flags)
+		protected Vagina()
 		{
-			clit = Clit.Generate(flags);
+			clit = Clit.Generate();
 			virgin = true;
 			type = VaginaType.HUMAN;
 		}
 
-		public static Vagina GenerateDefault(PiercingFlags flags)
+		public static Vagina GenerateDefault()
 		{
-			return new Vagina(flags);
+			return new Vagina();
 		}
 
-		public static Vagina Generate(PiercingFlags flags, VaginaType vaginaType)
+		public static Vagina Generate(VaginaType vaginaType)
 		{
-			return new Vagina(flags)
+			return new Vagina()
 			{
 				type = vaginaType
 			};
 		}
 
-		public static Vagina Generate(PiercingFlags flags, VaginaType vaginaType, float clitLength)
+		public static Vagina Generate(VaginaType vaginaType, float clitLength)
 		{
-			Vagina retVal = new Vagina(flags)
+			Vagina retVal = new Vagina()
 			{
-				type = vaginaType,
+				type = vaginaType
 			};
 			retVal.clit.growClit(clitLength - retVal.clit.length);
 			return retVal;
 		}
 
-		public static Vagina GenerateOmnibus(PiercingFlags flags)
+		public static Vagina GenerateOmnibus()
 		{
-			Vagina retVal = new Vagina(flags);
+			Vagina retVal = new Vagina();
 			retVal.ActivateOmnibusClit();
 			return retVal;
 		}
@@ -109,7 +109,7 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public bool canPierce(ClitPiercing piercingLocation)
+		public bool canPierce(ClitPiercings piercingLocation)
 		{
 			return clit.canPierce(piercingLocation);
 		}

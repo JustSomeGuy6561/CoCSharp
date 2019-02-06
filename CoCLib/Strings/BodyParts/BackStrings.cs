@@ -29,23 +29,23 @@ namespace   CoC.BodyParts
 		{
 
 		}
-		private static string DraconicManeDesc()
+		protected static string DraconicManeDesc()
 		{
 
 		}
-		private static string DraconicManeFullDesc(Back back)
+		protected static string DraconicManeFullDesc(Back back)
 		{
 
 		}
-		private static string DraconicManePlayerStr(Back back, Player player)
+		protected static string DraconicManePlayerStr(Back back, Player player)
 		{
 
 		}
-		private static string DraconicManeTransformStr(Back back, Player player)
+		protected static string DraconicManeTransformStr(Back back, Player player)
 		{
 
 		}
-		private static string DraconicManeRestoreStr(Back back, Player player)
+		protected static string DraconicManeRestoreStr(Back back, Player player)
 		{
 
 		}

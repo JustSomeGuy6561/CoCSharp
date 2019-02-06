@@ -58,7 +58,7 @@ namespace CoC.BodyParts
 		public bool blackNipples { get; protected set; }
 
 		protected short invertedNippleCountDown;
-		protected Nipples(PiercingFlags flags) : base(flags)
+		protected Nipples()
 		{
 			nippleStatus = NippleStatus.NORMAL;
 			length = MIN_NIPPLE_LENGTH;
@@ -70,22 +70,22 @@ namespace CoC.BodyParts
 		public SimpleDescriptor Description => () => NippleDescription(this);
 		public SimpleDescriptor DescriptionWithLength => () => NippleDescriptionWithLength(this);
 
-		public static Nipples Generate(PiercingFlags flags)
+		public static Nipples Generate()
 		{
-			return new Nipples(flags);
+			return new Nipples();
 		}
 
-		public static Nipples GenerateWithLength(PiercingFlags flags, float nippleLength)
+		public static Nipples GenerateWithLength(float nippleLength)
 		{
-			return new Nipples(flags)
+			return new Nipples()
 			{
 				length = nippleLength
 			};
 		}
 
-		public static Nipples GenerateForceType(PiercingFlags flags, float nippleLength, NippleStatus status)
+		public static Nipples GenerateForceType(float nippleLength, NippleStatus status)
 		{
-			return new Nipples(flags)
+			return new Nipples()
 			{
 				length = nippleLength,
 				nippleStatus = status

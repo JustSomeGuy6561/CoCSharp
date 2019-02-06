@@ -1,4 +1,4 @@
-﻿//EarsStrings.cs
+﻿//EarStrings.cs
 //Description:
 //Author: JustSomeGuy
 //01/04/2019, 6:09 PM

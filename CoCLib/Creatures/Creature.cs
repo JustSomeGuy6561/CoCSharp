@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/30/2018, 10:36 PM
-using  CoC.BodyParts;
+using CoC.BodyParts;
 using CoC.EpidermalColors;
 using CoC.Tools;
 
@@ -12,9 +12,6 @@ namespace CoC.Creatures
 	//as of now no NPCs use it. there's evidence this may not have always been the case or plans were to use it, idk.
 	internal abstract class Creature
 	{
-		protected readonly Tones defaultTone = Tones.LIGHT;
-		protected readonly HairFurColors defaultHair = HairFurColors.BLACK;
-
 		public readonly Antennae antennae;
 		public readonly Arms arms;
 		public readonly Back back;
@@ -32,6 +29,9 @@ namespace CoC.Creatures
 
 		public readonly FacialHair facialHair;
 
+		public virtual Species race => startingRace;
+		public readonly Species startingRace;
+
 		//may want to change this into a more global flag system, idk. 
 		public readonly PiercingFlags piercingFlags = PiercingFlags.Generate();
 
@@ -47,89 +47,49 @@ namespace CoC.Creatures
 		public Butt butt => lowerBody.butt;
 		public Ass ass => lowerBody.butt.ass;
 		public readonly string name;
-		protected Creature(string creatureName)
+
+		public int heightInInches { get; protected set; }
+
+		protected Creature(string creatureName, Species initialRace)
 		{
 			name = creatureName;
-			InitBody(out antennae, out arms, out back, out body, out ears, out face, out genitals, out gills, out horns, out lowerBody, out neck, out tail, out tongue, out wings, out facialHair, piercingFlags);
+			startingRace = initialRace;
+			CreatureCreator cc = creator;
+			//flags that affect the remaining creatures
+			Gender gender = cc?.gender ?? Gender.MALE;
+			piercingFlags = cc?.piercingFlags ?? PiercingFlags.Generate();
 
-			if (piercingFlags == null)
-			{
-				piercingFlags = PiercingFlags.Generate();
-			}
-			if (antennae == null)
-			{
-				antennae = Antennae.Generate(AntennaeType.NONE);
-			}
-			if (arms == null)
-			{
-				arms = Arms.Generate(ArmType.HUMAN);
-			}
-			if (back == null)
-			{
-				back = Back.Generate();
-			}
-			if (body == null)
-			{
-				body = Body.GenerateHumanoid(piercingFlags, defaultTone, hair.color);
-			}
-			if (ears == null)
-			{
-				ears = Ears.Generate(piercingFlags);
-			}
-			if (face == null)
-			{
-				face = Face.Generate(piercingFlags);
-			}
-			if (genitals == null)
-			{
-				genitals = Genitals.Generate(piercingFlags, Gender.MALE, false, false);
-			}
-			if (gills == null)
-			{
-				gills = Gills.Generate();
-			}
-			if (horns == null)
-			{
-				horns = Horns.Generate();
-			}
-			if (lowerBody == null)
-			{
-				lowerBody = LowerBody.Generate(LowerBodyType.HUMAN);
-			}
-			if (neck == null)
-			{
-				neck = Neck.Generate();
-			}
-			if (tail == null)
-			{
-				tail = Tail.GenerateNoTail(piercingFlags);
-			}
-			if (tongue == null)
-			{
-				tongue = Tongue.Generate(piercingFlags);
-			}
-			if (wings == null)
-			{
-				wings = Wings.Generate();
-			}
-			if (hair == null)
-			{
-				hair = Hair.Generate();
-			}
-			if (facialHair == null)
-			{
-				facialHair = FacialHair.Generate();
-			}
+			antennae = cc?.antennae ?? Antennae.GenerateDefault();
+			arms = cc?.arms ?? Arms.GenerateDefault();
+			back = cc?.back ?? Back.GenerateDefault();
+			Balls balls = cc?.balls ?? Balls.GenerateDefault(gender);
+			Breasts breasts = cc?.breasts ?? Breasts.GenerateDefault(piercingFlags, gender, false);
+			Cock[] cocks = cc?.cocks ?? (gender.HasFlag(Gender.MALE) ? new Cock[]{ Cock.GenerateDefault(piercingFlags, false)} : new Cock[]{});
+			ears = cc?.ears ?? Ears.GenerateDefault(piercingFlags);
+			Eyes eyes = cc?.eyes ?? Eyes.GenerateDefault();
+			hair = cc?.hair ?? Hair.GenerateDefault();
+			gills = cc?.gills ?? Gills.GenerateDefault();
+			horns = cc?.horns ?? Horns.GenerateDefault();
+			neck = cc?.neck ?? Neck.GenerateDefault();
+			tail = cc?.tail ?? Tail.GenerateDefault(piercingFlags);
+			tongue = cc?.tongue ?? Tongue.GenerateDefault(piercingFlags);
+			Vagina[] vaginas = cc?.vaginas ?? (gender.HasFlag(Gender.FEMALE) ? new Vagina[] { Vagina.GenerateDefault(piercingFlags) } : new Vagina[] { });
+			wings = cc?.wings ?? Wings.GenerateDefault();
+			facialHair = cc?.facialHair ?? FacialHair.GenerateDefault();
+
+			//composite classes.
+			face = cc?.face ?? Face.GenerateDefault(piercingFlags);
+			body = cc?.body ?? Body.GenerateDefault(piercingFlags);
+			lowerBody = cc?.lowerBody ?? LowerBody.GenerateDefault();
+			genitals = cc?.genitals ?? Genitals.GenerateDefault(piercingFlags, gender, false, false);
 		}
-		//only way to do readonly and still compile. ik it's weird, but with visual studio it'll auto complete and you'll be fine.
-		//simple assign somethihg to whatever values you want to change from their default. 
-		internal abstract void InitBody(out Antennae antennae, out Arms arms, out Back back, out Body body, out Ears ears, out Face face, out Genitals genitals, out Gills gills, 
-			out Horns horns, out LowerBody lowerBody, out Neck neck, out Tail tail, out Tongue tongue, out Wings wings, out FacialHair facialHair, PiercingFlags piercingFlags);
+
+		public abstract CreatureCreator creator { get; }
 
 		//internal abstract void InitInventory
 
 
-		//OutputText("You are a " + player.height.toString() + " tall " + player.gender.asText() + " " + player.race.toString() + ", with " + player.bodyTypeString() + ".");
+		//publicputText("You are a " + player.height.toString() + " tall " + player.gender.asText() + " " + player.race.toString() + ", with " + player.bodyTypeString() + ".");
 		public SimpleDescriptor generalDescription;
 
 		//
@@ -144,5 +104,34 @@ namespace CoC.Creatures
 			return body.primaryEpidermis.fur;
 		}
 
+	}
+
+	internal abstract class CreatureCreator
+	{
+		public Antennae antennae;
+		public Arms arms;
+		public Back back;
+		public Body body;
+		public Ears ears;
+		public Face face;
+		public Genitals genitals;
+		public Gills gills;
+		public Horns horns;
+		public LowerBody lowerBody;
+		public Neck neck;
+		public Tail tail;
+		public Tongue tongue;
+		public Wings wings;
+		public FacialHair facialHair;
+		public PiercingFlags piercingFlags;
+
+		public int? height = null;
+		public int? 
+
+		//anything that needs to be done that can't be done via setting the above variables.
+		//note that when this is called, it is guranteed that all body parts will be initialized.
+		//there is no need to reinitialize them. primarily, this is for piercings, though perhaps you'd like to fine-tune 
+		//a character post init - override default behaviors or reset updated hair colors or something. 
+		public abstract void postInit();
 	}
 }
