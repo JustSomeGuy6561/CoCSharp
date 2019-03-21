@@ -41,7 +41,7 @@ namespace  CoC.Backend.BodyParts
 		public readonly ChangeType<ContainerClass> transformFrom;
 		public readonly RestoreType<ContainerClass> restoreString;
 
-		protected BodyPartBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc,
+		private protected BodyPartBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc,
 			TypeAndPlayerDelegate<ContainerClass> playerDesc, ChangeType<ContainerClass> transform, RestoreType<ContainerClass> restore)
 		{
 			shortDescription = shortDesc;

@@ -31,7 +31,7 @@ namespace  CoC.BodyParts
 			{
 				return false;
 			}
-			if (!IsPierced(piercingLocation) && !forceIfEnabled)
+			if (!IsPiercedAt(piercingLocation) && !forceIfEnabled)
 			{
 				return false;
 			}
@@ -39,7 +39,7 @@ namespace  CoC.BodyParts
 			{
 				return false;
 			}
-			else if (!IsPierced(piercingLocation))
+			else if (!IsPiercedAt(piercingLocation))
 			{
 				return Pierce(piercingLocation, jewelry);
 			}
@@ -85,17 +85,20 @@ namespace  CoC.BodyParts
 		{
 			return jewelryLookup.ContainsKey(piercingLocation);
 		}
-		public bool IsPierced(PiercingEnum piercingLocation)
+		public bool IsPiercedAt(PiercingEnum piercingLocation)
 		{
 			return piercingLookup.ContainsKey(piercingLocation) && piercingLookup[piercingLocation];
 		}
+		public bool IsCurrentlyPierced => currentJewelryCount > 0;
+		public bool IsPierced => currentPiercingCount > 0;
+
 		public bool Pierce(PiercingEnum piercingLocation, PiercingJewelry jewelry)
 		{
 			if (!canPierce(piercingLocation))
 			{
 				return false;
 			}
-			if (IsPierced(piercingLocation))
+			if (IsPiercedAt(piercingLocation))
 			{
 				return false;
 			}
@@ -113,7 +116,7 @@ namespace  CoC.BodyParts
 
 		public bool EquipPiercingJewelryAndPierceIfNotPierced(PiercingEnum piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
-			if (!IsPierced(piercingLocation))
+			if (!IsPiercedAt(piercingLocation))
 			{
 				return Pierce(piercingLocation, jewelry);
 			}

@@ -11,7 +11,7 @@ namespace CoC.Backend.BodyParts
 	public abstract class PiercableBodyPartBehavior<ThisClass, ContainerClass, PiercingEnum> : BodyPartBehavior<ThisClass, ContainerClass> where ThisClass : PiercableBodyPartBehavior<ThisClass, ContainerClass, PiercingEnum>
 		where ContainerClass : PiercableBodyPart<ContainerClass, ThisClass, PiercingEnum> where PiercingEnum : System.Enum
 	{
-		protected PiercableBodyPartBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc, TypeAndPlayerDelegate<ContainerClass> playerDesc,
+		private protected PiercableBodyPartBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc, TypeAndPlayerDelegate<ContainerClass> playerDesc,
 			ChangeType<ContainerClass> transform, RestoreType<ContainerClass> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore) { }
 	}
 }

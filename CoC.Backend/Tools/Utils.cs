@@ -3,7 +3,9 @@
 //Author: JustSomeGuy
 //12/26/2018, 7:56 PM
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 //IK Utils is generally frowned upon, but there's a bunch of useful tools, so.
 namespace CoC.Backend.Tools
@@ -75,7 +77,10 @@ namespace CoC.Backend.Tools
 		}
 
 		
-
+		public static IEnumerable<T> AsIterable<T>() where T: Enum
+		{
+			return Enum.GetValues(typeof(T)).Cast<T>();
+		}
 	}
 
 	public class Pair<T, U>

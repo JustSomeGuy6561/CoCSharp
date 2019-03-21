@@ -10,6 +10,17 @@ namespace CoC.Backend.Strings
 {
 	static class GlobalStrings
 	{
+		private static readonly string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
+
+		public static string NumberAsText(int number)
+		{
+			if (number >= 10 || number < 0)
+			{
+				return number.ToString();
+			}
+			return numbers[number];
+		}
+
 		public static string None() { return ""; }
 
 		public static string TransformToDefault<T, Y>(T type, Player p) where T : BodyPartBase<T, Y> where Y : BodyPartBehavior<Y, T>
@@ -62,6 +73,21 @@ namespace CoC.Backend.Strings
 			lengthInInches = Math.Round(lengthInInches, MidpointRounding.AwayFromZero);
 			return lengthInInches.ToString() + " inches";
 		}
+
+		private static bool IMPERIAL = true;
+
+		public static string FeetOrMeters(double inches)
+		{
+			if (IMPERIAL)
+			{
+				return inches / 12.0 + "feet";
+			}
+			else
+			{
+				return inches * 0.0254 + "meters";
+			}
+		}
+
 
 		public static string CantAttackName<T>(T type)
 		{

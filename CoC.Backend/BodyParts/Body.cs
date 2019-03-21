@@ -4,153 +4,19 @@
 //1/18/2019, 9:56 PM
 
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
+using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace CoC.Backend.BodyParts
 {
 
-	/*
-	 * Body: Much like genitals, it will store all data related to it. in this case, skin tone/ fur color.
-	 * for primary and things like underbody. it will also store the hair color if the pc is completely devoid of hair
-	 * similarly, it will generate the fur color from hair if no hair is available. body parts that react to changes in
-	 * primary and/or secondary colors can implement an interface granting them access to primary and secondary colors as they
-	 * change. as of now, this is arms (by extension, hands), legs, and face. 
-	 * 
-	 * vanilla behavior is that all parts that set a tone or fur color and chage a type restore underbody to none. i'd like to automate that
-	 * idk how w/0 making every race implement core type. 
-	 * 
-	 * need to update epidermis. it currently only supports either furcolor or tone. that, or store them separately here, which is the only place
-	 * that behavior is necessary. i could then set one in here internally for others to read and use.
-	 * 
-	 * problem is that asking implementation of that for every race is nuts. 
-	 * also, player appearance could says something like: the rest of your body is covered in (scales/fur/normal skin) (if secondary color: with exception to your stomach, which has (whatever color))
-	 * 
-	 * solution: if your fur or scales do something special, give it a type. so, goblin/demon/anemone (etc.) skin, which is basically normal skin with a different tone, can be skin. but if your or skin
-	 * has stripes or some incarnate tattoo or something (yw, kitsunes), make it a new type. same goes for fur - if the creature _CAN_ use a secondary color, make them require it. this allows stripes, spots
-	 * etc - whatever pattern you desire. you can have a creature with normal fur/scales everywhere, but using the secondary color as short hairs around their reproductive bits or whatever, if you so desire
-	 *NOTES:
-	 * 
-	 * underbody can be dyed separately if furry. can be toned regardless. just changes adjective, but is more or less useless for fur.
-
-USE OF UNDERBODY:
-
-black rubber egg - restores type. i assume it also removes fur from core?
-
-canine - not directly used. used to determine arm color.
-clovis (sheep) - same as core. counts as fur.
-ember - same as core. counts as scales. used as the underbelly.
-equinium - fun fact: despite horses having an underbody, it actually restores it.
-ferret fruit: picks a secondary color from a list of ferret fur colors. called underside. arms and legs both use it. fur
-fox berry: used directly with appearance, indirectly used for arms. fur.
-fox jewel: removed, unless fur color combo is a specific group. not directly used. fur or none
-golden rind (deer): set to white when given brown fur, like a deer. fur
-red river root (panda): set with fur color, to black. probably used for arms and legs in future. fur
-reptilium: same as core. scales. used as underbelly.
-snake oil: from what i can tell, it's actually bugged. it's supposed to be a naga underbody type, but it's allows to be reptilian. also, counts as scales. color is green.
-tonotrice: counts as feathered. set to random colors from cockatrice pool. different from core.
-cat: used for arms. not set directly.
-
-PLAYER_APPEARANCE: (if applicable)
-used on fox face as fur color under jaw. 
-used on cat face as fur color under jaw.
-used on lizard face. if scaled, makes lower/under jaw.
-used on dragon face. used as under jaw color
-ditto, for deer.
-cockatrice just checks for it. if applicable, changes a string.
-
-used for ferret arms
-used in describing core, used as underbelly.
-used in lizard tail, if different from regular epidermis.
-ditto, for dragon.
-used in naga lower body as underbelly scales.
-used in red panda for legs. 
-
-From what i can tell of underbody, it takes the animal and applies colors seen on the underbody. since most are quadrupeds, this includes arms and legs. if they have scales, it's 
-		 -----------------------------------
-things that set fur color or tone:
-
-black rubber egg. silently removes fur. making that less silent. restoring underbelly. consider making rubber a new skin type. 
-ectoplasm - only skin tone
-
-canine pepper - restored
-echidna - restored
-ferret - set
-goldenrind (deer) -set
-kanga fruit - restored
-labova - restored
-mouse cocoa - restored
-red river root (red panda) - set
-ringtail fig (coon)  - restored
-kitsune scene - N/A
-
-gown (dryad) - restores skin type, actually changes to bark.
-update behavior to restore.
-fox jewel (kitsune) - restored
-goblin ale - just skin color. no effect on skintype.
-golden seed (harpy) - just skin color. no effect on skintype.
-imp food - may change type to plain, but does so silently. fix this. otherwise, let it go.
-pig truffle - just changes color. no effect on type.
-reptilium - set
-rhino steak - restored
-snake oil - set
-succubus milk - changes color. no effect on type. 
-sweet gossamer - restored
-wet cloth - restored
-
-	 */
 	public enum NavelPiercings { TOP, BOTTOM }
-
-	/* Behavior of body: you always have some form of skin, even if you have feathers or fur. Thus, you always have a primary skin tone. 
-	 * fur only applies if the body has it.
-	 * 
-	 * If you change to a fur type from a tone type and dont provide a fur color, it will use the hair color, or a default if the character is bald.
-	 * if you change to a fur type from another fur type, the existing fur color will be used unless a new color is provided. 
-	 * 
-	 * If you cange to a tone type, the current skin tone will be used unless another is provided, regardless of original type.
-	 * 
-	 * Some body types allow an "underbody." underbodies are an alternate color for the anthropomorphic equivalent to the underside of an animal. this generally means the chest and core areas, though
-	 * reptiles use it as an "underbelly" instead. some body parts, notably arms and legs, may wish to use this underbelly color; an interface exists for this. more on that later. 
-	 * 
-	 * Underbody is extremely difficult to provide a logical solution for, as it's sort of used for whatever anyone feels like. That said, here are the rules i have come up with:
-	 * 1) Underbody only exists when needed. if a type does not use it, it is disabled. 
-	 * 1-A) If a type does use it, but the old type does not, it will default to the primary color. you may provide an alternate color as you see fit.
-	 * 
-	 * 2) Underbody can only use a tone or a fur color. whichever one it uses, the other is always set to the empty or not applicable option. 
-	 * 2-A) If you change from a furred underbody to a toned underbody, the old underbody fur color is lost. the tone is the primary tone unless an alternate is provided.
-	 * 2-B) If you change from a toned underbody to a furred one, the old tone is lost. the fur is the primary fur color, unless an alternate is provided.
-	 * 2-C) If the underbody remains toned (or remains furred), the old underbody color will remain in use, unless an alternate is provided. 
-	 * 
-	 * 3) Body parts (notably arms and legs) may wish to match the underbody. this class has a simple event system - any body part may implement a tone aware or fur aware interface, 
-	 * by adding it to the lists here, it will be notified of any changes to hair or fur colors. it may simply update itself with the new color, or do something crazy such as lose its fur or whatever. 
-	 * that's entirely up to you.
-	 * 
-	 * Note that this is one-way. The core can tell the body parts they may want to update, but the body parts do not report back.
-	 * 3-A) It's important to note the order of events. when you update a type, it will change the type, activate or deactivate tone, fur, and/or underbody as needed, then notify all body parts that care.
-	 * then, and only then, will the update function return.
-	 * 3-B) It is recommended to provide custom underbelly or primary colors when you change the type, instead of separately. if you do this, it will only have to notify body parts once instead of twice.
-	 * Additionally, it may prevent undesired behavior. for example: you are using Red Panda TFs, and wish to add an underbody. The PC already has black Red Panda arms. you wish to set the underbody to match the
-	 * arms. Currently, however, the PC has blue fur. if you change the type to a furry type with underbody, but don't provide an underbody color, it will use the primary color (blue) as the underbody color. 
-	 * Suddenly, your black panda arms are now blue. if you go to update the underbody to match your arms now, it will remain blue, not become black. 
-	 * 
-	 * TL;DR: when you call any update or restore function, this will automatically update body parts that implement itoneaware or ifuraware before returning. if you want to get data from these body parts 
-	 * before they are altered, you must do so before calling an update or restore. 
-	 */
-
-	/*
-	 * To make things easier, everything that is updated by changes in the body is stored in the body. so, anything that uses the fur color or skin tone. at this point that's pretty much everything. 
-	 * 
-	 * Any part that uses these now expects to be correctly set when it is updated - there's no magic involved. note that these may implement some custom logic to parse it before setting it if they want,
-	 * but other than that, it just works (TM).
-	 * 
-	 * Anything that has its own fur/hair/skin 
-	 */
-
 	[DataContract]
-	public class Body : PiercableBodyPart<Body, BodyType, NavelPiercings>, ISerializable
+	public class Body : PiercableBodyPart<Body, BodyType, NavelPiercings>
 	{
 
 		//Hair, Fur, Tone
@@ -172,20 +38,7 @@ wet cloth - restored
 		private Tones secondaryTone => _secondaryEpidermis.tone;
 		//End Hair/Fur/Tone
 
-		public override BodyType type
-		{
-			get => _type;
-			protected set
-			{
-				if (_type != value)
-				{
-					value.UpdateEpidermisTypes(_primaryEpidermis, _secondaryEpidermis);
-				}
-				_type = value;
-			}
-		}
-		//[Save]
-		private BodyType _type;
+		public override BodyType type { get; protected set; }
 
 		public override bool isDefault => type == BodyType.HUMANOID;
 
@@ -193,7 +46,7 @@ wet cloth - restored
 		public bool isTone => type.isTone;
 		public bool isCockatrice => type.isCockatrice;
 
-		internal Body(BodyType bodyType)
+		private protected Body(BodyType bodyType)
 		{
 			if (hairColor == null || hairColor == HairFurColors.NO_HAIR_FUR)
 			{
@@ -202,12 +55,12 @@ wet cloth - restored
 			this.hairColor = hairColor;
 			type = bodyType;
 
-			_primaryEpidermis = Epidermis.GenerateDefault(bodyType.epidermisType);
-			_secondaryEpidermis = Epidermis.GenerateDefault(bodyType.epidermisType);
+			_primaryEpidermis = Epidermis.GenerateEmpty();
+			_secondaryEpidermis = Epidermis.GenerateEmpty();
 			if (bodyType.isFurry)
 			{
 				FurBodyType furBody = (FurBodyType)type;
-				this.hairColor = furBody.defaultFurColor.primaryColor;
+				hairColor = furBody.defaultFurColor.primaryColor;
 				_primaryEpidermis.UpdateEpidermis((FurBasedEpidermisType)type.epidermisType, furBody.defaultFurColor);
 				if (furBody.hasUnderBody)
 				{
@@ -230,8 +83,6 @@ wet cloth - restored
 				_primaryEpidermis.UpdateEpidermis((FurBasedEpidermisType)cockatriceBody.epidermisType, cockatriceBody.defaultFur);
 				_secondaryEpidermis.UpdateEpidermis((ToneBasedEpidermisType)cockatriceBody.secondaryEpidermisType, cockatriceBody.defaultScales, true);
 			}
-
-			SetupAndValidateData();
 		}
 
 		#region Generate
@@ -247,7 +98,7 @@ wet cloth - restored
 		public static Body GenerateHumanoid(Tones skinTone)
 		{
 			Body retVal = new Body(BodyType.HUMANOID);
-			retVal.updatePrimaryEpidermis(skinTone);
+			retVal._primaryEpidermis.ChangeTone(skinTone);
 			return retVal;
 		}
 
@@ -257,11 +108,11 @@ wet cloth - restored
 			Body retVal = new Body(BodyType.COCKATRICE);
 			if (!featherColor.isNoFur())
 			{
-				retVal.updatePrimaryEpidermis(featherColor);
+				retVal._primaryEpidermis.ChangeFur(featherColor);
 			}
 			if (scaleColor != Tones.NOT_APPLICABLE)
 			{
-				retVal.updateSecondaryEpidermis(scaleColor);
+				retVal._secondaryEpidermis.ChangeTone(scaleColor);
 			}
 			return retVal;
 		}
@@ -271,7 +122,7 @@ wet cloth - restored
 			Body retVal = new Body(toneBody);
 			if (primaryTone != Tones.NOT_APPLICABLE)
 			{
-				retVal.updatePrimaryEpidermis(primaryTone);
+				retVal._primaryEpidermis.ChangeTone(primaryTone);
 			}
 			return retVal;
 		}
@@ -280,11 +131,11 @@ wet cloth - restored
 			Body retVal = new Body(toneBody);
 			if (primaryTone != Tones.NOT_APPLICABLE)
 			{
-				retVal.updatePrimaryEpidermis(primaryTone);
+				retVal._primaryEpidermis.ChangeTone(primaryTone);
 			}
 			if (secondaryTone != Tones.NOT_APPLICABLE && toneBody.hasUnderBody)
 			{
-				retVal.updateSecondaryEpidermis(secondaryTone);
+				retVal._secondaryEpidermis.ChangeTone(secondaryTone);
 			}
 			return retVal;
 		}
@@ -294,7 +145,7 @@ wet cloth - restored
 			Body retVal = new Body(furryBody);
 			if (!primaryFur.isNoFur())
 			{
-				retVal.updatePrimaryEpidermis(primaryFur);
+				retVal._primaryEpidermis.ChangeFur(primaryFur);
 			}
 			return retVal;
 		}
@@ -303,11 +154,11 @@ wet cloth - restored
 			Body retVal = new Body(furryBody);
 			if (!primaryFur.isNoFur())
 			{
-				retVal.updatePrimaryEpidermis(primaryFur);
+				retVal._primaryEpidermis.ChangeFur(primaryFur);
 			}
 			if (!secondaryFur.isNoFur())
 			{
-				retVal.updateSecondaryEpidermis(secondaryFur);
+				retVal._secondaryEpidermis.ChangeFur(secondaryFur);
 			}
 			return retVal;
 		}
@@ -329,38 +180,23 @@ wet cloth - restored
 			{
 				featherColor = cockatriceBodyType.defaultFur;
 			}
-			//otherwise, at least one is good.
-
-			bool furChanged = _primaryEpidermis.usesTone || (type.hasUnderBody && _secondaryEpidermis.usesFur) || featherColor != _primaryEpidermis.fur;
-			bool toneChanged = _primaryEpidermis.usesTone || (type.hasUnderBody && _secondaryEpidermis.usesFur) || scaleTone != _secondaryEpidermis.tone;
-
 			//if only one fur is good, and it's the new color, replace the null color.
 			if (!featherColor.isNoFur())
 			{
-				this.updatePrimaryEpidermis(featherColor);
+				_primaryEpidermis.ChangeFur(featherColor);
 			}
 			//if it's the old color, do nothing.
 
 			//do the same for tones.
 			if (scaleTone != Tones.NOT_APPLICABLE)
 			{
-				updateSecondaryEpidermis(scaleTone);
-			}
-
-			if (furChanged)
-			{
-				FurChanged();
-			}
-			if (toneChanged)
-			{
-				ToneChanged();
+				_secondaryEpidermis.ChangeTone(scaleTone);
 			}
 			type = cockatriceBodyType;
 			return true;
 		}
 		public bool UpdateBody(CockatriceBodyType cockatriceBodyType)
 		{
-			bool bothChanged = type.epidermisType.usesTone || (type.hasUnderBody && _secondaryEpidermis.usesFur);
 			if (type == cockatriceBodyType)
 			{
 				return false;
@@ -370,23 +206,18 @@ wet cloth - restored
 
 				if (hairColor != HairFurColors.NO_HAIR_FUR)
 				{
-					updatePrimaryEpidermis(new FurColor(hairColor));
+					_primaryEpidermis.ChangeFur(new FurColor(hairColor));
 				}
 				else
 				{
-					updatePrimaryEpidermis(cockatriceBodyType.defaultFur);
+					_primaryEpidermis.ChangeFur(cockatriceBodyType.defaultFur);
 				}
 			}
 			if (_secondaryEpidermis.tone == Tones.NOT_APPLICABLE)
 			{
-				updateSecondaryEpidermis(cockatriceBodyType.defaultScales);
+				_secondaryEpidermis.ChangeTone(cockatriceBodyType.defaultScales);
 			}
 			type = cockatriceBodyType;
-			if (bothChanged)
-			{
-				FurChanged();
-				ToneChanged();
-			}
 			return true;
 		}
 
@@ -426,18 +257,18 @@ wet cloth - restored
 			//set the primary fur. if we can use the passed value, do so.
 			if (!primaryColor.isNoFur())
 			{
-				updatePrimaryEpidermis(primaryColor);
+				_primaryEpidermis.ChangeFur(primaryColor);
 			}
 			//if not, and the fur is not currently set, use the hair value.
 			else if (primaryFur.isNoFur())
 			{
-				updatePrimaryEpidermis(new FurColor(hairColor));
+				_primaryEpidermis.ChangeFur(new FurColor(hairColor));
 			}
 
 			//set the secondary fur.
 			if (furryType.hasUnderBody)
 			{
-				updateSecondaryEpidermis(secondaryColor);
+				_secondaryEpidermis.ChangeFur(secondaryColor);
 			}
 			else
 			{
@@ -445,15 +276,6 @@ wet cloth - restored
 			}
 
 			type = furryType;
-
-			if (previouslyUsedTone || primaryTone != firstTone || secondaryTone != secondTone)
-			{
-				ToneChanged();
-			}
-			if (previouslyUsedTone || primaryFur != firstFur || secondaryFur != secondFur)
-			{
-				FurChanged();
-			}
 			return true;
 		}
 		public bool UpdateBody(FurBodyType furryType, FurColor primaryColor)
@@ -479,11 +301,11 @@ wet cloth - restored
 			{
 				hairColor = primaryColor.primaryColor;
 			}
-			updatePrimaryEpidermis(primaryColor);
+			_primaryEpidermis.ChangeFur(primaryColor);
 			//set the secondary fur.
 			if (furryType.hasUnderBody && secondaryFur.isNoFur())
 			{
-				updateSecondaryEpidermis(primaryColor);
+				_secondaryEpidermis.ChangeFur(primaryColor);
 			}
 			//or clear it
 			else if (!furryType.hasUnderBody)
@@ -492,15 +314,6 @@ wet cloth - restored
 			}
 
 			type = furryType;
-
-			if (previouslyUsedTone || primaryTone != firstTone || secondaryTone != secondTone)
-			{
-				ToneChanged();
-			}
-			if (previouslyUsedTone || primaryFur != firstFur || secondaryFur != secondFur)
-			{
-				FurChanged();
-			}
 			return true;
 		}
 		public bool UpdateBody(FurBodyType furryType)
@@ -522,16 +335,16 @@ wet cloth - restored
 			if (primaryFur.isNoFur() && hairColor == HairFurColors.NO_HAIR_FUR)
 			{
 				hairColor = furryType.defaultFurColor.primaryColor;
-				updatePrimaryEpidermis(furryType.defaultFurColor);
+				_primaryEpidermis.ChangeFur(furryType.defaultFurColor);
 			}
 			else if (primaryFur.isNoFur())
 			{
-				updatePrimaryEpidermis(new FurColor(hairColor));
+				_primaryEpidermis.ChangeFur(new FurColor(hairColor));
 			}
 			//set the secondary fur.
 			if (furryType.hasUnderBody && secondaryFur.isNoFur())
 			{
-				updateSecondaryEpidermis(primaryFur);
+				_secondaryEpidermis.ChangeFur(primaryFur);
 			}
 			else if (!furryType.hasUnderBody)
 			{
@@ -539,15 +352,6 @@ wet cloth - restored
 			}
 
 			type = furryType;
-
-			if (previouslyUsedTone || primaryTone != firstTone || secondaryTone != secondTone)
-			{
-				ToneChanged();
-			}
-			if (previouslyUsedTone || primaryFur != firstFur || secondaryFur != secondFur)
-			{
-				FurChanged();
-			}
 			return true;
 		}
 
@@ -574,11 +378,11 @@ wet cloth - restored
 
 			if (primaryColor != Tones.NOT_APPLICABLE)
 			{
-				updatePrimaryEpidermis(primaryColor);
+				_primaryEpidermis.ChangeTone(primaryColor);
 			}
 			if (toneType.hasUnderBody)
 			{
-				updateSecondaryEpidermis(secondaryColor);
+				_secondaryEpidermis.ChangeTone(secondaryColor);
 			}
 			else
 			{
@@ -586,14 +390,6 @@ wet cloth - restored
 			}
 
 			type = toneType;
-			if (previouslyUsedFur || primaryTone != firstTone || secondaryTone != secondTone)
-			{
-				ToneChanged();
-			}
-			if (previouslyUsedFur || primaryFur != firstFur || secondaryFur != secondFur)
-			{
-				FurChanged();
-			}
 			return true;
 		}
 		public bool UpdateBody(ToneBodyType toneType, Tones primaryColor)
@@ -613,24 +409,16 @@ wet cloth - restored
 			Tones firstTone = primaryTone;
 			Tones secondTone = secondaryTone;
 
-			updatePrimaryEpidermis(primaryColor);
+			_primaryEpidermis.ChangeTone(primaryColor);
 			if (toneType.hasUnderBody && secondaryTone == Tones.NOT_APPLICABLE)
 			{
-				updateSecondaryEpidermis(primaryColor);
+				_secondaryEpidermis.ChangeTone(primaryColor);
 			}
 			else
 			{
 				_secondaryEpidermis.Reset();
 			}
 			type = toneType;
-			if (previouslyUsedFur || primaryTone != firstTone || secondaryTone != secondTone)
-			{
-				ToneChanged();
-			}
-			if (previouslyUsedFur || primaryFur != firstFur || secondaryFur != secondFur)
-			{
-				FurChanged();
-			}
 			return true;
 		}
 		public bool UpdateBody(ToneBodyType toneType)
@@ -652,17 +440,9 @@ wet cloth - restored
 			}
 			else if (secondaryTone == Tones.NOT_APPLICABLE)
 			{
-				updateSecondaryEpidermis(primaryTone);
+				_secondaryEpidermis.ChangeTone(primaryTone);
 			}
 			type = toneType;
-			if (previouslyUsedFur || primaryTone != firstTone || secondaryTone != secondTone)
-			{
-				ToneChanged();
-			}
-			if (previouslyUsedFur || primaryFur != firstFur || secondaryFur != secondFur)
-			{
-				FurChanged();
-			}
 			return true;
 		}
 		#endregion
@@ -681,42 +461,33 @@ wet cloth - restored
 		{
 			return true;
 		}
-
-		private void UpdateEpidermis(Epidermis epidermis, FurBasedEpidermisType furType, FurColor fur)
-		{
-
-		}
-
-		private void UpdateEpidermis(Epidermis epidermis, ToneBasedEpidermisType toneType, Tones tone)
-		{
-
-		}
-
-		private void ChangeEpidermis(Epidermis epidermis, Tones tone)
-		{
-			epidermis.ChangeTone(tone, true);
-		}
-
-		private void ChangeEpidermis(Epidermis epidermis, FurColor fur)
-		{
-			epidermis.ChangeFur(fur, true);
-		}
-
 		#endregion
 		#region Serialization
-		protected Body(SerializationInfo info, StreamingContext context)
+
+		internal override Type[] saveVersions => new Type[] { typeof(BodySurrogateVersion1) };
+		internal override Type currentSaveVersion => typeof(BodySurrogateVersion1);
+		internal override BodyPartSurrogate<Body, BodyType> ToCurrentSave()
 		{
-			type = BodyType.Deserialize(info.GetInt32(nameof(type)));
-			_primaryEpidermis = (Epidermis)info.GetValue(nameof(_primaryEpidermis), typeof(Epidermis));
-			_secondaryEpidermis = (Epidermis)info.GetValue(nameof(_secondaryEpidermis), typeof(Epidermis));
+			return new BodySurrogateVersion1()
+			{
+				bodyType = index,
+				primaryEpidermis = _primaryEpidermis,
+				secondaryEpidermis = _secondaryEpidermis,
+				piercingsUnlocked = piercingLookup.Values.ToArray()
+			};
 		}
 
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		internal Body(BodySurrogateVersion1 surrogate)
 		{
-			info.AddValue(nameof(type), type.index);
-			info.AddValue(nameof(_primaryEpidermis), _primaryEpidermis, typeof(Epidermis));
-			info.AddValue(nameof(_secondaryEpidermis), _secondaryEpidermis, typeof(Epidermis));
+			_primaryEpidermis = surrogate.primaryEpidermis;
+			_secondaryEpidermis = surrogate.secondaryEpidermis;
+			type = BodyType.Deserialize(surrogate.bodyType);
+			piercingLookup = new Dictionary<NavelPiercings, bool>();
+#warning Add piercing jewelry when that's implemented
+			foreach (var val in Utils.AsIterable<NavelPiercings>())
+			{
+				piercingLookup[val] = surrogate.piercingsUnlocked.Length > (int)val ? surrogate.piercingsUnlocked[(int)val] : false;
+			}
 		}
 		#endregion
 	}
@@ -729,19 +500,15 @@ wet cloth - restored
 
 		public readonly bool hasUnderBody;
 		public readonly SimpleDescriptor underBodyDescription;
-		public readonly EpidermisType epidermisType;
 		public override int index => _index;
 		private readonly int _index;
 
-		public virtual void UpdateEpidermisTypes(Epidermis primary, Epidermis secondary)
-		{
-			primary.UpdateEpidermis(epidermisType);
-			secondary.UpdateEpidermis(secondaryEpidermisType);
-		}
+		internal abstract void ValidateDataPostInit(Epidermis primary, Epidermis secondary);
 
+		public readonly EpidermisType epidermisType;
 		public virtual EpidermisType secondaryEpidermisType => epidermisType;
 
-		protected BodyType(EpidermisType type, SimpleDescriptor underbodyDescript,
+		private protected BodyType(EpidermisType type, SimpleDescriptor underbodyDescript,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
 			ChangeType<Body> transform, RestoreType<Body> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
@@ -753,7 +520,7 @@ wet cloth - restored
 			bodyTypes[_index] = this;
 		}
 
-		protected BodyType(EpidermisType type,
+		private protected BodyType(EpidermisType type,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
 			ChangeType<Body> transform, RestoreType<Body> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
@@ -765,7 +532,7 @@ wet cloth - restored
 			bodyTypes[_index] = this;
 		}
 
-		public static BodyType Deserialize(int index)
+		internal static BodyType Deserialize(int index)
 		{
 			if (index < 0 || index >= bodyTypes.Count)
 			{
@@ -827,6 +594,26 @@ wet cloth - restored
 		{
 			defaultFurColor = new FurColor(defFur);
 		}
+
+		internal override void ValidateDataPostInit(Epidermis primary, Epidermis secondary)
+		{
+			if (primary.fur.isNoFur())
+			{
+				primary.ChangeFur(defaultFurColor);
+			}
+			if (primary.type != epidermisType)
+			{
+				primary.UpdateEpidermis(epidermisType);
+			}
+			if (hasUnderBody && secondary.fur.isNoFur())
+			{
+				secondary.ChangeFur(defaultFurColor);
+			}
+			if (hasUnderBody && secondary.type != secondaryEpidermisType)
+			{
+				secondary.UpdateEpidermis(secondaryEpidermisType);
+			}
+		}
 	}
 
 	public class ToneBodyType : BodyType
@@ -845,6 +632,26 @@ wet cloth - restored
 		{
 			defaultTone = defTone;
 		}
+
+		internal override void ValidateDataPostInit(Epidermis primary, Epidermis secondary)
+		{
+			if (primary.tone == Tones.NOT_APPLICABLE)
+			{
+				primary.ChangeTone(defaultTone);
+			}
+			if (primary.type != epidermisType)
+			{
+				primary.UpdateEpidermis(epidermisType);
+			}
+			if (hasUnderBody && secondary.tone == Tones.NOT_APPLICABLE)
+			{
+				secondary.ChangeTone(defaultTone);
+			}
+			if (hasUnderBody && secondary.type != secondaryEpidermisType)
+			{
+				secondary.UpdateEpidermis(secondaryEpidermisType);
+			}
+		}
 	}
 
 	public class CockatriceBodyType : BodyType
@@ -858,5 +665,45 @@ wet cloth - restored
 		}
 
 		public override EpidermisType secondaryEpidermisType => EpidermisType.SCALES;
+
+		internal override void ValidateDataPostInit(Epidermis primary, Epidermis secondary)
+		{
+			if (primary.fur.isNoFur())
+			{
+				primary.ChangeFur(defaultFur);
+			}
+			if (primary.type != epidermisType)
+			{
+				primary.UpdateEpidermis(epidermisType);
+			}
+			if (secondary.tone == Tones.NOT_APPLICABLE)
+			{
+				secondary.ChangeTone(defaultScales);
+			}
+			if (secondary.type != secondaryEpidermisType)
+			{
+				secondary.UpdateEpidermis(secondaryEpidermisType);
+			}
+		}
+	}
+
+	[DataContract]
+	[KnownType(typeof(Epidermis))]
+	[KnownType(typeof(bool[]))]
+	public sealed class BodySurrogateVersion1 : BodyPartSurrogate<Body, BodyType>
+	{
+		[DataMember]
+		public int bodyType;
+		[DataMember]
+		public Epidermis primaryEpidermis;
+		[DataMember]
+		public Epidermis secondaryEpidermis;
+		[DataMember]
+		public bool[] piercingsUnlocked;
+
+		internal override Body ToBodyPart()
+		{
+			return new Body(this);
+		}
 	}
 }

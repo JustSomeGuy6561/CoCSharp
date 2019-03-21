@@ -4,6 +4,7 @@
 //1/1/2019, 9:09 AM
 
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,13 @@ namespace CoC.Backend.BodyParts
 		where ThisClass : PiercableBodyPart<ThisClass, TypeClass, PiercingEnum>
 		where TypeClass : PiercableBodyPartBehavior<TypeClass, ThisClass, PiercingEnum> where PiercingEnum : Enum
 	{
-		protected PiercingFlags piercingFlags => Program.sessionSettings.piercingFlags;
+		protected bool piercingFetish => BackendSessionData.data.piercingFetish;
 
 		public int maxPiercingCount => Enum.GetNames(typeof(PiercingEnum)).Length;
 		//functional programming ftw!
 		//counts the number of trues, and returns it. uses a "fold" function. fold iterates over a list, doing an action for each element, then returning the result
 		public int currentPiercingCount => piercingLookup.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
-		public int currentJewelryCount => jewelryLookup.Values.Count;
+		public int currentJewelryCount => jewelryLookup.Values.Aggregate(0, (x, y) => { if (y != null) x++; return x; });
 
 		public bool EquipPiercingJewelry(PiercingEnum piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
@@ -124,10 +125,6 @@ namespace CoC.Backend.BodyParts
 
 		public bool canPierce(PiercingEnum piercingLocation)
 		{
-			if (!piercingFlags.enabled)
-			{
-				return false;
-			}
 			return PiercingLocationUnlocked(piercingLocation);
 		}
 

@@ -3,6 +3,10 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
+using CoC.Backend.Save;
+using System;
+using System.Runtime.Serialization;
+
 namespace CoC.Backend.BodyParts
 {
 	/*
@@ -14,22 +18,25 @@ namespace CoC.Backend.BodyParts
 	 */
 
 	//super confusing generics ftw! Basically, you have to define what it is, and what it's behavior is.
-	//TL;DR: [BodyPart]<[Body Part], [BodyPartType]> 
+	//TL;DR: BodyPart<[BodyPart], [BodyPartType]> 
 	//example: 
 	//internal class Arms : BodyPartBase<Arms, ArmType>
 	//internal class ArmType : BodyPartBehavior<ArmType, Arms>
 
-	public abstract class BodyPartBase<ThisClass,BehaviorClass> where ThisClass : BodyPartBase<ThisClass, BehaviorClass> where BehaviorClass : BodyPartBehavior<BehaviorClass, ThisClass>
+	[DataContract]
+	public abstract class BodyPartBase<ThisClass, BehaviorClass> : ISaveableBase where ThisClass : BodyPartBase<ThisClass, BehaviorClass> where BehaviorClass : BodyPartBehavior<BehaviorClass, ThisClass>
 	{
+		//standard implementations.
+		public abstract BehaviorClass type { get; protected set; }
 		internal abstract bool Restore();
 
 		public abstract bool isDefault { get; }
 
-		public abstract BehaviorClass type { get; protected set; }
 
-		//there may be cases where you need to know the length of the hair or something - something not stored 
-		//not stored in the immutable part. you can override these to do so.
+		//These probably will never be overridden, but w/e.
 		public virtual int index => type.index;
+
+		//Text output.
 		public virtual SimpleDescriptor shortDescription => type.shortDescription;
 		public virtual SimpleDescriptor fullDescription => () => type.fullDescription((ThisClass)this);
 
@@ -37,5 +44,17 @@ namespace CoC.Backend.BodyParts
 		public virtual ChangeStr<BehaviorClass> transformInto => (newBehavior, player) => newBehavior.transformFrom((ThisClass)this, player);
 		public virtual RestoreStr restoreString => (player) => type.restoreString((ThisClass)this, player);
 
+		//Serialization
+		Type ISaveableBase.currentSaveType => currentSaveVersion;
+		Type[] ISaveableBase.saveVersionTypes => saveVersions;
+		object ISaveableBase.ToCurrentSaveVersion()
+		{
+			return ToCurrentSave();
+		}
+
+		internal abstract Type currentSaveVersion { get; }
+		internal abstract Type[] saveVersions { get; }
+
+		internal abstract BodyPartSurrogate<ThisClass, BehaviorClass> ToCurrentSave();
 	}
 }

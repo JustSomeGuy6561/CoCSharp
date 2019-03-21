@@ -170,7 +170,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (oldArms.type.isPredatorArms())
 			{
-				return "\n\nYour " + oldArms.hands.shortDescription() + " change a little to become more dragon-like." +
+				return "\n\nYour " + oldArms.hands.description() + " change a little to become more dragon-like." +
 					" <b>Your arms and claws are like those of a dragon.</b>";
 			}
 			return "\n\nYou scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. " +
@@ -204,7 +204,7 @@ namespace CoC.Backend.BodyParts
 			}
 			if (!oldArms.hands.type.isClaws)
 			{
-				sb.Append("\n\nYour " + oldArms.hands.shortDescription() + " suddenly ache in pain, and all you can do is curl " +
+				sb.Append("\n\nYour " + oldArms.hands.description() + " suddenly ache in pain, and all you can do is curl " +
 					"them up to you. Against your body, you feel them form into three long claws, with a smaller one replacing your thumb but " +
 					"just as versatile. <b>You have imp claws!</b>");
 			}
@@ -236,7 +236,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (oldArms.type.isPredatorArms())
 			{
-				return "\n\nYour " + oldArms.hands.shortDescription() + " change a little to become more lizard-like." +
+				return "\n\nYour " + oldArms.hands.description() + " change a little to become more lizard-like." +
 					" <b>You now have lizard-like claws.</b>";
 			}
 			else return "\n\nYou scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. After a longer"
@@ -279,7 +279,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string WolfFullDesc(Arms arm)
 		{
-			return "wolf-like arms and " + arm.hands.shortDescription();
+			return "wolf-like arms and " + arm.hands.description();
 		}
 		private static string WolfPlayerStr(Arms arm, Player player)
 		{
@@ -292,7 +292,7 @@ namespace CoC.Backend.BodyParts
 		{
 			bool armChanged = false;
 			StringBuilder sb = new StringBuilder("Your arms feel stiff, and despite any attempt to move them, they just sit there, limply." +
-				" You soon realize the bones in your " + oldArms.hands.shortDescription() + " are changing, as well as the muscles on your arms.");
+				" You soon realize the bones in your " + oldArms.hands.description() + " are changing, as well as the muscles on your arms.");
 			if (oldArms.type == ArmType.DOG)
 			{
 				sb.Append("Strangely, your arms don't seem to change much, though they feel much stronger than before. Stretching a little, you realize your paws are also much less." +
@@ -341,7 +341,7 @@ namespace CoC.Backend.BodyParts
 			return "Your arms are covered in " + arm.epidermis.FullDescription()
 		  + " from the shoulder down to the elbow where they stop in a fluffy cuff. A handful of long feathers grow from your"
 		  + " elbow in the form of vestigial wings, and while they may not let you fly, they certainly help you jump. Your lower"
-		  + " arm is coated in " + arm.secondaryEpidermis.FullDescription() + " and your fingertips terminate in " + arm.hands.shortDescription() + ".";
+		  + " arm is coated in " + arm.secondaryEpidermis.FullDescription() + " and your fingertips terminate in " + arm.hands.description() + ".";
 		}
 		private static string CockatriceTransformStr(Arms oldArms, Player player)
 		{
@@ -369,11 +369,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RedPandaPlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermis.furTexture.ToString() +", " + arm.epidermis.justColor() + " fluff cover your arms. Your paws have " + arm.hands.fullDescription() + ".";
+			return arm.epidermis.furTexture.ToString() +", " + arm.epidermis.justColor() + " fluff cover your arms. Your paws have " + arm.hands.description() + ".";
 		}
 		private static string RedPandaTransformStr(Arms oldArms, Player player)
 		{
-
+			return 
 		}
 		private static string RedPandaRestoreStr(Arms currentArms, Player player)
 		{
@@ -438,7 +438,7 @@ namespace CoC.Backend.BodyParts
 		{
 			bool armChanged = false;
 			StringBuilder sb = new StringBuilder("Your arms feel stiff, and despite any attempt to move them, they just sit there, limply." +
-				" You soon realize the bones in your " + oldArms.hands.shortDescription() + " are changing, as well as the muscles on your arms.");
+				" You soon realize the bones in your " + oldArms.hands.description() + " are changing, as well as the muscles on your arms.");
 			if (oldArms.type == ArmType.WOLF)
 			{
 				sb.Append("Strangely, your arms don't seem to change much, though they feel a bit weaker than before. Stretching a little, you realize your paws are also much more" +
@@ -508,7 +508,7 @@ namespace CoC.Backend.BodyParts
 
 		private static string PredatorRestoreStr(Arms arms, Player player)
 		{
-			return "\n\nYou feel a sudden tingle in your " + arms.hands.shortDescription() + " and then you realize,"
+			return "\n\nYou feel a sudden tingle in your " + arms.hands.description() + " and then you realize,"
 				+ " that they have become normal human fingernails again. Your arms quickly follow suit. "
 				+ "<b>You have normal human arms again.</b>";
 		}

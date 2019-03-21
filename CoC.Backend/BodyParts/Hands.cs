@@ -11,8 +11,9 @@ namespace CoC.Backend.BodyParts
 	{
 		public override HandType type { get; protected set; }
 
-		protected Hands(HandType type, Tones currentTone) : base(type)
+		protected Hands(HandType handType, Tones currentTone)
 		{
+			type = handType;
 			this.clawTone = currentTone;
 		}
 
@@ -80,7 +81,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		protected HandType(HandStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<Hands> fullDesc) : base(shortDesc)
+		private protected HandType(HandStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<Hands> fullDesc) : base(shortDesc)
 		{
 			_index = indexMaker++;
 			fullDescription = fullDesc;

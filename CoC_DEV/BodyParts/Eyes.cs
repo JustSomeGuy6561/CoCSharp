@@ -7,6 +7,7 @@ using CoC.Tools;
 using static CoC.UI.TextOutput;
 namespace CoC.BodyParts
 {
+
 	public enum EyeColor
 	{
 		AMBER, BLUE, BROWN, GRAY, GREEN, HAZEL, RED, VIOLET,
@@ -17,10 +18,13 @@ namespace CoC.BodyParts
 	{
 		protected EyeType _eyeType = EyeType.HUMAN;
 
-		EyeColor leftIrisColor;
+		public EyeColor leftIrisColor;
 		//People really like heterochromia in PCs.
-		EyeColor rightIrisColor;
+		public EyeColor rightIrisColor;
 
+		public bool isHeterochromia => leftIrisColor != rightIrisColor;
+		public int eyeCount => type.eyeCount;
+		public bool isReptilian => type.isReptilianEyes;
 		public override EyeType type { get; protected set; }
 
 		protected Eyes(EyeColor color, EyeType eyetype)
@@ -81,31 +85,14 @@ namespace CoC.BodyParts
 			return true;
 		}
 
-		public bool UpdateEyeTypeAndDisplayMessage(EyeType newType, Player player)
+		public string EyeColorChangeFlavorText(EyeColor newColor)
 		{
-			if (type == newType)
-			{
-				return false;
-			}
-			OutputText(transformInto(newType, player));
-			type = newType;
-			return true;
+			return type.EyeChangeSpecial(leftIrisColor, newColor, rightIrisColor, newColor);
 		}
 
-		public bool UpdateEyeColorsAndDisplayMessage(EyeColor leftEye, EyeColor rightEye)
+		public string EyeColorChangeFlavorText(EyeColor leftEye, EyeColor rightEye)
 		{
-			if (leftIrisColor == leftEye && rightIrisColor == rightEye)
-			{
-				return false;
-			}
-			OutputText(ChangeEyeColorStr(this, leftEye, rightEye));
-			UpdateEyeColors(leftEye, rightEye);
-			return true;
-		}
-
-		public string ChangeEyeColorStr(Eyes currentEyes, EyeColor leftEye, EyeColor rightEye)
-		{
-			return EyeChangeStr(currentEyes, leftEye, rightEye);
+			return type.EyeChangeSpecial(leftIrisColor, leftEye, rightIrisColor, rightEye);
 		}
 
 		public void Reset()
@@ -159,10 +146,16 @@ namespace CoC.BodyParts
 		private static int indexMaker = 0;
 		private readonly int _index;
 
+		public bool isReptilianEyes => this == LIZARD || this == BASILISK || this == DRAGON;
 
-		protected EyeType(SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc, ChangeType<Eyes> transform,
+		internal delegate string EyeChangeDelegate(EyeColor oldLeft, EyeColor newLeft, EyeColor oldRight, EyeColor newRight);
+
+		public readonly EyeChangeDelegate EyeChangeSpecial;
+
+		protected EyeType(EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc, ChangeType<Eyes> transform,
 			RestoreType<Eyes> restore, int numEyes = 2, SCLERA_COLOR color = SCLERA_COLOR.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
+			EyeChangeSpecial = eyeChange;
 			eyeCount = numEyes;
 			_index = indexMaker++;
 			scleraColor = color;
@@ -185,15 +178,15 @@ namespace CoC.BodyParts
 			return retVal;
 		}
 		*/
-		public static EyeType HUMAN = new EyeType(HumanShortStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: SCLERA_COLOR.WHITE);
-		public static EyeType SPIDER = new EyeType(SpiderShortStr, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
-		public static EyeType SAND_TRAP = new EyeType(SandTrapShortStr, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: SCLERA_COLOR.BLACK);
-		public static EyeType LIZARD = new EyeType(LizardShortStr, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static EyeType DRAGON = new EyeType(DragonShortStr, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static EyeType BASILISK = new EyeType(BasiliskShortStr, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
-		public static EyeType WOLF = new EyeType(WolfShortStr, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static EyeType COCKATRICE = new EyeType(CockatriceShortStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
-		public static EyeType CAT = new EyeType(CatShortStr, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static EyeType HUMAN = new EyeType(HumanEyeChange, HumanShortStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: SCLERA_COLOR.WHITE);
+		public static EyeType SPIDER = new EyeType(SpiderEyeChange, SpiderShortStr, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
+		public static EyeType SAND_TRAP = new EyeType(SandTrapEyeChange, SandTrapShortStr, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: SCLERA_COLOR.BLACK);
+		public static EyeType LIZARD = new EyeType(LizardEyeChange, LizardShortStr, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static EyeType DRAGON = new EyeType(DragonEyeChange, DragonShortStr, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static EyeType BASILISK = new EyeType(BasiliskEyeChange, BasiliskShortStr, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
+		public static EyeType WOLF = new EyeType(WolfEyeChange, WolfShortStr, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static EyeType COCKATRICE = new EyeType(CockatriceEyeChange, CockatriceShortStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static EyeType CAT = new EyeType(CatEyeChange, CatShortStr, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 
 		public override int index => _index;
 	}

@@ -30,12 +30,7 @@ namespace CoC.Backend.BodyParts
 		public abstract BehaviorClass type { get; protected set; }
 		public int index => type.index;
 
-		public virtual SimpleDescriptor shortDescription => type.shortDescription;
-
-		protected SimpleBodyPart(BehaviorClass value)
-		{
-			type = value;
-		}
+		public virtual SimpleDescriptor description => type.desrciption;
 
 	}
 
@@ -44,10 +39,10 @@ namespace CoC.Backend.BodyParts
 	{
 		public abstract int index { get; }
 
-		protected SimpleBodyPartType(SimpleDescriptor shortDesc)
+		private protected SimpleBodyPartType(SimpleDescriptor shortDesc)
 		{
-			shortDescription = shortDesc;
+			desrciption = shortDesc;
 		}
-		public readonly SimpleDescriptor shortDescription;
+		public readonly SimpleDescriptor desrciption;
 	}
 }

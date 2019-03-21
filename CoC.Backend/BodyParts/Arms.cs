@@ -4,8 +4,8 @@
 //12/26/2018, 7:58 PM
 
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Creatures;
 using CoC.Backend.Races;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -22,19 +22,19 @@ namespace CoC.Backend.BodyParts
 	 * using a great deal of magic/bullshit, but it's frankly slow, and manually implementing it isn't terribly hard.
 	 */
 	[DataContract]
-	public class Arms : BodyPartBase<Arms, ArmType>, ISerializable
+	public class Arms : BodyPartBase<Arms, ArmType>
 	{
 		public readonly Hands hands;
 
-		private readonly Epidermis _epidermis = Epidermis.GenerateDefault(EpidermisType.SKIN);
-		private readonly Epidermis _secondaryEpidermis = Epidermis.GenerateDefault(EpidermisType.SKIN);
+		private readonly Epidermis _epidermis = Epidermis.GenerateDefaultOfType(EpidermisType.SKIN);
+		private readonly Epidermis _secondaryEpidermis = Epidermis.GenerateDefaultOfType(EpidermisType.SKIN);
 
 		private Tones restoreTone;
 
 		public EpidermalData epidermis => _epidermis.GetEpidermalData();
 		public EpidermalData secondaryEpidermis => _secondaryEpidermis.GetEpidermalData();
 
-		protected Arms(ArmType type)
+		private protected Arms(ArmType type)
 		{
 			_type = type;
 			hands = Hands.Generate(type.handType);
@@ -95,17 +95,21 @@ namespace CoC.Backend.BodyParts
 			return type.UpdateEpidermis(_epidermis, _secondaryEpidermis, primary, secondary, hairColor, bodyType);
 		}
 
-		protected Arms(SerializationInfo info, StreamingContext context)
+		#region Serialization
+		internal override Type currentSaveVersion => typeof(ArmSurrogateVersion1);
+
+		internal override Type[] saveVersions => new Type[] { typeof(ArmSurrogateVersion1) };
+
+		internal override BodyPartSurrogate<Arms, ArmType> ToCurrentSave()
 		{
-			_type = ArmType.Deserialize(info.GetInt32(nameof(type)));
-			hands = Hands.Generate(_type.handType);
+			return new ArmSurrogateVersion1()
+			{
+				armType = index
+			};
 		}
 
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue(nameof(type), _type.index);
-		}
+		internal Arms(ArmSurrogateVersion1 surrogate) : this(ArmType.Deserialize(surrogate.armType)) { }
+		#endregion
 	}
 
 	public abstract partial class ArmType : BodyPartBehavior<ArmType, Arms>
@@ -117,12 +121,12 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermisType epidermisType;
 
 		//update the original and secondary original based on the current data. 
-		public abstract bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType);
+		internal abstract bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType);
 
 		public override int index => _index;
 		private readonly int _index;
 
-		protected ArmType(HandType hand, EpidermisType epidermis,
+		private protected ArmType(HandType hand, EpidermisType epidermis,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, TypeAndPlayerDelegate<Arms> playerDesc,
 			ChangeType<Arms> transform, RestoreType<Arms> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
@@ -131,11 +135,11 @@ namespace CoC.Backend.BodyParts
 			epidermisType = epidermis;
 			arms[_index] = this;
 		}
-		public static ArmType Deserialize(int index)
+		internal static ArmType Deserialize(int index)
 		{
 			if (index < 0 || index >= arms.Count)
 			{
-				throw new System.ArgumentException("index for arm type desrialize out of range");
+				throw new System.ArgumentException("index for arm type deserialize out of range");
 			}
 			else
 			{
@@ -171,7 +175,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly FurArms FOX = new FurArms(HandType.FOX, EpidermisType.FUR, Species.FOX.defaultFur, FurTexture.NONDESCRIPT, true, FoxDescStr, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
 		//Add new Arm Types Here.
 
-		private class FerretArms : FurArms
+		private sealed class FerretArms : FurArms
 		{
 			private readonly FurColor defaultSecondaryColor = Species.FERRET.defaultUnderFur;
 			public FerretArms() : base(HandType.FERRET, EpidermisType.FUR, Species.FERRET.defaultFur, FurTexture.NONDESCRIPT, true, FerretDescStr,
@@ -179,7 +183,7 @@ namespace CoC.Backend.BodyParts
 			{ }
 
 			//ferret arms are weird - they change part-way down, so the upper half is actually the primary color if applicable. the second half is the underbody color or the default.
-			public override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
+			internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
 			{
 				bool retVal = false;
 				FurColor color = this.defaultColor;
@@ -208,13 +212,13 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//upper half of arm - primary color, as fur. lower half: scales, uses secondary tone. 
-		private class CockatriceArms : FurArms
+		private sealed class CockatriceArms : FurArms
 		{
 			public CockatriceArms() : base(HandType.COCKATRICE, EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, FurTexture.NONDESCRIPT, true,
 				CockatriceDescStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 			{ }
 
-			public override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
+			internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
 			{
 				bool retVal = false;
 				FurColor color = this.defaultColor;
@@ -261,7 +265,7 @@ namespace CoC.Backend.BodyParts
 			mutable = canChange;
 		}
 
-		public override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
+		internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
 		{
 			FurColor color = this.defaultColor;
 
@@ -302,13 +306,24 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		public override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
+		internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
 		{
 			Tones color = mutable ? currPrimary.tone : defaultTone;
 
 			bool retVal = original.UpdateOrChange((ToneBasedEpidermisType)epidermisType, color, true);
 			secondaryOriginal.Reset();
 			return retVal;
+		}
+	}
+
+	[DataContract]
+	public sealed class ArmSurrogateVersion1 : BodyPartSurrogate<Arms, ArmType>
+	{
+		[DataMember]
+		public int armType;
+		internal override Arms ToBodyPart()
+		{
+			return new Arms(this);
 		}
 	}
 }

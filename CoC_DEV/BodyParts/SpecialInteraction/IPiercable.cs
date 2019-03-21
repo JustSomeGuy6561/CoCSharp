@@ -28,7 +28,7 @@ namespace  CoC.BodyParts.SpecialInteraction
 		//provides an option to disable certain piercings unless certain conditions are met. 
 		bool canPierce(PiercingLocationEnum piercingLocation);
 
-		bool IsPierced(PiercingLocationEnum piercingLocation);
+		bool IsPiercedAt(PiercingLocationEnum piercingLocation);
 		bool HasJewelry(PiercingLocationEnum piercingLocation);
 	}
 }

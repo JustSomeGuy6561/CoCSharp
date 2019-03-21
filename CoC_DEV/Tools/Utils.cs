@@ -56,18 +56,6 @@ namespace CoC.Tools
 			return Convert.ToBoolean(rnd.Next(0, 2));
 		}
 
-		public static void RandBytes(ref byte[] data)
-		{
-			rnd.NextBytes(data);
-		}
-
-		public static byte RandByte()
-		{
-			byte[] retVal = new byte[1];
-			rnd.NextBytes(retVal);
-			return retVal[0];
-		}
-
 		public static void Clamp<T>(ref T val, T min, T max) where T : IComparable<T>
 		{
 			if (val.CompareTo(min) < 0) val = min;

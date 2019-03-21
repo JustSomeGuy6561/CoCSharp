@@ -4,6 +4,9 @@
 //12/26/2018, 7:58 PM
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Strings;
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace CoC.Backend.BodyParts
 {
@@ -26,7 +29,8 @@ namespace CoC.Backend.BodyParts
 	public enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED }
 	public enum FurTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, MANGEY }
 
-	public partial class Epidermis : SimpleBodyPart<EpidermisType>
+	[DataContract]
+	public partial class Epidermis : SimpleSaveableBodyPart<Epidermis, EpidermisType>
 	{
 		public FurColor fur { get; protected set; }
 		public Tones tone { get; protected set; }
@@ -39,6 +43,14 @@ namespace CoC.Backend.BodyParts
 
 		public override EpidermisType type { get; protected set; }
 
+
+		private protected Epidermis()
+		{
+			this.type = EpidermisType.EMPTY;
+			fur = new FurColor();
+			tone = Tones.NOT_APPLICABLE;
+		}
+		#region Generate
 		public EpidermalData GetEpidermalData()
 		{
 			if (type.usesFur)
@@ -49,23 +61,21 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-
-		protected Epidermis(EpidermisType type) : base(type)
+		public static Epidermis GenerateEmpty()
 		{
-			fur = new FurColor();
-			tone = Tones.NOT_APPLICABLE;
+			return new Epidermis();
 		}
 
-		public static Epidermis GenerateDefault(EpidermisType epidermisType)
+		public static Epidermis GenerateDefaultOfType(EpidermisType epidermisType)
 		{
-			Epidermis retVal = new Epidermis(epidermisType);
-			if (epidermisType is ToneBasedEpidermisType)
+			Epidermis retVal = new Epidermis();
+			if (epidermisType is ToneBasedEpidermisType toneType)
 			{
-				retVal.tone = ((ToneBasedEpidermisType)epidermisType).defaultTone;
+				retVal.UpdateEpidermis(toneType, toneType.defaultTone);
 			}
-			else if (epidermisType is FurBasedEpidermisType)
+			else if (epidermisType is FurBasedEpidermisType furType)
 			{
-				retVal.fur.UpdateFurColor(((FurBasedEpidermisType)epidermisType).defaultFur);
+				retVal.UpdateEpidermis(furType, furType.defaultFur);
 			}
 			return retVal;
 		}
@@ -73,22 +83,24 @@ namespace CoC.Backend.BodyParts
 		//provide with initial values. these should not be null/empty, as they are the absolute fallbacks.
 		public static Epidermis Generate(ToneBasedEpidermisType toneType, Tones initialTone, SkinTexture texture = SkinTexture.NONDESCRIPT)
 		{
-			return new Epidermis(toneType)
+			return new Epidermis()
 			{
+				type = toneType,
 				tone = initialTone,
 				skinTexture = texture
 			};
 		}
-		public static Epidermis Generate(FurBasedEpidermisType type, FurColor furColor, FurTexture texture = FurTexture.NONDESCRIPT)
+		public static Epidermis Generate(FurBasedEpidermisType furType, FurColor furColor, FurTexture texture = FurTexture.NONDESCRIPT)
 		{
-			Epidermis retVal = new Epidermis(type)
+			Epidermis retVal = new Epidermis()
 			{
+				type = furType,
 				furTexture = texture
 			};
 			retVal.fur.UpdateFurColor(furColor);
 			return retVal;
 		}
-
+		#endregion
 		public void Reset()
 		{
 			type = EpidermisType.EMPTY;
@@ -97,7 +109,7 @@ namespace CoC.Backend.BodyParts
 			furTexture = FurTexture.NONDESCRIPT;
 			skinTexture = SkinTexture.NONDESCRIPT;
 		}
-
+		#region Updates
 		public bool UpdateEpidermis(EpidermisType epidermisType, bool resetOther = false)
 		{
 			if (type == epidermisType)
@@ -186,7 +198,8 @@ namespace CoC.Backend.BodyParts
 			skinTexture = texture;
 			return true;
 		}
-
+		#endregion Updates
+		#region Change
 		public bool ChangeTone(Tones newTone, bool resetFur = false)
 		{
 			if (resetFur)
@@ -214,7 +227,8 @@ namespace CoC.Backend.BodyParts
 			}
 			return false;
 		}
-
+#endregion
+		#region Update Or Change
 		//Useful Helpers. Update if different, change if same. I'm not overly fond of the idea as the behavior is not identical in all instances, but
 		//considering how often the if/else check would be used this makes more sense. use these only if you are truly doing it - if you know the type is 
 		//correct, then just call change.
@@ -260,14 +274,41 @@ namespace CoC.Backend.BodyParts
 			}
 			else return ChangeFur(overrideColor, resetTone);
 		}
+		#endregion
+		#region Serialization
+		internal override Type currentSaveVersion => typeof(EpidermisSurrogateVersion1);
+
+		internal override Type[] saveVersions => new Type[] { typeof(EpidermisSurrogateVersion1) };
+
+		internal override SimpleSurrogate<Epidermis, EpidermisType> ToCurrentSave()
+		{
+			return new EpidermisSurrogateVersion1()
+			{
+				epidermisType = this.index,
+				furColor = this.fur,
+				tone = this.tone,
+				furTexture = (int)this.furTexture,
+				skinTexture = (int)this.skinTexture,
+			};
+		}
+
+		internal Epidermis(EpidermisSurrogateVersion1 surrogate)
+		{
+			type = EpidermisType.Deserialize(surrogate.epidermisType);
+			fur = surrogate.furColor;
+			furTexture = (FurTexture)surrogate.furTexture;
+			tone = surrogate.tone;
+			skinTexture = (SkinTexture)surrogate.skinTexture;
+		}
+		#endregion
 	}
 
 
 	//IMMUTABLE
-	public abstract partial class EpidermisType : SimpleBodyPartType
+	public abstract partial class EpidermisType : SimpleSaveableBehavior
 	{
 		private static int indexMaker = 0;
-
+		private static readonly List<EpidermisType> epidermi = new List<EpidermisType>();
 		public abstract bool usesTone { get; }
 		public virtual bool usesFur => !usesTone;
 
@@ -277,11 +318,33 @@ namespace CoC.Backend.BodyParts
 		public bool hairMutable => usesFur && updateable;
 		public bool toneMutable => usesTone && updateable;
 
-		protected EpidermisType(SimpleDescriptor desc, bool canChange) : base(desc)
+		private protected EpidermisType(SimpleDescriptor desc, bool canChange) : base(desc)
 		{
 			_index = indexMaker++;
+			epidermi[_index] = this;
 			updateable = canChange;
 		}
+
+		internal static EpidermisType Deserialize(int index)
+		{
+			if (index < 0 || index >= epidermi.Count)
+			{
+				throw new System.ArgumentException("index for arm type deserialize out of range");
+			}
+			else
+			{
+				EpidermisType epidermis = epidermi[index];
+				if (epidermis != null)
+				{
+					return epidermis;
+				}
+				else
+				{
+					throw new System.ArgumentException("index for arm type points to an object that does not exist. this may be due to obsolete code");
+				}
+			}
+		}
+
 		public override int index => _index;
 
 		public static readonly ToneBasedEpidermisType SKIN = new ToneBasedEpidermisType(SkinStr, true, Tones.LIGHT);
@@ -363,20 +426,20 @@ namespace CoC.Backend.BodyParts
 
 		public string shortDescription()
 		{
-			return epidermisType.shortDescription();
+			return epidermisType.desrciption();
 		}
 		public string FullDescription()
 		{
 			if (epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermisType.usesTone) return fullStr(skinTexture.AsString(), tone, epidermisType.shortDescription);
-			else return fullStr(furTexture.AsString(), fur, epidermisType.shortDescription);
+			else if (epidermisType.usesTone) return fullStr(skinTexture.AsString(), tone, epidermisType.desrciption);
+			else return fullStr(furTexture.AsString(), fur, epidermisType.desrciption);
 		}
 
 		public string descriptionWithColor()
 		{
 			if (epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermisType.usesTone) return ColoredStr(tone, epidermisType.shortDescription);
-			else return ColoredStr(fur, epidermisType.shortDescription);
+			else if (epidermisType.usesTone) return ColoredStr(tone, epidermisType.desrciption);
+			else return ColoredStr(fur, epidermisType.desrciption);
 		}
 
 		public string justTexture()
@@ -391,6 +454,27 @@ namespace CoC.Backend.BodyParts
 			if (epidermisType == EpidermisType.EMPTY) return "";
 			else if (epidermisType.usesTone) return tone.AsString();
 			else return fur.AsString();
+		}
+	}
+
+	[DataContract]
+	[KnownType(typeof(FurColor))]
+	[KnownType(typeof(Tones))]
+	public sealed class EpidermisSurrogateVersion1 : SimpleSurrogate<Epidermis, EpidermisType>
+	{
+		[DataMember]
+		public FurColor furColor;
+		[DataMember]
+		public Tones tone;
+		[DataMember]
+		public int epidermisType;
+		[DataMember]
+		public int furTexture;
+		[DataMember]
+		public int skinTexture;
+		internal override Epidermis ToBodyPart()
+		{
+			return new Epidermis(this);
 		}
 	}
 }

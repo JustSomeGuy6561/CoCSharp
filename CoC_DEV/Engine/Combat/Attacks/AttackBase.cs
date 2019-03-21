@@ -31,6 +31,11 @@ namespace CoC.Engine.Combat.Attacks
 
 			public override void UseAttack(Creature attacker, Creature Defender)
 			{ }
+
+			public bool CanUseAttack()
+			{
+				return false;
+			}
 		}
 	}
 

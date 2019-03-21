@@ -5,6 +5,8 @@ using System.Windows.Media;
 
 namespace CoCWinDesktop
 {
+
+
 	internal static class Settings
 	{
 		private static readonly string[] backgrounds = { Path.Combine("resources", "background1.jpg"), Path.Combine("resources", "background2.png"), Path.Combine("resources", "background3.png"), Path.Combine("resources", "background4.png"), null, Path.Combine("resources", "backgroundKaizo.png") };

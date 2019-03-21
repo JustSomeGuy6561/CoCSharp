@@ -2,25 +2,26 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:41 PM
-using  CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Engine;
-using CoC.Wearables.Piercings;
+using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-namespace  CoC.Backend.BodyParts
+namespace CoC.Backend.BodyParts
 {
-	public abstract class SimplePiercing<PiercingEnum> : IPiercable<PiercingEnum> where PiercingEnum : System.Enum
+	public abstract class SimplePiercing<ThisClass, PiercingEnum> : IPiercable<PiercingEnum>, ISaveableBase where PiercingEnum : Enum
+		where ThisClass : SimplePiercing<ThisClass, PiercingEnum>
 	{
-		protected PiercingFlags piercingFlags => Program.sessionSettings.piercingFlags;
+		protected bool piercingFetish => BackendSessionData.data.piercingFetish;
+		protected Dictionary<PiercingEnum, bool> piercingLookup;
+		protected Dictionary<PiercingEnum, PiercingJewelry> jewelryLookup;
 
 		public int maxPiercingCount => Enum.GetNames(typeof(PiercingEnum)).Length;
 		//functional programming ftw!
 		//counts the number of trues, and returns it. uses a "fold" function. fold iterates over a list, doing an action for each element, then returning the result
 		public int currentPiercingCount => piercingLookup.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
 		public int currentJewelryCount => jewelryLookup.Values.Count;
+
 
 		public bool EquipPiercingJewelry(PiercingEnum piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
@@ -124,14 +125,33 @@ namespace  CoC.Backend.BodyParts
 
 		public bool canPierce(PiercingEnum piercingLocation)
 		{
-			if (!piercingFlags.enabled)
-			{
-				return false;
-			}
 			return PiercingLocationUnlocked(piercingLocation);
 		}
 
-		protected Dictionary<PiercingEnum, bool> piercingLookup;
-		protected Dictionary<PiercingEnum, PiercingJewelry> jewelryLookup;
+		#region Serialization
+		Type ISaveableBase.currentSaveType => throw new NotImplementedException();
+
+		Type[] ISaveableBase.saveVersionTypes => throw new NotImplementedException();
+		object ISaveableBase.ToCurrentSaveVersion()
+		{
+			throw new NotImplementedException();
+		}
+
+		internal abstract Type[] currentSaves { get; }
+		internal abstract Type currentSaveVersion { get; }
+
+		internal abstract SimplePiercingSurrogate<ThisClass, PiercingEnum> ToCurrentSave();
+
+		#endregion
+	}
+	public abstract class SimplePiercingSurrogate<SaveClass, PiercingEnum> : ISurrogateBase where SaveClass : SimplePiercing<SaveClass, PiercingEnum> where PiercingEnum : Enum
+	{
+		private protected SimplePiercingSurrogate() { }
+
+		internal abstract SaveClass ToSimplePiercingPart();
+		object ISurrogateBase.ToSaveable()
+		{
+			return ToSimplePiercingPart();
+		}
 	}
 }

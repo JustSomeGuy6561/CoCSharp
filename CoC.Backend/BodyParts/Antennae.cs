@@ -5,22 +5,22 @@
 
 
 using CoC.Backend.Strings;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 [assembly: InternalsVisibleTo("CoCLibTest")]
 namespace CoC.Backend.BodyParts
 {
 	[DataContract]
-	public class Antennae : BodyPartBase<Antennae, AntennaeType>, ISerializable
+	public class Antennae : BodyPartBase<Antennae, AntennaeType>
 	{
 
 		public override AntennaeType type { get; protected set; }
 		public override bool isDefault => type == AntennaeType.NONE;
 
-		protected Antennae(AntennaeType antennaeType)
+		private protected Antennae(AntennaeType antennaeType)
 		{
 			type = antennaeType;
 		}
@@ -56,27 +56,21 @@ namespace CoC.Backend.BodyParts
 			return type == newType;
 		}
 
+
 		#region serialization
 
-		protected Antennae(SerializationInfo info, StreamingContext context)
+		internal override Type[] saveVersions => throw new NotImplementedException();
+		internal override Type currentSaveVersion => typeof(AntennaeSurrogateVersion1);
+
+		internal override BodyPartSurrogate<Antennae, AntennaeType> ToCurrentSave()
 		{
-			int index = 0;
-			foreach (SerializationEntry entry in info)
+			return new AntennaeSurrogateVersion1()
 			{
-				if (entry.Name == typeof(AntennaeType).Name)
-				{
-					index = (int)info.GetValue(typeof(AntennaeType).Name, typeof(int));
-				}
-			}
-			type = AntennaeType.Deserialize(index);
-
+				antennaeType = index
+			};
 		}
 
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue(typeof(AntennaeType).Name, type.index);
-		}
+		internal Antennae(AntennaeSurrogateVersion1 surrogate) : this(AntennaeType.Deserialize(surrogate.antennaeType)) { }
 		#endregion
 	}
 
@@ -85,7 +79,8 @@ namespace CoC.Backend.BodyParts
 		private static int indexMaker = 0;
 		private static List<AntennaeType> antennaes = new List<AntennaeType>();
 
-		protected AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,
+		//C# 7.2 magic. basically, prevents it from being messed with except internally.
+		private protected AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,
 			ChangeType<Antennae> transformMessage, RestoreType<Antennae> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
 		{
 			_index = indexMaker++;
@@ -128,6 +123,20 @@ namespace CoC.Backend.BodyParts
 
 		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceFullDesc,
 			(x, y) => CockatricePlayer(y), CockatriceTransform, CockatriceRestore);
+	}
+
+	[DataContract]
+	public sealed class AntennaeSurrogateVersion1 : BodyPartSurrogate<Antennae, AntennaeType>
+	{
+		[DataMember]
+		public int antennaeType;
+
+		public AntennaeSurrogateVersion1() : base() { }
+
+		internal override Antennae ToBodyPart()
+		{
+			return new Antennae(this);
+		}
 	}
 }
 

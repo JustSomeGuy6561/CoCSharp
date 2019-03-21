@@ -4,6 +4,7 @@
 //Author: JustSomeGuy
 //2/20/2019, 5:46 PM
 
+using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Tools;
 using CoC.Tools;
@@ -25,7 +26,7 @@ namespace CoC.Backend.Races
 		public HairFurColors defaultSpines = HairFurColors.GREEN;
 		public HairFurColors defaultPlume = HairFurColors.RED;
 		public Tones defaultTone => Tones.GREEN;
-		public EyeColor defaultEyeColor => EyeColor.BLUE;
+		public EyeColor defaultEyeColor => EyeColor.GRAY;
 		internal Basilisk() : base(BasiliskStr) { }
 	}
 
@@ -83,6 +84,8 @@ namespace CoC.Backend.Races
 			if (Utils.Rand(10) < 2) underbody = primary.primaryColor == HairFurColors.WHITE ? new FurColor(HairFurColors.BLACK) : new FurColor(HairFurColors.WHITE);
 			else underbody = new FurColor(primary);
 		}
+
+		public EyeColor defaultEyeColor => EyeColor.GREEN;
 
 		internal Cat() : base(CatStr) { }
 	}
@@ -183,7 +186,7 @@ namespace CoC.Backend.Races
 		public FurColor defaultPrimaryFeathers => new FurColor(HairFurColors.BLUE);
 		public Tones defaultScaleTone => Tones.BLUE;
 		public FurColor defaultSecondaryFeathers => new FurColor(HairFurColors.TURQUOISE);
-
+		public EyeColor defaultEyeColor => EyeColor.BLUE;
 		internal Cockatrice() : base(CockatriceStr) { }
 	}
 
@@ -229,6 +232,7 @@ namespace CoC.Backend.Races
 	{
 		//eye color: Orange
 		public Tones defaultTone => Tones.SILVER; // ember uses to silver/gold. So, that's what i'll use. screw it. 
+		public EyeColor defaultEyeColor => EyeColor.ORANGE;
 		internal Dragon() : base(DragonStr) { }
 	}
 
@@ -355,6 +359,7 @@ namespace CoC.Backend.Races
 		public Tones[] availableTones => new Tones[] { Tones.LIGHT, Tones.FAIR, Tones.OLIVE, Tones.DARK, Tones.EBONY, Tones.MAHOGANY, Tones.RUSSET };
 		public Tones defaultTone => Tones.LIGHT;
 		public HairFurColors defaultPlume => HairFurColors.RED;
+		public EyeColor defaultEyeColor => EyeColor.GRAY;
 		internal Human() : base(HumanStr) { }
 	}
 
@@ -450,6 +455,7 @@ namespace CoC.Backend.Races
 
 
 		public Tones defaultTone => Tones.DARK_RED;
+		public EyeColor defaultEyeColor => EyeColor.YELLOW;
 		internal Lizard() : base(LizardStr) { }
 	}
 
@@ -586,6 +592,7 @@ namespace CoC.Backend.Races
 
 	public class SandTrap : Species
 	{
+		public EyeColor defaultEyeColor => EyeColor.BLACK;
 		internal SandTrap() : base(SandTrapStr) { }
 	}
 
@@ -612,6 +619,7 @@ namespace CoC.Backend.Races
 	public class Spider : Species
 	{
 		public Tones defaultTone => Tones.BLACK;
+		public EyeColor defaultEyeColor => EyeColor.BLACK;
 		internal Spider() : base(SpiderStr) { }
 	}
 
@@ -622,6 +630,7 @@ namespace CoC.Backend.Races
 
 	public class Wolf : Species
 	{
+		public EyeColor defaultEyeColor => EyeColor.AMBER;
 		internal Wolf() : base(WolfStr) { }
 	}
 }

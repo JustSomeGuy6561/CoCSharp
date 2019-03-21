@@ -29,7 +29,6 @@ namespace  CoC.BodyParts
 		public bool hasButt => buttSize >= TIGHT;
 		public int index => buttSize;
 
-		public readonly Ass ass;
 		public int buttSize
 		{
 			get => _buttSize;
@@ -48,25 +47,10 @@ namespace  CoC.BodyParts
 			if (size < TIGHT)
 			{
 				size = BUTTLESS;
-				ass = Ass.GenerateAbnormalAssHole(AssLocation.NOT_APPLICABLE);
-			}
-			else
-			{
-				ass = Ass.GenerateNormalAssHole();
 			}
 			_buttSize = size;
 		}
-		protected Butt(AssLocation customAss, int size = TIGHT)
-		{
-			Utils.Clamp(ref size, BUTTLESS, INCONCEIVABLY_BIG);
-			if (size < TIGHT)
-			{
-				size = BUTTLESS;
-			}
-			_buttSize = size;
-			ass = Ass.GenerateAbnormalAssHole(customAss);
-
-		}
+		
 		public string shortDescription()
 		{
 			return AssButtHipStrings.hipDescription(buttSize);
