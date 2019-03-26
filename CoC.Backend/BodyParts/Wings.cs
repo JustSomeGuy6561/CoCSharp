@@ -55,12 +55,12 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == WingType.NONE;
 
-		public static Wings GenerateDefault()
+		internal static Wings GenerateDefault()
 		{
 			return new Wings();
 		}
 
-		public static Wings GenerateDefaultOfType(WingType wingType)
+		internal static Wings GenerateDefaultOfType(WingType wingType)
 		{
 			return new Wings()
 			{
@@ -68,7 +68,7 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		public static Wings GenerateDefaultWithSize(WingType wingType, bool large)
+		internal static Wings GenerateDefaultWithSize(WingType wingType, bool large)
 		{
 			Wings retVal = new Wings()
 			{
@@ -78,24 +78,24 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		public static Wings GenerateColored(TonableWings tonableWings, Tones tone)
+		internal static Wings GenerateColored(TonableWings tonableWings, Tones tone)
 		{
 			return new Wings(tonableWings, tone);
 		}
 
-		public static Wings GenerateColoredWithSize(TonableWings tonableWings, Tones tone, bool large)
+		internal static Wings GenerateColoredWithSize(TonableWings tonableWings, Tones tone, bool large)
 		{
 			Wings retVal = new Wings(tonableWings, tone);
 			retVal.isLarge = retVal.type.canChangeSize ? large : retVal.isLarge;
 			return retVal;
 		}
 
-		public static Wings GenerateColored(FeatheredWings featheredWings, HairFurColors feathers)
+		internal static Wings GenerateColored(FeatheredWings featheredWings, HairFurColors feathers)
 		{
 			return new Wings(featheredWings, feathers);
 		}
 
-		public static Wings GenerateColoredWithSize(FeatheredWings featheredWings, HairFurColors feathers, bool large)
+		internal static Wings GenerateColoredWithSize(FeatheredWings featheredWings, HairFurColors feathers, bool large)
 		{
 			Wings retVal = new Wings(featheredWings, feathers);
 			retVal.isLarge = retVal.type.canChangeSize ? large : retVal.isLarge;
@@ -135,11 +135,11 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			type = featheredWings;
-			if (featherColor != featherCol && !HairFurColors.IsNullOrEmpty(featherCol))
+			if (featherColor != featherCol && !HairFurColors.isNullOrEmpty(featherCol))
 			{
 				featherColor = featherCol;
 			}
-			else if (featherColor == HairFurColors.NO_HAIR_FUR)
+			else if (HairFurColors.isNullOrEmpty(featherColor))
 			{
 				featherColor = featheredWings.defaultHair;
 
@@ -235,7 +235,7 @@ namespace CoC.Backend.BodyParts
 
 		bool IDyeable.attemptToDye(HairFurColors dye)
 		{
-			if (allowsDye() && dye != HairFurColors.NO_HAIR_FUR && dye != featherColor)
+			if (allowsDye() && !HairFurColors.isNullOrEmpty(dye) && dye != featherColor)
 			{
 				featherColor = dye;
 				return true;
@@ -250,7 +250,7 @@ namespace CoC.Backend.BodyParts
 
 		bool IToneable.attemptToUseLotion(Tones tone)
 		{
-			if (canToneLotion() && tone != Tones.NOT_APPLICABLE && tone != this.wingTone)
+			if (canToneLotion() && !Tones.isNullOrEmpty(tone) && tone != this.wingTone)
 			{
 				wingTone = tone;
 			}
@@ -296,10 +296,10 @@ namespace CoC.Backend.BodyParts
 
 		public virtual Tones defaultTone => Tones.NOT_APPLICABLE;
 		public virtual HairFurColors defaultHair => HairFurColors.NO_HAIR_FUR;
-		public bool usesTone => defaultTone != Tones.NOT_APPLICABLE;
-		public bool usesHair => defaultHair != HairFurColors.NO_HAIR_FUR;
+		public bool usesTone => !Tones.isNullOrEmpty(defaultTone);
+		public bool usesHair => !HairFurColors.isNullOrEmpty(defaultHair);
 		public readonly bool canChangeSize;
-		public virtual bool canChangeColor => defaultTone != Tones.NOT_APPLICABLE || defaultHair != HairFurColors.NO_HAIR_FUR;
+		public virtual bool canChangeColor => !Tones.isNullOrEmpty(defaultTone) || !HairFurColors.isNullOrEmpty(defaultHair);
 
 		public bool defaultIsLarge => UpdateSizeOnTransform(false);
 

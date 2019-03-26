@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/27/2018, 12:22 AM
 
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
@@ -35,9 +36,11 @@ namespace CoC.Backend.BodyParts
 	}
 
 	[DataContract]
-	public class Ears : PiercableBodyPart<Ears, EarType, EarPiercings>
+	public class Ears : PiercableBodyPart<Ears, EarType, EarPiercings>, IBodyAware
 	{
-		private readonly FurColor earFur = new FurColor();
+		private FurColor earFur => type.ParseFurColor(_earFur, bodyData());
+		private readonly FurColor _earFur = new FurColor();
+
 		protected Ears()
 		{
 			type = EarType.HUMAN;
@@ -81,22 +84,6 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal bool UpdateFurEars(FurEarType furEar, FurColor primary, HairFurColors fallback)
-		{
-			if (type == furEar)
-			{
-				return false;
-			}
-			type = furEar;
-			type.ParseFurColor(earFur, primary, fallback);
-			return true;
-		}
-
-		public void ChangeFurColor(FurColor primary, HairFurColors fallback)
-		{
-			type.ParseFurColor(earFur, primary, fallback);
-		}
-
 		internal override Type currentSaveVersion => typeof(EarSurrogateVersion1);
 
 		internal override Type[] saveVersions => new Type[] { typeof(EarSurrogateVersion1) };
@@ -108,6 +95,12 @@ namespace CoC.Backend.BodyParts
 				earType = index,
 				earPiercings = serializePiercings()
 			};
+		}
+
+		private BodyDataGetter bodyData;
+		void IBodyAware.GetBodyData(BodyDataGetter getter)
+		{
+			bodyData = getter;
 		}
 
 		internal Ears(EarSurrogateVersion1 surrogate)
@@ -130,9 +123,9 @@ namespace CoC.Backend.BodyParts
 			ears.AddAt(this, index);
 		}
 
-		public virtual void ParseFurColor(FurColor current, FurColor primary, HairFurColors fallback)
+		internal virtual FurColor ParseFurColor(FurColor current, in BodyData data)
 		{
-			current.Reset();
+			return current;
 		}
 
 		internal static EarType Deserialize(int index)
@@ -193,18 +186,15 @@ namespace CoC.Backend.BodyParts
 			defaultFur = defaultColor;
 		}
 
-		public override void ParseFurColor(FurColor current, FurColor primary, HairFurColors fallback)
+		internal override FurColor ParseFurColor(FurColor current, in BodyData bodyData)
 		{
 			FurColor color = defaultFur;
-			if (!primary.isNoFur())
+			if (!bodyData.primary.fur.isEmpty)
 			{
-				color = primary;
-			}
-			else if (fallback != HairFurColors.NO_HAIR_FUR)
-			{
-				color = new FurColor(fallback);
+				color = bodyData.primary.fur;
 			}
 			current.UpdateFurColor(color);
+			return current;
 		}
 	}
 

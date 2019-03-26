@@ -13,18 +13,14 @@ namespace CoC.Backend.BodyParts
 {
 	//Epidermis represents the equivalent to skin on all species.
 
-	/*
-	 * Redesign: Tone or Fur EpidermisType, custom updates for both. a default is to be provided, with an optional bool to force override
-	 * This makes it so even if the current fur or tone is empty, a valid value will exist. further, it allows an implementation to override
-	 * the current color if they so desire.
+	/* Epidermis is a weird case in that it cannot be alone; it must help make up something else. It is expressly for storage
+	 * so it should never be public. Epidermal Data is provided for public access, so if you want people to have access to the data
+	 * stored in the epidermis in the frontend, provide a means of obtaining the epidermal data instance. 
+	 *   (generally, a property like so: public EpidermalData EpidermisName => EpidermisStorage.GetEpidermalData();)
+	 * 
+	 * Note that different body parts will use the epidermis differently - be sure to check them on how they work.
 	 */
 
-	/*
-	 * NOTES: Epidermis is a simple part. That means it should not be attached to a creature directly
-	 * instead, it should be part of another. it can either use skin tone, or fur color, not both.
-	 * it will store both values passed into it, but if you query for one and it's not in use, it will
-	 * return not applicable/no fur. 
-	 */
 
 	//feel free to add more of these. i just did these because they were there, and i didn't want to use a string.
 	public enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED, SLIMY }
@@ -53,7 +49,6 @@ namespace CoC.Backend.BodyParts
 			skinTexture = SkinTexture.NONDESCRIPT;
 			furTexture = FurTexture.NONDESCRIPT;
 		}
-		#region Generate
 		public EpidermalData GetEpidermalData()
 		{
 			if (type.usesFur)
@@ -63,14 +58,23 @@ namespace CoC.Backend.BodyParts
 			else return new EpidermalData(type, tone, skinTexture);
 
 		}
+		#region Generate
 
 		public static Epidermis GenerateEmpty()
 		{
 			return new Epidermis();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="epidermisType"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException">Thrown if epidermisType is null</exception>
 		public static Epidermis GenerateDefaultOfType(EpidermisType epidermisType)
 		{
+			if (epidermisType == null) throw new ArgumentNullException();
+
 			Epidermis retVal = new Epidermis();
 			if (epidermisType is ToneBasedEpidermisType toneType)
 			{
@@ -83,9 +87,20 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		//provide with initial values. these should not be null/empty, as they are the absolute fallbacks.
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="toneType"></param>
+		/// <param name="initialTone"></param>
+		/// <param name="texture"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"> thrown if toneType is null </exception>
 		public static Epidermis Generate(ToneBasedEpidermisType toneType, Tones initialTone, SkinTexture texture = SkinTexture.NONDESCRIPT)
 		{
+			//null checks
+			if (toneType == null) throw new ArgumentNullException(); //can't determine behavior, so throw.
+			if (Tones.isNullOrEmpty(initialTone)) initialTone = toneType.defaultTone; //can be null. we can survive this, so don't throw.
+
 			return new Epidermis()
 			{
 				type = toneType,
@@ -93,8 +108,34 @@ namespace CoC.Backend.BodyParts
 				skinTexture = texture
 			};
 		}
+
+		public static Epidermis Generate(Epidermis other)
+		{
+			if (other == null) throw new ArgumentNullException();
+			return new Epidermis()
+			{
+				type = other.type,
+				tone = other.tone,
+				fur = other.fur,
+				furTexture = other.furTexture,
+				skinTexture = other.skinTexture
+			};
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="furType"></param>
+		/// <param name="furColor">the fur color to use. if null or empty, uses type default.</param>
+		/// <param name="texture"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException">Thrown if furType is null</exception>
 		public static Epidermis Generate(FurBasedEpidermisType furType, FurColor furColor, FurTexture texture = FurTexture.NONDESCRIPT)
 		{
+			//null checks
+			if (furType == null) throw new ArgumentNullException(); //we can't survive this, so throw.
+			if (FurColor.isNullOrEmpty(furColor)) furColor = furType.defaultFur; //can be null. we can survive this, though, so don't throw
+
 			Epidermis retVal = new Epidermis()
 			{
 				type = furType,
@@ -115,12 +156,12 @@ namespace CoC.Backend.BodyParts
 		#region Updates
 		public bool UpdateEpidermis(EpidermisType epidermisType, bool resetOther = false)
 		{
-			if (type == epidermisType)
+			if (epidermisType == null || type == epidermisType)
 			{
 				return false;
 			}
 			type = epidermisType;
-			if (epidermisType is ToneBasedEpidermisType && tone == Tones.NOT_APPLICABLE)
+			if (epidermisType is ToneBasedEpidermisType && tone.isEmpty) //can't be null
 			{
 				tone = ((ToneBasedEpidermisType)type).defaultTone;
 				if (resetOther)
@@ -128,7 +169,7 @@ namespace CoC.Backend.BodyParts
 					fur.Reset();
 				}
 			}
-			else if (epidermisType is FurBasedEpidermisType && fur.isNoFur())
+			else if (epidermisType is FurBasedEpidermisType && fur.isEmpty) //can't be null
 			{
 				fur.UpdateFurColor(((FurBasedEpidermisType)type).defaultFur);
 				if (resetOther)
@@ -159,16 +200,16 @@ namespace CoC.Backend.BodyParts
 
 		public bool UpdateEpidermis(FurBasedEpidermisType furType, FurColor overrideColor, FurTexture texture, bool resetTone = false)
 		{
-			if (type == furType && !fur.isNoFur())
+			if (furType == null || type == furType)
 			{
 				return false;
 			}
 			type = furType;
-			if (!overrideColor.isNoFur())
+			if (!FurColor.isNullOrEmpty(overrideColor)) //can be null
 			{
 				fur.UpdateFurColor(overrideColor);
 			}
-			else if (fur.isNoFur())
+			else if (fur.isEmpty) //can't be null
 			{
 				fur.UpdateFurColor(furType.defaultFur);
 			}
@@ -181,16 +222,16 @@ namespace CoC.Backend.BodyParts
 		}
 		public bool UpdateEpidermis(ToneBasedEpidermisType toneType, Tones overrideTone, SkinTexture texture, bool resetFur = false)
 		{
-			if (type == toneType)
+			if (toneType == null || type == toneType)
 			{
 				return false;
 			}
 			type = toneType;
-			if (overrideTone != Tones.NOT_APPLICABLE)
+			if (!Tones.isNullOrEmpty(overrideTone)) //can be null.
 			{
 				tone = overrideTone;
 			}
-			else if (tone == Tones.NOT_APPLICABLE)
+			else if (tone.isEmpty) //can't be null
 			{
 				tone = toneType.defaultTone;
 			}
@@ -205,11 +246,11 @@ namespace CoC.Backend.BodyParts
 		#region Change
 		public bool ChangeTone(Tones newTone, bool resetFur = false)
 		{
-			if (resetFur)
+			if (resetFur && !type.usesFur) //don't erase if it's in use
 			{
 				fur.Reset();
 			}
-			if (type.toneMutable && tone != newTone && newTone != Tones.NOT_APPLICABLE)
+			if (type.toneMutable && tone != newTone && !Tones.isNullOrEmpty(newTone)) //can be null
 			{
 				tone = newTone;
 				return true;
@@ -219,11 +260,11 @@ namespace CoC.Backend.BodyParts
 
 		public bool ChangeFur(FurColor furColor, bool resetTone = false)
 		{
-			if (resetTone)
+			if (resetTone && !type.usesTone)
 			{
 				tone = Tones.NOT_APPLICABLE;
 			}
-			if (fur != furColor && type.hairMutable && !furColor.isNoFur())
+			if (fur != furColor && type.furMutable && !FurColor.isNullOrEmpty(furColor)) //can be null
 			{
 				fur.UpdateFurColor(furColor);
 				return true;
@@ -249,6 +290,9 @@ namespace CoC.Backend.BodyParts
 		//Useful Helpers. Update if different, change if same. I'm not overly fond of the idea as the behavior is not identical in all instances, but
 		//considering how often the if/else check would be used this makes more sense. use these only if you are truly doing it - if you know the type is 
 		//correct, then just call change.
+
+		//NOTE: while these may not throw themselves, they may call something that throws. this is why i don't like these helpers. 
+
 		public bool UpdateOrChange(FurBasedEpidermisType furType, FurColor overrideColor, bool resetTone = false)
 		{
 			if (furType != type)
@@ -309,12 +353,25 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			EpidermisType epidermis = type;
+			FurColor furColor = fur;
+			Tones tones = tone;
+
+			bool valid = EpidermisType.Validate(ref epidermis, ref furColor, ref tones, correctDataIfInvalid);
+			tone = tones;
+			fur = furColor;
+			type = epidermis;
+			return valid;
+		}
+
 		internal Epidermis(EpidermisSurrogateVersion1 surrogate)
 		{
 			type = EpidermisType.Deserialize(surrogate.epidermisType);
-			fur = surrogate.furColor;
+			fur = surrogate.furColor ?? new FurColor();
 			furTexture = (FurTexture)surrogate.furTexture;
-			tone = surrogate.tone;
+			tone = surrogate.tone ?? Tones.NOT_APPLICABLE;
 			skinTexture = (SkinTexture)surrogate.skinTexture;
 		}
 		#endregion
@@ -332,8 +389,9 @@ namespace CoC.Backend.BodyParts
 		protected readonly bool updateable;
 		protected readonly int _index;
 
-		public bool hairMutable => usesFur && updateable;
-		public bool toneMutable => usesTone && updateable;
+		//we can change fur if it's a tone type (just for storage when changing classes mind you)
+		public bool furMutable => !usesFur || updateable;
+		public bool toneMutable => !usesTone || updateable;
 
 		private protected EpidermisType(SimpleDescriptor desc, bool canChange) : base(desc)
 		{
@@ -342,11 +400,18 @@ namespace CoC.Backend.BodyParts
 			updateable = canChange;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown if index is out of range</exception>
+		/// <exception cref="ArgumentException">Thrown if index points to a non-existant object</exception> 
 		internal static EpidermisType Deserialize(int index)
 		{
 			if (index < 0 || index >= epidermi.Count)
 			{
-				throw new System.ArgumentException("index for arm type deserialize out of range");
+				throw new System.ArgumentOutOfRangeException();
 			}
 			else
 			{
@@ -361,6 +426,24 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
+
+		internal static bool Validate(ref EpidermisType epidermisType, ref FurColor fur, ref Tones tone, bool correctInvalidData = false)
+		{
+			bool valid = true;
+			if (!epidermi.Contains(epidermisType))
+			{
+				if (!correctInvalidData)
+				{
+					return false;
+				}
+				epidermisType = SKIN;
+				valid = false;
+			}
+			valid &= epidermisType.ValidateData(ref fur, ref tone, correctInvalidData);
+			return valid;
+		}
+
+		private protected abstract bool ValidateData(ref FurColor fur, ref Tones tone, bool correctInvalidData = false);
 
 		public override int index => _index;
 
@@ -379,24 +462,51 @@ namespace CoC.Backend.BodyParts
 
 	public class FurBasedEpidermisType : EpidermisType
 	{
-		public FurColor defaultFur;
+		public FurColor defaultFur => new FurColor(_defaultFur);
+		private readonly FurColor _defaultFur;
 		internal FurBasedEpidermisType(SimpleDescriptor desc, bool canChange, FurColor defaultColor) : base(desc, canChange)
 		{
-			defaultFur = new FurColor(defaultColor);
+			_defaultFur = new FurColor(defaultColor);
 		}
 
 		public override bool usesTone => false;
+
+		private protected override bool ValidateData(ref FurColor fur, ref Tones tone, bool correctInvalidData = false)
+		{
+			if (!fur.isEmpty)
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				fur = defaultFur;
+			}
+			return true;
+		}
 	}
 
 	public class ToneBasedEpidermisType : EpidermisType
 	{
-		public Tones defaultTone;
+		public readonly Tones defaultTone;
 		internal ToneBasedEpidermisType(SimpleDescriptor desc, bool canChange, Tones defaultColor) : base(desc, canChange)
 		{
 			defaultTone = defaultColor;
 		}
 
 		public override bool usesTone => true;
+
+		private protected override bool ValidateData(ref FurColor fur, ref Tones tone, bool correctInvalidData = false)
+		{
+			if (!tone.isEmpty)
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				tone = defaultTone;
+			}
+			return false;
+		}
 	}
 
 	public class EmptyEpidermisType : EpidermisType
@@ -406,35 +516,67 @@ namespace CoC.Backend.BodyParts
 		public override bool usesTone => false;
 		public override bool usesFur => false;
 
+		private protected override bool ValidateData(ref FurColor fur, ref Tones tone, bool correctInvalidData = false)
+		{
+			return true;
+		}
+
 	}
 
+	/// <summary>
+	/// </summary>
 	public partial class EpidermalData
 	{
 
 		public EpidermisType epidermisType { get; private set; }
-		private readonly FurColor _fur;
-		private readonly Tones _tone;
+		private readonly FurColor _fur; //NOT NULL EVER!
+		private readonly Tones _tone; //NOT NULL EVER!
 
 		private readonly SkinTexture _skinTexture;
 		private readonly FurTexture _furTexture;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="furColor"></param>
+		/// <param name="texture"></param>
+		/// <exception cref="ArgumentNullException">Thrown if type or tones is null</exception>
 		public EpidermalData(EpidermisType type, FurColor furColor, FurTexture texture)
 		{
-			epidermisType = type;
+			epidermisType = type ?? throw new ArgumentNullException();
+			if (furColor == null) throw new ArgumentNullException();
 			_fur = new FurColor(furColor);
 			_tone = Tones.NOT_APPLICABLE;
 			_furTexture = texture;
 			_skinTexture = SkinTexture.NONDESCRIPT;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="tones"></param>
+		/// <param name="texture"></param>
+		/// <exception cref="ArgumentNullException">Thrown is type or tones is null</exception>
 		public EpidermalData(EpidermisType type, Tones tones, SkinTexture texture)
 		{
-			epidermisType = type;
+			epidermisType = type ?? throw new ArgumentNullException();
+			_tone = tones ?? throw new ArgumentNullException();
 			_fur = new FurColor();
-			_tone = tones;
 			_skinTexture = texture;
 			_furTexture = FurTexture.NONDESCRIPT;
 		}
+
+		public EpidermalData()
+		{
+			this.epidermisType = EpidermisType.EMPTY;
+			_fur = new FurColor();
+			_tone = Tones.NOT_APPLICABLE;
+			_furTexture = FurTexture.NONDESCRIPT;
+			_skinTexture = SkinTexture.NONDESCRIPT;
+		}
+
 
 		public bool usesFur => epidermisType.usesFur;
 		public bool usesTone => epidermisType.usesTone;

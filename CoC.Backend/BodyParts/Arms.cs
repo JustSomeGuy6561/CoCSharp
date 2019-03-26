@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
 
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
@@ -13,26 +14,32 @@ using System.Runtime.Serialization;
 namespace CoC.Backend.BodyParts
 {
 	/*
-	 * Quick Note: Arms now have a consistent logic - if the arm is furry, it will first try to use the secondary (underbody) color, if the body has one. if not, it will fallback to the
+	 * Arm covering (skin, scales, etc) Note:
+	 * Arms now have a consistent logic - if the arm is furry, it will first try to use the secondary (underbody) color, if the body has one. if not, it will fallback to the
 	 * body's regular fur color, if one exists. It will fallback to hair if not available, and if THAT is not available, fallback to the default for whatever type of arm it is. 
 	 * Tones will simply use the primary skin tone - i cannot think of a reason arms would have a special tone different from the body. 
 	 * Since this logic is implemented in the arm type, a derived class can override this behavior for custom arm types. currently, Ferrets do this.
 	 * 
-	 * Serialization note: This class uses the Save Attribute for readibility ONLY. it isn't actually used. I could use it with reflection to automatically serialize the class
-	 * using a great deal of magic/bullshit, but it's frankly slow, and manually implementing it isn't terribly hard.
+	 * This epidermis data must be LAZY! meaning it won't be calculated until the moment it's needed. We achieve this by using a delegate (function pointer) to get the body data on demand.
+	 * We could (theoretically) get it and deal with it immediately, but Lazy implementation allows us to get around creating this before the body, if that ever happened.
+	 * 
+	 * An aside: unfortunately, i can't think up a means to memoize the epidermis/secondary epidermis. so it'll have to get them each time. This shouldn't be costly enough to worry about that, though
 	 */
 	[DataContract]
-	public class Arms : BodyPartBase<Arms, ArmType>
+	public class Arms : BodyPartBase<Arms, ArmType>, IBodyAware
 	{
 		public readonly Hands hands;
 
-		private readonly Epidermis _epidermis = Epidermis.GenerateDefaultOfType(EpidermisType.SKIN);
-		private readonly Epidermis _secondaryEpidermis = Epidermis.GenerateDefaultOfType(EpidermisType.SKIN);
+		private BodyDataGetter bodyData;
 
 		private Tones restoreTone;
 
-		public EpidermalData epidermis => _epidermis.GetEpidermalData();
-		public EpidermalData secondaryEpidermis => _secondaryEpidermis.GetEpidermalData();
+
+		private Epidermis epidermis => type.GetEpidermis(true, bodyData());
+		private Epidermis secondaryEpidermis => type.GetEpidermis(false, bodyData());
+
+		public EpidermalData epidermalData => epidermis.GetEpidermalData();
+		public EpidermalData secondaryEpidermalData => secondaryEpidermis.GetEpidermalData();
 
 		private protected Arms(ArmType type)
 		{
@@ -77,30 +84,27 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			_epidermis.UpdateOrChange((ToneBasedEpidermisType)type.epidermisType, restoreTone, true);
-			_secondaryEpidermis.Reset();
 			type = ArmType.HUMAN;
 
 			return true;
 		}
 
-		internal bool UpdateArms(ArmType armType, Epidermis primary, Epidermis secondary, HairFurColors hairColor, BodyType bodyType)
+		internal bool UpdateArms(ArmType armType)
 		{
 			if (armType == null || type == armType)
 			{
 				return false;
 			}
 			type = armType;
-			UpdateEpidermis(primary, secondary, hairColor, bodyType);
 			return true;
 		}
 
-		public bool UpdateEpidermis(Epidermis primary, Epidermis secondary, HairFurColors hairColor, BodyType bodyType)
+		#region IBodyAware
+		void IBodyAware.GetBodyData(BodyDataGetter getter)
 		{
-			hands.reactToChangeInSkinTone(primary.tone, secondary.tone);
-			restoreTone = primary.tone;
-			return type.UpdateEpidermis(_epidermis, _secondaryEpidermis, primary, secondary, hairColor, bodyType);
+			bodyData = getter;
 		}
+		#endregion
 
 		#region Serialization
 		internal override Type currentSaveVersion => typeof(ArmSurrogateVersion1);
@@ -128,7 +132,8 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermisType epidermisType;
 
 		//update the original and secondary original based on the current data. 
-		internal abstract bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType);
+
+		internal abstract Epidermis GetEpidermis(bool primary, in BodyData bodyData);
 
 		public override int index => _index;
 		private readonly int _index;
@@ -203,69 +208,56 @@ namespace CoC.Backend.BodyParts
 				FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr)
 			{ }
 
-			//ferret arms are weird - they change part-way down, so the upper half is actually the primary color if applicable. the second half is the underbody color or the default.
-			internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
+			internal override Epidermis GetEpidermis(bool primary, in BodyData bodyData)
 			{
-				bool retVal = false;
-				FurColor color = this.defaultColor;
-				if (mutable)
-				{
-					if (currPrimary.usesFur && !currPrimary.fur.isNoFur())
-					{
-						color = currPrimary.fur;
-					}
-					else if (currHair != HairFurColors.NO_HAIR_FUR)
-					{
-						color = new FurColor(currHair);
-					}
+				Epidermis source = primary ? bodyData.primary : bodyData.secondary;
+				FurColor color = primary ? defaultColor : defaultSecondaryColor;
 
-				}
-				retVal |= original.UpdateOrChange((FurBasedEpidermisType)epidermisType, color, true);
-
-				color = defaultSecondaryColor;
-				if (currSecondary.usesFur && !currSecondary.fur.isNoFur())
+				if (source.usesFur && !source.fur.isEmpty)
 				{
-					color = currSecondary.fur;
+					color = source.fur;
 				}
-				retVal |= secondaryOriginal.UpdateOrChange((FurBasedEpidermisType)epidermisType, color, true);
-				return retVal;
+				//detects weird edge case wher both halves of ferret arms use hair for both. if the primary hair is null and used the hair, force the secondary to use the default.
+				//clever logic people may note this ignores the case where the primary used its default - that'd only happen if the hair was empty, though, so it's irrelevant
+				else if (!bodyData.hairColor.isEmpty && (primary || bodyData.primary.fur.isEmpty)) 
+				{
+					color = new FurColor(bodyData.hairColor);
+				}
+				return Epidermis.Generate((FurBasedEpidermisType)epidermisType, color, defaultTexture);
 			}
 		}
 
 		//upper half of arm - primary color, as fur. lower half: scales, uses secondary tone. 
 		private sealed class CockatriceArms : FurArms
 		{
+			private readonly ToneBasedEpidermisType secondaryType = EpidermisType.SCALES;
+			private readonly Tones defaultScales = Species.COCKATRICE.defaultScaleTone;
+			private readonly SkinTexture defaultScaleTexture;
+
 			public CockatriceArms() : base(HandType.COCKATRICE, EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, FurTexture.NONDESCRIPT, true,
 				CockatriceDescStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 			{ }
-
-			internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
+			internal override Epidermis GetEpidermis(bool primary, in BodyData bodyData)
 			{
-				bool retVal = false;
-				FurColor color = this.defaultColor;
-				if (mutable)
+				if (primary)
 				{
-					if (bodyType == BodyType.COCKATRICE && currPrimary.usesFur && !currPrimary.fur.isNoFur())
+					FurColor color = defaultColor;
+					if (bodyData.bodyType == BodyType.COCKATRICE && !bodyData.primary.fur.isEmpty)
 					{
-						color = currPrimary.fur;
+						color = bodyData.primary.fur;
 					}
-					else if (currHair != HairFurColors.NO_HAIR_FUR)
+					else if (!bodyData.hairColor.isEmpty)
 					{
-						color = new FurColor(currHair);
+						color = new FurColor(bodyData.hairColor);
 					}
-
+					return Epidermis.Generate((FurBasedEpidermisType)epidermisType, color, defaultTexture);
 				}
-				retVal |= original.UpdateOrChange((FurBasedEpidermisType)epidermisType, color, true);
-
-				Tones tone = currPrimary.tone;
-				if (currSecondary.usesTone && !currSecondary.fur.isNoFur())
+				else
 				{
-					color = currSecondary.fur;
+					Tones color = bodyData.secondary.usesTone && !bodyData.secondary.tone.isEmpty ? bodyData.secondary.tone : defaultScales;
+					return Epidermis.Generate(secondaryType, color, defaultScaleTexture);
 				}
-				retVal |= secondaryOriginal.UpdateOrChange(EpidermisType.SCALES, tone, true);
-				return retVal;
 			}
-
 		}
 		public bool isPredatorArms()
 		{
@@ -287,30 +279,35 @@ namespace CoC.Backend.BodyParts
 			mutable = canChange;
 		}
 
-		internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
+		internal override Epidermis GetEpidermis(bool primary, in BodyData bodyData)
 		{
-			FurColor color = this.defaultColor;
-
-			if (mutable)
+			if (primary && mutable)
 			{
-				if (currSecondary.usesFur && !currSecondary.fur.isNoFur())
+				FurColor color = this.defaultColor;
+				if (bodyData.secondary.usesFur && !bodyData.secondary.fur.isEmpty) // can't be null
 				{
-					color = currSecondary.fur;
+					color = bodyData.secondary.fur;
 				}
-				else if (currPrimary.usesFur && !currPrimary.fur.isNoFur())
+				else if (bodyData.primary.usesFur && !bodyData.primary.fur.isEmpty) //can't be null
 				{
-					color = currPrimary.fur;
+					color = bodyData.primary.fur;
 				}
-				else if (currHair != HairFurColors.NO_HAIR_FUR)
+				else if (!bodyData.hairColor.isEmpty) //can't be null
 				{
-					color = new FurColor(currHair);
+					color = new FurColor(bodyData.hairColor);
 				}
-
+				return Epidermis.Generate((FurBasedEpidermisType)epidermisType, color, defaultTexture);
 			}
-			bool retVal = original.UpdateOrChange((FurBasedEpidermisType)epidermisType, color, true);
-			secondaryOriginal.Reset();
-			return retVal;
+			else if (primary)
+			{
+				return Epidermis.Generate((FurBasedEpidermisType)epidermisType, defaultColor, defaultTexture);
+			}
+			else
+			{
+				return Epidermis.GenerateEmpty();
+			}
 		}
+
 	}
 
 	public class ToneArms : ArmType
@@ -327,15 +324,14 @@ namespace CoC.Backend.BodyParts
 			mutable = canChange;
 		}
 
-		internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
+		internal override Epidermis GetEpidermis(bool primary, in BodyData bodyData)
 		{
-			Tones color = mutable ? currPrimary.tone : defaultTone;
-
-			bool retVal = original.UpdateOrChange((ToneBasedEpidermisType)epidermisType, color, true);
-			secondaryOriginal.Reset();
-			return retVal;
-
-
+			if (primary)
+			{
+				Tones color = mutable ? bodyData.primary.tone : defaultTone;
+				return Epidermis.Generate((ToneBasedEpidermisType)epidermisType, color, defaultTexture);
+			}
+			return Epidermis.GenerateEmpty();
 		}
 	}
 

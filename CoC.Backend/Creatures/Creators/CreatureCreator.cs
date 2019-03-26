@@ -23,8 +23,6 @@ namespace CoC.Backend.Creatures
 		public HairFurColors backHairFur;
 		//Body
 		public BodyType bodyType;
-		#warning Not Set properly!
-		public HairFurColors hairColor; 
 		public Tones tone;
 		public FurColor furColor;
 		public Tones underTone;
@@ -45,8 +43,12 @@ namespace CoC.Backend.Creatures
 		public EyeColor? rightEyeColor;
 		//Gills
 		public GillType gillType;
+		//Hair
+		public HairType hairType;
+		public HairFurColors hairColor;
+		public HairFurColors hairHighlightColor;
+		public ushort? hairLength = null;
 		//Horns
-
 		//NOTE: horns can be defined in one of two ways: transformation level or explicit horn count and length. While it's recommended to use the tf level and 
 		//let the game logic run its course, you may have NPCs with specific lengths and horns that may be difficult or impossible to get naturally, so you have that option too.
 

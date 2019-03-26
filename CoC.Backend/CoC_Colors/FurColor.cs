@@ -84,25 +84,22 @@ namespace CoC.Backend.CoC_Colors
 
 		private void validateData()
 		{
-			if (primaryColor == HairFurColors.NO_HAIR_FUR && secondaryColor != HairFurColors.NO_HAIR_FUR)
+			if (HairFurColors.isNullOrEmpty(primaryColor) && !HairFurColors.isNullOrEmpty(secondaryColor))
 			{
 				primaryColor = secondaryColor;
 				secondaryColor = HairFurColors.NO_HAIR_FUR;
 			}
-			if (secondaryColor == HairFurColors.NO_HAIR_FUR)
+			if (HairFurColors.isNullOrEmpty(secondaryColor))
 			{
 				multiColorPattern = FurMulticolorPattern.NO_PATTERN;
 			}
 		}
 
-		public bool isNoFur()
-		{
-			return HairFurColors.IsNullOrEmpty(primaryColor); //all data validated; no primary is empty when secondary isn't.
-		}
+		public bool isEmpty => primaryColor.isEmpty; //primary color cannot be null.
 
 		public static bool isNullOrEmpty(FurColor furColor)
 		{
-			return furColor == null || furColor.isNoFur();
+			return furColor == null || furColor.isEmpty;
 		}
 
 		//ToDo: move these strings to a strings class.

@@ -41,6 +41,7 @@ namespace CoC.Backend.Creatures
 				ears = this.ears,
 				eyes = this.eyes,
 				gills = this.gills,
+				hair = this.hair,
 				horns = this.horns,
 				tongue = this.tongue,
 				wings = this.wings,
@@ -84,6 +85,8 @@ namespace CoC.Backend.Creatures
 		[DataMember]
 		public Gills gills;
 		[DataMember]
+		public Hair hair;
+		[DataMember]
 		public Horns horns;
 		[DataMember]
 		public Tongue tongue;
@@ -110,6 +113,7 @@ namespace CoC.Backend.Creatures
 				eyebrow = this.eyebrow,
 				eyes = this.eyes,
 				gills = this.gills,
+				hair = this.hair,
 				horns = this.horns,
 				lip = this.lip,
 				nose = this.nose,

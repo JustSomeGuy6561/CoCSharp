@@ -19,11 +19,11 @@ namespace CoC.Backend.BodyParts
 
 		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
 
-		public static Hands Generate(HandType handType)
+		internal static Hands Generate(HandType handType)
 		{
 			return new Hands(handType, Tones.IVORY);
 		}
-		public static Hands Generate(HandType handType, Tones currentTone)
+		internal static Hands Generate(HandType handType, Tones currentTone)
 		{
 			return new Hands(handType, currentTone);
 		}

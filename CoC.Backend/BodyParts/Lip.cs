@@ -14,7 +14,7 @@ namespace CoC.Backend.BodyParts
 	public class Lip : SimplePiercing<Lip, LipPiercings>
 	{
 		protected Lip() { }
-		public static Lip Generate()
+		internal static Lip Generate()
 		{
 			return new Lip();
 		}

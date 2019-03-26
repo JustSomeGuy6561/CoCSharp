@@ -4,6 +4,7 @@
 //12/29/2018, 1:58 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Races;
 using CoC.Backend.Save;
 using CoC.Backend.Tools;
 using System;
@@ -31,14 +32,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (value.usesHair != type.usesHair)
 				{
-					if (value.usesHair && hairFur == HairFurColors.NO_HAIR_FUR)
-					{
-						hairFur = ((DragonBackMane)value).defaultColor;
-					}
-					else if (!value.usesHair)
-					{
-						hairFur = HairFurColors.NO_HAIR_FUR;
-					}
+					hairFur = value.defaultHair;
 				}
 				_type = value;
 			}
@@ -70,9 +64,9 @@ namespace CoC.Backend.BodyParts
 		}
 		internal static Back GenerateDraconicMane(DragonBackMane dragonMane, HairFurColors maneColor)
 		{
-			return new Back(dragonMane)
+			return new Back(dragonMane) //throws for null
 			{
-				hairFur = HairFurColors.IsNullOrEmpty(maneColor) ? dragonMane.defaultColor : maneColor
+				hairFur = HairFurColors.isNullOrEmpty(maneColor) ? dragonMane.defaultHair : maneColor //could be null
 			};
 		}
 
@@ -92,8 +86,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			type = newType;
-			hairFur = (type as DragonBackMane)?.defaultColor ?? HairFurColors.NO_HAIR_FUR;
+			type = newType; //automatically sets hair to default.
 			return true;
 		}
 
@@ -103,14 +96,11 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			type = dragonMane;
-			if (!HairFurColors.IsNullOrEmpty(maneColor))
+			type = dragonMane; //sets hair to default automatically.
+			//overrides it if possible.
+			if (!HairFurColors.isNullOrEmpty(maneColor)) //can be null.
 			{
 				hairFur = maneColor;
-			}
-			else
-			{
-				maneColor = dragonMane.defaultColor;
 			}
 			return true;
 		}
@@ -120,7 +110,7 @@ namespace CoC.Backend.BodyParts
 			return type.usesHair;
 		}
 
-		bool IDyeable.isDifferentColor(HairFurColors dyeColor)
+		bool IDyeable.isDifferentColor(HairFurColors dyeColor) //
 		{
 			if (dyeColor == null) throw new ArgumentNullException();
 			return dyeColor != hairFur;
@@ -128,7 +118,8 @@ namespace CoC.Backend.BodyParts
 
 		bool IDyeable.attemptToDye(HairFurColors dye)
 		{
-			if (!allowsDye() || dye == hairFur || HairFurColors.IsNullOrEmpty(dye))
+			if (dye == null) throw new ArgumentNullException();
+			if (!allowsDye() || dye == hairFur) //shouldn't be null, but can be.
 			{
 				return false;
 			}
@@ -151,12 +142,12 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal Back(BackSurrogateVersion1 surrogate)
+		internal Back(BackSurrogateVersion1 surrogate) //assuming surrogate is not null. that may end up being foolish, idk.
 		{
 			//allow type property to set hair to default.
 			type = BackType.Deserialize(surrogate.backType);
 			//override it if we have good hair data.
-			if (!HairFurColors.IsNullOrEmpty(surrogate.hairFur) && _type.usesHair)
+			if (!HairFurColors.isNullOrEmpty(surrogate.hairFur) && _type.usesHair) //may be null
 			{
 				hairFur = surrogate.hairFur;
 			}
@@ -169,7 +160,9 @@ namespace CoC.Backend.BodyParts
 		private static readonly List<BackType> backs = new List<BackType>();
 		private readonly int _index;
 		public override int index => _index;
-		public virtual bool usesHair => false;
+
+		public virtual HairFurColors defaultHair => HairFurColors.NO_HAIR_FUR;
+		public bool usesHair => !defaultHair.isEmpty;
 
 		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, TypeAndPlayerDelegate<Back> playerDesc,
 			ChangeType<Back> transform, RestoreType<Back> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
@@ -216,6 +209,14 @@ namespace CoC.Backend.BodyParts
 
 		internal virtual bool ValidateData(ref HairFurColors hair, bool correctInvalidData = false)
 		{
+			if (usesHair && HairFurColors.isNullOrEmpty(hair))
+			{
+				if (correctInvalidData)
+				{
+					hair = defaultHair;
+				}
+				return false;
+			}
 			return true;
 		}
 
@@ -229,26 +230,10 @@ namespace CoC.Backend.BodyParts
 	}
 	public class DragonBackMane : BackType
 	{
-		public readonly HairFurColors defaultColor;
-		public override bool usesHair => true;
+		public override HairFurColors defaultHair => Species.DRAGON.defaultManeColor;
 
 		internal DragonBackMane() : base(DraconicManeDesc, DraconicManeFullDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr)
-		{
-			defaultColor = HairFurColors.GREEN;
-		}
-
-		internal override bool ValidateData(ref HairFurColors hair, bool correctInvalidData = false)
-		{
-			if (!HairFurColors.IsNullOrEmpty(hair))
-			{
-				return true;
-			}
-			else if (correctInvalidData)
-			{
-				hair = defaultColor;
-			}
-			return false;
-		}
+		{}
 	}
 
 	[DataContract]

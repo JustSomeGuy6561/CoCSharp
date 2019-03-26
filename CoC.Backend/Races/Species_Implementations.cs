@@ -234,6 +234,8 @@ namespace CoC.Backend.Races
 
 		public Tones defaultWingTone => Tones.DARK_RED;
 		public EyeColor defaultEyeColor => EyeColor.ORANGE;
+
+		public HairFurColors defaultManeColor => HairFurColors.GREEN;
 		internal Dragon() : base(DragonStr) { }
 	}
 

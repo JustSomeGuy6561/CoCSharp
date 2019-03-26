@@ -11,6 +11,7 @@ namespace CoC.Backend.Save.Internals
 		public Ears ears;
 		public Eyes eyes;
 		public Gills gills;
+		public Hair hair;
 		public Horns horns;
 		public Tongue tongue;
 		public Wings wings;
