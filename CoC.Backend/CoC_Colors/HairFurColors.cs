@@ -2,9 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //12/26/2018, 7:56 PM
+using CoC.Backend.Save;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 
 //using CoC.Internal.
 
@@ -13,9 +16,11 @@ namespace CoC.Backend.CoC_Colors
 	//"Why do this - we had strings. strings were fine! why overdesign the wheel?"
 	//well, because we had several switch statements manually parse a string to find a close color.
 	//which you can do with RGB values automatically. and adding a color here is (relatively) painless.
-	public class HairFurColors : CoCColors
+	[DataContract]
+	public class HairFurColors : CoCColors, ISaveableBase
 	{
-		private static List<HairFurColors> supportedColors;
+		public const int RAINBOW_HACK = unchecked ((int)0xaa18855e);
+		private static readonly List<HairFurColors> supportedColors = new List<HairFurColors>();
 
 		public static readonly HairFurColors[] DYE_COLORS = { BLACK, AUBURN, BLONDE, BLUE, BROWN, GRAY, GREEN, ORANGE, PINK, PURPLE, RAINBOW, RED, RUSSET, YELLOW, WHITE };
 
@@ -28,6 +33,7 @@ namespace CoC.Backend.CoC_Colors
 		public static readonly HairFurColors BROWN = new HairFurColors(Color.Brown);
 		public static readonly HairFurColors CARAMEL = new HairFurColors(Color.PeachPuff, "caramel");
 		public static readonly HairFurColors CERULEAN = new HairFurColors(Color.Azure, "cerulean");
+		public static readonly HairFurColors CHARCOAL = new HairFurColors(Color.SlateGray, "charcoal");
 		public static readonly HairFurColors CHARTREUSE = new HairFurColors(Color.YellowGreen, "chartreuse");
 		public static readonly HairFurColors CHOCOLATE = new HairFurColors(Color.Chocolate);
 		public static readonly HairFurColors DARK_BLUE = new HairFurColors(Color.DarkBlue);
@@ -64,10 +70,11 @@ namespace CoC.Backend.CoC_Colors
 		public static readonly HairFurColors SILVER_WHITE = new HairFurColors(Color.Gainsboro, "silver-white");
 		public static readonly HairFurColors SNOW_WHITE = new HairFurColors(Color.White, "snow-white");
 		public static readonly HairFurColors TAN = new HairFurColors(Color.Tan);
+		public static readonly HairFurColors TURQUOISE = new HairFurColors(Color.Turquoise);
 		public static readonly HairFurColors WHITE = new HairFurColors(Color.Linen, "white"); //= #ffffff
 		public static readonly HairFurColors YELLOW = new HairFurColors(Color.Yellow);
-		//thanks, rainbow.
-		public static readonly HairFurColors RAINBOW = new HairFurColors(Color.Transparent, "rainbow-colored");
+		//thanks, rainbow. Hacking it in with a random RGB and an alpha. all other colors (except transparent) use full alpha, meaning this will be unique
+		public static readonly HairFurColors RAINBOW = new HairFurColors(Color.FromArgb(RAINBOW_HACK), "rainbow-colored");
 
 		//Don't add transparent to the available colors.
 		//DO NOT USE THIS. IT'S ONLY HERE FOR DEFAULT!
@@ -81,6 +88,11 @@ namespace CoC.Backend.CoC_Colors
 		protected HairFurColors(Color rgb) : base(rgb)
 		{
 			supportedColors.Add(this);
+		}
+
+		public static bool IsNullOrEmpty(HairFurColors color)
+		{
+			return color == null || color == NO_HAIR_FUR;
 		}
 
 		public static List<HairFurColors> AvailableHairFurColors()
@@ -108,6 +120,42 @@ namespace CoC.Backend.CoC_Colors
 		private double compare(Color color)
 		{
 			return WeightedColorCompare(color, rgbValue);
+		}
+		internal static HairFurColors Deserialize(Color color)
+		{
+			if (color == Color.Transparent)
+			{
+				return HairFurColors.NO_HAIR_FUR;
+			}
+			else if (color.ToArgb() == RAINBOW_HACK)
+			{
+				return HairFurColors.RAINBOW;
+			}
+			else return NearestHairFurColor(color);
+		}
+
+		Type ISaveableBase.currentSaveType => typeof(HairSurrogate);
+
+		Type[] ISaveableBase.saveVersionTypes => new Type[] { typeof(HairSurrogate) };
+
+		object ISaveableBase.ToCurrentSaveVersion()
+		{
+			return new HairSurrogate()
+			{
+				color = this.rgbValue.ToArgb()
+			};
+		}
+	}
+
+	[DataContract]
+	[KnownType(typeof(Color))]
+	public sealed class HairSurrogate : ISurrogateBase
+	{
+		[DataMember]
+		public int color;
+		public object ToSaveable()
+		{
+			return HairFurColors.Deserialize(Color.FromArgb(color));
 		}
 	}
 }

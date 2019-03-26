@@ -4,18 +4,24 @@
 //1/1/2019, 9:09 AM
 
 using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Save;
+using CoC.Backend.Save.Internals;
+using CoC.Backend.Wearables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace CoC.Backend.BodyParts
 {
+	[DataContract]
 	public abstract class PiercableBodyPart<ThisClass, TypeClass, PiercingEnum> : BodyPartBase<ThisClass, TypeClass>, IPiercable<PiercingEnum>
 		where ThisClass : PiercableBodyPart<ThisClass, TypeClass, PiercingEnum>
 		where TypeClass : PiercableBodyPartBehavior<TypeClass, ThisClass, PiercingEnum> where PiercingEnum : Enum
 	{
 		protected bool piercingFetish => BackendSessionData.data.piercingFetish;
+
+		protected readonly Dictionary<PiercingEnum, bool> piercingLookup = new Dictionary<PiercingEnum, bool>();
+		protected readonly Dictionary<PiercingEnum, PiercingJewelry> jewelryLookup = new Dictionary<PiercingEnum, PiercingJewelry>();
 
 		public int maxPiercingCount => Enum.GetNames(typeof(PiercingEnum)).Length;
 		//functional programming ftw!
@@ -128,8 +134,36 @@ namespace CoC.Backend.BodyParts
 			return PiercingLocationUnlocked(piercingLocation);
 		}
 
-		protected Dictionary<PiercingEnum, bool> piercingLookup;
-		protected Dictionary<PiercingEnum, PiercingJewelry> jewelryLookup;
+		internal void deserializePiercings(bool[] piercingData)
+		{
+			this.piercingLookup.Clear();
+			if (piercingData == null || piercingData.Length == 0)
+			{
+				return;
+			}
+			int iter = Math.Min(piercingData.Length, maxPiercingCount);
+			for (int x = 0; x < iter; x++)
+			{
+				if (piercingData[x])
+				{
+					PiercingEnum piercing = (PiercingEnum)Enum.ToObject(typeof(PiercingEnum), x);
+					piercingLookup.Add(piercing, true);
+				}
+			}
+		}
 
+		internal bool[] serializePiercings()
+		{
+			bool[] retVal = new bool[maxPiercingCount];
+			foreach (var val in piercingLookup)
+			{
+				if (val.Value)
+				{
+					var ind = (int)Convert.ChangeType(val.Key, typeof(int));
+					retVal[ind] = true;
+				}
+			}
+			return retVal;
+		}
 	}
 }

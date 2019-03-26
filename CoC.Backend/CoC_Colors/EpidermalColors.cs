@@ -4,9 +4,11 @@
 //12/31/2018, 2:35 AM
 using System;
 using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace CoC.Backend.CoC_Colors
 {
+	[DataContract]
 	public abstract class CoCColors
 	{
 		//RGB is used for comparing colors. it factors in when trying to convert one color to something else 

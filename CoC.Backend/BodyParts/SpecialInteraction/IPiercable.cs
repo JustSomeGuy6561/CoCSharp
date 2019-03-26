@@ -3,15 +3,15 @@
 //Author: JustSomeGuy
 //12/30/2018, 12:34 AM
 
-using CoC.Wearables.Piercings;
-
+using CoC.Backend.Wearables;
+using System;
 namespace  CoC.Backend.BodyParts.SpecialInteraction
 {
 	//Quick clarification: piercings are permanent in that it remains pierced even if no
 	//jewelry is in this piercing. thus, once pierced, isPierced will return true.
 	//HasJewelry will only return true if there is some jewelry in that piercing.
 
-	interface IPiercable<PiercingLocationEnum> where PiercingLocationEnum : System.Enum
+	public interface IPiercable<PiercingLocationEnum> where PiercingLocationEnum : System.Enum
 	{
 		int maxPiercingCount { get; }
 
@@ -30,5 +30,19 @@ namespace  CoC.Backend.BodyParts.SpecialInteraction
 
 		bool IsPierced(PiercingLocationEnum piercingLocation);
 		bool HasJewelry(PiercingLocationEnum piercingLocation);
+	}
+
+	public static class PiercingHelper
+	{
+		public static bool[] CreatePiercingListForCreator<T, U>(params U[] piercingLocations) where T: IPiercable<U> where U: Enum
+		{
+			bool[] retVal = new bool[Enum.GetNames(typeof(U)).Length];
+			foreach (U param in piercingLocations)
+			{
+				var ind = (int)Convert.ChangeType(param, typeof(int));
+				retVal[ind] = true;
+			}
+			return retVal;
+		}
 	}
 }

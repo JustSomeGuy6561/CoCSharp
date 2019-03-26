@@ -9,6 +9,8 @@ namespace  CoC.Backend.BodyParts.SpecialInteraction
 	{
 		bool canToneLotion();
 
+		bool isDifferentTone(Tones tone);
+
 		bool attemptToUseLotion(Tones tone);
 	}
 }

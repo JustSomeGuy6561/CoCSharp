@@ -4,23 +4,28 @@
 //1/5/2019, 5:41 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Save;
+using CoC.Backend.Save.Internals;
+using CoC.Backend.Wearables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+
 namespace CoC.Backend.BodyParts
 {
+	[DataContract]
 	public abstract class SimplePiercing<ThisClass, PiercingEnum> : IPiercable<PiercingEnum>, ISaveableBase where PiercingEnum : Enum
 		where ThisClass : SimplePiercing<ThisClass, PiercingEnum>
 	{
 		protected bool piercingFetish => BackendSessionData.data.piercingFetish;
-		protected Dictionary<PiercingEnum, bool> piercingLookup;
-		protected Dictionary<PiercingEnum, PiercingJewelry> jewelryLookup;
+		protected readonly Dictionary<PiercingEnum, bool> piercingLookup = new Dictionary<PiercingEnum, bool>();
+		protected readonly Dictionary<PiercingEnum, PiercingJewelry> jewelryLookup = new Dictionary<PiercingEnum, PiercingJewelry>();
 
 		public int maxPiercingCount => Enum.GetNames(typeof(PiercingEnum)).Length;
 		//functional programming ftw!
 		//counts the number of trues, and returns it. uses a "fold" function. fold iterates over a list, doing an action for each element, then returning the result
 		public int currentPiercingCount => piercingLookup.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
-		public int currentJewelryCount => jewelryLookup.Values.Count;
+		public int currentJewelryCount => jewelryLookup.Values.Aggregate(0, (x, y) => { if (y != null) x++; return x; });
 
 
 		public bool EquipPiercingJewelry(PiercingEnum piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
@@ -129,12 +134,44 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region Serialization
-		Type ISaveableBase.currentSaveType => throw new NotImplementedException();
+		internal void deserializePiercings(bool[] piercingData)
+		{
+			this.piercingLookup.Clear();
+			if (piercingData == null || piercingData.Length == 0)
+			{
+				return;
+			}
+			int iter = Math.Min(piercingData.Length, maxPiercingCount);
+			for (int x = 0; x < iter; x++)
+			{
+				if (piercingData[x])
+				{
+					PiercingEnum piercing = (PiercingEnum)Enum.ToObject(typeof(PiercingEnum), x);
+					piercingLookup.Add(piercing, true);
+				}
+			}
+		}
 
-		Type[] ISaveableBase.saveVersionTypes => throw new NotImplementedException();
+		internal bool[] serializePiercings()
+		{
+			bool[] retVal = new bool[maxPiercingCount];
+			foreach (var val in piercingLookup)
+			{
+				if (val.Value)
+				{
+					var ind = (int)Convert.ChangeType(val.Key, typeof(int));
+					retVal[ind] = true;
+				}
+			}
+			return retVal;
+		}
+
+		Type ISaveableBase.currentSaveType => currentSaveVersion;
+
+		Type[] ISaveableBase.saveVersionTypes => currentSaves;
 		object ISaveableBase.ToCurrentSaveVersion()
 		{
-			throw new NotImplementedException();
+			return ToCurrentSave();
 		}
 
 		internal abstract Type[] currentSaves { get; }
@@ -144,6 +181,7 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 	}
+	[DataContract]
 	public abstract class SimplePiercingSurrogate<SaveClass, PiercingEnum> : ISurrogateBase where SaveClass : SimplePiercing<SaveClass, PiercingEnum> where PiercingEnum : Enum
 	{
 		private protected SimplePiercingSurrogate() { }

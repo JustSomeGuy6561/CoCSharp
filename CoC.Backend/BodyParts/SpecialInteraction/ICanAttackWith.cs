@@ -2,7 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/7/2019, 2:58 AM
-using CoC.Engine.Combat.Attacks;
+using CoC.Backend.Engine.Combat.Attacks;
 
 namespace  CoC.Backend.BodyParts.SpecialInteraction
 {

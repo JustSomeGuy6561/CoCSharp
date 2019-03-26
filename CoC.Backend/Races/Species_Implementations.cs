@@ -7,7 +7,6 @@
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Tools;
-using CoC.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -103,7 +102,7 @@ namespace CoC.Backend.Races
 		//i suppose it'd carry over to other classes on TF, but that seems an unintended side-effect.
 		//similarly, unless the check for cockatrice skin is ran, or FurColor is expressly called (which is VERY unsafe, unless the cockatrice check is ran),
 		//the primary fur color is ignored
-		
+
 		//if cockatrice, store the fur and tone in the primary, and use them both. 
 
 		//i'm changing this - now the body will use the primary fur color and the tone as the underbody (which is scales)
@@ -232,6 +231,8 @@ namespace CoC.Backend.Races
 	{
 		//eye color: Orange
 		public Tones defaultTone => Tones.SILVER; // ember uses to silver/gold. So, that's what i'll use. screw it. 
+
+		public Tones defaultWingTone => Tones.DARK_RED;
 		public EyeColor defaultEyeColor => EyeColor.ORANGE;
 		internal Dragon() : base(DragonStr) { }
 	}
@@ -346,7 +347,7 @@ namespace CoC.Backend.Races
 	public class Harpy : Species
 	{
 		public FurColor defaultFeathers => new FurColor(HairFurColors.WHITE);
-
+		public HairFurColors defaultFeatherHair => HairFurColors.WHITE;
 		internal Harpy() : base(HarpyStr) { }
 	}
 
@@ -417,7 +418,7 @@ namespace CoC.Backend.Races
 
 		public Tones[] KitsuneTones => new Tones[] { Tones.TAN, Tones.OLIVE, Tones.LIGHT };
 
-		public Tones ElderKitsuneTones => new Tones[] { Tones.DARK, Tones.EBONY, Tones.ASHEN, Tones.SABLE, Tones.MILKY_WHITE };
+		public Tones[] ElderKitsuneTones => new Tones[] { Tones.DARK, Tones.EBONY, Tones.ASHEN, Tones.SABLE, Tones.MILKY_WHITE };
 		internal Kitsune() : base(KitsuneStr) { }
 	}
 

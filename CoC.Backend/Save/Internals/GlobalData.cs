@@ -1,8 +1,7 @@
-﻿using CoC.Backend.Save;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
-namespace CoC.Backend.SaveData
+namespace CoC.Backend.Save.Internals
 {
 	[DataContract]
 	internal sealed class BackendGlobalData : SaveableData

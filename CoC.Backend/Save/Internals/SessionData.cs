@@ -1,7 +1,9 @@
-﻿using System;
+﻿using CoC.Backend.Creatures;
+using System;
 using System.Runtime.Serialization;
+using CoC.Backend.Save;
 
-namespace CoC.Backend.Save
+namespace CoC.Backend.Save.Internals
 {
 	[DataContract]
 	public sealed class BackendSessionData : SaveableData
@@ -12,11 +14,14 @@ namespace CoC.Backend.Save
 		public long secondsPlayed { get; private set; }
 		public bool piercingFetish { get; private set; }
 
+		public Player player;
+
 		internal BackendSessionData()
 		{
 			numTimesSaved = 0;
 			secondsPlayed = 0;
 			piercingFetish = false;
+			player = null;
 		}
 
 		internal BackendSessionData(BackendSessionSave saveData)
@@ -24,6 +29,7 @@ namespace CoC.Backend.Save
 			numTimesSaved = saveData.numSaves;
 			secondsPlayed = saveData.secondsPlayed;
 			piercingFetish = saveData.piercingFetish;
+			player = saveData.player;
 		}
 
 
@@ -37,13 +43,15 @@ namespace CoC.Backend.Save
 			{
 				numSaves = this.numTimesSaved,
 				secondsPlayed = this.secondsPlayed,
-				piercingFetish = this.piercingFetish
+				piercingFetish = this.piercingFetish,
+				player = this.player
 			};
 		}
 	}
 
 
 	[DataContract]
+	[KnownType(typeof(Player))]
 	public sealed class BackendSessionSave : ISurrogateBase
 	{
 		internal BackendSessionSave() { }
@@ -53,7 +61,8 @@ namespace CoC.Backend.Save
 		public long secondsPlayed;
 		[DataMember]
 		public bool piercingFetish;
-
+		[DataMember]
+		public Player player;
 		public object ToSaveable()
 		{
 			return new BackendSessionData(this);

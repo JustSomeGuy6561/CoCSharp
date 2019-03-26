@@ -1,14 +1,24 @@
 ﻿using CoC.Backend.Save;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public abstract class SimpleSaveableBodyPart<ThisClass, BehaviorClass> : SimpleBodyPart<BehaviorClass>, ISaveableBase 
+	[DataContract]
+	public abstract class SimpleSaveableBodyPart<ThisClass, BehaviorClass> : ISaveableBase 
 		where ThisClass : SimpleSaveableBodyPart<ThisClass, BehaviorClass> 
 		where BehaviorClass : SimpleSaveableBehavior
 	{
+
+		public abstract BehaviorClass type { get; protected set; }
+		public virtual int index => type.index;
+
+		internal abstract bool Validate(bool correctDataIfInvalid = false);
+
+		public virtual SimpleDescriptor description => type.desrciption;
+
 		Type ISaveableBase.currentSaveType => currentSaveVersion;
 		Type[] ISaveableBase.saveVersionTypes => saveVersions;
 		object ISaveableBase.ToCurrentSaveVersion()
@@ -23,11 +33,18 @@ namespace CoC.Backend.BodyParts
 
 	}
 
-	public abstract class SimpleSaveableBehavior : SimpleBodyPartType
+	public abstract class SimpleSaveableBehavior
 	{
-		private protected SimpleSaveableBehavior(SimpleDescriptor shortDesc) : base(shortDesc)	{}
+		public abstract int index { get; }
+
+		private protected SimpleSaveableBehavior(SimpleDescriptor shortDesc)
+		{
+			desrciption = shortDesc;
+		}
+		public readonly SimpleDescriptor desrciption;
 	}
 
+	[DataContract]
 	public abstract class SimpleSurrogate<SaveClass, BehaviorClass> : ISurrogateBase where SaveClass : SimpleSaveableBodyPart<SaveClass, BehaviorClass> where BehaviorClass: SimpleSaveableBehavior
 	{
 		private protected SimpleSurrogate() { }

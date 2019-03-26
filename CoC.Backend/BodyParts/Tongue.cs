@@ -80,19 +80,15 @@ namespace CoC.Backend.BodyParts
 			return new TongueSurrogateVersion1()
 			{
 				tongueType = index,
-				piercingsUnlocked = piercingLookup.Values.ToArray()
+				tonguePiercings = serializePiercings()
 			};
 		}
 
 		internal Tongue(TongueSurrogateVersion1 surrogate)
 		{
 			type = TongueType.Deserialize(surrogate.tongueType);
-			piercingLookup = new Dictionary<TonguePiercings, bool>();
 #warning Add piercing jewelry when that's implemented
-			foreach (var val in Utils.AsIterable<TonguePiercings>())
-			{
-				piercingLookup[val] = surrogate.piercingsUnlocked.Length > (int)val ? surrogate.piercingsUnlocked[(int)val] : false;
-			}
+			deserializePiercings(surrogate.tonguePiercings);
 		}
 	}
 	public partial class TongueType : PiercableBodyPartBehavior<TongueType, Tongue, TonguePiercings>
@@ -105,6 +101,7 @@ namespace CoC.Backend.BodyParts
 		private protected TongueType(short tongueLength, SimpleDescriptor shortDesc, DescriptorWithArg<Tongue> fullDesc, TypeAndPlayerDelegate<Tongue> playerDesc, ChangeType<Tongue> transform, RestoreType<Tongue> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
+			tongues.AddAt(this, _index);
 			length = tongueLength;
 		}
 
@@ -146,7 +143,7 @@ namespace CoC.Backend.BodyParts
 		[DataMember]
 		public int tongueType;
 		[DataMember]
-		public bool[] piercingsUnlocked;
+		public bool[] tonguePiercings;
 
 		internal override Tongue ToBodyPart()
 		{

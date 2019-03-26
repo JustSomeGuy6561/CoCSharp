@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //12/26/2018, 7:56 PM
 
-namespace CoC.Tools
+namespace CoC.Backend.Tools
 {
 	interface IRandom<T>
 	{

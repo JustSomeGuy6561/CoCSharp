@@ -4,7 +4,7 @@
 //12/26/2018, 7:56 PM
 using System.Collections.Generic;
 
-namespace CoC.Tools
+namespace CoC.Backend.Tools
 {
 	internal class Lottery<T> : IRandom<T>
 	{

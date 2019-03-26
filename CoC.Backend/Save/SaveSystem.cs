@@ -118,7 +118,8 @@ namespace CoC.Backend.Save
 			string file = Path.Combine(saveDirectory, fileName);
 			SaveableData[] members = sessionData.Values.ToArray();
 			DataContractSerializer dcs = DataContractSystem.getSerializer();
-			using (XmlWriter writer = XmlWriter.Create(file))
+			XmlWriterSettings settings = new XmlWriterSettings { Indent = true };
+			using (XmlWriter writer = XmlWriter.Create(file, settings))
 			{
 				dcs.WriteObject(writer, members);
 			}

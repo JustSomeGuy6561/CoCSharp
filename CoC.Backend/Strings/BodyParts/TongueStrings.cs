@@ -11,7 +11,7 @@ namespace CoC.Backend.BodyParts
 {
 	//full desc adds "pierced " 30% of the time, if pierced.
 
-	internal partial class TongueType
+	public partial class TongueType
 	{
 		private static string HumanDesc()
 		{

@@ -8,7 +8,9 @@ namespace  CoC.Backend.BodyParts.SpecialInteraction
 {
 	interface IDyeable
 	{
-		bool canDye();
+		bool allowsDye();
+
+		bool isDifferentColor(HairFurColors dyeColor);
 
 		bool attemptToDye(HairFurColors dye);
 	}

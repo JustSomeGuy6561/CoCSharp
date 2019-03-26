@@ -5,6 +5,7 @@
 
 
 using CoC.Backend.Strings;
+using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -22,7 +23,7 @@ namespace CoC.Backend.BodyParts
 
 		private protected Antennae(AntennaeType antennaeType)
 		{
-			type = antennaeType;
+			type = antennaeType ?? throw new ArgumentNullException();
 		}
 
 
@@ -34,6 +35,14 @@ namespace CoC.Backend.BodyParts
 			}
 			type = AntennaeType.NONE;
 			return type == AntennaeType.NONE;
+		}
+
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			AntennaeType antennae = type; 
+			bool retVal = AntennaeType.Validate(ref antennae, correctDataIfInvalid);
+			type = antennae;
+			return retVal;
 		}
 
 		internal static Antennae GenerateDefault()
@@ -48,7 +57,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateAntennae(AntennaeType newType)
 		{
-			if (type == newType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
@@ -59,7 +68,7 @@ namespace CoC.Backend.BodyParts
 
 		#region serialization
 
-		internal override Type[] saveVersions => throw new NotImplementedException();
+		internal override Type[] saveVersions => new Type[] { typeof(AntennaeSurrogateVersion1) };
 		internal override Type currentSaveVersion => typeof(AntennaeSurrogateVersion1);
 
 		internal override BodyPartSurrogate<Antennae, AntennaeType> ToCurrentSave()
@@ -77,14 +86,14 @@ namespace CoC.Backend.BodyParts
 	public partial class AntennaeType : BodyPartBehavior<AntennaeType, Antennae>
 	{
 		private static int indexMaker = 0;
-		private static List<AntennaeType> antennaes = new List<AntennaeType>();
+		private static readonly List<AntennaeType> antennaes = new List<AntennaeType>();
 
 		//C# 7.2 magic. basically, prevents it from being messed with except internally.
 		private protected AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,
 			ChangeType<Antennae> transformMessage, RestoreType<Antennae> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
 		{
 			_index = indexMaker++;
-			antennaes[_index] = this;
+			antennaes.AddAt(this, _index);
 		}
 
 		public override int index
@@ -112,6 +121,19 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 			//return antennaes[0];
+		}
+
+		internal static bool Validate(ref AntennaeType antennae, bool correctInvalidData)
+		{
+			if (antennaes.Contains(antennae))
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				antennae = NONE;
+			}
+			return false;
 		}
 
 		//Don't do this to this level lol. I just used lambdas everywhere because i changed the signature in the base to make things behave better globally, and didn't want to deal 

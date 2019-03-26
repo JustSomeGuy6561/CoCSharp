@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CoC.Backend.Creatures;
 using CoC.Backend.Save;
-using CoC.Backend.SaveData;
+using CoC.Backend.Save.Internals;
 namespace CoC.Backend.Engine
 {
-	class BackendInitializer
+	public static class BackendInitializer
 	{
 		public static void Init()
 		{
-			SaveSystem.AddGlobalSaveInstance(new BackendGlobalData(), typeof(BackendGlobalData));
-			SaveSystem.AddSessionSaveInstance(new BackendSessionData(), typeof(BackendSessionData));
+			SaveSystem.AddGlobalSaveInstance(new BackendGlobalData());
+			SaveSystem.AddSessionSaveInstance(new BackendSessionData());
+			Player initialPlayer = new Player(creator:null);
+			BackendSessionData.data.player = initialPlayer;
+			initialPlayer.AddSurrogateData();
 		}
 	}
 }

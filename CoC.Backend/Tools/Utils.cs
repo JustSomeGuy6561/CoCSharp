@@ -81,6 +81,26 @@ namespace CoC.Backend.Tools
 		{
 			return Enum.GetValues(typeof(T)).Cast<T>();
 		}
+
+		public static void AddAt<T>(this List<T> list, T item, int index)
+		{
+			if (list.Count <= index)
+			{
+				while (list.Count < index)
+				{
+					list.Add(default);
+				}
+				list.Add(item);
+			}
+			else if (list.Count > index)
+			{
+				list[index] = item;
+			}
+			else
+			{
+				list.Add(item);
+			}
+		}
 	}
 
 	public class Pair<T, U>

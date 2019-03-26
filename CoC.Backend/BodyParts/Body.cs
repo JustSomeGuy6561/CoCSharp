@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/18/2019, 9:56 PM
 
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -16,9 +17,9 @@ namespace CoC.Backend.BodyParts
 
 	public enum NavelPiercings { TOP, BOTTOM }
 	[DataContract]
-	public class Body : PiercableBodyPart<Body, BodyType, NavelPiercings>
+	public class Body : PiercableBodyPart<Body, BodyType, NavelPiercings> //IDyeable, IToneable
 	{
-
+		private static readonly HairFurColors DEFAULT_HAIR = HairFurColors.BLACK;
 		//Hair, Fur, Tone
 		//[Save]
 		public HairFurColors hairColor { get; private set; }
@@ -48,7 +49,7 @@ namespace CoC.Backend.BodyParts
 
 		private protected Body(BodyType bodyType)
 		{
-			if (hairColor == null || hairColor == HairFurColors.NO_HAIR_FUR)
+			if (HairFurColors.IsNullOrEmpty(hairColor)) 
 			{
 				hairColor = HairFurColors.BLACK;
 			}
@@ -57,6 +58,7 @@ namespace CoC.Backend.BodyParts
 
 			_primaryEpidermis = Epidermis.GenerateEmpty();
 			_secondaryEpidermis = Epidermis.GenerateEmpty();
+			hairColor = DEFAULT_HAIR;
 			if (bodyType.isFurry)
 			{
 				FurBodyType furBody = (FurBodyType)type;
@@ -74,14 +76,20 @@ namespace CoC.Backend.BodyParts
 				if (toneBody.hasUnderBody)
 				{
 					_secondaryEpidermis.UpdateEpidermis((ToneBasedEpidermisType)type.epidermisType, toneBody.defaultTone);
-
 				}
 			}
-			else //bodyType.isCockatrice
+			else if (bodyType.isCockatrice)
 			{
 				CockatriceBodyType cockatriceBody = (CockatriceBodyType)type;
 				_primaryEpidermis.UpdateEpidermis((FurBasedEpidermisType)cockatriceBody.epidermisType, cockatriceBody.defaultFur);
 				_secondaryEpidermis.UpdateEpidermis((ToneBasedEpidermisType)cockatriceBody.secondaryEpidermisType, cockatriceBody.defaultScales, true);
+			}
+			else if (bodyType.isKitsune)
+			{
+				KitsuneBodyType kitsuneBody = (KitsuneBodyType)type;
+				_primaryEpidermis.UpdateEpidermis((ToneBasedEpidermisType)kitsuneBody.epidermisType, kitsuneBody.defaultSkin);
+				_primaryEpidermis.ChangeFur(kitsuneBody.defaultFur); // needs to override.
+				_secondaryEpidermis.UpdateEpidermis((FurBasedEpidermisType)kitsuneBody.secondaryEpidermisType, kitsuneBody.defaultFur);
 			}
 		}
 
@@ -117,49 +125,74 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		public static Body GenerateTonedNoUnderbody(ToneBodyType toneBody, Tones primaryTone)
+		public static Body GenerateKitsune(Tones skinTone, FurColor furColor)
 		{
-			Body retVal = new Body(toneBody);
-			if (primaryTone != Tones.NOT_APPLICABLE)
+			Body retVal = new Body(BodyType.KITSUNE);
+			if (!furColor.isNoFur())
 			{
-				retVal._primaryEpidermis.ChangeTone(primaryTone);
+				retVal._primaryEpidermis.ChangeFur(furColor);
+				retVal._secondaryEpidermis.ChangeFur(furColor);
 			}
-			return retVal;
-		}
-		public static Body GenerateToneWithUnderbody(ToneBodyType toneBody, Tones primaryTone, Tones secondaryTone)
-		{
-			Body retVal = new Body(toneBody);
-			if (primaryTone != Tones.NOT_APPLICABLE)
+			if (skinTone != Tones.NOT_APPLICABLE)
 			{
-				retVal._primaryEpidermis.ChangeTone(primaryTone);
-			}
-			if (secondaryTone != Tones.NOT_APPLICABLE && toneBody.hasUnderBody)
-			{
-				retVal._secondaryEpidermis.ChangeTone(secondaryTone);
+				retVal._primaryEpidermis.ChangeTone(skinTone);
 			}
 			return retVal;
 		}
 
-		public static Body GenerateFurredNoUnderbody(FurBodyType furryBody, FurColor primaryFur)
+		public static Body GenerateTonedNoUnderbody(ToneBodyType toneBody, Tones primaryTone, SkinTexture texture = SkinTexture.NONDESCRIPT)
 		{
-			Body retVal = new Body(furryBody);
-			if (!primaryFur.isNoFur())
+			Body retVal = new Body(toneBody);
+			if (primaryTone != Tones.NOT_APPLICABLE)
 			{
-				retVal._primaryEpidermis.ChangeFur(primaryFur);
+				retVal._primaryEpidermis.ChangeTone(primaryTone);
 			}
+			retVal._primaryEpidermis.ChangeTexture(texture);
 			return retVal;
 		}
-		public static Body GenerateFurredWithUnderbody(FurBodyType furryBody, FurColor primaryFur, FurColor secondaryFur)
+		public static Body GenerateToneWithUnderbody(ToneBodyType toneBody, Tones primaryTone, Tones secondaryTone, 
+			SkinTexture primaryTexture = SkinTexture.NONDESCRIPT, SkinTexture secondaryTexture = SkinTexture.NONDESCRIPT)
+		{
+			Body retVal = new Body(toneBody);
+			if (primaryTone != Tones.NOT_APPLICABLE)
+			{
+				retVal._primaryEpidermis.ChangeTone(primaryTone);
+			}
+			retVal._primaryEpidermis.ChangeTexture(primaryTexture);
+
+			if (secondaryTone != Tones.NOT_APPLICABLE && toneBody.hasUnderBody)
+			{
+				retVal._secondaryEpidermis.ChangeTone(secondaryTone);
+			}
+			retVal._secondaryEpidermis.ChangeTexture(secondaryTexture);
+
+			return retVal;
+		}
+
+		public static Body GenerateFurredNoUnderbody(FurBodyType furryBody, FurColor primaryFur, FurTexture texture = FurTexture.NONDESCRIPT)
 		{
 			Body retVal = new Body(furryBody);
 			if (!primaryFur.isNoFur())
 			{
 				retVal._primaryEpidermis.ChangeFur(primaryFur);
 			}
+			retVal._primaryEpidermis.ChangeTexture(texture);
+			return retVal;
+		}
+		public static Body GenerateFurredWithUnderbody(FurBodyType furryBody, FurColor primaryFur, FurColor secondaryFur, 
+			FurTexture primaryTexture = FurTexture.NONDESCRIPT, FurTexture secondaryTexture = FurTexture.NONDESCRIPT)
+		{
+			Body retVal = new Body(furryBody);
+			if (!primaryFur.isNoFur())
+			{
+				retVal._primaryEpidermis.ChangeFur(primaryFur);
+			}
+			retVal._primaryEpidermis.ChangeTexture(primaryTexture);
 			if (!secondaryFur.isNoFur())
 			{
 				retVal._secondaryEpidermis.ChangeFur(secondaryFur);
 			}
+			retVal._secondaryEpidermis.ChangeTexture(secondaryTexture);
 			return retVal;
 		}
 		#endregion
@@ -473,21 +506,19 @@ namespace CoC.Backend.BodyParts
 				bodyType = index,
 				primaryEpidermis = _primaryEpidermis,
 				secondaryEpidermis = _secondaryEpidermis,
-				piercingsUnlocked = piercingLookup.Values.ToArray()
+				hairColor = this.hairColor,
+				navelPiercings = serializePiercings()
 			};
 		}
 
 		internal Body(BodySurrogateVersion1 surrogate)
 		{
+			type = BodyType.Deserialize(surrogate.bodyType);
 			_primaryEpidermis = surrogate.primaryEpidermis;
 			_secondaryEpidermis = surrogate.secondaryEpidermis;
-			type = BodyType.Deserialize(surrogate.bodyType);
-			piercingLookup = new Dictionary<NavelPiercings, bool>();
+			hairColor = surrogate.hairColor;
 #warning Add piercing jewelry when that's implemented
-			foreach (var val in Utils.AsIterable<NavelPiercings>())
-			{
-				piercingLookup[val] = surrogate.piercingsUnlocked.Length > (int)val ? surrogate.piercingsUnlocked[(int)val] : false;
-			}
+			deserializePiercings(surrogate.navelPiercings);
 		}
 		#endregion
 	}
@@ -496,7 +527,7 @@ namespace CoC.Backend.BodyParts
 	{
 		private static int indexMaker = 0;
 
-		private static List<BodyType> bodyTypes = new List<BodyType>();
+		private static readonly List<BodyType> bodyTypes = new List<BodyType>();
 
 		public readonly bool hasUnderBody;
 		public readonly SimpleDescriptor underBodyDescription;
@@ -517,7 +548,7 @@ namespace CoC.Backend.BodyParts
 			hasUnderBody = underbodyDescript != GlobalStrings.None;
 
 			_index = indexMaker++;
-			bodyTypes[_index] = this;
+			bodyTypes.AddAt(this, _index);
 		}
 
 		private protected BodyType(EpidermisType type,
@@ -529,7 +560,7 @@ namespace CoC.Backend.BodyParts
 			hasUnderBody = false;
 
 			_index = indexMaker++;
-			bodyTypes[_index] = this;
+			bodyTypes.AddAt(this, _index);
 		}
 
 		internal static BodyType Deserialize(int index)
@@ -558,6 +589,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly ToneBodyType REPTILIAN = new ToneBodyType(EpidermisType.SCALES, Tones.DARK_RED, ScalesUnderbodyDesc, ScalesDesc, ScalesFullDesc, ScalesPlayerStr, ScalesTransformStr, ScalesRestoreStr);
 		public static readonly ToneBodyType NAGA = new ToneBodyType(EpidermisType.SCALES, Tones.DARK_RED, NagaUnderbodyDesc, NagaDesc, NagaFullDesc, NagaPlayerStr, NagaTransformStr, NagaRestoreStr);
 		public static readonly CockatriceBodyType COCKATRICE = new CockatriceBodyType(new FurColor(HairFurColors.WHITE), Tones.TAN);
+		public static readonly KitsuneBodyType KITSUNE = new KitsuneBodyType(Tones.TAN, new FurColor(HairFurColors.WHITE));
 		public static readonly ToneBodyType WOODEN = new ToneBodyType(EpidermisType.BARK, Tones.WOODLY_BROWN, BarkDesc, BarkFullDesc, BarkPlayerStr, BarkTransformStr, BarkRestoreStr);
 		//one color (or two in a pattern, like zebra stripes) over the entire body.
 		public static readonly FurBodyType SIMPLE_FUR = new FurBodyType(EpidermisType.FUR, new FurColor(HairFurColors.BLACK), FurDesc, FurFullDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
@@ -576,6 +608,7 @@ namespace CoC.Backend.BodyParts
 		public bool isFurry => this is FurBodyType;
 		public bool isTone => this is ToneBodyType;
 		public bool isCockatrice => this is CockatriceBodyType;
+		public bool isKitsune => this is KitsuneBodyType;
 	}
 
 	public class FurBodyType : BodyType
@@ -658,7 +691,8 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly FurColor defaultFur;
 		public readonly Tones defaultScales;
-		internal CockatriceBodyType(FurColor feathers, Tones underbodyScales) : base(EpidermisType.FEATHERS, FeatherUnderbodyDesc, FeatherDesc, FeatherFullDesc, FeatherPlayerStr, FeatherTransformStr, FeatherRestoreStr)
+		internal CockatriceBodyType(FurColor feathers, Tones underbodyScales) : base(EpidermisType.FEATHERS, CockatriceUnderbodyDesc, 
+			CockatriceDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 		{
 			defaultFur = feathers;
 			defaultScales = underbodyScales;
@@ -687,6 +721,39 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	public class KitsuneBodyType : BodyType
+	{
+		public readonly FurColor defaultFur;
+		public readonly Tones defaultSkin;
+		internal KitsuneBodyType(Tones skinTone, FurColor fur) : base(EpidermisType.SKIN, KitsuneUnderbodyDesc, KitsuneDesc, KitsuneFullDesc, KitsunePlayerStr, KitsuneTransformStr, KitsuneRestoreStr)
+		{
+			defaultFur = fur;
+			defaultSkin = skinTone;
+		}
+
+		public override EpidermisType secondaryEpidermisType => EpidermisType.FUR;
+
+		internal override void ValidateDataPostInit(Epidermis primary, Epidermis secondary)
+		{
+			if (primary.tone == Tones.NOT_APPLICABLE)
+			{
+				primary.ChangeTone(defaultSkin);
+			}
+			if (primary.type != epidermisType)
+			{
+				primary.UpdateEpidermis(epidermisType);
+			}
+			if (secondary.fur.isNoFur())
+			{
+				secondary.ChangeFur(defaultFur);
+			}
+			if (secondary.type != secondaryEpidermisType)
+			{
+				secondary.UpdateEpidermis(secondaryEpidermisType);
+			}
+		}
+	}
+
 	[DataContract]
 	[KnownType(typeof(Epidermis))]
 	[KnownType(typeof(bool[]))]
@@ -695,11 +762,13 @@ namespace CoC.Backend.BodyParts
 		[DataMember]
 		public int bodyType;
 		[DataMember]
+		public HairFurColors hairColor;
+		[DataMember]
 		public Epidermis primaryEpidermis;
 		[DataMember]
 		public Epidermis secondaryEpidermis;
 		[DataMember]
-		public bool[] piercingsUnlocked;
+		public bool[] navelPiercings;
 
 		internal override Body ToBodyPart()
 		{

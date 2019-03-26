@@ -7,11 +7,11 @@ namespace  CoC.BodyParts
 {
 	public enum NosePiercings {LEFT_NOSTRIL, RIGHT_NOSTRIL, SEPTIMUS, BRIDGE}
 
-	internal class Nose : SimplePiercing<NosePiercings>
+	public class Nose : SimplePiercing<NosePiercings>
 	{
 		protected Nose() {}
 
-		public static Nose Generate()
+		internal static Nose Generate()
 		{
 			return new Nose();
 		}

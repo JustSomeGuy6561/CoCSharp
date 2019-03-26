@@ -2,9 +2,8 @@
 //Description: The base class for implementing how a body part behaves.
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
-using CoC.Tools;
 
-namespace  CoC.Backend.BodyParts
+namespace CoC.Backend.BodyParts
 {
 	/* Behavior or ruleset base class.
 	 * All body parts are made up of two things: a "ruleset", and then variables
@@ -24,7 +23,7 @@ namespace  CoC.Backend.BodyParts
 
 	public abstract class BodyPartBehavior<ThisClass, ContainerClass> where ThisClass : BodyPartBehavior<ThisClass, ContainerClass> where ContainerClass : BodyPartBase<ContainerClass, ThisClass>
 	{
-		
+
 		public abstract int index { get; }
 
 		//Function pointers. Wooo!

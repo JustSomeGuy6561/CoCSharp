@@ -4,6 +4,7 @@
 //12/26/2018, 7:58 PM
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Strings;
+using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -26,7 +27,7 @@ namespace CoC.Backend.BodyParts
 	 */
 
 	//feel free to add more of these. i just did these because they were there, and i didn't want to use a string.
-	public enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED }
+	public enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED, SLIMY }
 	public enum FurTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, MANGEY }
 
 	[DataContract]
@@ -35,8 +36,8 @@ namespace CoC.Backend.BodyParts
 		public FurColor fur { get; protected set; }
 		public Tones tone { get; protected set; }
 
-		protected SkinTexture skinTexture;
-		protected FurTexture furTexture;
+		public SkinTexture skinTexture { get; protected set; }
+		public FurTexture furTexture { get; protected set; }
 
 		public bool usesFur => type.usesFur;
 		public bool usesTone => type.usesTone;
@@ -49,6 +50,8 @@ namespace CoC.Backend.BodyParts
 			this.type = EpidermisType.EMPTY;
 			fur = new FurColor();
 			tone = Tones.NOT_APPLICABLE;
+			skinTexture = SkinTexture.NONDESCRIPT;
+			furTexture = FurTexture.NONDESCRIPT;
 		}
 		#region Generate
 		public EpidermalData GetEpidermalData()
@@ -156,7 +159,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool UpdateEpidermis(FurBasedEpidermisType furType, FurColor overrideColor, FurTexture texture, bool resetTone = false)
 		{
-			if (type == furType)
+			if (type == furType && !fur.isNoFur())
 			{
 				return false;
 			}
@@ -227,7 +230,21 @@ namespace CoC.Backend.BodyParts
 			}
 			return false;
 		}
-#endregion
+
+		public bool ChangeTexture(FurTexture newTexture)
+		{
+			if (furTexture == newTexture) return false;
+			furTexture = newTexture;
+			return true;
+		}
+
+		public bool ChangeTexture(SkinTexture newTexture)
+		{
+			if (skinTexture == newTexture) return false;
+			skinTexture = newTexture;
+			return true;
+		}
+		#endregion
 		#region Update Or Change
 		//Useful Helpers. Update if different, change if same. I'm not overly fond of the idea as the behavior is not identical in all instances, but
 		//considering how often the if/else check would be used this makes more sense. use these only if you are truly doing it - if you know the type is 
@@ -321,7 +338,7 @@ namespace CoC.Backend.BodyParts
 		private protected EpidermisType(SimpleDescriptor desc, bool canChange) : base(desc)
 		{
 			_index = indexMaker++;
-			epidermi[_index] = this;
+			epidermi.AddAt(this, _index);
 			updateable = canChange;
 		}
 
@@ -398,14 +415,16 @@ namespace CoC.Backend.BodyParts
 		private readonly FurColor _fur;
 		private readonly Tones _tone;
 
-		private SkinTexture _skinTexture;
-		private FurTexture _furTexture;
+		private readonly SkinTexture _skinTexture;
+		private readonly FurTexture _furTexture;
 
 		public EpidermalData(EpidermisType type, FurColor furColor, FurTexture texture)
 		{
 			epidermisType = type;
 			_fur = new FurColor(furColor);
 			_tone = Tones.NOT_APPLICABLE;
+			_furTexture = texture;
+			_skinTexture = SkinTexture.NONDESCRIPT;
 		}
 
 		public EpidermalData(EpidermisType type, Tones tones, SkinTexture texture)
@@ -413,6 +432,8 @@ namespace CoC.Backend.BodyParts
 			epidermisType = type;
 			_fur = new FurColor();
 			_tone = tones;
+			_skinTexture = texture;
+			_furTexture = FurTexture.NONDESCRIPT;
 		}
 
 		public bool usesFur => epidermisType.usesFur;

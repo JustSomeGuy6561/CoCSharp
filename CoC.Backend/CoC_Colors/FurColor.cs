@@ -2,12 +2,16 @@
 //Description:
 //Author: JustSomeGuy
 //1/3/2019, 1:53 PM
+using CoC.Backend.Save;
+using System;
 using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace CoC.Backend.CoC_Colors
 {
-	public enum FurMulticolorPattern { STRIPED, SPOTTED, MIXED, NO_PATTERN }
-	public class FurColor
+	public enum FurMulticolorPattern {NO_PATTERN, STRIPED, SPOTTED, MIXED  }
+	[DataContract]
+	public class FurColor : ISaveableBase
 	{
 		public FurMulticolorPattern multiColorPattern { get; protected set; }
 		public HairFurColors primaryColor { get; protected set; }
@@ -33,6 +37,7 @@ namespace CoC.Backend.CoC_Colors
 			secondaryColor = other.secondaryColor;
 			isMultiColored = other.isMultiColored;
 			multiColorPattern = other.multiColorPattern;
+			validateData();
 		}
 
 		public FurColor(HairFurColors primary, HairFurColors secondary, FurMulticolorPattern pattern)
@@ -41,6 +46,7 @@ namespace CoC.Backend.CoC_Colors
 			secondaryColor = secondary;
 			multiColorPattern = pattern;
 			isMultiColored = true;
+			validateData();
 		}
 		public void UpdateFurColor(FurColor other)
 		{
@@ -48,6 +54,7 @@ namespace CoC.Backend.CoC_Colors
 			this.primaryColor = other.primaryColor;
 			this.secondaryColor = other.secondaryColor;
 			this.multiColorPattern = other.multiColorPattern;
+			validateData();
 		}
 
 		public void UpdateFurColor(HairFurColors primary)
@@ -64,6 +71,7 @@ namespace CoC.Backend.CoC_Colors
 			primaryColor = primary;
 			secondaryColor = secondary;
 			multiColorPattern = pattern;
+			validateData();
 		}
 
 		public void Reset()
@@ -74,9 +82,27 @@ namespace CoC.Backend.CoC_Colors
 			secondaryColor = HairFurColors.NO_HAIR_FUR;
 		}
 
+		private void validateData()
+		{
+			if (primaryColor == HairFurColors.NO_HAIR_FUR && secondaryColor != HairFurColors.NO_HAIR_FUR)
+			{
+				primaryColor = secondaryColor;
+				secondaryColor = HairFurColors.NO_HAIR_FUR;
+			}
+			if (secondaryColor == HairFurColors.NO_HAIR_FUR)
+			{
+				multiColorPattern = FurMulticolorPattern.NO_PATTERN;
+			}
+		}
+
 		public bool isNoFur()
 		{
-			return primaryColor.rgbValue == Color.Transparent;
+			return HairFurColors.IsNullOrEmpty(primaryColor); //all data validated; no primary is empty when secondary isn't.
+		}
+
+		public static bool isNullOrEmpty(FurColor furColor)
+		{
+			return furColor == null || furColor.isNoFur();
 		}
 
 		//ToDo: move these strings to a strings class.
@@ -102,6 +128,43 @@ namespace CoC.Backend.CoC_Colors
 						return primaryColor.AsString() + " and " + secondaryColor.AsString();
 				}
 			}
+		}
+
+		Type ISaveableBase.currentSaveType => typeof(FurSurrogateVersion1);
+		Type[] ISaveableBase.saveVersionTypes => new Type[] { typeof(FurSurrogateVersion1) };
+		object ISaveableBase.ToCurrentSaveVersion()
+		{
+			return new FurSurrogateVersion1()
+			{
+				primary = this.primaryColor,
+				secondary = this.secondaryColor,
+				pattern = (int)this.multiColorPattern
+			};
+		}
+
+		internal FurColor(FurSurrogateVersion1 surrogate)
+		{
+			primaryColor = surrogate.primary ?? HairFurColors.NO_HAIR_FUR;
+			secondaryColor = surrogate.secondary ?? HairFurColors.NO_HAIR_FUR;
+			multiColorPattern = (FurMulticolorPattern)surrogate.pattern;
+			validateData();
+		}
+
+	}
+
+	[DataContract]
+	public sealed class FurSurrogateVersion1 : ISurrogateBase
+	{
+		[DataMember]
+		public HairFurColors primary;
+		[DataMember]
+		public HairFurColors secondary;
+		[DataMember]
+		public int pattern;
+		
+		object ISurrogateBase.ToSaveable()
+		{
+			return new FurColor(this);
 		}
 	}
 }

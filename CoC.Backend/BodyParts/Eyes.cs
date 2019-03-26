@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/27/2018, 1:32 AM
 using CoC.Backend.Races;
+using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -15,6 +16,8 @@ namespace CoC.Backend.BodyParts
 		//AND NOW THE CRAZY COLORS - WHY NOT?
 		YELLOW, PINK, ORANGE, INDIGO, TAN, BLACK
 	}
+
+	[DataContract]
 	public partial class Eyes : BodyPartBase<Eyes, EyeType>
 	{
 
@@ -181,7 +184,7 @@ namespace CoC.Backend.BodyParts
 			eyeCount = numEyes;
 			defaultColor = defaultEyeColor;
 			_index = indexMaker++;
-			eyes[_index] = this;
+			eyes.AddAt(this, _index);
 			scleraColor = color;
 		}
 

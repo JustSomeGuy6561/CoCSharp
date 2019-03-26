@@ -5,10 +5,10 @@
 
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Races;
+using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace CoC.Backend.BodyParts
 {
@@ -36,7 +36,7 @@ namespace CoC.Backend.BodyParts
 
 		private protected Arms(ArmType type)
 		{
-			_type = type;
+			_type = type ?? throw new ArgumentNullException();
 			hands = Hands.Generate(type.handType);
 		}
 
@@ -49,8 +49,15 @@ namespace CoC.Backend.BodyParts
 				hands.UpdateHands(value.handType);
 			}
 		}
-		////[Save]
 		private ArmType _type;
+
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			ArmType armType = type;
+			bool retVal = ArmType.Validate(ref armType, correctDataIfInvalid);
+			type = armType; //automatically sets hand.
+			return retVal;
+		}
 
 		public override bool isDefault => type == ArmType.HUMAN;
 
@@ -79,7 +86,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateArms(ArmType armType, Epidermis primary, Epidermis secondary, HairFurColors hairColor, BodyType bodyType)
 		{
-			if (type == armType)
+			if (armType == null || type == armType)
 			{
 				return false;
 			}
@@ -115,7 +122,7 @@ namespace CoC.Backend.BodyParts
 	public abstract partial class ArmType : BodyPartBehavior<ArmType, Arms>
 	{
 		private static int indexMaker = 0;
-		private static List<ArmType> arms = new List<ArmType>();
+		private static readonly List<ArmType> arms = new List<ArmType>();
 
 		public readonly HandType handType;
 		public readonly EpidermisType epidermisType;
@@ -133,7 +140,7 @@ namespace CoC.Backend.BodyParts
 			_index = indexMaker++;
 			handType = hand;
 			epidermisType = epidermis;
-			arms[_index] = this;
+			arms.AddAt(this, _index);
 		}
 		internal static ArmType Deserialize(int index)
 		{
@@ -154,6 +161,20 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
+
+		internal static bool Validate(ref ArmType armType, bool correctInvalidData = false)
+		{
+			if (arms.Contains(armType))
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				armType = HUMAN;
+			}
+			return false;
+		}
+
 
 		//DO NOT REORDER THESE (Under penalty of death lol)
 		public static readonly ToneArms HUMAN = new ToneArms(HandType.HUMAN, EpidermisType.SKIN, Species.HUMAN.defaultTone, SkinTexture.NONDESCRIPT, true, HumanDescStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
@@ -244,6 +265,7 @@ namespace CoC.Backend.BodyParts
 				retVal |= secondaryOriginal.UpdateOrChange(EpidermisType.SCALES, tone, true);
 				return retVal;
 			}
+
 		}
 		public bool isPredatorArms()
 		{
@@ -303,7 +325,6 @@ namespace CoC.Backend.BodyParts
 			defaultTexture = defaultSkinTexture;
 			defaultTone = defTone;
 			mutable = canChange;
-
 		}
 
 		internal override bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType)
@@ -313,6 +334,8 @@ namespace CoC.Backend.BodyParts
 			bool retVal = original.UpdateOrChange((ToneBasedEpidermisType)epidermisType, color, true);
 			secondaryOriginal.Reset();
 			return retVal;
+
+
 		}
 	}
 

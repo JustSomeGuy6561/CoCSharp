@@ -373,7 +373,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RedPandaTransformStr(Arms oldArms, Player player)
 		{
-			return 
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease(); 
 		}
 		private static string RedPandaRestoreStr(Arms currentArms, Player player)
 		{
@@ -381,11 +381,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FerretDescStr()
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string FerretFullDesc(Arms arm)
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string FerretPlayerStr(Arms arm, Player player)
 		{
@@ -395,7 +395,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FerretTransformStr(Arms oldArms, Player player)
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string FerretRestoreStr(Arms currentArms, Player player)
 		{
@@ -403,11 +403,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CatDescStr()
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string CatFullDesc(Arms arm)
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string CatPlayerStr(Arms arm, Player player)
 		{
@@ -415,7 +415,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CatTransformStr(Arms oldArms, Player player)
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string CatRestoreStr(Arms currentArms, Player player)
 		{
@@ -423,11 +423,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DogDescStr()
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string DogFullDesc(Arms arm)
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string DogPlayerStr(Arms arm, Player player)
 		{
@@ -476,11 +476,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FoxDescStr()
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string FoxFullDesc(Arms arm)
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string FoxPlayerStr(Arms arm, Player player)
 		{
@@ -488,7 +488,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FoxTransformStr(Arms oldArms, Player player)
 		{
-
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string FoxRestoreStr(Arms currentArms, Player player)
 		{

@@ -28,10 +28,26 @@ namespace CoC.Backend.BodyParts
 	{
 		//standard implementations.
 		public abstract BehaviorClass type { get; protected set; }
-		internal abstract bool Restore();
 
 		public abstract bool isDefault { get; }
 
+		//statics cannot be created here, but they'll appear as follows
+
+		//internal static ThisClass GenerateDefault();
+		//internal static ThisClass GenerateDefaultOfType(BehaviorClass type);
+
+		//internal static ThisClass Generate[Special Name](BehaviorClass type, [additional parameters]);
+		//internal static bool Update[Special Name](BehaviorClass type, [additional parameters]);
+		//(optional) internal static bool Change[Special Name]([additional parameters]);
+
+		//statics will work as follows: they will immediately return false if the type is identical
+		//otherwise, they will do all the update stuff and return true.
+		//if there are addition parameters that can be set via update, you MUST implement the change functions
+		//so that these can be set if the type is identical and update will immediately return false.
+		
+		internal abstract bool Restore();
+
+		internal abstract bool Validate(bool correctDataIfInvalid = false);
 
 		//These probably will never be overridden, but w/e.
 		public virtual int index => type.index;
