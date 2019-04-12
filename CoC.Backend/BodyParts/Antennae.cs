@@ -8,38 +8,23 @@ using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 
-[assembly: InternalsVisibleTo("CoCLibTest")]
 namespace CoC.Backend.BodyParts
 {
-	[DataContract]
-	public class Antennae : BodyPartBase<Antennae, AntennaeType>
+
+	public sealed class Antennae : BehavioralSaveablePart<Antennae, AntennaeType>
 	{
 
 		public override AntennaeType type { get; protected set; }
-		public override bool isDefault => type == AntennaeType.NONE;
 
-		private protected Antennae(AntennaeType antennaeType)
+		private Antennae(AntennaeType antennaeType)
 		{
 			type = antennaeType ?? throw new ArgumentNullException();
 		}
-
-
-		internal override bool Restore()
-		{
-			if (type == AntennaeType.NONE)
-			{
-				return false;
-			}
-			type = AntennaeType.NONE;
-			return type == AntennaeType.NONE;
-		}
-
+		public override bool isDefault => type == AntennaeType.NONE;
 		internal override bool Validate(bool correctDataIfInvalid = false)
 		{
-			AntennaeType antennae = type; 
+			AntennaeType antennae = type;
 			bool retVal = AntennaeType.Validate(ref antennae, correctDataIfInvalid);
 			type = antennae;
 			return retVal;
@@ -65,25 +50,18 @@ namespace CoC.Backend.BodyParts
 			return type == newType;
 		}
 
-
-		#region serialization
-
-		internal override Type[] saveVersions => new Type[] { typeof(AntennaeSurrogateVersion1) };
-		internal override Type currentSaveVersion => typeof(AntennaeSurrogateVersion1);
-
-		internal override BodyPartSurrogate<Antennae, AntennaeType> ToCurrentSave()
+		internal override bool Restore()
 		{
-			return new AntennaeSurrogateVersion1()
+			if (type == AntennaeType.NONE)
 			{
-				antennaeType = index
-			};
+				return false;
+			}
+			type = AntennaeType.NONE;
+			return type == AntennaeType.NONE;
 		}
-
-		internal Antennae(AntennaeSurrogateVersion1 surrogate) : this(AntennaeType.Deserialize(surrogate.antennaeType)) { }
-		#endregion
 	}
 
-	public partial class AntennaeType : BodyPartBehavior<AntennaeType, Antennae>
+	public partial class AntennaeType : SaveableBehavior<AntennaeType, Antennae>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<AntennaeType> antennaes = new List<AntennaeType>();
@@ -96,10 +74,7 @@ namespace CoC.Backend.BodyParts
 			antennaes.AddAt(this, _index);
 		}
 
-		public override int index
-		{
-			get { return _index; }
-		}
+		public override int index => _index;
 		private readonly int _index;
 
 		internal static AntennaeType Deserialize(int index)
@@ -147,18 +122,5 @@ namespace CoC.Backend.BodyParts
 			(x, y) => CockatricePlayer(y), CockatriceTransform, CockatriceRestore);
 	}
 
-	[DataContract]
-	public sealed class AntennaeSurrogateVersion1 : BodyPartSurrogate<Antennae, AntennaeType>
-	{
-		[DataMember]
-		public int antennaeType;
-
-		public AntennaeSurrogateVersion1() : base() { }
-
-		internal override Antennae ToBodyPart()
-		{
-			return new Antennae(this);
-		}
-	}
 }
 

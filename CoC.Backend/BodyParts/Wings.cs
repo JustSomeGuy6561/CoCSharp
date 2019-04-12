@@ -12,8 +12,8 @@ using System.Runtime.Serialization;
 
 namespace CoC.Backend.BodyParts
 {
-	[DataContract]
-	public class Wings : BodyPartBase<Wings, WingType>, IDyeable, IToneable
+
+	public sealed class Wings : BehavioralSaveablePart<Wings, WingType>, IDyeable, IToneable
 	{
 		//add to creature. 
 		//public bool hasWings => wings.type != WingType.NONE;
@@ -33,20 +33,20 @@ namespace CoC.Backend.BodyParts
 		private WingType _type;
 		internal HairFurColors featherColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
 		internal Tones wingTone { get; private set; } = Tones.NOT_APPLICABLE;
-		public bool isLarge { get; protected set; } = false;
+		public bool isLarge { get; private set; } = false;
 
-		protected Wings()
+		private Wings()
 		{
 			_type = WingType.NONE; //not using the property. set to small, which is irrelevant.
 		}
 
-		protected Wings(TonableWings wingType, Tones tone)
+		private Wings(TonableWings wingType, Tones tone)
 		{
 			type = wingType; //sets isLarge automatically.
 			wingTone = Tones.isNullOrEmpty(tone) ? wingType.defaultTone : tone;
 		}
 
-		protected Wings(FeatheredWings wingType, HairFurColors color)
+		private Wings(FeatheredWings wingType, HairFurColors color)
 		{
 			type = wingType;
 			featherColor = color;
@@ -54,6 +54,18 @@ namespace CoC.Backend.BodyParts
 		public bool canFly => type != WingType.NONE && isLarge;
 
 		public override bool isDefault => type == WingType.NONE;
+
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			WingType wingType = type;
+			var feather = featherColor;
+			var tone = wingTone;
+			bool valid = WingType.Validate(ref wingType, ref feather, ref tone, correctDataIfInvalid);
+			type = wingType;
+			featherColor = feather;
+			wingTone = tone;
+			return valid;
+		}
 
 		internal static Wings GenerateDefault()
 		{
@@ -119,7 +131,7 @@ namespace CoC.Backend.BodyParts
 
 			if (type is FeatheredWings)
 			{
-				featherColor = type.defaultHair;
+				featherColor = type.defaultFeatherColor;
 			}
 			else if (type is TonableWings)
 			{
@@ -141,7 +153,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (HairFurColors.isNullOrEmpty(featherColor))
 			{
-				featherColor = featheredWings.defaultHair;
+				featherColor = featheredWings.defaultFeatherColor;
 
 			}
 			return true;
@@ -262,29 +274,9 @@ namespace CoC.Backend.BodyParts
 			return wingTone != tone;
 		}
 
-		internal override Type[] saveVersions => new Type[] { typeof(WingSurrogateVersion1) };
-		internal override Type currentSaveVersion => typeof(WingSurrogateVersion1);
-		internal override BodyPartSurrogate<Wings, WingType> ToCurrentSave()
-		{
-			return new WingSurrogateVersion1()
-			{
-				wingType = index,
-				largeWings = isLarge,
-				wingTone = this.wingTone,
-				featherColor = this.featherColor
-			};
-		}
-
-		internal Wings(WingSurrogateVersion1 surrogate)
-		{
-			type = WingType.Deserialize(surrogate.wingType);
-			wingTone = surrogate.wingTone;
-			featherColor = surrogate.featherColor;
-			isLarge = type.canChangeSize ? surrogate.largeWings : isLarge;
-		}
 	}
 
-	public partial class WingType : BodyPartBehavior<WingType, Wings>
+	public partial class WingType : SaveableBehavior<WingType, Wings>
 	{
 		public enum BehaviorOnTransform { CONVERT_TO_SMALL, KEEP_SIZE, CONVERT_TO_LARGE }
 
@@ -295,11 +287,11 @@ namespace CoC.Backend.BodyParts
 		protected readonly BehaviorOnTransform transformBehavior;
 
 		public virtual Tones defaultTone => Tones.NOT_APPLICABLE;
-		public virtual HairFurColors defaultHair => HairFurColors.NO_HAIR_FUR;
+		public virtual HairFurColors defaultFeatherColor => HairFurColors.NO_HAIR_FUR;
 		public bool usesTone => !Tones.isNullOrEmpty(defaultTone);
-		public bool usesHair => !HairFurColors.isNullOrEmpty(defaultHair);
+		public bool usesHair => !HairFurColors.isNullOrEmpty(defaultFeatherColor);
 		public readonly bool canChangeSize;
-		public virtual bool canChangeColor => !Tones.isNullOrEmpty(defaultTone) || !HairFurColors.isNullOrEmpty(defaultHair);
+		public virtual bool canChangeColor => !Tones.isNullOrEmpty(defaultTone) || !HairFurColors.isNullOrEmpty(defaultFeatherColor);
 
 		public bool defaultIsLarge => UpdateSizeOnTransform(false);
 
@@ -343,6 +335,39 @@ namespace CoC.Backend.BodyParts
 					throw new ArgumentException("index for arm type points to an object that does not exist. this may be due to obsolete code");
 				}
 			}
+		}
+
+		internal static bool Validate(ref WingType wingType, ref HairFurColors featherCol, ref Tones wingTone, bool correctInvalidData = false)
+		{
+			bool valid = true;
+			if (!wings.Contains(wingType))
+			{
+				if (!correctInvalidData)
+				{
+					return false;
+				}
+				wingType = NONE;
+				valid = false;
+			}
+			if (wingType.usesHair && ((!wingType.canChangeColor && featherCol != wingType.defaultFeatherColor) || featherCol.isEmpty))
+			{
+				if (!correctInvalidData)
+				{
+					return false;
+				}
+				featherCol = wingType.defaultFeatherColor;
+				valid = false;
+			}
+			if (wingType.usesTone && ((!wingType.canChangeColor && wingTone != wingType.defaultTone) || wingTone.isEmpty))
+			{
+				if (!correctInvalidData)
+				{
+					return false;
+				}
+				wingTone = wingType.defaultTone;
+				valid = false;
+			}
+			return valid;
 		}
 
 		public bool UpdateSizeOnTransform(bool wasLarge)
@@ -389,7 +414,7 @@ namespace CoC.Backend.BodyParts
 			_defaultHair = defaultHair;
 		}
 
-		public override HairFurColors defaultHair => _defaultHair;
+		public override HairFurColors defaultFeatherColor => _defaultHair;
 	}
 
 	public class TonableWings : WingType
@@ -408,24 +433,5 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public override Tones defaultTone => _defaultTone;
-	}
-
-	[DataContract]
-	public sealed class WingSurrogateVersion1 : BodyPartSurrogate<Wings, WingType>
-	{
-		[DataMember]
-		public int wingType;
-
-		[DataMember]
-		public HairFurColors featherColor;
-		[DataMember]
-		public Tones wingTone;
-		[DataMember]
-		public bool largeWings;
-
-		internal override Wings ToBodyPart()
-		{
-			return new Wings(this);
-		}
 	}
 }

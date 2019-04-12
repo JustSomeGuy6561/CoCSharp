@@ -7,11 +7,11 @@ using CoC.Backend.CoC_Colors;
 
 namespace CoC.Backend.BodyParts
 {
-	public class Hands : SimpleBodyPart<HandType>
+	public sealed class Hands : BehavioralPartBase<HandType>
 	{
 		public override HandType type { get; protected set; }
 
-		protected Hands(HandType handType, Tones currentTone)
+		private Hands(HandType handType, Tones currentTone)
 		{
 			type = handType;
 			this.clawTone = currentTone;
@@ -37,7 +37,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public Tones clawTone { get; protected set; }
+		public Tones clawTone { get; private set; }
 
 		public void reactToChangeInSkinTone(Tones primary, Tones secondary)
 		{
@@ -50,7 +50,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class HandType : SimpleBodyPartType
+	public partial class HandType : BehaviorBase
 	{
 		private static int indexMaker = 0;
 

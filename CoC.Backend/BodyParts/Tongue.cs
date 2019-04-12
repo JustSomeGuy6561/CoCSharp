@@ -3,27 +3,44 @@
 //Author: JustSomeGuy
 //1/6/2019, 1:26 AM
 
+using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.BodyParts
 {
-	public enum TonguePiercings { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
-	public class Tongue : PiercableBodyPart<Tongue, TongueType, TonguePiercings>
+	public enum TonguePiercingLocation { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
+
+	public sealed class Tongue : BehavioralSaveablePart<Tongue, TongueType>
 	{
-		private protected Tongue()
+		private Tongue()
 		{
 			type = TongueType.HUMAN;
 		}
 
 		public override TongueType type { get; protected set; }
 
+		private static readonly JewelryType TongueJewelry = JewelryType.STUD;
+
+		public readonly Piercing<TonguePiercingLocation> tonguePiercings;
+
 		public bool isLongTongue => type.longTongue;
 		public int length => type.length;
 		public override bool isDefault => type == TongueType.HUMAN;
+
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			var tongueType = type;
+			bool valid = TongueType.Validate(ref tongueType, correctDataIfInvalid);
+			type = tongueType;
+			if (valid || correctDataIfInvalid)
+			{
+				valid &= tonguePiercings.Validate();
+			}
+			return valid;
+		}
 
 		internal static Tongue GenerateDefault()
 		{
@@ -59,39 +76,21 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//could be a one-liner. written this way because maybe people wanna change it, idk.
-		protected override bool PiercingLocationUnlocked(TonguePiercings piercingLocation)
+		private bool PiercingLocationUnlocked(TonguePiercingLocation piercingLocation)
 		{
-			if (piercingFetish)
+			if (tonguePiercings.piercingFetish)
 			{
 				return true;
 			}
 			//allow one tongue piercing. must have fetish for more than that.
-			else if (currentPiercingCount > 0 && !IsPierced(piercingLocation))
+			else if (tonguePiercings.piercingCount > 0 && !tonguePiercings.isPiercedAt(piercingLocation))
 			{
 				return false;
 			}
 			else return true;
 		}
-
-		internal override Type[] saveVersions => new Type[] { typeof(TongueSurrogateVersion1) };
-		internal override Type currentSaveVersion => typeof(TongueSurrogateVersion1);
-		internal override BodyPartSurrogate<Tongue, TongueType> ToCurrentSave()
-		{
-			return new TongueSurrogateVersion1()
-			{
-				tongueType = index,
-				tonguePiercings = serializePiercings()
-			};
-		}
-
-		internal Tongue(TongueSurrogateVersion1 surrogate)
-		{
-			type = TongueType.Deserialize(surrogate.tongueType);
-#warning Add piercing jewelry when that's implemented
-			deserializePiercings(surrogate.tonguePiercings);
-		}
 	}
-	public partial class TongueType : PiercableBodyPartBehavior<TongueType, Tongue, TonguePiercings>
+	public partial class TongueType : SaveableBehavior<TongueType, Tongue>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<TongueType> tongues = new List<TongueType>();
@@ -127,6 +126,18 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
+		internal static bool Validate(ref TongueType tongue, bool correctInvalidData = false)
+		{
+			if (tongues.Contains(tongue))
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				tongue = HUMAN;
+			}
+			return false;
+		}
 
 		public static readonly TongueType HUMAN = new TongueType(4, HumanDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
 		public static readonly TongueType SNAKE = new TongueType(6, SnakeDesc, SnakeFullDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr);
@@ -135,19 +146,5 @@ namespace CoC.Backend.BodyParts
 		public static readonly TongueType ECHIDNA = new TongueType(12, EchidnaDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
 		public static readonly TongueType LIZARD = new TongueType(12, LizardDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
 		public static readonly TongueType CAT = new TongueType(4, CatDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
-	}
-
-	[DataContract]
-	public sealed class TongueSurrogateVersion1 : BodyPartSurrogate<Tongue, TongueType>
-	{
-		[DataMember]
-		public int tongueType;
-		[DataMember]
-		public bool[] tonguePiercings;
-
-		internal override Tongue ToBodyPart()
-		{
-			return new Tongue(this);
-		}
 	}
 }

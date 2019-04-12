@@ -118,6 +118,10 @@ namespace TestingClassLibrary.SaveTest
 			string file = Path.Combine(saveDirectory, fileName);
 			SaveableData[] members = sessionData.Values.ToArray();
 			DataContractSerializer dcs = DataContractSystem.getSerializer();
+			DataContractSerializerSettings dataContractSerializerSettings = new DataContractSerializerSettings()
+			{
+				a
+			}
 			using (XmlWriter writer = XmlWriter.Create(file))
 			{
 				dcs.WriteObject(writer, members);

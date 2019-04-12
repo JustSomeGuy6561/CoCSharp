@@ -1,0 +1,33 @@
+﻿Location: RNG based simple thing. has a level to unlock prereq.
+Multiple Event Types:
+	-Random event. occurs randomly a set percent of the time.
+	-Semi-Random event. Like above, but is guarenteed to proc after a certain number of attempts. This is a built-in bad luck protection, as it were. 
+	  if multiple events proc this simultaneously, the longest wait is prioritized. Use these sparingly, or with long cooldowns.
+	-Triggered Event: Occurs when some trigger happens, and has priority over everything else. in the event multiple triggers occur, one will proc before the other, but which one is not defined.
+
+  events have an unlock condition, though this can always be set to true for events that don't require any pre-requisites.
+  events also have a "completed" flag, which removes the event from the pool of possibilities when it procs. any persistent event should set this to always return false.
+  events can trigger combat (random enemy encounters are a simple example, though so could conversation). 
+  events can unlock other events, locations, or places. officially, i'd recommend an event chain be written as one event instead of several one-offs, but do whatever you find easier.
+  events should end with a return to camp, though it's possible that an event would unlock a place, and thus you'd visit there instead.
+
+	events: Always active after, conditionally active.
+
+
+
+
+
+
+Place: Decision-Based area. has a trigger condition to unlock. 
+Primarily Decision Trees, but each can optionally implement an "interrupt event"
+	- Interrupt events can be random, triggered, or semi-random events, like above. these events should feel like an interruption to normal gameplay/life/whatever, so should occur infrequently.
+	- These can return to the previous tree, or back to camp. it is possible to trigger combat out of these.
+
+Decision Tree: each decision is done as a "callback" function. whatever creates the decision tree simply lays out the decisions via add button, then returns (reaches the end of the function). 
+the game is ultimately run via the UI layer, so the UI needs to have control. note that generally the UI will be event based, so returning is especially important.
+
+Dungeons/Quests: Quests interrupt normal gameplay. Time will progress as normal, but any special actions (NPC pregnancies, Lover/Ally/Slave interracts, etc) will be ignored. This is a huge departure
+from the standard gameplay style, but it's neccessary for continuity purposes. honestly, this will be the toughest thing to implement. i'd recommend acting as though these happened in spite of the player
+being gone, unless they require the player, at which point they don't happen. dungeons technically count as this, but generally dungeons are completed within an hour, so this isn't an issue.
+
+it may be possible to have special implementations of standard events if a quest is occurring, though this is up to the quest to implement. again, not sure how. 

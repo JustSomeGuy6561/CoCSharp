@@ -10,16 +10,24 @@ using System.Runtime.Serialization;
 //using CoC.
 namespace CoC.Backend.BodyParts
 {
-	[DataContract]
-	public class Gills : BodyPartBase<Gills, GillType>
+	
+	public sealed class Gills : BehavioralSaveablePart<Gills, GillType>
 	{
-		protected Gills()
+		private Gills()
 		{
 			type = GillType.NONE;
 		}
 		public override GillType type { get; protected set; }
 
 		public override bool isDefault => type == GillType.NONE;
+
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			GillType gillType = type;
+			bool valid = GillType.Validate(ref gillType, correctDataIfInvalid);
+			type = gillType;
+			return valid;
+		}
 
 		internal static Gills GenerateDefault()
 		{
@@ -55,25 +63,9 @@ namespace CoC.Backend.BodyParts
 			type = GillType.NONE;
 			return type == GillType.NONE;
 		}
-
-		internal override Type currentSaveVersion => typeof(GillSurrogateVersion1);
-		internal override Type[] saveVersions => new Type[] { typeof(GillSurrogateVersion1) };
-
-		internal override BodyPartSurrogate<Gills, GillType> ToCurrentSave()
-		{
-			return new GillSurrogateVersion1()
-			{
-				gillType = index
-			};
-		}
-
-		internal Gills(GillSurrogateVersion1 surrogate)
-		{
-			type = GillType.Deserialize(surrogate.gillType);
-		}
 	}
 
-	public partial class GillType : BodyPartBehavior<GillType, Gills>
+	public partial class GillType : SaveableBehavior<GillType, Gills>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<GillType> gills = new List<GillType>();
@@ -103,23 +95,23 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-
+		internal static bool Validate(ref GillType gillType, bool correctInvalidData = false)
+		{
+			if (gills.Contains(gillType))
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				gillType = NONE;
+			}
+			return false;
+		}
 		protected readonly int _index;
 		public override int index => _index;
 
 		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), GlobalStrings.TransformToDefault<Gills, GillType>, GlobalStrings.RevertAsDefault);
 		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneFullDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
 		public static readonly GillType FISH = new GillType(FishDescStr, FishFullDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
-	}
-
-	[DataContract]
-	public sealed class GillSurrogateVersion1 : BodyPartSurrogate<Gills, GillType>
-	{
-		[DataMember]
-		public int gillType;
-		internal override Gills ToBodyPart()
-		{
-			return new Gills(this);
-		}
 	}
 }

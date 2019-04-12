@@ -6,7 +6,7 @@ namespace CoC.Backend.Creatures
 {
 	public class Monster : CombatCreature
 	{
-		public Monster(CreatureCreator creator) : base(creator)
+		public Monster(MonsterCreator creator) : base(creator)
 		{
 		}
 	}

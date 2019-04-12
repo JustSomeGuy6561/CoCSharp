@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
+using System.Xml;
 
 namespace TestingClassLibrary.SaveTest
 {
@@ -11,6 +11,7 @@ namespace TestingClassLibrary.SaveTest
 		internal static readonly HashSet<Type> allItemsWithSurrogates = new HashSet<Type>();
 		internal static readonly HashSet<Type> allSurrogates = new HashSet<Type>(); //must be of the type ISurrogateClass<T>
 		internal static readonly Dictionary<Type, Type> itemToCurrentSurrogateType = new Dictionary<Type, Type>();
+
 
 
 		private static readonly SaveSurrogate surrogate = new SaveSurrogate();
@@ -43,8 +44,6 @@ namespace TestingClassLibrary.SaveTest
 			itemToCurrentSurrogateType.Add(item, classWithSurrogates.currentSaveType);
 			return true;
 		}
-
-
 	}
 	internal class SaveSurrogate : ISerializationSurrogateProvider
 	{
@@ -52,7 +51,7 @@ namespace TestingClassLibrary.SaveTest
 		public Type GetSurrogateType(Type type)
 		{
 			//could one-line linq this probably, but meh.
-			foreach(var save in DataContractSystem.itemToCurrentSurrogateType)
+			foreach (var save in DataContractSystem.itemToCurrentSurrogateType)
 			{
 				if (save.Key.IsAssignableFrom(type))
 				{

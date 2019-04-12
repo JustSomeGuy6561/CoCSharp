@@ -2,12 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //12/26/2018, 7:56 PM
-using CoC.Backend.Save;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.Serialization;
 
 //using CoC.Internal.
 
@@ -16,10 +13,10 @@ namespace CoC.Backend.CoC_Colors
 	//"Why do this - we had strings. strings were fine! why overdesign the wheel?"
 	//well, because we had several switch statements manually parse a string to find a close color.
 	//which you can do with RGB values automatically. and adding a color here is (relatively) painless.
-	[DataContract]
-	public class HairFurColors : CoCColors, ISaveableBase
+
+	public class HairFurColors : CoCColors
 	{
-		public const int RAINBOW_HACK = unchecked ((int)0xaa18855e);
+		private const int RAINBOW_HACK = unchecked((int)0xaa18855e);
 		private static readonly List<HairFurColors> supportedColors = new List<HairFurColors>();
 
 		public static readonly HairFurColors[] DYE_COLORS = { BLACK, AUBURN, BLONDE, BLUE, BROWN, GRAY, GREEN, ORANGE, PINK, PURPLE, RAINBOW, RED, RUSSET, YELLOW, WHITE };
@@ -44,7 +41,7 @@ namespace CoC.Backend.CoC_Colors
 		public static readonly HairFurColors DEEP_RED = new HairFurColors(Color.Magenta, "deep red");
 		public static readonly HairFurColors EMERALD = new HairFurColors(Color.FromArgb(80, 200, 120), "emerald");
 		public static readonly HairFurColors GOLDEN = new HairFurColors(Color.Gold);
-		public static readonly HairFurColors GOLDEN_BLONDE = new HairFurColors(Color.FromArgb(243,219,95), "golden-blonde");
+		public static readonly HairFurColors GOLDEN_BLONDE = new HairFurColors(Color.FromArgb(243, 219, 95), "golden-blonde");
 		public static readonly HairFurColors GRAY = new HairFurColors(Color.Gray);
 		public static readonly HairFurColors GRAYISH_BLUE = new HairFurColors(Color.DarkSlateBlue, "grayish-blue");
 		public static readonly HairFurColors GREEN = new HairFurColors(Color.Green);
@@ -58,15 +55,15 @@ namespace CoC.Backend.CoC_Colors
 		public static readonly HairFurColors ORANGE = new HairFurColors(Color.Orange);
 		public static readonly HairFurColors PEACH = new HairFurColors(Color.LightCoral, "peach");
 		public static readonly HairFurColors PINK = new HairFurColors(Color.Pink);
-		public static readonly HairFurColors PLATINUM_BLONDE = new HairFurColors(Color.FromArgb(244,255,155), "platinum-blonde");
+		public static readonly HairFurColors PLATINUM_BLONDE = new HairFurColors(Color.FromArgb(244, 255, 155), "platinum-blonde");
 		public static readonly HairFurColors PURPLE = new HairFurColors(Color.Purple);
-		public static readonly HairFurColors PURPLISH_BLACK = new HairFurColors(Color.FromArgb(52,0,52), "dark purple");
+		public static readonly HairFurColors PURPLISH_BLACK = new HairFurColors(Color.FromArgb(52, 0, 52), "dark purple");
 		public static readonly HairFurColors RED = new HairFurColors(Color.Red, "red"); //well, red seems too strong.
 		public static readonly HairFurColors RUSSET = new HairFurColors(Color.FromArgb(128, 70, 27), "russet");
 		public static readonly HairFurColors SANDY_BLONDE = new HairFurColors(Color.PaleGoldenrod, "sandy-blonde");
 		public static readonly HairFurColors SANDY_BROWN = new HairFurColors(Color.Tan, "sandy-brown");
 		public static readonly HairFurColors SILVER = new HairFurColors(Color.Silver); //metalic silver == "shiny" silver. or "metallic" silver
-		public static readonly HairFurColors SILVER_BLONDE = new HairFurColors(Color.FromArgb(238,229,128), "silvery-blonde");
+		public static readonly HairFurColors SILVER_BLONDE = new HairFurColors(Color.FromArgb(238, 229, 128), "silvery-blonde");
 		public static readonly HairFurColors SILVER_WHITE = new HairFurColors(Color.Gainsboro, "silver-white");
 		public static readonly HairFurColors SNOW_WHITE = new HairFurColors(Color.White, "snow-white");
 		public static readonly HairFurColors TAN = new HairFurColors(Color.Tan);
@@ -134,30 +131,6 @@ namespace CoC.Backend.CoC_Colors
 				return HairFurColors.RAINBOW;
 			}
 			else return NearestHairFurColor(color);
-		}
-
-		Type ISaveableBase.currentSaveType => typeof(HairSurrogate);
-
-		Type[] ISaveableBase.saveVersionTypes => new Type[] { typeof(HairSurrogate) };
-
-		object ISaveableBase.ToCurrentSaveVersion()
-		{
-			return new HairSurrogate()
-			{
-				color = this.rgbValue.ToArgb()
-			};
-		}
-	}
-
-	[DataContract]
-	[KnownType(typeof(Color))]
-	public sealed class HairSurrogate : ISurrogateBase
-	{
-		[DataMember]
-		public int color;
-		public object ToSaveable()
-		{
-			return HairFurColors.Deserialize(Color.FromArgb(color));
 		}
 	}
 }

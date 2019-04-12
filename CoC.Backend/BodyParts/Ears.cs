@@ -5,11 +5,10 @@
 
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
-using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.BodyParts
 {
@@ -35,22 +34,38 @@ namespace CoC.Backend.BodyParts
 		RIGHT_ANTI_HELIX
 	}
 
-	[DataContract]
-	public class Ears : PiercableBodyPart<Ears, EarType, EarPiercings>, IBodyAware
+
+	public sealed class Ears : BehavioralSaveablePart<Ears, EarType>, IBodyAware
 	{
+		private const JewelryType VALID_EAR_PIERCINGS = JewelryType.STUD | JewelryType.DANGLER | JewelryType.HOOP | JewelryType.RING | JewelryType.CURVED_BARBELL | JewelryType.SPECIAL;
 		private FurColor earFur => type.ParseFurColor(_earFur, bodyData());
 		private readonly FurColor _earFur = new FurColor();
 
-		protected Ears()
+		public readonly Piercing<EarPiercings> earPiercings;
+
+		private Ears()
 		{
 			type = EarType.HUMAN;
+			earPiercings = new Piercing<EarPiercings>(VALID_EAR_PIERCINGS, PiercingLocationUnlocked);
 		}
 
 		public override EarType type { get; protected set; }
 
 		public override bool isDefault => type == EarType.HUMAN;
 
-		protected override bool PiercingLocationUnlocked(EarPiercings piercingLocation)
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			EarType earType = type;
+			bool valid = EarType.Validate(ref earType, correctDataIfInvalid);
+			type = earType;
+			if (valid || correctDataIfInvalid)
+			{
+				valid &= earPiercings.Validate();
+			}
+			return valid;
+		}
+
+		private bool PiercingLocationUnlocked(EarPiercings piercingLocation)
 		{
 			return true;
 		}
@@ -84,33 +99,14 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal override Type currentSaveVersion => typeof(EarSurrogateVersion1);
-
-		internal override Type[] saveVersions => new Type[] { typeof(EarSurrogateVersion1) };
-
-		internal override BodyPartSurrogate<Ears, EarType> ToCurrentSave()
-		{
-			return new EarSurrogateVersion1()
-			{
-				earType = index,
-				earPiercings = serializePiercings()
-			};
-		}
-
 		private BodyDataGetter bodyData;
 		void IBodyAware.GetBodyData(BodyDataGetter getter)
 		{
 			bodyData = getter;
 		}
-
-		internal Ears(EarSurrogateVersion1 surrogate)
-		{
-			type = EarType.Deserialize(surrogate.earType);
-			deserializePiercings(surrogate.earPiercings);
-		}
 	}
 
-	public partial class EarType : PiercableBodyPartBehavior<EarType, Ears, EarPiercings>
+	public partial class EarType : SaveableBehavior<EarType, Ears>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EarType> ears = new List<EarType>();
@@ -146,6 +142,19 @@ namespace CoC.Backend.BodyParts
 					throw new System.ArgumentException("index for arm type points to an object that does not exist. this may be due to obsolete code");
 				}
 			}
+		}
+
+		internal static bool Validate(ref EarType earType, bool correctInvalidData = false)
+		{
+			if (ears.Contains(earType))
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				earType = HUMAN;
+			}
+			return false;
 		}
 
 		public override int index => _index;
@@ -195,19 +204,6 @@ namespace CoC.Backend.BodyParts
 			}
 			current.UpdateFurColor(color);
 			return current;
-		}
-	}
-
-	[DataContract]
-	public sealed class EarSurrogateVersion1 : BodyPartSurrogate<Ears, EarType>
-	{
-		[DataMember]
-		public int earType;
-		[DataMember]
-		public bool[] earPiercings;
-		internal override Ears ToBodyPart()
-		{
-			return new Ears(this);
 		}
 	}
 }

@@ -25,15 +25,12 @@ namespace CoC.Backend.BodyParts
 	 * 
 	 * An aside: unfortunately, i can't think up a means to memoize the epidermis/secondary epidermis. so it'll have to get them each time. This shouldn't be costly enough to worry about that, though
 	 */
-	[DataContract]
-	public class Arms : BodyPartBase<Arms, ArmType>, IBodyAware
+	
+	public sealed class Arms : BehavioralSaveablePart<Arms, ArmType>, IBodyAware
 	{
 		public readonly Hands hands;
 
 		private BodyDataGetter bodyData;
-
-		private Tones restoreTone;
-
 
 		private Epidermis epidermis => type.GetEpidermis(true, bodyData());
 		private Epidermis secondaryEpidermis => type.GetEpidermis(false, bodyData());
@@ -41,7 +38,7 @@ namespace CoC.Backend.BodyParts
 		public EpidermalData epidermalData => epidermis.GetEpidermalData();
 		public EpidermalData secondaryEpidermalData => secondaryEpidermis.GetEpidermalData();
 
-		private protected Arms(ArmType type)
+		private Arms(ArmType type)
 		{
 			_type = type ?? throw new ArgumentNullException();
 			hands = Hands.Generate(type.handType);
@@ -58,6 +55,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private ArmType _type;
 
+		public override bool isDefault => type == ArmType.HUMAN;
 		internal override bool Validate(bool correctDataIfInvalid = false)
 		{
 			ArmType armType = type;
@@ -66,7 +64,6 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		public override bool isDefault => type == ArmType.HUMAN;
 
 		internal static Arms GenerateDefault()
 		{
@@ -99,31 +96,18 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
+		public bool usesTone => type is ToneArms;
+		public bool usesFur => type is FurArms;
+
 		#region IBodyAware
 		void IBodyAware.GetBodyData(BodyDataGetter getter)
 		{
 			bodyData = getter;
 		}
 		#endregion
-
-		#region Serialization
-		internal override Type currentSaveVersion => typeof(ArmSurrogateVersion1);
-
-		internal override Type[] saveVersions => new Type[] { typeof(ArmSurrogateVersion1) };
-
-		internal override BodyPartSurrogate<Arms, ArmType> ToCurrentSave()
-		{
-			return new ArmSurrogateVersion1()
-			{
-				armType = index
-			};
-		}
-
-		internal Arms(ArmSurrogateVersion1 surrogate) : this(ArmType.Deserialize(surrogate.armType)) { }
-		#endregion
 	}
 
-	public abstract partial class ArmType : BodyPartBehavior<ArmType, Arms>
+	public abstract partial class ArmType : SaveableBehavior<ArmType, Arms>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<ArmType> arms = new List<ArmType>();
@@ -219,7 +203,7 @@ namespace CoC.Backend.BodyParts
 				}
 				//detects weird edge case wher both halves of ferret arms use hair for both. if the primary hair is null and used the hair, force the secondary to use the default.
 				//clever logic people may note this ignores the case where the primary used its default - that'd only happen if the hair was empty, though, so it's irrelevant
-				else if (!bodyData.hairColor.isEmpty && (primary || bodyData.primary.fur.isEmpty)) 
+				else if (!bodyData.hairColor.isEmpty && (primary || bodyData.primary.fur.isEmpty))
 				{
 					color = new FurColor(bodyData.hairColor);
 				}
@@ -232,7 +216,7 @@ namespace CoC.Backend.BodyParts
 		{
 			private readonly ToneBasedEpidermisType secondaryType = EpidermisType.SCALES;
 			private readonly Tones defaultScales = Species.COCKATRICE.defaultScaleTone;
-			private readonly SkinTexture defaultScaleTexture;
+			private readonly SkinTexture defaultScaleTexture = SkinTexture.NONDESCRIPT;
 
 			public CockatriceArms() : base(HandType.COCKATRICE, EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, FurTexture.NONDESCRIPT, true,
 				CockatriceDescStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
@@ -335,14 +319,4 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	[DataContract]
-	public sealed class ArmSurrogateVersion1 : BodyPartSurrogate<Arms, ArmType>
-	{
-		[DataMember]
-		public int armType;
-		internal override Arms ToBodyPart()
-		{
-			return new Arms(this);
-		}
-	}
 }

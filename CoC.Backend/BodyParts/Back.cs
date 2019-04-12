@@ -5,22 +5,17 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Races;
-using CoC.Backend.Save;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 namespace CoC.Backend.BodyParts
 {
-	//implement i fur aware if you want it to update with the player.
-	//note that if you do so you'll need some sort of logic to deal with if it 
-	//was dyed recently/ ever.
-	[DataContract]
-	public class Back : BodyPartBase<Back, BackType>, IDyeable, ISaveableBase//, IFurAware
+	
+	public sealed class Back : BehavioralSaveablePart<Back, BackType>, IDyeable
 	{
-		public HairFurColors hairFur { get; protected set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
-
-		protected Back(BackType backType)
+		public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
+		private Back(BackType backType)
 		{
 			_type = backType ?? throw new ArgumentNullException();
 		}
@@ -97,7 +92,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			type = dragonMane; //sets hair to default automatically.
-			//overrides it if possible.
+							   //overrides it if possible.
 			if (!HairFurColors.isNullOrEmpty(maneColor)) //can be null.
 			{
 				hairFur = maneColor;
@@ -129,32 +124,9 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 		}
-
-		internal override Type currentSaveVersion => typeof(BackSurrogateVersion1);
-
-		internal override Type[] saveVersions => new Type[] { typeof(BackSurrogateVersion1) };
-		internal override BodyPartSurrogate<Back, BackType> ToCurrentSave()
-		{
-			return new BackSurrogateVersion1()
-			{
-				backType = index,
-				hairFur = hairFur
-			};
-		}
-
-		internal Back(BackSurrogateVersion1 surrogate) //assuming surrogate is not null. that may end up being foolish, idk.
-		{
-			//allow type property to set hair to default.
-			type = BackType.Deserialize(surrogate.backType);
-			//override it if we have good hair data.
-			if (!HairFurColors.isNullOrEmpty(surrogate.hairFur) && _type.usesHair) //may be null
-			{
-				hairFur = surrogate.hairFur;
-			}
-		}
 	}
 
-	public partial class BackType : BodyPartBehavior<BackType, Back>
+	public partial class BackType : SaveableBehavior<BackType, Back>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<BackType> backs = new List<BackType>();
@@ -233,19 +205,6 @@ namespace CoC.Backend.BodyParts
 		public override HairFurColors defaultHair => Species.DRAGON.defaultManeColor;
 
 		internal DragonBackMane() : base(DraconicManeDesc, DraconicManeFullDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr)
-		{}
-	}
-
-	[DataContract]
-	public sealed class BackSurrogateVersion1 : BodyPartSurrogate<Back, BackType>
-	{
-		[DataMember]
-		public int backType;
-		[DataMember]
-		public HairFurColors hairFur;
-		internal override Back ToBodyPart()
-		{
-			return new Back(this);
-		}
+		{ }
 	}
 }

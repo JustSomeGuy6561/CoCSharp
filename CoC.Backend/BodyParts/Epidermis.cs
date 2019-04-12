@@ -26,14 +26,13 @@ namespace CoC.Backend.BodyParts
 	public enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED, SLIMY }
 	public enum FurTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, MANGEY }
 
-	[DataContract]
-	public partial class Epidermis : SimpleSaveableBodyPart<Epidermis, EpidermisType>
+	public sealed partial class Epidermis : BehavioralPartBase<EpidermisType>
 	{
-		public FurColor fur { get; protected set; }
-		public Tones tone { get; protected set; }
+		public FurColor fur { get; private set; }
+		public Tones tone { get; private set; }
 
-		public SkinTexture skinTexture { get; protected set; }
-		public FurTexture furTexture { get; protected set; }
+		public SkinTexture skinTexture { get; private set; }
+		public FurTexture furTexture { get; private set; }
 
 		public bool usesFur => type.usesFur;
 		public bool usesTone => type.usesTone;
@@ -41,7 +40,7 @@ namespace CoC.Backend.BodyParts
 		public override EpidermisType type { get; protected set; }
 
 
-		private protected Epidermis()
+		private Epidermis()
 		{
 			this.type = EpidermisType.EMPTY;
 			fur = new FurColor();
@@ -57,6 +56,18 @@ namespace CoC.Backend.BodyParts
 			}
 			else return new EpidermalData(type, tone, skinTexture);
 
+		}
+		internal bool Validate(bool correctDataIfInvalid = false)
+		{
+			EpidermisType epidermis = type;
+			FurColor furColor = fur;
+			Tones tones = tone;
+
+			bool valid = EpidermisType.Validate(ref epidermis, ref furColor, ref tones, correctDataIfInvalid);
+			tone = tones;
+			fur = furColor;
+			type = epidermis;
+			return valid;
 		}
 		#region Generate
 
@@ -134,7 +145,7 @@ namespace CoC.Backend.BodyParts
 		{
 			//null checks
 			if (furType == null) throw new ArgumentNullException(); //we can't survive this, so throw.
-			if (FurColor.isNullOrEmpty(furColor)) furColor = furType.defaultFur; //can be null. we can survive this, though, so don't throw
+			if (FurColor.IsNullOrEmpty(furColor)) furColor = furType.defaultFur; //can be null. we can survive this, though, so don't throw
 
 			Epidermis retVal = new Epidermis()
 			{
@@ -205,7 +216,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			type = furType;
-			if (!FurColor.isNullOrEmpty(overrideColor)) //can be null
+			if (!FurColor.IsNullOrEmpty(overrideColor)) //can be null
 			{
 				fur.UpdateFurColor(overrideColor);
 			}
@@ -264,7 +275,7 @@ namespace CoC.Backend.BodyParts
 			{
 				tone = Tones.NOT_APPLICABLE;
 			}
-			if (fur != furColor && type.furMutable && !FurColor.isNullOrEmpty(furColor)) //can be null
+			if (fur != furColor && type.furMutable && !FurColor.IsNullOrEmpty(furColor)) //can be null
 			{
 				fur.UpdateFurColor(furColor);
 				return true;
@@ -336,50 +347,11 @@ namespace CoC.Backend.BodyParts
 			else return ChangeFur(overrideColor, resetTone);
 		}
 		#endregion
-		#region Serialization
-		internal override Type currentSaveVersion => typeof(EpidermisSurrogateVersion1);
-
-		internal override Type[] saveVersions => new Type[] { typeof(EpidermisSurrogateVersion1) };
-
-		internal override SimpleSurrogate<Epidermis, EpidermisType> ToCurrentSave()
-		{
-			return new EpidermisSurrogateVersion1()
-			{
-				epidermisType = this.index,
-				furColor = this.fur,
-				tone = this.tone,
-				furTexture = (int)this.furTexture,
-				skinTexture = (int)this.skinTexture,
-			};
-		}
-
-		internal override bool Validate(bool correctDataIfInvalid = false)
-		{
-			EpidermisType epidermis = type;
-			FurColor furColor = fur;
-			Tones tones = tone;
-
-			bool valid = EpidermisType.Validate(ref epidermis, ref furColor, ref tones, correctDataIfInvalid);
-			tone = tones;
-			fur = furColor;
-			type = epidermis;
-			return valid;
-		}
-
-		internal Epidermis(EpidermisSurrogateVersion1 surrogate)
-		{
-			type = EpidermisType.Deserialize(surrogate.epidermisType);
-			fur = surrogate.furColor ?? new FurColor();
-			furTexture = (FurTexture)surrogate.furTexture;
-			tone = surrogate.tone ?? Tones.NOT_APPLICABLE;
-			skinTexture = (SkinTexture)surrogate.skinTexture;
-		}
-		#endregion
 	}
 
 
 	//IMMUTABLE
-	public abstract partial class EpidermisType : SimpleSaveableBehavior
+	public abstract partial class EpidermisType : BehaviorBase
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EpidermisType> epidermi = new List<EpidermisType>();
@@ -589,20 +561,20 @@ namespace CoC.Backend.BodyParts
 
 		public string shortDescription()
 		{
-			return epidermisType.desrciption();
+			return epidermisType.shortDescription();
 		}
 		public string FullDescription()
 		{
 			if (epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermisType.usesTone) return fullStr(skinTexture.AsString(), tone, epidermisType.desrciption);
-			else return fullStr(furTexture.AsString(), fur, epidermisType.desrciption);
+			else if (epidermisType.usesTone) return fullStr(skinTexture.AsString(), tone, epidermisType.shortDescription);
+			else return fullStr(furTexture.AsString(), fur, epidermisType.shortDescription);
 		}
 
 		public string descriptionWithColor()
 		{
 			if (epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermisType.usesTone) return ColoredStr(tone, epidermisType.desrciption);
-			else return ColoredStr(fur, epidermisType.desrciption);
+			else if (epidermisType.usesTone) return ColoredStr(tone, epidermisType.shortDescription);
+			else return ColoredStr(fur, epidermisType.shortDescription);
 		}
 
 		public string justTexture()
@@ -617,27 +589,6 @@ namespace CoC.Backend.BodyParts
 			if (epidermisType == EpidermisType.EMPTY) return "";
 			else if (epidermisType.usesTone) return tone.AsString();
 			else return fur.AsString();
-		}
-	}
-
-	[DataContract]
-	[KnownType(typeof(FurColor))]
-	[KnownType(typeof(Tones))]
-	public sealed class EpidermisSurrogateVersion1 : SimpleSurrogate<Epidermis, EpidermisType>
-	{
-		[DataMember]
-		public FurColor furColor;
-		[DataMember]
-		public Tones tone;
-		[DataMember]
-		public int epidermisType;
-		[DataMember]
-		public int furTexture;
-		[DataMember]
-		public int skinTexture;
-		internal override Epidermis ToBodyPart()
-		{
-			return new Epidermis(this);
 		}
 	}
 }

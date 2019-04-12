@@ -2,6 +2,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 
 namespace Testing
@@ -15,7 +16,7 @@ namespace Testing
 			additionalHornTransformStrength = 1,
 			earType = EarType.ELFIN,
 			hairColor = HairFurColors.ORANGE,
-			
+
 		};
 
 		public static PlayerCreator ARIA => new PlayerCreator()
@@ -25,12 +26,23 @@ namespace Testing
 			hairColor = HairFurColors.PINK,
 
 			bodyType = BodyType.KITSUNE,
-			earPiercings = PiercingHelper.CreatePiercingListForCreator<Ears, EarPiercings>(EarPiercings.LEFT_LOBE_1, EarPiercings.LEFT_LOBE_2,
-						EarPiercings.LEFT_AURICAL_3, EarPiercings.LEFT_AURICAL_4, EarPiercings.LEFT_HELIX_1, EarPiercings.LEFT_HELIX_2,
-						EarPiercings.RIGHT_LOBE_1, EarPiercings.RIGHT_LOBE_2, EarPiercings.RIGHT_HELIX_2, EarPiercings.RIGHT_AURICAL_1, EarPiercings.RIGHT_AURICAL_2,
-						//Right industrial.
-						EarPiercings.RIGHT_HELIX_3, EarPiercings.RIGHT_ANTI_HELIX),
-			navelPiercings = PiercingHelper.CreatePiercingListForCreator<Body, NavelPiercings>(NavelPiercings.BOTTOM),
+			earPiercings = Piercing<EarPiercings>.CreatePiercingDataForCreator(
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_LOBE_1, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_LOBE_2, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_AURICAL_3, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_AURICAL_4, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_HELIX_1, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_HELIX_2, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_LOBE_1, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_LOBE_2, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_HELIX_2, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_AURICAL_1, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_AURICAL_2, new JewelryDummyForDebugging()),
+				//Right industrial.
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_HELIX_3, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_ANTI_HELIX, new JewelryDummyForDebugging())),
+
+			navelPiercings = Piercing<NavelPiercingLocation>.CreatePiercingDataForCreator(new Pair<NavelPiercingLocation, PiercingJewelry>(NavelPiercingLocation.BOTTOM, new JewelryDummyForDebugging())),
 		};
 
 		public static PlayerCreator BERTRAM => new PlayerCreator()
@@ -41,7 +53,7 @@ namespace Testing
 		public static PlayerCreator CEVEO => new PlayerCreator()
 		{
 			leftEyeColor = EyeColor.BROWN,
-			lipPiercings = PiercingHelper.CreatePiercingListForCreator<Lip, LipPiercings>(LipPiercings.LABRET),
+			//lipPiercings = PiercingHelper.CreatePiercingListForCreator<Lip, LipPiercings>(LipPiercings.LABRET),
 			hairColor = HairFurColors.BLACK,
 			tone = Tones.PALE,
 		};
@@ -65,38 +77,38 @@ namespace Testing
 		};
 
 		//the first with true rng, so i can't use shorthand :(.
-//		public static PlayerCreator CHIMERA
-//		{
-//			get
-//			{
-//				PlayerCreator retVal = new PlayerCreator();
-//				int rand = Utils.Rand(100);
-//				if (rand < 50)
-//				{
-//					retVal.bodyType = BodyType.HUMANOID;
-//				}
-//				else if (rand < 80)
-//				{
-//					retVal.bodyType = BodyType.SIMPLE_FUR;
-//				}
-//				else
-//				{
-//					retVal.bodyType = BodyType.GOO;
-//					retVal.skinTexture = SkinTexture.SLIMY;
-//				}
-//#warning: Implement face.
-//				if (/*faceType == Spider &&*/Utils.RandBool())
-//				{
-//					retVal.eyeType = EyeType.SPIDER;
-//				}
-//				else if (Utils.Rand(20) == 0)
-//				{
-//					retVal.eyeType= 
-//				}
-//				return retVal;
+		//		public static PlayerCreator CHIMERA
+		//		{
+		//			get
+		//			{
+		//				PlayerCreator retVal = new PlayerCreator();
+		//				int rand = Utils.Rand(100);
+		//				if (rand < 50)
+		//				{
+		//					retVal.bodyType = BodyType.HUMANOID;
+		//				}
+		//				else if (rand < 80)
+		//				{
+		//					retVal.bodyType = BodyType.SIMPLE_FUR;
+		//				}
+		//				else
+		//				{
+		//					retVal.bodyType = BodyType.GOO;
+		//					retVal.skinTexture = SkinTexture.SLIMY;
+		//				}
+		//#warning: Implement face.
+		//				if (/*faceType == Spider &&*/Utils.RandBool())
+		//				{
+		//					retVal.eyeType = EyeType.SPIDER;
+		//				}
+		//				else if (Utils.Rand(20) == 0)
+		//				{
+		//					retVal.eyeType= 
+		//				}
+		//				return retVal;
 
-//			}
-//		}
+		//			}
+		//		}
 
 		public static PlayerCreator CODY => new PlayerCreator()
 		{
@@ -113,7 +125,10 @@ namespace Testing
 			underFurColor = new FurColor(HairFurColors.SNOW_WHITE),
 			earType = EarType.FOX,
 			armType = ArmType.FOX,
-			earPiercings = PiercingHelper.CreatePiercingListForCreator<Ears, EarPiercings>(EarPiercings.LEFT_LOBE_1, EarPiercings.RIGHT_LOBE_1),
+			earPiercings = Piercing<EarPiercings>.CreatePiercingDataForCreator(
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_LOBE_1, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_LOBE_1, new JewelryDummyForDebugging())
+			),
 			eyeType = EyeType.DRAGON,
 			hornType = HornType.DRACONIC,
 			additionalHornTransformStrength = 2,
@@ -279,11 +294,16 @@ namespace Testing
 		public static PlayerCreator SORA => new PlayerCreator()
 		{
 			tongueType = TongueType.SNAKE,
-			tonguePiercings = PiercingHelper.CreatePiercingListForCreator<Tongue, TonguePiercings>(TonguePiercings.MIDDLE_CENTER),
+			tonguePiercings = Piercing<TonguePiercingLocation>.CreatePiercingDataForCreator(
+				new Pair<TonguePiercingLocation, PiercingJewelry>(TonguePiercingLocation.MIDDLE_CENTER, new JewelryDummyForDebugging())),
 			earType = EarType.FOX,
-			earPiercings = PiercingHelper.CreatePiercingListForCreator<Ears, EarPiercings>(EarPiercings.LEFT_LOBE_1, EarPiercings.RIGHT_LOBE_1, EarPiercings.LEFT_LOBE_2),
+			earPiercings = Piercing<EarPiercings>.CreatePiercingDataForCreator(
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_LOBE_1, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.RIGHT_LOBE_1, new JewelryDummyForDebugging()),
+				new Pair<EarPiercings, PiercingJewelry>(EarPiercings.LEFT_LOBE_2, new JewelryDummyForDebugging())),
 			//two fox tails.
 			bodyType = BodyType.KITSUNE,
+
 		};
 
 		public static PlayerCreator TYRIANA => new PlayerCreator()

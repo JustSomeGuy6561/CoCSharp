@@ -2,23 +2,19 @@
 //Description:
 //Author: JustSomeGuy
 //1/3/2019, 1:53 PM
-using CoC.Backend.Save;
-using System;
-using System.Drawing;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.CoC_Colors
 {
-	public enum FurMulticolorPattern {NO_PATTERN, STRIPED, SPOTTED, MIXED  }
-	[DataContract]
-	public class FurColor : ISaveableBase
+	public enum FurMulticolorPattern { NO_PATTERN, STRIPED, SPOTTED, MIXED }
+
+	public class FurColor
 	{
 		public FurMulticolorPattern multiColorPattern { get; protected set; }
 		public HairFurColors primaryColor { get; protected set; }
 		public HairFurColors secondaryColor { get; protected set; }
 		public bool isMultiColored { get; private set; }
 
-		public FurColor()
+		public FurColor() : base()
 		{
 			Reset();
 		}
@@ -97,7 +93,7 @@ namespace CoC.Backend.CoC_Colors
 
 		public bool isEmpty => primaryColor.isEmpty; //primary color cannot be null.
 
-		public static bool isNullOrEmpty(FurColor furColor)
+		public static bool IsNullOrEmpty(FurColor furColor)
 		{
 			return furColor == null || furColor.isEmpty;
 		}
@@ -125,43 +121,6 @@ namespace CoC.Backend.CoC_Colors
 						return primaryColor.AsString() + " and " + secondaryColor.AsString();
 				}
 			}
-		}
-
-		Type ISaveableBase.currentSaveType => typeof(FurSurrogateVersion1);
-		Type[] ISaveableBase.saveVersionTypes => new Type[] { typeof(FurSurrogateVersion1) };
-		object ISaveableBase.ToCurrentSaveVersion()
-		{
-			return new FurSurrogateVersion1()
-			{
-				primary = this.primaryColor,
-				secondary = this.secondaryColor,
-				pattern = (int)this.multiColorPattern
-			};
-		}
-
-		internal FurColor(FurSurrogateVersion1 surrogate)
-		{
-			primaryColor = surrogate.primary ?? HairFurColors.NO_HAIR_FUR;
-			secondaryColor = surrogate.secondary ?? HairFurColors.NO_HAIR_FUR;
-			multiColorPattern = (FurMulticolorPattern)surrogate.pattern;
-			validateData();
-		}
-
-	}
-
-	[DataContract]
-	public sealed class FurSurrogateVersion1 : ISurrogateBase
-	{
-		[DataMember]
-		public HairFurColors primary;
-		[DataMember]
-		public HairFurColors secondary;
-		[DataMember]
-		public int pattern;
-		
-		object ISurrogateBase.ToSaveable()
-		{
-			return new FurColor(this);
 		}
 	}
 }

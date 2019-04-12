@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CoC.Backend.Creatures
 {
-	class MonsterCreator : CombatCreatureCreator
+	public sealed class MonsterCreator : CombatCreatureCreator
 	{
 	}
 }

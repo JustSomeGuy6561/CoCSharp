@@ -17,38 +17,67 @@ namespace CoC.Backend.BodyParts
 		YELLOW, PINK, ORANGE, INDIGO, TAN, BLACK
 	}
 
-	[DataContract]
-	public partial class Eyes : BodyPartBase<Eyes, EyeType>
+	
+	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType>
 	{
 
-		public EyeColor leftIrisColor { get; protected set; }
+		public EyeColor leftIrisColor { get; private set; }
 		//People really like heterochromia in PCs.
-		public EyeColor rightIrisColor { get; protected set; }
+		public EyeColor rightIrisColor { get; private set; }
 
 		public bool isHeterochromia => leftIrisColor != rightIrisColor;
 		public int eyeCount => type.eyeCount;
 		public bool isReptilian => type.isReptilianEyes;
 		public override EyeType type { get; protected set; }
 
-		public override bool isDefault => type == EyeType.HUMAN;
 
-		private protected Eyes(EyeType eyetype)
+		private Eyes(EyeType eyetype)
 		{
 			type = eyetype;
 			leftIrisColor = type.defaultColor;
 			rightIrisColor = type.defaultColor;
 		}
-		private protected Eyes(EyeType eyetype, EyeColor color)
+		private Eyes(EyeType eyetype, EyeColor color)
 		{
 			type = eyetype;
 			leftIrisColor = color;
 			rightIrisColor = color;
 		}
-		private protected Eyes(EyeType eyetype, EyeColor leftEye, EyeColor rightEye)
+		private Eyes(EyeType eyetype, EyeColor leftEye, EyeColor rightEye)
 		{
 			type = eyetype;
 			leftIrisColor = leftEye;
 			rightIrisColor = rightEye;
+		}
+
+		public override bool isDefault => type == EyeType.HUMAN;
+
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			var eyeType = type;
+			bool valid = EyeType.Validate(ref eyeType, correctDataIfInvalid);
+			type = eyeType;
+			//check left eye. skip this if the data is already invalid and we aren't correcting invalid data.
+			//checks to see if the value is out of range for the Enum (C# doesn't check enums)
+			if ((valid || correctDataIfInvalid) && !Enum.IsDefined(typeof(EyeColor), (int)leftIrisColor))
+			{
+				if (correctDataIfInvalid)
+				{
+					leftIrisColor = EyeColor.AMBER;
+				}
+				valid = false;
+			}
+			//check right eye. skip this if the data is already invalid and we aren't correcting invalid data.
+			//checks to see if the value is out of range for the Enum (C# doesn't check enums)
+			if ((valid || correctDataIfInvalid) && !Enum.IsDefined(typeof(EyeColor), (int)rightIrisColor))
+			{
+				if (correctDataIfInvalid)
+				{
+					rightIrisColor = EyeColor.AMBER;
+				}
+				valid = false;
+			}
+			return valid;
 		}
 
 		internal static Eyes GenerateDefault()
@@ -128,26 +157,6 @@ namespace CoC.Backend.BodyParts
 			type = EyeType.HUMAN;
 			return true;
 		}
-
-		internal override Type[] saveVersions => new Type[] { typeof(EyeSurrogateVersion1) };
-		internal override Type currentSaveVersion => typeof(EyeSurrogateVersion1);
-		internal override BodyPartSurrogate<Eyes, EyeType> ToCurrentSave()
-		{
-			return new EyeSurrogateVersion1()
-			{
-				eyeType = index,
-				leftEyeVal = (int)leftIrisColor,
-				rightEyeVal = (int)rightIrisColor
-			};
-		}
-
-		internal Eyes(EyeSurrogateVersion1 surrogate)
-		{
-			type = EyeType.Deserialize(surrogate.eyeType);
-			leftIrisColor = (EyeColor)surrogate.leftEyeVal;
-			rightIrisColor = (EyeColor)surrogate.rightEyeVal;
-		}
-
 	}
 	public enum SCLERA_COLOR
 	{
@@ -156,7 +165,7 @@ namespace CoC.Backend.BodyParts
 		CLEAR//, //Everything else
 			 //RED   //Vampires? (silly mode, i guess)
 	}
-	public partial class EyeType : BodyPartBehavior<EyeType, Eyes>
+	public partial class EyeType : SaveableBehavior<EyeType, Eyes>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EyeType> eyes = new List<EyeType>();
@@ -187,6 +196,7 @@ namespace CoC.Backend.BodyParts
 			eyes.AddAt(this, _index);
 			scleraColor = color;
 		}
+		public override int index => _index;
 
 		internal static EyeType Deserialize(int index)
 		{
@@ -208,6 +218,18 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		internal static bool Validate(ref EyeType eyeType, bool correctInvalidData = false)
+		{
+			if (eyes.Contains(eyeType))
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				eyeType = HUMAN;
+			}
+			return false;
+		}
 
 		public static EyeType HUMAN = new EyeType(Species.HUMAN.defaultEyeColor, HumanEyeChange, HumanShortStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: SCLERA_COLOR.WHITE);
 		public static EyeType SPIDER = new EyeType(Species.SPIDER.defaultEyeColor, SpiderEyeChange, SpiderShortStr, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
@@ -219,21 +241,5 @@ namespace CoC.Backend.BodyParts
 		public static EyeType COCKATRICE = new EyeType(Species.COCKATRICE.defaultEyeColor, CockatriceEyeChange, CockatriceShortStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
 		public static EyeType CAT = new EyeType(Species.CAT.defaultEyeColor, CatEyeChange, CatShortStr, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 
-		public override int index => _index;
-	}
-
-	[DataContract]
-	public sealed class EyeSurrogateVersion1 : BodyPartSurrogate<Eyes, EyeType>
-	{
-		[DataMember]
-		public int eyeType;
-		[DataMember]
-		public int leftEyeVal;
-		[DataMember]
-		public int rightEyeVal;
-		internal override Eyes ToBodyPart()
-		{
-			return new Eyes(this);
-		}
 	}
 }

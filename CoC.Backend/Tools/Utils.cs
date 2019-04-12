@@ -101,6 +101,32 @@ namespace CoC.Backend.Tools
 				list.Add(item);
 			}
 		}
+
+		public static float Lerp(int first, int second, float location)
+		{
+			if (location <= 0)
+			{
+				return first;
+			}
+			else if (location >= 1)
+			{
+				return second;
+			}
+			return first + (second - first) * location;
+		}
+
+		public static float AsPercent(this int value, int min = 0, int max = 100)
+		{
+			if (value <= min)
+			{
+				return 0;
+			}
+			else if (value >= max)
+			{
+				return 1;
+			}
+			return (value - min * 1.0f) / (max - min * 1.0f);
+		}
 	}
 
 	public class Pair<T, U>

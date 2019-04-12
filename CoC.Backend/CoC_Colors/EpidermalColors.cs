@@ -4,15 +4,14 @@
 //12/31/2018, 2:35 AM
 using System;
 using System.Drawing;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.CoC_Colors
 {
-	[DataContract]
+
 	public abstract class CoCColors
 	{
 		//RGB is used for comparing colors. it factors in when trying to convert one color to something else 
-		protected CoCColors(Color rgb, string colorName)
+		protected CoCColors(Color rgb, string colorName) : base()
 		{
 			rgbValue = rgb;
 			if (!string.IsNullOrWhiteSpace(colorName))
@@ -25,7 +24,7 @@ namespace CoC.Backend.CoC_Colors
 			}
 		}
 
-		protected CoCColors(Color rgb)
+		protected CoCColors(Color rgb) : base()
 		{
 			rgbValue = rgb;
 			value = rgb.Name;

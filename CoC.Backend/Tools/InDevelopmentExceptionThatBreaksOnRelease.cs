@@ -13,7 +13,7 @@ namespace CoC.Backend.Tools
 	[SuppressMessage("Microsoft.Design",
 	"CA1032:ImplementStandardExceptionConstructors",
 	Justification = "Never used in production.")]
-	class InDevelopmentExceptionThatBreaksOnRelease : Exception
+	public  class InDevelopmentExceptionThatBreaksOnRelease : Exception
 	{
 	}
 

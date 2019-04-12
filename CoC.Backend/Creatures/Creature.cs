@@ -1,13 +1,10 @@
 ﻿using CoC.Backend.BodyParts;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Save;
-using CoC.Backend.Save.Internals;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.Creatures
 {
-	[DataContract]
+
 	public abstract class Creature
 	{
 
@@ -23,9 +20,6 @@ namespace CoC.Backend.Creatures
 		public readonly Tongue tongue;
 		public readonly Wings wings;
 		//piercing extras
-		public readonly Lip lip;
-		public readonly Nose nose;
-		public readonly Eyebrow eyebrow;
 
 		protected Creature(CreatureCreator creator)
 		{
@@ -38,7 +32,7 @@ namespace CoC.Backend.Creatures
 			else if (creator.bodyType.isFurry)
 			{
 				//invalid primary color
-				if (FurColor.isNullOrEmpty(creator.furColor))
+				if (FurColor.IsNullOrEmpty(creator.furColor))
 				{
 					body = Body.GenerateDefaultOfType(creator.bodyType);
 					if (creator.furTexture != FurTexture.NONDESCRIPT)
@@ -56,7 +50,7 @@ namespace CoC.Backend.Creatures
 				else
 				{
 					//check for invalid color.
-					FurColor underColor = FurColor.isNullOrEmpty(creator.underFurColor) ? creator.furColor : creator.underFurColor;
+					FurColor underColor = FurColor.IsNullOrEmpty(creator.underFurColor) ? creator.furColor : creator.underFurColor;
 					body = Body.GenerateFurredWithUnderbody((FurBodyType)creator.bodyType, creator.furColor, underColor, creator.furTexture, creator.underBodyFurTexture);
 				}
 			}
@@ -82,28 +76,28 @@ namespace CoC.Backend.Creatures
 			}
 			else if (creator.bodyType.isCockatrice)
 			{
-				if (Tones.isNullOrEmpty(creator.underTone) && FurColor.isNullOrEmpty(creator.furColor))
+				if (Tones.isNullOrEmpty(creator.underTone) && FurColor.IsNullOrEmpty(creator.furColor))
 				{
 					body = Body.GenerateDefaultOfType(creator.bodyType);
 				}
 				else
 				{
 					Tones scales = Tones.isNullOrEmpty(creator.underTone) ? BodyType.COCKATRICE.defaultScales : creator.underTone;
-					FurColor feathers = FurColor.isNullOrEmpty(creator.furColor) ? BodyType.COCKATRICE.defaultFur : creator.furColor;
+					FurColor feathers = FurColor.IsNullOrEmpty(creator.furColor) ? BodyType.COCKATRICE.defaultFur : creator.furColor;
 
 					body = Body.GenerateCockatrice(feathers, scales);
 				}
 			}
 			else if (creator.bodyType.isKitsune)
 			{
-				if (FurColor.isNullOrEmpty(creator.underFurColor) && Tones.isNullOrEmpty(creator.tone))
+				if (FurColor.IsNullOrEmpty(creator.underFurColor) && Tones.isNullOrEmpty(creator.tone))
 				{
 					body = Body.GenerateDefaultOfType(creator.bodyType);
 				}
 				else
 				{
 					Tones skin = Tones.isNullOrEmpty(creator.tone) ? BodyType.KITSUNE.defaultSkin : creator.tone;
-					FurColor fur = FurColor.isNullOrEmpty(creator.underFurColor) ? BodyType.KITSUNE.defaultFur : creator.underFurColor;
+					FurColor fur = FurColor.IsNullOrEmpty(creator.underFurColor) ? BodyType.KITSUNE.defaultFur : creator.underFurColor;
 
 					body = Body.GenerateKitsune(skin, fur);
 				}
@@ -112,7 +106,6 @@ namespace CoC.Backend.Creatures
 			{
 				body = Body.GenerateDefaultOfType(creator.bodyType);
 			}
-			body.deserializePiercings(creator?.navelPiercings);
 			//antennae
 			antennae = creator?.antennaeType != null ? Antennae.GenerateDefaultOfType(creator.antennaeType) : Antennae.GenerateDefault();
 			//arms
@@ -153,29 +146,30 @@ namespace CoC.Backend.Creatures
 			//gills
 			gills = creator?.gillType != null ? Gills.GenerateDefaultOfType(creator.gillType) : Gills.GenerateDefault();
 
-			if (creator?.hairType == null)
-			{
-				hair = Hair.GenerateDefault();
-			}
-			else if (creator.hairColor == null)
-			{
-				if (creator.hairLength == null)
-				{
-					hair = Hair.GenerateDefaultOfType(creator.hairType);
-				}
-				else
-				{
-					hair = Hair.GenerateWithLength(creator.hairType, (ushort)creator.hairLength);
-				}
-			}
-			else if (creator.hairHighlightColor == null)
-			{
-				hair = Hair.GenerateWithColor(creator.hairType, creator.hairColor, creator.hairLength);
-			}
-			else
-			{
-				hair = Hair.GenerateWithColorAndHighlight(creator.hairType, creator.hairColor, creator.hairHighlightColor);
-			}
+			//if (creator?.hairType == null)
+			//{
+			//	hair = Hair.GenerateDefault();
+			//}
+			//else if (creator.hairColor == null)
+			//{
+			//	if (creator.hairLength == null)
+			//	{
+			//		hair = Hair.GenerateDefaultOfType(creator.hairType);
+			//	}
+			//	else
+			//	{
+			//		hair = Hair.GenerateWithLength(creator.hairType, (float)creator.hairLength);
+			//	}
+			//}
+			//else if (creator.hairHighlightColor == null)
+			//{
+			//	hair = Hair.GenerateWithColor(creator.hairType, creator.hairColor, creator.hairLength);
+			//}
+			//else
+			//{
+			//	hair = Hair.GenerateWithColorAndHighlight(creator.hairType, creator.hairColor, creator.hairHighlightColor, creator.hairLength);
+			//}
+			hair = Hair.GenerateDefault();
 
 			//horns
 			if (creator?.hornType == null)
@@ -197,8 +191,6 @@ namespace CoC.Backend.Creatures
 			//horns.ReactToChangeInFemininity(genitals.feminity);
 			//tongue
 			tongue = creator?.tongueType == null ? Tongue.GenerateDefault() : Tongue.GenerateDefaultOfType(creator.tongueType);
-			tongue.deserializePiercings(creator?.tonguePiercings);
-
 			//wings
 			if (creator?.wingType == null)
 			{
@@ -234,37 +226,6 @@ namespace CoC.Backend.Creatures
 			{
 				wings = Wings.GenerateDefaultOfType(creator.wingType);
 			}
-			//eyebrow
-			eyebrow = Eyebrow.Generate();
-			eyebrow.deserializePiercings(creator?.eyebrowPiercings);
-			//lip
-			lip = Lip.Generate();
-			lip.deserializePiercings(creator?.lipPiercings);
-			//nose
-			nose = Nose.Generate();
-			nose.deserializePiercings(creator?.nosePiercings);
-
-			SetupBindings();
-		}
-
-		internal Creature(SurrogateCreatureCreator surrogateCreator)
-		{
-			antennae = surrogateCreator?.antennae ?? Antennae.GenerateDefault();
-			arms = surrogateCreator?.arms ?? Arms.GenerateDefault();
-			back = surrogateCreator?.back ?? Back.GenerateDefault();
-			body = surrogateCreator?.body ?? Body.GenerateDefault();
-			ears = surrogateCreator?.ears ?? Ears.GenerateDefault();
-			eyes = surrogateCreator?.eyes ?? Eyes.GenerateDefault();
-			gills = surrogateCreator?.gills ?? Gills.GenerateDefault();
-			hair = surrogateCreator?.hair ?? Hair.GenerateDefault();
-			horns = surrogateCreator?.horns ?? Horns.GenerateDefault();
-			tongue = surrogateCreator?.tongue ?? Tongue.GenerateDefault();
-			wings = surrogateCreator?.wings ?? Wings.GenerateDefault();
-			//Piercings
-			lip = surrogateCreator?.lip ?? Lip.Generate();
-			nose = surrogateCreator?.nose ?? Nose.Generate();
-			eyebrow = surrogateCreator?.eyebrow ?? Eyebrow.Generate();
-
 			SetupBindings();
 		}
 
@@ -321,30 +282,6 @@ namespace CoC.Backend.Creatures
 		public bool RestoreTongue()
 		{
 			return tongue.Restore();
-		}
-
-		internal virtual void AddSurrogateData()
-		{
-			//standard parts.
-			DataContractSystem.AddSurrogateData(antennae);
-			DataContractSystem.AddSurrogateData(arms);
-			DataContractSystem.AddSurrogateData(back);
-			DataContractSystem.AddSurrogateData(body);
-			DataContractSystem.AddSurrogateData(ears);
-			DataContractSystem.AddSurrogateData(eyes);
-			DataContractSystem.AddSurrogateData(gills);
-			DataContractSystem.AddSurrogateData(hair);
-			DataContractSystem.AddSurrogateData(horns);
-			DataContractSystem.AddSurrogateData(tongue);
-			DataContractSystem.AddSurrogateData(wings);
-			//epidermis sub-part and its sub-parts.
-			body.AddEpidermisSurrogateData();
-			//piercing sub-parts
-			DataContractSystem.AddSurrogateData(eyebrow);
-			DataContractSystem.AddSurrogateData(lip);
-			DataContractSystem.AddSurrogateData(nose);
-			//piercing jewelry.
-			//NYI
 		}
 	}
 }

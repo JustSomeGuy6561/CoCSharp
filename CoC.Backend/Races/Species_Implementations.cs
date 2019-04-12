@@ -13,6 +13,7 @@ using System.Linq;
 
 namespace CoC.Backend.Races
 {
+
 	public class Anemone : Species
 	{
 		public HairFurColors defaultHair => HairFurColors.CERULEAN;
@@ -34,11 +35,13 @@ namespace CoC.Backend.Races
 		public HairFurColors defaultHair => HairFurColors.BLACK;
 		public FurColor defaultFur => new FurColor(HairFurColors.BLACK, HairFurColors.YELLOW, FurMulticolorPattern.STRIPED);
 		public Tones defaultTone => Tones.BLACK;
+		public Tones defaultAbdomenTone => defaultTone;
 		internal Bee() : base(BeeStr) { }
 	}
-
 	public class Behemoth : Species
 	{
+		public FurColor defaultFur => new FurColor(HairFurColors.DARK_RED);
+		public FurColor defaultTailFur => defaultFur;
 		internal Behemoth() : base(BehemothStr) { }
 	}
 
@@ -49,6 +52,9 @@ namespace CoC.Backend.Races
 
 	public class Bunny : Species
 	{
+		public FurColor defaultFur => new FurColor(HairFurColors.WHITE);
+		public FurColor defaultFacialFur => defaultFur;
+		public FurColor defaultTailFur => defaultFur;
 		internal Bunny() : base(BunnyStr) { }
 	}
 
@@ -73,6 +79,7 @@ namespace CoC.Backend.Races
 		};
 
 		public FurColor defaultFur => new FurColor(HairFurColors.BROWN);
+		public FurColor defaultFacialFur => defaultFur;
 
 		//has a 20% chance of an underbody. It will be white, unless primary is white, then black.
 		public void getRandomFurColors(out FurColor primary, out FurColor underbody)
@@ -85,6 +92,7 @@ namespace CoC.Backend.Races
 		}
 
 		public EyeColor defaultEyeColor => EyeColor.GREEN;
+		public FurColor defaultTailFur => defaultFur;
 
 		internal Cat() : base(CatStr) { }
 	}
@@ -185,22 +193,33 @@ namespace CoC.Backend.Races
 		public FurColor defaultPrimaryFeathers => new FurColor(HairFurColors.BLUE);
 		public Tones defaultScaleTone => Tones.BLUE;
 		public FurColor defaultSecondaryFeathers => new FurColor(HairFurColors.TURQUOISE);
+		public FurColor defaultTailFeaithers => defaultSecondaryFeathers;
 		public EyeColor defaultEyeColor => EyeColor.BLUE;
 		internal Cockatrice() : base(CockatriceStr) { }
 	}
 
 	public class Cow : Species
 	{
+		public FurColor defaultFur => new FurColor(HairFurColors.WHITE, HairFurColors.BLACK, FurMulticolorPattern.SPOTTED);
+		public FurColor defaultFacialFur => defaultFur;
+		public FurColor defaultTailFur => defaultFur;
 		internal Cow() : base(CowStr) { }
 	}
 
 	public class Deer : Species
 	{
+		public FurColor defaultFurColor => new FurColor(HairFurColors.LIGHT_BROWN);
+		public FurColor defaultYouthFurColor => new FurColor(HairFurColors.LIGHT_BROWN, HairFurColors.WHITE, FurMulticolorPattern.SPOTTED); //unused atm.
+		public FurColor defaultTailFur => new FurColor(HairFurColors.WHITE);
+		public FurColor defaultFacialFur => defaultFurColor;
+
 		internal Deer() : base(DeerStr) { }
 	}
 
 	public class Demon : Species
 	{
+		public Tones defaultTone => Tones.DARK_RED;
+		public Tones defaultTailTone => defaultTone;
 		internal Demon() : base(DemonStr) { }
 	}
 
@@ -224,6 +243,8 @@ namespace CoC.Backend.Races
 			new FurColor(HairFurColors.BLACK, HairFurColors.WHITE, FurMulticolorPattern.NO_PATTERN)
 		};
 		public FurColor defaultFur => new FurColor(HairFurColors.DARK_RED); //Hellhound
+		public FurColor defaultFacialFur => defaultFur; //see above.
+		public FurColor defaultTailFur => defaultFacialFur;
 		internal Dog() : base(DogStr) { }
 	}
 
@@ -236,11 +257,18 @@ namespace CoC.Backend.Races
 		public EyeColor defaultEyeColor => EyeColor.ORANGE;
 
 		public HairFurColors defaultManeColor => HairFurColors.GREEN;
+		public Tones defaultTailTone => defaultTone;
 		internal Dragon() : base(DragonStr) { }
 	}
 
 	public class Echidna : Species
 	{
+		public FurColor defaultFur => new FurColor(HairFurColors.LIGHT_BROWN);
+		public Tones defaultSpineColor => Tones.IVORY; //unused atm.
+
+		public FurColor defaultFacialFur => defaultFur;
+		public FurColor defaultTailFur => new FurColor(HairFurColors.BLACK);
+
 		internal Echidna() : base(EchidnaStr) { }
 	}
 
@@ -270,6 +298,10 @@ namespace CoC.Backend.Races
 
 		public FurColor defaultFur => new FurColor(HairFurColors.BLACK);
 		public FurColor defaultUnderFur => new FurColor(HairFurColors.BROWN, HairFurColors.BLACK, FurMulticolorPattern.MIXED);
+
+		public FurColor defaultFacialFur => defaultUnderFur;
+		public FurColor defaultSecondaryFacialFur => new FurColor(HairFurColors.WHITE);
+		public FurColor defaultTailFur =>defaultUnderFur;
 
 		internal Ferret() : base(FerretStr) { }
 	}
@@ -309,6 +341,9 @@ namespace CoC.Backend.Races
 		public FurColor defaultFur => new FurColor(HairFurColors.ORANGE);
 		public FurColor defaultUnderbody => new FurColor(HairFurColors.WHITE);
 
+		public FurColor defaultFacialFur => new FurColor(HairFurColors.ORANGE, HairFurColors.WHITE, FurMulticolorPattern.NO_PATTERN);
+
+		public FurColor defaultTailFur => new FurColor(HairFurColors.ORANGE, HairFurColors.WHITE, FurMulticolorPattern.STRIPED);
 		internal Fox() : base(FoxStr) { }
 	}
 
@@ -325,6 +360,7 @@ namespace CoC.Backend.Races
 	public class Goat : Species
 	{
 		public FurColor defaultWool => new FurColor(HairFurColors.WHITE);
+		public FurColor defaultTailFur => defaultWool;
 		internal Goat() : base(GoatStr) { }
 	}
 
@@ -350,11 +386,17 @@ namespace CoC.Backend.Races
 	{
 		public FurColor defaultFeathers => new FurColor(HairFurColors.WHITE);
 		public HairFurColors defaultFeatherHair => HairFurColors.WHITE;
+		public FurColor defaultTailFeathers => defaultFeathers;
 		internal Harpy() : base(HarpyStr) { }
 	}
 
 	public class Horse : Species
 	{
+		public FurColor defaultFacialFur => new FurColor(HairFurColors.BROWN);
+		public FurColor defaultFur => new FurColor(HairFurColors.BROWN);
+		public HairFurColors defaultHairColor => HairFurColors.BLACK;
+		public FurColor defaultTailFur => new FurColor(defaultHairColor);
+
 		internal Horse() : base(HorseStr) { }
 	}
 	public class Human : Species
@@ -370,11 +412,17 @@ namespace CoC.Backend.Races
 	{
 		public Tones[] availableTones => new Tones[] { Tones.RED, Tones.ORANGE };
 		public Tones defaultTone => Tones.ORANGE;
+		public FurColor defaultTailFur => new FurColor(HairFurColors.BLACK);
 		internal Imp() : base(ImpStr) { }
 	}
 
 	public class Kangaroo : Species
 	{
+		public FurColor defaultFur => new FurColor(HairFurColors.LIGHT_BROWN);
+		public FurColor defaultUnderbodyFur => new FurColor(HairFurColors.WHITE);
+		public FurColor defaultFacialFur => defaultUnderbodyFur;
+
+		public FurColor defaultTailFur => defaultFur;
 		internal Kangaroo() : base(KangarooStr) { }
 	}
 
@@ -421,6 +469,8 @@ namespace CoC.Backend.Races
 		public Tones[] KitsuneTones => new Tones[] { Tones.TAN, Tones.OLIVE, Tones.LIGHT };
 
 		public Tones[] ElderKitsuneTones => new Tones[] { Tones.DARK, Tones.EBONY, Tones.ASHEN, Tones.SABLE, Tones.MILKY_WHITE };
+
+		public FurColor defaultFacialFur => new FurColor(HairFurColors.WHITE);
 		internal Kitsune() : base(KitsuneStr) { }
 	}
 
@@ -459,6 +509,7 @@ namespace CoC.Backend.Races
 
 		public Tones defaultTone => Tones.DARK_RED;
 		public EyeColor defaultEyeColor => EyeColor.YELLOW;
+		public Tones defaultTailTone => defaultTone;
 		internal Lizard() : base(LizardStr) { }
 	}
 
@@ -469,6 +520,10 @@ namespace CoC.Backend.Races
 
 	public class Mouse : Species
 	{
+		public FurColor defaultFur => new FurColor(HairFurColors.CHOCOLATE);
+		public FurColor defaultFacialFur => defaultFur;
+
+		public FurColor defaultTailFur =>defaultFur;
 		internal Mouse() : base(MouseStr) { }
 	}
 
@@ -509,7 +564,7 @@ namespace CoC.Backend.Races
 			}
 			return Tones.NOT_APPLICABLE;
 		}
-
+		public Tones defaultTone => Tones.DARK_GREEN;
 		public Tones defaultUnderTone => Tones.TAN;
 
 		internal Naga() : base(NagaStr) { }
@@ -517,16 +572,23 @@ namespace CoC.Backend.Races
 
 	public class Pig : Species
 	{
+		public FurColor defaultFur => new FurColor(HairFurColors.PINK);
+		public FurColor defaultFacialFur => defaultFur;
+		public FurColor defaultTailFur => defaultFur;
 		internal Pig() : base(PigStr) { }
 	}
 
 	public class Pony : Species
 	{
+		public FurColor MLP_Fur => new FurColor(HairFurColors.PINK);
 		internal Pony() : base(PonyStr) { }
 	}
 
 	public class Raccoon : Species
 	{
+		public FurColor defaultFur => new FurColor(HairFurColors.DARK_GRAY, HairFurColors.LIGHT_GRAY, FurMulticolorPattern.STRIPED);
+		public FurColor defaultFacialFur => defaultFur;
+		public FurColor defaultTailFur => defaultFur;
 		internal Raccoon() : base(RaccoonStr) { }
 	}
 
@@ -571,6 +633,7 @@ namespace CoC.Backend.Races
 
 		public FurColor defaultUnderFur => new FurColor(HairFurColors.BLACK);
 		public FurColor defaultFur => new FurColor(HairFurColors.AUBURN);
+		
 		internal RedPanda() : base(RedPandaStr) { }
 	}
 
@@ -581,6 +644,8 @@ namespace CoC.Backend.Races
 
 	public class Rhino : Species
 	{
+		public Tones defaultTone = Tones.DARK_GRAY;
+		public FurColor defaultTailFur => new FurColor(HairFurColors.BLACK);
 		internal Rhino() : base(RhinoStr) { }
 	}
 
@@ -590,6 +655,7 @@ namespace CoC.Backend.Races
 
 		public Tones[] availableTones => new Tones[] { Tones.LIGHT, Tones.FAIR, Tones.TAN, Tones.DARK, Tones.DARK_RED };
 
+		public Tones defaultTailTone => defaultTone;
 		internal Salamander() : base(SalamanderStr) { }
 	}
 
@@ -601,16 +667,21 @@ namespace CoC.Backend.Races
 
 	public class Scorpion : Species
 	{
+		public Tones defaultTailTone => Tones.TAN;
 		internal Scorpion() : base(ScorpionStr) { }
 	}
 
 	public class Shark : Species
 	{
+		public Tones defaultTone => Tones.GRAY;
+		public Tones defaultTailTone => defaultTone;
 		internal Shark() : base(SharkStr) { }
 	}
 
 	public class Sheep : Species
 	{
+		public FurColor defaultColor => new FurColor(HairFurColors.WHITE);
+		public FurColor defaultTailFur => defaultColor;
 		internal Sheep() : base(SheepStr) { }
 	}
 
@@ -621,8 +692,10 @@ namespace CoC.Backend.Races
 
 	public class Spider : Species
 	{
-		public Tones defaultTone => Tones.BLACK;
 		public EyeColor defaultEyeColor => EyeColor.BLACK;
+
+		public Tones defaultTone => Tones.BLACK;
+		public Tones defaultAbdomenTone =>Tones.BLACK;
 		internal Spider() : base(SpiderStr) { }
 	}
 
@@ -634,6 +707,11 @@ namespace CoC.Backend.Races
 	public class Wolf : Species
 	{
 		public EyeColor defaultEyeColor => EyeColor.AMBER;
+
+		public FurColor defaultFurColor => new FurColor(HairFurColors.BLACK, HairFurColors.GRAY, FurMulticolorPattern.NO_PATTERN);
+		public FurColor defaultFacialFur => new FurColor(HairFurColors.GRAY);
+		public FurColor defaultTailFur => new FurColor(HairFurColors.GRAY);
+
 		internal Wolf() : base(WolfStr) { }
 	}
 }

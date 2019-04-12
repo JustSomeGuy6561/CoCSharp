@@ -5,17 +5,15 @@
 
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Save;
+using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.BodyParts
 {
 
-	public enum NavelPiercings { TOP, BOTTOM }
 
 
 	//NOTE: primary epidermis here stores the current skin/scales/etc tone even if fur is in use. that's because under that fur is some form of skin.
@@ -25,12 +23,12 @@ namespace CoC.Backend.BodyParts
 
 	//secondary epidermis should only store one kind and set the other to empty, though i've probably missed a few cases. regardless, epidermal data will
 	//fix that for me, so use that if you're looking for that data. no alternatives have been provided. 
+	public enum NavelPiercingLocation { TOP, BOTTOM }
 
-
-	[DataContract]
-	public class Body : PiercableBodyPart<Body, BodyType, NavelPiercings>, IHairAware //IDyeable, IToneable
+	public sealed class Body : BehavioralSaveablePart<Body, BodyType>, IHairAware //IDyeable, IToneable
 	{
 		private static readonly HairFurColors DEFAULT_HAIR = HairFurColors.BLACK;
+		private const JewelryType AVAILABLE_NAVEL_PIERCINGS = JewelryType.CURVED_BARBELL | JewelryType.DANGLER | JewelryType.RING | JewelryType.STUD | JewelryType.SPECIAL;
 		//Hair, Fur, Tone
 		private HairFurColors hairColor => hairData().hairColor;
 
@@ -38,8 +36,10 @@ namespace CoC.Backend.BodyParts
 		//kitsune is weird af man.
 		public EpidermalData secondaryEpidermis => type.hasUnderBody ? _secondaryEpidermis.GetEpidermalData() : new EpidermalData();
 
-		private Epidermis _primaryEpidermis;
-		private Epidermis _secondaryEpidermis;
+		private readonly Epidermis _primaryEpidermis;
+		private readonly Epidermis _secondaryEpidermis;
+
+		public readonly Piercing<NavelPiercingLocation> navelPiercings;
 
 		public Tones SkinTone => _primaryEpidermis.tone;
 		public FurColor FurColor => type.usesUnderFurInstead ? _secondaryEpidermis.fur : _primaryEpidermis.fur;
@@ -47,18 +47,7 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == BodyType.HUMANOID;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
-		{
-			BodyType bodyType = type;
-			HairFurColors hair = hairColor;
-			return BodyType.Validate(ref bodyType, _primaryEpidermis, _secondaryEpidermis, ref hair, correctDataIfInvalid);
-		}
-
-		public bool isFurry => type.isFurry;
-		public bool isTone => type.isTone;
-		public bool isCockatrice => type.isCockatrice;
-
-		private protected Body(BodyType bodyType)
+		private Body(BodyType bodyType)
 		{
 			type = bodyType ?? throw new ArgumentNullException();
 
@@ -95,6 +84,29 @@ namespace CoC.Backend.BodyParts
 				_primaryEpidermis.ChangeFur(kitsuneBody.defaultFur); // needs to override.
 				_secondaryEpidermis.UpdateEpidermis((FurBasedEpidermisType)kitsuneBody.secondaryEpidermisType, kitsuneBody.defaultFur);
 			}
+
+			navelPiercings = new Piercing<NavelPiercingLocation>(AVAILABLE_NAVEL_PIERCINGS, PiercingLocationUnlocked);
+		}
+
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			BodyType bodyType = type;
+			HairFurColors hair = hairColor;
+			bool valid = BodyType.Validate(ref bodyType, _primaryEpidermis, _secondaryEpidermis, ref hair, correctDataIfInvalid);
+			if (valid || correctDataIfInvalid)
+			{
+				valid &= navelPiercings.Validate();
+			}
+			return valid;
+		}
+
+		public bool isFurry => type.isFurry;
+		public bool isTone => type.isTone;
+		public bool isCockatrice => type.isCockatrice;
+
+		private bool PiercingLocationUnlocked(NavelPiercingLocation piercingLocation)
+		{
+			return true;
 		}
 
 		internal BodyData ToBodyData()
@@ -117,7 +129,7 @@ namespace CoC.Backend.BodyParts
 		{
 			Body retVal = new Body(BodyType.COCKATRICE);
 			//the constructor automatically initializes these to default values. this overrides them if valid
-			if (!FurColor.isNullOrEmpty(featherColor))
+			if (!FurColor.IsNullOrEmpty(featherColor))
 			{
 				retVal._primaryEpidermis.ChangeFur(featherColor);
 			}
@@ -134,7 +146,7 @@ namespace CoC.Backend.BodyParts
 		{
 			Body retVal = new Body(BodyType.KITSUNE);
 			//the constructor automatically initializes these to default values. this overrides them if valid
-			if (!FurColor.isNullOrEmpty(furColor))
+			if (!FurColor.IsNullOrEmpty(furColor))
 			{
 				retVal._primaryEpidermis.ChangeFur(furColor);
 				retVal._secondaryEpidermis.ChangeFur(furColor);
@@ -182,7 +194,7 @@ namespace CoC.Backend.BodyParts
 		internal static Body GenerateFurredNoUnderbody(FurBodyType furryBody, FurColor primaryFur, FurTexture texture = FurTexture.NONDESCRIPT)
 		{
 			Body retVal = new Body(furryBody);
-			if (!FurColor.isNullOrEmpty(primaryFur))
+			if (!FurColor.IsNullOrEmpty(primaryFur))
 			{
 				retVal._primaryEpidermis.ChangeFur(primaryFur);
 			}
@@ -193,12 +205,12 @@ namespace CoC.Backend.BodyParts
 			FurTexture primaryTexture = FurTexture.NONDESCRIPT, FurTexture secondaryTexture = FurTexture.NONDESCRIPT)
 		{
 			Body retVal = new Body(furryBody);
-			if (!FurColor.isNullOrEmpty(primaryFur))
+			if (!FurColor.IsNullOrEmpty(primaryFur))
 			{
 				retVal._primaryEpidermis.ChangeFur(primaryFur);
 			}
 			retVal._primaryEpidermis.ChangeTexture(primaryTexture);
-			if (!FurColor.isNullOrEmpty(secondaryFur))
+			if (!FurColor.IsNullOrEmpty(secondaryFur))
 			{
 				retVal._secondaryEpidermis.ChangeFur(secondaryFur);
 			}
@@ -250,12 +262,12 @@ namespace CoC.Backend.BodyParts
 			}
 			//else secondaryEpidermis is set already and we can't replace it. do nothing.
 			_secondaryEpidermis.ChangeTexture(scaleTexture);
-			if (FurColor.isNullOrEmpty(featherColor) && _primaryEpidermis.fur.isEmpty)
+			if (FurColor.IsNullOrEmpty(featherColor) && _primaryEpidermis.fur.isEmpty)
 			{
 				featherColor = cockatriceBodyType.defaultFur;
 			}
 			//if only one fur is good, and it's the new color, replace the null color.
-			else if (!FurColor.isNullOrEmpty(featherColor))
+			else if (!FurColor.IsNullOrEmpty(featherColor))
 			{
 				_primaryEpidermis.ChangeFur(featherColor);
 			}
@@ -273,18 +285,18 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			else if (FurColor.isNullOrEmpty(primaryColor) && FurColor.isNullOrEmpty(secondaryColor))
+			else if (FurColor.IsNullOrEmpty(primaryColor) && FurColor.IsNullOrEmpty(secondaryColor))
 			{
 				return UpdateBody(furryType);
 			}
-			else if (!furryType.hasUnderBody || FurColor.isNullOrEmpty(secondaryColor))
+			else if (!furryType.hasUnderBody || FurColor.IsNullOrEmpty(secondaryColor))
 			{
 				return UpdateBody(furryType, primaryColor);
 			}
 			//past this point, secondaryColor is guarenteed to not be null.
 
 			//set the primary fur. if we can use the passed value, do so.
-			if (!FurColor.isNullOrEmpty(primaryColor))
+			if (!FurColor.IsNullOrEmpty(primaryColor))
 			{
 				_primaryEpidermis.ChangeFur(primaryColor);
 			}
@@ -314,7 +326,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			else if (FurColor.isNullOrEmpty(primaryColor))
+			else if (FurColor.IsNullOrEmpty(primaryColor))
 			{
 				return UpdateBody(furryType);
 			}
@@ -498,46 +510,9 @@ namespace CoC.Backend.BodyParts
 		}
 		private HairDataGetter hairData;
 		#endregion
-		#region Helpers
-		protected override bool PiercingLocationUnlocked(NavelPiercings piercingLocation)
-		{
-			return true;
-		}
-		#endregion
-		#region Serialization
-		internal void AddEpidermisSurrogateData()
-		{
-			DataContractSystem.AddSurrogateData(_primaryEpidermis);
-			DataContractSystem.AddSurrogateData(_primaryEpidermis.fur);
-			DataContractSystem.AddSurrogateData(_primaryEpidermis.fur.primaryColor);
-			DataContractSystem.AddSurrogateData(_primaryEpidermis.tone);
-		}
-		internal override Type[] saveVersions => new Type[] { typeof(BodySurrogateVersion1) };
-		internal override Type currentSaveVersion => typeof(BodySurrogateVersion1);
-		internal override BodyPartSurrogate<Body, BodyType> ToCurrentSave()
-		{
-			return new BodySurrogateVersion1()
-			{
-				bodyType = index,
-				primaryEpidermis = _primaryEpidermis,
-				secondaryEpidermis = _secondaryEpidermis,
-				navelPiercings = serializePiercings()
-			};
-		}
-
-
-		internal Body(BodySurrogateVersion1 surrogate)
-		{
-			type = BodyType.Deserialize(surrogate.bodyType);
-			_primaryEpidermis = surrogate.primaryEpidermis;
-			_secondaryEpidermis = surrogate.secondaryEpidermis;
-#warning Add piercing jewelry when that's implemented
-			deserializePiercings(surrogate.navelPiercings);
-		}
-		#endregion
 	}
 
-	public abstract partial class BodyType : PiercableBodyPartBehavior<BodyType, Body, NavelPiercings>
+	public abstract partial class BodyType : SaveableBehavior<BodyType, Body>
 	{
 		private static int indexMaker = 0;
 
@@ -616,6 +591,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//apparently cat, fox, wolf, horse, and dog use fur underbody, kindof. 
+#warning Consider replacing hard coded values with some sort of global reference to species where available. most dont have this options, so idk.
 
 		public static readonly ToneBodyType HUMANOID = new ToneBodyType(EpidermisType.SKIN, Tones.LIGHT, SkinDesc, SkinFullDesc, SkinPlayerStr, SkinTransformStr, SkinRestoreStr);
 		public static readonly ToneBodyType REPTILIAN = new ToneBodyType(EpidermisType.SCALES, Tones.DARK_RED, ScalesUnderbodyDesc, ScalesDesc, ScalesFullDesc, ScalesPlayerStr, ScalesTransformStr, ScalesRestoreStr);
@@ -764,7 +740,7 @@ namespace CoC.Backend.BodyParts
 				}
 				valid = false;
 			}
-			if (FurColor.isNullOrEmpty(primary.fur)) //guarenteed not to be null, but idk, futureproof check.
+			if (FurColor.IsNullOrEmpty(primary.fur)) //guarenteed not to be null, but idk, futureproof check.
 			{
 				primary.ChangeFur(defaultFur); //need to overwrite
 			}
@@ -829,26 +805,6 @@ namespace CoC.Backend.BodyParts
 				secondary.UpdateEpidermis(secondaryEpidermisType);
 			}
 			return valid;
-		}
-	}
-
-	[DataContract]
-	[KnownType(typeof(Epidermis))]
-	[KnownType(typeof(bool[]))]
-	public sealed class BodySurrogateVersion1 : BodyPartSurrogate<Body, BodyType>
-	{
-		[DataMember]
-		public int bodyType;
-		[DataMember]
-		public Epidermis primaryEpidermis;
-		[DataMember]
-		public Epidermis secondaryEpidermis;
-		[DataMember]
-		public bool[] navelPiercings;
-
-		internal override Body ToBodyPart()
-		{
-			return new Body(this);
 		}
 	}
 

@@ -2,20 +2,17 @@
 //Description:
 //Author: JustSomeGuy
 //12/31/2018, 1:02 AM
-using CoC.Backend.Save;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.CoC_Colors
 {
 	//"Why do this - we had strings. strings were fine! why overdesign the wheel?"
 	//well, because we had several switch statements manually parse a string to find a close color.
 	//which you can do with RGB values automatically. and adding a color here is (relatively) painless.
-	[DataContract]
-	public class Tones : CoCColors, ISaveableBase
+
+	public class Tones : CoCColors
 	{
 		//I probably missed one somewhere. sue me.
 		protected static HashSet<Tones> availableTones = new HashSet<Tones>();
@@ -144,29 +141,6 @@ namespace CoC.Backend.CoC_Colors
 				return Tones.NOT_APPLICABLE;
 			}
 			else return NearestTone(color);
-		}
-
-		Type ISaveableBase.currentSaveType => typeof(ToneSurrogate);
-
-		Type[] ISaveableBase.saveVersionTypes => new Type[] { typeof(ToneSurrogate) };
-
-		object ISaveableBase.ToCurrentSaveVersion()
-		{
-			return new ToneSurrogate()
-			{
-				color = this.rgbValue.ToArgb()
-			};
-		}
-	}
-	[DataContract]
-	[KnownType(typeof(Color))]
-	public sealed class ToneSurrogate : ISurrogateBase
-	{
-		[DataMember]
-		public int color;
-		public object ToSaveable()
-		{
-			return Tones.Deserialize(Color.FromArgb(color));
 		}
 	}
 }
