@@ -9,7 +9,7 @@ namespace CoC.Backend.Items.Wearables.Piercings
 	
 	public sealed class JewelryDummyForDebugging : PiercingJewelry
 	{
-		public JewelryDummyForDebugging() : base(JewelryType.STUD, null, false) {}
+		public JewelryDummyForDebugging() : base(JewelryType.BARBELL_STUD, null, false) {}
 	}
 #endif
 }

@@ -18,10 +18,8 @@ namespace CoC.Backend.BodyParts
 		public const JewelryType SUPPORTED_TAIL_PIERCINGS = JewelryType.RING;
 		public const int MAX_ATTACK_CHARGES = 100;
 
-		private Epidermis _epidermis => type.ParseEpidermis(bodyData());
-		private Epidermis _secondaryEpidermis => type.ParseSecondaryEpidermis(bodyData());
-		public EpidermalData epidermis => _epidermis.GetEpidermalData();
-		public EpidermalData secondaryEpidermis => _secondaryEpidermis.GetEpidermalData();
+		public EpidermalData epidermis => type.ParseEpidermis(bodyData());
+		public EpidermalData secondaryEpidermis => type.ParseSecondaryEpidermis(bodyData());
 
 		public byte tailCount
 		{
@@ -100,8 +98,6 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			type = TailType.NONE; //type resets everything.
-			_epidermis.Reset();
-			_secondaryEpidermis.Reset();
 			return true;
 		}
 
@@ -143,13 +139,13 @@ namespace CoC.Backend.BodyParts
 		private static List<TailType> tails = new List<TailType>();
 		//public readonly AttackBase attack;
 		public readonly bool mutable;
-		//public abstract bool UpdateEpidermis(Epidermis original, Epidermis secondaryOriginal, Epidermis currPrimary, Epidermis currSecondary, HairFurColors currHair, BodyType bodyType);
+
 		public readonly EpidermisType epidermisType;
 
-		internal abstract Epidermis ParseEpidermis(in BodyData bodyData);
-		internal virtual Epidermis ParseSecondaryEpidermis(in BodyData bodyData)
+		internal abstract EpidermalData ParseEpidermis(in BodyData bodyData);
+		internal virtual EpidermalData ParseSecondaryEpidermis(in BodyData bodyData)
 		{
-			return Epidermis.GenerateEmpty();
+			return new EpidermalData();
 		}
 
 
@@ -208,8 +204,11 @@ namespace CoC.Backend.BodyParts
 		public static readonly TailType DOG = new FurryTail(EpidermisType.FUR, Species.DOG.defaultTailFur, true, DogShortDesc, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
 		public static readonly TailType DEMONIC = new SuccubusTail();
 		public static readonly TailType COW = new FurryTail(EpidermisType.FUR, Species.COW.defaultTailFur, true, CowShortDesc, CowFullDesc, CowPlayerStr, CowTransformStr, CowRestoreStr);
-		public static readonly TailType SPIDER_ABDOMEN = new ToneTail(EpidermisType.CARAPACE, Species.SPIDER.defaultAbdomenTone, false, SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //web
-		public static readonly TailType BEE_ABDOMEN = new ToneTail(EpidermisType.CARAPACE, Species.BEE.defaultAbdomenTone, false, BeeShortDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //sting
+		//public static readonly TailType SPIDER_ABDOMEN = new ToneTail(EpidermisType.CARAPACE, Species.SPIDER.defaultAbdomenTone, false, SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //web
+		//public static readonly TailType BEE_ABDOMEN = new ToneTail(EpidermisType.CARAPACE, Species.BEE.defaultAbdomenTone, false, BeeShortDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //sting
+		public static readonly TailType SPIDER_OVIPOSITOR = new ToneTail(EpidermisType.CARAPACE, Species.SPIDER.defaultAbdomenTone, false, SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //web
+		public static readonly TailType BEE_OVIPOSITOR = new ToneTail(EpidermisType.CARAPACE, Species.BEE.defaultAbdomenTone, false, BeeShortDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //none)
+
 		public static readonly TailType SHARK = new ToneTail(EpidermisType.SKIN, Species.SHARK.defaultTailTone, true, SharkShortDesc, SharkFullDesc, SharkPlayerStr, SharkTransformStr, SharkRestoreStr); //slam
 		public static readonly TailType CAT = new FurryTail(EpidermisType.FUR, Species.CAT.defaultTailFur, true, CatShortDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 		public static readonly TailType LIZARD = new ToneTail(EpidermisType.SCALES, Species.LIZARD.defaultTailTone, true, LizardShortDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr); //whip
@@ -241,9 +240,9 @@ namespace CoC.Backend.BodyParts
 
 			public override byte initialTailCount => 0;
 
-			internal override Epidermis ParseEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				return Epidermis.GenerateEmpty();
+				return new EpidermalData();
 			}
 		}
 		private class FurryTail : TailType
@@ -257,21 +256,21 @@ namespace CoC.Backend.BodyParts
 			}
 
 
-			internal override Epidermis ParseEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
 				FurColor color = this.defaultFur;
 				if (mutable)
 				{
-					if (bodyData.primary.usesFur && !FurColor.IsNullOrEmpty(bodyData.primary.fur))
+					if (bodyData.main.usesFur && !FurColor.IsNullOrEmpty(bodyData.main.fur))
 					{
-						color = bodyData.primary.fur;
+						color = bodyData.main.fur;
 					}
-					else if (!bodyData.hairColor.isEmpty)
+					else if (!bodyData.activeHairColor.isEmpty)
 					{
 						color = new FurColor(bodyData.hairColor);
 					}
 				}
-				return Epidermis.Generate((FurBasedEpidermisType)epidermisType, color);
+				return new EpidermalData(epidermisType, color, FurTexture.NONDESCRIPT);
 			}
 		}
 
@@ -285,19 +284,16 @@ namespace CoC.Backend.BodyParts
 				defaultTone = defaultColor;
 			}
 
-			internal override Epidermis ParseEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				Tones color = mutable ? bodyData.primary.tone : defaultTone;
-				return Epidermis.Generate((ToneBasedEpidermisType)epidermisType, color);
+				Tones color = mutable ? bodyData.main.tone : defaultTone;
+				return new EpidermalData(epidermisType, color, SkinTexture.NONDESCRIPT);
 			}
 		}
 
 		private class FoxTail : FurryTail
 		{
-			public FoxTail() : base(EpidermisType.FUR, Species.FOX.defaultTailFur, true, FoxShortDesc, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr)
-			{
-
-			}
+			public FoxTail() : base(EpidermisType.FUR, Species.FOX.defaultTailFur, true, FoxShortDesc, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) {}
 			public override byte maxTailCount => 9;
 		}
 

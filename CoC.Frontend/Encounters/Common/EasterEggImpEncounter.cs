@@ -11,8 +11,8 @@ namespace CoC.Frontend.Encounters.Common
 	class EasterEggImpEncounter : RandomEncounter
 	{
 		private static Player player => GameEngine.currentPlayer;
-		protected override int chances => (int)Math.Round(Utils.Lerp(2, 0, player.level.AsPercent(1,20)));
-
+		protected override int chances => Utils.LerpRound(1, 20, player.level, 2, 0);
+			
 		protected override bool encounterDisabled()
 		{
 			return player.level >= 15;

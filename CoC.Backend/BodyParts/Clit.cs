@@ -2,29 +2,36 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 6:03 PM
-using CoC.Tools;
-using  CoC.BodyParts.SpecialInteraction;
+using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Tools;
 using System.Diagnostics;
 using System.Linq;
+using CoC.Backend.SaveData;
+using CoC.Backend.Items.Wearables.Piercings;
 
-namespace  CoC.BodyParts
+namespace CoC.Backend.BodyParts
 {
-
 
 	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
-	internal class Clit : SimplePiercing<ClitPiercings>, IGrowShrinkable
+	public sealed class Clit : SimpleSaveablePart<Clit>, IGrowShrinkable //IPerkAware
 	{
-#warning add more descriptors.
-		protected readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
+		//TODO: make it work with large clit perk, percing fetish perk if i make that a perk.
+
+		private static readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
+		private const JewelryType SUPPORTED_CLIT_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
+
+		private bool piercingFestish => BackendSessionData.data.piercingFetish;
+
 
 		public const float MIN_CLIT_SIZE = 0.25f;
 		public const float DEFAULT_CLIT_SIZE = 0.25f;
 		public const float MAX_CLIT_SIZE = 100f;
 
-		public float length {
+		public float length
+		{
 			get => _length;
-			protected set
+			private set
 			{
 				Utils.Clamp(ref value, MIN_CLIT_SIZE, MAX_CLIT_SIZE);
 				_length = value;
@@ -32,12 +39,15 @@ namespace  CoC.BodyParts
 		}
 		private float _length;
 
-		public bool omnibusClit { get; protected set; }
+		public bool omnibusClit { get; private set; }
 
-		protected Clit(float clitSize = DEFAULT_CLIT_SIZE)
+		public readonly Piercing<ClitPiercings> clitPiercings;
+
+		private Clit(float clitSize = DEFAULT_CLIT_SIZE)
 		{
 			length = clitSize;
 			omnibusClit = false;
+			clitPiercings = new Piercing<ClitPiercings>(SUPPORTED_CLIT_PIERCINGS, PiercingLocationUnlocked);
 		}
 
 		public static Clit Generate()
@@ -53,14 +63,14 @@ namespace  CoC.BodyParts
 			};
 		}
 
-		protected override bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
+		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
 		{
 
 			if (!requiresFetish.Contains(piercingLocation))
 			{
 				return true;
 			}
-			else if (!piercingFlags.piercingFetishEnabled)
+			else if (!piercingFestish)
 			{
 				return false;
 			}
@@ -76,9 +86,9 @@ namespace  CoC.BodyParts
 			{
 				return length >= 7;
 			}
-			#if DEBUG
+#if DEBUG
 			Debug.WriteLine("Hit some edge case. probably should fix this as it always returns false.");
-			#endif
+#endif
 			return false;
 		}
 
@@ -88,7 +98,7 @@ namespace  CoC.BodyParts
 			{
 				return null;
 			}
-			clitCock.UpdateSize(length + 4);
+			clitCock.SetLength(length + 4);
 			return clitCock;
 		}
 		private Cock clitCock = Cock.GenerateClitCock();
@@ -141,19 +151,19 @@ namespace  CoC.BodyParts
 		}
 
 		#region Grow/Shrinkable
-		public bool CanGrowPlus()
+		bool IGrowShrinkable.CanGrowPlus()
 		{
 			return length < MAX_CLIT_SIZE;
 		}
 
-		public bool CanReducto()
+		bool IGrowShrinkable.CanReducto()
 		{
 			return length > MIN_CLIT_SIZE;
 		}
 
-		public float UseGroPlus()
+		float IGrowShrinkable.UseGroPlus()
 		{
-			if (!CanGrowPlus())
+			if (!((IGrowShrinkable)this).CanGrowPlus())
 			{
 				return 0;
 			}
@@ -162,15 +172,21 @@ namespace  CoC.BodyParts
 			return length - oldLength;
 		}
 
-		public float UseReducto()
+		float IGrowShrinkable.UseReducto()
 		{
-			if (!CanReducto())
+			if (!((IGrowShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
 			float oldLength = length;
 			length /= 1.7f;
 			return oldLength - length;
+		}
+
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			length = length;
+			return clitPiercings.Validate(correctDataIfInvalid);
 		}
 		#endregion
 	}

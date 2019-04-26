@@ -254,11 +254,19 @@ namespace CoC.Backend.Races
 		public Tones defaultTone => Tones.SILVER; // ember uses to silver/gold. So, that's what i'll use. screw it. 
 
 		public Tones defaultWingTone => Tones.DARK_RED;
+		public Tones defaultWingBoneTone => defaultWingTone;
 		public EyeColor defaultEyeColor => EyeColor.ORANGE;
 
 		public HairFurColors defaultManeColor => HairFurColors.GREEN;
 		public Tones defaultTailTone => defaultTone;
 		internal Dragon() : base(DragonStr) { }
+	}
+
+	public class Dryad : Species
+	{
+		public Tones defaultBarkColor => Tones.WOODLY_BROWN;
+		public HairFurColors defaultVineColor => HairFurColors.GREEN;
+		internal Dryad() : base(DryadStr) { }
 	}
 
 	public class Echidna : Species
@@ -403,7 +411,6 @@ namespace CoC.Backend.Races
 	{
 		public Tones[] availableTones => new Tones[] { Tones.LIGHT, Tones.FAIR, Tones.OLIVE, Tones.DARK, Tones.EBONY, Tones.MAHOGANY, Tones.RUSSET };
 		public Tones defaultTone => Tones.LIGHT;
-		public HairFurColors defaultPlume => HairFurColors.RED;
 		public EyeColor defaultEyeColor => EyeColor.GRAY;
 		internal Human() : base(HumanStr) { }
 	}
@@ -471,6 +478,10 @@ namespace CoC.Backend.Races
 		public Tones[] ElderKitsuneTones => new Tones[] { Tones.DARK, Tones.EBONY, Tones.ASHEN, Tones.SABLE, Tones.MILKY_WHITE };
 
 		public FurColor defaultFacialFur => new FurColor(HairFurColors.WHITE);
+
+		public FurColor defaultFur => kitsuneFurColors[0];
+		public Tones defaultSkin => KitsuneTones[0];
+
 		internal Kitsune() : base(KitsuneStr) { }
 	}
 

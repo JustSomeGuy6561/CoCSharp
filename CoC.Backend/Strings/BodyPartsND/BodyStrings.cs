@@ -2,13 +2,117 @@
 //Description:
 //Author: JustSomeGuy
 //1/4/2019, 8:22 PM
+using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
+using System.Collections.Generic;
 
 namespace CoC.Backend.BodyParts
 {
+
+	public partial class Body
+	{
+		private string MultiDye(HairFurColors dyeColor, HashSet<byte> indices)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string SingleDye(HairFurColors dyeColor, byte index)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string MultiLotions(SkinTexture lotionTexture, HashSet<byte> indices)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string SingleLotion(SkinTexture lotionTexture, byte index)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+	}
+
 	public partial class BodyType
 	{
+		#region Generics
+
+		protected static string BodyDesc()
+		{
+			return "Body";
+		}
+
+		protected static string Body2Desc()
+		{
+			return "Body 2";
+		}
+
+		protected static string YourBodyDesc()
+		{
+			return " your body";
+		}
+
+		protected static string PartsOfFurPatternDesc()
+		{
+			return " parts of your fur to form a pattern";
+		}
+
+		protected static string UnderBodyDesc()
+		{
+			return "Underbody";
+		}
+
+		protected static string YourUnderBodyDesc()
+		{
+			return " your underbody";
+		}
+
+		protected static SimpleDescriptor YourDescriptor(EpidermisType epidermisType)
+		{
+			return () => YourDesc(epidermisType);
+		}
+
+		private static string YourDesc(EpidermisType epidermisType)
+		{
+			return " your " + epidermisType.shortDescription;
+		}
+		#endregion
+		//primary fur: fur
+		//secondary fur: fur on your underbody
+
+		//but during apply land, it's fur|feathers on your underside. TY GAME!
+
+		//primary tone: body
+		//secondary tone: underbody
+
+		//Apply <dye color> dye to the <this function>?
+		//The <this function> is aleady <dye color>.
+		//You applied the dye to <this function>. It is now <dye color>
+		private string BodyDyeDesc()
+		{
+			//if (this.)
+			return "the " + epidermisType.shortDescription() + " covering your body";
+		}
+
+		private string BodyToneDesc()
+		{
+			return "your " + secondaryEpidermisType.shortDescription();
+		}
+
+
+		private string UnderBodyDyeDesc()
+		{
+			return secondaryEpidermisType.shortDescription() + " covering your underbody";
+		}
+
+		//apply <tone color> lotion to <this function>?
+		//
+		private string UnderBodyToneDesc()
+		{
+			return "the " + secondaryEpidermisType.shortDescription() + " on your underside";
+		}
+
 		#region Skin
 		private static string SkinDesc()
 		{
@@ -56,6 +160,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string YourUnderScalesDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 		#endregion
 		#region Naga
 		private static string NagaDesc()
@@ -79,6 +188,11 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string NagaRestoreStr(Body body, Player player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string YourUnderNagaDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -134,6 +248,14 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		//the feathers|fur covering parts of your body.
+		protected static string PartialDyeDesc(EpidermisType epidermis)
+		{
+			return "the" + epidermis.shortDescription() + "covering most of your body";
+		}
+
+
 		#endregion
 		#region Bark
 		private static string BarkDesc()
@@ -182,6 +304,42 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string YourUnderFurDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		#endregion
+		#region Feathers
+		private static string FeatherDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string UnderFeatherDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FeatherFullDesc(Body body)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FeatherPlayerStr(Body body, Player player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FeatherTransformStr(Body body, Player player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FeatherRestoreStr(Body body, Player player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string YourUnderFeatherDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 		#endregion
 		#region Wool
 		private static string WoolDesc()
@@ -205,6 +363,11 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string WoolRestoreStr(Body body, Player player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string YourUnderWoolDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -298,4 +461,5 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 	}
+
 }

@@ -6,7 +6,6 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.BodyParts
 {
@@ -15,16 +14,16 @@ namespace CoC.Backend.BodyParts
 
 	//This class is so much harder to implement than i thought it'd be.
 	//Edit so much later: This class is probably the most complicated i've implemented to date. I still need to add attack data.
-	
-	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowShrinkable
+
+	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowShrinkable, IGenderListener
 	{
-		private readonly FemininityData hornMasculinity = new FemininityData();
+		private readonly Femininity hornMasculinity = Femininity.GenerateDefault();
 		public override HornType type { get; protected set; }
 
-		public int significantHornSize => _significantHornSize;
-		private int _significantHornSize;
-		public int numHorns => _numHorns;
-		private int _numHorns;
+		public byte significantHornSize => _significantHornSize;
+		private byte _significantHornSize;
+		public byte numHorns => _numHorns;
+		private byte _numHorns;
 
 		#region Constructors
 		private Horns()
@@ -41,7 +40,7 @@ namespace CoC.Backend.BodyParts
 			_significantHornSize = type.defaultLength;
 		}
 
-		private Horns(HornType hornType, int hornLength, int hornCount)
+		private Horns(HornType hornType, byte hornLength, byte hornCount)
 		{
 			type = hornType;
 			_significantHornSize = hornLength;
@@ -69,21 +68,20 @@ namespace CoC.Backend.BodyParts
 			return new Horns(hornType);
 		}
 
-		internal static Horns GenerateWithStrength(HornType hornType, int hornStrength, bool uniform = false)
+		internal static Horns GenerateWithStrength(HornType hornType, byte hornStrength, bool uniform = false)
 		{
 			Horns retVal = new Horns(hornType);
-			uint strength = hornStrength < -1 ? 0 : hornStrength == -1 ? int.MaxValue : (uint)hornStrength;
-			retVal.StrengthenTransform(strength);
+			retVal.StrengthenTransform(hornStrength);
 			return retVal;
 		}
 
-		internal static Horns GenerateOverride(HornType hornType, int hornLength, int numHorns)
+		internal static Horns GenerateOverride(HornType hornType, byte hornLength, byte numHorns)
 		{
 			return new Horns(hornType, hornLength, numHorns);
 		}
 		#endregion
 		#region Update
-		public bool UpdateType(HornType newType)
+		internal bool UpdateHorns(HornType newType)
 		{
 			if (type == newType)
 			{
@@ -95,7 +93,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public bool UpdateTypeAndStrengthen(HornType newType, uint byAmount)
+		internal bool UpdateAndStrengthenHorns(HornType newType, byte byAmount)
 		{
 			if (type == newType)
 			{
@@ -127,7 +125,7 @@ namespace CoC.Backend.BodyParts
 			return type.CanGrow(numHorns, significantHornSize, in hornMasculinity);
 		}
 
-		public bool StrengthenTransform(uint numberOfTimes = 1)
+		public bool StrengthenTransform(byte numberOfTimes = 1)
 		{
 			if (numberOfTimes == 0)
 			{
@@ -141,7 +139,7 @@ namespace CoC.Backend.BodyParts
 			return type.CanShrink(numHorns, significantHornSize, in hornMasculinity);
 		}
 
-		public bool WeakenTransform(uint byAmount = 1)
+		public bool WeakenTransform(byte byAmount = 1)
 		{
 			if (byAmount == 0)
 			{
@@ -158,13 +156,22 @@ namespace CoC.Backend.BodyParts
 			}
 			return removeHorns;
 		}
-
-		internal void ReactToChangeInFemininity(FemininityData femininity)
+		#endregion
+		
+		#region IGenderListener
+		void IGenderAware.GetFemininityData(GenderDataGetter getter)
 		{
-			hornMasculinity.Update(femininity);
+			dataGetter = getter;
+		}
+		private GenderDataGetter dataGetter;
+
+		void IGenderListener.reactToChangeInFemininity()
+		{
+			hornMasculinity.Update(dataGetter().femininity);
 			type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, in hornMasculinity);
 		}
 		#endregion
+
 		#region IGrowShrinkable
 		bool IGrowShrinkable.CanReducto()
 		{
@@ -177,7 +184,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return 0;
 			}
-			int len = significantHornSize;
+			byte len = significantHornSize;
 			type.ReductoHorns(ref _numHorns, ref _significantHornSize, in hornMasculinity);
 			return len - significantHornSize;
 		}
@@ -194,32 +201,32 @@ CanGrowPlus())
 			{
 				return 0;
 			}
-			int len = significantHornSize;
+			byte len = significantHornSize;
 			type.GroPlusHorns(ref _numHorns, ref _significantHornSize, in hornMasculinity);
 			return significantHornSize - len;
 		}
 		#endregion
 	}
 
-	//i could go with function pointers throughout this, but frankly it's complicated enough that it might as well just be abstract.
+	//i could go with function pobyteers throughout this, but frankly it's complicated enough that it might as well just be abstract.
 
 	public abstract partial class HornType : SaveableBehavior<HornType, Horns>
 	{
 		#region HornType
 		#region variables
 		//private vars
-		private const int MAX_HORN_LENGTH = 40;
+		private const byte MAX_HORN_LENGTH = 40;
 		//index mgic
-		private static int indexMaker = 0;
+		private static byte indexMaker = 0;
 		private static readonly List<HornType> horns = new List<HornType>();
 		//members
-		private readonly int _index;
-		public readonly int maxHorns;
-		public readonly int minHorns;
-		public readonly int defaultHorns;
-		public readonly int defaultLength;
-		public readonly int maxHornLength;
-		public readonly int minHornLength;
+		private readonly byte _index;
+		public readonly byte maxHorns;
+		public readonly byte minHorns;
+		public readonly byte defaultHorns;
+		public readonly byte defaultLength;
+		public readonly byte maxHornLength;
+		public readonly byte minHornLength;
 
 		//properties
 		public bool allowsHorns => maxHorns > 0;
@@ -227,19 +234,19 @@ CanGrowPlus())
 		public override int index => _index;
 		#endregion
 		//call the other constructor with defaults set to min.
-		private protected HornType(int minHorns, int maximumHorns, int minLength, int maxLength,
+		private protected HornType(byte minHorns, byte maximumHorns, byte minLength, byte maxLength,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc, ChangeType<Horns> transform, RestoreType<Horns> restore)
 			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
-		private protected HornType(int minimumHorns, int maximumHorns, int minLength, int maxLength, int defaultHornCount, int defaultHornLength,
+		private protected HornType(byte minimumHorns, byte maximumHorns, byte minLength, byte maxLength, byte defaultHornCount, byte defaultHornLength,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc,
 			ChangeType<Horns> transform, RestoreType<Horns> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			//Woo data cleanup.
-			Utils.Clamp(ref maximumHorns, 0, int.MaxValue);
-			Utils.Clamp(ref minimumHorns, 0, maximumHorns);
-			Utils.Clamp(ref maxLength, 0, MAX_HORN_LENGTH);
-			Utils.Clamp(ref minLength, 0, maxLength);
+			Utils.Clamp(ref maximumHorns, (byte)0, byte.MaxValue);
+			Utils.Clamp(ref minimumHorns, (byte)0, maximumHorns);
+			Utils.Clamp(ref maxLength, (byte)0, MAX_HORN_LENGTH);
+			Utils.Clamp(ref minLength, (byte)0, maxLength);
 			Utils.Clamp(ref defaultHornCount, minHorns, maxHorns);
 			Utils.Clamp(ref defaultHornLength, minLength, maxLength);
 			//and now set them. finally
@@ -254,7 +261,7 @@ CanGrowPlus())
 			horns.AddAt(this, _index);
 		}
 
-		internal static HornType Deserialize(int index)
+		internal static HornType Deserialize(byte index)
 		{
 			if (index < 0 || index >= horns.Count)
 			{
@@ -269,12 +276,12 @@ CanGrowPlus())
 				}
 				else
 				{
-					throw new System.ArgumentException("index for horn type points to an object that does not exist. this may be due to obsolete code");
+					throw new System.ArgumentException("index for horn type pobytes to an object that does not exist. this may be due to obsolete code");
 				}
 			}
 		}
 
-		internal static bool Validate(ref HornType hornType, ref int hornCount, ref int hornLength, in FemininityData masculinity, bool correctInvalidData = false)
+		internal static bool Validate(ref HornType hornType, ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 		{
 			bool valid = true;
 			if (!horns.Contains(hornType))
@@ -290,10 +297,10 @@ CanGrowPlus())
 			return valid;
 		}
 
-		protected virtual bool ValidateData(ref int hornCount, ref int hornLength, in FemininityData masculinity, bool correctInvalidData = false)
+		protected virtual bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 		{
 			bool valid = true;
-			int correctedValue = hornCount;
+			byte correctedValue = hornCount;
 			Utils.Clamp(ref correctedValue, minHorns, maxHorns);
 			if (correctedValue != hornCount)
 			{
@@ -318,38 +325,38 @@ CanGrowPlus())
 			return valid;
 		}
 
-		internal virtual void reactToChangesInMasculinity(ref int hornCount, ref int hornLength, in FemininityData masculinity) { }
-		internal virtual bool CanGrow(int numHorns, int largestHornLength, in FemininityData masculinity)
+		internal virtual void reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, in Femininity masculinity) { }
+		internal virtual bool CanGrow(byte numHorns, byte largestHornLength, in Femininity masculinity)
 		{
 			return numHorns < maxHorns || largestHornLength < maxHornLength;
 		}
-		internal virtual bool CanShrink(int numHorns, int largestHornLength, in FemininityData masculinity)
+		internal virtual bool CanShrink(byte numHorns, byte largestHornLength, in Femininity masculinity)
 		{
 			return numHorns > minHorns || largestHornLength > minHornLength;
 		}
 
 		internal virtual bool AllowsReducto => false;
-		internal virtual float ReductoHorns(ref int numHorns, ref int maxHornLength, in FemininityData masculinity)
+		internal virtual float ReductoHorns(ref byte numHorns, ref byte maxHornLength, in Femininity masculinity)
 		{
 			return 0;
 		}
 		internal virtual bool AllowsGroPlus => false;
-		internal virtual float GroPlusHorns(ref int numHorns, ref int maxHornLength, in FemininityData masculinity)
+		internal virtual float GroPlusHorns(ref byte numHorns, ref byte maxHornLength, in Femininity masculinity)
 		{
 			return 0;
 		}
 
-		internal abstract bool StrengthenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, in FemininityData masculinity, bool uniform = false); //unknown
+		internal abstract bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in Femininity masculinity, bool uniform = false); //unknown
 
-		internal abstract bool WeakenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, in FemininityData masculinity);
+		internal abstract bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in Femininity masculinity);
 
-		internal virtual void GrowToMax(ref int numHorns, ref int largestHorn, in FemininityData masculinity)
+		internal virtual void GrowToMax(ref byte numHorns, ref byte largestHorn, in Femininity masculinity)
 		{
 			numHorns = maxHorns;
 			largestHorn = maxHornLength;
 		}
 
-		internal virtual void ShrinkToMin(ref int numHorns, ref int largestHorn, in FemininityData masculinity)
+		internal virtual void ShrinkToMin(ref byte numHorns, ref byte largestHorn, in Femininity masculinity)
 		{
 			numHorns = minHorns;
 			largestHorn = minHornLength;
@@ -374,16 +381,16 @@ CanGrowPlus())
 		//these horns are immutable - if you have them, they do not grow or shrink, and you can't get any more of them.
 		private class SimpleOrNoHorns : HornType
 		{
-			public SimpleOrNoHorns(int hornCount, int hornLength,
+			public SimpleOrNoHorns(byte hornCount, byte hornLength,
 				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc, ChangeType<Horns> transform,
 				RestoreType<Horns> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in Femininity masculinity, bool uniform = false)
 			{
 				return false;
 			}
 
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in Femininity masculinity)
 			{
 				numHorns = 0;
 				significantHornLength = 0;
@@ -395,19 +402,19 @@ CanGrowPlus())
 		{
 			public DemonHorns() : base(2, 12, 2, 10, DemonShortDesc, DemonFullDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr) { }
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool uniform = false)
 			{
-				Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
+				Utils.Clamp<byte>(ref byAmount, 0, byte.MaxValue);
 				if (numHorns >= maxHorns || byAmount == 0)
 				{
 					return false;
 				}
-				numHorns = Math.Min(maxHorns, numHorns + (2 * (int)byAmount));
+				numHorns = (byte)Math.Min(maxHorns, numHorns + (2 * byAmount));
 				hornLength = demonLengthFromHornCount(numHorns);
 				return true;
 			}
 			//Lose 4-6 horns. if that makes it 0 horns, return true
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				if (byAmount == 0)
 				{
@@ -415,21 +422,21 @@ CanGrowPlus())
 				}
 				while (byAmount-- > 0 && numHorns > 0)
 				{
-					numHorns -= numHorns > 6 ? 6 : numHorns > 4 ? 4 : numHorns;
+					numHorns.add((byte)(numHorns > 6 ? 6 : numHorns > 4 ? 4 : numHorns));
 				}
 				hornLength = demonLengthFromHornCount(numHorns);
 				return numHorns <= 0;
 			}
 
 
-			protected override bool ValidateData(ref int hornCount, ref int hornLength, in FemininityData masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 			{
 				bool valid = base.ValidateData(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
 				if (!valid && !correctInvalidData)
 				{
 					return false;
 				}
-				int correctLength = demonLengthFromHornCount(hornCount);
+				byte correctLength = demonLengthFromHornCount(hornCount);
 				if (correctLength == hornLength)
 				{
 					return valid;
@@ -440,7 +447,7 @@ CanGrowPlus())
 				}
 				return false;
 			}
-			private int demonLengthFromHornCount(int hornCount)
+			private byte demonLengthFromHornCount(byte hornCount)
 			{
 				if (hornCount >= 8) return 10;
 				else if (hornCount >= 6) return 8;
@@ -451,7 +458,7 @@ CanGrowPlus())
 
 		private class BullHorns : HornType
 		{
-			private static readonly int maxFeminineLength = 5;
+			private static readonly byte maxFeminineLength = 5;
 			public BullHorns() : base(2, 2, 2, MAX_HORN_LENGTH, BullShortDesc, BullFullDesc, BullPlayerStr, BullTransformStr, BullRestoreStr)
 			{
 				if (minHornLength > maxFeminineLength)
@@ -462,16 +469,16 @@ CanGrowPlus())
 
 			internal override bool AllowsReducto => true;
 
-			internal override void reactToChangesInMasculinity(ref int hornCount, ref int hornLength, in FemininityData femininity)
+			internal override void reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, in Femininity femininity)
 			{
 				if (femininity.isHyperFeminine)
 				{
-					int x = 2;
+					byte x = 2;
 					feminizeHorns(ref x, ref hornLength);
 				}
 				else if (femininity.isFemale)
 				{
-					int x = 1;
+					byte x = 1;
 					feminizeHorns(ref x, ref hornLength);
 				}
 				else if (femininity.isHyperMasculine) //hyper masculine.
@@ -491,13 +498,13 @@ CanGrowPlus())
 
 			}
 
-			internal override float ReductoHorns(ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				if (!CanShrink(numHorns, hornLength, masculinity))
 				{
 					return 0;
 				}
-				int reduceAmount = 0;
+				byte reduceAmount = 0;
 				//large horns and female? remove a lot.
 				if (masculinity.isFemale && hornLength > 18)
 				{
@@ -511,12 +518,12 @@ CanGrowPlus())
 				//smaller, but still above female max, and female? make female max.
 				else if (masculinity.isFemale && hornLength > maxFeminineLength)
 				{
-					reduceAmount = hornLength - maxFeminineLength;
+					reduceAmount = hornLength.subtract(maxFeminineLength);
 				}
 				//female and female horns above min size? make them min size
 				else if (masculinity.isFemale && hornLength > minHornLength)
 				{
-					reduceAmount = hornLength - minHornLength;
+					reduceAmount= hornLength.subtract(minHornLength);
 				}
 				//not feminine and large? remove some
 				else if (hornLength >= 10)
@@ -526,19 +533,19 @@ CanGrowPlus())
 				//not feminine and smallish? make feminine max.
 				else if (hornLength > maxFeminineLength)
 				{
-					reduceAmount = hornLength - maxFeminineLength;
+					reduceAmount= hornLength.subtract(maxFeminineLength);
 				}
 				hornLength -= reduceAmount;
 				return reduceAmount;
 			}
 
-			internal override bool CanGrow(int numHorns, int largestHornLength, in FemininityData masculinity)
+			internal override bool CanGrow(byte numHorns, byte largestHornLength, in Femininity masculinity)
 			{
 				if (masculinity.isFemale) return largestHornLength < maxFeminineLength;
 				else return largestHornLength < maxHornLength;
 			}
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool uniform = false)
 			{
 				if (byAmount == 0 || (!masculinity.isFemale && hornLength >= maxHornLength))
 				{
@@ -546,9 +553,8 @@ CanGrowPlus())
 				}
 				else if (masculinity.isFemale)
 				{
-					Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
-					int amount = (int)byAmount;
-					feminizeHorns(ref amount, ref hornLength); //grow or lengthen until it reaches feminine max.
+					Utils.Clamp<byte>(ref byAmount, 0, byte.MaxValue);
+					feminizeHorns(ref byAmount, ref hornLength); //grow or lengthen until it reaches feminine max.
 					return true;
 				}
 				else
@@ -563,23 +569,23 @@ CanGrowPlus())
 						//grow horns 3-6 inches.
 						else
 						{
-							hornLength += Tools.Utils.Rand(4) + 3;
+							hornLength += (byte)(Utils.Rand(4) + 3);
 						}
 					}
 					hornLength = hornLength > maxHornLength ? maxHornLength : hornLength;
 					return true;
 				}
 			}
-			//Lose half of the length, down to 5inches. at that point, revert to nubs if female
+			//Lose half of the length, down to 5inches. at that pobyte, revert to nubs if female
 			//or lose the rest if male. after that, lose them regardless.
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				//early exit: no amount
 				if (byAmount == 0)
 				{
 					return false;
 				}
-				Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
+				Utils.Clamp<byte>(ref byAmount, 0, byte.MaxValue);
 				//early exit, non-zero count and at minimum.
 				if (hornLength == minHornLength || (hornLength <= maxFeminineLength && masculinity.isMale))
 				{
@@ -590,7 +596,7 @@ CanGrowPlus())
 				//feminine and horns are at or above max length for feminine characters.
 				else if (masculinity.isFemale && hornLength >= maxFeminineLength)
 				{
-					int amount = (int)byAmount;
+					byte amount = (byte)byAmount;
 					feminizeHorns(ref amount, ref hornLength);
 					if (amount > 1)
 					{
@@ -641,7 +647,7 @@ CanGrowPlus())
 				}
 			}
 			//grows or shrinks 
-			private void feminizeHorns(ref int amount, ref int hornLength)
+			private void feminizeHorns(ref byte amount, ref byte hornLength)
 			{
 				if (hornLength == maxFeminineLength)
 				{
@@ -668,13 +674,13 @@ CanGrowPlus())
 				}
 			}
 
-			internal override void GrowToMax(ref int numHorns, ref int largestHorn, in FemininityData masculinity)
+			internal override void GrowToMax(ref byte numHorns, ref byte largestHorn, in Femininity masculinity)
 			{
 				numHorns = maxHorns;
 				largestHorn = masculinity.isFemale ? maxFeminineLength : maxHornLength;
 			}
 
-			protected override bool ValidateData(ref int numHorns, ref int hornLength, in FemininityData masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 			{
 				bool primary = base.ValidateData(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
 				if (!primary && !correctInvalidData)
@@ -704,25 +710,25 @@ CanGrowPlus())
 
 			//Executive decision: second pair of dragon horns can't be shrunk. 
 			internal override bool AllowsReducto => true;
-			internal override float ReductoHorns(ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
-				int reductoVal = 2;
-				int oldHornLength = hornLength;
-				hornLength = Math.Max(minHornLength, hornLength - reductoVal);
+				byte reduced = hornLength.subtract(2);
+				byte oldHornLength = hornLength;
+				hornLength = Math.Max(minHornLength, reduced);
 				return oldHornLength - hornLength;
 			}
 
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
-				int groVal = 2;
-				int oldHornLength = hornLength;
-				hornLength = Math.Min(maxHornLength, hornLength + groVal);
+				byte grown = hornLength.add(2);
+				byte oldHornLength = hornLength;
+				hornLength = Math.Min(maxHornLength, grown);
 				return oldHornLength - hornLength;
 			}
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool uniform = false)
 			{
 				if ((hornLength >= maxHornLength && numHorns >= maxHorns) || byAmount == 0)
 				{
@@ -744,7 +750,7 @@ CanGrowPlus())
 
 			}
 			//if 4 horns, become 2 horns. then shrink horns to 6in. then remove them completely.
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				while (byAmount > 0 && hornLength > 0)
 				{
@@ -771,51 +777,51 @@ CanGrowPlus())
 		private class Antlers : HornType
 		{
 			private readonly bool isReindeer;
-			public Antlers(bool reindeer, int maxLength,
+			public Antlers(bool reindeer, byte maxLength,
 				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc,
 				ChangeType<Horns> transform, RestoreType<Horns> restore) : base(2, 20, 6, maxLength, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				isReindeer = reindeer;
 			}
 
-			internal override bool CanGrow(int numHorns, int largestHornLength, in FemininityData masculinity)
+			internal override bool CanGrow(byte numHorns, byte largestHornLength, in Femininity masculinity)
 			{
 				return numHorns < maxHorns;
 			}
 
-			internal override bool CanShrink(int numHorns, int largestHornLength, in FemininityData masculinity)
+			internal override bool CanShrink(byte numHorns, byte largestHornLength, in Femininity masculinity)
 			{
 				return numHorns > minHorns;
 			}
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
-				int reductoVal = 4;
-				int oldHornCount = numHorns;
-				numHorns = Math.Max(minHornLength, hornLength - reductoVal);
+				byte reduced = numHorns.subtract(4);
+				byte oldHornCount = numHorns;
+				numHorns = Math.Max(minHornLength, reduced);
 				hornLength = setLengthFromHorns(numHorns);
 				return oldHornCount - numHorns;
 			}
 
 			internal override bool AllowsGroPlus => isReindeer;
 
-			internal override float GroPlusHorns(ref int numHorns, ref int hornLength, in FemininityData masculinitiy)
+			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinitiy)
 			{
 				if (!isReindeer || numHorns >= maxHorns)
 				{
 					return 0;
 				}
-				int growHorns = (new Lottery<int>(3, 3, 4, 4, 5, 6)).Select();
-				int oldHornCount = numHorns;
+				byte growHorns = new Lottery<byte>(3, 3, 4, 4, 5, 6).Select();
+				byte oldHornCount = numHorns;
 				numHorns += growHorns;
-				Utils.Clamp(ref numHorns, 0, maxHorns);
+				Utils.Clamp(ref numHorns, (byte)0, maxHorns);
 				hornLength = setLengthFromHorns(numHorns);
 				return numHorns - oldHornCount;
 			}
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool uniform = false)
 			{
 				if (numHorns >= maxHorns || byAmount == 0)
 				{
@@ -831,22 +837,22 @@ CanGrowPlus())
 					}
 					else
 					{
-						int growHorns = (new Lottery<int>(3, 3, 4, 4, 5, 6)).Select();
+						byte growHorns = (new Lottery<byte>(3, 3, 4, 4, 5, 6)).Select();
 						numHorns += growHorns;
 					}
-					Utils.Clamp(ref numHorns, 0, maxHorns);
+					Utils.Clamp(ref numHorns, (byte)0, maxHorns);
 				}
 				hornLength = setLengthFromHorns(numHorns);
 				return true;
 
 			}
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				//get value, then decrement. if you're not familiar with this, it's confusing, i know. but i always
 				//forget to decrement the loop at the end, and infinite loops are worse.
 				while (byAmount-- > 0 && numHorns > minHorns)
 				{
-					int removeHorns = (new Lottery<int>(3, 3, 4, 4, 5, 6)).Select();
+					byte removeHorns = new Lottery<byte>(3, 3, 4, 4, 5, 6).Select();
 					numHorns -= removeHorns;
 					Utils.Clamp(ref numHorns, minHorns, maxHorns);
 				}
@@ -854,14 +860,14 @@ CanGrowPlus())
 				return byAmount > 0;
 			}
 
-			protected override bool ValidateData(ref int hornCount, ref int hornLength, in FemininityData masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 			{
 				bool valid = base.ValidateData(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
 				if (!valid && !correctInvalidData)
 				{
 					return false;
 				}
-				int correctLength = setLengthFromHorns(hornCount);
+				byte correctLength = setLengthFromHorns(hornCount);
 				if (correctLength == hornLength)
 				{
 					return valid;
@@ -873,23 +879,23 @@ CanGrowPlus())
 				return false;
 			}
 
-			private int setLengthFromHorns(int hornCount)
+			private byte setLengthFromHorns(byte hornCount)
 			{
 				if (!isReindeer || hornCount < 8)
 				{
-					return hornCount + 4;
+					return hornCount.add(4);
 				}
 				else if (hornCount >= 16)
 				{
-					return hornCount + 16;
+					return hornCount.add(16);
 				}
 				else if (hornCount >= 12)
 				{
-					return hornCount + 12;
+					return hornCount.add(12);
 				}
 				else //if (hornCount >= 8)
 				{
-					return hornCount + 8;
+					return hornCount.add(8);
 				}
 			}
 		}
@@ -900,9 +906,9 @@ CanGrowPlus())
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
-				int changeAmount = 0;
+				byte changeAmount = 0;
 				if (hornLength <= minHornLength)
 					return 0;
 				else if (hornLength + 1 == maxHornLength)
@@ -911,7 +917,7 @@ CanGrowPlus())
 				}
 				else
 				{
-					changeAmount = new Lottery<int>(1, 1, 2, 2, 2, 2).Select();
+					changeAmount = new Lottery<byte>(1, 1, 2, 2, 2, 2).Select();
 				}
 				hornLength -= changeAmount;
 				return changeAmount;
@@ -919,9 +925,9 @@ CanGrowPlus())
 
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
-				int changeAmount = 0;
+				byte changeAmount = 0;
 				if (hornLength >= maxHornLength)
 				{
 					return 0;
@@ -932,13 +938,13 @@ CanGrowPlus())
 				}
 				else
 				{
-					changeAmount = new Lottery<int>(1, 1, 2, 2, 2, 2).Select();
+					changeAmount = new Lottery<byte>(1, 1, 2, 2, 2, 2).Select();
 				}
 				hornLength += changeAmount;
 				return changeAmount;
 			}
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool uniform = false)
 			{
 				if (hornLength >= maxHornLength || byAmount == 0)
 				{
@@ -958,14 +964,14 @@ CanGrowPlus())
 					}
 					else
 					{
-						hornLength += (new Lottery<int>(1, 1, 2, 2, 2, 2)).Select();
+						hornLength += (new Lottery<byte>(1, 1, 2, 2, 2, 2)).Select();
 					}
 				}
 				return true;
 
 			}
-			//nope.avi. they're so small there's just no point. you just lose them.
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			//nope.avi. they're so small there's just no pobyte. you just lose them.
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				hornLength = 0;
 				return true;
@@ -979,7 +985,7 @@ CanGrowPlus())
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				if (hornLength <= minHornLength)
 					return 0;
@@ -992,7 +998,7 @@ CanGrowPlus())
 			}
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				if (hornLength >= maxHornLength)
 					return 0;
@@ -1004,7 +1010,7 @@ CanGrowPlus())
 				}
 			}
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculine, bool uniform)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculine, bool uniform)
 			{
 				if (hornLength >= maxHornLength || byAmount == 0)
 				{
@@ -1017,7 +1023,7 @@ CanGrowPlus())
 				}
 			}
 			//Just lose it (ah aah aah)
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculine)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculine)
 			{
 				hornLength = minHornLength;
 				return true;
@@ -1028,7 +1034,7 @@ CanGrowPlus())
 		{
 			public RhinoHorn() : base(1, 2, 6, 12, RhinoShortDesc, RhinoFullDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr) { }
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int significantHornLength, in FemininityData masculinity, bool uniform)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in Femininity masculinity, bool uniform)
 			{
 				if (numHorns >= maxHorns || byAmount == 0)
 				{
@@ -1042,7 +1048,7 @@ CanGrowPlus())
 				}
 
 			}
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				if (numHorns == maxHorns)
 				{
@@ -1058,7 +1064,7 @@ CanGrowPlus())
 				return true;
 			}
 
-			protected override bool ValidateData(ref int hornCount, ref int hornLength, in FemininityData masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 			{
 				bool valid = true;
 				if (hornCount < minHorns)
@@ -1101,7 +1107,7 @@ CanGrowPlus())
 
 		private class SheepHorns : HornType
 		{
-			private static readonly int maxFeminineLength = 7;
+			private static readonly byte maxFeminineLength = 7;
 
 			public SheepHorns() : base(2, 2, 2, 30, SheepShortDesc, SheepFullDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr)
 			{
@@ -1112,21 +1118,21 @@ CanGrowPlus())
 			}
 
 			internal override bool AllowsReducto => true;
-			internal override float ReductoHorns(ref int numHorns, ref int largestHornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte largestHornLength, in Femininity masculinity)
 			{
 
-				int reduceAmount = 0;
+				byte reduceAmount = 0;
 				if (largestHornLength > maxFeminineLength)
 					reduceAmount = 6;
 				else if (largestHornLength > minHornLength)
 				{
-					reduceAmount = Math.Min(2, largestHornLength - minHornLength);
+					reduceAmount = Math.Min((byte)2, largestHornLength.subtract(minHornLength));
 				}
 				largestHornLength -= reduceAmount;
 				return reduceAmount;
 			}
 
-			internal override bool CanGrow(int numHorns, int largestHornLength, in FemininityData masculinity)
+			internal override bool CanGrow(byte numHorns, byte largestHornLength, in Femininity masculinity)
 			{
 				if (masculinity.isFemale)
 				{
@@ -1138,7 +1144,7 @@ CanGrowPlus())
 				}
 			}
 
-			internal override bool StrengthenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity, bool uniform)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool uniform)
 			{
 				bool feminine = masculinity.isFemale;
 				if (byAmount == 0 || feminine && hornLength >= maxHornLength)
@@ -1154,8 +1160,8 @@ CanGrowPlus())
 				}
 				else
 				{
-					Lottery<int> lottery = new Lottery<int>();
-					int maxLength = maxHornLength;
+					Lottery<byte> lottery = new Lottery<byte>();
+					byte maxLength = maxHornLength;
 					if (feminine)
 					{
 						maxLength = maxFeminineLength;
@@ -1169,8 +1175,8 @@ CanGrowPlus())
 					{
 						lottery.addItems(2, 3, 4, 5, 6);
 					}
-					Utils.Clamp<uint>(ref byAmount, 0, int.MaxValue);
-					int amount = (int)byAmount;
+					Utils.Clamp<byte>(ref byAmount, 0, byte.MaxValue);
+					byte amount = (byte)byAmount;
 					while (amount-- > 0 && hornLength < maxLength)
 					{
 						hornLength += lottery.Select();
@@ -1183,13 +1189,13 @@ CanGrowPlus())
 			//if masculine, Lose third of length, down to max feminine length. 
 			//if feminine, go to max feminine length immediately
 			//after that go to min, then lose horns entirely.
-			internal override bool WeakenTransform(uint byAmount, ref int numHorns, ref int hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
 				while (byAmount-- > 0 && hornLength > minHornLength)
 				{
 					if (hornLength >= 12 && !masculinity.isFemale)
 					{
-						hornLength = (int)Math.Floor(hornLength * 2.0 / 3);
+						hornLength = (byte)Math.Floor(hornLength * 2.0 / 3);
 					}
 					else if (hornLength > maxFeminineLength)
 					{
@@ -1203,13 +1209,13 @@ CanGrowPlus())
 				return byAmount > 0;
 			}
 
-			internal override void GrowToMax(ref int numHorns, ref int largestHorn, in FemininityData masculinity)
+			internal override void GrowToMax(ref byte numHorns, ref byte largestHorn, in Femininity masculinity)
 			{
 				numHorns = maxHorns;
 				largestHorn = masculinity.isFemale ? maxFeminineLength : maxHornLength;
 			}
 
-			protected override bool ValidateData(ref int numHorns, ref int hornLength, in FemininityData masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 			{
 				bool primary = base.ValidateData(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
 				if (!primary && !correctInvalidData)
@@ -1240,7 +1246,7 @@ CanGrowPlus())
 		
 
 		IMP: "a pair of short, imp-like horns"
-		BULL: public override string GetDescriptor(int numHorns, int hornLength)
+		BULL: public override string GetDescriptor(byte numHorns, byte hornLength)
 		{
 				if (hornLength < 3)
 					return "a pair of small nubs, like those on a young bovine";
@@ -1249,24 +1255,24 @@ CanGrowPlus())
 				else if (hornLength < 12)
 					return "two large horns, roughly " + hornLength.ToString() + " inches in length, curve forwards like those of a bull.";
 				else if (hornLength < 20)
-					return "two very large and dangerous looking horns, curving forward, reaching at least " + (hornLength == 12 ? "a foot" : hornLength.ToString() + "inches") + ". They have dangerous looking points.";
+					return "two very large and dangerous looking horns, curving forward, reaching at least " + (hornLength == 12 ? "a foot" : hornLength.ToString() + "inches") + ". They have dangerous looking pobytes.";
 				else //if (player.horns.value >= 20)
-					return "two huge horns, curving outward at first, then forwards. They reach at least " + hornLength.ToString() + "inches and end in sharp points. They look incredibly dangerous";
+					return "two huge horns, curving outward at first, then forwards. They reach at least " + hornLength.ToString() + "inches and end in sharp pobytes. They look incredibly dangerous";
 		}
-		RHINO public override string GetDescriptor(int numHorns, int hornLength)
+		RHINO public override string GetDescriptor(byte numHorns, byte hornLength)
 		{
 			return hornLength < maxHornLength ? "a single sharp horn" : "a single foot-long unicorn horn, complete with a spiral";
 		}
-		GOAT: public override string GetDescriptor(int numHorns, int hornLength)
+		GOAT: public override string GetDescriptor(byte numHorns, byte hornLength)
 		{
 			return hornLength > minHornLength ? "a pair of " + hornLength + " inch goat horns. They are curved and patterned in ridges." : "a pair of short, nubby goat horns";
 		}
 
-		UNICORN: public override string GetDescriptor(int numHorns, int hornLength)
+		UNICORN: public override string GetDescriptor(byte numHorns, byte hornLength)
 		{
 			return hornLength < maxHornLength ? "a single sharp horn" : "a single foot-long unicorn horn, complete with a spiral";
 		}
-		DRAGON: public override string GetDescriptor(int numHorns, int hornLength)
+		DRAGON: public override string GetDescriptor(byte numHorns, byte hornLength)
 		{
 			if (numHorns == maxHorns)
 				return "four draconic horns. The first pair of horns are " + hornLength + " inches. The second pair sits behind them and reaches one foot in length";
@@ -1275,11 +1281,11 @@ CanGrowPlus())
 			else
 				return "a pair of " + hornLength.ToString() + " inch horns - relatively short for a dragon";
 		}
-		ANTLERS: public override string GetDescriptor(int numHorns, int hornLength)
+		ANTLERS: public override string GetDescriptor(byte numHorns, byte hornLength)
 		{
-			return "a rack of " + (numHorns % 2 == 1 ? "asymmetric " : "") + "antlers, with a total of" + numHorns.ToString() + " points.";
+			return "a rack of " + (numHorns % 2 == 1 ? "asymmetric " : "") + "antlers, with a total of" + numHorns.ToString() + " pobytes.";
 		}
-		SHEEP: public override string GetDescriptor(int numHorns, int hornLength)
+		SHEEP: public override string GetDescriptor(byte numHorns, byte hornLength)
 		{
 			if (hornLength < 3)
 				return "a pair of small sheep horns";

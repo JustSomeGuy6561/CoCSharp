@@ -9,6 +9,29 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class WingType
 	{
+		private static string Wing2Text()
+		{
+			return "Wings 2";
+		}
+		private static string YourBoneDesc()
+		{
+			return " your wings' bones";
+		}
+		private static string WingText()
+		{
+			return "Wings";
+		}
+		private static string WingDesc(bool isLotion)
+		{
+			if (isLotion)
+			{
+				return " your wings' membranes";
+			}
+			else
+			{
+				return " your wings";
+			}
+		}
 		private static string NoneDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();

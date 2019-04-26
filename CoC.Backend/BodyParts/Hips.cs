@@ -9,16 +9,16 @@ namespace CoC.Backend.BodyParts
 {
 	public sealed partial class Hips : SimpleSaveablePart<Hips>, IGrowShrinkable, IBodyAware
 	{
-		public const int BOYISH = 0;
-		public const int SLENDER = 2;
-		public const int AVERAGE = 4;
-		public const int AMPLE = 6;
-		public const int CURVY = 10;
-		public const int PUDGY = 12;
-		public const int FERTILE = 15;
-		public const int INHUMANLY_WIDE = 20;
+		public const byte BOYISH = 0;
+		public const byte SLENDER = 2;
+		public const byte AVERAGE = 4;
+		public const byte AMPLE = 6;
+		public const byte CURVY = 10;
+		public const byte PUDGY = 12;
+		public const byte FERTILE = 15;
+		public const byte INHUMANLY_WIDE = 20;
 
-		public int hipSize
+		public byte hipSize
 		{
 			get { return _hipsize; }
 			private set
@@ -27,30 +27,30 @@ namespace CoC.Backend.BodyParts
 				_hipsize = value;
 			}
 		}
-		private int _hipsize;
+		private byte _hipsize;
 
-		private Hips(int size)
+		private Hips(byte size)
 		{
 			hipSize = size;
 		}
-		public int index => hipSize;
-		public static Hips GenerateHips(int size = AVERAGE)
+		public byte index => hipSize;
+		public static Hips GenerateHips(byte size = AVERAGE)
 		{
 			return new Hips(size);
 		}
 
-		public int GrowHips(int amount = 1)
+		public byte GrowHips(byte amount = 1)
 		{
-			int oldSize = hipSize;
+			byte oldSize = hipSize;
 			hipSize += amount;
-			return hipSize - oldSize;
+			return hipSize.subtract(oldSize);
 		}
 
-		public int ShrinkHips(int amount = 1)
+		public byte ShrinkHips(byte amount = 1)
 		{
-			int oldSize = hipSize;
+			byte oldSize = hipSize;
 			hipSize -= amount;
-			return oldSize - hipSize;
+			return oldSize.subtract(hipSize);
 		}
 
 		bool IGrowShrinkable.CanReducto()
@@ -60,14 +60,14 @@ namespace CoC.Backend.BodyParts
 
 		float IGrowShrinkable.UseReducto()
 		{
-			int oldSize = hipSize;
+			byte oldSize = hipSize;
 			if (hipSize > CURVY)
 			{
 				hipSize -= 3;
 			}
 			else
 			{
-				hipSize -= Utils.Rand(3) + 1;
+				hipSize -= (byte)(Utils.Rand(3) + 1);
 			}
 			return oldSize - hipSize;
 		}

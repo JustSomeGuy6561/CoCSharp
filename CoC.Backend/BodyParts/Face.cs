@@ -14,22 +14,51 @@ namespace CoC.Backend.BodyParts
 	public enum NosePiercingLocation { LEFT_NOSTRIL, RIGHT_NOSTRIL, SEPTIMUS, BRIDGE }
 
 
-	public sealed class Face : BehavioralSaveablePart<Face, FaceType>, IBodyAware
+	/*
+	 * Faces are another instance of shit that breaks the epidermis stores only one things rule. You can have a two-tone face, but theres also skin underneath,
+	 * and for some reason you need the skin tone to describe the face in detail. IDK, man. If for some reason, you have a face that has two epidermis values, and
+	 * you need to know the body tone
+	 */
+
+	public sealed class Face : BehavioralSaveablePart<Face, FaceType>, IBodyAware, ILotionable //ICanAttackWith if we want to make a "Bite"
 	{
-		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.CURVED_BARBELL | JewelryType.STUD | JewelryType.RING;
-		private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.STUD | JewelryType.RING | JewelryType.CURVED_BARBELL;
-		private const JewelryType SUPPORTED_EYEBROW_JEWELRY = JewelryType.STUD | JewelryType.CURVED_BARBELL | JewelryType.RING;
+		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING;
+		private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.HORSESHOE;
+		private const JewelryType SUPPORTED_EYEBROW_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING;
 
 		public readonly Piercing<LipPiercingLocation> lipPiercings;
 		public readonly Piercing<NosePiercingLocation> nosePiercings;
 		public readonly Piercing<EyebrowPiercingLocation> eyebrowPiercings;
 
-		public override FaceType type { get; protected set; }
+		public override FaceType type
+		{
+			get => _type;
+			protected set
+			{
+				_type = value;
+			}
+		}
+		private FaceType _type;
+
 		public bool isFullMorph { get; private set; }
 
-		private Epidermis epidermis => type.ParseEpidermis(bodyData(), isFullMorph);
-		private Epidermis secondaryEpidermis => type.ParseSecondaryEpidermis(bodyData(), isFullMorph);
 
+		public EpidermalData primary => type.ParseEpidermis(bodyData(), isFullMorph, skinTexture);
+		public EpidermalData secondary => type.ParseSecondaryEpidermis(bodyData(), isFullMorph, skinTexture);
+		public SkinTexture skinTexture
+		{
+			get => _skinTexture;
+			private set
+			{
+				if (Enum.IsDefined(typeof(SkinTexture), value))
+				{
+					_skinTexture = value;
+				}
+			}
+		}
+		private SkinTexture _skinTexture = SkinTexture.NONDESCRIPT;
+
+		Tones epidermisTone => bodyData().mainSkin.tone;
 
 		private Face()
 		{
@@ -65,6 +94,25 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
+		internal static Face GenerateWithComplexion(FaceType faceType, SkinTexture complexion)
+		{
+			return new Face()
+			{
+				type = faceType,
+				skinTexture = complexion
+			};
+		}
+
+		internal static Face GenerateWithSizeAndComplexion(FaceType faceType, bool fullMorph, SkinTexture complexion)
+		{
+			return new Face()
+			{
+				type = faceType,
+				skinTexture = complexion,
+				isFullMorph = faceType.hasSecondLevel ? fullMorph : false,
+			};
+		}
+
 		internal bool UpdateFace(FaceType faceType)
 		{
 			if (type == faceType)
@@ -83,6 +131,29 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			type = faceType;
+			isFullMorph = type.hasSecondLevel ? fullMorph : false;
+			return true;
+		}
+
+		internal bool UpdateFaceWithComplexion(FaceType faceType, SkinTexture complexion)
+		{
+			if (type == faceType)
+			{
+				return false;
+			}
+			type = faceType;
+			skinTexture = complexion;
+			return true;
+		}
+
+		internal bool UpdateFaceWithMorphAndComplexion(FaceType faceType, bool fullMorph, SkinTexture complexion)
+		{
+			if (type == faceType)
+			{
+				return false;
+			}
+			type = faceType;
+			skinTexture = complexion;
 			isFullMorph = type.hasSecondLevel ? fullMorph : false;
 			return true;
 		}
@@ -120,7 +191,15 @@ namespace CoC.Backend.BodyParts
 			else return UpdateFaceWithMorph(faceType, forceFullMorph);
 		}
 
-
+		internal bool ChangeComplexion(SkinTexture complexion)
+		{
+			if (skinTexture == complexion)
+			{
+				return false;
+			}
+			skinTexture = complexion;
+			return true;
+		}
 
 		internal override bool Restore()
 		{
@@ -165,6 +244,14 @@ namespace CoC.Backend.BodyParts
 			valid &= ValidatePiercing(valid, nosePiercings, correctDataIfInvalid);
 			valid &= ValidatePiercing(valid, eyebrowPiercings, correctDataIfInvalid);
 			valid &= ValidatePiercing(valid, lipPiercings, correctDataIfInvalid);
+			if ((valid || correctDataIfInvalid) && !Enum.IsDefined(typeof(SkinTexture), _skinTexture))
+			{
+				if (correctDataIfInvalid)
+				{
+					_skinTexture = SkinTexture.NONDESCRIPT;
+				}
+				valid = false;
+			}
 			return valid;
 		}
 		private bool ValidatePiercing<T>(bool valid, Piercing<T> piercing, bool correctInvalidData) where T : Enum
@@ -174,6 +261,36 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			return piercing.Validate(correctInvalidData);
+		}
+
+		bool ILotionable.canLotion()
+		{
+			return type.canChangeComplexion;
+		}
+
+		bool ILotionable.isDifferentTexture(SkinTexture lotionTexture)
+		{
+			return lotionTexture != skinTexture || !Enum.IsDefined(typeof(SkinTexture), lotionTexture);
+		}
+
+		bool ILotionable.attemptToLotion(SkinTexture lotionTexture)
+		{
+			if (!((ILotionable)this).canLotion() || !((ILotionable)this).isDifferentTexture(lotionTexture))
+			{
+				return false;
+			}
+			skinTexture = lotionTexture;
+			return true;
+		}
+
+		string ILotionable.buttonText()
+		{
+			return type.buttonText();
+		}
+
+		string ILotionable.locationDesc()
+		{
+			return type.locationDesc();
 		}
 
 		void IBodyAware.GetBodyData(BodyDataGetter getter)
@@ -198,7 +315,7 @@ namespace CoC.Backend.BodyParts
 
 		private readonly DescriptorWithArg<bool> morphText;
 
-		private protected FaceType(EpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText, 
+		private protected FaceType(EpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText,
 			DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr, ChangeType<Face> transform,
 			RestoreType<Face> restore) : base(firstLevelShortDesc, fullDesc, playerStr, transform, restore)
 		{
@@ -217,7 +334,7 @@ namespace CoC.Backend.BodyParts
 			morphText = x => "";
 			faces.AddAt(this, _index);
 		}
-		public virtual bool isHumanoid(bool isSecondLevel)
+		internal virtual bool isHumanoid(bool isSecondLevel)
 		{
 			if (hasSecondLevel)
 			{
@@ -226,16 +343,18 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		public virtual bool MorphStrengthPostTransform(bool previousWasFullMorph)
+		internal virtual bool MorphStrengthPostTransform(bool previousWasFullMorph)
 		{
 			return false;
 		}
 
-
-		internal abstract Epidermis ParseEpidermis(BodyData bodyData, bool isFullMorph);
-		internal virtual Epidermis ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph)
+		internal virtual bool canChangeComplexion => true;
+		internal virtual SimpleDescriptor buttonText => FaceStr;
+		internal virtual SimpleDescriptor locationDesc => YourFaceStr;
+		internal abstract EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion);
+		internal virtual EpidermalData ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 		{
-			return Epidermis.GenerateEmpty();
+			return new EpidermalData();
 		}
 
 		public override int index => _index;
@@ -293,21 +412,18 @@ namespace CoC.Backend.BodyParts
 
 		private class ToneFace : FaceType
 		{
-			public ToneFace(EpidermisType epidermisType, SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr,
+			public ToneFace(ToneBasedEpidermisType epidermisType, SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr,
 				ChangeType<Face> transform, RestoreType<Face> restore) : base(epidermisType, shortDesc, fullDesc, playerStr, transform, restore) { }
 
-			public ToneFace(EpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText, 
-				DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr, ChangeType<Face> transform, RestoreType<Face> restore) 
+			public ToneFace(ToneBasedEpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText,
+				DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr, ChangeType<Face> transform, RestoreType<Face> restore)
 				: base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, strengthenWeakenMorphText, fullDesc, playerStr, transform, restore)
 			{
 			}
 
-			internal override Epidermis ParseEpidermis(BodyData bodyData, bool isFullMorph)
+			internal override EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
-				//primary epidermis is guarenteed to have a skin tone.
-				Epidermis retVal = Epidermis.Generate(bodyData.primary);
-				retVal.UpdateEpidermis(epidermisType); //if it's already this type it'll return false, but we dont really care.
-				return retVal;
+				return new EpidermalData(epidermisType, bodyData.mainSkin.tone, complexion);
 			}
 		}
 
@@ -316,25 +432,25 @@ namespace CoC.Backend.BodyParts
 			private readonly Tones defaultSecondaryTone;
 
 			public MultiToneFace(Tones secondaryToneFallback,
-				EpidermisType epidermisType, SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr,
+				ToneBasedEpidermisType epidermisType, SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr,
 				ChangeType<Face> transform, RestoreType<Face> restore) : base(epidermisType, shortDesc, fullDesc, playerStr, transform, restore)
 			{
 				defaultSecondaryTone = secondaryToneFallback;
 			}
 
 			public MultiToneFace(Tones secondaryToneFallback,
-				EpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText,
+				ToneBasedEpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText,
 				DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr, ChangeType<Face> transform, RestoreType<Face> restore)
 				: base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, strengthenWeakenMorphText, fullDesc, playerStr, transform, restore)
 			{
 				defaultSecondaryTone = secondaryToneFallback;
 			}
 
-			internal override Epidermis ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph)
+			internal override EpidermalData ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
-				Epidermis retVal = Epidermis.GenerateDefaultOfType(epidermisType);
-				retVal.ChangeTone(!Tones.isNullOrEmpty(bodyData.secondary.tone) ? bodyData.secondary.tone : defaultSecondaryTone);
-				return retVal;
+				Tones tone = !bodyData.supplementary.tone.isEmpty ? bodyData.supplementary.tone : defaultSecondaryTone;
+				SkinTexture texture = bodyData.supplementary.usesTone ? bodyData.supplementary.skinTexture : SkinTexture.NONDESCRIPT;
+				return new EpidermalData(epidermisType, tone, texture);
 			}
 		}
 
@@ -356,21 +472,20 @@ namespace CoC.Backend.BodyParts
 				defaultColor = fallbackColor;
 			}
 
-			internal override Epidermis ParseEpidermis(BodyData bodyData, bool isFullMorph)
+			internal override EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
 				FurColor color = defaultColor;
-				if (!FurColor.IsNullOrEmpty(bodyData.primary.fur)) //probably never null, but w/e i'll be safe.
+				FurTexture texture = FurTexture.NONDESCRIPT;
+				if (!bodyData.activeFur.fur.isEmpty) //probably never null, but w/e i'll be safe.
 				{
-					color = bodyData.primary.fur;
+					color = bodyData.activeFur.fur;
+					texture = bodyData.activeFur.furTexture;
 				}
-				else if (!HairFurColors.isNullOrEmpty(bodyData.hairColor))
+				else if (!bodyData.activeHairColor.isEmpty)
 				{
-					color = new FurColor(bodyData.hairColor);
+					color = new FurColor(bodyData.activeHairColor);
 				}
-				Epidermis retVal = Epidermis.GenerateDefaultOfType(epidermisType);
-				retVal.ChangeFur(color);
-				retVal.ChangeTone(bodyData.primary.tone);
-				return retVal;
+				return new EpidermalData(epidermisType, color, texture);
 			}
 		}
 
@@ -393,23 +508,25 @@ namespace CoC.Backend.BodyParts
 				secondaryDefaultColor = secondaryFallbackColor;
 			}
 
-			internal override Epidermis ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph)
+			internal override EpidermalData ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
-				Epidermis retVal = Epidermis.GenerateDefaultOfType(epidermisType);
+				EpidermalData primary = ParseEpidermis(bodyData, isFullMorph, complexion);
+				//Epidermis retVal = new Epidermis(epidermisType, true);
 				FurColor color = secondaryDefaultColor;
-				//make sure the fur color is not the same as the primary, and that it is valid.s
-				if (!FurColor.IsNullOrEmpty(bodyData.secondary.fur) && bodyData.secondary.fur != bodyData.primary.fur)
+				FurTexture texture = FurTexture.NONDESCRIPT;
+				////make sure the fur color is not the same as the primary, and that it is valid.s
+				if (!bodyData.supplementary.fur.isEmpty && bodyData.supplementary.fur != primary.fur)
 				{
-					color = bodyData.secondary.fur;
+					color = bodyData.supplementary.fur;
+					texture = bodyData.supplementary.furTexture;
 				}
-				//check if the hair isn't empty. further, make sure the primary color isn't also using the hair color.
-				else if (!HairFurColors.isNullOrEmpty(bodyData.hairColor) && !FurColor.IsNullOrEmpty(bodyData.primary.fur))
+				////check if the hair isn't empty. further, make sure the primary color isn't also using the hair color.
+				else if (!bodyData.hairColor.isEmpty)
 				{
 					color = new FurColor(bodyData.hairColor);
 				}
 
-				retVal.ChangeFur(color);
-				return retVal;
+				return new EpidermalData(epidermisType, color, texture);
 			}
 		}
 
@@ -417,7 +534,7 @@ namespace CoC.Backend.BodyParts
 		{
 			public PigFace() : base(EpidermisType.FUR, Species.PIG.defaultFacialFur, PigShortDesc, BoarShortDesc, PigMorphText, PigFullDesc, PigPlayerStr, PigTransformStr, PigRestoreStr) { }
 
-			public override bool isHumanoid(bool isSecondLevel)
+			internal override bool isHumanoid(bool isSecondLevel)
 			{
 				return false;
 			}
@@ -426,7 +543,7 @@ namespace CoC.Backend.BodyParts
 		{
 			public SpiderFace() : base(EpidermisType.SKIN, SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr) { }
 
-			public override bool isHumanoid(bool isSecondLevel)
+			internal override bool isHumanoid(bool isSecondLevel)
 			{
 				return true;
 			}
@@ -435,7 +552,7 @@ namespace CoC.Backend.BodyParts
 		{
 			public SharkFace() : base(EpidermisType.SKIN, SharkShortDesc, SharkFullDesc, SharkPlayerStr, SharkTransformStr, SharkRestoreStr) { }
 
-			public override bool isHumanoid(bool isSecondLevel)
+			internal override bool isHumanoid(bool isSecondLevel)
 			{
 				return true;
 			}
@@ -444,7 +561,7 @@ namespace CoC.Backend.BodyParts
 		{
 			public SnakeFace() : base(EpidermisType.SCALES, SnakeShortDesc, SnakeFullDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr) { }
 
-			public override bool isHumanoid(bool isSecondLevel)
+			internal override bool isHumanoid(bool isSecondLevel)
 			{
 				return true;
 			}
@@ -454,37 +571,37 @@ namespace CoC.Backend.BodyParts
 		{
 			private readonly EpidermisType secondaryEpidermis = EpidermisType.SCALES;
 			private readonly Tones defaultUnderTone = Species.COCKATRICE.defaultScaleTone;
-			public CockatriceFace() : base(EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, CockatriceShortDesc, 
-				CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr) {}
+			public CockatriceFace() : base(EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, CockatriceShortDesc,
+				CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
+			{ }
 
-			internal override Epidermis ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph)
+			internal override EpidermalData ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
-				Epidermis retVal = Epidermis.GenerateDefaultOfType(secondaryEpidermis);
-				retVal.ChangeTone(!Tones.isNullOrEmpty(bodyData.secondary.tone) ? bodyData.secondary.tone : defaultUnderTone);
-				return retVal;
+				//Epidermis retVal = new Epidermis(secondaryEpidermis, true);
+				Tones tone = !bodyData.supplementary.tone.isEmpty ? bodyData.supplementary.tone : defaultUnderTone;
+				SkinTexture texture = bodyData.supplementary.usesTone ? bodyData.supplementary.skinTexture : SkinTexture.NONDESCRIPT;
+				return new EpidermalData(secondaryEpidermis, tone, texture);
+				//return retVal;
 			}
 		}
 
 		private sealed class FoxFace : FurFace
 		{
 			private FurColor defaultKitsuneFur => Species.KITSUNE.defaultFacialFur;
-			public FoxFace() : base(EpidermisType.FUR, Species.FOX.defaultFacialFur, KitsuneShortDesc, FoxShortDesc, FoxMorphText, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr)	{}
+			public FoxFace() : base(EpidermisType.FUR, Species.FOX.defaultFacialFur, KitsuneShortDesc, FoxShortDesc, FoxMorphText, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
 
-			internal override Epidermis ParseEpidermis(BodyData bodyData, bool isFullMorph)
+			internal override EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
 				FurColor color = isFullMorph ? defaultColor : defaultKitsuneFur;
-				if (!FurColor.IsNullOrEmpty(bodyData.primary.fur)) //probably never null, but w/e i'll be safe.
+				if (!bodyData.activeFur.fur.isEmpty)
 				{
-					color = bodyData.primary.fur;
+					color = bodyData.activeFur.fur;
 				}
-				else if (!HairFurColors.isNullOrEmpty(bodyData.hairColor))
+				else if (!bodyData.activeHairColor.isEmpty)
 				{
-					color = new FurColor(bodyData.hairColor);
+					color = new FurColor(bodyData.activeHairColor);
 				}
-				Epidermis retVal = Epidermis.GenerateDefaultOfType(epidermisType);
-				retVal.ChangeFur(color);
-				retVal.ChangeTone(bodyData.primary.tone);
-				return retVal;
+				return new EpidermalData(epidermisType, color, FurTexture.SOFT);
 			}
 		}
 	}

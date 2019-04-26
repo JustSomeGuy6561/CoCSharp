@@ -13,7 +13,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	{
 		public bool piercingFetish => BackendSessionData.data.piercingFetish;
 
-		public int maxPiercingCount => Enum.GetNames(typeof(Locations)).Length;
+		public int maxPiercingCount => EnumHelper.Length<Locations>();
 		protected readonly Dictionary<Locations, bool> piercedAt = new Dictionary<Locations, bool>();
 		protected readonly Dictionary<Locations, PiercingJewelry> jewelryEquipped = new Dictionary<Locations, PiercingJewelry>();
 
@@ -150,7 +150,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 		public static PiercingJewelry[] CreatePiercingDataForCreator(params Pair<Locations, PiercingJewelry>[] locations)
 		{
-			PiercingJewelry[] retVal = new PiercingJewelry[Enum.GetNames(typeof(Locations)).Length];
+			PiercingJewelry[] retVal = new PiercingJewelry[EnumHelper.Length<Locations>()];
 			foreach (var data in locations)
 			{
 				var ind = (int)Convert.ChangeType(data.first, typeof(int));

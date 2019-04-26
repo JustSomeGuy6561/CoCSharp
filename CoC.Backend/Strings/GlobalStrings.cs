@@ -2,15 +2,14 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 2:04 PM
-using System;
+using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
-using  CoC.Backend.BodyParts;
 
 namespace CoC.Backend.Strings
 {
-	static class GlobalStrings
+	public static class GlobalStrings
 	{
-		private static readonly string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
+		private static readonly string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" };
 
 		public static string NumberAsText(int number)
 		{
@@ -30,83 +29,52 @@ namespace CoC.Backend.Strings
 
 		public static string RevertAsDefault<T>(T type, Player p)
 		{
-			#if DEBUG
+#if DEBUG
 			return "Debug Warning: you've tried to change to the default " + type.GetType().Name + ", but you're already it!";
-			#else
+#else
 			return "";
-			#endif
+#endif
 
 		}
-
-		public static string LengthInHalfInch(double lengthInInches)
-		{
-			double decimalPoint = lengthInInches % 1;
-			if (decimalPoint > .75)
-			{
-				decimalPoint = 1;
-			}
-			else if (decimalPoint > .25)
-			{
-				decimalPoint = 0.5f;
-			}
-			else
-			{
-				decimalPoint = 0f;
-			}
-			lengthInInches = Math.Floor(lengthInInches) + decimalPoint;
-
-			return lengthInInches.ToString() + " inch";
-		}
-		public static string LengthInHalfInches(double lengthInInches)
-		{
-			return LengthInHalfInch(lengthInInches) + "es";
-		}
-
-		public static string LengthInInch(double lengthInInches)
-		{
-			lengthInInches = Math.Round(lengthInInches, MidpointRounding.AwayFromZero);
-			return lengthInInches.ToString() + " inch";
-		}
-
-		public static string LengthInInches(double lengthInInches)
-		{
-			lengthInInches = Math.Round(lengthInInches, MidpointRounding.AwayFromZero);
-			return lengthInInches.ToString() + " inches";
-		}
-
-		private static bool IMPERIAL = true;
-
-		public static string FeetOrMeters(double inches)
-		{
-			if (IMPERIAL)
-			{
-				return inches / 12.0 + "feet";
-			}
-			else
-			{
-				return inches * 0.0254 + "meters";
-			}
-		}
-
 
 		public static string CantAttackName<T>(T type)
 		{
-			#if DEBUG
+#if DEBUG
 			return "Warning: you called an attack name, but cannot attack with this body part! Type: " + type.GetType().Name;
-			#else
+#else
 			return "";
-			#endif
+#endif
 		}
 
-		public static string CantAttackWith<T, U>(T type, Player player) where T : BehavioralSaveablePart<T, U> where U : SaveableBehavior<U,T>
+		public static string CantAttackWith<T, U>(T type, Player player) where T : BehavioralSaveablePart<T, U> where U : SaveableBehavior<U, T>
 		{
-			#if DEBUG
+#if DEBUG
 			return "Warning: you called an attack hint, but cannot attack with this body part! Type: " + type.GetType().Name;
-			#else
+#else
 			return "";
-			#endif
+#endif
 		}
 
+		public static string CapitalizeFirstLetter(this string text)
+		{
+			if (string.IsNullOrEmpty(text))
+			{
+				#if DEBUG
+				return "Warning: You called capitalize on a null or empty string";
+				#else
+				return text;
+				#endif
+			}
+			char[] chars = text.ToCharArray();
+			return new string(chars);
+		}
+
+		//simple plural check for strings ending in S.
+		public static bool IsPluralWithS(this string text)
+		{
+			string s = text.TrimEnd();
+			return s[s.Length - 1] == 's';
+		}
 	}
 
 }

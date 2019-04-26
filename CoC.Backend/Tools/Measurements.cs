@@ -26,15 +26,22 @@ namespace CoC.Backend.Tools
 
 		public static string ToNearestSmallUnit(double measure, bool abbreviate, bool useTextIfSmall, bool? plural = null)
 		{
+			string unit;
 			if (UsesMetric)
 			{
 				measure *= TO_CM;
+			}
+			if (useTextIfSmall && measure <= 10 && measure >= -10)
+			{
+				unit = getSmallUnit(false, measure > 1 || measure < -1);
+				return smallText(measure) + " " + unit;
 			}
 			if (plural == null)
 			{
 				plural = measure > 1 || measure < -1;
 			}
-			string unit = getSmallUnit(abbreviate, (bool)plural);
+
+			unit = getSmallUnit(abbreviate, (bool)plural);
 			return string.Format("{0:F0} {1}", measure, unit);
 		}
 
@@ -44,19 +51,22 @@ namespace CoC.Backend.Tools
 			{
 				measure *= TO_CM;
 			}
+			string unit;
 			measure *= 2;
 			measure = Math.Round(measure);
 			measure /= 2;
+			if (useTextIfSmall && measure <= 10 && measure >= -10)
+			{
+				unit = getSmallUnit(false, measure > 1.25 || measure < -1.25);
+				return smallHalfText(measure) + " " + unit;
+			}
 
 			if (plural == null)
 			{
-				plural = measure != 1 && measure != -1;
+				plural = measure > 1.25 || measure < -1.25;
 			}
-			string unit = getSmallUnit(abbreviate, (bool)plural);
-			if (useTextIfSmall && measure <= 10)
-			{
 
-			}
+			unit = getSmallUnit(abbreviate, (bool)plural);
 			return string.Format("{0:0.#} {1}", measure, unit);
 		}
 
@@ -197,6 +207,43 @@ namespace CoC.Backend.Tools
 			}
 		}
 
+		public static string ToNearestHalfLargeUnit(double measure, bool abbreviate, bool useTextIfSmall, bool? plural = null)
+		{
+			if (UsesMetric)
+			{
+				measure *= TO_CM;
+				measure /= 100;
+			}
+			else
+			{
+				measure /= 12;
+			}
+			if (measure % 1 <= 0.25)
+			{
+				measure = Math.Floor(measure);
+			}
+			else if (measure % 1 >= 0.75)
+			{
+				measure = Math.Ceiling(measure);
+			}
+			else
+			{
+				measure = (Math.Floor(measure) * 2 + 1) / 2;
+			}
 
+			string unit;
+			if (useTextIfSmall && measure <= 10 && measure >= -10)
+			{
+				unit = getLargeUnit(false, measure > 1.25 || measure < -1.25);
+				return smallHalfText(measure) + " " + unit;
+			}
+
+			if (plural == null)
+			{
+				plural = measure > 1.25 || measure < -1.25 ;
+			}
+			unit = getLargeUnit(abbreviate, (bool)plural);
+			return string.Format("{0:0.#} {1}", measure, unit);
+		}
 	}
 }

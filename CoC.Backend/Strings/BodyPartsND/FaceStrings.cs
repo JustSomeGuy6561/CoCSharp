@@ -9,9 +9,20 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class FaceType
 	{
+		private string FaceStr()
+		{
+			return "Face";
+		}
+
+		private string YourFaceStr()
+		{
+			return " your face";
+		}
+
+
 		private static string HumanShortDesc()
 		{
-			return "human face";
+			return " human face";
 		}
 		private static string HumanFullDesc(Face face)
 		{
@@ -19,7 +30,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanPlayerStr(Face face, Player player)
 		{
-			return "Your face is human in shape and structure, with [skin].";
+			return " Your face is human in shape and structure, with [skin].";
 		}
 		private static string HumanTransformStr(Face face, Player player)
 		{

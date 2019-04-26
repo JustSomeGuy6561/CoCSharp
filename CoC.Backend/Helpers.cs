@@ -85,5 +85,16 @@ namespace CoC
 			}
 			return (ushort)result;
 		}
+
+		public static ushort mult(this byte first, byte second)
+		{
+			int val = first * second;
+			return (ushort)val;
+		}
+
+		public static uint mult(this ushort first, ushort second)
+		{
+			return (uint)(first * second);
+		}
 	}
 }

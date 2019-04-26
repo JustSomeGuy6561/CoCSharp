@@ -99,7 +99,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				sb.Append("Your tongue expands in your mouth, bulging to the point you need to open your mouth and release it. You realize it's now about " + GlobalStrings.FeetOrMeters(24)
+				sb.Append("Your tongue expands in your mouth, bulging to the point you need to open your mouth and release it. You realize it's now about " + Measurement.ToNearestHalfLargeUnit(24, false, true)
 					+ "in length. Experimenting with it a bit, you eventually get used to the new length. ");
 			}
 			sb.Append("You find it easy to move and control, as natural as walking. <b> You now have a long demon-tongue.</b>");
@@ -119,7 +119,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DraconicPlayerStr(Tongue tongue, Player player)
 		{
-			return "Your mouth contains a thick, fleshy tongue that, if you so desire, can telescope to a distance of about " + GlobalStrings.FeetOrMeters(48) +"."
+			return "Your mouth contains a thick, fleshy tongue that, if you so desire, can telescope to a distance of about " + Measurement.ToNearestHalfLargeUnit(48, false, true) +"."
 				+ " It has sufficient manual dexterity that you can use it almost like a third arm.";
 		}
 		private static string DraconicTransformStr(Tongue tongue, Player player)
@@ -217,7 +217,7 @@ namespace CoC.Backend.BodyParts
 					sb.Append("It suddenly shifts towards a more human shape, but this doesn't last long.");
 				}
 				sb.Append("Slowly your tongue swells, thickening up until it’s about as thick as your thumb, filling your mouth as you"
-					+ " splutter. It begins lengthening afterwards, continuing until it hangs out your mouth, settling at" + GlobalStrings.FeetOrMeters(12) + "long. "
+					+ " splutter. It begins lengthening afterwards, continuing until it hangs out your mouth, settling at" + Measurement.ToNearestHalfLargeUnit(12, false, true) + "long. "
 					+ " The tip pinches making you wince, morphing into a distinctly forked shape.");
 			}
 			sb.Append(" As you inspect your tongue you slowly regain control, retracting it into your mouth, the forked tips picking up"

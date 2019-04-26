@@ -4,7 +4,7 @@ using System;
 namespace CoC.Backend.Items.Wearables.Piercings
 {
 	[Flags]
-	public enum JewelryType { STUD = 1, RING = 2, DANGLER = 4, HOOP = 8, CURVED_BARBELL = 16, SPECIAL = 32 }
+	public enum JewelryType { BARBELL_STUD = 1, RING = 2, DANGLER = 4, HOOP = 8, HORSESHOE = 16, /*CHAIN = 32, SPECIAL = 64*/ SPECIAL = 32 }
 
 	public class PiercingJewelry
 	{

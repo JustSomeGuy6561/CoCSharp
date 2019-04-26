@@ -8,6 +8,15 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class NeckType
 	{
+		private string GenericButtonDesc()
+		{
+			return "Neck";
+		}
+
+		private string GenericLocationText()
+		{
+			return " your neck";
+		}
 
 		private static string HumanDesc()
 		{

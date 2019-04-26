@@ -4,49 +4,35 @@
 //12/26/2018, 7:58 PM
 
 using CoC.Backend.CoC_Colors;
+using System;
 
 namespace CoC.Backend.BodyParts
 {
+	
 	public sealed class Hands : BehavioralPartBase<HandType>
 	{
+
 		public override HandType type { get; protected set; }
 
-		private Hands(HandType handType, Tones currentTone)
+		public Tones clawTone => type.getClawTone(getArmData(true).tone, getArmData(false).tone);
+
+		private readonly Func<bool, EpidermalData> getArmData;
+		private Hands(HandType handType, Func<bool, EpidermalData> currentEpidermalData)
 		{
 			type = handType;
-			this.clawTone = currentTone;
+			getArmData = currentEpidermalData;
 		}
 
 		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
 
-		internal static Hands Generate(HandType handType)
+		internal static Hands Generate(HandType handType, Func<bool, EpidermalData> currentEpidermalData)
 		{
-			return new Hands(handType, Tones.IVORY);
-		}
-		internal static Hands Generate(HandType handType, Tones currentTone)
-		{
-			return new Hands(handType, currentTone);
+			return new Hands(handType, currentEpidermalData);
 		}
 
 		public void UpdateHands(HandType newType)
 		{
 			type = newType;
-			if (!type.canTone())
-			{
-				clawTone = Tones.NOT_APPLICABLE;
-			}
-		}
-
-		public Tones clawTone { get; private set; }
-
-		public void reactToChangeInSkinTone(Tones primary, Tones secondary)
-		{
-			if (type.canTone())
-			{
-				Tones claw = clawTone;
-				type.tryToTone(ref claw, primary, secondary);
-				clawTone = claw;
-			}
 		}
 	}
 
@@ -54,7 +40,7 @@ namespace CoC.Backend.BodyParts
 	{
 		private static int indexMaker = 0;
 
-		protected enum HandStyle { HANDS, CLAWS, PAWS /*, OTHER*/}
+		protected enum HandStyle { HANDS, CLAWS, PAWS, OTHER }
 
 		public DescriptorWithArg<Hands> fullDescription;
 		public override int index => _index;
@@ -67,18 +53,18 @@ namespace CoC.Backend.BodyParts
 		public bool isClaws => handStyle == HandStyle.CLAWS;
 		public bool isPaws => handStyle == HandStyle.PAWS;
 		public bool isHands => handStyle == HandStyle.HANDS;
+
 		//default case. never procs, though that may change in the future, idk.
 		public bool isOther => !(isClaws || isHands || isPaws);
 
 		protected readonly HandStyle handStyle;
-		public virtual bool tryToTone(ref Tones currentTone, Tones primaryTone, Tones secondaryTone)
+		public virtual Tones getClawTone (Tones primaryTone, Tones secondaryTone)
 		{
 			if (canTone())
 			{
-				currentTone = primaryTone;
-				return currentTone == primaryTone;
+				return primaryTone;
 			}
-			return false;
+			return Tones.NOT_APPLICABLE;
 		}
 
 		private protected HandType(HandStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<Hands> fullDesc) : base(shortDesc)
@@ -99,6 +85,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly HandType COCKATRICE = new HandType(HandStyle.CLAWS, CockatriceShort, CockatriceFullDesc);
 		public static readonly HandType RED_PANDA = new HandType(HandStyle.PAWS, RedPandaShort, RedPandaFullDesc);
 		public static readonly HandType FERRET = new HandType(HandStyle.PAWS, FerretShort, FerretFullDesc);
+		public static readonly HandType GOO = new HandType(HandStyle.OTHER, GooShort, GooFullDesc);
 		//public static readonly Hands MANTIS = new Hands(HandStyle.OTHER, MantisShort MantisFullDesc); //Not even remotely implemented.
 
 		private class LizardClaws : HandType
@@ -111,13 +98,10 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 
-			public override bool tryToTone(ref Tones currentTone, Tones primaryTone, Tones secondaryTone)
+			public override Tones getClawTone(Tones primaryTone, Tones secondaryTone)
 			{
 				//do some magic to the tone to make it lizard claw compatible
-				currentTone = primaryTone;
-				//maybe implement the switch here? imo it's just easier to create a helper
-				//that outputs the correct -ish or -y when asked for the claw color.
-				return true;
+				return primaryTone;
 			}
 		}
 
@@ -130,11 +114,10 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 
-			public override bool tryToTone(ref Tones currentTone, Tones primaryTone, Tones secondaryTone)
+			public override Tones getClawTone(Tones primaryTone, Tones secondaryTone)
 			{
 				//do some magic to the tone to make it imp claw compatible
-				currentTone = primaryTone;
-				return true;
+				return primaryTone;
 			}
 		}
 	}

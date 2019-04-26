@@ -18,7 +18,7 @@ namespace CoC.Backend.BodyParts
 	}
 
 	
-	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType>
+	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType> //ICanAttackWith. Basilisk Eyes.
 	{
 
 		public EyeColor leftIrisColor { get; private set; }

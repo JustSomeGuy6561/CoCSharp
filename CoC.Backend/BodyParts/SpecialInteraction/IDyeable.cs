@@ -6,12 +6,21 @@ using CoC.Backend.CoC_Colors;
 
 namespace  CoC.Backend.BodyParts.SpecialInteraction
 {
-	interface IDyeable
+	public interface IDyeable
 	{
+		string buttonText();
+
+		string locationDesc();
+
 		bool allowsDye();
 
 		bool isDifferentColor(HairFurColors dyeColor);
 
-		bool attemptToDye(HairFurColors dye);
+		bool attemptToDye(HairFurColors dyeColor);
+	}
+
+	public interface IDyeableCustomText : IDyeable
+	{
+		string ApplyDye(HairFurColors dyeColor);
 	}
 }

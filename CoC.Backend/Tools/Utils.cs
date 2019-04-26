@@ -76,7 +76,13 @@ namespace CoC.Backend.Tools
 			else if (val.CompareTo(max) > 0) val = max;
 		}
 
-		
+		public static T Clamp2<T>(T val, T min, T max) where T : IComparable<T>
+		{
+			if (val.CompareTo(min) < 0) val = min;
+			else if (val.CompareTo(max) > 0) val = max;
+			return val;
+		}
+
 		public static IEnumerable<T> AsIterable<T>() where T: Enum
 		{
 			return Enum.GetValues(typeof(T)).Cast<T>();
@@ -102,31 +108,68 @@ namespace CoC.Backend.Tools
 			}
 		}
 
-		public static float Lerp(int first, int second, float location)
+		public static float Lerp(int min, int max, float percent)
 		{
-			if (location <= 0)
+			if (percent <= 0)
 			{
-				return first;
+				return min;
 			}
-			else if (location >= 1)
+			else if (percent >= 1)
 			{
-				return second;
+				return max;
 			}
-			return first + (second - first) * location;
+			return min + (max - min) * percent;
 		}
 
-		public static float AsPercent(this int value, int min = 0, int max = 100)
+
+		public static float Lerp(int minX, int maxX, float x, int minY, int maxY)
 		{
-			if (value <= min)
+			if (x >= maxX)
 			{
-				return 0;
+				return maxY;
 			}
-			else if (value >= max)
+			else if (x <= minX)
 			{
-				return 1;
+				return minY;
 			}
-			return (value - min * 1.0f) / (max - min * 1.0f);
+
+			return (minY * (maxX - x) + maxY * (x - minX)) / (maxX - minX);
 		}
+
+		public static float Lerp(float minX, float maxX, float x, float minY, float maxY)
+		{
+			if (x >= maxX)
+			{
+				return maxY;
+			}
+			else if (x <= minX)
+			{
+				return minY;
+			}
+
+			return (minY * (maxX - x) + maxY * (x - minX)) / (maxX - minX);
+		}
+
+		public static byte LerpRound(byte minX, byte maxX, byte x, byte minY, byte maxY)
+		{
+			return (byte)Math.Round(Lerp(minX, maxX, x, minY, maxY));
+		}
+
+		public static ushort LerpRound(ushort minX, ushort maxX, ushort x, ushort minY, ushort maxY)
+		{
+			return (ushort)Math.Round(Lerp(minX, maxX, x, minY, maxY));
+		}
+
+		public static short LerpRound(short minX, short maxX, short x, short minY, short maxY)
+		{
+			return (short)Math.Round(Lerp(minX, maxX, x, minY, maxY));
+		}
+
+		public static int LerpRound(int minX, int maxX, int x, int minY, int maxY)
+		{
+			return (int)Math.Round(Lerp(minX, maxX, x, minY, maxY));
+		}
+
 	}
 
 	public class Pair<T, U>

@@ -103,7 +103,7 @@ namespace CoC.Backend.CoC_Colors
 
 		public bool isEmpty => this == NOT_APPLICABLE;
 
-		public static bool isNullOrEmpty(Tones tone)
+		public static bool IsNullOrEmpty(Tones tone)
 		{
 			return tone == null || tone == NOT_APPLICABLE;
 		}
@@ -112,7 +112,7 @@ namespace CoC.Backend.CoC_Colors
 		{
 			//edge cases. they'll already do weird shit, so just randomize it.
 			//you really should check for these first.
-			if (currentHairFur == HairFurColors.RAINBOW || HairFurColors.isNullOrEmpty(currentHairFur))
+			if (currentHairFur == HairFurColors.RAINBOW || HairFurColors.IsNullOrEmpty(currentHairFur))
 			{
 				return NOT_APPLICABLE;
 			}

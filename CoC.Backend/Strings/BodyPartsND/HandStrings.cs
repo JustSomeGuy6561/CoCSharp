@@ -67,6 +67,16 @@ namespace CoC.Backend.BodyParts
 			return GenericPawFullDesc();
 		}
 
+		private static string GooShort()
+		{
+			return "gooey appendages";
+		}
+
+		private static string GooFullDesc(Hands hands)
+		{
+			return "gooey, vaguely hand-like appendages";
+		}
+
 		private static string GenericPawFullDesc()
 		{
 			return "cute, pink paw pads and short claws";

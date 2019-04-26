@@ -89,7 +89,7 @@ namespace CoC.Backend.CoC_Colors
 
 		public bool isEmpty => this == NO_HAIR_FUR;
 
-		public static bool isNullOrEmpty(HairFurColors color)
+		public static bool IsNullOrEmpty(HairFurColors color)
 		{
 			return color == null || color == NO_HAIR_FUR;
 		}
@@ -103,7 +103,7 @@ namespace CoC.Backend.CoC_Colors
 		public static HairFurColors NearestHairFurColor(Tones currentTone)
 		{
 			//you really should check for this first.
-			if (Tones.isNullOrEmpty(currentTone))
+			if (Tones.IsNullOrEmpty(currentTone))
 			{
 				return NO_HAIR_FUR;
 			}

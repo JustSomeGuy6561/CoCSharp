@@ -1,5 +1,5 @@
 ﻿//Antennae.cs
-//Description:
+//Description: Contains the Antennae and AntennaeType classes, a body part that helps make up creature.
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
@@ -57,7 +57,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			type = AntennaeType.NONE;
-			return type == AntennaeType.NONE;
+			return true;
 		}
 	}
 
@@ -81,7 +81,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (index < 0 || index >= antennaes.Count)
 			{
-				throw new System.ArgumentException("index for antennae type desrialize out of range");
+				throw new ArgumentException("index for antennae type desrialize out of range");
 			}
 			else
 			{
@@ -92,10 +92,9 @@ namespace CoC.Backend.BodyParts
 				}
 				else
 				{
-					throw new System.ArgumentException("index for antennae type points to an object that does not exist. this may be due to obsolete code");
+					throw new ArgumentException("index for antennae type points to an object that does not exist. this may be due to obsolete code");
 				}
 			}
-			//return antennaes[0];
 		}
 
 		internal static bool Validate(ref AntennaeType antennae, bool correctInvalidData)

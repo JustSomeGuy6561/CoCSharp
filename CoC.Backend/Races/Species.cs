@@ -58,6 +58,7 @@ namespace CoC.Backend.Races
 		public static readonly Demon DEMON = new Demon();
 		public static readonly Dog DOG = new Dog();
 		public static readonly Dragon DRAGON = new Dragon();
+		public static readonly Dryad DRYAD = new Dryad();
 		public static readonly Echidna ECHIDNA = new Echidna();
 		public static readonly Ferret FERRET = new Ferret();
 		public static readonly Fox FOX = new Fox();

@@ -26,11 +26,8 @@ namespace CoC.Backend.BodyParts
 		public const byte SEXTOPED_LEG_COUNT = 6; //for squids/octopi, if i implement them. technically, an octopus is 2 legs and 6 arms, but i like the 6 legs 2 arms because legs have a count, arms dont.
 		public const byte OCTOPED_LEG_COUNT = 8;
 
-		private Epidermis _primaryEpidermis => type.ParseEpidermis(bodyData());
-		private Epidermis _secondaryEpidermis => type.ParseSecondaryEpidermis(bodyData());
-		public EpidermalData primaryEpidermis => _primaryEpidermis.GetEpidermalData();
-		public EpidermalData secondaryEpidermis => _secondaryEpidermis.GetEpidermalData();
-
+		public EpidermalData primaryEpidermis => type.ParseEpidermis(bodyData());
+		public EpidermalData secondaryEpidermis => type.ParseEpidermis(bodyData());
 		public int legCount => type.legCount;
 
 		private LowerBody(LowerBodyType type)
@@ -146,11 +143,11 @@ namespace CoC.Backend.BodyParts
 		public bool isSextoped => legCount == SEXTOPED;
 		public bool isOctoped => legCount == OCTOPED;
 
-		internal abstract Epidermis ParseEpidermis(in BodyData bodyData);
+		internal abstract EpidermalData ParseEpidermis(in BodyData bodyData);
 
-		internal virtual Epidermis ParseSecondaryEpidermis(in BodyData bodyData)
+		internal virtual EpidermalData ParseSecondaryEpidermis(in BodyData bodyData)
 		{
-			return Epidermis.GenerateEmpty();
+			return new EpidermalData();
 		}
 
 		public override int index => _index;
@@ -216,35 +213,35 @@ namespace CoC.Backend.BodyParts
 				mutable = canChange;
 			}
 
-			internal override Epidermis ParseEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
 				FurColor color = this.defaultColor;
 				FurTexture texture = this.defaultTexture;
 				if (mutable)
 				{
-					if (bodyData.secondary.usesFur && !FurColor.IsNullOrEmpty(bodyData.secondary.fur))
+					if (bodyData.supplementary.usesFur && !FurColor.IsNullOrEmpty(bodyData.supplementary.fur))
 					{
-						color = bodyData.secondary.fur;
+						color = bodyData.supplementary.fur;
 					}
-					else if (!FurColor.IsNullOrEmpty(bodyData.primary.fur))
+					else if (!FurColor.IsNullOrEmpty(bodyData.main.fur))
 					{
-						color = bodyData.primary.fur;
+						color = bodyData.main.fur;
 					}
-					else if (!HairFurColors.isNullOrEmpty(bodyData.hairColor))
+					else if (!HairFurColors.IsNullOrEmpty(bodyData.hairColor))
 					{
 						color = new FurColor(bodyData.hairColor);
 					}
 
-					if (bodyData.secondary.usesFur && bodyData.secondary.furTexture != FurTexture.NONDESCRIPT)
+					if (bodyData.supplementary.usesFur && bodyData.supplementary.furTexture != FurTexture.NONDESCRIPT)
 					{
-						texture = bodyData.secondary.furTexture;
+						texture = bodyData.supplementary.furTexture;
 					}
-					else if (bodyData.primary.usesFur && bodyData.primary.furTexture != FurTexture.NONDESCRIPT)
+					else if (bodyData.main.usesFur && bodyData.main.furTexture != FurTexture.NONDESCRIPT)
 					{
-						texture = bodyData.primary.furTexture;
+						texture = bodyData.main.furTexture;
 					}
 				}
-				return Epidermis.Generate((FurBasedEpidermisType)epidermisType, color, defaultTexture);
+				return new EpidermalData(epidermisType, color, defaultTexture);
 			}
 		}
 
@@ -262,12 +259,12 @@ namespace CoC.Backend.BodyParts
 				mutable = canChange;
 			}
 
-			internal override Epidermis ParseEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				Tones color = mutable ? bodyData.primary.tone : defaultTone;
-				SkinTexture texture = mutable && bodyData.primary.usesTone ? bodyData.primary.skinTexture : defaultTexture;
+				Tones color = mutable ? bodyData.mainSkin.tone : defaultTone;
+				SkinTexture texture = mutable && bodyData.main.usesTone ? bodyData.main.skinTexture : defaultTexture;
 
-				return Epidermis.Generate((ToneBasedEpidermisType)epidermisType, color, texture);
+				return new EpidermalData(epidermisType, color, texture);
 			}
 		}
 
@@ -278,24 +275,24 @@ namespace CoC.Backend.BodyParts
 			public NagaLowerBody() : base(FootType.NONE, EpidermisType.SCALES, MONOPED, Species.NAGA.defaultTone, 
 				SkinTexture.NONDESCRIPT, true, NagaDesc, NagaFullDesc, NagaPlayerStr, NagaTransformStr, NagaRestoreStr)	{ }
 
-			internal override Epidermis ParseEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				Tones color = bodyData.bodyType == BodyType.NAGA && !Tones.isNullOrEmpty(bodyData.secondary.tone) ? bodyData.secondary.tone : bodyData.primary.tone; 
-				return Epidermis.Generate((ToneBasedEpidermisType)epidermisType, color, defaultTexture);
+				Tones color = bodyData.bodyType == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone) ? bodyData.supplementary.tone : bodyData.mainSkin.tone;
+				return new EpidermalData (epidermisType, color, defaultTexture);
 			}
 
-			internal override Epidermis ParseSecondaryEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseSecondaryEpidermis(in BodyData bodyData)
 			{
-				Tones color = bodyData.secondary.tone;
-				if (bodyData.bodyType == BodyType.NAGA && !Tones.isNullOrEmpty(bodyData.secondary.tone))
+				Tones color = bodyData.supplementary.tone;
+				if (bodyData.bodyType == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone))
 				{
 					color = Species.NAGA.UnderToneFrom(color);
 				}
-				else if (Tones.isNullOrEmpty(color))
+				else if (Tones.IsNullOrEmpty(color))
 				{
 					color = defaultUnderTone;
 				}
-				return Epidermis.Generate((ToneBasedEpidermisType)epidermisType, color, defaultTexture);
+				return new EpidermalData(epidermisType, color, defaultTexture);
 			}
 		}
 
@@ -303,19 +300,19 @@ namespace CoC.Backend.BodyParts
 		{
 			public CockatriceLowerBody() : base(FootType.HARPY_TALON, EpidermisType.FEATHERS, BIPED, Species.COCKATRICE.defaultPrimaryFeathers, FurTexture.NONDESCRIPT, true, CockatriceDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr) { }
 
-			internal override Epidermis ParseEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
 				FurColor color = this.defaultColor;
 				FurTexture texture = this.defaultTexture;
-				if (!FurColor.IsNullOrEmpty(bodyData.primary.fur))
+				if (!FurColor.IsNullOrEmpty(bodyData.activeFur.fur))
 				{
-					color = bodyData.primary.fur;
+					color = bodyData.activeFur.fur;
 				}
-				else if (!HairFurColors.isNullOrEmpty(bodyData.hairColor))
+				else if (!HairFurColors.IsNullOrEmpty(bodyData.hairColor))
 				{
 					color = new FurColor(bodyData.hairColor);
 				}
-				return Epidermis.Generate((FurBasedEpidermisType)epidermisType, color, bodyData.primary.furTexture);
+				return new EpidermalData((FurBasedEpidermisType)epidermisType, color, bodyData.main.furTexture);
 			}
 		}
 
@@ -323,11 +320,11 @@ namespace CoC.Backend.BodyParts
 		{
 			public RedPandaLowerBody() : base(FootType.PAW, EpidermisType.FUR, BIPED, Species.RED_PANDA.defaultFur, FurTexture.NONDESCRIPT, true, RedPandaDesc, RedPandaFullDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr) { }
 
-			internal override Epidermis ParseEpidermis(in BodyData bodyData)
+			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				FurColor color = bodyData.secondary.usesFur && !FurColor.IsNullOrEmpty(bodyData.secondary.fur) ? bodyData.secondary.fur : defaultColor;
-				FurTexture texture = bodyData.secondary.usesFur && bodyData.secondary.furTexture != FurTexture.NONDESCRIPT ? bodyData.secondary.furTexture : defaultTexture;
-				return Epidermis.Generate((FurBasedEpidermisType)epidermisType, color, texture);
+				FurColor color = bodyData.supplementary.usesFur && !FurColor.IsNullOrEmpty(bodyData.supplementary.fur) ? bodyData.supplementary.fur : defaultColor;
+				FurTexture texture = bodyData.supplementary.usesFur && bodyData.supplementary.furTexture != FurTexture.NONDESCRIPT ? bodyData.supplementary.furTexture : defaultTexture;
+				return new EpidermalData(epidermisType, color, texture);
 			}
 		}
 	}
@@ -338,14 +335,14 @@ namespace CoC.Backend.BodyParts
 		{
 		}
 
-		internal override Epidermis ParseEpidermis(in BodyData bodyData)
+		internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 		{
-			return Epidermis.GenerateEmpty();
+			return new EpidermalData();
 		}
 
-		internal override Epidermis ParseSecondaryEpidermis(in BodyData bodyData)
+		internal override EpidermalData ParseSecondaryEpidermis(in BodyData bodyData)
 		{
-			return Epidermis.GenerateEmpty();
+			return new EpidermalData();
 		}
 	}
 }

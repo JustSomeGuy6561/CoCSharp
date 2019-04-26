@@ -36,7 +36,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HarpyFullDesc(Arms arm)
 		{
-			return arm.epidermalData.justColor() + " feathered arms";
+			return arm.epidermis.justColor() + " feathered arms";
 		}
 		private static string HarpyPlayerStr(Arms arm, Player player)
 		{
@@ -45,13 +45,13 @@ namespace CoC.Backend.BodyParts
 		private static string HarpyTransformStr(Arms oldArms, Player player)
 		{
 			StringBuilder retVal = new StringBuilder("You look on in horror while");
-			if (oldArms.epidermalData.usesFur)
+			if (oldArms.epidermis.usesFur)
 			{
 				retVal.Append("your fur falls off your arms, and avian plumage grows in its place.");
 			}
 			else
 			{
-				retVal.Append("avian plumage sprouts from your " + oldArms.epidermalData.shortDescription() + ", covering your forearms "
+				retVal.Append("avian plumage sprouts from your " + oldArms.epidermis.shortDescription() + ", covering your forearms "
 					+ "until <b>your arms look vaguely like wings.</b>");
 			}
 			if (oldArms.hands.type != HandType.HUMAN)
@@ -77,11 +77,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SpiderFullDesc(Arms arm)
 		{
-			return "chitinous " + arm.epidermalData.justColor() + " spider arms";
+			return "chitinous " + arm.epidermis.justColor() + " spider arms";
 		}
 		private static string SpiderPlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermalData.FullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves from a distance.";
+			return arm.epidermis.FullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves from a distance.";
 		}
 		private static string SpiderTransformStr(Arms oldArms, Player player)
 		{
@@ -93,7 +93,7 @@ namespace CoC.Backend.BodyParts
 			retVal.Append("You watch, spellbound, while your forearms gradually become shiny. The entire outer structure of your arms tingles while it divides into segments");
 			if (oldArms.type != HUMAN && oldArms.type != HARPY)
 			{
-				retVal.Append(", <b>turning the " + oldArms.epidermalData.shortDescription() + " into a shiny black carapace</b>. ");
+				retVal.Append(", <b>turning the " + oldArms.epidermis.shortDescription() + " into a shiny black carapace</b>. ");
 			}
 			else
 			{
@@ -118,14 +118,14 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string BeePlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermalData.FullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves ended with a yellow fuzz from a distance.";
+			return arm.epidermis.FullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves ended with a yellow fuzz from a distance.";
 		}
 		private static string BeeTransformStr(Arms oldArms, Player player)
 		{
 			StringBuilder sb = new StringBuilder("\n\n");
 			if (oldArms.type == ArmType.SPIDER)
 			{
-				sb.Append("The " + oldArms.epidermalData.shortDescription() + "on your upper arms slowly starting to grown yellow fuzz, making them looks more like those of bee.");
+				sb.Append("The " + oldArms.epidermis.shortDescription() + "on your upper arms slowly starting to grown yellow fuzz, making them looks more like those of bee.");
 			}
 			else
 			{
@@ -141,7 +141,7 @@ namespace CoC.Backend.BodyParts
 				}
 				else
 				{
-					sb.Append(", <b>turning the " + oldArms.epidermalData.shortDescription() + " into a shiny black carapace</b>. ");
+					sb.Append(", <b>turning the " + oldArms.epidermis.shortDescription() + " into a shiny black carapace</b>. ");
 				}
 				sb.Append("A moment later the pain fades and you are able to turn your gaze down to your beautiful new arms, covered in " +
 					"shining black chitin from the upper arm down, and downy yellow fuzz along your upper arm.");
@@ -175,7 +175,7 @@ namespace CoC.Backend.BodyParts
 			}
 			return "\n\nYou scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. " +
 				"After a longer moment of ignoring it you finally glance down in irritation, only to discover that your arms former " +
-				"appearance has changed into those of some reptilian killer with shield-shaped " + player.body.primaryEpidermis.tone +
+				"appearance has changed into those of some reptilian killer with shield-shaped " + player.body.mainEpidermis.tone +
 				" scales and powerful, thick, curved steel-gray claws replacing your fingernails.\n<b>You now have dragon arms.</b>";
 		}
 		private static string DragonRestoreStr(Arms currentArms, Player player)
@@ -188,7 +188,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string ImpFullDesc(Arms arm)
 		{
-			return arm.epidermalData.justColor() + " predator arms ending in imp claws";
+			return arm.epidermis.justColor() + " predator arms ending in imp claws";
 		}
 		private static string ImpPlayerStr(Arms arm, Player player)
 		{
@@ -258,7 +258,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SalamanderPlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermalData.FullDescription() + "cover your arms from the biceps down, and your fingernails are now " + arm.hands.fullDescription();
+			return arm.epidermis.FullDescription() + "cover your arms from the biceps down, and your fingernails are now " + arm.hands.fullDescription();
 		}
 		private static string SalamanderTransformStr(Arms oldArms, Player player)
 		{
@@ -284,7 +284,7 @@ namespace CoC.Backend.BodyParts
 		private static string WolfPlayerStr(Arms arm, Player player)
 		{
 			return "Your arms are shaped like a wolf's, overly muscular at your shoulders and biceps before quickly slimming down."
-				+ " They're covered in " + arm.epidermalData.FullDescription() + " and end in paws with just enough flexibility to be used as hands."
+				+ " They're covered in " + arm.epidermis.FullDescription() + " and end in paws with just enough flexibility to be used as hands."
 				+ " They're rather difficult to move in directions besides back and forth.";
 		}
 		//based off dog. it was never implemented in game, even though there was text for the PC having them. 
@@ -299,7 +299,7 @@ namespace CoC.Backend.BodyParts
 					"dextrous than before, though your claws are much sharper. <b> You now have wolf-like arms!</b>");
 				return sb.ToString();
 			}
-			else if (!oldArms.epidermalData.usesFur && !oldArms.secondaryEpidermalData.usesFur)
+			else if (!oldArms.epidermis.usesFur && !oldArms.secondaryEpidermis.usesFur)
 			{
 				armChanged = true;
 				sb.Append(" A thick layer of fur quickly grows in, covering your arm from to the tips of your fingers.");
@@ -334,14 +334,14 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CockatriceFullDesc(Arms arm)
 		{
-			return arm.epidermalData.fur.AsString() + ", feathered cockatrice arms with " + arm.hands.fullDescription();
+			return arm.epidermis.fur.AsString() + ", feathered cockatrice arms with " + arm.hands.fullDescription();
 		}
 		private static string CockatricePlayerStr(Arms arm, Player player)
 		{
-			return "Your arms are covered in " + arm.epidermalData.FullDescription()
+			return "Your arms are covered in " + arm.epidermis.FullDescription()
 		  + " from the shoulder down to the elbow where they stop in a fluffy cuff. A handful of long feathers grow from your"
 		  + " elbow in the form of vestigial wings, and while they may not let you fly, they certainly help you jump. Your lower"
-		  + " arm is coated in " + arm.secondaryEpidermalData.FullDescription() + " and your fingertips terminate in " + arm.hands.shortDescription() + ".";
+		  + " arm is coated in " + arm.secondaryEpidermis.FullDescription() + " and your fingertips terminate in " + arm.hands.shortDescription() + ".";
 		}
 		private static string CockatriceTransformStr(Arms oldArms, Player player)
 		{
@@ -365,11 +365,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RedPandaFullDesc(Arms arm)
 		{
-			return arm.epidermalData.FullDescription() + "panda-arms";
+			return arm.epidermis.FullDescription() + "panda-arms";
 		}
 		private static string RedPandaPlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermalData.furTexture.ToString() +", " + arm.epidermalData.justColor() + " fluff cover your arms. Your paws have " + arm.hands.shortDescription() + ".";
+			return arm.epidermis.furTexture.ToString() +", " + arm.epidermis.justColor() + " fluff cover your arms. Your paws have " + arm.hands.shortDescription() + ".";
 		}
 		private static string RedPandaTransformStr(Arms oldArms, Player player)
 		{
@@ -389,8 +389,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FerretPlayerStr(Arms arm, Player player)
 		{
-			return "Soft, " + arm.epidermalData.justColor() + " fluff covers your arms, turning into "
-				+ arm.secondaryEpidermalData.FullDescription() + " from elbows to paws."
+			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms, turning into "
+				+ arm.secondaryEpidermis.FullDescription() + " from elbows to paws."
 				+ " The latter have " + arm.hands.fullDescription();
 		}
 		private static string FerretTransformStr(Arms oldArms, Player player)
@@ -431,7 +431,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DogPlayerStr(Arms arm, Player player)
 		{
-			return "Soft, " + arm.epidermalData.justColor() + " fluff covers your arms. Your paw-like hands have " + arm.hands.fullDescription()
+			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms. Your paw-like hands have " + arm.hands.fullDescription()
 				+ ". With the right legs (and the right motivation), you could run with them, much like the hellounds you see in the mountains.";
 		}
 		private static string DogTransformStr(Arms oldArms, Player player)
@@ -445,7 +445,7 @@ namespace CoC.Backend.BodyParts
 					"dextrous than before, though your claws are much duller. <b> You now have dog-like arms!</b>");
 				return sb.ToString();
 			}
-			else if (!oldArms.epidermalData.usesFur && !oldArms.secondaryEpidermalData.usesFur)
+			else if (!oldArms.epidermis.usesFur && !oldArms.secondaryEpidermis.usesFur)
 			{
 				armChanged = true;
 				sb.Append(" A thick layer of fur quickly grows in, covering your arm from to the tips of your fingers.");
@@ -495,15 +495,36 @@ namespace CoC.Backend.BodyParts
 			return PawRestoreString();
 		}
 
+		private static string GooDesc()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string GooFullDesc(Arms arms)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string GooPlayerStr(Arms arm, Player player)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string GooTransformStr(Arms oldArms, Player player)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string GooRestoreStr(Arms currentArms, Player player)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 
 		private static string CatFoxPlayerStr(Arms arms, Player player)
 		{
-			return "Soft, " + arms.epidermalData.justColor() + " fluff covers your arms. Your paw-like hands have " + arms.hands.fullDescription() + ".";
+			return "Soft, " + arms.epidermis.justColor() + " fluff covers your arms. Your paw-like hands have " + arms.hands.fullDescription() + ".";
 		}
 
 		private static string PredatorPlayerStr(Arms arms, Player player)
 		{
-			return "Your arms are covered by " + arms.epidermalData.shortDescription() + " and your hands are noew " + arms.hands.fullDescription() + ".";
+			return "Your arms are covered by " + arms.epidermis.shortDescription() + " and your hands are noew " + arms.hands.fullDescription() + ".";
 		}
 
 		private static string PredatorRestoreStr(Arms arms, Player player)

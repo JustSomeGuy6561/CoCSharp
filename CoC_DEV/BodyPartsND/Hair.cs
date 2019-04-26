@@ -17,7 +17,7 @@ namespace CoC.BodyParts
 
 	public enum HairStyle { NO_STYLE, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED }
 
-	internal partial class Hair : BodyPartBase<Hair, HairType>, IDyeable, ITimeAware
+	public sealed partial class Hair : BodyPartBase<Hair, HairType>, IDyeable, ITimeAware
 	{
 		private static readonly HairFurColors HUMAN_DEFAULT = HairFurColors.BLACK;
 
@@ -29,13 +29,12 @@ namespace CoC.BodyParts
 		//Members
 		#region Members
 		//system related
-		private HashSet<IHairAware> hairAwares = new HashSet<IHairAware>();
 		private int hoursCounter = 0;
 		//regular
 		public bool isGrowing { get; protected set; }
 		public bool isSemiTransparent { get; protected set; }
 		public float lengthInInches { get; protected set; }
-		protected int hoursSinceTrimmed;
+		private int hoursSinceTrimmed;
 
 		public HairStyle style { get; protected set; }
 
@@ -338,7 +337,7 @@ namespace CoC.BodyParts
 		#endregion
 	}
 
-	internal partial class HairType : BodyPartBehavior<HairType, Hair>
+	public partial class HairType : BodyPartBehavior<HairType, Hair>
 	{
 		private static int indexMaker = 0;
 
@@ -455,7 +454,6 @@ namespace CoC.BodyParts
 
 			public override bool preventHairGrowth => true;
 		}
-
 	}
 
 	internal class HairColorEventArg : EventArgs

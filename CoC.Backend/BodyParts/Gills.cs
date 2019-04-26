@@ -43,7 +43,7 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		public bool UpdateType(GillType gillType)
+		internal bool UpdateGills(GillType gillType)
 		{
 			if (type == gillType)
 			{

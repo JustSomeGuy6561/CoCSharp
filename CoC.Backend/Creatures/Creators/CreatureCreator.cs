@@ -28,20 +28,20 @@ namespace CoC.Backend.Creatures
 		public FurColor furColor;
 		public Tones underTone;
 		public FurColor underFurColor;
-		public FurTexture furTexture = FurTexture.NONDESCRIPT;
-		public SkinTexture skinTexture = SkinTexture.NONDESCRIPT;
-		public FurTexture underBodyFurTexture = FurTexture.NONDESCRIPT;
-		public SkinTexture underBodySkinTexture = SkinTexture.NONDESCRIPT;
+		public FurTexture? furTexture = null;
+		public SkinTexture? skinTexture = null;
+		public FurTexture? underBodyFurTexture = null;
+		public SkinTexture? underBodySkinTexture = null;
 		public PiercingJewelry[] navelPiercings = null;
 		//Ears
 		public EarType earType;
 		public PiercingJewelry[] earPiercings = null;
 		//Eyebrow
-		//public bool[] eyebrowPiercings = null;
+		public bool[] eyebrowPiercings = null;
 		//Eyes
 		public EyeType eyeType;
-		public EyeColor? leftEyeColor;
-		public EyeColor? rightEyeColor;
+		public EyeColor? leftEyeColor = null;
+		public EyeColor? rightEyeColor = null;
 		//Gills
 		public GillType gillType;
 		//Hair
@@ -58,12 +58,12 @@ namespace CoC.Backend.Creatures
 		public HornType hornType;
 
 		//Horn option1: TransformLevel
-		public int additionalHornTransformStrength = 0;
+		public byte additionalHornTransformStrength = 0;
 		public bool forceUniformHornGrowthOnCreate = false;
 
 		//Horn option2: Explicit values.
-		public int? hornCount = null;
-		public int? hornSize = null;
+		public byte? hornCount = null;
+		public byte? hornSize = null;
 
 		//Tongue
 		public TongueType tongueType;

@@ -7,6 +7,9 @@
 //using  CoC.BodyParts.SpecialInteraction;
 //using CoC.Engine;
 
+//ITimeAware
+
+
 //namespace  CoC.BodyParts
 //{
 //	//Can't use readonly, as beards aren't constant - they grow.

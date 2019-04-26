@@ -4,20 +4,31 @@
 //12/29/2018, 1:58 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Engine.Combat.Attacks;
+using CoC.Backend.Engine.Combat.Attacks.BodyPartAttacks;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 namespace CoC.Backend.BodyParts
 {
-	
-	public sealed class Back : BehavioralSaveablePart<Back, BackType>, IDyeable
+	//Moved abdomens for bee, spider here. I dunno, it seemed like that made more sense, though i'm not exactly familiar with the anatomy of anthropomorphized spiders.
+	//tail now has the ovipositors. ovipositors are no longer perks. in the event bees and spiders need some back type (remember, wings and back are separate), i could just
+	//add an ovipositor type. for now i don't think i need to. the scorpion is still a tail, but i may move it here for ease of coding, though technically it's a tail. idk man.
+
+	public sealed class Back : BehavioralSaveablePart<Back, BackType>, IDyeable, ICanAttackWith //For Back Tendrils (NYI), and spider/bee abdomen. Also, ITimeAware, to regenerate resources.
 	{
-		public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
+		//public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
+		public EpidermalData backEpidermis => epidermis.GetEpidermalData();
+
+		private Epidermis epidermis = new Epidermis();
+		private AttackBase _attack = AttackBase.NO_ATTACK;
+		public ushort resources { get; private set; } = 0;
+
 		private Back(BackType backType)
 		{
 			_type = backType ?? throw new ArgumentNullException();
+			_type.ParseEpidermis(epidermis);
 		}
 
 		public override BackType type
@@ -25,9 +36,9 @@ namespace CoC.Backend.BodyParts
 			get => _type;
 			protected set
 			{
-				if (value.usesHair != type.usesHair)
+				if (value != _type)
 				{
-					hairFur = value.defaultHair;
+					_attack = value.GetAttackOnTransform(() => resources, (x) => resources = x);
 				}
 				_type = value;
 			}
@@ -40,9 +51,7 @@ namespace CoC.Backend.BodyParts
 		internal override bool Validate(bool correctDataIfInvalid = false)
 		{
 			BackType backType = type;
-			var hair = hairFur;
-			bool retVal = BackType.Validate(ref backType, ref hair, correctDataIfInvalid);
-			hairFur = hair;
+			bool retVal = BackType.Validate(ref backType, epidermis, correctDataIfInvalid);
 			type = backType;
 			return retVal;
 		}
@@ -59,10 +68,12 @@ namespace CoC.Backend.BodyParts
 		}
 		internal static Back GenerateDraconicMane(DragonBackMane dragonMane, HairFurColors maneColor)
 		{
-			return new Back(dragonMane) //throws for null
+			Back newBack = new Back(dragonMane); //throws for null
+			if (!HairFurColors.IsNullOrEmpty(maneColor))
 			{
-				hairFur = HairFurColors.isNullOrEmpty(maneColor) ? dragonMane.defaultHair : maneColor //could be null
-			};
+				newBack.epidermis.ChangeFur(maneColor);
+			}
+			return newBack;
 		}
 
 		internal override bool Restore()
@@ -75,7 +86,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		public bool UpdateBack(BackType newType)
+		internal bool UpdateBack(BackType newType)
 		{
 			if (newType == null || type == newType)
 			{
@@ -85,45 +96,66 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public bool UpdateBack(DragonBackMane dragonMane, HairFurColors maneColor)
+		internal bool UpdateBack(DragonBackMane dragonMane, HairFurColors maneColor)
 		{
 			if (dragonMane == null || type == dragonMane)
 			{
 				return false;
 			}
-			type = dragonMane; //sets hair to default automatically.
+			type = dragonMane; //sets epidermis to use hair.
 							   //overrides it if possible.
-			if (!HairFurColors.isNullOrEmpty(maneColor)) //can be null.
+			if (!HairFurColors.IsNullOrEmpty(maneColor)) //can be null.
 			{
-				hairFur = maneColor;
+				epidermis.ChangeFur(maneColor);
 			}
 			return true;
 		}
 
-		public bool allowsDye()
+		#region IDyeable
+		bool IDyeable.allowsDye()
 		{
-			return type.usesHair;
+			return epidermis.furMutable;
 		}
 
 		bool IDyeable.isDifferentColor(HairFurColors dyeColor) //
 		{
 			if (dyeColor == null) throw new ArgumentNullException();
-			return dyeColor != hairFur;
+			return !epidermis.fur.IsIdenticalTo(dyeColor);
 		}
 
 		bool IDyeable.attemptToDye(HairFurColors dye)
 		{
-			if (dye == null) throw new ArgumentNullException();
-			if (!allowsDye() || dye == hairFur) //shouldn't be null, but can be.
+			if (!canDye || !dyeable.isDifferentColor(dye))
 			{
 				return false;
 			}
 			else
 			{
-				hairFur = dye;
-				return true;
+				return epidermis.ChangeFur(new FurColor(dye));
 			}
 		}
+
+		string IDyeable.buttonText()
+		{
+			return type.dyeDesc();
+		}
+
+		string IDyeable.locationDesc()
+		{
+			return type.dyeText();
+		}
+
+		private bool canDye => dyeable.allowsDye();
+		private IDyeable dyeable => this;
+		#endregion
+
+		#region ICanAttackWith
+
+		AttackBase ICanAttackWith.attack => _attack;
+
+		bool ICanAttackWith.canAttackWith() => _attack != AttackBase.NO_ATTACK;
+
+		#endregion
 	}
 
 	public partial class BackType : SaveableBehavior<BackType, Back>
@@ -133,8 +165,22 @@ namespace CoC.Backend.BodyParts
 		private readonly int _index;
 		public override int index => _index;
 
-		public virtual HairFurColors defaultHair => HairFurColors.NO_HAIR_FUR;
-		public bool usesHair => !defaultHair.isEmpty;
+		public virtual bool canDye => false;/* defaultHair => HairFurColors.NO_HAIR_FUR;*/
+
+		internal virtual AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+		{
+			return AttackBase.NO_ATTACK;
+		}
+
+
+		public virtual void ParseEpidermis(Epidermis epidermis)
+		{
+			epidermis.Reset();
+		}
+
+		internal virtual SimpleDescriptor dyeDesc => GenericBtnkDesc;
+		internal virtual SimpleDescriptor dyeText => GenericLocDesc;
+		//public bool usesHair => !defaultHair.isEmpty;
 
 		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, TypeAndPlayerDelegate<Back> playerDesc,
 			ChangeType<Back> transform, RestoreType<Back> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
@@ -163,33 +209,17 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static bool Validate(ref BackType backType, ref HairFurColors hair, bool correctInvalidData = false)
+		internal static bool Validate(ref BackType backType, Epidermis epidermis, bool correctInvalidData = false)
 		{
-			bool valid = true;
-			if (!backs.Contains(backType))
+			if (backs.Contains(backType))
 			{
-				if (!correctInvalidData)
-				{
-					return false;
-				}
-				valid = false;
+				return true;
+			}
+			else if (correctInvalidData)
+			{
 				backType = NORMAL;
 			}
-			valid &= backType.ValidateData(ref hair, correctInvalidData);
-			return valid;
-		}
-
-		internal virtual bool ValidateData(ref HairFurColors hair, bool correctInvalidData = false)
-		{
-			if (usesHair && HairFurColors.isNullOrEmpty(hair))
-			{
-				if (correctInvalidData)
-				{
-					hair = defaultHair;
-				}
-				return false;
-			}
-			return true;
+			return false;
 		}
 
 		//i'd love to combine these, but they're actually entirely dependant on if the player used hair serum on Ember. 
@@ -198,13 +228,49 @@ namespace CoC.Backend.BodyParts
 		public static readonly DragonBackMane DRACONIC_MANE = new DragonBackMane();
 		public static readonly BackType DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesFullDesc, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
 		public static readonly BackType SHARK_FIN = new BackType(SharkFinDesc, SharkFinFullDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
+		public static readonly AttackableBackType SPIDER_ABDOMEN = new AttackableBackType(SPIDER_ATTACK, CARAPACE, SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //web
+		public static readonly AttackableBackType BEE_ABDOMEN = new AttackableBackType(BEE_STING, CARAPACE, BeeShortDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //sting
+		public static readonly AttackableBackType TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TenderilFullDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
 
+		private static readonly Func<Func<ushort>, Action<ushort>, ResourceAttackBase> SPIDER_ATTACK = (x, y) => new SpiderWeb(x, y);
+		private static readonly Func<Func<ushort>, Action<ushort>, ResourceAttackBase> BEE_STING = (x, y) => new BeeSting(x, y);
+		private static readonly Func<Func<ushort>, Action<ushort>, ResourceAttackBase> TENDRIL_GRAB = (x, y) => new TentaGrab(x, y);
+
+		private static readonly Epidermis CARAPACE = new Epidermis(EpidermisType.CARAPACE, Tones.BLACK, SkinTexture.SHINY);
+		private static readonly Epidermis TENDRIL_EPIDERMIS = new Epidermis(EpidermisType.GOO, Tones.CERULEAN, SkinTexture.SLIMY);
 	}
-	public class DragonBackMane : BackType
+	public sealed class DragonBackMane : BackType
 	{
-		public override HairFurColors defaultHair => Species.DRAGON.defaultManeColor;
+		public HairFurColors defaultHair => Species.DRAGON.defaultManeColor;
+		internal override SimpleDescriptor dyeDesc => ManeDesc;
+		internal override SimpleDescriptor dyeText => YourManeDesc;
 
 		internal DragonBackMane() : base(DraconicManeDesc, DraconicManeFullDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr)
 		{ }
+	}
+
+	public sealed class AttackableBackType : BackType
+	{
+		private readonly Epidermis baseAppearance;
+		//callback madness! Lets us not make this virtual. basically, since we can't create the attack without knowing where we get the resources, we can't create it here.
+		//BUT, given a callback to the resources, we can generate the attack here, using another callback. Clarity dictates i not do this, but fuck it.
+		private readonly Func<Func<ushort>, Action<ushort>, ResourceAttackBase> getAttack; //a callback. takes another callback (that returns a ushort), and returns an attack that requires resources.
+		internal AttackableBackType(Func<Func<ushort>, Action<ushort>, ResourceAttackBase> attackGetter, Epidermis appearance,
+			SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, TypeAndPlayerDelegate<Back> playerDesc, ChangeType<Back> transform, RestoreType<Back> restore)
+			: base(shortDesc, fullDesc, playerDesc, transform, restore)
+		{
+			getAttack = attackGetter;
+			baseAppearance = appearance;
+		}
+
+		public override void ParseEpidermis(Epidermis epidermis)
+		{
+			epidermis.copyFrom(baseAppearance); //copy the base appearance to the epidermis.
+		}
+
+		internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+		{
+			return getAttack(get, set);
+		}
 	}
 }

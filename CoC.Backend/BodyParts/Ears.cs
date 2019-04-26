@@ -37,7 +37,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class Ears : BehavioralSaveablePart<Ears, EarType>, IBodyAware
 	{
-		private const JewelryType VALID_EAR_PIERCINGS = JewelryType.STUD | JewelryType.DANGLER | JewelryType.HOOP | JewelryType.RING | JewelryType.CURVED_BARBELL | JewelryType.SPECIAL;
+		private const JewelryType VALID_EAR_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.DANGLER | JewelryType.HOOP | JewelryType.RING | JewelryType.HORSESHOE | JewelryType.SPECIAL;
 		private FurColor earFur => type.ParseFurColor(_earFur, bodyData());
 		private readonly FurColor _earFur = new FurColor();
 
@@ -198,9 +198,9 @@ namespace CoC.Backend.BodyParts
 		internal override FurColor ParseFurColor(FurColor current, in BodyData bodyData)
 		{
 			FurColor color = defaultFur;
-			if (!bodyData.primary.fur.isEmpty)
+			if (!bodyData.main.fur.isEmpty)
 			{
-				color = bodyData.primary.fur;
+				color = bodyData.main.fur;
 			}
 			current.UpdateFurColor(color);
 			return current;

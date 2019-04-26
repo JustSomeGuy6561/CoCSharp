@@ -146,17 +146,38 @@ namespace CoC.Backend.BodyParts
 			}
 			return false;
 		}
+
+		string IDyeable.buttonText()
+		{
+			return type.buttonText();
+		}
+
+		string IDyeable.locationDesc()
+		{
+			return type.locationDesc();
+		}
 	}
 
 	public partial class NeckType : SaveableBehavior<NeckType, Neck>
 	{
+		public const byte MIN_NECK_LENGTH = 2;
+
+		protected const int MAX_HUMAN_LENGTH = 2;
+		protected const int MAX_DRAGON_LENGTH = 30;
+		protected const int MAX_COCKATRICE_LENGTH = 2;
+
 		private static int indexMaker = 0;
 		private static readonly List<NeckType> necks = new List<NeckType>();
-		public const byte MIN_NECK_LENGTH = 2;
-		public readonly int _index;
+		private readonly int _index;
 
 		public readonly byte maxNeckLength;
 		public readonly HairFurColors defaultColor;
+
+		public readonly bool canDye;
+		public bool usesHair => canDye;
+
+		internal virtual SimpleDescriptor buttonText => GenericButtonDesc;
+		internal virtual SimpleDescriptor locationDesc => GenericLocationText;
 
 		private protected NeckType(byte maxLength,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> fullDesc, TypeAndPlayerDelegate<Neck> playerDesc, ChangeType<Neck> transform,
@@ -209,8 +230,6 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public readonly bool canDye;
-		public bool usesHair => canDye;
 
 		//this uses a percent approach. if you want just a flat value, override this.
 
@@ -228,8 +247,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				double percent = percentTowardsMaxLength(length, oldType.maxNeckLength);
-				length = (byte)Math.Round(MIN_NECK_LENGTH + (maxNeckLength - MIN_NECK_LENGTH) * percent);
+				length = Utils.LerpRound(MIN_NECK_LENGTH, oldType.maxNeckLength, length, MIN_NECK_LENGTH, maxNeckLength);
 			}
 
 			//current behavior: we always use new default hair - we never save the old color. in the event this behavior gets changed 
@@ -279,29 +297,8 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		protected const int MAX_HUMAN_LENGTH = 2;
-		protected const int MAX_DRAGON_LENGTH = 30;
-		protected const int MAX_COCKATRICE_LENGTH = 2;
-
 		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanFullDesc, HumanPlayerStr, GlobalStrings.TransformToDefault<Neck, NeckType>, GlobalStrings.RevertAsDefault);
 		public static readonly NeckType DRACONIC = new NeckType(MAX_DRAGON_LENGTH, DragonDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
 		public static readonly NeckType COCKATRICE = new NeckType(MAX_COCKATRICE_LENGTH, HairFurColors.GREEN, CockatriceDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
-
-		private double percentTowardsMaxLength(int length, int max)
-		{
-			//prevents divide by zero errors.
-			if (length <= MIN_NECK_LENGTH || MIN_NECK_LENGTH == max)
-			{
-				return 0;
-			}
-			else if (length >= max)
-			{
-				return 1;
-			}
-			else
-			{
-				return (max - length * 1.0) / (max - MIN_NECK_LENGTH);
-			}
-		}
 	}
 }

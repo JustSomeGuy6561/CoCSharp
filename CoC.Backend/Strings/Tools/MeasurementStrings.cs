@@ -56,5 +56,51 @@ namespace CoC.Backend.Tools
 			return "ft";
 		}
 
+
+		private static string smallText(double amount)
+		{
+			StringBuilder sb = new StringBuilder();
+			if (amount > 10 || amount < 10)
+			{
+				return amount.ToString();
+			}
+			int val = (int)Math.Floor(Math.Abs(amount));
+
+			if (val == 0)
+			{
+				sb.Append(" less than ");
+				val = 1;
+			}
+			else
+			{
+				sb.Append(" roughly ");
+			}
+			sb.Append(numbers[val]);
+			return sb.ToString();
+		}
+
+		private static string smallHalfText(double amount)
+		{
+			if (amount > 10 || amount < 10)
+			{
+				return amount.ToString();
+			}
+
+			int val = (int)Math.Floor(Math.Abs(amount));
+			double remainder = amount % 1;
+			string extra = "";
+			if (remainder > .20 && remainder < .70)
+			{
+				if (val == 0)
+				{
+					return " roughly half a ";
+				}
+				else
+				{
+					extra = " and a half";
+				}
+			}
+			return " roughly " + numbers[val] + extra;
+		}
 	}
 }

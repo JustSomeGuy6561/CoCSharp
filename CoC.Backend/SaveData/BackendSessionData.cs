@@ -11,6 +11,10 @@ namespace CoC.Backend.SaveData
 
 		public bool piercingFetish = false;
 
+		public bool hasBigTitPerk = false;
+
+		public bool hasBigCockPerk = false;
+
 		internal Player player;
 	}
 }

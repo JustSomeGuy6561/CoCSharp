@@ -66,6 +66,11 @@ namespace CoC.Backend.Races
 		{
 			return "drider";
 		}
+
+		protected static string DryadStr()
+		{
+			return "dryad";
+		}
 		protected static string EchidnaStr()
 		{
 			return "echidna";

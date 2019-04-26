@@ -13,16 +13,18 @@ namespace CoC.Backend.BodyParts
 {
 	public enum TonguePiercingLocation { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
 
-	public sealed class Tongue : BehavioralSaveablePart<Tongue, TongueType>
+	public sealed class Tongue : BehavioralSaveablePart<Tongue, TongueType> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
 	{
+		public const JewelryType TongueJewelry = JewelryType.BARBELL_STUD;
 		private Tongue()
 		{
 			type = TongueType.HUMAN;
+
+			tonguePiercings = new Piercing<TonguePiercingLocation>(TongueJewelry, PiercingLocationUnlocked);
 		}
 
 		public override TongueType type { get; protected set; }
 
-		private static readonly JewelryType TongueJewelry = JewelryType.STUD;
 
 		public readonly Piercing<TonguePiercingLocation> tonguePiercings;
 

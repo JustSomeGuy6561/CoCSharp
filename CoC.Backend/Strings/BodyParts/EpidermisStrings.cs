@@ -75,7 +75,7 @@ namespace CoC.Backend.BodyParts
 
 		private static string FeathersStr()
 		{
-			return "feather";
+			return "feathers";
 		}
 
 		private static string FurStr()
@@ -91,7 +91,7 @@ namespace CoC.Backend.BodyParts
 
 		private static string GooStr()
 		{
-			return "goo";
+			return "gooey skin";
 		}
 		private static string WoolStr()
 		{
@@ -108,7 +108,7 @@ namespace CoC.Backend.BodyParts
 
 		private static string RubberStr()
 		{
-			return "rubber-skin";
+			return "rubbery skin";
 		}
 	}
 }
