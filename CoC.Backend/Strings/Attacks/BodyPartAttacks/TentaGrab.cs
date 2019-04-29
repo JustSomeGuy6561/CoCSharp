@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CoC.Backend.Engine.Combat.Attacks.BodyPartAttacks
+namespace CoC.Backend.Attacks.BodyPartAttacks
 {
 	public partial class TentaGrab
 	{

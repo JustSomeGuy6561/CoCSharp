@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Backend.Engine.Combat.Attacks
+namespace CoC.Backend.Attacks
 {
 	public abstract class ResourceAttackBase : AttackBase
 	{
@@ -16,8 +16,8 @@ namespace CoC.Backend.Engine.Combat.Attacks
 			get => getResources();
 			set => setResources(value);
 		}
-		protected readonly Func<ushort> getResources;
-		protected readonly Action<ushort> setResources;
+		private readonly Func<ushort> getResources;
+		private readonly Action<ushort> setResources;
 
 		protected ResourceAttackBase(ushort maxResource, ushort maxRechargeRate, ushort initialResource, ushort initialRechargeRate, Func<ushort> getResourceCount, Action<ushort> setResourceCount,
 			SimpleDescriptor attackName) : base(attackName) 

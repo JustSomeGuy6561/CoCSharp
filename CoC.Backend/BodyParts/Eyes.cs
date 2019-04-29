@@ -2,11 +2,13 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 1:32 AM
+using CoC.Backend.Attacks;
+using CoC.Backend.Attacks.BodyPartAttacks;
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace CoC.Backend.BodyParts
 {
@@ -17,8 +19,8 @@ namespace CoC.Backend.BodyParts
 		YELLOW, PINK, ORANGE, INDIGO, TAN, BLACK
 	}
 
-	
-	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType> //ICanAttackWith. Basilisk Eyes.
+
+	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType>, ICanAttackWith //Basilisk Eyes.
 	{
 
 		public EyeColor leftIrisColor { get; private set; }
@@ -157,6 +159,9 @@ namespace CoC.Backend.BodyParts
 			type = EyeType.HUMAN;
 			return true;
 		}
+
+		AttackBase ICanAttackWith.attack => type.attack;
+		bool ICanAttackWith.canAttackWith() => type.attack != AttackBase.NO_ATTACK;
 	}
 	public enum SCLERA_COLOR
 	{
@@ -198,6 +203,8 @@ namespace CoC.Backend.BodyParts
 		}
 		public override int index => _index;
 
+		internal virtual AttackBase attack => AttackBase.NO_ATTACK;
+
 		internal static EyeType Deserialize(int index)
 		{
 			if (index < 0 || index >= eyes.Count)
@@ -236,10 +243,20 @@ namespace CoC.Backend.BodyParts
 		public static EyeType SAND_TRAP = new EyeType(Species.SAND_TRAP.defaultEyeColor, SandTrapEyeChange, SandTrapShortStr, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: SCLERA_COLOR.BLACK);
 		public static EyeType LIZARD = new EyeType(Species.LIZARD.defaultEyeColor, LizardEyeChange, LizardShortStr, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
 		public static EyeType DRAGON = new EyeType(Species.DRAGON.defaultEyeColor, DragonEyeChange, DragonShortStr, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static EyeType BASILISK = new EyeType(Species.BASILISK.defaultEyeColor, BasiliskEyeChange, BasiliskShortStr, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
+		public static EyeType BASILISK = new StoneStareEyeType(Species.BASILISK.defaultEyeColor, BasiliskEyeChange, BasiliskShortStr, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
 		public static EyeType WOLF = new EyeType(Species.WOLF.defaultEyeColor, WolfEyeChange, WolfShortStr, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static EyeType COCKATRICE = new EyeType(Species.COCKATRICE.defaultEyeColor, CockatriceEyeChange, CockatriceShortStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static EyeType COCKATRICE = new StoneStareEyeType(Species.COCKATRICE.defaultEyeColor, CockatriceEyeChange, CockatriceShortStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
 		public static EyeType CAT = new EyeType(Species.CAT.defaultEyeColor, CatEyeChange, CatShortStr, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 
+		private class StoneStareEyeType : EyeType
+		{
+			internal override AttackBase attack => _attack;
+			private static readonly AttackBase _attack = new BasiliskStare();
+			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc,
+				ChangeType<Eyes> transform, RestoreType<Eyes> restore, int numEyes = 2, SCLERA_COLOR color = SCLERA_COLOR.CLEAR)
+				: base(defaultEyeColor, eyeChange, shortDesc, fullDesc, playerDesc, transform, restore, numEyes, color) { }
+		}
 	}
+
+
 }

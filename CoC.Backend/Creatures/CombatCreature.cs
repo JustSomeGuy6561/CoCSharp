@@ -10,6 +10,23 @@
 		{
 		}
 
+		public float spellCost(double baseCost)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		public float physicalCost(double baseCost)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		public float availableStamina => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+
+		public bool hasEnoughStamina(double baseCost, bool isPhysical)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		//internal CombatCreature(SurrogateCombatCreator surrogateCreator) : base(surrogateCreator)
 		//{
 

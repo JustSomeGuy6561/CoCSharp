@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Backend.Engine.Combat.Attacks
+namespace CoC.Backend.Attacks
 {
 	public sealed class NoAttack : AttackBase
 	{
@@ -21,17 +21,24 @@ namespace CoC.Backend.Engine.Combat.Attacks
 		}
 		private static NoAttack _instance;
 
-		private NoAttack() : base(GlobalStrings.None, GlobalStrings.None, GlobalStrings.None)
+		private NoAttack() : base(GlobalStrings.None)
 		{}
 
-		public override bool CanUseAttack(CombatCreature source)
+		protected override DescriptorWithArg<CombatCreature> AttackDescription()
+		{
+			return x => GlobalStrings.None();
+		}
+
+		protected override bool CanUseAttack(CombatCreature attacker, CombatCreature defender)
 		{
 			return false;
 		}
 
-		public override SimpleDescriptor DoAttack(CombatCreature attacker, CombatCreature defender)
+		protected override SimpleDescriptor DoAttack(CombatCreature attacker, CombatCreature defender)
 		{
 			return GlobalStrings.None;
 		}
+
+		protected override bool isPhysical => false;
 	}
 }

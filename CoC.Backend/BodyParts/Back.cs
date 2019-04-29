@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 1:58 AM
+using CoC.Backend.Attacks;
+using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Engine.Combat.Attacks;
-using CoC.Backend.Engine.Combat.Attacks.BodyPartAttacks;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;

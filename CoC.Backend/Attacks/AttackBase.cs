@@ -1,6 +1,6 @@
 ﻿using CoC.Backend.Creatures;
 
-namespace CoC.Backend.Engine.Combat.Attacks
+namespace CoC.Backend.Attacks
 {
 	//attacks are going to be initialized each time they are attached to something. the simple fact of the matter is some of them require resources, and 
 	//that can't be static. the extra resource cost is small, especially considering how few enemies have them and how (relatively) infrequent combat is.
@@ -11,12 +11,12 @@ namespace CoC.Backend.Engine.Combat.Attacks
 	
 	public abstract class AttackBase
 	{
-		public abstract bool CanUseAttack(CombatCreature source);
+		protected abstract bool CanUseAttack(CombatCreature attacker, CombatCreature defender);
 
-		public abstract SimpleDescriptor DoAttack(CombatCreature attacker, CombatCreature defender);
+		protected abstract SimpleDescriptor DoAttack(CombatCreature attacker, CombatCreature defender);
 
-		public readonly SimpleDescriptor attackName;
-		public abstract SimpleDescriptor AttackDescription();
+		protected readonly SimpleDescriptor attackName;
+		protected abstract DescriptorWithArg<CombatCreature> AttackDescription();
 
 		public AttackBase(SimpleDescriptor name)
 		{
@@ -24,5 +24,8 @@ namespace CoC.Backend.Engine.Combat.Attacks
 		}
 
 		public static readonly AttackBase NO_ATTACK = NoAttack.instance;
+
+		protected abstract bool isPhysical { get; }
+
 	}
 }

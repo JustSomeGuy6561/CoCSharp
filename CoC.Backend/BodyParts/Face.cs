@@ -1,4 +1,6 @@
-﻿using CoC.Backend.BodyParts.SpecialInteraction;
+﻿using CoC.Backend.Attacks;
+using CoC.Backend.Attacks.BodyPartAttacks;
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -20,7 +22,7 @@ namespace CoC.Backend.BodyParts
 	 * you need to know the body tone
 	 */
 
-	public sealed class Face : BehavioralSaveablePart<Face, FaceType>, IBodyAware, ILotionable //ICanAttackWith if we want to make a "Bite"
+	public sealed class Face : BehavioralSaveablePart<Face, FaceType>, IBodyAware, ILotionable, ICanAttackWith
 	{
 		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING;
 		private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.HORSESHOE;
@@ -297,6 +299,13 @@ namespace CoC.Backend.BodyParts
 		{
 			bodyData = getter;
 		}
+
+		bool ICanAttackWith.canAttackWith()
+		{
+			return type.canAttackWith;
+		}
+		AttackBase ICanAttackWith.attack => type.attack;
+
 		private BodyDataGetter bodyData;
 	}
 
@@ -312,6 +321,9 @@ namespace CoC.Backend.BodyParts
 
 		public SimpleDescriptor weakenTransformText => () => morphText(false);
 		public SimpleDescriptor strengthenTransformText => () => morphText(true);
+
+		internal virtual AttackBase attack => AttackBase.NO_ATTACK;
+		internal virtual bool canAttackWith => attack != AttackBase.NO_ATTACK;
 
 		private readonly DescriptorWithArg<bool> morphText;
 
@@ -547,6 +559,9 @@ namespace CoC.Backend.BodyParts
 			{
 				return true;
 			}
+
+			internal override AttackBase attack => _attack;
+			private static readonly AttackBase _attack = new SpiderBite();
 		}
 		private sealed class SharkFace : ToneFace
 		{
@@ -556,6 +571,9 @@ namespace CoC.Backend.BodyParts
 			{
 				return true;
 			}
+
+			internal override AttackBase attack => _attack;
+			private static readonly AttackBase _attack = new GenericBite(SharkShortDesc, 4);
 		}
 		private sealed class SnakeFace : ToneFace
 		{
@@ -565,6 +583,9 @@ namespace CoC.Backend.BodyParts
 			{
 				return true;
 			}
+
+			internal override AttackBase attack => _attack;
+			private static readonly AttackBase _attack = new NagaBite();
 		}
 
 		private sealed class CockatriceFace : FurFace

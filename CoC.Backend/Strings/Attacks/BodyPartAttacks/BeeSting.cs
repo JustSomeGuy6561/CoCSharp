@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CoC.Backend.Creatures;
 
-namespace CoC.Backend.Engine.Combat.Attacks.BodyPartAttacks
+namespace CoC.Backend.Attacks.BodyPartAttacks
 {
 	public sealed partial class BeeSting
 	{

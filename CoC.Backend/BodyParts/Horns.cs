@@ -2,6 +2,8 @@
 //Description:
 //Author: JustSomeGuy
 //12/28/2018, 1:50 AM
+using CoC.Backend.Attacks;
+using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Tools;
 using System;
@@ -15,7 +17,7 @@ namespace CoC.Backend.BodyParts
 	//This class is so much harder to implement than i thought it'd be.
 	//Edit so much later: This class is probably the most complicated i've implemented to date. I still need to add attack data.
 
-	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowShrinkable, IGenderListener
+	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowShrinkable, IGenderListener, ICanAttackWith
 	{
 		private readonly Femininity hornMasculinity = Femininity.GenerateDefault();
 		public override HornType type { get; protected set; }
@@ -206,6 +208,15 @@ CanGrowPlus())
 			return significantHornSize - len;
 		}
 		#endregion
+
+		#region ICanAttackWith
+		AttackBase ICanAttackWith.attack => type.GetAttack(this);
+		bool ICanAttackWith.canAttackWith()
+		{
+			return type.CanAttackWith(this);
+		}
+
+		#endregion
 	}
 
 	//i could go with function pobyteers throughout this, but frankly it's complicated enough that it might as well just be abstract.
@@ -362,19 +373,24 @@ CanGrowPlus())
 			largestHorn = minHornLength;
 		}
 
+		internal abstract AttackBase GetAttack(Horns horns);
+		internal abstract bool CanAttackWith(Horns horns);
+
 		public static readonly HornType NONE = new SimpleOrNoHorns(0, 0, NoHornsShortDesc, NoHornsFullDesc, NoHornsPlayerStr, NoHornsTransformStr, NoHornsRestoreStr);
 		public static readonly HornType DEMON = new DemonHorns();
-		public static readonly HornType BULL_LIKE = new BullHorns(); //female aware. fuck me.
+		public static readonly HornType BULL_LIKE = new BullHorns(); //female aware. fuck me. //OLD COW_MINOTAUR
 		public static readonly HornType DRACONIC = new DragonHorns();
 		//Fun fact: female reindeer (aka caribou in North America) grow horns. no other species of deer do that. which leads to the weird distinction here.
 		//I've tried to remove clones, but i think this is the exception. On that note, water deer have long teeth, not horns. I'm, not adding them.
 		public static readonly HornType DEER_ANTLERS = new Antlers(false, 24, DeerShortDesc, DeerFullDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
 		public static readonly HornType REINDEER_ANTLERS = new Antlers(true, 36, ReindeerShortDesc, ReindeerFullDesc, ReindeerPlayerStr, ReindeerTransformStr, ReindeerRestoreStr);
 
-		public static readonly HornType SATYR = new GoatHorns();
+		//Strangely enough, GOAT horns are used for satyrs (and only satyrs) though in-game enemy satyrs attack as if they have ram's horms. stranger still, the PC grows standard goat horns,
+		//But does not gain the ability to head-butt like satyrs do in game. IDK man.
+		public static readonly HornType GOAT = new GoatHorns(); 
 		public static readonly HornType UNICORN = new UniHorn();
 		public static readonly HornType RHINO = new RhinoHorn();
-		public static readonly HornType SHEEP = new SheepHorns(); //female aware. see above.
+		public static readonly HornType SHEEP = new SheepHorns(); //female aware. see above. //OLD SHEEP, RAM
 
 		public static readonly HornType IMP = new SimpleOrNoHorns(2, 3, ImpShortDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);//"a pair of short, imp-like horns");
 		#endregion
@@ -396,6 +412,10 @@ CanGrowPlus())
 				significantHornLength = 0;
 				return true;
 			}
+
+			internal override AttackBase GetAttack(Horns horns) => AttackBase.NO_ATTACK;
+			internal override bool CanAttackWith(Horns horns) => false;
+
 		}
 
 		private class DemonHorns : HornType
@@ -428,6 +448,8 @@ CanGrowPlus())
 				return numHorns <= 0;
 			}
 
+			internal override AttackBase GetAttack(Horns horns) => AttackBase.NO_ATTACK;
+			internal override bool CanAttackWith(Horns horns) => false;
 
 			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 			{
@@ -447,6 +469,7 @@ CanGrowPlus())
 				}
 				return false;
 			}
+
 			private byte demonLengthFromHornCount(byte hornCount)
 			{
 				if (hornCount >= 8) return 10;
@@ -454,6 +477,8 @@ CanGrowPlus())
 				else if (hornCount >= 4) return 4;
 				else return 2;
 			}
+
+
 		}
 
 		private class BullHorns : HornType
@@ -646,6 +671,43 @@ CanGrowPlus())
 					return hornLength == 0;
 				}
 			}
+
+			internal override AttackBase GetAttack(Horns horns)
+			{
+				byte getHornCount() => horns.significantHornSize;
+				byte getHornLength() => horns.numHorns;
+				return new GoreHorn(getHornCount, getHornLength);
+			}
+			internal override bool CanAttackWith(Horns horns)
+			{
+				return horns.significantHornSize > maxFeminineLength;
+			}
+
+			internal override void GrowToMax(ref byte numHorns, ref byte largestHorn, in Femininity masculinity)
+			{
+				numHorns = maxHorns;
+				largestHorn = masculinity.isFemale ? maxFeminineLength : maxHornLength;
+			}
+
+			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
+			{
+				bool primary = base.ValidateData(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
+				if (!primary && !correctInvalidData)
+				{
+					return false;
+				}
+
+				if (!masculinity.isFemale || hornLength <= maxFeminineLength) //if our data is good here, return primary. bool && true = bool;
+				{
+					return primary;
+				}
+				else if (correctInvalidData)
+				{
+					hornLength = maxFeminineLength;
+				}
+				return false;
+			}
+
 			//grows or shrinks 
 			private void feminizeHorns(ref byte amount, ref byte hornLength)
 			{
@@ -672,31 +734,6 @@ CanGrowPlus())
 						}
 					}
 				}
-			}
-
-			internal override void GrowToMax(ref byte numHorns, ref byte largestHorn, in Femininity masculinity)
-			{
-				numHorns = maxHorns;
-				largestHorn = masculinity.isFemale ? maxFeminineLength : maxHornLength;
-			}
-
-			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
-			{
-				bool primary = base.ValidateData(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
-				if (!primary && !correctInvalidData)
-				{
-					return false;
-				}
-
-				if (!masculinity.isFemale || hornLength <= maxFeminineLength) //if our data is good here, return primary. bool && true = bool;
-				{
-					return primary;
-				}
-				else if (correctInvalidData)
-				{
-					hornLength = maxFeminineLength;
-				}
-				return false;
 			}
 		}
 
@@ -770,6 +807,8 @@ CanGrowPlus())
 				}
 				return hornLength == 0;
 			}
+			internal override AttackBase GetAttack(Horns horns) => AttackBase.NO_ATTACK;
+			internal override bool CanAttackWith(Horns horns) => false;
 
 		}
 
@@ -860,6 +899,9 @@ CanGrowPlus())
 				return byAmount > 0;
 			}
 
+			internal override AttackBase GetAttack(Horns horns) => AttackBase.NO_ATTACK;
+			internal override bool CanAttackWith(Horns horns) => false;
+
 			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
 			{
 				bool valid = base.ValidateData(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
@@ -878,6 +920,7 @@ CanGrowPlus())
 				}
 				return false;
 			}
+
 
 			private byte setLengthFromHorns(byte hornCount)
 			{
@@ -976,6 +1019,12 @@ CanGrowPlus())
 				hornLength = 0;
 				return true;
 			}
+
+			internal override AttackBase GetAttack(Horns horns)
+			{
+				return AttackBase.NO_ATTACK;
+			}
+			internal override bool CanAttackWith(Horns horns) => false;
 		}
 
 		//Get it? That made me laugh way harder than it should have (which is not at all).
@@ -1027,6 +1076,18 @@ CanGrowPlus())
 			{
 				hornLength = minHornLength;
 				return true;
+			}
+
+			internal override bool CanAttackWith(Horns horns)
+			{
+				return true;
+			}
+
+			internal override AttackBase GetAttack(Horns horns)
+			{
+				byte getHornCount() => horns.significantHornSize;
+				byte getHornLength() => horns.numHorns;
+				return new GoreHorn(getHornCount, getHornLength);
 			}
 		}
 
@@ -1103,6 +1164,17 @@ CanGrowPlus())
 				}
 				return valid;
 			}
+
+			internal override AttackBase GetAttack(Horns horns)
+			{
+				return _attack;
+			}
+			private static readonly AttackBase _attack = new RhinoUpheaval();
+			internal override bool CanAttackWith(Horns horns)
+			{
+				return horns.numHorns == maxHorns;
+			}
+
 		}
 
 		private class SheepHorns : HornType
@@ -1233,6 +1305,16 @@ CanGrowPlus())
 				}
 				return false;
 			}
+
+			internal override bool CanAttackWith(Horns horns)
+			{
+				return horns.significantHornSize > maxFeminineLength;
+			}
+			internal override AttackBase GetAttack(Horns horns)
+			{
+				return _attack;
+			}
+			private static readonly AttackBase _attack = new RamHorn();
 		}
 		/*
 		

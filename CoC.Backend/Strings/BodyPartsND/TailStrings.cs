@@ -146,7 +146,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return "A pain builds in your backside... growing more and more pronounced. The pressure suddenly disappears with a loud ripping and tearing noise. <b>You realize you now have a demon tail</b>... complete with a cute little spade.";
 			}
-			else if (tail.type == SPIDER_ABDOMEN || tail.type == BEE_ABDOMEN)
+			else if (tail.type == SPIDER_OVIPOSITOR || tail.type == BEE_OVIPOSITOR)
 			{
 				return "You feel a tingling in your insectile abdomen as it stretches, narrowing, the exoskeleton flaking off as it transforms into a flexible demon-tail, complete with a round spaded tip. ";
 			}

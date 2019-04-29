@@ -1,18 +1,20 @@
 ﻿using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Attacks;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using CoC.Backend.Attacks.BodyPartAttacks;
 
 namespace CoC.Backend.BodyParts
 {
-	public enum HairStyle { NO_STYLE, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED }
+	public enum HairStyle { NO_STYLE, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED, PONYTAIL}
 
 
 	//even when bald, we keep track of the hair color. just check if bald before saying they have (haircolor) hair.
 
-	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType>, ISimultaneousMultiDyeable// itimeaware //possibly ICanAttackWith, if i can fit in a Shantae Easter Egg somewhere.
+	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType>, ISimultaneousMultiDyeable, ICanAttackWith// itimeaware
 	{
 		private static readonly HairFurColors DEFAULT_COLOR = HairFurColors.BLACK;
 
@@ -140,7 +142,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return type.canDye;
 			}
-			else 
+			else
 			{
 				throw new NotImplementedException("Somebody added a new dyeable member and didn't implement it correctly.");
 			}
@@ -226,6 +228,9 @@ namespace CoC.Backend.BodyParts
 
 		private IMultiDyeable dyeable => this;
 		private byte numDyeMembers => dyeable.numDyeableMembers;
+
+		AttackBase ICanAttackWith.attack => type.attack;
+		bool ICanAttackWith.canAttackWith() => type.canAttackWith(this);
 	}
 
 	//public class HairType : SaveableBehavior<HairType, Hair>
@@ -258,6 +263,9 @@ namespace CoC.Backend.BodyParts
 
 		public virtual bool canCut => true;
 		public virtual bool canLengthen => true;
+
+		internal virtual AttackBase attack => AttackBase.NO_ATTACK;
+		internal virtual bool canAttackWith(Hair hair) => attack != AttackBase.NO_ATTACK;
 
 		public readonly HairFurColors defaultColor;
 		public readonly float defaultHairLength;
@@ -328,7 +336,7 @@ namespace CoC.Backend.BodyParts
 
 		//default l
 		public static readonly HairType NO_HAIR = new NoHair(); //0.0
-		public static readonly HairType NORMAL = new HairType(HairFurColors.BLACK, 0.0f, false, NormalDesc, NormalFullDesc, NormalPlayerStr, NormalGrowStr, NormalTransformStr, NormalRestoreStr);
+		public static readonly HairType NORMAL = new NormalHair();
 		public static readonly HairType FEATHER = new HairType(HairFurColors.WHITE, 5.0f, false, FeatherDesc, FeatherFullDesc, FeatherPlayerStr, FeatherGrowStr, FeatherTransformStr, FeatherRestoreStr);
 		public static readonly HairType GOO = new HairType(HairFurColors.CERULEAN, 5.0f, false, GooDesc, GooFullDesc, GooPlayerStr, GooGrowStr, GooTransformStr, GooRestoreStr); //5 in if bald. updating behavior to <5 or bald to 5 inch. just say your old type 
 		public static readonly HairType ANEMONE = new AnemoneHair();
@@ -362,6 +370,18 @@ namespace CoC.Backend.BodyParts
 
 		}
 
+		private class NormalHair : HairType
+		{
+			public NormalHair() : base(HairFurColors.BLACK, 0.0f, false, NormalDesc, NormalFullDesc, NormalPlayerStr, NormalGrowStr, NormalTransformStr, NormalRestoreStr) {}
+
+			internal override AttackBase attack => _attack;
+			private static readonly AttackBase _attack = new HairWhip();
+			//this could have been done as a special extended content in the frontend, but i've already got the attackwith interface for anemone hair, might as well do it here. 
+			internal override bool canAttackWith(Hair hair) //only allow it if it's Ret2Go! (or if it's braided a la harem style)
+			{
+				return hair.length >= 36.0f && (hair.style == HairStyle.BRAIDED || hair.style == HairStyle.PONYTAIL) && hair.hairColor == HairFurColors.PURPLE;
+			}
+		}
 
 		private class AnemoneHair : HairType
 		{
@@ -370,6 +390,9 @@ namespace CoC.Backend.BodyParts
 			public override bool canCut => false;
 
 			public override bool canLengthen => false;
+
+			internal override AttackBase attack => _attack;
+			private static readonly AttackBase _attack = new AnemoneSting();
 
 		}
 
@@ -415,7 +438,7 @@ namespace CoC.Backend.BodyParts
 		internal bool hairDeactivated => hairType == HairType.NO_HAIR || (hairLength == 0 && isNotGrowing);
 		internal bool isBald => isNoHair || hairLength == 0;
 
-		internal HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor; 
+		internal HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
 
 		internal HairData(HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool notGrowing)
 		{
