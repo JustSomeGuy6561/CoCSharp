@@ -186,4 +186,23 @@ namespace CoC.Backend.CoC_Colors
 			return hashCode;
 		}
 	}
+
+	public static class FurColorHelper
+	{
+		public static string AsString(this FurMulticolorPattern pattern)
+		{
+			switch (pattern)
+			{
+				case FurMulticolorPattern.MIXED:
+					return "Mixed";
+				case FurMulticolorPattern.NO_PATTERN:
+					return "No Pattern";
+				case FurMulticolorPattern.SPOTTED:
+					return "Spotted";
+				case FurMulticolorPattern.STRIPED:
+					return "Striped";
+			}
+			throw new NotImplementedException("A new fur pattern was added, but the AsString function was not updated.");
+		}
+	}
 }

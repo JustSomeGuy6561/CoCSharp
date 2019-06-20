@@ -14,9 +14,9 @@ namespace CoC.Backend.BodyParts
 		public const byte FEMININE_MAX = 100;
 		public const byte MASCULINE_MAX = 0;
 
-		public const byte MIN_ANDROGENOUS = 35;
-		public const byte ANDROGENOUS = 50;
-		public const byte MAX_ANDROGENOUS = 65;
+		public const byte MIN_ANDROGYNOUS = 35;
+		public const byte ANDROGYNOUS = 50;
+		public const byte MAX_ANDROGYNOUS = 65;
 
 		public const byte SLIGHTLY_FEMININE = 60;
 		public const byte FEMININE = 70;
@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 		public bool isFemale => atLeastSlightlyFeminine;
 		public bool isMale => atLeastSlightlyMasculine;
 
-		public bool isAndrogenous => value >= MIN_ANDROGENOUS && value <= MAX_ANDROGENOUS;
+		public bool isAndrogynous => value >= MIN_ANDROGYNOUS && value <= MAX_ANDROGYNOUS;
 
 		public bool isSlightlyFeminine => value >= SLIGHTLY_FEMININE && value < FEMININE;
 		public bool atLeastSlightlyFeminine => value >= SLIGHTLY_FEMININE && value < FEMININE;

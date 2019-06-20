@@ -7,6 +7,7 @@ namespace CoC.Backend.Creatures
 
 	public abstract class Creature
 	{
+		public readonly string name;
 
 		public readonly Antennae antennae;
 		public readonly Arms arms;
@@ -33,9 +34,11 @@ namespace CoC.Backend.Creatures
 
 		protected Creature(CreatureCreator creator)
 		{
+			name = creator?.name ?? "Unknown";
 			//semantically, we Should do the things other parts can depend on first, but as long as we
 			//dont actually require the data in the generate functions (which we generally shouldn't - that's why we're lazy)
 			//it won't matter. Anything that needs this stuff for validation 
+
 
 			//body
 			if (creator?.bodyType == null)
@@ -46,14 +49,14 @@ namespace CoC.Backend.Creatures
 			{
 				SkinTexture skinTexture = creator.skinTexture ?? SkinTexture.NONDESCRIPT;
 
-				body = Body.GenerateTonedNoUnderbody(simpleToneBodyType, creator.tone, skinTexture);
+				body = Body.GenerateTonedNoUnderbody(simpleToneBodyType, creator.complexion, skinTexture);
 			}
 			else if (creator.bodyType is CompoundToneBodyType compoundToneBodyType)
 			{
 				SkinTexture primary = creator.skinTexture ?? SkinTexture.NONDESCRIPT;
 				SkinTexture secondary = creator.underBodySkinTexture ?? SkinTexture.NONDESCRIPT;
 
-				body = Body.GenerateToneWithUnderbody(compoundToneBodyType, creator.tone, creator.underTone, primary, secondary);
+				body = Body.GenerateToneWithUnderbody(compoundToneBodyType, creator.complexion, creator.underTone, primary, secondary);
 			}
 			else if (creator.bodyType is SimpleFurBodyType simpleFur)
 			{
@@ -73,14 +76,14 @@ namespace CoC.Backend.Creatures
 				FurTexture fur = creator.furTexture ?? FurTexture.NONDESCRIPT;
 				SkinTexture skin = creator.skinTexture ?? SkinTexture.NONDESCRIPT;
 
-				body = Body.GenerateKitsune(creator.tone, creator.furColor, skin, fur);
+				body = Body.GenerateKitsune(creator.complexion, creator.furColor, skin, fur);
 			}
 			else if (creator.bodyType is CockatriceBodyType)
 			{
 				SkinTexture scales = creator.skinTexture ?? SkinTexture.NONDESCRIPT;
 				FurTexture feather = creator.furTexture ?? FurTexture.NONDESCRIPT;
 
-				body = Body.GenerateCockatrice(creator.furColor, creator.tone, feather, scales);
+				body = Body.GenerateCockatrice(creator.furColor, creator.complexion, feather, scales);
 			}
 			else
 			{
@@ -169,7 +172,7 @@ namespace CoC.Backend.Creatures
 			{
 				horns = Horns.GenerateDefaultOfType(creator.hornType);
 			}
-			//horns.ReactToChangeInFemininity(genitals.feminity);
+			//horns.ReactToChangeInFemininity(genitals.femininity);
 			//tongue
 			tongue = creator?.tongueType == null ? Tongue.GenerateDefault() : Tongue.GenerateDefaultOfType(creator.tongueType);
 			//wings

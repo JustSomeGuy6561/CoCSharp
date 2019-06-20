@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/5/2019, 5:57 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -16,11 +17,18 @@ namespace CoC.Backend.BodyParts
 		RIGHT_1, RIGHT_2, RIGHT_3, RIGHT_4, RIGHT_5, RIGHT_6
 	}
 
-	public sealed class Vagina : BehavioralSaveablePart<Vagina, VaginaType>
+	public enum VaginalWetness : byte { DRY, NORMAL, WET, SLICK, DROOLING, SLAVERING }
+
+	public enum VaginalLooseness : byte { TIGHT, NORMAL, SLIGHTLY_LOOSE, LOOSE, GAPING, CLOWN_CAR_WIDE }
+
+	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, ITimeAwareWithOutput
 	{
 		private const JewelryType SUPPORTED_LABIA_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 		public readonly Clit clit;
 		public bool virgin { get; private set; }
+
+		public VaginalWetness wetness { get; private set; }
+		public VaginalLooseness looseness { get; private set; }
 
 		public readonly Piercing<LabiaPiercings> labiaPiercings;
 
@@ -29,8 +37,21 @@ namespace CoC.Backend.BodyParts
 			clit = Clit.Generate();
 			virgin = true;
 			type = VaginaType.HUMAN;
+			wetness = VaginalWetness.NORMAL;
+			looseness = VaginalLooseness.TIGHT;
 			labiaPiercings = new Piercing<LabiaPiercings>(SUPPORTED_LABIA_JEWELRY, PiercingLocationUnlocked);
 		}
+
+		private Vagina(float clitLength)
+		{
+			clit = Clit.GenerateWithLength(clitLength);
+			virgin = true;
+			type = VaginaType.HUMAN;
+			wetness = VaginalWetness.NORMAL;
+			looseness = VaginalLooseness.TIGHT;
+			labiaPiercings = new Piercing<LabiaPiercings>(SUPPORTED_LABIA_JEWELRY, PiercingLocationUnlocked);
+		}
+
 		public override VaginaType type { get; protected set; }
 
 		internal static Vagina GenerateFromGender(Gender gender)
@@ -52,26 +73,34 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal static Vagina Generate(VaginaType vaginaType, float clitLength)
+		internal static Vagina Generate(VaginaType vaginaType, float clitLength, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, VaginalWetness vaginalWetness = VaginalWetness.NORMAL, bool? virgin = null)
 		{
-			Vagina retVal = new Vagina()
+			if (virgin == null)
 			{
+				virgin = vaginalLooseness == VaginalLooseness.TIGHT;
+			}
+
+			return new Vagina(clitLength)
+			{
+				virgin = (bool)virgin,
+				looseness = vaginalLooseness,
+				wetness = vaginalWetness,
 				type = vaginaType
 			};
-			retVal.clit.growClit(clitLength - retVal.clit.length);
-			return retVal;
 		}
 
-		internal static Vagina GenerateOmnibus(VaginaType vaginaType)
+		internal static Vagina GenerateOmnibus(VaginaType vaginaType, float clitLength = 5.0f, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, 
+			VaginalWetness vaginalWetness = VaginalWetness.NORMAL, bool virgin = false, bool clitCockVirgin = true)
 		{
-			Vagina retVal = new Vagina()
+			Vagina retVal = new Vagina(clitLength)
 			{
 				type = vaginaType,
 			};
 			retVal.ActivateOmnibusClit();
 			return retVal;
 		}
-
+		
+		
 		public override bool isDefault => type == VaginaType.HUMAN;
 
 		internal bool Deflower()
@@ -84,6 +113,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
+		
 		internal bool UpdateType(VaginaType newType)
 		{
 			if (type == newType)
@@ -142,6 +172,46 @@ namespace CoC.Backend.BodyParts
 			}
 			return valid;
 		}
+
+		#region ITimeAware
+		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		{
+			needsOutput = false;
+			outputIsTightenedUp = false;
+			//if has a perk that makes vagina a certain looseness
+			//parse it. set any output flags accordingly.
+			/*else */
+			if (looseness > VaginalLooseness.TIGHT)
+			{
+				vaginaTightenTimer += hoursPassed;
+				if (vaginaTightenTimer >= timerAmount)
+				{
+					looseness--;
+					needsOutput = true;
+					outputIsTightenedUp = true;
+				}
+				vaginaTightenTimer = 0;
+			}
+
+			else if (vaginaTightenTimer > 0)
+			{
+				vaginaTightenTimer = 0;
+			}
+		}
+
+		private byte vaginaTightenTimer = 0;
+
+		bool ITimeAwareWithOutput.RequiresOutput => needsOutput;
+
+		private bool needsOutput = false;
+		private bool outputIsTightenedUp = false;
+
+		string ITimeAwareWithOutput.Output()
+		{
+			return VaginaTimePassedText();
+		}
+
+		#endregion
 	}
 
 	public sealed partial class VaginaType : SaveableBehavior<VaginaType, Vagina>

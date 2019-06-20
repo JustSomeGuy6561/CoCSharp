@@ -66,6 +66,7 @@ namespace CoC.Backend.Strings
 				#endif
 			}
 			char[] chars = text.ToCharArray();
+			chars[0] = char.ToUpper(chars[0]);
 			return new string(chars);
 		}
 
@@ -75,6 +76,70 @@ namespace CoC.Backend.Strings
 			string s = text.TrimEnd();
 			return s[s.Length - 1] == 's';
 		}
+
+		public static string YES(bool capital = true)
+		{
+			return capital ? "Yes" : "yes";
+		}
+
+		public static string NO(bool capital = true)
+		{
+			return capital ? "No" : "no";
+		}
+
+		public static string OK(bool capital = true)
+		{
+			return capital ? "Ok" : "ok";
+		}
+
+		public static string BACK(bool capital = true)
+		{
+			return capital ? "Back" : "back";
+		}
+
+		public static string CANCEL(bool capital = true)
+		{
+			return capital ? "Cancel" : "cancel";
+		}
+
+		public static string MAN(bool capital = true)
+		{
+			return capital ? "Man" : "man";
+		}
+		public static string WOMAN(bool capital = true)
+		{
+			return capital ? "Woman" : "woman";
+		}
+		public static string HERM(bool capital = true)
+		{
+			return capital ? "Herm" : "herm";
+		}
+
+		public static string DEFAULT(bool capital = true)
+		{
+			return capital ? "Default" : "default";
+		}
+
+		public static string NEXT(bool capital = true)
+		{
+			return capital ? "Next" : "next";
+		}
+
+		public static string CONTINUE(bool capital = true)
+		{
+			return capital ? "Continue" : "continue";
+		}
+
+		public static string RETURN(bool capital = true)
+		{
+			return capital ? "Return" : "return";
+		}
+
+		public static string CONFIRM(bool capital = true)
+		{
+			return capital ? "Confirm" : "confirm";
+		}
 	}
+
 
 }

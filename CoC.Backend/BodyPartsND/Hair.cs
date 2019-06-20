@@ -18,6 +18,11 @@ namespace CoC.Backend.BodyParts
 	{
 		private static readonly HairFurColors DEFAULT_COLOR = HairFurColors.BLACK;
 
+		//currently only limited by the range of a float in centimeters. we store things in imperial measures, however, so this is actually limited to 
+		//max float divided by 2.54. In the future a more convenient value (like say, 360, or 30 feet long) may be used, but for now, i'm not limiting it. Go nuts, people!
+		public const float MAX_LENGTH = float.MaxValue / 2.54f;
+		public const float MIN_LENGTH = 0;
+
 		//make sure to check this when deserializing - if you dont use the property is may cause errors.
 		public HairFurColors hairColor
 		{

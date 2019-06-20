@@ -66,7 +66,7 @@ namespace  CoC.BodyParts
 		 * Genderless: <6in Dick, B-cup or smaller breasts, and 35-65 masculinity.
 		 * Herm: everything else.
 		 * 
-		 * How you deal with androgenous and herm is up to you. Note that b/c this is a trap check, something may appear
+		 * How you deal with androgynous and herm is up to you. Note that b/c this is a trap check, something may appear
 		 * to be a herm, but not be (large breasts and a dick, for example, but no vag).
 		 * 
 		*/
@@ -225,7 +225,7 @@ namespace  CoC.BodyParts
 			{
 				return false;
 			}
-			vaginas[vaginaCount++] = Vagina.Generate(flags, newVaginaType, clitLength);
+			vaginas[vaginaCount++] = Vagina.Generate(newVaginaType, clitLength);
 			return true;
 		}
 
@@ -315,9 +315,9 @@ namespace  CoC.BodyParts
 
 	internal class Femininity
 	{
-		public const int MIN_ANDROGENOUS = 35;
-		public const int ANDROGENOUS = 50;
-		public const int MAX_ANDROGENOUS = 65;
+		public const int MIN_ANDROGYNOUS = 35;
+		public const int ANDROGYNOUS = 50;
+		public const int MAX_ANDROGYNOUS = 65;
 
 		public const int SLIGHTLY_FEMININE = 60;
 		public const int FEMININE = 70;
@@ -395,7 +395,7 @@ namespace  CoC.BodyParts
 			return oldFemininity - femininity;
 		}
 
-		public bool isAndrogenous => femininity >= Femininity.MIN_ANDROGENOUS && femininity <= Femininity.MAX_ANDROGENOUS;
+		public bool isAndrogynous => femininity >= Femininity.MIN_ANDROGYNOUS && femininity <= Femininity.MAX_ANDROGYNOUS;
 
 		public bool isSlightlyFeminine => femininity >= Femininity.SLIGHTLY_FEMININE && femininity < Femininity.FEMININE;
 		public bool atLeastSlightlyFeminine => femininity >= Femininity.SLIGHTLY_FEMININE && femininity < Femininity.FEMININE;
@@ -421,7 +421,7 @@ namespace  CoC.BodyParts
 		public bool isFemale => atLeastSlightlyFeminine;
 		public bool isMale => atLeastSlightlyMasculine;
 
-		public bool isAndrogenous => femininity >= Femininity.MIN_ANDROGENOUS && femininity <= Femininity.MAX_ANDROGENOUS;
+		public bool isAndrogynous => femininity >= Femininity.MIN_ANDROGYNOUS && femininity <= Femininity.MAX_ANDROGYNOUS;
 
 		public bool isSlightlyFeminine => femininity >= Femininity.SLIGHTLY_FEMININE && femininity < Femininity.FEMININE;
 		public bool atLeastSlightlyFeminine => femininity >= Femininity.SLIGHTLY_FEMININE && femininity < Femininity.FEMININE;

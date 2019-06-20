@@ -11,5 +11,10 @@ namespace CoC.Backend.Engine
 		public static LocationBase currentLocation;
 
 		public static Player currentPlayer;
+
+		public static void Run()
+		{
+
+		}
 	}
 }

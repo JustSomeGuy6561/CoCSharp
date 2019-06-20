@@ -6,6 +6,7 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Engine;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -16,7 +17,7 @@ namespace CoC.Backend.BodyParts
 	//tail now has the ovipositors. ovipositors are no longer perks. in the event bees and spiders need some back type (remember, wings and back are separate), i could just
 	//add an ovipositor type. for now i don't think i need to. the scorpion is still a tail, but i may move it here for ease of coding, though technically it's a tail. idk man.
 
-	public sealed class Back : BehavioralSaveablePart<Back, BackType>, IDyeable, ICanAttackWith //For Back Tendrils (NYI), and spider/bee abdomen. Also, ITimeAware, to regenerate resources.
+	public sealed class Back : BehavioralSaveablePart<Back, BackType>, IDyeable, ICanAttackWith, ITimeAware //For Back Tendrils (NYI), and spider/bee abdomen. Also, ITimeAware, to regenerate resources.
 	{
 		//public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
 		public EpidermalData backEpidermis => epidermis.GetEpidermalData();
@@ -24,6 +25,11 @@ namespace CoC.Backend.BodyParts
 		private Epidermis epidermis = new Epidermis();
 		private AttackBase _attack = AttackBase.NO_ATTACK;
 		public ushort resources { get; private set; } = 0;
+		public ushort regenRate { get; private set; } = 0;
+
+		public ushort maxCharges => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxResource : (ushort)0;
+		public ushort maxRegen => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxRechargeRate : (ushort)0;
+
 
 		private Back(BackType backType)
 		{
@@ -39,6 +45,16 @@ namespace CoC.Backend.BodyParts
 				if (value != _type)
 				{
 					_attack = value.GetAttackOnTransform(() => resources, (x) => resources = x);
+					if (_attack is ResourceAttackBase resourceAttack)
+					{
+						resources = resourceAttack.initialResource;
+						regenRate = resourceAttack.initialRechargeRate;
+					}
+					else
+					{
+						resources = 0;
+						regenRate = 0;
+					}
 				}
 				_type = value;
 			}
@@ -155,6 +171,17 @@ namespace CoC.Backend.BodyParts
 
 		bool ICanAttackWith.canAttackWith() => _attack != AttackBase.NO_ATTACK;
 
+		#endregion
+
+		#region ITimeAware
+		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		{
+			if (_attack is ResourceAttackBase resourceAttack && resources < maxCharges) //slight optimization. make sure we aren't at max.
+			{
+				resources += (ushort)regenRate.mult(hoursPassed);
+				if (resources > maxCharges) resources = maxCharges;
+			}
+		}
 		#endregion
 	}
 

@@ -5,14 +5,16 @@
 //using CoC.Backend.Tools;
 //using System;
 //using System.Linq;
+using CoC.Backend.Engine;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class Genitals : SimpleSaveablePart<Genitals> //IPerkAware
+	public sealed class Genitals : SimpleSaveablePart<Genitals>, ITimeAwareWithOutput  //, IPerkAware
 	{
 		public const int MAX_COCKS = 10;
 		public const int MAX_VAGINAS = 2;
@@ -34,12 +36,14 @@ namespace CoC.Backend.BodyParts
 		public int numVaginas => _vaginas.Count;
 
 		public readonly Balls balls;
-		public readonly Femininity femininity; //make sure to cap this if not androgenous perk.
+		public readonly Femininity femininity; //make sure to cap this if not androgynous perk.
 		public readonly Fertility fertility;
 
 		public ReadOnlyCollection<Cock> cocks => Array.AsReadOnly(_cocks.ToArray());
 		public ReadOnlyCollection<Vagina> vaginas => Array.AsReadOnly(_vaginas.ToArray());
 		public ReadOnlyCollection<Breasts> breasts => Array.AsReadOnly(_breasts.ToArray());
+
+
 
 
 
@@ -132,6 +136,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private bool _hasClitCock = false;
 
+
+		private bool needsOutput = false;
 		private Genitals(Gender gender)
 		{
 			ass = Ass.GenerateDefault();
@@ -182,9 +188,57 @@ namespace CoC.Backend.BodyParts
 			return new Genitals(ass, breasts, cocks, balls, vaginas, femininity, fertility);
 		}
 
+		bool ITimeAwareWithOutput.RequiresOutput => needsOutput;
+
+		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		{
+			needsOutput = false;
+			output.Clear();
+
+			//i have no clue how this would work for multi-snatch configs. 
+			foreach (var vagina in _vaginas)
+			{
+				DoTimeAware(vagina, hoursPassed);
+			}
+			DoTimeAware(ass, hoursPassed);
+
+#warning TODO: implement this as it becomes possible.
+			//increment time since last orgasm, times since last cock cum (if applicable), time since last milked (if applicable).
+			//if neither are applicable, feel free to reset them.
+
+			//If nipple is inverted or slightly inverted and is pierced.
+			//decrement the pull-out timer. if it's 0 or less, set the nipple status on each breast row accordingly.
+			//append the nipple pulled out by piercing to the output StringBuilder.
+
+			//If lactating and something happened via time passing(full, slowed down, etc), set needs output to true, append 
+			//the result of this to the output string builder.
+			//if some status effect relating to your genitals requires output, parse it and append it.
+		}
+
+		private void DoTimeAware(ITimeAware member, byte hoursPassed)
+		{
+			member.ReactToTimePassing(hoursPassed);
+			if (member is ITimeAwareWithOutput memberWithOutput)
+			{
+				bool hasOutput = memberWithOutput.RequiresOutput;
+				needsOutput |= hasOutput;
+				if (hasOutput)
+				{
+					output.Append(memberWithOutput.Output());
+				}
+			}
+		}
+
+		private readonly StringBuilder output = new StringBuilder();
+
+		string ITimeAwareWithOutput.Output()
+		{
+			return output.ToString();
+		}
+
 		//allows players with clit-dicks (a hard-to-obtain omnibus trait) to appear female, and do female scenes. 
 		//NYI, but also allows players to "surprise" NPCs expecting lesbian sex (or males expecting straight sex)
-		//Not to be confused with the "traps" check - this is a check for your junk.
+		//Not to be confused with the "traps" check - this is a check for your junk
 		public Gender genderWithoutOmnibusClit
 		{
 			get
@@ -204,7 +258,7 @@ namespace CoC.Backend.BodyParts
 		 * Genderless: <6in Dick, B-cup or smaller breasts, and 35-65 masculinity.
 		 * Herm: everything else.
 		 * 
-		 * How you deal with androgenous and herm is up to you. Note that b/c this is a trap check, something may appear
+		 * How you deal with androgynous and herm is up to you. Note that b/c this is a trap check, something may appear
 		 * to be a herm, but not be (large breasts and a dick, for example, but no vag).
 		 * 
 		*/
@@ -238,6 +292,8 @@ namespace CoC.Backend.BodyParts
 				return Gender.HERM;
 			}
 		}
+
+
 
 		/// <summary>
 		/// Evens out all breast rows so they are closer to the average nipple length and cup size, rounding up.

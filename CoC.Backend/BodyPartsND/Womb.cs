@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Pregnancies;
+﻿using CoC.Backend.Engine;
+using CoC.Backend.Pregnancies;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ namespace CoC.Backend.BodyParts
 	//itimeaware: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant.
 
 	//TODO: Add Eggs when eggs are created: EDIT: make this a helper in the frontend. we still need to add them with the itimeaware above, but eggpregnate is an edge case that helpers can handle.
-	public sealed class Womb : BehavioralSaveablePart<Womb, WombType> //itimeaware
+	public sealed class Womb : BehavioralSaveablePart<Womb, WombType>, ITimeAwareWithOutput //itimeaware
 	{
 		internal readonly PregnancyStore pregnancy = new PregnancyStore();
 		internal readonly PregnancyStore analPregnancy = new PregnancyStore();
@@ -114,6 +115,15 @@ namespace CoC.Backend.BodyParts
 			}
 			return valid && pregnancy.Validate(correctDataIfInvalid) && analPregnancy.Validate(correctDataIfInvalid);
 		}
+
+		#region ITimeAware
+		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		{
+
+		}
+
+
+		#endregion
 	}
 	public partial class WombType : SaveableBehavior<WombType, Womb>
 	{

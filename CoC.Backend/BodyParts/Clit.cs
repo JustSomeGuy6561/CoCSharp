@@ -55,9 +55,18 @@ namespace CoC.Backend.BodyParts
 			return new Clit();
 		}
 
-		public static Clit GenerateOmnibusClit()
+		public static Clit GenerateWithLength(float clitLength)
 		{
-			return new Clit(5.0f)
+			return new Clit(clitLength);
+		}
+
+		public static Clit GenerateOmnibusClit(float clitLength = 5.0f)
+		{
+			if (clitLength < 5)
+			{
+				clitLength = 5;
+			}
+			return new Clit(clitLength)
 			{
 				omnibusClit = true
 			};
@@ -150,6 +159,12 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
+		internal override bool Validate(bool correctDataIfInvalid = false)
+		{
+			length = length;
+			return clitPiercings.Validate(correctDataIfInvalid);
+		}
+
 		#region Grow/Shrinkable
 		bool IGrowShrinkable.CanGrowPlus()
 		{
@@ -183,11 +198,7 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
-		{
-			length = length;
-			return clitPiercings.Validate(correctDataIfInvalid);
-		}
+
 		#endregion
 	}
 }

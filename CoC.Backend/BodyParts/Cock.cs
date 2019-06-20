@@ -152,7 +152,7 @@ namespace CoC.Backend.BodyParts
 			return new Cock(cockType);
 		}
 
-		internal static Cock Generate(CockType cockType, float length, float girth)
+		internal static Cock Generate(CockType cockType, float length, float girth, bool virginCock = true)
 		{
 			return new Cock(cockType, length, girth);
 		}
@@ -335,7 +335,7 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public bool hasKnot => baseKnotMultiplier > 1.0f;
+		public bool hasKnot => baseKnotMultiplier != 0f;
 		public readonly float baseKnotMultiplier;
 
 		//vanilla game limited cock width to 2/5 the length. i realize that some cocks may require that ratio be lower, so if it irks you, you
@@ -388,7 +388,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly CockType HORSE = new CockType(CockGroup.MAMMALIAN, HorseDesc, HorseFullDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
 		public static readonly CockType DOG = new CockType(CockGroup.MAMMALIAN, 1.1f, DogDesc, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);// can range up to 2.1 depending on item.
 		public static readonly CockType DEMON = new CockType(CockGroup.CORRUPTED, DemonDesc, DemonFullDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr);
-		public static readonly CockType TENTACLE = new FlexiCock(CockGroup.CORRUPTED, TentacleDesc, TentacleFullDesc, TentaclePlayerStr, TentacleTransformStr, TentacleRestoreStr);
+		public static readonly CockType TENTACLE = new FlexiCock(CockGroup.CORRUPTED, 1.1f, TentacleDesc, TentacleFullDesc, TentaclePlayerStr, TentacleTransformStr, TentacleRestoreStr);
 		public static readonly CockType CAT = new CockType(CockGroup.MAMMALIAN, CatDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 		public static readonly CockType LIZARD = new CockType(CockGroup.REPTILIAN, LizardDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
 		public static readonly CockType ANEMONE = new CockType(CockGroup.AQUATIC, AnemoneDesc, AnemoneFullDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);

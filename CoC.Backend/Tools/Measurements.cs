@@ -18,9 +18,10 @@ namespace CoC.Backend.Tools
 		public static bool UsesMetric => BackendGlobalData.data.UsesMetricMeasurements;
 
 		//are these remotely necessary? nope. but they're more readible imo than magic numbers.
-		private const double TO_CM = 2.54;
-		private const byte IN_PER_FT = 12;
-		private const byte CM_PER_M = 100;
+		public const double TO_CM = 2.54;
+		public const double TO_IN = 1 / TO_CM;
+		public const byte IN_PER_FT = 12;
+		public const byte CM_PER_M = 100;
 
 
 
@@ -86,6 +87,36 @@ namespace CoC.Backend.Tools
 				measure /= 4;
 			}
 
+			if (plural == null)
+			{
+				plural = measure != 1 && measure != -1;
+			}
+			string unit = getSmallUnit(abbreviate, (bool)plural);
+			if (UsesMetric)
+			{
+				return string.Format("{0:0.#} {1}", measure, unit);
+			}
+			else
+			{
+				return string.Format("{0:0.##} {1}", measure, unit);
+			}
+		}
+
+		public static string ToNearestQuarterInchOrHalfCentimeter(double measure, bool abbreviate, bool? plural = null)
+		{
+			if (UsesMetric)
+			{
+				measure *= TO_CM;
+				measure *= 5;
+				measure = Math.Round(measure);
+				measure /= 10;
+			}
+			else
+			{
+				measure *= 4;
+				measure = Math.Round(measure);
+				measure /= 4;
+			}
 			if (plural == null)
 			{
 				plural = measure != 1 && measure != -1;

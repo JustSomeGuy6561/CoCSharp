@@ -9,17 +9,26 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	//public sealed partial class Ass
-	//{
-	//	private string assFullDescription()
-	//	{
+	public sealed partial class Ass
+	{
+		//private string assFullDescription()
+		//{
 
-	//	}
-	//	private string assPlayerStr(Player player)
-	//	{
+		//}
+		//private string assPlayerStr(Player player)
+		//{
 
-	//	}
-	//}
+		//}
+
+		private string AssTimePassedOutput()
+		{
+			if (outputIsTightenedUp)
+			{
+				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			}
+			return "";
+		}
+	}
 	public sealed partial class Butt
 	{
 

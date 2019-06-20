@@ -13,7 +13,7 @@ namespace CoC.Backend.BodyParts
 
 	public static class HairHelpers
 	{
-		public static string asString(this HairStyle style)
+		public static string AsString(this HairStyle style)
 		{
 			switch (style)
 			{
@@ -66,7 +66,7 @@ namespace CoC.Backend.BodyParts
 			StringBuilder retVal = new StringBuilder();
 			if (hair.style != HairStyle.NO_STYLE)
 			{
-				retVal.Append(hair.style.asString());
+				retVal.Append(hair.style.AsString());
 				if (hair.isSemiTransparent)
 				{
 					retVal.Append("private static string ");
@@ -96,7 +96,7 @@ namespace CoC.Backend.BodyParts
 				StringBuilder retVal = new StringBuilder(Measurement.ToNearestHalfSmallUnit(hair.length, false, false));
 				if (hair.style != HairStyle.NO_STYLE)
 				{
-					retVal.Append(hair.style.asString());
+					retVal.Append(hair.style.AsString());
 					if (hair.isSemiTransparent)
 					{
 						retVal.Append("private static string ");

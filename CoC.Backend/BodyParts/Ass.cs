@@ -2,13 +2,14 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:21 PM
+using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
 	public enum AnalWetness : byte { DRY, NORMAL, MOIST, SLIMY, DROOLING, SLIME_DROOLING }
 	public enum AnalLooseness : byte { VIRGIN, TIGHT, NORMAL, LOOSE, STRETCHED, GAPING }
-	public sealed partial class Ass //: IPerkAware, ITimeAware
+	public sealed partial class Ass: ITimeAwareWithOutput //, IPerkAware
 	{
 		public const ushort MAX_ANAL_CAPACITY = ushort.MaxValue;
 
@@ -18,6 +19,9 @@ namespace CoC.Backend.BodyParts
 		private const byte LOOSENESS_GAPING_TIMER = 12;
 
 		private byte buttTightenTimer = 0;
+		private bool needsOutput = false;
+		private bool outputIsTightenedUp = false;
+
 		public AnalWetness wetness
 		{
 			get => _analWetness;
@@ -126,7 +130,7 @@ namespace CoC.Backend.BodyParts
 			return ass;
 		}
 
-		internal byte StretchAnus(byte amount = 1)
+		internal byte StretchAnus(byte amount = 1, bool permanent = false)
 		{
 			byte oldLooseness = (byte)looseness;
 			looseness += amount;
@@ -140,9 +144,27 @@ namespace CoC.Backend.BodyParts
 			return oldLooseness.subtract((byte)looseness);
 		}
 
-		internal void ForceAnalLooseness(AnalLooseness analLooseness)
+		internal void SetMinAnalLooseness(AnalLooseness minLooseness)
 		{
-			looseness = analLooseness;
+			minAnalLooseness = minLooseness;
+			if (looseness < minAnalLooseness)
+			{
+				looseness = minLooseness;
+			}
+		}
+
+		internal bool SetAnalLooseness(AnalLooseness analLooseness, bool forceIfLessThanCurrentMin = false)
+		{
+			if (forceIfLessThanCurrentMin && analLooseness < minAnalLooseness)
+			{
+				minAnalLooseness = analLooseness;
+			}
+			if (analLooseness >= minAnalLooseness)
+			{
+				looseness = analLooseness;
+				return true;
+			}
+			return false;
 		}
 
 		internal byte AddWetness(byte amount = 1)
@@ -152,7 +174,7 @@ namespace CoC.Backend.BodyParts
 			return ((byte)wetness).subtract(oldWetness);
 		}
 
-		internal byte SubtraactWetness(byte amount = 1)
+		internal byte SubtractWetness(byte amount = 1)
 		{
 			byte oldWetness = (byte)wetness;
 			wetness -= amount;
@@ -179,7 +201,6 @@ namespace CoC.Backend.BodyParts
 			experience += analExperiencedGained;
 			AnalLooseness oldLooseness = looseness;
 			ushort capacity = analCapacity();
-
 
 			if (penetratorArea >= capacity * 1.5f)
 			{
@@ -237,21 +258,35 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		private void ReactToTimePassing(byte hoursPassed)
+		void ITimeAware.ReactToTimePassing(byte hoursPassed)
 		{
-			if (looseness > AnalLooseness.TIGHT)
+			needsOutput = false;
+			outputIsTightenedUp = false;
+			//if has a perk that makes ass a certain looseness
+			//parse it. set any output flags accordingly.
+			/*else */if (looseness > minAnalLooseness)
 			{
 				buttTightenTimer += hoursPassed;
 				if (buttTightenTimer >= timerAmount)
 				{
 					looseness--;
+					needsOutput = true;
+					outputIsTightenedUp = true;
 				}
 				buttTightenTimer = 0;
 			}
+
 			else if (buttTightenTimer > 0)
 			{
 				buttTightenTimer = 0;
 			}
+		}
+
+		bool ITimeAwareWithOutput.RequiresOutput => needsOutput;
+
+		string ITimeAwareWithOutput.Output()
+		{
+			return AssTimePassedOutput();
 		}
 	}
 }

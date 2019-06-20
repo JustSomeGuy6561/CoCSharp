@@ -184,4 +184,28 @@ namespace CoC.Backend.Tools
 		}
 	}
 
+	public class Pair<T> : Pair<T, T>
+	{
+		public Pair(T f, T s) : base(f, s) {}
+	}
+
+	public class Triple<T, U, V>
+	{
+		public readonly T first;
+		public readonly U second;
+		public readonly V third;
+
+		public Triple(T f, U s, V t)
+		{
+			first = f;
+			second = s;
+			third = t;
+		}
+	}
+
+	public class Triple<T> : Triple<T, T, T>
+	{
+		public Triple(T f, T s, T t) : base(f, s, t) {}
+	}
 }
+
