@@ -308,7 +308,7 @@ namespace CoC.Frontend.Creatures
 			}
 			else
 			{
-				sb.Append("Your hair will grow over time, and certain items or interractions can change your hair during gameplay.");
+				sb.Append("Your hair will grow over time, and certain items or interactions can change your hair during gameplay.");
 			}
 			sb.Append(Environment.NewLine + Environment.NewLine + "You may also choose to ");
 			sb.Append(isFromCustomization ? "return to" : "continue on to");
@@ -498,7 +498,7 @@ namespace CoC.Frontend.Creatures
 				unit = " inches";
 			}
 			return "You can choose a cock length between " + min + " and " + max + unit + ". Your starting cock length will also affect starting cock thickness." +
-				Environment.NewLine + Environment.NewLine + "Cock type and size can be altered later in the game through certain items or interractions.";
+				Environment.NewLine + Environment.NewLine + "Cock type and size can be altered later in the game through certain items or interactions.";
 		}
 
 		private string ClitSizeStr()
@@ -527,7 +527,7 @@ namespace CoC.Frontend.Creatures
 				unit = " inches";
 			}
 			return "You can choose a clit length between " + min + " and " + max + unit + Environment.NewLine + Environment.NewLine + 
-				"Clit size and other vaginal traits can be altered later in the game through certain items or interractions.";
+				"Clit size and other vaginal traits can be altered later in the game through certain items or interactions.";
 		}
 		private string BreastSizeStr()
 		{

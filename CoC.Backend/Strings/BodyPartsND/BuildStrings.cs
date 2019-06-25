@@ -1,141 +1,23 @@
-﻿//ButtHipStrings.cs
-//Description:
+﻿//ArmStrings.cs
+//Description: Implements the strings for the arm and armtype. separation of concerns.
 //Author: JustSomeGuy
-//1/5/2019, 3:05 AM
-
-
+//1/18/2019, 9:30 PM
+using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Ass
+	public partial class Build
 	{
-		//private string assFullDescription()
-		//{
-
-		//}
-		//private string assPlayerStr(Player player)
-		//{
-
-		//}
-
-		private string AssTimePassedOutput()
-		{
-			if (outputIsTightenedUp)
-			{
-				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-			}
-			return "";
-		}
-	}
-	public sealed partial class Butt
-	{
-
-		private string toText()
-		{
-
-			if (buttSize == Butt.BUTTLESS)
-			{
-				return "buttless";
-			}
-			else if (buttSize < Butt.TIGHT)
-			{
-				return "very tight";
-			}
-			else if (buttSize < Butt.AVERAGE)
-			{
-				return "tight";
-			}
-			else if (buttSize < Butt.NOTICEABLE)
-			{
-				return "average";
-			}
-			else if (buttSize < Butt.LARGE)
-			{
-				return "noticable";
-			}
-			else if (buttSize < Butt.JIGGLY)
-			{
-				return "large";
-			}
-			else if (buttSize < Butt.EXPANSIVE)
-			{
-				return "jiggly";
-			}
-			else if (buttSize < Butt.HUGE)
-			{
-				return "expansive";
-			}
-			else if (buttSize < Butt.INCONCEIVABLY_BIG)
-			{
-				return "huge";
-			}
-			else
-			{
-				return "inconceivably big";
-			}
-		}
-
-		private string shortDesc()
+		private string ButtFullDesc()
 		{
 			StringBuilder sb = new StringBuilder();
 			string[] options;
-			if (buttSize < TIGHT)
+			if (butt.size < Butt.TIGHT)
 			{
-				options = new string[] { "insignificant ", "very small " };
-			}
-			else if (buttSize < AVERAGE)
-			{
-				options = new string[] { "tight ", "firm ", "compact " };
-			}
-			else if (buttSize < NOTICEABLE)
-			{
-				options = new string[] { "regular ", "unremarkable " };
-			}
-			else if (buttSize < LARGE)
-			{
-				if (Utils.Rand(3) == 0) return "handful of ass";
-				options = new string[] { "full ", "shapely " };
-			}
-			else if (buttSize < JIGGLY)
-			{
-				options = new string[] { "squeezable ", "large ", "substantial " };
-			}
-			else if (buttSize < EXPANSIVE)
-			{
-				options = new string[] { "jiggling ", "spacious ", "heavy " };
-			}
-			else if (buttSize < HUGE)
-			{
-				if (Utils.Rand(3) == 0) return "generous amount of ass";
-				options = new string[] { "expansive ", "voluminous " };
-			}
-			else if (buttSize < INCONCEIVABLY_BIG)
-			{
-				if (Utils.Rand(3) == 0) return "jiggling expanse of ass";
-				options = new string[] { "huge ", "vast " };
-			}
-			else //if (buttSize >= INCONCEIVABLY_BIG)
-			{
-				options = new string[] { "ginormous ", "colossal ", "tremendous " };
-			}
-
-			sb.Append(Utils.RandomChoice(options));
-			options = new string[] { "butt ", "ass " };
-			sb.Append(Utils.RandomChoice(options));
-			if (Utils.RandBool()) sb.Append("cheeks");
-			return sb.ToString();
-		}
-
-
-		private string fullDesc(Frame frame)
-		{
-			StringBuilder sb = new StringBuilder();
-			string[] options;
-			if (buttSize < TIGHT)
-			{
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					options = new string[] { "incredibly tight, perky " };
 				}
@@ -145,17 +27,17 @@ namespace CoC.Backend.BodyParts
 					options = new string[1];
 					options[0] = " ";
 					//Soft PC's buns!
-					if (frame.muscleTone <= Frame.TONE_SOFT && Utils.Rand(3) == 0) options[0] = ", yet soft ";
+					if (muscleTone <= TONE_SOFT && Utils.Rand(3) == 0) options[0] = ", yet soft ";
 				}
 			}
-			else if (buttSize < AVERAGE)
+			else if (butt.size < Butt.AVERAGE)
 			{
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					options = new string[] { "perky, muscular ", "tight, toned ", "compact, muscular ", "tight ", "muscular, toned " };
 				}
 				//Nondescript
-				else if (frame.muscleTone >= Frame.TONE_SOFT)
+				else if (muscleTone >= TONE_SOFT)
 				{
 					options = new string[] { "tight ", "firm ", "compact ", "petite " };
 				}
@@ -165,15 +47,15 @@ namespace CoC.Backend.BodyParts
 					options = new string[] { "small, heart-shaped ", "soft, compact ", "soft, heart-shaped ", "small, cushy ", "small ", "petite ", "snug ", };
 				}
 			}
-			else if (buttSize < NOTICEABLE)
+			else if (butt.size < Butt.NOTICEABLE)
 			{
 				//TOIGHT LIKE A TIGER
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					options = new string[] { "nicely muscled ", "nice, toned ", "muscly ", "nice toned ", "toned ", "fair " };
 				}
 				//Nondescript
-				else if (frame.muscleTone >= Frame.TONE_SOFT)
+				else if (muscleTone >= TONE_SOFT)
 				{
 					options = new string[] { "nice ", "fair " };
 				}
@@ -183,15 +65,15 @@ namespace CoC.Backend.BodyParts
 					options = new string[] { "nice, cushiony ", "soft ", "nicely-rounded, heart-shaped ", "cushy ", "soft, squeezable " };
 				}
 			}
-			else if (buttSize < LARGE)
+			else if (butt.size < Butt.LARGE)
 			{
 				//TOIGHT LIKE A TIGER
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					options = new string[] { "full, toned ", "muscly handful of ", "shapely, toned ", "muscular, hand-filling ", "shapely, chiseled ", "full ", "chiseled " };
 				}
 				//Nondescript
-				else if (frame.muscleTone >= Frame.TONE_SOFT)
+				else if (muscleTone >= TONE_SOFT)
 				{
 					options = new string[] { "handful of ", "full ", "shapely ", "hand-filling " };
 				}
@@ -202,15 +84,15 @@ namespace CoC.Backend.BodyParts
 					options = new string[] { "somewhat jiggly ", "soft, hand-filling ", "cushiony, full ", "plush, shapely ", "full ", "soft, shapely ", "rounded, spongy " };
 				}
 			}
-			else if (buttSize < JIGGLY)
+			else if (butt.size < Butt.JIGGLY)
 			{
 				//TOIGHT LIKE A TIGER
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					options = new string[] { "large, muscular ", "substantial, toned ", "big-but-tight ", "squeezable, toned ", "large, brawny ", "big-but-fit ", "powerful, squeezable ", "large " };
 				}
 				//Nondescript
-				else if (frame.muscleTone >= Frame.TONE_SOFT)
+				else if (muscleTone >= TONE_SOFT)
 				{
 					options = new string[] { "squeezable ", "large ", "substantial " };
 				}
@@ -220,15 +102,15 @@ namespace CoC.Backend.BodyParts
 					options = new string[] { "large, bouncy ", "soft, eye-catching ", "big, slappable ", "soft, pinchable ", "large, plush ", "squeezable ", "cushiony ", "plush ", "pleasantly plump " };
 				}
 			}
-			else if (buttSize < EXPANSIVE)
+			else if (butt.size < Butt.EXPANSIVE)
 			{
 				//TOIGHT LIKE A TIGER
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					options = new string[] { "thick, muscular ", "big, burly ", "heavy, powerful ", "spacious, muscular ", "toned, cloth-straining ", "thick ", "thick, strong " };
 				}
 				//Nondescript
-				else if (frame.muscleTone >= Frame.TONE_SOFT)
+				else if (muscleTone >= TONE_SOFT)
 				{
 					options = new string[] { "jiggling ", "spacious ", "heavy ", "cloth-straining " };
 				}
@@ -239,16 +121,16 @@ namespace CoC.Backend.BodyParts
 						"spacious ", "heavy, cushiony ", "slappable, thick ", "jiggling ", "spacious ", "soft, plump " };
 				}
 			}
-			else if (buttSize < HUGE)
+			else if (butt.size < Butt.HUGE)
 			{
 				//TOIGHT LIKE A TIGER
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					options = new string[] { "expansive, muscled ", "voluminous, rippling ", "generous, powerful ",
 						"big, burly ", "well-built, voluminous ", "powerful ", "muscular ", "powerful, expansive " };
 				}
 				//Nondescript
-				else if (frame.muscleTone >= Frame.TONE_SOFT)
+				else if (muscleTone >= TONE_SOFT)
 				{
 					options = new string[] { "expansive ", "generous ", "voluminous ", "wide " };
 				}
@@ -259,14 +141,14 @@ namespace CoC.Backend.BodyParts
 						"slappable ", "thickly-padded ", "wide, jiggling ", "wide ", "voluminous ", "soft, padded " };
 				}
 			}
-			else if (buttSize < INCONCEIVABLY_BIG)
+			else if (butt.size < Butt.INCONCEIVABLY_BIG)
 			{
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					options = new string[] { "huge, toned ", "vast, muscular ", "vast, well-built ", "huge, muscular ", "strong, immense ", "muscle-bound " };
 				}
 				//Nondescript
-				else if (frame.muscleTone >= Frame.TONE_SOFT)
+				else if (muscleTone >= TONE_SOFT)
 				{
 					if (Utils.Rand(5) == 0) return "jiggling expanse of ass";
 					else if (Utils.Rand(4) == 0) return "copious ass-flesh";
@@ -279,15 +161,15 @@ namespace CoC.Backend.BodyParts
 						"seam-bursting ", "plush, vast ", "giant, slappable ", "giant ", "huge ", "swollen, pillow-like " };
 				}
 			}
-			else //if (buttSize >= INCONCEIVABLY_BIG)
+			else //if (butt.size >= INCONCEIVABLY_BIG)
 			{
-				if (frame.muscleTone >= Frame.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= TONE_SLIGHTLY_VISIBLE)
 				{
 					if (Utils.Rand(7) == 0) return "colossal, muscly ass";
 					options = new string[] { "ginormous, muscle-bound ", "colossal yet toned ", "strong, tremendously large ", "tremendous, muscled ", "ginormous, toned ", "colossal, well-defined " };
 				}
 				//Nondescript
-				else if (frame.muscleTone >= Frame.TONE_SOFT)
+				else if (muscleTone >= TONE_SOFT)
 				{
 					options = new string[] { "ginormous ", "colossal ", "tremendous ", "gigantic " };
 				}
@@ -303,102 +185,61 @@ namespace CoC.Backend.BodyParts
 			sb.Append(new Lottery<string>("butt", "butt", "butt", "butt", "ass", "ass", "ass", "ass", "backside", "backside", "derriere", "rump", "bottom").Select());
 			return sb.ToString();
 		}
-	}
-	public sealed partial class Hips
-	{
-		private string AsText()
-		{
-			if (hipSize <= Hips.BOYISH)
-			{
-				return "slim, masculine";
-			}
-			else if (hipSize < Hips.SLENDER)
-			{
-				return "boyish";
-			}
-			else if (hipSize < Hips.AVERAGE)
-			{
-				return "slender";
-			}
-			else if (hipSize < Hips.AMPLE)
-			{
-				return "average";
-			}
-			else if (hipSize < Hips.CURVY)
-			{
-				return "ample";
-			}
-			else if (hipSize < Hips.PUDGY)
-			{
-				return "curvy";
-			}
-			else if (hipSize < Hips.FERTILE)
-			{
-				return "very curvy, amost pudgy";
-			}
-			else if (hipSize < Hips.INHUMANLY_WIDE)
-			{
-				return "child-bearing";
-			}
-			else
-			{
-				return "broodmother level";
-			}
-		}
 
-		private string Description(LowerBodyType lowerBody, Frame frame)
+		private string HipsFullDesc()
 		{
+			LowerBodyType lowerBody = lowerBodyData().lowerBodyType;
 			BodyType bodyType = bodyData().bodyType;
 
 			StringBuilder sb = new StringBuilder();
-			if (hipSize < SLENDER)
+			if (hips.size < Hips.SLENDER)
 			{
 				sb.Append(Utils.RandomChoice("tiny ", "narrow ", "boyish "));
 			}
-			else if (hipSize < AVERAGE)
+			else if (hips.size < Hips.AVERAGE)
 			{
 				sb.Append(Utils.RandomChoice("slender ", "narrow ", "thin "));
-				if (frame.thickness < 30)
+				if (thickness < 30)
 				{
 					sb.Append(Utils.RandomChoice("slightly-flared ", "curved "));
 				}
 			}
-			else if (hipSize < AMPLE)
+			else if (hips.size < Hips.AMPLE)
 			{
 				sb.Append(Utils.RandomChoice("well-formed ", "pleasant "));
-				if (frame.thickness < 30)
+				if (thickness < 30)
 				{
 					sb.Append(Utils.RandomChoice("flared ", "curvy "));
 				}
 			}
-			else if (hipSize < CURVY)
+			else if (hips.size < Hips.CURVY)
 			{
 				sb.Append(Utils.RandomChoice("ample ", "noticeable ", "girly "));
-				if (frame.thickness < 30)
+				if (thickness < 30)
 				{
 					sb.Append(Utils.RandomChoice("flared ", "waspish "));
 				}
 			}
 			//we just skip pudgy. ok.
-			else if (hipSize < FERTILE)
+			else if (hips.size < Hips.FERTILE)
 			{
 				sb.Append(Utils.RandomChoice("flared ", "curvy ", "wide "));
-				if (frame.thickness < 30)
+				if (thickness < 30)
 				{
 					sb.Append(Utils.RandomChoice("flared ", "waspish "));
 				}
 			}
-			else if (hipSize < INHUMANLY_WIDE)
+			else if (hips.size < Hips.INHUMANLY_WIDE)
 			{
-				if (frame.thickness < 40)
+				if (thickness < 40)
 				{
 					sb.Append(Utils.RandomChoice("flared, ", "waspish, "));
 				}
 				sb.Append(Utils.RandomChoice("fertile ", "child-bearing ", "voluptuous "));
 			}
-			else //if (hipSize >= INHUMANLY_WIDE)
+			else //if (hips.hipSize >= INHUMANLY_WIDE)
 			{
-				if (frame.thickness < 40)
+				if (thickness < 40)
 				{
 					sb.Append(Utils.RandomChoice("flaring, ", "incredibly waspish, "));
 				}
@@ -417,5 +258,150 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	public partial class Hips
+	{
+		private string AsStr()
+		{
+			if (size <= BOYISH)
+			{
+				return "slim, masculine";
+			}
+			else if (size < SLENDER)
+			{
+				return "boyish";
+			}
+			else if (size < AVERAGE)
+			{
+				return "slender";
+			}
+			else if (size < AMPLE)
+			{
+				return "average";
+			}
+			else if (size < CURVY)
+			{
+				return "ample";
+			}
+			else if (size < PUDGY)
+			{
+				return "curvy";
+			}
+			else if (size < FERTILE)
+			{
+				return "very curvy, amost pudgy";
+			}
+			else if (size < INHUMANLY_WIDE)
+			{
+				return "child-bearing";
+			}
+			else
+			{
+				return "broodmother level";
+			}
+		}
 
+		private string ShortDesc()
+		{
+			return AsStr() + " hips";
+		}
+	}
+
+	public partial class Butt
+	{
+		private string AsStr()
+		{
+
+			if (size == BUTTLESS)
+			{
+				return "buttless";
+			}
+			else if (size < TIGHT)
+			{
+				return "very tight";
+			}
+			else if (size < AVERAGE)
+			{
+				return "tight";
+			}
+			else if (size < NOTICEABLE)
+			{
+				return "average";
+			}
+			else if (size < LARGE)
+			{
+				return "noticable";
+			}
+			else if (size < JIGGLY)
+			{
+				return "large";
+			}
+			else if (size < EXPANSIVE)
+			{
+				return "jiggly";
+			}
+			else if (size < HUGE)
+			{
+				return "expansive";
+			}
+			else if (size < INCONCEIVABLY_BIG)
+			{
+				return "huge";
+			}
+			else
+			{
+				return "inconceivably big";
+			}
+		}
+
+		private string ShortDesc()
+		{
+			StringBuilder sb = new StringBuilder();
+			string[] options;
+			if (size < TIGHT)
+			{
+				options = new string[] { "insignificant ", "very small " };
+			}
+			else if (size < AVERAGE)
+			{
+				options = new string[] { "tight ", "firm ", "compact " };
+			}
+			else if (size < NOTICEABLE)
+			{
+				options = new string[] { "regular ", "unremarkable " };
+			}
+			else if (size < LARGE)
+			{
+				if (Utils.Rand(3) == 0) return "handful of ass";
+				options = new string[] { "full ", "shapely " };
+			}
+			else if (size < JIGGLY)
+			{
+				options = new string[] { "squeezable ", "large ", "substantial " };
+			}
+			else if (size < EXPANSIVE)
+			{
+				options = new string[] { "jiggling ", "spacious ", "heavy " };
+			}
+			else if (size < HUGE)
+			{
+				if (Utils.Rand(3) == 0) return "generous amount of ass";
+				options = new string[] { "expansive ", "voluminous " };
+			}
+			else if (size < INCONCEIVABLY_BIG)
+			{
+				if (Utils.Rand(3) == 0) return "jiggling expanse of ass";
+				options = new string[] { "huge ", "vast " };
+			}
+			else //if (buttSize >= INCONCEIVABLY_BIG)
+			{
+				options = new string[] { "ginormous ", "colossal ", "tremendous " };
+			}
+
+			sb.Append(Utils.RandomChoice(options));
+			options = new string[] { "butt ", "ass " };
+			sb.Append(Utils.RandomChoice(options));
+			if (Utils.RandBool()) sb.Append("cheeks");
+			return sb.ToString();
+		}
+	}
 }

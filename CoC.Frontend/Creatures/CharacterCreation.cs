@@ -1275,7 +1275,7 @@ namespace CoC.Frontend.Creatures
 			{
 				if (Measurement.UsesMetric)
 				{
-					creator.heightInInches = (byte)Math.Round(parsedInt * Measurement.TO_IN);
+					creator.heightInInches = (byte)Math.Round(parsedInt * Measurement.TO_INCHES);
 				}
 				else
 				{
@@ -1299,7 +1299,7 @@ namespace CoC.Frontend.Creatures
 		private void MenuCockLength()
 		{
 			bool buttonMaker(byte index, float val, bool metric) => AddButton(index, Measurement.ToNearestHalfSmallUnit(val, true, false),
-				() => ChooseCockLength(metric ? (float)(val * Measurement.TO_IN) : val));
+				() => ChooseCockLength(metric ? (float)(val * Measurement.TO_INCHES) : val));
 			ClearOutput();
 			OutputText(CockLengthStr());
 			byte count = 0;
@@ -1344,7 +1344,7 @@ namespace CoC.Frontend.Creatures
 		private void MenuClitLength()
 		{
 			bool buttonMaker(byte index, float val, bool metric) => AddButton(index, Measurement.ToNearestQuarterInchOrHalfCentimeter(val, true),
-				() => ChooseClitLength(metric ? (float)(val * Measurement.TO_IN) : val));
+				() => ChooseClitLength(metric ? (float)(val * Measurement.TO_INCHES) : val));
 			ClearOutput();
 			OutputText(ClitLengthStr());
 			byte count = 0;

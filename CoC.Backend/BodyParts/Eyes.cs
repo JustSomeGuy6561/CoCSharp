@@ -19,6 +19,11 @@ namespace CoC.Backend.BodyParts
 		SILVER, YELLOW, PINK, ORANGE, INDIGO, TAN, BLACK
 	}
 
+	//Eye color is completely new territory, so bear with me. The player gets to pick an eye color (and we can potentially give them an item or interaction to change it)
+	//or a pair of colors for heterochromia. Certain eye types in old code would unofficially set the eye color by saying it was a certain color in flavor text.
+	//i've rewritten them to work with a sort of common ground - the transforms obviously alter the eye, and therefore may affect its appearance, but the original color 
+	//is still used in some manner. For example, basilisk eyes are still blue, but they now use the player-chosen eye color for their lightning-like streaks. 
+	//(unless the eyes are already blue, which then use white streaks). It's a bit more work, but i think it's nicer. 
 
 	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType>, ICanAttackWith //Basilisk Eyes.
 	{
@@ -54,16 +59,16 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == EyeType.HUMAN;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			var eyeType = type;
-			bool valid = EyeType.Validate(ref eyeType, correctDataIfInvalid);
+			bool valid = EyeType.Validate(ref eyeType, correctInvalidData);
 			type = eyeType;
 			//check left eye. skip this if the data is already invalid and we aren't correcting invalid data.
 			//checks to see if the value is out of range for the Enum (C# doesn't check enums)
-			if ((valid || correctDataIfInvalid) && !Enum.IsDefined(typeof(EyeColor), (int)leftIrisColor))
+			if ((valid || correctInvalidData) && !Enum.IsDefined(typeof(EyeColor), (int)leftIrisColor))
 			{
-				if (correctDataIfInvalid)
+				if (correctInvalidData)
 				{
 					leftIrisColor = EyeColor.AMBER;
 				}
@@ -71,9 +76,9 @@ namespace CoC.Backend.BodyParts
 			}
 			//check right eye. skip this if the data is already invalid and we aren't correcting invalid data.
 			//checks to see if the value is out of range for the Enum (C# doesn't check enums)
-			if ((valid || correctDataIfInvalid) && !Enum.IsDefined(typeof(EyeColor), (int)rightIrisColor))
+			if ((valid || correctInvalidData) && !Enum.IsDefined(typeof(EyeColor), (int)rightIrisColor))
 			{
-				if (correctDataIfInvalid)
+				if (correctInvalidData)
 				{
 					rightIrisColor = EyeColor.AMBER;
 				}
@@ -102,7 +107,11 @@ namespace CoC.Backend.BodyParts
 			return new Eyes(eyes, leftEye, rightEye);
 		}
 
-		internal bool UpdateEyeColor(EyeColor color)
+		//note that there's no update type that takes new eye colors - remember, new eye types are supposed to respect the old eye color.
+		//if you REALLY want to change this, just call update, then call change. You'll probably want some unique flavor text, though, as
+		//the calls to change color str and update str are not really designed with being called back to back in mind and may sound weird, idk.
+
+		internal bool ChangeEyeColor(EyeColor color)
 		{
 			if (leftIrisColor == color && rightIrisColor == color)
 			{
@@ -112,7 +121,7 @@ namespace CoC.Backend.BodyParts
 			rightIrisColor = color;
 			return true;
 		}
-		internal bool UpdateEyeColors(EyeColor leftEye, EyeColor rightEye)
+		internal bool ChangeEyeColor(EyeColor leftEye, EyeColor rightEye)
 		{
 			if (leftIrisColor == leftEye && rightIrisColor == rightEye)
 			{
@@ -225,7 +234,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static bool Validate(ref EyeType eyeType, bool correctInvalidData = false)
+		internal static bool Validate(ref EyeType eyeType, bool correctInvalidData)
 		{
 			if (eyes.Contains(eyeType))
 			{

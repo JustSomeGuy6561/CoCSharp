@@ -18,8 +18,8 @@ namespace CoC.Backend.Tools
 		public static bool UsesMetric => BackendGlobalData.data.UsesMetricMeasurements;
 
 		//are these remotely necessary? nope. but they're more readible imo than magic numbers.
-		public const double TO_CM = 2.54;
-		public const double TO_IN = 1 / TO_CM;
+		public const double TO_CENTIMETERS = 2.54;
+		public const double TO_INCHES = 1 / TO_CENTIMETERS;
 		public const byte IN_PER_FT = 12;
 		public const byte CM_PER_M = 100;
 
@@ -30,7 +30,7 @@ namespace CoC.Backend.Tools
 			string unit;
 			if (UsesMetric)
 			{
-				measure *= TO_CM;
+				measure *= TO_CENTIMETERS;
 			}
 			if (useTextIfSmall && measure <= 10 && measure >= -10)
 			{
@@ -50,7 +50,7 @@ namespace CoC.Backend.Tools
 		{
 			if (UsesMetric)
 			{
-				measure *= TO_CM;
+				measure *= TO_CENTIMETERS;
 			}
 			string unit;
 			measure *= 2;
@@ -75,7 +75,7 @@ namespace CoC.Backend.Tools
 		{
 			if (UsesMetric)
 			{
-				measure *= TO_CM;
+				measure *= TO_CENTIMETERS;
 				measure *= 10;
 				measure = Math.Round(measure);
 				measure /= 10;
@@ -106,7 +106,7 @@ namespace CoC.Backend.Tools
 		{
 			if (UsesMetric)
 			{
-				measure *= TO_CM;
+				measure *= TO_CENTIMETERS;
 				measure *= 5;
 				measure = Math.Round(measure);
 				measure /= 10;
@@ -242,7 +242,7 @@ namespace CoC.Backend.Tools
 		{
 			if (UsesMetric)
 			{
-				measure *= TO_CM;
+				measure *= TO_CENTIMETERS;
 				measure /= 100;
 			}
 			else

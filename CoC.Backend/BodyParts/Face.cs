@@ -236,19 +236,19 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;
 
 			FaceType faceType = type;
 			bool fullMorph = isFullMorph;
-			valid = FaceType.Validate(ref faceType, ref fullMorph);
-			valid &= ValidatePiercing(valid, nosePiercings, correctDataIfInvalid);
-			valid &= ValidatePiercing(valid, eyebrowPiercings, correctDataIfInvalid);
-			valid &= ValidatePiercing(valid, lipPiercings, correctDataIfInvalid);
-			if ((valid || correctDataIfInvalid) && !Enum.IsDefined(typeof(SkinTexture), _skinTexture))
+			valid = FaceType.Validate(ref faceType, ref fullMorph, correctInvalidData);
+			valid &= ValidatePiercing(valid, nosePiercings, correctInvalidData);
+			valid &= ValidatePiercing(valid, eyebrowPiercings, correctInvalidData);
+			valid &= ValidatePiercing(valid, lipPiercings, correctInvalidData);
+			if ((valid || correctInvalidData) && !Enum.IsDefined(typeof(SkinTexture), _skinTexture))
 			{
-				if (correctDataIfInvalid)
+				if (correctInvalidData)
 				{
 					_skinTexture = SkinTexture.NONDESCRIPT;
 				}
@@ -372,7 +372,7 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		internal static bool Validate(ref FaceType faceType, ref bool isFullMorph, bool correctInvalidData = false)
+		internal static bool Validate(ref FaceType faceType, ref bool isFullMorph, bool correctInvalidData)
 		{
 			bool valid = true;
 			if (!faces.Contains(faceType))

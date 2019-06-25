@@ -104,13 +104,13 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			TailType tailType = type;
-			bool valid = TailType.Validate(ref tailType, ref _tailCount);
-			if (valid || correctDataIfInvalid)
+			bool valid = TailType.Validate(ref tailType, ref _tailCount, correctInvalidData);
+			if (valid || correctInvalidData)
 			{
-				valid &= tailPiercings.Validate(correctDataIfInvalid);
+				valid &= tailPiercings.Validate(correctInvalidData);
 			}
 			return valid;
 		}
@@ -168,12 +168,12 @@ namespace CoC.Backend.BodyParts
 		public virtual byte initialTailCount => 1;
 		public virtual byte maxTailCount => initialTailCount;
 
-		private protected TailType(EpidermisType epidermis, bool canChange, //AttackBase attackData,
+		private protected TailType(EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
 			RestoreType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			epidermisType = epidermis;
-			mutable = canChange;
+			mutable = toneFurMutable;
 			_index = indexMaker++;
 			tails.AddAt(this, _index);
 			//attack = attackData ?? AttackBase.NO_ATTACK;
@@ -181,7 +181,7 @@ namespace CoC.Backend.BodyParts
 
 		public override int index => _index;
 
-		internal static bool Validate(ref TailType tailType, ref byte tailCount, bool correctInvalidData = false)
+		internal static bool Validate(ref TailType tailType, ref byte tailCount, bool correctInvalidData)
 		{
 			if (!tails.Contains(tailType))
 			{

@@ -50,7 +50,7 @@ DESIGN:
 
 Separate Logic and Text Output:
 Current Design is to have all your code in one location and all your text in another. this allows writers to do what they do best, and programmers to do the same.
-For events or interractions, like visiting a place or talking to a character, all the text should be stored as multiple functions that return nothing and output the string
+For events or interactions, like visiting a place or talking to a character, all the text should be stored as multiple functions that return nothing and output the string
 to OutputText. What we want from these functions is the most text per function call, with the least number of variables passed in. You can expect the writer to do small amounts of code, 
 like check the gender passed in and print "him/her/it/other politically correct pronoun" accordingly, or get the descriptor of the various body parts, but they shouldn't be doing much logic.
 small logic, like printing an "s" at the end if they have more than one, or printing a very specific string for an edge case is ok, however. if it's an entire wall of text because the pc is
@@ -77,7 +77,7 @@ pass in a reference to the functions you just defined in the strings file, and y
 Repeat this for all body parts.
 
 Now, implement the item or means to transform into this race. If you can, provide a means for the game to call that transformation, even if the corresponding item wasn't used, or barring that, allow the game to
-"use" the item silently, without mentioning the item itself in the transformation text. this way, we can possibly implement a wearable or NPC interraction in the future that causes the player to transform.
+"use" the item silently, without mentioning the item itself in the transformation text. this way, we can possibly implement a wearable or NPC interaction in the future that causes the player to transform.
 An example of this is the Naga Dress in the current ActionScript version of the game - you drink (nonexistant) snake oil every morning, instead of it just being some effect of the dress. 
 
 Finally, add some means for the player to acquire this item. Either add this to the list of drops for an area, or through food at a restaurant. Done

@@ -21,7 +21,7 @@ namespace CoC.Backend.BodyParts
 
 	public enum VaginalLooseness : byte { TIGHT, NORMAL, SLIGHTLY_LOOSE, LOOSE, GAPING, CLOWN_CAR_WIDE }
 
-	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, ITimeAwareWithOutput
+	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, ITimeListenerWithOutput
 	{
 		private const JewelryType SUPPORTED_LABIA_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 		public readonly Clit clit;
@@ -158,23 +158,23 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			VaginaType vaginaType = type;
-			bool valid = VaginaType.Validate(ref vaginaType, correctDataIfInvalid);
-			if (valid || correctDataIfInvalid)
+			bool valid = VaginaType.Validate(ref vaginaType, correctInvalidData);
+			if (valid || correctInvalidData)
 			{
-				valid &= labiaPiercings.Validate();
+				valid &= labiaPiercings.Validate(correctInvalidData); // = x & so we're fine.
 			}
-			if (valid || correctDataIfInvalid)
+			if (valid || correctInvalidData)
 			{
-				valid &= clit.Validate(correctDataIfInvalid);
+				valid &= clit.Validate(correctInvalidData);
 			}
 			return valid;
 		}
 
 		#region ITimeAware
-		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		void ITimeListener.ReactToTimePassing(byte hoursPassed)
 		{
 			needsOutput = false;
 			outputIsTightenedUp = false;
@@ -201,12 +201,12 @@ namespace CoC.Backend.BodyParts
 
 		private byte vaginaTightenTimer = 0;
 
-		bool ITimeAwareWithOutput.RequiresOutput => needsOutput;
+		bool ITimeListenerWithOutput.RequiresOutput => needsOutput;
 
 		private bool needsOutput = false;
 		private bool outputIsTightenedUp = false;
 
-		string ITimeAwareWithOutput.Output()
+		string ITimeListenerWithOutput.Output()
 		{
 			return VaginaTimePassedText();
 		}
@@ -228,7 +228,7 @@ namespace CoC.Backend.BodyParts
 			types.AddAt(this, _index);
 		}
 
-		internal static bool Validate(ref VaginaType vaginaType, bool correctInvalidData = false)
+		internal static bool Validate(ref VaginaType vaginaType, bool correctInvalidData)
 		{
 			if (types.Contains(vaginaType))
 			{

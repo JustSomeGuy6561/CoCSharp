@@ -14,7 +14,7 @@ namespace CoC.Frontend.Encounters.Forest
 	//	if the satyr is particularly into tentacle rape (random chance), he may be mad and attack you. if he does, he will have high initial lust and some health loss.
 	//	otherwise the vines will attack you for stealing their plaything. you may get a reward from satyr.
 
-	//The remaining 80% is split between attacking you and normal interraction, according to your corruption:
+	//The remaining 80% is split between attacking you and normal interaction, according to your corruption:
 	//Of course, with high enough intellect and the plant book, you have the option to simply leave and ignore all of these. 
 	//0-33: 40% attack, 40% normal interract (destroy, leave, or explore further)
 	//34-66: 30% attack, 25% normal, 25% sexy time

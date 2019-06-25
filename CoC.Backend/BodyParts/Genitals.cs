@@ -14,7 +14,7 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class Genitals : SimpleSaveablePart<Genitals>, ITimeAwareWithOutput  //, IPerkAware
+	public sealed class Genitals : SimpleSaveablePart<Genitals>, ITimeListenerWithOutput  //, IPerkAware
 	{
 		public const int MAX_COCKS = 10;
 		public const int MAX_VAGINAS = 2;
@@ -188,9 +188,9 @@ namespace CoC.Backend.BodyParts
 			return new Genitals(ass, breasts, cocks, balls, vaginas, femininity, fertility);
 		}
 
-		bool ITimeAwareWithOutput.RequiresOutput => needsOutput;
+		bool ITimeListenerWithOutput.RequiresOutput => needsOutput;
 
-		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		void ITimeListener.ReactToTimePassing(byte hoursPassed)
 		{
 			needsOutput = false;
 			output.Clear();
@@ -215,10 +215,10 @@ namespace CoC.Backend.BodyParts
 			//if some status effect relating to your genitals requires output, parse it and append it.
 		}
 
-		private void DoTimeAware(ITimeAware member, byte hoursPassed)
+		private void DoTimeAware(ITimeListener member, byte hoursPassed)
 		{
 			member.ReactToTimePassing(hoursPassed);
-			if (member is ITimeAwareWithOutput memberWithOutput)
+			if (member is ITimeListenerWithOutput memberWithOutput)
 			{
 				bool hasOutput = memberWithOutput.RequiresOutput;
 				needsOutput |= hasOutput;
@@ -231,7 +231,7 @@ namespace CoC.Backend.BodyParts
 
 		private readonly StringBuilder output = new StringBuilder();
 
-		string ITimeAwareWithOutput.Output()
+		string ITimeListenerWithOutput.Output()
 		{
 			return output.ToString();
 		}
@@ -599,9 +599,9 @@ namespace CoC.Backend.BodyParts
 			return (CupSize)(byte)Math.Ceiling(_breasts.Average(x => (double)x.cupSize));
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
-			//#error FIX ME!
+			#error FIX ME!
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 	}

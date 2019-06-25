@@ -53,14 +53,14 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == EarType.HUMAN;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			EarType earType = type;
-			bool valid = EarType.Validate(ref earType, correctDataIfInvalid);
+			bool valid = EarType.Validate(ref earType, correctInvalidData);
 			type = earType;
-			if (valid || correctDataIfInvalid)
+			if (valid || correctInvalidData)
 			{
-				valid &= earPiercings.Validate();
+				valid &= earPiercings.Validate(correctInvalidData);
 			}
 			return valid;
 		}
@@ -144,7 +144,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static bool Validate(ref EarType earType, bool correctInvalidData = false)
+		internal static bool Validate(ref EarType earType, bool correctInvalidData)
 		{
 			if (ears.Contains(earType))
 			{

@@ -89,7 +89,7 @@ namespace CoC.Backend.BodyParts
 		//public DescriptorWithArg<Balls> fullDescription => BallsFullDesc;
 		//public TypeAndPlayerDelegate<Balls> TypeAndPlayerDelegate => BallsPlayerStr;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;
 			//auto-Validate;
@@ -98,19 +98,19 @@ namespace CoC.Backend.BodyParts
 			//validate uniball. default corrective behavior is to remove uniball.
 			if (uniBall && size > UNIBALL_SIZE_THRESHOLD)
 			{
-				if (correctDataIfInvalid)
+				if (correctInvalidData)
 				{
 					count++;
 				}
 				valid = false;
 			}
-			if (valid || correctDataIfInvalid)
+			if (valid || correctInvalidData)
 			{
 				byte oldCount = count;
 				Utils.Clamp(ref oldCount, UNIBALL_COUNT, MAX_BALLS_COUNT);
 
 				valid &= count == oldCount;
-				if (correctDataIfInvalid)
+				if (correctInvalidData)
 				{
 					count = oldCount;
 				}

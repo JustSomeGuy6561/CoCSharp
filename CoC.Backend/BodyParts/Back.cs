@@ -17,7 +17,7 @@ namespace CoC.Backend.BodyParts
 	//tail now has the ovipositors. ovipositors are no longer perks. in the event bees and spiders need some back type (remember, wings and back are separate), i could just
 	//add an ovipositor type. for now i don't think i need to. the scorpion is still a tail, but i may move it here for ease of coding, though technically it's a tail. idk man.
 
-	public sealed class Back : BehavioralSaveablePart<Back, BackType>, IDyeable, ICanAttackWith, ITimeAware //For Back Tendrils (NYI), and spider/bee abdomen. Also, ITimeAware, to regenerate resources.
+	public sealed class Back : BehavioralSaveablePart<Back, BackType>, IDyeable, ICanAttackWith, ITimeListener //For Back Tendrils (NYI), and spider/bee abdomen. Also, ITimeAware, to regenerate resources.
 	{
 		//public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
 		public EpidermalData backEpidermis => epidermis.GetEpidermalData();
@@ -64,10 +64,10 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == BackType.NORMAL;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			BackType backType = type;
-			bool retVal = BackType.Validate(ref backType, epidermis, correctDataIfInvalid);
+			bool retVal = BackType.Validate(ref backType, epidermis, correctInvalidData);
 			type = backType;
 			return retVal;
 		}
@@ -174,7 +174,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region ITimeAware
-		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		void ITimeListener.ReactToTimePassing(byte hoursPassed)
 		{
 			if (_attack is ResourceAttackBase resourceAttack && resources < maxCharges) //slight optimization. make sure we aren't at max.
 			{
@@ -236,7 +236,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static bool Validate(ref BackType backType, Epidermis epidermis, bool correctInvalidData = false)
+		internal static bool Validate(ref BackType backType, Epidermis epidermis, bool correctInvalidData)
 		{
 			if (backs.Contains(backType))
 			{

@@ -161,10 +161,10 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			cupSize = cupSize;
-			return nipples.Validate();
+			return nipples.Validate(correctInvalidData);
 		}
 	}
 }

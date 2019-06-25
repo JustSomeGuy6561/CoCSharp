@@ -47,7 +47,7 @@ namespace CoC.Backend.BodyParts
 
 		internal abstract bool Restore();
 
-		internal abstract bool Validate(bool correctDataIfInvalid = false);
+		internal abstract bool Validate(bool correctInvalidData);
 
 		//Text output.
 		public virtual SimpleDescriptor fullDescription => () => type.fullDescription((ThisClass)this);

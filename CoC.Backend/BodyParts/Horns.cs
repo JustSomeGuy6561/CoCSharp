@@ -51,10 +51,10 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		public override bool isDefault => type == HornType.NONE;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			HornType hornType = type;
-			bool valid = HornType.Validate(ref hornType, ref _numHorns, ref _significantHornSize, in hornMasculinity, correctDataIfInvalid);
+			bool valid = HornType.Validate(ref hornType, ref _numHorns, ref _significantHornSize, in hornMasculinity, correctInvalidData);
 			type = hornType;
 			return valid;
 		}
@@ -292,7 +292,7 @@ CanGrowPlus())
 			}
 		}
 
-		internal static bool Validate(ref HornType hornType, ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
+		internal static bool Validate(ref HornType hornType, ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData)
 		{
 			bool valid = true;
 			if (!horns.Contains(hornType))
@@ -308,7 +308,7 @@ CanGrowPlus())
 			return valid;
 		}
 
-		protected virtual bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
+		protected virtual bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData)
 		{
 			bool valid = true;
 			byte correctedValue = hornCount;
@@ -451,7 +451,7 @@ CanGrowPlus())
 			internal override AttackBase GetAttack(Horns horns) => AttackBase.NO_ATTACK;
 			internal override bool CanAttackWith(Horns horns) => false;
 
-			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData)
 			{
 				bool valid = base.ValidateData(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
 				if (!valid && !correctInvalidData)
@@ -689,7 +689,7 @@ CanGrowPlus())
 				largestHorn = masculinity.isFemale ? maxFeminineLength : maxHornLength;
 			}
 
-			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool correctInvalidData)
 			{
 				bool primary = base.ValidateData(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
 				if (!primary && !correctInvalidData)
@@ -902,7 +902,7 @@ CanGrowPlus())
 			internal override AttackBase GetAttack(Horns horns) => AttackBase.NO_ATTACK;
 			internal override bool CanAttackWith(Horns horns) => false;
 
-			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData)
 			{
 				bool valid = base.ValidateData(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
 				if (!valid && !correctInvalidData)
@@ -1125,7 +1125,7 @@ CanGrowPlus())
 				return true;
 			}
 
-			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in Femininity masculinity, bool correctInvalidData)
 			{
 				bool valid = true;
 				if (hornCount < minHorns)
@@ -1287,7 +1287,7 @@ CanGrowPlus())
 				largestHorn = masculinity.isFemale ? maxFeminineLength : maxHornLength;
 			}
 
-			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool correctInvalidData = false)
+			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in Femininity masculinity, bool correctInvalidData)
 			{
 				bool primary = base.ValidateData(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
 				if (!primary && !correctInvalidData)

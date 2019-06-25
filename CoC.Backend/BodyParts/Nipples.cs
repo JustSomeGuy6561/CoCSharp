@@ -88,22 +88,22 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			//self-validating.
 			bool valid = true;
 			length = length;
 			if (!Enum.IsDefined(typeof(NippleStatus), nippleStatus))
 			{
-				if (correctDataIfInvalid)
+				if (correctInvalidData)
 				{
 					nippleStatus = NippleStatus.NORMAL;
 				}
 				valid = false;
 			}
-			if (valid || correctDataIfInvalid)
+			if (valid || correctInvalidData)
 			{
-				valid &= nipplePiercing.Validate(correctDataIfInvalid);
+				valid &= nipplePiercing.Validate(correctInvalidData);
 			}
 			return valid;
 		}

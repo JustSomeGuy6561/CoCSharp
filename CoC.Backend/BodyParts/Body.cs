@@ -101,14 +101,14 @@ namespace CoC.Backend.BodyParts
 		//doesnt call constructors would invite so many problems due to readonlys that it wouldn't be all that smart. If the bodyType is null, assumes mainSkin and mainFur are not null.
 		//also assumes the hairData getter has been connected already. 
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			BodyType bodyType = type;
-			bool valid = BodyType.Validate(ref bodyType, mainSkin, mainFur, ref primary, ref secondary, hairData(), correctDataIfInvalid);
+			bool valid = BodyType.Validate(ref bodyType, mainSkin, mainFur, ref primary, ref secondary, hairData(), correctInvalidData);
 			type = bodyType;
-			if (valid || correctDataIfInvalid)
+			if (valid || correctInvalidData)
 			{
-				valid &= navelPiercings.Validate();
+				valid &= navelPiercings.Validate(correctInvalidData);
 			}
 			return valid;
 		}
@@ -978,10 +978,7 @@ namespace CoC.Backend.BodyParts
 		//validate is called after deserialization. Validate makes the following assumptions that the following are true after deserialization:
 		//mainFur, mainSkin are valid - at worst
 		//epidermis types for main fur, main skin are valid. this is guarenteed by the body's validate.
-
-
-
-		internal static bool Validate(ref BodyType bodyType, Epidermis mainSkin, Epidermis mainFur, ref Epidermis primaryEpidermis, ref Epidermis secondaryEpidermis, in HairData hairData, bool correctInvalidData = false)
+		internal static bool Validate(ref BodyType bodyType, Epidermis mainSkin, Epidermis mainFur, ref Epidermis primaryEpidermis, ref Epidermis secondaryEpidermis, in HairData hairData, bool correctInvalidData)
 		{
 			if (!bodyTypes.Contains(bodyType))
 			{

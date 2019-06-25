@@ -17,10 +17,10 @@ namespace CoC.Backend.BodyParts
 	public sealed class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType>, IBodyAware, ICanAttackWith
 	{
 		public readonly Feet feet;
-		//		//No magic constants. Woo!
-		//		//not even remotely necessary, but it makes it a hell of a lot easier to debug
-		//		//when numbers aren't magic constants. (running grep with a string is much easier
-		//		//than a regular expression looking for legs.count = [A-Za-z0-9]+ or something worse
+		//No magic constants. Woo!
+		//not even remotely necessary, but it makes it a hell of a lot easier to debug
+		//when numbers aren't magic constants. (running grep with a string is much easier
+		//than a regular expression looking for legs.count = [A-Za-z0-9]+ or something worse
 
 		public const byte MONOPED_LEG_COUNT = 1;
 		public const byte BIPED_LEG_COUNT = 2;
@@ -83,9 +83,12 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
-			throw new System.NotImplementedException();
+			LowerBodyType lowerBodyType = type;
+			bool valid = LowerBodyType.Validate(ref lowerBodyType, correctInvalidData);
+			type = lowerBodyType;
+			return valid;
 		}
 		private BodyDataGetter bodyData;
 
@@ -114,13 +117,36 @@ namespace CoC.Backend.BodyParts
 		private const int SEXTOPED = 6;
 		private const int OCTOPED = 8;
 
-		public readonly int legCount;
+		public readonly byte legCount;
 
 		private static int indexMaker = 0;
 		private static List<LowerBodyType> lowerBodyTypes = new List<LowerBodyType>();
 
 		public readonly FootType footType;
 		public readonly EpidermisType epidermisType;
+		protected LowerBodyType(FootType foot, EpidermisType epidermis, byte numLegs,
+			SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc,
+			ChangeType<LowerBody> transform, RestoreType<LowerBody> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		{
+			_index = indexMaker++;
+			lowerBodyTypes.AddAt(this, _index);
+			footType = foot;
+			epidermisType = epidermis;
+			legCount = numLegs;
+		}
+
+		internal static bool Validate(ref LowerBodyType type, bool correctInvalidData)
+		{
+			if (lowerBodyTypes.Contains(type))
+			{
+				return true;
+			}
+			else if (correctInvalidData)
+			{
+				type = HUMAN;
+			}
+			return false;
+		}
 
 		internal static LowerBodyType Deserialize(int index)
 		{
@@ -163,16 +189,6 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		protected LowerBodyType(FootType foot, EpidermisType epidermis, int numLegs,
-			SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc,
-			ChangeType<LowerBody> transform, RestoreType<LowerBody> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
-		{
-			_index = indexMaker++;
-			lowerBodyTypes.AddAt(this, _index);
-			footType = foot;
-			epidermisType = epidermis;
-			legCount = numLegs;
-		}
 
 		public static readonly LowerBodyType HUMAN = new ToneLowerBody(FootType.HUMAN, EpidermisType.SKIN, BIPED, Species.HUMAN.defaultTone, SkinTexture.NONDESCRIPT, true, HumanDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
 		public static readonly LowerBodyType HOOVED = new FurLowerBodyWithKick(FootType.HOOVES, EpidermisType.FUR, BIPED, Species.HORSE.defaultFur, FurTexture.NONDESCRIPT, true, HoovedDesc, HoovedFullDesc, HoovedPlayerStr, HoovedTransformStr, HoovedRestoreStr);
@@ -200,8 +216,8 @@ namespace CoC.Backend.BodyParts
 		public static readonly LowerBodyType SALAMANDER = new ToneLowerBody(FootType.MANDER_CLAW, EpidermisType.SCALES, BIPED, Species.SALAMANDER.defaultTone, SkinTexture.NONDESCRIPT, true, SalamanderDesc, SalamanderFullDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
 		public static readonly LowerBodyType WOLF = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, Species.WOLF.defaultFurColor, FurTexture.NONDESCRIPT, true, WolfDesc, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
 		public static readonly LowerBodyType IMP = new ToneLowerBody(FootType.IMP_CLAW, EpidermisType.SCALES, BIPED, Species.IMP.defaultTone, SkinTexture.NONDESCRIPT, true, ImpDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
-
-
+		//remind me to add this later. 
+		//public static readonly LowerBodyType KID_OR_SQUID = new ToneLowerBody(FootType.TENDRIL, EpidermisType.SKIN, SEXTOPED, Species.TENTACLE_BEAST.defaultTone, SkinTexture.SLIMY, true, OctoDesc, OctoFullDesc, OctoPlayerStr, OctiTransformStr, OctoRestoreStr);
 		public static readonly LowerBodyType COCKATRICE = new CockatriceLowerBody();
 		public static readonly LowerBodyType RED_PANDA = new RedPandaLowerBody();
 
@@ -214,7 +230,7 @@ namespace CoC.Backend.BodyParts
 			public readonly FurColor defaultColor;
 			public readonly FurTexture defaultTexture;
 			protected readonly bool mutable;
-			public FurLowerBody(FootType foot, FurBasedEpidermisType epidermis, int numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
+			public FurLowerBody(FootType foot, FurBasedEpidermisType epidermis, byte numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
 				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc, ChangeType<LowerBody> transform,
 				RestoreType<LowerBody> restore) : base(foot, epidermis, numLegs, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
@@ -257,7 +273,7 @@ namespace CoC.Backend.BodyParts
 
 		private class FurLowerBodyWithKick : FurLowerBody
 		{
-			public FurLowerBodyWithKick(FootType foot, FurBasedEpidermisType epidermis, int numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture,  bool canChange, 
+			public FurLowerBodyWithKick(FootType foot, FurBasedEpidermisType epidermis, byte numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture,  bool canChange, 
 				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc, ChangeType<LowerBody> transform, RestoreType<LowerBody> restore) 
 				: base(foot, epidermis, numLegs, defaultFurColor, defaultFurTexture, canChange, shortDesc, fullDesc, playerDesc, transform, restore) {}
 
@@ -270,7 +286,7 @@ namespace CoC.Backend.BodyParts
 			public readonly SkinTexture defaultTexture;
 			public readonly bool mutable;
 			public readonly Tones defaultTone;
-			public ToneLowerBody(FootType foot, ToneBasedEpidermisType epidermis, int legCount, Tones defTone, SkinTexture defaultSkinTexture, bool canChange,
+			public ToneLowerBody(FootType foot, ToneBasedEpidermisType epidermis, byte legCount, Tones defTone, SkinTexture defaultSkinTexture, bool canChange,
 				 SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc, ChangeType<LowerBody> transform,
 				 RestoreType<LowerBody> restore) : base(foot, epidermis, legCount, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
@@ -367,6 +383,24 @@ namespace CoC.Backend.BodyParts
 		internal override EpidermalData ParseSecondaryEpidermis(in BodyData bodyData)
 		{
 			return new EpidermalData();
+		}
+	}
+
+	public sealed class LowerBodyData
+	{
+		public readonly LowerBodyType lowerBodyType;
+
+		public readonly EpidermalData primaryEpidermis;
+		public readonly EpidermalData secondaryEpidermis;
+
+		public byte legCount => lowerBodyType.legCount;
+		public FootType footType => lowerBodyType.footType;
+
+		internal LowerBodyData(LowerBodyType type, EpidermalData epidermis, EpidermalData secondary)
+		{
+			lowerBodyType = type;
+			primaryEpidermis = epidermis;
+			secondaryEpidermis = secondary;
 		}
 	}
 }

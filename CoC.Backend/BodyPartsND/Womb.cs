@@ -3,13 +3,20 @@ using CoC.Backend.Pregnancies;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
 
+
+//
+// NOTE TO SELF: FINISH NOT DONE BODY PARTS, ADD THEM THE REST OF THE WAY TO CREATOR
+// MAKE SURE PLAYER, COMBAT CREATURE, CREATURE CORRECTLY PARSE _ALL_ DATA FRM CREATOR 
+// CLEAN UP MINOR ERRORS. TRY TO BUILD AND CLEAN UP MAJOR ERRORS THEN DO THE SAME WITH FRONTEND
+//
+
 namespace CoC.Backend.BodyParts
 {
 	//even though technically butt pregnancies dont occur in the womb, i'm going to store them here. 
 	//itimeaware: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant.
 
 	//TODO: Add Eggs when eggs are created: EDIT: make this a helper in the frontend. we still need to add them with the itimeaware above, but eggpregnate is an edge case that helpers can handle.
-	public sealed class Womb : BehavioralSaveablePart<Womb, WombType>, ITimeAwareWithOutput //itimeaware
+	public sealed class Womb : BehavioralSaveablePart<Womb, WombType>, ITimeListenerWithOutput //itimeaware
 	{
 		internal readonly PregnancyStore pregnancy = new PregnancyStore();
 		internal readonly PregnancyStore analPregnancy = new PregnancyStore();
@@ -95,12 +102,12 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;
 			if (type == null)
 			{
-				if (correctDataIfInvalid)
+				if (correctInvalidData)
 				{
 					type = WombType.STANDARD;
 				}
@@ -108,16 +115,16 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (type == WombType.BASILISK && !basiliskWombNowDefault)
 			{
-				if (correctDataIfInvalid)
+				if (correctInvalidData)
 				{
 					basiliskWombNowDefault = true;
 				}
 			}
-			return valid && pregnancy.Validate(correctDataIfInvalid) && analPregnancy.Validate(correctDataIfInvalid);
+			return valid && pregnancy.Validate(correctInvalidData) && analPregnancy.Validate(correctInvalidData);
 		}
 
 		#region ITimeAware
-		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		void ITimeListener.ReactToTimePassing(byte hoursPassed)
 		{
 
 		}

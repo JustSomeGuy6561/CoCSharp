@@ -114,11 +114,11 @@ namespace CoC.Backend.BodyParts
 			return type.canGrowNeck(length);
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			byte len = length;
 			HairFurColors col = neckColor;
-			bool valid = NeckType.Validate(ref _type, ref len, ref col, correctDataIfInvalid);
+			bool valid = NeckType.Validate(ref _type, ref len, ref col, correctInvalidData);
 			length = len;
 			neckColor = col;
 			return valid;
@@ -255,7 +255,7 @@ namespace CoC.Backend.BodyParts
 			color = defaultColor;
 		}
 
-		internal static bool Validate(ref NeckType neckType, ref byte length, ref HairFurColors color, bool correctInvalidData = false)
+		internal static bool Validate(ref NeckType neckType, ref byte length, ref HairFurColors color, bool correctInvalidData)
 		{
 			if (!necks.Contains(neckType))
 			{
@@ -270,7 +270,7 @@ namespace CoC.Backend.BodyParts
 			return neckType.ValidateData(ref length, ref color, correctInvalidData);
 		}
 
-		internal virtual bool ValidateData(ref byte length, ref HairFurColors color, bool correctInvalidData = false)
+		internal virtual bool ValidateData(ref byte length, ref HairFurColors color, bool correctInvalidData)
 		{
 			bool valid = true;
 			if (!usesHair && !color.isEmpty)

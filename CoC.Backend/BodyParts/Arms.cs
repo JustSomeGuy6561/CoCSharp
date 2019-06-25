@@ -52,10 +52,10 @@ namespace CoC.Backend.BodyParts
 		private ArmType _type;
 
 		public override bool isDefault => type == ArmType.HUMAN;
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			ArmType armType = type;
-			bool retVal = ArmType.Validate(ref armType, correctDataIfInvalid);
+			bool retVal = ArmType.Validate(ref armType, correctInvalidData);
 			type = armType; //automatically sets hand.
 			return retVal;
 		}
@@ -152,7 +152,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static bool Validate(ref ArmType armType, bool correctInvalidData = false)
+		internal static bool Validate(ref ArmType armType, bool correctInvalidData)
 		{
 			if (arms.Contains(armType))
 			{

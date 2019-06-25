@@ -9,7 +9,7 @@ namespace CoC.Backend.BodyParts
 {
 	public enum AnalWetness : byte { DRY, NORMAL, MOIST, SLIMY, DROOLING, SLIME_DROOLING }
 	public enum AnalLooseness : byte { VIRGIN, TIGHT, NORMAL, LOOSE, STRETCHED, GAPING }
-	public sealed partial class Ass: ITimeAwareWithOutput //, IPerkAware
+	public sealed partial class Ass: ITimeListenerWithOutput //, IPerkAware
 	{
 		public const ushort MAX_ANAL_CAPACITY = ushort.MaxValue;
 
@@ -258,7 +258,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		void ITimeListener.ReactToTimePassing(byte hoursPassed)
 		{
 			needsOutput = false;
 			outputIsTightenedUp = false;
@@ -282,9 +282,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		bool ITimeAwareWithOutput.RequiresOutput => needsOutput;
+		bool ITimeListenerWithOutput.RequiresOutput => needsOutput;
 
-		string ITimeAwareWithOutput.Output()
+		string ITimeListenerWithOutput.Output()
 		{
 			return AssTimePassedOutput();
 		}

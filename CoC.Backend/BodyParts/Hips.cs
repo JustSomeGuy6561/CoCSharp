@@ -7,7 +7,7 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Hips : SimpleSaveablePart<Hips>, IGrowShrinkable, IBodyAware
+	public sealed partial class Hips : SimpleSaveablePart<Hips>, IGrowShrinkable
 	{
 		public const byte BOYISH = 0;
 		public const byte SLENDER = 2;
@@ -18,58 +18,60 @@ namespace CoC.Backend.BodyParts
 		public const byte FERTILE = 15;
 		public const byte INHUMANLY_WIDE = 20;
 
-		public byte hipSize
+		public byte size
 		{
-			get { return _hipsize; }
-			private set
-			{
-				Utils.Clamp(ref value, BOYISH, INHUMANLY_WIDE);
-				_hipsize = value;
-			}
+			get => _hipsize;
+			private set => _hipsize = Utils.Clamp2(value, BOYISH, INHUMANLY_WIDE);
 		}
 		private byte _hipsize;
 
-		private Hips(byte size)
+		private Hips(byte hipSize)
 		{
-			hipSize = size;
+			size = hipSize;
 		}
-		public byte index => hipSize;
-		public static Hips GenerateHips(byte size = AVERAGE)
+		public byte index => size;
+
+		public static Hips Generate(byte size = AVERAGE)
 		{
 			return new Hips(size);
 		}
 
 		public byte GrowHips(byte amount = 1)
 		{
-			byte oldSize = hipSize;
-			hipSize += amount;
-			return hipSize.subtract(oldSize);
+			byte oldSize = size;
+			size += amount;
+			return size.subtract(oldSize);
 		}
 
 		public byte ShrinkHips(byte amount = 1)
 		{
-			byte oldSize = hipSize;
-			hipSize -= amount;
-			return oldSize.subtract(hipSize);
+			byte oldSize = size;
+			size -= amount;
+			return oldSize.subtract(size);
+		}
+
+		public void SetHipSize(byte newSize)
+		{
+			size = newSize;
 		}
 
 		bool IGrowShrinkable.CanReducto()
 		{
-			return hipSize > SLENDER;
+			return size > SLENDER;
 		}
 
 		float IGrowShrinkable.UseReducto()
 		{
-			byte oldSize = hipSize;
-			if (hipSize > CURVY)
+			byte oldSize = size;
+			if (size > CURVY)
 			{
-				hipSize -= 3;
+				size -= 3;
 			}
 			else
 			{
-				hipSize -= (byte)(Utils.Rand(3) + 1);
+				size -= (byte)(Utils.Rand(3) + 1);
 			}
-			return oldSize - hipSize;
+			return oldSize - size;
 		}
 
 		bool IGrowShrinkable.CanGrowPlus()
@@ -82,22 +84,12 @@ namespace CoC.Backend.BodyParts
 			return 0;
 		}
 
-		void IBodyAware.GetBodyData(BodyDataGetter getter)
-		{
-			bodyData = getter;
-		}
-		private BodyDataGetter bodyData;
+		public SimpleDescriptor AsText => AsStr;
+		public SimpleDescriptor ShortDescription => ShortDesc;
 
-		public SimpleDescriptor shortDescription => AsText;
-
-		public string fullDescription(LowerBodyType lowerBody, Frame frame)
+		internal override bool Validate(bool correctInvalidData)
 		{
-			return Description(lowerBody, frame);
-		}
-
-		internal override bool Validate(bool correctDataIfInvalid = false)
-		{
-			hipSize = hipSize;
+			size = size;
 			return true;
 		}
 	}

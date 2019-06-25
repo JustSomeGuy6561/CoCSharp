@@ -22,10 +22,10 @@ namespace CoC.Backend.BodyParts
 			type = antennaeType ?? throw new ArgumentNullException();
 		}
 		public override bool isDefault => type == AntennaeType.NONE;
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			AntennaeType antennae = type;
-			bool retVal = AntennaeType.Validate(ref antennae, correctDataIfInvalid);
+			bool retVal = AntennaeType.Validate(ref antennae, correctInvalidData);
 			type = antennae;
 			return retVal;
 		}

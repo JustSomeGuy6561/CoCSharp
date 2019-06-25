@@ -57,13 +57,13 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == WingType.NONE;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			WingType wingType = type;
 			var feather = featherColor;
 			var tone = wingTone;
 			var boneTone = wingBoneTone;
-			bool valid = WingType.Validate(ref wingType, ref feather, ref tone, ref boneTone, correctDataIfInvalid);
+			bool valid = WingType.Validate(ref wingType, ref feather, ref tone, ref boneTone, correctInvalidData);
 			type = wingType;
 			featherColor = feather;
 			wingTone = tone;
@@ -464,7 +464,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static bool Validate(ref WingType wingType, ref HairFurColors featherCol, ref Tones wingTone, ref Tones wingBoneTone, bool correctInvalidData = false)
+		internal static bool Validate(ref WingType wingType, ref HairFurColors featherCol, ref Tones wingTone, ref Tones wingBoneTone, bool correctInvalidData)
 		{
 			bool valid = true;
 			if (!wings.Contains(wingType))

@@ -24,92 +24,80 @@ namespace CoC.Backend.BodyParts
 		public const byte HUGE = 16;
 		public const byte INCONCEIVABLY_BIG = 20;
 
-		public bool hasButt => buttSize >= TIGHT;
-		public int index => buttSize;
+		public bool hasButt => size >= TIGHT;
+		public int index => size;
 
-		public byte buttSize
+		public byte size
 		{
 			get => _buttSize;
-			private set
-			{
-
-				Utils.Clamp(ref value, TIGHT, INCONCEIVABLY_BIG);
-				_buttSize = value;
-			}
-
+			private set => _buttSize = Utils.Clamp2(value, TIGHT, INCONCEIVABLY_BIG);
 		}
 		private byte _buttSize;
-		private Butt(byte size = TIGHT)
+
+		private Butt(byte size)
 		{
-			Utils.Clamp(ref size, BUTTLESS, INCONCEIVABLY_BIG);
 			if (size < TIGHT)
 			{
-				size = BUTTLESS;
+				_buttSize = BUTTLESS;
 			}
-			_buttSize = size;
+			else
+			{
+				this.size = size;
+			}
 		}
 
-		public SimpleDescriptor AsText => toText;
-
-		public SimpleDescriptor shortDescription => shortDesc;
-		public DescriptorWithArg<Frame> fullDescription => fullDesc;
-
-		public static Butt Generate_NoButt()
+		internal static Butt Generate(byte size = AVERAGE)
 		{
-			return new Butt(BUTTLESS);
-		}
-
-		/// <summary>
-		/// Generates a butt that can resize. minimum value is "TIGHT",
-		/// and max is "INCONCEIVABLY_BIG". if a value is outside this 
-		/// range it will be clamped into this range.
-		/// </summary>
-		/// <param name="size"></param>
-		/// <returns></returns>
-		public static Butt GenerateButt(byte size = AVERAGE)
-		{
-			Utils.Clamp(ref size, TIGHT, INCONCEIVABLY_BIG);
 			return new Butt(size);
 		}
 
+		public SimpleDescriptor AsText => AsStr;
+
+		public SimpleDescriptor ShortDescription => ShortDesc;
+
 		public byte GrowButt(byte amount = 1)
 		{
-			byte oldSize = buttSize;
-			buttSize += amount;
-			return buttSize.subtract(oldSize);
+			byte oldSize = size;
+			size += amount;
+			return size.subtract(oldSize);
 		}
 
 		public byte ShrinkButt(byte amount = 1)
 		{
-			byte oldSize = buttSize;
-			buttSize -= amount;
-			return oldSize.subtract(buttSize);
+			byte oldSize = size;
+			size -= amount;
+			return oldSize.subtract(size);
+		}
+
+		public void SetButtSize(byte newSize)
+		{
+			size = newSize;
 		}
 
 		bool IGrowShrinkable.CanReducto()
 		{
-			return buttSize > TIGHT;
+			return size > TIGHT;
 		}
 
 		float IGrowShrinkable.UseReducto()
 		{
-			int oldSize = buttSize;
-			if (buttSize >= HUGE)
+			int oldSize = size;
+			if (size >= HUGE)
 			{
-				buttSize = (byte)Math.Round(buttSize * 2.0 / 3);
+				size = (byte)Math.Round(size * 2.0 / 3);
 			}
-			else if (buttSize >= JIGGLY)
+			else if (size >= JIGGLY)
 			{
-				buttSize -= 3;
+				size -= 3;
 			}
-			else if (buttSize > TIGHT)
+			else if (size > TIGHT)
 			{
 				//shrink by up to 3, to a minimum rating of TIGHT
-				byte val = (byte)Math.Min(3, buttSize - TIGHT);
+				byte val = (byte)Math.Min(3, size - TIGHT);
 				//increase by 1, as rand returns 0 to (val-1), we want 1 to val
-				buttSize -= (byte)(Utils.Rand(val) + 1);
+				size -= (byte)(Utils.Rand(val) + 1);
 			}
-			return oldSize - buttSize;
+			return oldSize - size;
 		}
 
 		//apparently gro+ doesnt work on butt or hips.
@@ -123,10 +111,10 @@ namespace CoC.Backend.BodyParts
 			return 0;
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			//auto-validates data.
-			buttSize = buttSize;
+			size = size;
 			return true;
 		}
 	}

@@ -28,9 +28,9 @@ namespace CoC.Backend.Creatures
 		}
 		public string name;
 
-		public byte heightInInches = 0; //min height is like 3 feet something, idk. so if it's less than that, we'll treat it as min height, however, 0 is treated as not set. 
 
 		//The following can be left alone, as they will default to human values. You only need to define these if they aren't human values.  
+		public byte heightInInches = 0; //min height is like 3 feet something, idk. so if it's less than that, we'll treat it as min height, however, 0 is treated as not set. 
 
 		//Antennae
 		public AntennaeType antennaeType;

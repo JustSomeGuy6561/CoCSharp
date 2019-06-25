@@ -32,14 +32,14 @@ namespace CoC.Backend.BodyParts
 		public int length => type.length;
 		public override bool isDefault => type == TongueType.HUMAN;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			var tongueType = type;
-			bool valid = TongueType.Validate(ref tongueType, correctDataIfInvalid);
+			bool valid = TongueType.Validate(ref tongueType, correctInvalidData);
 			type = tongueType;
-			if (valid || correctDataIfInvalid)
+			if (valid || correctInvalidData)
 			{
-				valid &= tonguePiercings.Validate();
+				valid &= tonguePiercings.Validate(correctInvalidData);
 			}
 			return valid;
 		}
@@ -128,7 +128,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		internal static bool Validate(ref TongueType tongue, bool correctInvalidData = false)
+		internal static bool Validate(ref TongueType tongue, bool correctInvalidData)
 		{
 			if (tongues.Contains(tongue))
 			{

@@ -7,7 +7,7 @@ using System.Text;
 namespace CoC.Backend.Pregnancies
 {
 	//need way of checking for eggs - if egg pregnancy, they can be fertalized. 
-	public sealed class PregnancyStore : SimpleSaveablePart<PregnancyStore>, ITimeAwareWithOutput //, IPerkAware for perks 
+	public sealed class PregnancyStore : SimpleSaveablePart<PregnancyStore>, ITimeListenerWithOutput //, IPerkAware for perks 
 	{
 #warning TODO: fix me to use perks when available.
 		private float pregnancySpeed => 1f;
@@ -30,7 +30,7 @@ namespace CoC.Backend.Pregnancies
 			hoursTilBirth = 0;
 		}
 
-		internal override bool Validate(bool correctInvalidData = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			if (spawnType != null || birthCountdown == 0)
 			{
@@ -44,7 +44,7 @@ namespace CoC.Backend.Pregnancies
 		}
 
 		#region ITimeAware
-		void ITimeAware.ReactToTimePassing(byte hoursPassed)
+		void ITimeListener.ReactToTimePassing(byte hoursPassed)
 		{
 			needsOutput = false;
 			outputText = "";
@@ -60,9 +60,9 @@ namespace CoC.Backend.Pregnancies
 			}
 		}
 
-		bool ITimeAwareWithOutput.RequiresOutput => needsOutput;
+		bool ITimeListenerWithOutput.RequiresOutput => needsOutput;
 
-		string ITimeAwareWithOutput.Output()
+		string ITimeListenerWithOutput.Output()
 		{
 			return outputText;
 		}

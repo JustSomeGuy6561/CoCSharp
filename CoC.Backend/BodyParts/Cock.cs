@@ -220,19 +220,19 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;
 			CockType cockType = type;
-			valid = CockType.Validate(ref cockType, correctDataIfInvalid);
+			valid = CockType.Validate(ref cockType, correctInvalidData);
 			//should auto-Validate length and girth.
 			type = cockType;
-			if (valid || correctDataIfInvalid)
+			if (valid || correctInvalidData)
 			{
-				valid &= cockPiercings.Validate();
+				valid &= cockPiercings.Validate(correctInvalidData);
 			}
 			//give length priority.
-			if (valid || correctDataIfInvalid)
+			if (valid || correctInvalidData)
 			{
 				updateLengthAndGirth(cockLength, cockGirth);
 			}

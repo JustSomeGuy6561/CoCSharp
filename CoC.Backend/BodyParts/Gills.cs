@@ -21,10 +21,10 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == GillType.NONE;
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			GillType gillType = type;
-			bool valid = GillType.Validate(ref gillType, correctDataIfInvalid);
+			bool valid = GillType.Validate(ref gillType, correctInvalidData);
 			type = gillType;
 			return valid;
 		}
@@ -95,7 +95,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		internal static bool Validate(ref GillType gillType, bool correctInvalidData = false)
+		internal static bool Validate(ref GillType gillType, bool correctInvalidData)
 		{
 			if (gills.Contains(gillType))
 			{

@@ -159,10 +159,10 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
-		internal override bool Validate(bool correctDataIfInvalid = false)
+		internal override bool Validate(bool correctInvalidData)
 		{
 			length = length;
-			return clitPiercings.Validate(correctDataIfInvalid);
+			return clitPiercings.Validate(correctInvalidData);
 		}
 
 		#region Grow/Shrinkable

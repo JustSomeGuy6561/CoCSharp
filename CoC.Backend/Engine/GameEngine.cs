@@ -12,6 +12,8 @@ namespace CoC.Backend.Engine
 
 		public static Player currentPlayer;
 
+		public static byte CurrentHour;
+
 		public static void Run()
 		{
 

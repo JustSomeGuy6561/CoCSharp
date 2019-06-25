@@ -149,7 +149,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			return piercingUnlocked(piercingLocation);
 		}
 
-		internal bool Validate(bool correctInvalidData = false)
+		internal bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;
 			foreach (Locations entry in Enum.GetValues(typeof(Locations)).Cast<Locations>())

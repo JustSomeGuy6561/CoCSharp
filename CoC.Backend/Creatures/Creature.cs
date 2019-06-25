@@ -1,6 +1,7 @@
 ﻿using CoC.Backend.BodyParts;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.Creatures
 {
@@ -11,17 +12,17 @@ namespace CoC.Backend.Creatures
 
 		public readonly Antennae antennae;
 		public readonly Arms arms;
-		public readonly Ass ass;
 		public readonly Back back;
+		//public readonly Beard beard;
 		public readonly Body body;
+		public readonly Build build;
 		public readonly Ears ears;
 		public readonly Eyes eyes;
 		public readonly Face face;
-		public readonly Frame frame;
+
 		public readonly Genitals genitals;
 		public readonly Gills gills;
 		public readonly Hair hair;
-		public readonly Hips hips;
 		public readonly Horns horns;
 		public readonly LowerBody lowerBody;
 		public readonly Neck neck;
@@ -30,7 +31,17 @@ namespace CoC.Backend.Creatures
 		public readonly Wings wings;
 		public readonly Womb womb;
 
-		//public readonly Beard beard;
+		//aliases for build.
+		public Butt butt => build.butt;
+		public Hips hips => build.hips;
+
+		//aliases for balls.
+		public Ass ass => genitals.ass;
+		public ReadOnlyCollection<Breasts> breasts => genitals.breasts;
+		public ReadOnlyCollection<Cock> cocks => genitals.cocks;
+		public ReadOnlyCollection<Vagina> vaginas => genitals.vaginas;
+		public Balls balls => genitals.balls;
+
 
 		protected Creature(CreatureCreator creator)
 		{

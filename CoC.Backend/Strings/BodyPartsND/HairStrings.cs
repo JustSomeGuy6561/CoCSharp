@@ -5,6 +5,7 @@
 
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
+using System;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
@@ -30,9 +31,9 @@ namespace CoC.Backend.BodyParts
 				case HairStyle.COILED:
 					return "coiled";
 				case HairStyle.NO_STYLE:
+					return "no style";
 				default:
-					return "";
-
+					throw new NotImplementedException("A new hair style was added but someone didn't implement it's AsString");
 			}
 		}
 	}
@@ -136,6 +137,16 @@ namespace CoC.Backend.BodyParts
 		{
 			return " the hair that forms your highlights";
 		}
+
+		private string NoLongerBaldStr()
+		{
+			return Environment.NewLine + Tools.SafelyFormattedString.FormattedText("You are no longer bald. You now have " + fullDescription() + " coating your head.", StringFormats.BOLD) + Environment.NewLine;
+		}
+
+		private string HairLongerStr()
+		{
+			return Environment.NewLine + SafelyFormattedString.FormattedText("Your hair's growth has reached a new threshold, giving you " + fullDescription() + ".", StringFormats.BOLD) + Environment.NewLine;
+		}
 	}
 	public partial class HairType
 	{
@@ -152,10 +163,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHairGrowStr(Player player)
+		private static string NoHairToGrow()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string NoHairToCut()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string NoHairTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -176,10 +193,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NormalGrowStr(Player player)
+		private static string NormalGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string NormalCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string NormalTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -200,10 +223,17 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatherGrowStr(Player player)
+		private static string FeatherGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string FeatherCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+
 		private static string FeatherTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -226,10 +256,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooGrowStr(Player player)
+		private static string GooGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string GooCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string GooTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -250,10 +286,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneGrowStr(Player player)
+		private static string AnemoneNoGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string AnemoneNoCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string AnemoneTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -275,10 +317,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string QuillGrowStr(Player player)
+		private static string QuillGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string QuillCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string QuillTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -300,10 +348,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpineGrowStr(Player player)
+		private static string SpineNoGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string SpineNoCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 
 		private static string SpineTransformStr(Hair hair, Player player)
 		{
@@ -326,10 +380,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PlumeGrowStr(Player player)
+		private static string PlumeGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string PlumeCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string PlumeTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -350,10 +410,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WoolGrowStr(Player player)
+		private static string WoolGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string WoolCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string WoolTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -375,10 +441,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VineGrowStr(Player player)
+		private static string VineNoGrowStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string VineNoCutStr()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string VineTransformStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();

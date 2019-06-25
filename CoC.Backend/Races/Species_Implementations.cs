@@ -27,6 +27,13 @@ namespace CoC.Backend.Races
 		public HairFurColors defaultPlume = HairFurColors.RED;
 		public Tones defaultTone => Tones.GREEN;
 		public EyeColor defaultEyeColor => EyeColor.GRAY;
+
+		public HairFurColors ToNearestSpineColor(HairFurColors currentColor)
+		{
+#warning Fix Me!
+			return currentColor;
+		}
+
 		internal Basilisk() : base(BasiliskStr) { }
 	}
 

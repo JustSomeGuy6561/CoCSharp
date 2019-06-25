@@ -96,5 +96,7 @@ namespace CoC
 		{
 			return (uint)(first * second);
 		}
+
 	}
+
 }

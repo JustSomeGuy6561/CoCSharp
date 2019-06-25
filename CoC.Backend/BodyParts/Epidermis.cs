@@ -141,12 +141,12 @@ namespace CoC.Backend.BodyParts
 			else return new EpidermalData();
 		}
 
-		internal bool Validate(bool correctDataIfInvalid = false)
+		internal bool Validate(bool correctInvalidData)
 		{
 			EpidermisType epidermis = type;
 			Tones tones = tone;
 
-			bool valid = EpidermisType.Validate(ref epidermis, fur, ref tones, correctDataIfInvalid);
+			bool valid = EpidermisType.Validate(ref epidermis, fur, ref tones, correctInvalidData);
 			tone = tones;
 			type = epidermis;
 			return valid;
@@ -401,7 +401,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static bool Validate(ref EpidermisType epidermisType, FurColor fur, ref Tones tone, bool correctInvalidData = false)
+		internal static bool Validate(ref EpidermisType epidermisType, FurColor fur, ref Tones tone, bool correctInvalidData)
 		{
 			bool valid = true;
 			if (!epidermi.Contains(epidermisType))
@@ -417,7 +417,7 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		private protected abstract bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData = false);
+		private protected abstract bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData);
 
 		public override int index => _index;
 
@@ -445,7 +445,7 @@ namespace CoC.Backend.BodyParts
 
 		public override bool usesTone => false;
 
-		private protected override bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData = false)
+		private protected override bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData)
 		{
 			if (!fur.isEmpty)
 			{
@@ -469,7 +469,7 @@ namespace CoC.Backend.BodyParts
 
 		public override bool usesTone => true;
 
-		private protected override bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData = false)
+		private protected override bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData)
 		{
 			if (!tone.isEmpty)
 			{
@@ -490,7 +490,7 @@ namespace CoC.Backend.BodyParts
 		public override bool usesTone => false;
 		public override bool usesFur => false;
 
-		private protected override bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData = false)
+		private protected override bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData)
 		{
 			return true;
 		}
