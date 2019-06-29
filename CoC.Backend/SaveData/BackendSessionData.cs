@@ -16,5 +16,7 @@ namespace CoC.Backend.SaveData
 		public bool hasBigCockPerk = false;
 
 		internal Player player;
+
+		public bool SFW_Mode = false;
 	}
 }

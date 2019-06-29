@@ -1,5 +1,7 @@
-﻿using CoC.Backend.Tools;
+﻿using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Tools;
 using System;
+using System.Collections.Generic;
 
 //most of these are simply bytes, though a few do have extra behavior. An common software engineering practice is to never use primitives directly - this can be
 //confusing or arbitrary - 5 could mean 5 years, 5 decades, 5 score, 5 centuries, etc. While i don't agree with that assessment 100%, it sometimes has merit. 
@@ -26,7 +28,19 @@ namespace CoC.Backend.BodyParts
 		public const byte MASCULINE = 30;
 		public const byte HYPER_MASCULINE = 10;
 
-		public byte value { get; private set; }
+		public byte value
+		{
+			get => _value;
+			private set
+			{
+				if (value != _value)
+				{
+					_value = Utils.Clamp2(value, MASCULINE_MAX, FEMININE_MAX);
+					femininityChanged(); //notify everyone.
+				}
+			}
+		}
+		private byte _value;
 
 		public static implicit operator byte(Femininity femininity)
 		{
@@ -37,25 +51,25 @@ namespace CoC.Backend.BodyParts
 		{
 			if (gender == Gender.GENDERLESS)
 			{
-				value = 50;
+				_value = 50;
 			}
 			else if (gender == Gender.HERM)
 			{
-				value = 60;
+				_value = 60;
 			}
 			else if (gender == Gender.MALE)
 			{
-				value = 25;
+				_value = 25;
 			}
 			else
 			{
-				value = 75;
+				_value = 75;
 			}
 		}
 
 		private Femininity(byte femininity)
 		{
-			value = Utils.Clamp2(femininity, MASCULINE_MAX, FEMININE_MAX);
+			_value = Utils.Clamp2(femininity, MASCULINE_MAX, FEMININE_MAX);
 		}
 
 		internal static Femininity GenerateFromGender(Gender gender)
@@ -77,7 +91,40 @@ namespace CoC.Backend.BodyParts
 		{
 			return new Femininity(this);
 		}
+		private readonly HashSet<IFemininityListener> femininityListeners = new HashSet<IFemininityListener>();
+		internal bool RegisterListener(IFemininityListener listener)
+		{
+			if (femininityListeners.Add(listener))
+			{
+				listener.GetFemininityData(ToFemininityData);
+				return true;
+			}
+			return false;
 
+		}
+
+		internal bool DeregisterListener(IFemininityListener listener)
+		{
+			return femininityListeners.Remove(listener);
+		}
+
+		internal void SetupFemininityAware(IFemininityAware femininityAware)
+		{
+			femininityAware.GetFemininityData(ToFemininityData);
+		}
+
+		private void femininityChanged()
+		{
+			foreach (IFemininityListener listener in femininityListeners)
+			{
+				listener.reactToChangeInFemininity();
+			}
+		}
+
+		private FemininityData ToFemininityData()
+		{
+			return new FemininityData(this);
+		}
 
 		public bool isFemale => atLeastSlightlyFeminine;
 		public bool isMale => atLeastSlightlyMasculine;
@@ -115,6 +162,11 @@ namespace CoC.Backend.BodyParts
 			byte oldFemininity = value;
 			value -= amount;
 			return oldFemininity.subtract(value);
+		}
+
+		public void SetFemininity(byte newValue)
+		{
+			value = newValue;
 		}
 
 		public void Update(Femininity other)

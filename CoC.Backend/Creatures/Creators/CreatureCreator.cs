@@ -80,7 +80,8 @@ namespace CoC.Backend.Creatures
 		public LowerBodyType lowerBodyType;
 		//Neck
 		public NeckType neckType;
-		public byte neckLength = NeckType.MIN_NECK_LENGTH;
+		public byte neckLength = NeckType.MIN_NECK_LENGTH; //ignored if type does not support neck length.
+	
 		//Tail
 		public byte? tailCount = null;
 		public TailType tailType;
@@ -106,7 +107,9 @@ namespace CoC.Backend.Creatures
 		public Dictionary<LipPiercingLocation, PiercingJewelry> lipPiercings = null; //Lip
 		public Dictionary<NosePiercingLocation, PiercingJewelry> nosePiercings = null; //Nose
 		public SkinTexture? facialSkinTexture = null; //lets you have freckles i guess.
-													  //Eyes
+							
+		//Eyes
+		//Note: If one eye color is defined, both eyes are given that color. I'd prefer you use left eye for that purpose, but either works.
 		public EyeColor? leftEyeColor = null;
 		public EyeColor? rightEyeColor = null;
 		//Hair
@@ -118,8 +121,8 @@ namespace CoC.Backend.Creatures
 		public Dictionary<TonguePiercingLocation, PiercingJewelry> tonguePiercings = null;
 
 		//Ass
-		public AnalLooseness analLooseness = AnalLooseness.VIRGIN;
-		public AnalWetness analWetness = AnalWetness.DRY;
+		public AnalLooseness analLooseness = AnalLooseness.NORMAL;
+		public AnalWetness analWetness = AnalWetness.NORMAL;
 		public bool? assVirgin = null;
 		public byte analExperience = 0;
 
@@ -150,7 +153,11 @@ namespace CoC.Backend.Creatures
 		public bool cockVirgin = true;
 		public VaginaCreator[] vaginas = null;
 		public float? cumMultiplier = null; //if have cocks, defaults to 1, otherwise 0.
-											//Balls
+
+		//i suppose this kinda a perk, but w/e.
+		public bool hasOmnibusClit = false;
+
+		//Balls
 		public byte? numBalls;
 		public byte? ballSize;
 
@@ -170,14 +177,10 @@ namespace CoC.Backend.Creatures
 
 		//Femininity 
 		public byte? femininity;
-		//Frame data
+		//Build data
 		public byte? thickness;
 		public byte? tone;
-
-		//Butt
 		public byte? buttSize;
-
-		//Hips
 		public byte? hipSize;
 
 

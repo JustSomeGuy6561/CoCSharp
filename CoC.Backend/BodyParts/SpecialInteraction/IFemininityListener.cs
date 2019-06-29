@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {
-	internal interface IGenderListener : IGenderAware
+	internal interface IFemininityListener : IFemininityAware
 	{
 		void reactToChangeInFemininity();
 	}

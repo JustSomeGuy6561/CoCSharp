@@ -5,7 +5,7 @@
 //using CoC.Backend.Tools;
 //using System;
 //using System.Linq;
-using CoC.Backend.Engine;
+using CoC.Backend.BodyParts.SpecialInteraction;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +14,7 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class Genitals : SimpleSaveablePart<Genitals>, ITimeListenerWithOutput  //, IPerkAware
+	public sealed class Genitals : SimpleSaveablePart<Genitals>, IBodyPartTimeLazy  //, IPerkAware //for now all the stuff it contains is lazy, so that's all we need.
 	{
 		public const int MAX_COCKS = 10;
 		public const int MAX_VAGINAS = 2;
@@ -39,13 +39,13 @@ namespace CoC.Backend.BodyParts
 		public readonly Femininity femininity; //make sure to cap this if not androgynous perk.
 		public readonly Fertility fertility;
 
-		public ReadOnlyCollection<Cock> cocks => Array.AsReadOnly(_cocks.ToArray());
-		public ReadOnlyCollection<Vagina> vaginas => Array.AsReadOnly(_vaginas.ToArray());
-		public ReadOnlyCollection<Breasts> breasts => Array.AsReadOnly(_breasts.ToArray());
+		public readonly ReadOnlyCollection<Cock> cocks;
+		public readonly ReadOnlyCollection<Vagina> vaginas;
 
+		public readonly ReadOnlyCollection<Breasts> breasts;
 
-
-
+		public ReadOnlyCollection<Clit> clits => new ReadOnlyCollection<Clit>(_vaginas.ConvertAll(x => x.clit));
+		public ReadOnlyCollection<Nipples> nipples => new ReadOnlyCollection<Nipples>(_breasts.ConvertAll(x => x.nipples));
 
 		//fertility gets a class because it's not just an int, it also has a bool that determines if the creature is artificially infertile
 		//(sand witch pill, contraceptives, whatever.)
@@ -137,7 +137,6 @@ namespace CoC.Backend.BodyParts
 		private bool _hasClitCock = false;
 
 
-		private bool needsOutput = false;
 		private Genitals(Gender gender)
 		{
 			ass = Ass.GenerateDefault();
@@ -147,6 +146,8 @@ namespace CoC.Backend.BodyParts
 			_vaginas.Add(Vagina.GenerateFromGender(gender));
 			femininity = Femininity.GenerateFromGender(gender);
 			fertility = Fertility.GenerateDefault();
+
+			initHelper(out cocks, out vaginas, out breasts);
 		}
 
 		private Genitals(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, Femininity femininity, Fertility fertility)
@@ -158,6 +159,16 @@ namespace CoC.Backend.BodyParts
 			CleanCopy(vaginas, _vaginas, MAX_VAGINAS);
 			this.femininity = femininity;
 			this.fertility = fertility;
+
+			initHelper(out this.cocks, out this.vaginas, out this.breasts);
+
+		}
+
+		private void initHelper(out ReadOnlyCollection<Cock> cocks, out ReadOnlyCollection<Vagina> vaginas, out ReadOnlyCollection<Breasts> breasts)
+		{
+			cocks = new ReadOnlyCollection<Cock>(_cocks);
+			vaginas = new ReadOnlyCollection<Vagina>(_vaginas);
+			breasts = new ReadOnlyCollection<Breasts>(_breasts);
 		}
 
 		//similar in fashion to array.copy, though a bit slower as there aren't any optimizations. 
@@ -187,20 +198,27 @@ namespace CoC.Backend.BodyParts
 		{
 			return new Genitals(ass, breasts, cocks, balls, vaginas, femininity, fertility);
 		}
+		#region TimeListeners
 
-		bool ITimeListenerWithOutput.RequiresOutput => needsOutput;
-
-		void ITimeListener.ReactToTimePassing(byte hoursPassed)
+		bool IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed, out string output)
 		{
-			needsOutput = false;
-			output.Clear();
-
+			bool needsOutput = false;
+			StringBuilder outputBuilder = new StringBuilder();
+			string outputHelper;
 			//i have no clue how this would work for multi-snatch configs. 
 			foreach (var vagina in _vaginas)
 			{
-				DoTimeAware(vagina, hoursPassed);
+				if (DoLazy(vagina, isPlayer, hoursPassed, out outputHelper) && !string.IsNullOrWhiteSpace(outputHelper))
+				{
+					needsOutput = true;
+					outputBuilder.Append(outputHelper);
+				}
 			}
-			DoTimeAware(ass, hoursPassed);
+			if (DoLazy(ass, isPlayer, hoursPassed, out outputHelper))
+			{
+				needsOutput = true;
+				outputBuilder.Append(outputHelper);
+			}
 
 #warning TODO: implement this as it becomes possible.
 			//increment time since last orgasm, times since last cock cum (if applicable), time since last milked (if applicable).
@@ -213,29 +231,17 @@ namespace CoC.Backend.BodyParts
 			//If lactating and something happened via time passing(full, slowed down, etc), set needs output to true, append 
 			//the result of this to the output string builder.
 			//if some status effect relating to your genitals requires output, parse it and append it.
+
+			output = outputBuilder.ToString();
+			return needsOutput;
 		}
 
-		private void DoTimeAware(ITimeListener member, byte hoursPassed)
+		private bool DoLazy(IBodyPartTimeLazy member, bool isPlayer, byte hoursPassed, out string output)
 		{
-			member.ReactToTimePassing(hoursPassed);
-			if (member is ITimeListenerWithOutput memberWithOutput)
-			{
-				bool hasOutput = memberWithOutput.RequiresOutput;
-				needsOutput |= hasOutput;
-				if (hasOutput)
-				{
-					output.Append(memberWithOutput.Output());
-				}
-			}
+			return member.reactToTimePassing(isPlayer, hoursPassed, out output);
 		}
 
-		private readonly StringBuilder output = new StringBuilder();
-
-		string ITimeListenerWithOutput.Output()
-		{
-			return output.ToString();
-		}
-
+		#endregion
 		//allows players with clit-dicks (a hard-to-obtain omnibus trait) to appear female, and do female scenes. 
 		//NYI, but also allows players to "surprise" NPCs expecting lesbian sex (or males expecting straight sex)
 		//Not to be confused with the "traps" check - this is a check for your junk
@@ -534,24 +540,31 @@ namespace CoC.Backend.BodyParts
 
 		internal bool MakeFemale()
 		{
-			if (numCocks == 0 && !hasClitCock)
+			if (numCocks == 0 && !hasClitCock && numVaginas > 0)
 			{
 				return false;
 			}
 			RemoveCock(numCocks);
-
+			if (numVaginas == 0)
+			{
+				AddVagina(VaginaType.HUMAN);
+			}
 			hasClitCock = false;
 			return true;
 		}
 
 		internal bool MakeMale()
 		{
-			if (numVaginas == 0 && numBreastRows == 1 && _breasts[0].isMale)
+			if (numVaginas == 0 && numBreastRows == 1 && _breasts[0].isMale && numCocks > 0)
 			{
 				return false;
 			}
 			RemoveVagina(numVaginas);
 			RemoveBreastRow(numBreastRows);
+			if (numCocks == 0)
+			{
+				AddCock(CockType.HUMAN);
+			}
 			return true;
 		}
 
@@ -603,6 +616,36 @@ namespace CoC.Backend.BodyParts
 		{
 			#error FIX ME!
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		public byte feminize(byte amount)
+		{
+			return femininity.feminize(amount);
+		}
+
+		public byte masculinize(byte amount)
+		{
+			return femininity.masculinize(amount);	
+		}
+
+		public void SetFemininity(byte newValue)
+		{
+			femininity.SetFemininity(newValue);
+		}
+
+		internal void SetupFemininityAware(IFemininityAware femininityAware)
+		{
+			femininity.SetupFemininityAware(femininityAware);
+		}
+
+		internal bool RegisterFemininityListener(IFemininityListener listener)
+		{
+			return femininity.RegisterListener(listener);
+		}
+
+		internal bool DeregisterFemininityListener(IFemininityListener listener)
+		{
+			return femininity.DeregisterListener(listener);
 		}
 	}
 }

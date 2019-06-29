@@ -105,6 +105,16 @@ namespace CoC.Backend.BodyParts
 		public bool isQuadruped => legCount == QUADRUPED_LEG_COUNT;
 		public bool isSextoped => legCount == SEXTOPED_LEG_COUNT;
 		public bool isOctoped => legCount == OCTOPED_LEG_COUNT;
+
+		internal void SetupLowerBodyAware(ILowerBodyAware lowerBodyAware)
+		{
+			lowerBodyAware.GetLowerBodyData(ToLowerBodyData);
+		}
+
+		private LowerBodyData ToLowerBodyData()
+		{
+			return new LowerBodyData(type, primaryEpidermis, secondaryEpidermis);
+		}
 	}
 
 	public abstract partial class LowerBodyType : SaveableBehavior<LowerBodyType, LowerBody>

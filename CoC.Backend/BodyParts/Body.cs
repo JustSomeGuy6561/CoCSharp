@@ -49,7 +49,6 @@ namespace CoC.Backend.BodyParts
 	public sealed partial class Body : BehavioralSaveablePart<Body, BodyType>, IHairAware, IMultiDyeableCustomText, IPatternable, ISimultaneousMultiToneable, IMultiLotionableCustomText
 	{
 
-
 		private const JewelryType AVAILABLE_NAVEL_PIERCINGS = JewelryType.HORSESHOE | JewelryType.DANGLER | JewelryType.RING | JewelryType.BARBELL_STUD | JewelryType.SPECIAL;
 		//Hair, Fur, Tone
 		//private HairFurColors hairColor => hairData().hairColor;
@@ -96,6 +95,7 @@ namespace CoC.Backend.BodyParts
 			navelPiercings = new Piercing<NavelPiercingLocation>(AVAILABLE_NAVEL_PIERCINGS, PiercingLocationUnlocked);
 		}
 
+
 		//called after deserialization. We're making the following assumptions: If the bodyType is not null, its Init was called. this should be true, because we control
 		//deserialization, though i suppose if we use a method of serialization that doesn't call constructors, that wouldn't apply. Honestly though, using a serialization technique that
 		//doesnt call constructors would invite so many problems due to readonlys that it wouldn't be all that smart. If the bodyType is null, assumes mainSkin and mainFur are not null.
@@ -118,9 +118,14 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal BodyData ToBodyData()
+		private BodyData ToBodyData()
 		{
 			return new BodyData(primary, secondary, mainFur, mainSkin, hairData(), type);
+		}
+
+		internal void SetupBodyAware(IBodyAware bodyAware)
+		{
+			bodyAware.GetBodyData(ToBodyData);
 		}
 
 		#region Generate

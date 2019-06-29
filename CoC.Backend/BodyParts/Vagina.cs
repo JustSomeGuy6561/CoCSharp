@@ -3,11 +3,11 @@
 //Author: JustSomeGuy
 //1/5/2019, 5:57 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
+using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
@@ -17,11 +17,13 @@ namespace CoC.Backend.BodyParts
 		RIGHT_1, RIGHT_2, RIGHT_3, RIGHT_4, RIGHT_5, RIGHT_6
 	}
 
+	//unlike ass wetness changes, this seems fine by me. the normal case is some wetness, though dryer than that is not terribly strange.
 	public enum VaginalWetness : byte { DRY, NORMAL, WET, SLICK, DROOLING, SLAVERING }
 
-	public enum VaginalLooseness : byte { TIGHT, NORMAL, SLIGHTLY_LOOSE, LOOSE, GAPING, CLOWN_CAR_WIDE }
+	//i have, however, renamed these. gaping-wide-> gaping. gaping-> roomy. could even rename clown car to gaping-wide if clown car is a little too bizarre, but i'm kinda fond of its bizarre-ness.
+	public enum VaginalLooseness : byte { TIGHT, NORMAL, LOOSE, ROOMY, GAPING, CLOWN_CAR_WIDE }
 
-	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, ITimeListenerWithOutput
+	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, IBodyPartTimeLazy
 	{
 		private const JewelryType SUPPORTED_LABIA_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 		public readonly Clit clit;
@@ -29,6 +31,13 @@ namespace CoC.Backend.BodyParts
 
 		public VaginalWetness wetness { get; private set; }
 		public VaginalLooseness looseness { get; private set; }
+		private VaginalLooseness minVaginalLooseness = VaginalLooseness.TIGHT;
+
+		private const ushort LOOSENESS_LOOSE_TIMER = 200;
+        private const ushort LOOSENESS_ROOMY_TIMER = 100;
+        private const ushort LOOSENESS_GAPING_TIMER = 70;
+        private const ushort LOOSENESS_CLOWN_CAR_TIMER = 50;
+		private ushort vaginaTightenTimer = 0;
 
 		public readonly Piercing<LabiaPiercings> labiaPiercings;
 
@@ -173,42 +182,68 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		#region ITimeAware
-		void ITimeListener.ReactToTimePassing(byte hoursPassed)
+		#region ITimeListener
+
+		private ushort timerAmount
 		{
-			needsOutput = false;
-			outputIsTightenedUp = false;
+			get
+			{
+				if (looseness < VaginalLooseness.LOOSE)
+				{
+					return 0;
+				}
+				else if (looseness == VaginalLooseness.LOOSE)
+				{
+					return LOOSENESS_LOOSE_TIMER;
+				}
+				else if (looseness == VaginalLooseness.ROOMY)
+				{
+					return LOOSENESS_ROOMY_TIMER;
+				}
+				else if (looseness == VaginalLooseness.GAPING)
+				{
+					return LOOSENESS_GAPING_TIMER;
+				}
+				else //if (looseness >= VaginalLooseness.CLOWN_CAR_LEVEL)
+				{
+					return LOOSENESS_CLOWN_CAR_TIMER;
+				}
+			}
+		}
+
+
+
+		bool IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed, out string output)
+		{
+			bool needsOutput = false;
+			StringBuilder sb = new StringBuilder();
 			//if has a perk that makes vagina a certain looseness
 			//parse it. set any output flags accordingly.
-			/*else */
-			if (looseness > VaginalLooseness.TIGHT)
+			/*else */ if (looseness > VaginalLooseness.NORMAL && looseness > minVaginalLooseness) //whichever is greator.
 			{
 				vaginaTightenTimer += hoursPassed;
 				if (vaginaTightenTimer >= timerAmount)
 				{
-					looseness--;
+					sb.Append(VaginaTightenedUpDueToInactivity(looseness));
 					needsOutput = true;
-					outputIsTightenedUp = true;
+					looseness--;
+					vaginaTightenTimer = 0;
 				}
-				vaginaTightenTimer = 0;
 			}
 
 			else if (vaginaTightenTimer > 0)
 			{
 				vaginaTightenTimer = 0;
 			}
-		}
 
-		private byte vaginaTightenTimer = 0;
+			//if a perk exists that sets wetness to a certain level, parse it.
+			//append to sb accordingly.
 
-		bool ITimeListenerWithOutput.RequiresOutput => needsOutput;
+			//if any perk exists that sets a minimum/maximum clit length, parse it.
+			//append to sb accordingly.
 
-		private bool needsOutput = false;
-		private bool outputIsTightenedUp = false;
-
-		string ITimeListenerWithOutput.Output()
-		{
-			return VaginaTimePassedText();
+			output = sb.ToString();
+			return isPlayer && needsOutput;
 		}
 
 		#endregion

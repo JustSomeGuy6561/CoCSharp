@@ -25,6 +25,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string EggSpawnText()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 		private static string EggDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -45,6 +50,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private static string BunnySpawnText()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 		private static string BunnyDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -62,6 +72,11 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string BunnyRestoreStr(Womb oldWomb, Player player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string BasiliskSpawnText()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

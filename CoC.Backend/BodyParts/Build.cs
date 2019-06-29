@@ -87,9 +87,14 @@ namespace CoC.Backend.BodyParts
 			return new Build(DEFAULT_HEIGHT, THICKNESS_NORMAL, TONE_SOFT, Hips.AVERAGE, Butt.AVERAGE);
 		}
 
-		internal static Build Generate(byte heightInInches, byte thickness = THICKNESS_NORMAL, byte muscleTone = TONE_SOFT, byte hipSize = Hips.AVERAGE, byte buttSize = Butt.AVERAGE)
+		internal static Build Generate(byte heightInInches, byte? thickness = null, byte? muscleTone = null, byte? hipSize = null, byte? buttSize = null)
 		{
-			return new Build(heightInInches, thickness, muscleTone, hipSize, buttSize);
+			byte thick, tone, hip, butt;
+			thick = thickness ?? THICKNESS_NORMAL;
+			tone = muscleTone ?? TONE_SOFT;
+			hip = hipSize ?? Hips.AVERAGE;
+			butt = buttSize ?? Butt.AVERAGE;
+			return new Build(heightInInches, thick, tone, hip, butt);
 		}
 
 		internal static Build GenerateButtless(byte heightInInches, byte thickness = THICKNESS_NORMAL, byte muscleTone = TONE_SOFT, byte hipSize = Hips.AVERAGE)
@@ -187,6 +192,15 @@ namespace CoC.Backend.BodyParts
 		void ILowerBodyAware.GetLowerBodyData(LowerBodyDataGetter getter)
 		{
 			lowerBodyData = getter;
+		}
+
+		internal void SetupBuildAware(IBuildAware buildAware)
+		{
+			buildAware.GetBuildData(ToBuildData);
+		}
+		private BuildData ToBuildData()
+		{
+			return new BuildData(heightInInches, muscleTone, thickness, butt.size, hips.size);
 		}
 	}
 

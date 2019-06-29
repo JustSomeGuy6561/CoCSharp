@@ -6,15 +6,10 @@ namespace CoC.Backend.Tools
 {
 	public static partial class Measurement
 	{
-		private static readonly string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" };
 
 		private static string AsText(int number)
 		{
-			if (number >= numbers.Length || number < 0)
-			{
-				return number.ToString();
-			}
-			return numbers[number];
+			return Utils.Count(number);
 		}
 
 		private static string meterDesc(bool plural = false)
@@ -75,7 +70,7 @@ namespace CoC.Backend.Tools
 			{
 				sb.Append(" roughly ");
 			}
-			sb.Append(numbers[val]);
+			sb.Append(Utils.Count(val));
 			return sb.ToString();
 		}
 
@@ -100,7 +95,7 @@ namespace CoC.Backend.Tools
 					extra = " and a half";
 				}
 			}
-			return " roughly " + numbers[val] + extra;
+			return " roughly " + Utils.Count(val) + extra;
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace CoC.Backend.BodyParts
 	//This class is so much harder to implement than i thought it'd be.
 	//Edit so much later: This class is probably the most complicated i've implemented to date. I still need to add attack data.
 
-	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowShrinkable, IGenderListener, ICanAttackWith
+	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowShrinkable, IFemininityListener, ICanAttackWith
 	{
 		private readonly Femininity hornMasculinity = Femininity.GenerateDefault();
 		public override HornType type { get; protected set; }
@@ -161,13 +161,13 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		
 		#region IGenderListener
-		void IGenderAware.GetFemininityData(GenderDataGetter getter)
+		void IFemininityAware.GetFemininityData(FemininityDataGetter getter)
 		{
 			dataGetter = getter;
 		}
-		private GenderDataGetter dataGetter;
+		private FemininityDataGetter dataGetter;
 
-		void IGenderListener.reactToChangeInFemininity()
+		void IFemininityListener.reactToChangeInFemininity()
 		{
 			hornMasculinity.Update(dataGetter().femininity);
 			type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, in hornMasculinity);

@@ -3,18 +3,32 @@ using CoC.Backend.Engine;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using CoC.Backend.BodyParts.SpecialInteraction;
 namespace CoC.Backend.Pregnancies
 {
 	//need way of checking for eggs - if egg pregnancy, they can be fertalized. 
-	public sealed class PregnancyStore : SimpleSaveablePart<PregnancyStore>, ITimeListenerWithOutput //, IPerkAware for perks 
+	public sealed class PregnancyStore : SimpleSaveablePart<PregnancyStore>, ITimeActiveListener  //, IPerkAware for perks 
 	{
 #warning TODO: fix me to use perks when available.
 		private float pregnancySpeed => 1f;
-		public SpawnType spawnType { get; private set; }
-		public ushort birthCountdown => (ushort)Math.Round(hoursTilBirth); //unless a pregnancy takes 7.50 years, a ushort is enough lol.
 
-		private float hoursTilBirth; //note that this is passed in as a ushort, but we use float for more accurate pregnancy speed multiplier math. 
+		//remember, we can have eggs even if we have normal womb due to ovi elixirs. 
+		private bool? eggSize = null;
+		public bool eggSizeKnown => eggSize != null;
+		public bool eggsLarge => eggSize == true;
+
+		public SpawnType spawnType { get; private set; }
+
+		private readonly bool isVagina;
+
+		public PregnancyStore(bool isThisVagina)
+		{
+			isVagina = isThisVagina;
+		}
+
+		public ushort birthCountdown => hoursTilBirth <= 0 ? (ushort) 0 : (ushort)Math.Round(hoursTilBirth); //unless a pregnancy takes 7.50 years, a ushort is enough lol.
+
+		private float hoursTilBirth; //note that this is passed in as a ushort, but we use float for more accurate pregnancy speed multiplier math, though i suppose this opens us up to floating point rounding errors.
 
 		public bool isPregnant => spawnType != null;
 
@@ -24,10 +38,24 @@ namespace CoC.Backend.Pregnancies
 			//if pregnant: set spawnType and birthCountdown;
 		}
 
-		internal void Reset()
+		internal void SetEggSize(bool isLarge)
+		{
+			eggSize = isLarge;
+		}
+
+		internal void ClearEggSize()
+		{
+			eggSize = null;
+		}
+
+		internal void Reset(bool clearEggSize = false)
 		{
 			spawnType = null;
 			hoursTilBirth = 0;
+			if (clearEggSize)
+			{
+				eggSize = null;
+			}
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -43,32 +71,44 @@ namespace CoC.Backend.Pregnancies
 			return false;
 		}
 
-		#region ITimeAware
+		#region ITimeListener
 		void ITimeListener.ReactToTimePassing(byte hoursPassed)
 		{
 			needsOutput = false;
-			outputText = "";
+			outputBuilder.Clear();
 
 			if (isPregnant)
 			{
+				ushort oldHours = birthCountdown;
 				hoursTilBirth -= hoursPassed * pregnancySpeed;
 				if (hoursTilBirth <= 0)
 				{
-					needsOutput = true;
-					outputText = spawnType.HandleBirth();
+					spawnType.HandleBirth(isVagina);
+					if (spawnType.birthRequiresOutput)
+					{
+						needsOutput = true;
+						outputBuilder.Append(spawnType.BirthText());
+					}
+				}
+				else
+				{
+					spawnType.NotifyTimePassed(isVagina, birthCountdown, oldHours);
+					if (spawnType.NeedsOutputDueToTimePassed)
+					{
+						needsOutput = true;
+						outputBuilder.Append(spawnType.TimePassedText());
+					}
 				}
 			}
 		}
 
-		bool ITimeListenerWithOutput.RequiresOutput => needsOutput;
+		bool ITimeListenerWithShortOutput.RequiresOutput => needsOutput;
 
-		string ITimeListenerWithOutput.Output()
+		string ITimeListenerWithShortOutput.Output()
 		{
-			return outputText;
+			return outputBuilder.ToString();
 		}
 
-		private bool needsOutput = false;
-		private string outputText = "";
 		#endregion
 	}
 }

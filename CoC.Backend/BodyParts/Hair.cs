@@ -34,7 +34,7 @@ namespace CoC.Backend.BodyParts
 	//right now, my solution is to keep the old color, even if the PC is bald/NO_HAIR, but in the event this changes or someone accidently clears the color, every time the hairType changes
 	//the new type checks to see if the color is null or empty and replaces it with their default (which is not null or empty) if it is. 
 
-	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType>, IBuildAware, ISimultaneousMultiDyeable, ICanAttackWith, ITimeListenerWithOutput
+	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType>, IBuildAware, ISimultaneousMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
 		internal static readonly HairFurColors DEFAULT_COLOR = HairFurColors.BLACK;
 
@@ -381,10 +381,16 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region HairAwareHelper
-		internal HairData ToHairData()
+		private HairData ToHairData()
 		{
 			return new HairData(type, hairColor, highlightColor, style, length, isSemiTransparent, !isGrowing);
 		}
+
+		internal void SetupHairAware(IHairAware hairAware)
+		{
+			hairAware.GetHairData(ToHairData);
+		}
+
 		#endregion
 		#region Dyeable
 		byte IMultiDyeable.numDyeableMembers => 2;
@@ -489,48 +495,49 @@ namespace CoC.Backend.BodyParts
 		AttackBase ICanAttackWith.attack => type.attack;
 		bool ICanAttackWith.canAttackWith() => type.canAttackWith(this);
 		#endregion
-		#region ITimeAware
-		bool ITimeListenerWithOutput.RequiresOutput => _requiresOutput;
-		private bool _requiresOutput = false;
-
-		private readonly StringBuilder specialOutput = new StringBuilder();
-
-		string ITimeListenerWithOutput.Output()
+		#region ITimeListener
+		bool IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed, out string output)
 		{
-			return specialOutput.ToString();
-		}
-		void ITimeListener.ReactToTimePassing(byte hoursPassed)
-		{
-			_requiresOutput = false;
-			specialOutput.Clear();
+
+			bool retVal = false;
+			StringBuilder sb = new StringBuilder();
 			HairStyle hairStyle = style;
 			float newLength = length;
-			bool somethingHappened = type.reactToTimePassing(ref newLength, ref _hairColor, ref _highlightColor, ref hairStyle, hoursPassed, growthMultiplier, out string specialHappenstance);
-			style = hairStyle;
-			if (!string.IsNullOrWhiteSpace(specialHappenstance))
+			//run the hair lengthening regardless, but only do the output if it's the player.
+			if (type.reactToTimePassing(ref newLength, ref _hairColor, ref _highlightColor, ref hairStyle, hoursPassed, growthMultiplier, out string specialHappenstance) && isPlayer) 
 			{
-				specialOutput.Append(specialHappenstance);
-				_requiresOutput = true;
-			}
-			byte tallness = buildData().heightInInches;
-			if (newLength > 0 && length < 0.01)
-			{
-				specialOutput.Append(NoLongerBaldStr());
-				_requiresOutput = true;
-			}
-			else if ((newLength >= 1 && length < 1) || (newLength >= 3 && length < 3) || (newLength >= 6 && length < 6) ||
-				(newLength >= 10 && length < 10) || (newLength >= 16 && length < 16) || (newLength >= 26 && length < 26) ||
-				(newLength >= 40 && length < 40) || (newLength >= 40 && newLength >= tallness && length < tallness))
-			{
-				specialOutput.Append(HairLongerStr());
-				_requiresOutput = true;
+				if (!string.IsNullOrWhiteSpace(specialHappenstance))
+				{
+					sb.Append(specialHappenstance);
+					retVal = true;
+				}
+				byte tallness = buildData().heightInInches;
+				if (newLength > 0 && length < 0.01)
+				{
+					sb.Append(NoLongerBaldStr());
+					retVal = true;
+				}
+				else if ((newLength >= 1 && length < 1) || (newLength >= 3 && length < 3) || (newLength >= 6 && length < 6) ||
+					(newLength >= 10 && length < 10) || (newLength >= 16 && length < 16) || (newLength >= 26 && length < 26) ||
+					(newLength >= 40 && length < 40) || (newLength >= 40 && newLength >= tallness && length < tallness))
+				{
+					sb.Append(HairLongerStr());
+					retVal = true;
+
+				}
 
 			}
+			style = hairStyle;
+			length = newLength;
+
+			output = sb.ToString();
+			return retVal && isPlayer;
 		}
+
 		#endregion
 		#region BuildData
 		private BuildDataGetter buildData;
-		void IBuildAware.GetBodyData(BuildDataGetter getter)
+		void IBuildAware.GetBuildData(BuildDataGetter getter)
 		{
 			buildData = getter;
 		}

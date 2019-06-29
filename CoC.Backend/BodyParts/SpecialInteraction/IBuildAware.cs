@@ -10,6 +10,6 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 	internal interface IBuildAware
 	{
-		void GetBodyData(BuildDataGetter getter);
+		void GetBuildData(BuildDataGetter getter);
 	}
 }

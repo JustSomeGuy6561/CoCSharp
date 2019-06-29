@@ -2,16 +2,14 @@
 
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {
-	public sealed class GenderData
+	public sealed class FemininityData
 	{
 		public readonly Femininity femininity;
-		public readonly Gender gender;
 
 		//enums are passed by value, so this should be fine.
-		internal GenderData(Femininity fem, Gender g)
+		internal FemininityData(Femininity fem)
 		{
 			femininity = fem.copy();
-			gender = g;
 		}
 	}
 }

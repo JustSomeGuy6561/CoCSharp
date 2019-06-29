@@ -3,9 +3,32 @@
 //Author: JustSomeGuy
 //1/5/2019, 10:11 PM
 using CoC.Backend.Creatures;
+using System;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Vagina
+	{
+		private string VaginaTightenedUpDueToInactivity(VaginalLooseness currentLooseness)
+		{
+			string recoverText;
+
+			if (currentLooseness <= VaginalLooseness.ROOMY)
+			{
+				recoverText = " recovers from your ordeals, tightening up a bit.";
+			}
+			else if (currentLooseness == VaginalLooseness.GAPING)
+			{
+				recoverText = " recovers from your ordeals and becomes tighter.";
+			}
+			else //if (currentLooseness >= VaginalLooseness.CLOWN_CAR_WIDE)
+			{
+				recoverText = " recovers from the brutal stretching it has received and tightens up a little bit, but not much.";
+			}
+			return Environment.NewLine + "Your " + shortDescription() + recoverText + Environment.NewLine;
+
+		}
+	}
 	public partial class VaginaType
 	{
 		private static string VagHumanDesc()

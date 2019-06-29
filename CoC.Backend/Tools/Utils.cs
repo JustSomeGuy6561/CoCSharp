@@ -12,6 +12,8 @@ namespace CoC.Backend.Tools
 {
 	public static class Utils
 	{
+		private static readonly string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" };
+
 		private static Random rnd = new Random();
 
 		//Random is generic, but strongly, staticly typed.
@@ -168,6 +170,15 @@ namespace CoC.Backend.Tools
 		public static int LerpRound(int minX, int maxX, int x, int minY, int maxY)
 		{
 			return (int)Math.Round(Lerp(minX, maxX, x, minY, maxY));
+		}
+
+		public static string Count(int x)
+		{
+			if (x >= 0 && x <= 10)
+			{
+				return numbers[x];
+			}
+			else return x.ToString();
 		}
 
 	}

@@ -2,25 +2,32 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:21 PM
-using CoC.Backend.Engine;
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Tools;
+using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public enum AnalWetness : byte { DRY, NORMAL, MOIST, SLIMY, DROOLING, SLIME_DROOLING }
-	public enum AnalLooseness : byte { VIRGIN, TIGHT, NORMAL, LOOSE, STRETCHED, GAPING }
-	public sealed partial class Ass: ITimeListenerWithOutput //, IPerkAware
+	//as with looseness, anal wetness defaults to dry, so that should be normal. 
+	//Revised ruling: Normal - no wetness. a rather uncomfortable experience unless you're used to it. DAMP - slightly wet, should be considered barely self-lubricating. 
+	//Not exactly strange (especially by mareth standards), it just suggests you're rather into recieving anal penetration. obtained naturally if you have an anal fetish 
+	//or if you have a lot of experience in anal sex.
+	//moist and up: same as before. not naturally achievable, though of course TF items or interactions can cause it. 
+	public enum AnalWetness : byte { NORMAL, DAMP, MOIST, SLIMY, DROOLING, SLIME_DROOLING }
+
+	//Pretty sure normal for ass size is pretty tight. so
+
+	public enum AnalLooseness : byte { NORMAL, LOOSE, ROOMY, STRETCHED, GAPING } //if you want to add a clown car level here, may i suggest RENT_ASUNDER?
+	public sealed partial class Ass: IBodyPartTimeLazy //, IPerkAware
 	{
 		public const ushort MAX_ANAL_CAPACITY = ushort.MaxValue;
 
-		private const byte LOOSENESS_NORMAL_TIMER = 72;
-		private const byte LOOSENESS_LOOSE_TIMER = 48;
+		private const byte LOOSENESS_LOOSE_TIMER = 72;
+		private const byte LOOSENESS_ROOMY_TIMER = 48;
 		private const byte LOOSENESS_STRETCHED_TIMER = 24;
 		private const byte LOOSENESS_GAPING_TIMER = 12;
 
 		private byte buttTightenTimer = 0;
-		private bool needsOutput = false;
-		private bool outputIsTightenedUp = false;
 
 		public AnalWetness wetness
 		{
@@ -28,7 +35,7 @@ namespace CoC.Backend.BodyParts
 			private set
 			{
 				byte val = (byte)value;
-				Utils.Clamp(ref val, (byte)AnalWetness.DRY, (byte)AnalWetness.SLIME_DROOLING);
+				Utils.Clamp(ref val, (byte)AnalWetness.NORMAL, (byte)AnalWetness.SLIME_DROOLING);
 				_analWetness = (AnalWetness)val;
 			}
 		}
@@ -40,10 +47,6 @@ namespace CoC.Backend.BodyParts
 			private set
 			{
 				byte val = (byte)value;
-				if (value != AnalLooseness.VIRGIN && minAnalLooseness == AnalLooseness.VIRGIN)
-				{
-					minAnalLooseness = AnalLooseness.TIGHT;
-				}
 				//if we shrink or grow the looseness, reset the timer. 
 				if (value != _analLooseness)
 				{
@@ -53,9 +56,9 @@ namespace CoC.Backend.BodyParts
 				_analLooseness = (AnalLooseness)val;
 			}
 		}
-		private AnalLooseness _analLooseness = AnalLooseness.VIRGIN;
+		private AnalLooseness _analLooseness = AnalLooseness.NORMAL;
 
-		private AnalLooseness minAnalLooseness = AnalLooseness.VIRGIN;
+		private AnalLooseness minAnalLooseness = AnalLooseness.NORMAL;
 
 		public ushort bonusAnalCapacity { get; private set; }
 
@@ -93,6 +96,9 @@ namespace CoC.Backend.BodyParts
 		}
 		public bool virgin { get; private set; } = true;
 
+		SimpleDescriptor shortDescription => shortDesc;
+		SimpleDescriptor fullDescription => fullDesc;
+
 		private Ass()
 		{
 			looseness = 0;
@@ -119,14 +125,12 @@ namespace CoC.Backend.BodyParts
 			//if not set or explicitly null
 			if (virginAnus == null)
 			{
-				ass.virgin = analLooseness == AnalLooseness.VIRGIN;
+				ass.virgin = analLooseness == AnalLooseness.NORMAL;
 			}
-			//if set and anus is not virgin looseness
-			else if (analLooseness != AnalLooseness.VIRGIN)
+			else
 			{
 				ass.virgin = (bool)virginAnus;
 			}
-			//else ass is virgin looseness. virgin defaults to true, so we don't need to set it here.
 			return ass;
 		}
 
@@ -185,6 +189,9 @@ namespace CoC.Backend.BodyParts
 		{
 			wetness = analWetness;
 		}
+		
+
+
 		//move this helper to the creature class.
 		////takes a cock, optionally attempting to impregnate the character with it. 
 		//internal bool analSex(Cock cock, bool canPreggers = false, byte analExperienceGained = 1)
@@ -218,10 +225,6 @@ namespace CoC.Backend.BodyParts
 			{
 				looseness++;
 			}
-			else if (looseness == AnalLooseness.VIRGIN)
-			{
-				looseness++;
-			}
 			if (penetratorArea >= capacity / 2)
 			{
 				buttTightenTimer = 0;
@@ -236,17 +239,17 @@ namespace CoC.Backend.BodyParts
 		{
 			get
 			{
-				if (looseness < AnalLooseness.NORMAL)
+				if (looseness < AnalLooseness.LOOSE)
 				{
 					return 0;
-				}
-				else if (looseness == AnalLooseness.NORMAL)
-				{
-					return LOOSENESS_NORMAL_TIMER;
 				}
 				else if (looseness == AnalLooseness.LOOSE)
 				{
 					return LOOSENESS_LOOSE_TIMER;
+				}
+				else if (looseness == AnalLooseness.ROOMY)
+				{
+					return LOOSENESS_ROOMY_TIMER;
 				}
 				else if (looseness == AnalLooseness.STRETCHED)
 				{
@@ -258,10 +261,11 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		void ITimeListener.ReactToTimePassing(byte hoursPassed)
+
+		bool IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed, out string output)
 		{
-			needsOutput = false;
-			outputIsTightenedUp = false;
+			bool needsOutput = false;
+			StringBuilder outputBuilder = new StringBuilder();
 			//if has a perk that makes ass a certain looseness
 			//parse it. set any output flags accordingly.
 			/*else */if (looseness > minAnalLooseness)
@@ -269,24 +273,24 @@ namespace CoC.Backend.BodyParts
 				buttTightenTimer += hoursPassed;
 				if (buttTightenTimer >= timerAmount)
 				{
+					if (isPlayer)
+					{
+						needsOutput = true;
+						outputBuilder.Append(AssTightenedUpDueToInactivity(looseness));
+					}
 					looseness--;
-					needsOutput = true;
-					outputIsTightenedUp = true;
+					buttTightenTimer = 0;
 				}
-				buttTightenTimer = 0;
 			}
 
 			else if (buttTightenTimer > 0)
 			{
 				buttTightenTimer = 0;
 			}
+
+			output = outputBuilder.ToString();
+			return needsOutput;
 		}
 
-		bool ITimeListenerWithOutput.RequiresOutput => needsOutput;
-
-		string ITimeListenerWithOutput.Output()
-		{
-			return AssTimePassedOutput();
-		}
 	}
 }

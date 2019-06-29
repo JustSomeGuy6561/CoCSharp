@@ -116,7 +116,7 @@ namespace CoC.Frontend.Creatures
 				ballSize = 5,
 				heightInInches = 67,
 				//Butt: Loose"
-				analLooseness = AnalLooseness.LOOSE,
+				analLooseness = AnalLooseness.ROOMY,
 				assVirgin = false,
 				//Skin: Purple
 				complexion = Tones.PURPLE,
@@ -177,7 +177,7 @@ namespace CoC.Frontend.Creatures
 							[LabiaPiercings.RIGHT_1] = labiaPiercing(), [LabiaPiercings.RIGHT_2] = labiaPiercing(), [LabiaPiercings.RIGHT_5] = labiaPiercing(), [LabiaPiercings.RIGHT_6] = labiaPiercing()
 						})
 				},
-				analLooseness = AnalLooseness.TIGHT,
+				analLooseness = AnalLooseness.NORMAL,
 				assVirgin = false,
 				tailType = TailType.FOX,
 				tailCount = 9,
@@ -667,7 +667,7 @@ namespace CoC.Frontend.Creatures
 				forceDefaultGender = true,
 
 				//428347355782040	Character Creation	Female,wetness=wet, Looseness=normal,not a virgin, Fertility high i guess i dont really care can be up to you.	for her face normal human, ears i want Elvin, no tails, just normal skin, body thickness i want to be slender, body tone kinda athletic but not too much, hair i want really long i think like a 30 on the codex number i think and her hair color light blonde, i want her to have normal D size breast with you can choose how you want them really though i dont think i really care, nipple size i dont care, her skin color a fair light light color but not too pale, for her starting equipment i want im not sure what i want her to wear but basically i want a Elvin archer with a bow. so maybe you can do something about the clothing. i just want a Elvin character in the game since theres goblins plus another archer besides kelt a female one add to that.	Lucina
-				vaginas = new VaginaCreator[] { new VaginaCreator(null, VaginalWetness.SLICK, VaginalLooseness.SLIGHTLY_LOOSE, false) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(null, VaginalWetness.SLICK, VaginalLooseness.LOOSE, false) },
 				femininity = 80,
 				fertility = 40,
 				earType = EarType.ELFIN,
@@ -742,7 +742,7 @@ namespace CoC.Frontend.Creatures
 				tone = 20,
 				fertility = 10,
 				hairLength = 15,
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f, VaginalWetness.SLICK, VaginalLooseness.SLIGHTLY_LOOSE, false) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f, VaginalWetness.SLICK, VaginalLooseness.LOOSE, false) },
 				heightInInches = 67,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.E) },
 				hipSize = 12,
@@ -836,7 +836,7 @@ namespace CoC.Frontend.Creatures
 				strength = 18,
 				fertility = 20,
 				hairLength = 15,
-				vaginas = new VaginaCreator[] { new VaginaCreator(VaginaType.EQUINE, 0.5f, VaginalWetness.SLICK, VaginalLooseness.SLIGHTLY_LOOSE, false) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(VaginaType.EQUINE, 0.5f, VaginalWetness.SLICK, VaginalLooseness.LOOSE, false) },
 				assVirgin = false,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.DD) },
 				cocks = new CockCreator[] { new CockCreator(CockType.HORSE, 14, 2.5f) },
@@ -893,7 +893,7 @@ namespace CoC.Frontend.Creatures
 				//Looseness- Normal Starting Value
 				//Clit-size- Normal Value"
 				vaginas = new VaginaCreator[] { new VaginaCreator(VaginaType.SAND_TRAP, 0.25f, VaginalWetness.SLICK, VaginalLooseness.NORMAL, false) },
-				analLooseness = AnalLooseness.TIGHT,
+				analLooseness = AnalLooseness.NORMAL,
 				assVirgin = false,
 				//Face- Canine
 				faceType = FaceType.DOG,
@@ -989,7 +989,7 @@ namespace CoC.Frontend.Creatures
 				//Muscle: 75/100"
 				tone = 75,
 				//for wetness a squirter, looseness a 2 and capacity at 140.
-				vaginas = new VaginaCreator[] { new VaginaCreator(vaginalWetness: VaginalWetness.SLAVERING, vaginalLooseness: VaginalLooseness.SLIGHTLY_LOOSE, isVirgin: true) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(vaginalWetness: VaginalWetness.SLAVERING, vaginalLooseness: VaginalLooseness.LOOSE, isVirgin: true) },
 				//Virgin, high fertility like in the email I sent before.  dragon wings, nine fox tails,  dragon legs, eight DD breasts with four fuckable nipples each, dragon tongue, waist length hair, large dragon wings.
 				wingType = WingType.DRACONIC,
 				largeWings = true,
@@ -1030,7 +1030,7 @@ namespace CoC.Frontend.Creatures
 				//virgin bum
 				analLooseness = 0,
 				//anal wetness 1
-				analWetness = AnalWetness.NORMAL,
+				analWetness = AnalWetness.DAMP,
 				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 11, 2, 1.2f) },
 				numBalls = 0,
 				ballSize = 0,
@@ -1460,7 +1460,7 @@ namespace CoC.Frontend.Creatures
 				cumMultiplier = 500, // don't ask how it works, copyright for this potion was sold for Joey
 
 				analWetness = AnalWetness.MOIST, // moist
-				analLooseness = AnalLooseness.TIGHT, // not virgin
+				analLooseness = AnalLooseness.NORMAL, // not virgin
 				assVirgin = false,
 
 				cocks = new CockCreator[] { new CockCreator(CockType.TENTACLE, 12, 1.3f, 1.5f), new CockCreator(CockType.TENTACLE, 12, 1.3f, 1.5f), new CockCreator(CockType.TENTACLE, 12, 1.3f, 1.5f) },
@@ -1832,7 +1832,7 @@ namespace CoC.Frontend.Creatures
 				cockVirgin = false,
 
 				//stretched butt with toys, but has never had anal sex.
-				analLooseness = AnalLooseness.NORMAL,
+				analLooseness = AnalLooseness.LOOSE,
 				assVirgin = true,
 
 				//no balls
@@ -1841,7 +1841,7 @@ namespace CoC.Frontend.Creatures
 
 				//strangely, clit grew slightly with achemical accident. more blood to the area, i guess.
 				//again, stretched via toys, but never had vaginal sex.
-				vaginas = new VaginaCreator[] { new VaginaCreator(1f, VaginalWetness.WET, VaginalLooseness.SLIGHTLY_LOOSE, true) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(1f, VaginalWetness.WET, VaginalLooseness.LOOSE, true) },
 
 				//formerly C Cup, shrunk by the accident. Let's make use of that new inverted option - slightly. 
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.A, 1) },
