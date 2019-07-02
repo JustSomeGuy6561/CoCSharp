@@ -6,6 +6,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,15 +27,19 @@ namespace CoC.Backend.BodyParts
 	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, IBodyPartTimeLazy, IBaseStatPerkAware
 	{
 		private const JewelryType SUPPORTED_LABIA_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
+
+		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
+		public const ushort MAX_VAGINAL_CAPACITY = ushort.MaxValue;
+
 		public readonly Clit clit;
 
-		private BasePerkDataGetter baseStats;
+		private PerkStatBonusGetter baseStats;
 
-		private VaginalLooseness minLooseness => baseStats?.Invoke().minVaginalLooseness ?? VaginalLooseness.TIGHT; //now safe for initializers.
-		private VaginalLooseness maxLooseness => baseStats?.Invoke().maxVaginalLooseness ?? VaginalLooseness.CLOWN_CAR_WIDE; //see above.
+		public VaginalLooseness minLooseness { get; private set; }
+		public VaginalLooseness maxLooseness { get; private set; }
 
-		private VaginalWetness minWetness => baseStats?.Invoke().minVaginalWetness ?? VaginalWetness.DRY;
-		private VaginalWetness maxWetness => baseStats?.Invoke().minVaginalWetness ?? VaginalWetness.SLAVERING;
+		public VaginalWetness minWetness { get; private set; }
+		public VaginalWetness maxWetness { get; private set; }
 
 		public VaginalWetness wetness
 		{
@@ -49,13 +54,35 @@ namespace CoC.Backend.BodyParts
 			private set => _looseness = Utils.ClampEnum2(value, minLooseness, maxLooseness);
 		}
 		private VaginalLooseness _looseness;
+
+		public ushort numTimesVaginal { get; private set; } = 0;
+
 		public bool virgin { get; private set; }
 
+		public ushort bonusVaginalCapacity { get; private set; } = 0;
+
+		private ushort perkBonusVaginalCapacity => baseStats?.Invoke().PerkBasedBonusVaginalCapacity ?? 0;
+		public ushort VaginalCapacity()
+		{
+
+			byte loose = (byte)looseness;
+			if (!virgin)
+			{
+				loose++;
+			}
+			byte wet = ((byte)wetness).add(1);
+			uint cap = (uint)Math.Floor(BASE_CAPACITY + bonusVaginalCapacity + perkBonusVaginalCapacity /*+ experience / 10*/ + 6 * loose * loose * wet / 10.0);
+			if (cap > MAX_VAGINAL_CAPACITY)
+			{
+				return MAX_VAGINAL_CAPACITY;
+			}
+			return (ushort)cap;
+		}
 
 		private const ushort LOOSENESS_LOOSE_TIMER = 200;
-        private const ushort LOOSENESS_ROOMY_TIMER = 100;
-        private const ushort LOOSENESS_GAPING_TIMER = 70;
-        private const ushort LOOSENESS_CLOWN_CAR_TIMER = 50;
+		private const ushort LOOSENESS_ROOMY_TIMER = 100;
+		private const ushort LOOSENESS_GAPING_TIMER = 70;
+		private const ushort LOOSENESS_CLOWN_CAR_TIMER = 50;
 		private ushort vaginaTightenTimer = 0;
 
 		public readonly Piercing<LabiaPiercings> labiaPiercings;
@@ -120,7 +147,7 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal static Vagina GenerateOmnibus(VaginaType vaginaType, float clitLength = 5.0f, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, 
+		internal static Vagina GenerateOmnibus(VaginaType vaginaType, float clitLength = 5.0f, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT,
 			VaginalWetness vaginalWetness = VaginalWetness.NORMAL, bool virgin = false, bool clitCockVirgin = true)
 		{
 			Vagina retVal = new Vagina(clitLength)
@@ -130,7 +157,7 @@ namespace CoC.Backend.BodyParts
 			retVal.ActivateOmnibusClit();
 			return retVal;
 		}
-		
+
 		#endregion
 		#region Update
 
@@ -184,9 +211,223 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		//public 
+		internal byte StretchVagina(byte amount = 1)
+		{
+
+			VaginalLooseness oldLooseness = looseness;
+			looseness = looseness.ByteEnumAdd(amount);
+			return looseness - oldLooseness;
+		}
+
+		internal byte ShrinkVagina(byte amount = 1)
+		{
+
+			VaginalLooseness oldLooseness = looseness;
+			looseness = looseness.ByteEnumSubtract(amount);
+			return oldLooseness - looseness;
+		}
+
+		internal bool SetVaginalLooseness(VaginalLooseness Looseness)
+		{
+			if (Looseness >= minLooseness && Looseness <= maxLooseness)
+			{
+				looseness = Looseness;
+				return true;
+			}
+			return false;
+		}
+
+		internal byte MakeWetter(byte amount = 1)
+		{
+			VaginalWetness oldWetness = wetness;
+			wetness = wetness.ByteEnumAdd(amount);
+			return wetness - oldWetness;
+		}
+
+		internal byte MakeDrier(byte amount = 1)
+		{
+			VaginalWetness oldWetness = wetness;
+			wetness = wetness.ByteEnumSubtract(amount);
+			return oldWetness - wetness;
+		}
+		internal bool SetVaginalWetness(VaginalWetness Wetness)
+		{
+			if (Wetness >= minWetness && Wetness <= maxWetness)
+			{
+				wetness = Wetness;
+				return true;
+			}
+			return false;
+		}
+
+		internal ushort AddBonusCapacity(ushort amountToAdd)
+		{
+			ushort currentCapacity = bonusVaginalCapacity;
+			bonusVaginalCapacity = bonusVaginalCapacity.add(amountToAdd);
+			return bonusVaginalCapacity.subtract(currentCapacity);
+		}
+
+		internal ushort SubtractBonusCapacity(ushort amountToRemove)
+		{
+			ushort currentCapacity = bonusVaginalCapacity;
+			bonusVaginalCapacity = bonusVaginalCapacity.subtract(amountToRemove);
+			return bonusVaginalCapacity.subtract(currentCapacity);
+		}
+
+		internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
+		{
+			VaginalLooseness looseness = minLooseness;
+			minLooseness = minLooseness.ByteEnumAdd(amount);
+			if (minLooseness > maxLooseness)
+			{
+				if (forceIncreaseMax)
+				{
+					maxLooseness = minLooseness;
+				}
+				else
+				{
+					minLooseness = maxLooseness;
+				}
+			}
+			return minLooseness - looseness;
+		}
+		internal byte DecreaseMinimumLooseness(byte amount = 1)
+		{
+			VaginalLooseness looseness = minLooseness;
+			minLooseness = minLooseness.ByteEnumSubtract(amount);
+			return looseness - minLooseness;
+		}
+		internal void SetMinLoosness(VaginalLooseness newValue)
+		{
+			minLooseness = newValue;
+		}
+
+		internal byte IncreaseMaximumLooseness(byte amount = 1)
+		{
+			VaginalLooseness looseness = maxLooseness;
+			maxLooseness = maxLooseness.ByteEnumSubtract(amount);
+			return maxLooseness - looseness;
+		}
+		internal byte DecreaseMaximumLooseness(byte amount = 1, bool forceDecreaseMin = false)
+		{
+			VaginalLooseness looseness = minLooseness;
+			maxLooseness = maxLooseness.ByteEnumSubtract(amount);
+			if (minLooseness > maxLooseness)
+			{
+				if (forceDecreaseMin)
+				{
+					minLooseness = maxLooseness;
+				}
+				else
+				{
+					maxLooseness = minLooseness;
+				}
+			}
+			return looseness - maxLooseness;
+		}
+		internal void SetMaxLoosness(VaginalLooseness newValue)
+		{
+			maxLooseness = newValue;
+		}
+
+		internal byte IncreaseMinimumWetness(byte amount = 1, bool forceIncreaseMax = false)
+		{
+			VaginalWetness wetness = minWetness;
+			minWetness = minWetness.ByteEnumAdd(amount);
+			if (minWetness > maxWetness)
+			{
+				if (forceIncreaseMax)
+				{
+					maxWetness = minWetness;
+				}
+				else
+				{
+					minWetness = maxWetness;
+				}
+			}
+			return minWetness - wetness;
+		}
+		internal byte DecreaseMinimumWetness(byte amount = 1)
+		{
+			VaginalWetness wetness = minWetness;
+			minWetness = minWetness.ByteEnumSubtract(amount);
+			return wetness - minWetness;
+		}
+		internal void SetMinWetness(VaginalWetness newValue)
+		{
+			minWetness = newValue;
+		}
+		internal byte IncreaseMaximumWetness(byte amount = 1)
+		{
+			VaginalWetness wetness = maxWetness;
+			maxWetness = maxWetness.ByteEnumSubtract(amount);
+			return maxWetness - wetness;
+		}
+		internal byte DecreaseMaximumWetness(byte amount = 1, bool forceDecreaseMin = false)
+		{
+			VaginalWetness wetness = minWetness;
+			maxWetness = maxWetness.ByteEnumSubtract(amount);
+			if (minWetness > maxWetness)
+			{
+				if (forceDecreaseMin)
+				{
+					minWetness = maxWetness;
+				}
+				else
+				{
+					maxWetness = minWetness;
+				}
+			}
+			return wetness - maxWetness;
+		}
+		internal void SetMaxWetness(VaginalWetness newValue)
+		{
+			maxWetness = newValue;
+		}
 
 		#endregion
+		#region Unique Functions
+		internal bool VaginalSex(ushort penetratorArea)
+		{
+			numTimesVaginal++;
+			return PenetrateVagina(penetratorArea, true);
+		}
+		internal bool PenetrateVagina(ushort penetratorArea, bool takeVirginity = false)
+		{
+
+			//experience = experience.add(ExperiencedGained);
+			VaginalLooseness oldLooseness = looseness;
+			ushort capacity = VaginalCapacity();
+
+			//don't have to worry about overflow, as +1 will never overflow our artificial max.
+			if (penetratorArea >= capacity * 1.5f)
+			{
+				looseness++;
+			}
+			else if (penetratorArea >= capacity && Utils.RandBool())
+			{
+				looseness++;
+			}
+			else if (penetratorArea >= capacity * 0.9f && Utils.Rand(4) == 0)
+			{
+				looseness++;
+			}
+			else if (penetratorArea >= capacity * 0.75f && Utils.Rand(10) == 0)
+			{
+				looseness++;
+			}
+			if (penetratorArea >= capacity / 2)
+			{
+				vaginaTightenTimer = 0;
+			}
+			if (virgin && takeVirginity)
+			{
+				virgin = false;
+			}
+			return oldLooseness != looseness;
+		}
+		#endregion
+
 		#region Clit Helpers
 		public bool omnibusClit => clit.omnibusClit;
 
@@ -287,9 +528,10 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Base Stat Perk
-		void IBaseStatPerkAware.GetBasePerkStats(BasePerkDataGetter getter)
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			baseStats = getter;
+			clit.GetBasePerkStats(getter);
 		}
 		#endregion
 	}

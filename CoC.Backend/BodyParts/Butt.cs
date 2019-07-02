@@ -11,7 +11,7 @@ namespace CoC.Backend.BodyParts
 	//it's literally just a wrapper for an int.
 	//but now it has validation! woo!
 	//oh, and a descriptor.
-	public sealed partial class Butt : SimpleSaveablePart<Butt>, IGrowShrinkable //IPerkAware? no idea if this thing uses perks.
+	public sealed partial class Butt : SimpleSaveablePart<Butt>, IGrowShrinkable
 	{
 		public const byte BUTTLESS = 0;
 

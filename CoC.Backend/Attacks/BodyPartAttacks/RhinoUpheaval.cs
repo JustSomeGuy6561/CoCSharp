@@ -1,4 +1,8 @@
-﻿using System;
+﻿//RhinoUpheaval.cs
+//Description:
+//Author: JustSomeGuy
+//4/29/2019, 12:18 AM
+using System;
 using System.Collections.Generic;
 using System.Text;
 using CoC.Backend.Creatures;

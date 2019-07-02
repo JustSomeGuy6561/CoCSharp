@@ -31,7 +31,7 @@ namespace CoC.Backend.BodyParts
 
 	public enum NippleStatus { NORMAL, FULLY_INVERTED, SLIGHTLY_INVERTED, FUCKABLE, DICK_NIPPLE }
 	public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
-	public sealed partial class Nipples : SimpleSaveablePart<Nipples>, IGrowShrinkable
+	public sealed partial class Nipples : SimpleSaveablePart<Nipples>, IGrowShrinkable, IBaseStatPerkAware
 	{
 		public const float MIN_NIPPLE_LENGTH = 0.25f;
 		public const float MAX_NIPPLE_LENGTH = 50f;
@@ -104,16 +104,24 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		internal float GrowNipple(float growAmount)
+		internal float GrowNipple(float growAmount, bool ignorePerk = false)
 		{
 			float oldLength = length;
+			if (!ignorePerk)
+			{
+				growAmount *= perkData().NippleGrowthMultiplier;
+			}
 			length += growAmount;
 			return length - oldLength;
 		}
 
-		internal float ShrinkNipple(float shrinkAmount)
+		internal float ShrinkNipple(float shrinkAmount, bool ignorePerk = false)
 		{
 			float oldLength = length;
+			if (!ignorePerk)
+			{
+				shrinkAmount *= perkData().NippleShrinkMultiplier;
+			}
 			length -= shrinkAmount;
 			return oldLength - length;
 		}
@@ -132,8 +140,12 @@ namespace CoC.Backend.BodyParts
 		{
 			nippleStatus = status;
 		}
+		private bool PiercingLocationUnlocked(NipplePiercings piercingLocation)
+		{
+			return true;
+		}
 
-
+		#region GrowShrink
 		bool IGrowShrinkable.CanGrowPlus()
 		{
 			return length < MAX_NIPPLE_LENGTH;
@@ -172,14 +184,20 @@ namespace CoC.Backend.BodyParts
 			}
 			return oldLength - length;
 		}
+		#endregion
 
-		private bool PiercingLocationUnlocked(NipplePiercings piercingLocation)
+		#region Perk Aware
+		private PerkStatBonusGetter perkData;
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
-			return true;
+			perkData = getter;
 		}
-
-		
-
+		private IBaseStatPerkAware aware => this;
+		internal void GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			aware.GetBasePerkStats(getter);
+		}
+		#endregion
 
 		//revert inverted nipple with piercing countdown/countup timer.
 		//	public void ReactToTimePassing(uint hoursPassed)

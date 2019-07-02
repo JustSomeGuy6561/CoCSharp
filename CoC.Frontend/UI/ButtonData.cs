@@ -1,4 +1,8 @@
-﻿using System;
+﻿//ButtonData.cs
+//Description:
+//Author: JustSomeGuy
+//6/10/2019, 7:52 PM
+using System;
 using System.Collections.ObjectModel;
 
 namespace CoC.Frontend.UI

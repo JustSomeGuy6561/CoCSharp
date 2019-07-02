@@ -1,4 +1,8 @@
-﻿namespace CoC.Frontend.Items.Materials.Jewelry
+﻿//Crimstone.cs
+//Description:
+//Author: JustSomeGuy
+//6/19/2019, 12:57 AM
+namespace CoC.Frontend.Items.Materials.Jewelry
 {
 	internal sealed partial class Crimstone
 	{

@@ -1,4 +1,8 @@
-﻿namespace CoC.Frontend.Items.Materials.Jewelry
+﻿//Silver.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 8:09 AM
+namespace CoC.Frontend.Items.Materials.Jewelry
 {
 	internal sealed partial class Silver
 	{

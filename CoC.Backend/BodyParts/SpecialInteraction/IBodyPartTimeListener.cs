@@ -1,4 +1,8 @@
-﻿
+﻿//IBodyPartTimeListener.cs
+//Description:
+//Author: JustSomeGuy
+//6/28/2019, 8:13 PM
+
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {
 	//body part variant of time listeners. these have a unique bool so different actions can be taken if it's not the player. 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿//Obsidian.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 7:44 AM
+using System;
 using System.Collections.Generic;
 using System.Text;
 

@@ -1,4 +1,8 @@
-﻿using CoC.Backend.BodyParts;
+﻿//CreatureCreator.cs
+//Description:
+//Author: JustSomeGuy
+//3/22/2019, 6:12 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Items.Wearables.Piercings;
 using System.Collections.Generic;
@@ -81,7 +85,7 @@ namespace CoC.Backend.Creatures
 		//Neck
 		public NeckType neckType;
 		public byte neckLength = NeckType.MIN_NECK_LENGTH; //ignored if type does not support neck length.
-	
+
 		//Tail
 		public byte? tailCount = null;
 		public TailType tailType;
@@ -107,7 +111,7 @@ namespace CoC.Backend.Creatures
 		public Dictionary<LipPiercingLocation, PiercingJewelry> lipPiercings = null; //Lip
 		public Dictionary<NosePiercingLocation, PiercingJewelry> nosePiercings = null; //Nose
 		public SkinTexture? facialSkinTexture = null; //lets you have freckles i guess.
-							
+
 		//Eyes
 		//Note: If one eye color is defined, both eyes are given that color. I'd prefer you use left eye for that purpose, but either works.
 		public EyeColor? leftEyeColor = null;

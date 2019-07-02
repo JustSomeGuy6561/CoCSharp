@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//CombatCreatureCreator.cs
+//Description:
+//Author: JustSomeGuy
+//3/22/2019, 6:12 PM
 
 namespace CoC.Backend.Creatures
 {

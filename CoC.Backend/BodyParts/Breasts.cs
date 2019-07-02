@@ -5,16 +5,19 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
-
+using System;
 
 namespace CoC.Backend.BodyParts
 {
 
-	public sealed class Breasts : SimpleSaveablePart<Breasts>, IGrowShrinkable //IPerkAware
+	public sealed class Breasts : SimpleSaveablePart<Breasts>, IGrowShrinkable, IBaseStatPerkAware
 	{
+		PerkStatBonusGetter modifierData;
 
-		#warning replace this later when a perk system is in place
-		private bool hasBigTitPerk => BackendSessionData.data.hasBigTitPerk;
+		private float bigTiddyMultiplier => modifierData().TitsGrowthMultiplier;
+		private float tinyTiddyMultiplier => modifierData().TitsShrinkMultiplier;
+		private bool makeBigTits => bigTiddyMultiplier > 1.1f;
+		private bool makeSmallTits => tinyTiddyMultiplier > 1.1f;
 
 		public CupSize cupSize
 		{
@@ -58,24 +61,34 @@ namespace CoC.Backend.BodyParts
 			return new Breasts(cup, nippleLength);
 		}
 
-		internal byte GrowBreasts(byte byAmount)
+		internal byte GrowBreasts(byte byAmount, bool ignorePerks = false)
 		{
 			if (cupSize >= CupSize.JACQUES00)
 			{
 				return 0;
 			}
 			CupSize oldSize = cupSize;
+			if (!ignorePerks)
+			{
+				ushort val = (ushort)Math.Round(byAmount * bigTiddyMultiplier);
+				byAmount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
+			}
 			cupSize = cupSize.ByteEnumAdd(byAmount);
 			return cupSize - oldSize;
 		}
 
-		internal byte ShrinkBreasts(byte byAmount)
+		internal byte ShrinkBreasts(byte byAmount, bool ignorePerks = false)
 		{
 			if (cupSize <= CupSize.FLAT)
 			{
 				return 0;
 			}
 			CupSize oldSize = cupSize;
+			if (!ignorePerks)
+			{
+				ushort val = (ushort)Math.Round(byAmount * tinyTiddyMultiplier);
+				byAmount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
+			}
 			cupSize = cupSize.ByteEnumSubtract(byAmount);
 			return cupSize - oldSize;
 		}
@@ -104,7 +117,7 @@ namespace CoC.Backend.BodyParts
 			CupSize oldSize = cupSize;
 			this.cupSize += (byte)(Utils.Rand(2) + 1);
 			//c# is a bitch in that all numbers are treated as ints or doubles unless explicitly cast - byte me
-			this.cupSize += (byte)(hasBigTitPerk && Utils.RandBool() ? 1 : 0); //add one for big tits perk 50% of the time
+			this.cupSize += (byte)(makeBigTits && Utils.RandBool() ? 1 : 0); //add one for big tits perk 50% of the time
 			return cupSize - oldSize;
 		}
 
@@ -115,7 +128,7 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			CupSize oldSize = cupSize;
-			if (cupSize == CupSize.A || hasBigTitPerk || Utils.RandBool())
+			if (cupSize == CupSize.A || !makeSmallTits || Utils.RandBool())
 			{
 				cupSize--;
 			}
@@ -166,6 +179,12 @@ namespace CoC.Backend.BodyParts
 		{
 			cupSize = cupSize;
 			return nipples.Validate(correctInvalidData);
+		}
+
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			modifierData = getter;
+			nipples.GetBasePerkStats(getter);
 		}
 	}
 }

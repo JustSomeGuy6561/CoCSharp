@@ -1,4 +1,8 @@
-﻿
+﻿//SimpleSaveablePart.cs
+//Description:
+//Author: JustSomeGuy
+//3/26/2019, 8:40 PM
+
 
 namespace CoC.Backend.BodyParts
 {

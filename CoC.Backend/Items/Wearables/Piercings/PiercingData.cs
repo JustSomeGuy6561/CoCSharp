@@ -1,4 +1,8 @@
-﻿using System;
+﻿//PiercingData.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 11:55 PM
+using System;
 using System.Collections.Generic;
 using System.Text;
 

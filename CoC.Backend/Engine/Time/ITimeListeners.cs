@@ -1,8 +1,9 @@
-﻿using CoC.Backend.Tools;
+﻿//ITimeListeners.cs
+//Description:
+//Author: JustSomeGuy
+//6/29/2019, 11:55 PM
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoC.Backend.Engine.Time
 {

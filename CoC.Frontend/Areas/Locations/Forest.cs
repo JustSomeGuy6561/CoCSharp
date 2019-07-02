@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Areas;
+﻿//Forest.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 8:26 PM
+using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
 using CoC.Frontend.Encounters.Common;
 using CoC.Frontend.Encounters.Forest;

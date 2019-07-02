@@ -1,4 +1,8 @@
-﻿using CoC.Backend.BodyParts;
+﻿//PlayerHelper.cs
+//Description:
+//Author: JustSomeGuy
+//2/27/2019, 10:07 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using static CoC.Frontend.UI.TextOutput;
 

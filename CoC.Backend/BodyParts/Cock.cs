@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 10:55 PM
+
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
@@ -22,7 +23,7 @@ namespace CoC.Backend.BodyParts
 	//well, mostly. knots were still a pain.
 	//whoever decided to use the AS3 equivalent hack for an enum, though, not so much. that was some ugly ass shit.
 
-	public sealed class Cock : BehavioralSaveablePart<Cock, CockType>, IGrowShrinkable// IPerkAware.
+	public sealed class Cock : BehavioralSaveablePart<Cock, CockType>, IGrowShrinkable, IBaseStatPerkAware
 	{
 		//TODO: Make this iperkaware for big cock perk.
 

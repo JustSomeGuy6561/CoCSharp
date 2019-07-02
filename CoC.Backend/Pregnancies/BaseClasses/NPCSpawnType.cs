@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//NPCSpawnType.cs
+//Description:
+//Author: JustSomeGuy
+//6/27/2019, 5:04 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 
 namespace CoC.Backend.Pregnancies

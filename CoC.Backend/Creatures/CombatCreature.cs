@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Perks;
+﻿//CombatCreature.cs
+//Description:
+//Author: JustSomeGuy
+//2/20/2019, 4:14 PM
+using CoC.Backend.Perks;
 
 namespace CoC.Backend.Creatures
 {

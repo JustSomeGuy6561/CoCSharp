@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Items.Materials;
+﻿//PiercingJewelry.cs
+//Description:
+//Author: JustSomeGuy
+//4/11/2019, 9:22 PM
+using CoC.Backend.Items.Materials;
 using System;
 
 namespace CoC.Backend.Items.Wearables.Piercings

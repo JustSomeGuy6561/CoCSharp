@@ -1,4 +1,8 @@
-﻿using CoC.Backend.CoC_Colors;
+﻿//BodyHelpers.cs
+//Description:
+//Author: JustSomeGuy
+//4/25/2019, 12:30 AM
+using CoC.Backend.CoC_Colors;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,4 +1,8 @@
-﻿using CoC.Frontend.SaveData;
+﻿//Jojo.cs
+//Description:
+//Author: JustSomeGuy
+//4/6/2019, 12:10 AM
+using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Text;

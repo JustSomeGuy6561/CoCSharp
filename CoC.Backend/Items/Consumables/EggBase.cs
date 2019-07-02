@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Tools;
+﻿//EggBase.cs
+//Description:
+//Author: JustSomeGuy
+//6/27/2019, 6:30 PM
+using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

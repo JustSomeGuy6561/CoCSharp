@@ -1,4 +1,9 @@
-﻿//Controller.cs
+﻿//ModelView.cs
+//Description:
+//Author: JustSomeGuy
+//2/27/2019, 10:15 PM
+
+//Controller.cs
 //Description:
 //Author: JustSomeGuy
 //1/19/2019, 8:01 PM

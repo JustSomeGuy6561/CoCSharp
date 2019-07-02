@@ -1,4 +1,8 @@
-﻿namespace CoC.Frontend.Items.Materials.Jewelry
+﻿//Emerald.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 7:25 AM
+namespace CoC.Frontend.Items.Materials.Jewelry
 {
 	internal sealed partial class Emerald
 	{

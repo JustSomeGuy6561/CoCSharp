@@ -1,9 +1,13 @@
-﻿using CoC.Backend.Areas;
+﻿//GameEngine.cs
+//Description:
+//Author: JustSomeGuy
+//4/6/2019, 12:20 AM
+using CoC.Backend.Areas;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine.Time;
 using CoC.Backend.Tools;
 using System;
 using System.IO;
-using CoC.Backend.Engine.Time;
 
 namespace CoC.Backend.Engine
 {

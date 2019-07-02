@@ -1,7 +1,8 @@
-﻿using CoC.Backend.Creatures;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//BackendSessionData.cs
+//Description:
+//Author: JustSomeGuy
+//4/7/2019, 7:27 PM
+using CoC.Backend.Creatures;
 
 namespace CoC.Backend.SaveData
 {

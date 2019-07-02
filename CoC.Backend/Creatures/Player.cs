@@ -1,4 +1,8 @@
-﻿using CoC.Backend.BodyParts;
+﻿//Player.cs
+//Description:
+//Author: JustSomeGuy
+//2/20/2019, 4:15 PM
+using CoC.Backend.BodyParts;
 
 namespace CoC.Backend.Creatures
 {

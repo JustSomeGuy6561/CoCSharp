@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using CoC.Backend.SaveData;
 using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Perks;
+using System;
 
 namespace CoC.Backend.BodyParts
 {
@@ -24,7 +26,7 @@ namespace CoC.Backend.BodyParts
 
 		private bool piercingFetish => BackendSessionData.data.piercingFetish;
 
-		private BasePerkDataGetter basePerkData;
+		private PerkStatBonusGetter basePerkData;
 
 		public const float MIN_CLIT_SIZE = 0.25f;
 		public const float DEFAULT_CLIT_SIZE = 0.25f;
@@ -219,13 +221,23 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-		void IBaseStatPerkAware.GetBasePerkStats(BasePerkDataGetter getter)
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			basePerkData = getter;
-			if (length < getter().MinNewClitSize)
+
+			PassiveBaseStatModifiers data = getter();
+			float minLength = data.MinNewClitSize + data.NewClitSizeDelta;
+			if (length < minLength)
 			{
-				length = getter().MinNewClitSize;
+				length = minLength;
 			} 
+		}
+
+		private IBaseStatPerkAware perkAware => this;
+
+		internal void GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			perkAware.GetBasePerkStats(getter);
 		}
 	}
 }

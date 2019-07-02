@@ -1,7 +1,9 @@
-﻿using CoC.Backend.Creatures;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//PhysicalSpecial.cs
+//Description:
+//Author: JustSomeGuy
+//4/29/2019, 1:22 AM
+
+using CoC.Backend.Creatures;
 
 namespace CoC.Backend.Attacks.BodyPartAttacks
 {
@@ -9,7 +11,7 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 	{
 
 		protected abstract ushort attackCost { get; }
-		public PhysicalSpecial(SimpleDescriptor name) : base(name) {}
+		public PhysicalSpecial(SimpleDescriptor name) : base(name) { }
 
 		protected override bool CanUseAttack(CombatCreature attacker, CombatCreature defender)
 		{

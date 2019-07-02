@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//TripOnRoot.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 9:46 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
 using static CoC.Frontend.UI.TextOutput;

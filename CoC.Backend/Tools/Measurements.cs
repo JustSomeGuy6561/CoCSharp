@@ -1,4 +1,8 @@
-﻿using CoC.Backend.SaveData;
+﻿//Measurements.cs
+//Description:
+//Author: JustSomeGuy
+//4/11/2019, 10:27 PM
+using CoC.Backend.SaveData;
 using System;
 
 namespace CoC.Backend.Tools

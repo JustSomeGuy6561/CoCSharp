@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Attacks;
+﻿//Face.cs
+//Description:
+//Author: JustSomeGuy
+//4/24/2019, 1:12 AM
+using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;

@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Strings;
+﻿//MenuHelpers.cs
+//Description:
+//Author: JustSomeGuy
+//6/7/2019, 12:52 AM
+using CoC.Backend.Strings;
 using System;
 using System.Collections.Generic;
 using System.Text;

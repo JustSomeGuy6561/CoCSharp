@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//ILowerBodyAware.cs
+//Description:
+//Author: JustSomeGuy
+//6/25/2019, 1:03 AM
 
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {

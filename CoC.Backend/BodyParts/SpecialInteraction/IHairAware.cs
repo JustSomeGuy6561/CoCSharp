@@ -1,4 +1,8 @@
-﻿using System;
+﻿//IHairAware.cs
+//Description:
+//Author: JustSomeGuy
+//3/26/2019, 2:04 AM
+using System;
 using System.Collections.Generic;
 using System.Text;
 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿//AreaBase.cs
+//Description:
+//Author: JustSomeGuy
+//4/7/2019, 7:37 PM
+using System;
 
 namespace CoC.Backend.Areas
 {

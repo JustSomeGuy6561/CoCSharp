@@ -1,8 +1,11 @@
-﻿using CoC.Backend.Attacks;
+﻿//Hair.cs
+//Description:
+//Author: JustSomeGuy
+//6/25/2019, 1:28 AM
+using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Engine;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -527,7 +530,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			//run the hair lengthening regardless, but only do the output if it's the player.
-			if (type.reactToTimePassing(ref newLength, ref _hairColor, ref _highlightColor, ref hairStyle, hoursPassed, unitsGrown, out string specialHappenstance) && isPlayer) 
+			if (type.reactToTimePassing(ref newLength, ref _hairColor, ref _highlightColor, ref hairStyle, hoursPassed, unitsGrown, out string specialHappenstance) && isPlayer)
 			{
 				if (!string.IsNullOrWhiteSpace(specialHappenstance))
 				{
@@ -652,7 +655,7 @@ namespace CoC.Backend.BodyParts
 		//Don't worry about saying that the hair grew to a certain length relative to the player - that's taken care of by the Hair class, and it'll be appended after any other special text you set here. 
 		//also, return true if something happened to the hair - even if it didn't change length, the game needs to know that you messed with the hair style, for example. false otherwise.
 
-		internal abstract bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, byte hoursPassed, 
+		internal abstract bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, byte hoursPassed,
 			float unitsGrown, out string SpecialOutput);
 
 
@@ -733,7 +736,7 @@ namespace CoC.Backend.BodyParts
 				return valid;
 			}
 
-			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, 
+			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor,
 				ref HairStyle hairStyle, byte hoursPassed, float unitsGrown, out string SpecialOutput)
 			{
 				SpecialOutput = "";
@@ -802,7 +805,7 @@ namespace CoC.Backend.BodyParts
 				//same with the hair style. 
 			}
 
-			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, 
+			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
 				byte hoursPassed, float unitsGrown, out string SpecialOutput)
 			{
 				SpecialOutput = "";
@@ -880,7 +883,7 @@ namespace CoC.Backend.BodyParts
 
 			}
 
-			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, 
+			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
 				byte hoursPassed, float unitsGrown, out string SpecialOutput)
 			{
 				SpecialOutput = "";
@@ -963,7 +966,7 @@ namespace CoC.Backend.BodyParts
 
 			}
 
-			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, 
+			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
 				byte hoursPassed, float unitsGrown, out string SpecialOutput)
 			{
 				SpecialOutput = "";

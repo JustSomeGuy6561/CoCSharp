@@ -1,4 +1,8 @@
-﻿namespace CoC.Frontend.Items.Materials.Jewelry
+﻿//Steel.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 2:18 PM
+namespace CoC.Frontend.Items.Materials.Jewelry
 {
 	internal sealed partial class Steel
 	{

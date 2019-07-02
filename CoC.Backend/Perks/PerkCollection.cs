@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//PerkCollection.cs
+//Description:
+//Author: JustSomeGuy
+//6/30/2019, 6:58 PM
+using CoC.Backend.Creatures;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +16,7 @@ namespace CoC.Backend.Perks
 		//the perks this creature has.
 		private readonly Dictionary<Type, PerkBase> perks = new Dictionary<Type, PerkBase>();
 
-		internal readonly PassiveStatModifiers baseModifiers;
+		internal readonly PassiveBaseStatModifiers baseModifiers;
 
 		//adds a new perk to the collection. returns false if the character already has an instance of this perk type.
 		public bool AddPerk(PerkBase perkBase)

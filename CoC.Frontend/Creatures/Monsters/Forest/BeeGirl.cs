@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//BeeGirl.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 11:05 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
 using System;
 using System.Collections.Generic;

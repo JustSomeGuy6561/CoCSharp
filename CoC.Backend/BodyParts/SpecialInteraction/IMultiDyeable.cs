@@ -1,4 +1,8 @@
-﻿using CoC.Backend.CoC_Colors;
+﻿//IMultiDyeable.cs
+//Description:
+//Author: JustSomeGuy
+//4/17/2019, 2:36 AM
+using CoC.Backend.CoC_Colors;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
 

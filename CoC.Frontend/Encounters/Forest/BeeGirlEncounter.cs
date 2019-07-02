@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Encounters;
+﻿//BeeGirlEncounter.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 9:46 PM
+using CoC.Backend.Encounters;
 using System;
 
 namespace CoC.Frontend.Encounters.Forest

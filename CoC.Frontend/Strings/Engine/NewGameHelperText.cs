@@ -1,4 +1,8 @@
-﻿using System;
+﻿//NewGameHelperText.cs
+//Description:
+//Author: JustSomeGuy
+//6/10/2019, 9:28 PM
+using System;
 using System.Collections.Generic;
 using System.Text;
 

@@ -1,4 +1,8 @@
-﻿using CoC.Backend.SaveData;
+﻿//FrontendSessionSave.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 11:12 PM
+using CoC.Backend.SaveData;
 
 namespace CoC.Frontend.SaveData
 {

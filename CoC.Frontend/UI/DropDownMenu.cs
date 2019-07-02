@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Tools;
+﻿//DropDownMenu.cs
+//Description:
+//Author: JustSomeGuy
+//6/19/2019, 9:32 PM
+using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

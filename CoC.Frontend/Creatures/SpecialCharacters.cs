@@ -1,4 +1,8 @@
-﻿using CoC.Backend.BodyParts;
+﻿//SpecialCharacters.cs
+//Description:
+//Author: JustSomeGuy
+//3/25/2019, 12:08 AM
+using CoC.Backend.BodyParts;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;

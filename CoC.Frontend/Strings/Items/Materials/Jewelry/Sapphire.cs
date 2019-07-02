@@ -1,4 +1,8 @@
-﻿namespace CoC.Frontend.Items.Materials.Jewelry
+﻿//Sapphire.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 10:05 PM
+namespace CoC.Frontend.Items.Materials.Jewelry
 {
 	internal sealed partial class Sapphire
 	{

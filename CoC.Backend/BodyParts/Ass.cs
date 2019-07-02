@@ -30,15 +30,14 @@ namespace CoC.Backend.BodyParts
 		private const byte LOOSENESS_ROOMY_TIMER = 48;
 		private const byte LOOSENESS_STRETCHED_TIMER = 24;
 		private const byte LOOSENESS_GAPING_TIMER = 12;
-		private BackendSessionData saveData => BackendSessionData.data;
 
 		private byte buttTightenTimer = 0;
 
-		private AnalLooseness maxLooseness => baseStats().maxAnalLooseness;
-		private AnalLooseness minLooseness => baseStats().minAnalLooseness;
+		public AnalLooseness minLooseness { get; private set; } = AnalLooseness.NORMAL;
+		public AnalLooseness maxLooseness { get; private set; } = AnalLooseness.GAPING;
 
-		private AnalWetness minWetness => baseStats().minAnalWetness;
-		private AnalWetness maxWetness => baseStats().maxAnalWetness;
+		public AnalWetness minWetness { get; private set; } = AnalWetness.NORMAL;
+		public AnalWetness maxWetness { get; private set; } = AnalWetness.SLIME_DROOLING;
 
 		public AnalWetness wetness
 		{
@@ -145,13 +144,9 @@ namespace CoC.Backend.BodyParts
 			return oldLooseness - looseness;
 		}
 
-		internal bool SetAnalLooseness(AnalLooseness analLooseness, bool forceIfLessThanCurrentMin = false)
+		internal bool SetAnalLooseness(AnalLooseness analLooseness)
 		{
-			if (forceIfLessThanCurrentMin && analLooseness < minLooseness)
-			{
-				return true;
-			}
-			else if (analLooseness >= minLooseness)
+			if (analLooseness >= minLooseness && analLooseness <= maxLooseness)
 			{
 				looseness = analLooseness;
 				return true;
@@ -159,22 +154,27 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		internal byte AddWetness(byte amount = 1)
+		internal byte MakeWetter(byte amount = 1)
 		{
 			AnalWetness oldWetness = wetness;
 			wetness = wetness.ByteEnumAdd(amount);
 			return wetness - oldWetness;
 		}
 
-		internal byte SubtractWetness(byte amount = 1)
+		internal byte MakeDrier(byte amount = 1)
 		{
 			AnalWetness oldWetness = wetness;
 			wetness = wetness.ByteEnumSubtract(amount);
 			return oldWetness - wetness;
 		}
-		internal void ForceAnalWetness(AnalWetness analWetness)
+		internal bool SetAnalWetness(AnalWetness analWetness)
 		{
-			wetness = analWetness;
+			if (analWetness >= minWetness && analWetness <= maxWetness)
+			{
+				wetness = analWetness;
+				return true;
+			}
+			return false;
 		}
 
 		internal ushort AddBonusCapacity(ushort amountToAdd)
@@ -190,15 +190,128 @@ namespace CoC.Backend.BodyParts
 			bonusAnalCapacity = bonusAnalCapacity.subtract(amountToRemove);
 			return bonusAnalCapacity.subtract(currentCapacity);
 		}
+
+
+		internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
+		{
+			AnalLooseness looseness = minLooseness;
+			minLooseness = minLooseness.ByteEnumAdd(amount);
+			if (minLooseness > maxLooseness)
+			{
+				if (forceIncreaseMax)
+				{
+					maxLooseness = minLooseness;
+				}
+				else
+				{
+					minLooseness = maxLooseness;
+				}
+			}
+			return minLooseness - looseness;
+		}
+		internal byte DecreaseMinimumLooseness(byte amount = 1)
+		{
+			AnalLooseness looseness = minLooseness;
+			minLooseness = minLooseness.ByteEnumSubtract(amount);
+			return looseness - minLooseness;
+		}
+		internal void SetMinLoosness(AnalLooseness newValue)
+		{
+			minLooseness = newValue;
+		}
+
+		internal byte IncreaseMaximumLooseness(byte amount = 1)
+		{
+			AnalLooseness looseness = maxLooseness;
+			maxLooseness = maxLooseness.ByteEnumSubtract(amount);
+			return maxLooseness - looseness;
+		}
+		internal byte DecreaseMaximumLooseness(byte amount = 1, bool forceDecreaseMin = false)
+		{
+			AnalLooseness looseness = minLooseness;
+			maxLooseness = maxLooseness.ByteEnumSubtract(amount);
+			if (minLooseness > maxLooseness)
+			{
+				if (forceDecreaseMin)
+				{
+					minLooseness = maxLooseness;
+				}
+				else
+				{
+					maxLooseness = minLooseness;
+				}
+			}
+			return looseness - maxLooseness;
+		}
+		internal void SetMaxLoosness(AnalLooseness newValue)
+		{
+			maxLooseness = newValue;
+		}
+
+
+		internal byte IncreaseMinimumWetness(byte amount = 1, bool forceIncreaseMax = false)
+		{
+			AnalWetness wetness = minWetness;
+			minWetness = minWetness.ByteEnumAdd(amount);
+			if (minWetness > maxWetness)
+			{
+				if (forceIncreaseMax)
+				{
+					maxWetness = minWetness;
+				}
+				else
+				{
+					minWetness = maxWetness;
+				}
+			}
+			return minWetness - wetness;
+		}
+		internal byte DecreaseMinimumWetness(byte amount = 1)
+		{
+			AnalWetness wetness = minWetness;
+			minWetness = minWetness.ByteEnumSubtract(amount);
+			return wetness - minWetness;
+		}
+		internal void SetMinWetness(AnalWetness newValue)
+		{
+			minWetness = newValue;
+		}
+		internal byte IncreaseMaximumWetness(byte amount = 1)
+		{
+			AnalWetness wetness = maxWetness;
+			maxWetness = maxWetness.ByteEnumSubtract(amount);
+			return maxWetness - wetness;
+		}
+		internal byte DecreaseMaximumWetness(byte amount = 1, bool forceDecreaseMin = false)
+		{
+			AnalWetness wetness = minWetness;
+			maxWetness = maxWetness.ByteEnumSubtract(amount);
+			if (minWetness > maxWetness)
+			{
+				if (forceDecreaseMin)
+				{
+					minWetness = maxWetness;
+				}
+				else
+				{
+					maxWetness = minWetness;
+				}
+			}
+			return wetness - maxWetness;
+		}
+		internal void SetMaxWetness(AnalWetness newValue)
+		{
+			maxWetness = newValue;
+		}
 		#endregion
 		//Alias these in the creature class, adding the relevant features not in Ass itself (knockup, orgasm)
 		#region Unique Functions
-		internal bool analSex(ushort penetratorArea)
+		internal bool AnalSex(ushort penetratorArea)
 		{
 			numTimesAnal++;
-			return analPenetrate(penetratorArea, true);
+			return PenetrateAsshole(penetratorArea, true);
 		}
-		internal bool analPenetrate(ushort penetratorArea, bool takeAnalVirginity = false/*, byte analExperiencedGained = 1*/)
+		internal bool PenetrateAsshole(ushort penetratorArea, bool takeAnalVirginity = false/*, byte analExperiencedGained = 1*/)
 		{
 
 			//experience = experience.add(analExperiencedGained);
@@ -266,8 +379,7 @@ namespace CoC.Backend.BodyParts
 		{
 			StringBuilder outputBuilder = new StringBuilder();
 
-			PassiveStatModifiers perkStats = baseStats();
-			//these should be done automatically by the perk that activated them, but if it's missed, we'll silently correct it. 
+			//these should be done automatically, but if it's missed, we'll silently correct it. 
 			if (looseness < minLooseness)
 			{
 				looseness = minLooseness;
@@ -301,9 +413,9 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region BasePerkStats
-		private BasePerkDataGetter baseStats;
+		private PerkStatBonusGetter baseStats;
 
-		void IBaseStatPerkAware.GetBasePerkStats(BasePerkDataGetter getter)
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			baseStats = getter;
 		}

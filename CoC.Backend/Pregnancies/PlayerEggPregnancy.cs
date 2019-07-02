@@ -1,8 +1,10 @@
-﻿using CoC.Backend.Engine.Time;
+﻿//PlayerEggPregnancy.cs
+//Description:
+//Author: JustSomeGuy
+//4/7/2019, 8:42 PM
+using CoC.Backend.Engine.Time;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace CoC.Backend.Pregnancies

@@ -1,10 +1,12 @@
-﻿using CoC.Backend.BodyParts;
+﻿//CockCreator.cs
+//Description:
+//Author: JustSomeGuy
+//6/13/2019, 8:39 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace CoC.Backend.Creatures
 {

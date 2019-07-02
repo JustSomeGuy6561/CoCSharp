@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//ConsumableBase.cs
+//Description:
+//Author: JustSomeGuy
+//6/27/2019, 6:32 PM
 
 namespace CoC.Backend.Items.Consumables
 {

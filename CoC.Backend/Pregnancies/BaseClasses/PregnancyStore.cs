@@ -1,10 +1,11 @@
-﻿using CoC.Backend.BodyParts;
+﻿//PregnancyStore.cs
+//Description:
+//Author: JustSomeGuy
+//4/7/2019, 7:57 PM
+using CoC.Backend.BodyParts;
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Engine.Time;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Tools;
 
 namespace CoC.Backend.Pregnancies
 {
@@ -13,7 +14,7 @@ namespace CoC.Backend.Pregnancies
 	{
 		private float pregnancySpeed => basePerkStats?.Invoke().pregnancyMultiplier ?? 1f;
 
-		private BasePerkDataGetter basePerkStats;
+		private PerkStatBonusGetter basePerkStats;
 
 		//remember, we can have eggs even if we have normal womb due to ovi elixirs. 
 		private bool? eggSize = null;
@@ -29,7 +30,7 @@ namespace CoC.Backend.Pregnancies
 			isVagina = isThisVagina;
 		}
 
-		public ushort birthCountdown => hoursTilBirth <= 0 ? (ushort) 0 : (ushort)Math.Ceiling(hoursTilBirth); //unless a pregnancy takes 7.50 years, a ushort is enough lol.
+		public ushort birthCountdown => hoursTilBirth <= 0 ? (ushort)0 : (ushort)Math.Ceiling(hoursTilBirth); //unless a pregnancy takes 7.50 years, a ushort is enough lol.
 
 		private float hoursTilBirth; //note that this is passed in as a ushort, but we use float for more accurate pregnancy speed multiplier math, though i suppose this opens us up to floating point rounding errors.
 
@@ -90,7 +91,7 @@ namespace CoC.Backend.Pregnancies
 					spawnType = null; //clear pregnancy.
 				}
 			}
-			
+
 			return output;
 		}
 
@@ -118,13 +119,23 @@ namespace CoC.Backend.Pregnancies
 			}
 		}
 
-		void IBaseStatPerkAware.GetBasePerkStats(BasePerkDataGetter getter)
+
+
+		private ITimeActiveListener active => this;
+		private ITimeLazyListener lazy => this;
+
+		#endregion
+		#region BaseStats
+		IBaseStatPerkAware perkAware => this;
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			basePerkStats = getter;
 		}
 
-		private ITimeActiveListener active => this;
-		private ITimeLazyListener lazy => this;
+		internal void GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			perkAware.GetBasePerkStats(getter);
+		}
 
 		#endregion
 	}

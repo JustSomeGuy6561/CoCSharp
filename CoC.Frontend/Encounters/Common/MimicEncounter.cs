@@ -1,4 +1,8 @@
-﻿using CoC.Backend;
+﻿//MimicEncounter.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 11:33 PM
+using CoC.Backend;
 using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
 using CoC.Backend.Engine;

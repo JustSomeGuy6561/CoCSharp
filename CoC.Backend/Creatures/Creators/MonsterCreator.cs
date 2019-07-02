@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//MonsterCreator.cs
+//Description:
+//Author: JustSomeGuy
+//3/22/2019, 6:13 PM
 
 namespace CoC.Backend.Creatures
 {

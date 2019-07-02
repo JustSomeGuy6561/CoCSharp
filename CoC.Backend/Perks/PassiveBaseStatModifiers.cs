@@ -1,4 +1,8 @@
-﻿using CoC.Backend.BodyParts;
+﻿//PassiveBaseStatModifiers.cs
+//Description:
+//Author: JustSomeGuy
+//6/30/2019, 7:45 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using System;
 using System.Collections.Generic;
@@ -48,7 +52,7 @@ namespace CoC.Backend.Perks
 	//But be careful you aren't causing infinite loops, either by contradicting something else, or by creating a situation where your changes cause you to get notified again (which causes you to change them again, etc)
 	//If this scares you or is beyond your current programming level, feel free to do it the old way. 
 
-	public sealed class PassiveStatModifiers
+	public sealed class PassiveBaseStatModifiers
 	{
 		//The game uses the following variables to 
 
@@ -113,41 +117,58 @@ namespace CoC.Backend.Perks
 		//0: no change;  0.5: 1.5x faster;  1: 2x faster... etc
 		//0: no change; -0.5: 1.5x slower; -1: 2x slower... etc
 
+		//Default size is only used if the size is not provided. 
+
 		public float NewCockSizeDelta; //how much do we add or remove for new cocks? //big cock perk for now. would allow a small cock perk as well
 		public float CockGrowthMultiplier; //how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
 		public float CockShrinkMultiplier; //how much more/less should we shrink a cock over base amount? //big cock, cockSock;
-		public float MinNewCockSize; //minimum size for any new cocks; //bro/futa perks for now
+		public float NewCockDefaultSize; //minimum size for any new cocks; //bro/futa perks for now
 		
 
-		//public float MinNewCockGirth //girth is derived from length.
 
 		public float NewClitSizeDelta; //how much do we add or remove to base amount for new Clits? //NYI, but BigClit Perks
 		public float ClitGrowthMultiplier; //how much more/less should we grow a Clit over the base amount?
 		public float ClitShrinkMultiplier; //how much more/less should we shrink a Clit over base amount?
 		public float MinNewClitSize; //minimum size for any new Clits; //bro/futa perks for now
 
-		public byte NewCupSizeSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
+		public byte NewBreastCupSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
 		public float TitsGrowthMultiplier; //how much more/less should we grow the breasts over the base amount?
 		public float TitsShrinkMultiplier; //how much more/less should we shrink the breasts over base amount?
-		public CupSize MinNewCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
+		public CupSize NewBreastDefaultCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
 
 		public float NewNippleSizeDelta; //how much do we add or remove to base amount for new Nipples? //NYI, but BigNipple Perks
 		public float NippleGrowthMultiplier; //how much more/less should we grow a Nipple over the base amount?
 		public float NippleShrinkMultiplier; //how much more/less should we shrink a Nipple over base amount?
-		public float MinNewNippleLength; //minimum size for any new Nipples; //bro/futa perks for now
+		public float NewNippleDefaultLength; //minimum size for any new Nipples; //bro/futa perks for now
 
-		public float NewBallsSizeDelta; //how much do we add or remove to base amount for new Balls? //note, will only go to max size for uniball if uniball. 
-		public float BallsGrowthMultiplier; //how much more/less should we grow the Balls over the base amount?
-		public float BallsShrinkMultiplier; //how much more/less should we shrink the Balls over base amount?
-		public float MinNewBallsSize; //note: will only go to uniball max if uniball.
+		public byte NewBallsSizeDelta; //how much do we add or remove to base amount for new Balls? //note, will only go to max size for uniball if uniball. 
+		public float BallsGrowthMultiplier; //how much more/less should we grow the Balls over the base amount? 1-3, expecting roughly 1.5
+		public float BallsShrinkMultiplier; //how much more/less should we shrink the Balls over base amount? 1-3, expecting roughly 1.5
+		public byte NewBallsDefaultSize; //note: will only go to uniball max if uniball.
 
-		public VaginalWetness wetnessOnNewVagina;
-		public VaginalLooseness loosenessOnNewVagina;
+		public bool AlwaysProducesMaxCum; //pilgrim perk
+		public float BonusCumStacked = 1; //muliplicative 
+		public uint BonusCumAdded = 0; //additive. 
+
+		public VaginalWetness NewVaginaDefaultWetness;
+		public VaginalLooseness NewVaginaDefaultLooseness;
+
+		public bool femininityLockedByGender = true;
+
+		public byte bonusFertility;
 
 		public ushort PerkBasedBonusVaginalCapacity; //vag of holding, elastic innards
 		public ushort PerkBasedBonusAnalCapacity; //elastic innards
 
 		//values that would cause issues (min cock size, vag wetness, etc) are purposely excluded. see top argument. 
 		//it'd be possible to have a perk that forces this to course correct almost immediately, if that's your desire - create a reaction that fires ASAP.
+
+		//i can't think of anything else for this.
+		//a bunch of old perks can just be attributes of classes, or fire a one-off "Reaction" instead of existing (looking at you Post-Akbal submit/whatever "perks")
+
+		//it may be possible to get a perk that prioritizes certain fur colors or skin tones, and that realistically could/should be handled here. 
+		//but that's not implemented, and i don't have any idea how they'd want it to work. 
+
+
 	}
 }

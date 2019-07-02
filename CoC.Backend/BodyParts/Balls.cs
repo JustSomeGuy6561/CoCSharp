@@ -3,7 +3,9 @@
 //Author: JustSomeGuy
 //12/29/2018, 10:57 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Perks;
 using CoC.Backend.Tools;
+using System;
 
 namespace CoC.Backend.BodyParts
 {
@@ -14,8 +16,10 @@ namespace CoC.Backend.BodyParts
 
 	//I'VE GOT BIG BALLS! OH, I'VE GOT BIG BALLS! THERE SUCH BIG BALLS! DIRTY BIG BALLS! HE'S GOT BIG BALLS! AND SHE'S GOT BIG BALLS! BUT WE'VE GOT THE BIGGEST BALLS OF THEM ALL!
 	//i'll see if i can hide this as an easter egg is some text somewhere. 
-	public sealed partial class Balls : SimpleSaveablePart<Balls>, IGrowShrinkable //IPerkAware ? is there a big balls perk? maybe an extra cum perk? i still think that should be part of genitals.
+	public sealed partial class Balls : SimpleSaveablePart<Balls>, IGrowShrinkable, IBaseStatPerkAware //perks are handled by genitals - kinda. 
 	{
+		PerkStatBonusGetter perkData;
+		PassiveBaseStatModifiers modifiers => perkData();
 
 		public const byte MAX_BALLS_SIZE = 30;
 		public const byte MIN_BALLS_SIZE = 1;
@@ -28,6 +32,7 @@ namespace CoC.Backend.BodyParts
 		public const byte DEFAULT_MIN_COUNT = 2;
 		public const byte DEFAULT_BALLS_COUNT = 2;
 		public int index => size;
+
 
 		//recommend saving the hasBalls bool even though it is a determined property - in the event of malformed data, it allows an additional way to catch
 		//if the save should have balls. 
@@ -127,7 +132,10 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				setBalls(true);
+				byte numBalls = 2;
+				var data = perkData();
+				byte newSize = data.NewBallsDefaultSize.add(data.NewBallsSizeDelta);
+				setBalls(true, numBalls, newSize);
 			}
 			return true;
 		}
@@ -221,7 +229,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal byte EnlargeBalls(byte amount)
+		internal byte EnlargeBalls(byte amount, bool ignorePerks = false)
 		{
 			if (!hasBalls || size == MAX_BALLS_SIZE || amount == 0)
 			{
@@ -232,6 +240,13 @@ namespace CoC.Backend.BodyParts
 				count++;
 			}
 			byte originalSize = size;
+			if (!ignorePerks)
+			{
+				//multiply it by the perk. float should be sanitized within passiveBaseStatModifier class.
+				ushort val = (ushort)Math.Round(modifiers.BallsGrowthMultiplier * amount);
+				amount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
+			}
+
 			if (amount >= MAX_BALLS_SIZE)
 			{
 				size = MAX_BALLS_SIZE;
@@ -243,13 +258,18 @@ namespace CoC.Backend.BodyParts
 			return size.subtract(originalSize);
 		}
 
-		internal byte ShrinkBalls(byte amount)
+		internal byte ShrinkBalls(byte amount, bool ignorePerks = false)
 		{
 			if (!hasBalls || size == MIN_BALLS_SIZE)
 			{
 				return 0;
 			}
 			byte originalSize = size;
+			if (!ignorePerks)
+			{
+				ushort val = (ushort)Math.Round(amount * modifiers.BallsShrinkMultiplier);
+				amount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
+			}
 			if (size - amount < MIN_BALLS_SIZE) //we actually want this as an int compare b/c negative numbers.
 			{
 				size = MIN_BALLS_SIZE;
@@ -269,7 +289,7 @@ namespace CoC.Backend.BodyParts
 		float IGrowShrinkable.UseReducto()
 		{
 			byte startVal = size;
-			//even chance of 2 - 5.
+			//even chance of 2 - 5, or 3-6 if we have a somewhat large shrink multiplier. 
 			if (((IGrowShrinkable)this).CanReducto())
 			{
 				size = size.subtract((byte)(Utils.Rand(4) + 2));
@@ -313,6 +333,8 @@ namespace CoC.Backend.BodyParts
 				if (numBalls % 2 == 1) numBalls--;
 
 				if (ballSize == 0) ballSize = DEFAULT_BALLS_SIZE;
+
+				Utils.Clamp(ref ballSize, MIN_BALLS_SIZE, MAX_BALLS_SIZE);
 			}
 			else
 			{
@@ -324,7 +346,7 @@ namespace CoC.Backend.BodyParts
 			size = ballSize;
 		}
 
-		private void setUniBall(bool isUniBall)
+		private void setUniBall(bool isUniBall) //uniball ignores perks.
 		{
 			if (isUniBall)
 			{
@@ -336,6 +358,12 @@ namespace CoC.Backend.BodyParts
 				count = 0;
 				size = 0;
 			}
+		}
+
+		//remember, we don't have the perks on creation, so we can't do it there. we can, however, do it in a lateInit, which this will function as. 
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			perkData = getter;
 		}
 	}
 }

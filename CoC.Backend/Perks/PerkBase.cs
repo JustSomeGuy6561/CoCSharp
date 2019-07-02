@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//PerkBase.cs
+//Description:
+//Author: JustSomeGuy
+//6/30/2019, 6:57 PM
+using CoC.Backend.Creatures;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +22,7 @@ namespace CoC.Backend.Perks
 		protected CombatCreature sourceCreature { get; private set; } = null;
 		//Giving you these means you have access to all the perks the creature currently has, and the base stat multipliers. They should only be used in this context; don't misuse this.
 		protected PerkCollection basicData => sourceCreature.perks; //gives you access to hasPerk. allows you to hard-code other checks, to prevent mutual exclusives.
-		protected PassiveStatModifiers baseModifiers => basicData.baseModifiers; //allows you to update base stats. 
+		protected PassiveBaseStatModifiers baseModifiers => basicData.baseModifiers; //allows you to update base stats. 
 
 		internal void Activate(CombatCreature source)
 		{

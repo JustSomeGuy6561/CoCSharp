@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//ILotionable.cs
+//Description:
+//Author: JustSomeGuy
+//4/24/2019, 12:34 AM
 
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {

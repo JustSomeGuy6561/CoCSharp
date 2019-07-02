@@ -1,4 +1,8 @@
-﻿using System;
+﻿//TimeOutputWrapper.cs
+//Description:
+//Author: JustSomeGuy
+//6/29/2019, 11:55 PM
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;

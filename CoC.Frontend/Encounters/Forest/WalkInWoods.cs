@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Encounters;
+﻿//WalkInWoods.cs
+//Description:
+//Author: JustSomeGuy
+//4/6/2019, 2:20 AM
+using CoC.Backend.Encounters;
 using System;
 using System.Collections.Generic;
 using System.Text;

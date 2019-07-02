@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Items.Materials;
+﻿//CeraphPiercings.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 7:42 AM
+using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Frontend.Items.Materials.Jewelry;
 using System;

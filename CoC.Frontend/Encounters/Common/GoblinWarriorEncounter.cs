@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//GoblinWarriorEncounter.cs
+//Description:
+//Author: JustSomeGuy
+//4/6/2019, 4:00 AM
+using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
 using CoC.Backend.Tools;

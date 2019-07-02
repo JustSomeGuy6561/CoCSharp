@@ -1,6 +1,9 @@
-﻿using CoC.Backend.Creatures;
+﻿//PlayerSpawnType.cs
+//Description:
+//Author: JustSomeGuy
+//6/27/2019, 5:04 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using System.Text;
 
 namespace CoC.Backend.Pregnancies
 {
@@ -9,7 +12,7 @@ namespace CoC.Backend.Pregnancies
 
 	public abstract partial class PlayerSpawnType : SpawnType
 	{
-		public Player player; 
+		public Player player;
 		//private float 
 
 		protected PlayerSpawnType(SimpleDescriptor nameOfFather, ushort birthTime) : base(nameOfFather, birthTime)

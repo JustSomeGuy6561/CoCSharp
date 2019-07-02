@@ -1,4 +1,8 @@
-﻿using System;
+﻿//NagaBite.cs
+//Description:
+//Author: JustSomeGuy
+//4/28/2019, 10:50 PM
+using System;
 using System.Collections.Generic;
 using System.Text;
 using CoC.Backend.Creatures;

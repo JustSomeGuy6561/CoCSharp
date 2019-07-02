@@ -1,4 +1,8 @@
-﻿using System;
+﻿//DynamicNPC.cs
+//Description:
+//Author: JustSomeGuy
+//6/28/2019, 8:30 PM
+using System;
 using System.Collections.Generic;
 using System.Text;
 

@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Tools;
+﻿//DeepwoodsStrings.cs
+//Description:
+//Author: JustSomeGuy
+//4/6/2019, 12:24 AM
+using CoC.Backend.Tools;
 
 namespace CoC.Frontend.Areas.Locations
 {

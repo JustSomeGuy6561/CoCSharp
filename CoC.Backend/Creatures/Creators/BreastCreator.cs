@@ -1,9 +1,11 @@
-﻿using CoC.Backend.BodyParts;
+﻿//BreastCreator.cs
+//Description:
+//Author: JustSomeGuy
+//6/13/2019, 9:23 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.Items.Wearables.Piercings;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace CoC.Backend.Creatures
 {

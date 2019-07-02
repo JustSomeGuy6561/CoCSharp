@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//TentaGrab.cs
+//Description:
+//Author: JustSomeGuy
+//4/28/2019, 10:05 PM
+using CoC.Backend.Creatures;
 using System;
 
 namespace CoC.Backend.Attacks.BodyPartAttacks

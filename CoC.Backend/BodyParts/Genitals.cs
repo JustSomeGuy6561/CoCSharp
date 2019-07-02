@@ -1,10 +1,8 @@
-﻿////Genitals.cs
-////Description:
-////Author: JustSomeGuy
-////1/5/2019, 3:16 AM
-//using CoC.Backend.Tools;
-//using System;
-//using System.Linq;
+﻿//Genitals.cs
+//Description:
+//Author: JustSomeGuy
+//1/5/2019, 3:16 AM
+
 using CoC.Backend.BodyParts.SpecialInteraction;
 using System;
 using System.Collections.Generic;
@@ -14,8 +12,19 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class Genitals : SimpleSaveablePart<Genitals>, IBodyPartTimeLazy  //, IPerkAware //for now all the stuff it contains is lazy, so that's all we need.
+	// this is a fucking mess. 
+	// need to: handle a late init to use correct mindefault values for cock, vagina, breasts, nipples.
+	// implement time aware - nipple piercings changing nipple status. 
+	// alias every fucking function to make values here there and everywhere increase. 
+	// every time we get a new cock, set it to default length if one not provided. increase length by delta, regardless.
+	// every time we get a vagina set its default wetness, looseness, and clitSize to defaults, unless provided. 
+	// breasts - figure out how the fuck we're gonna add new breast rows. 
+
+
+	public sealed class Genitals : SimpleSaveablePart<Genitals>, IBodyPartTimeLazy, IBaseStatPerkAware //for now all the stuff it contains is lazy, so that's all we need.
 	{
+		PerkStatBonusGetter perkModifiers;
+
 		public const int MAX_COCKS = 10;
 		public const int MAX_VAGINAS = 2;
 		//max in game that i can find is 5, but they only ever use 4 rows.
@@ -23,34 +32,39 @@ namespace CoC.Backend.BodyParts
 		//i'm not being a dick and reverting that. 4 it is.
 		public const int MAX_BREAST_ROWS = 4;
 
-		public readonly Ass ass;
+		private readonly bool needsLateInit;
+		private readonly bool needsDelta;
 
-		//honestly, this is too much power for what we need, but it's a hell of a lot simpler to implement.
-		//it's a glorified array, but minus the hassle of keeping track of what's actually not null.
+		public readonly Ass ass;
+		public readonly Balls balls;
+		public readonly Femininity femininity; //make sure to cap this if not androgynous perk.
+
+		//fertility gets a class because it's not just an int, it also has a bool that determines if the creature is artificially infertile
+		//(sand witch pill, contraceptives, whatever.)
+		public readonly Fertility fertility;
+
+		//using list, because it's easier to keep track of count when it does it for you. array would work, but it has the problem of counting nulls, and keeping track of that manually is tedious.
 		private readonly List<Breasts> _breasts = new List<Breasts>(MAX_BREAST_ROWS);
 		private readonly List<Cock> _cocks = new List<Cock>(MAX_COCKS);
 		private readonly List<Vagina> _vaginas = new List<Vagina>(MAX_VAGINAS);
 
-		public int numCocks => _cocks.Count;
-		public int numBreastRows => _breasts.Count;
-		public int numVaginas => _vaginas.Count;
-
-		public readonly Balls balls;
-		public readonly Femininity femininity; //make sure to cap this if not androgynous perk.
-		public readonly Fertility fertility;
-
+		#region public properties for Cock/Breast/Vagina
 		public readonly ReadOnlyCollection<Cock> cocks;
 		public readonly ReadOnlyCollection<Vagina> vaginas;
 
 		public readonly ReadOnlyCollection<Breasts> breasts;
+		public int numCocks => _cocks.Count + (hasClitCock ? _vaginas.Count : 0);
+		public int numBreastRows => _breasts.Count;
+		public int numVaginas => _vaginas.Count;
 
 		public ReadOnlyCollection<Clit> clits => new ReadOnlyCollection<Clit>(_vaginas.ConvertAll(x => x.clit));
 		public ReadOnlyCollection<Nipples> nipples => new ReadOnlyCollection<Nipples>(_breasts.ConvertAll(x => x.nipples));
 
-		//fertility gets a class because it's not just an int, it also has a bool that determines if the creature is artificially infertile
-		//(sand witch pill, contraceptives, whatever.)
+		public int nippleCount => _breasts.Count * (quadNipples ? 4 : 1);
+		#endregion
 
-		//nipple effects
+
+		#region Nipple Properties
 		public bool blackNipples
 		{
 			get => _blackNipples;
@@ -90,20 +104,67 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private NippleStatus _nippleType;
-
+		#endregion
 		//breasts
+#warning NYI
 		public ushort lactationAmount { get; private set; }
-		//public CupSize smallestBreast =>
-		//public CupSize largestBreast =>
 
-		//cocks
-		//public ushort longestCock => cocks.longestCock;
-		//public ushort shortestCock => cocks.shortestCock;
+#warning NYI
+		public ushort multiplier { get; private set; }
 
-		public ushort cumAmount { get; private set; }
+#warning NYI
+		public ushort hoursSinceCum { get; private set; }
 
-		//vagoos
+		private bool alwaysAtMax => perkModifiers?.Invoke().AlwaysProducesMaxCum ?? false;
+
+		private uint perkCumAdd => perkModifiers().BonusCumAdded;
+		private float perkCumMultiply => perkModifiers().BonusCumStacked;
+
+		public int cumAmount
+		{
+			get
+			{
+				if (numCocks == 0)
+				{
+					return 0;
+				}
+				double baseValue = 0;
+				if (!balls.hasBalls)
+				{
+					baseValue = 1 / 4 * multiplier;
+				}
+				else
+				{
+					baseValue = 2.54f * balls.size;
+					baseValue = 4.0 / 3 * Math.PI * Math.Pow(baseValue / 2, 3) * balls.count * multiplier;
+				}
+				if (hoursSinceCum < 12 && !alwaysAtMax) //i'd do 24 but this is Mareth, so.
+				{
+					baseValue *= hoursSinceCum / 12.0;
+				}
+				baseValue *= perkCumMultiply;
+				baseValue += perkCumAdd;
+
+				if (baseValue > int.MaxValue)
+				{
+					return int.MaxValue;
+				}
+				return (int)Math.Floor(baseValue);
+			}
+		}
+
+#warning NYI
 		public ushort largestVaginalCapacity { get; private set; }
+
+		public uint timesHadAnalSex => ass.numTimesAnal;
+#warning NYI
+		public uint timesHadVaginalSex { get; private set; } = 0;
+#warning NYI
+		public uint timesCockSounded { get; private set; } = 0;
+#warning NYI
+		public uint timesHadSexWithCock { get; private set; } = 0;
+
+		public bool cockVirgin => timesHadSexWithCock == 0;
 		//wetness, looseness.
 
 		//despite my attempts to remove status effects wherever possible, i'm not crazy. Heat/Rut/Dsyfunction seem like ideal status effects. 
@@ -136,7 +197,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private bool _hasClitCock = false;
 
-
+		#region Constructors
 		private Genitals(Gender gender)
 		{
 			ass = Ass.GenerateDefault();
@@ -146,6 +207,9 @@ namespace CoC.Backend.BodyParts
 			_vaginas.Add(Vagina.GenerateFromGender(gender));
 			femininity = Femininity.GenerateFromGender(gender);
 			fertility = Fertility.GenerateDefault();
+
+			needsLateInit = true;
+			needsDelta = true;
 
 			initHelper(out cocks, out vaginas, out breasts);
 		}
@@ -160,9 +224,14 @@ namespace CoC.Backend.BodyParts
 			this.femininity = femininity;
 			this.fertility = fertility;
 
+			needsLateInit = false;
+			needsDelta = true;
+
 			initHelper(out this.cocks, out this.vaginas, out this.breasts);
 
 		}
+
+		//delta not needed when we load from a save. 
 
 		private void initHelper(out ReadOnlyCollection<Cock> cocks, out ReadOnlyCollection<Vagina> vaginas, out ReadOnlyCollection<Breasts> breasts)
 		{
@@ -185,7 +254,8 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-
+		#endregion
+		#region Generate
 		internal static Genitals GenerateDefault(Gender gender)
 		{
 			return new Genitals(gender);
@@ -198,192 +268,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return new Genitals(ass, breasts, cocks, balls, vaginas, femininity, fertility);
 		}
-		#region TimeListeners
-
-		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
-		{
-			StringBuilder outputBuilder = new StringBuilder();
-			string outputHelper;
-			//i have no clue how this would work for multi-snatch configs. 
-			foreach (var vagina in _vaginas)
-			{
-				if (DoLazy(vagina, isPlayer, hoursPassed, out outputHelper))
-				{
-					outputBuilder.Append(outputHelper);
-				}
-			}
-			if (DoLazy(ass, isPlayer, hoursPassed, out outputHelper))
-			{
-				outputBuilder.Append(outputHelper);
-			}
-
-#warning TODO: implement this as it becomes possible.
-			//increment time since last orgasm, times since last cock cum (if applicable), time since last milked (if applicable).
-			//if neither are applicable, feel free to reset them.
-
-			//If nipple is inverted or slightly inverted and is pierced.
-			//decrement the pull-out timer. if it's 0 or less, set the nipple status on each breast row accordingly.
-			//append the nipple pulled out by piercing to the output StringBuilder.
-
-			//If lactating and something happened via time passing(full, slowed down, etc), set needs output to true, append 
-			//the result of this to the output string builder.
-			//if some status effect relating to your genitals requires output, parse it and append it.
-
-			return outputBuilder.ToString();
-			
-		}
-
-		private bool DoLazy(IBodyPartTimeLazy member, bool isPlayer, byte hoursPassed, out string output)
-		{
-			output = member.reactToTimePassing(isPlayer, hoursPassed);
-			return !string.IsNullOrEmpty(output);
-		}
-
 		#endregion
-		//allows players with clit-dicks (a hard-to-obtain omnibus trait) to appear female, and do female scenes. 
-		//NYI, but also allows players to "surprise" NPCs expecting lesbian sex (or males expecting straight sex)
-		//Not to be confused with the "traps" check - this is a check for your junk
-		public Gender genderWithoutOmnibusClit
-		{
-			get
-			{
-				if (gender == Gender.HERM && numCocks == 0 && hasClitCock)
-				{
-					return Gender.FEMALE;
-				}
-				return gender;
-			}
-		}
-
-		/* Trap check. use this where player appearance is more important than actual assets, or for trappy sex, idk.
-		 * 
-		 * Female: C-cup breasts and >35 masculinity OR <6in Dick and >65 masculinity
-		 * Male: 6in+ Dick and <65 masculinity OR B-Cup or smaller breasts and <35 masculinity
-		 * Genderless: <6in Dick, B-cup or smaller breasts, and 35-65 masculinity.
-		 * Herm: everything else.
-		 * 
-		 * How you deal with androgynous and herm is up to you. Note that b/c this is a trap check, something may appear
-		 * to be a herm, but not be (large breasts and a dick, for example, but no vag).
-		 * 
-		*/
-		public Gender trappyGender
-		{
-			get
-			{
-				//noticable bulge and breasts
-				if (BiggestTitSize() > CupSize.B && BiggestCockSize() >= 6)
-				{
-					return Gender.HERM;
-				}
-				//noticable breasts and sufficiently female
-				else if (BiggestTitSize() > CupSize.B && !femininity.atLeastSlightlyMasculine)
-				{
-					return Gender.FEMALE;
-				}
-				//noticable dick and sufficiently male
-				else if (BiggestCockSize() >= 6 && !femininity.atLeastSlightlyFeminine)
-				{
-					return Gender.MALE;
-				}
-				//not noticable assets - go by appearance
-				else if (BiggestCockSize() < 6 && BiggestTitSize() <= CupSize.B)
-				{
-					if (femininity.atLeastSlightlyFeminine) return Gender.FEMALE;
-					else if (femininity.atLeastSlightlyMasculine) return Gender.MALE;
-					return Gender.GENDERLESS;
-				}
-				//noticable breasts or dick, but too masculine or feminine. 
-				return Gender.HERM;
-			}
-		}
-
-
-
-		/// <summary>
-		/// Evens out all breast rows so they are closer to the average nipple length and cup size, rounding up.
-		/// large ones are shrunk, small ones grow. only does one unit of change, unless until even is set, then
-		/// will completely average all values.
-		/// </summary>
-		/// <param name="untilEven">if true, forces all breast rows to average value, if false, only one unit.</param>
-		internal void NormalizeBreasts(bool untilEven = false)
-		{
-			if (numBreastRows == 1)
-			{
-				return;
-			}
-			CupSize averageSize = AverageTitSize();
-			if (untilEven)
-			{
-				foreach (var row in _breasts)
-				{
-					row.setCupSize(averageSize);
-				}
-			}
-			else
-			{
-				foreach (var row in _breasts)
-				{
-					if (row.cupSize > averageSize)
-					{
-						row.ShrinkBreasts(1);
-					}
-					else if (row.cupSize < averageSize)
-					{
-						row.GrowBreasts(1);
-					}
-				}
-			}
-		}
-
-		internal void NormalizeDicks(bool untilEven = false)
-		{
-			if (numCocks == 1)
-			{
-				return;
-			}
-			float avgLength = AverageCockLength();
-			float avgGirth = AverageCockGirth();
-			if (untilEven)
-			{
-				foreach (var cock in _cocks)
-				{
-					cock.SetLengthAndGirth(avgLength, avgGirth);
-				}
-			}
-			else
-			{
-				foreach (var cock in _cocks)
-				{
-					if (cock.cockGirth < avgGirth - 0.5f)
-					{
-						cock.ThickenCock(0.5f);
-					}
-					else if (cock.cockGirth > avgGirth + 0.5f)
-					{
-						cock.ThinCock(0.5f);
-					}
-					else
-					{
-						cock.SetGirth(avgGirth);
-					}
-
-					if (cock.cockLength < avgLength - 1)
-					{
-						cock.LengthenCock(1);
-					}
-					else if (cock.cockLength > avgLength + 1)
-					{
-						cock.ShortenCock(1);
-					}
-					else
-					{
-						cock.SetLength(avgLength);
-					}
-				}
-			}
-		}
-
-
+		#region Update
+		#region Add
 		//Dog and wolf both make breast size one smaller than previous.
 		//Everything else keeps the size.
 		//Nipple status and blackness vary.
@@ -403,6 +290,21 @@ namespace CoC.Backend.BodyParts
 			double avgCup = _breasts.Average((x) => (double)x.cupSize);
 			byte cup = (byte)Math.Ceiling(avgCup);
 			_breasts.Add(Breasts.Generate((CupSize)cup, (float)avgLength));
+			_breasts[_breasts.Count - 1].nipples.setBlackNipple(blackNipples);
+			_breasts[_breasts.Count - 1].nipples.setQuadNipple(quadNipples);
+			_breasts[_breasts.Count - 1].nipples.setNippleStatus(nippleType);
+			return true;
+		}
+
+		internal bool AddBreastRow(CupSize cup)
+		{
+			if (numBreastRows >= MAX_BREAST_ROWS)
+			{
+				return false;
+			}
+			double avgLength = _breasts.Average((x) => (double)x.nipples.length);
+			_breasts.Add(Breasts.Generate(cup, (float)avgLength));
+
 			_breasts[_breasts.Count - 1].nipples.setBlackNipple(blackNipples);
 			_breasts[_breasts.Count - 1].nipples.setQuadNipple(quadNipples);
 			_breasts[_breasts.Count - 1].nipples.setNippleStatus(nippleType);
@@ -450,7 +352,8 @@ namespace CoC.Backend.BodyParts
 			_vaginas.Add(Vagina.Generate(newVaginaType, clitLength));
 			return true;
 		}
-
+		#endregion
+		#region  Remove
 		internal int RemoveBreastRow(int count = 1)
 		{
 			if (count < 0 || numBreastRows == 1 && _breasts[0].isMale)
@@ -535,7 +438,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return RemoveVagina(numVaginas);
 		}
-
+		#endregion
+		#endregion
+		#region Genital Exclusive
 		internal bool MakeFemale()
 		{
 			if (numCocks == 0 && !hasClitCock && numVaginas > 0)
@@ -565,7 +470,66 @@ namespace CoC.Backend.BodyParts
 			}
 			return true;
 		}
+		#region ExtraGenderChecks
+		//allows players with clit-dicks (a hard-to-obtain omnibus trait) to appear female, and do female scenes. 
+		//NYI, but also allows players to "surprise" NPCs expecting lesbian sex (or males expecting straight sex)
+		//Not to be confused with the "traps" check - this is a check for your junk
+		public Gender genderWithoutOmnibusClit
+		{
+			get
+			{
+				if (gender == Gender.HERM && numCocks == 0 && hasClitCock)
+				{
+					return Gender.FEMALE;
+				}
+				return gender;
+			}
+		}
 
+		/* Trap check. use this where player appearance is more important than actual assets, or for trappy sex, idk.
+		 * 
+		 * Female: C-cup breasts and >35 masculinity OR <6in Dick and >65 masculinity
+		 * Male: 6in+ Dick and <65 masculinity OR B-Cup or smaller breasts and <35 masculinity
+		 * Genderless: <6in Dick, B-cup or smaller breasts, and 35-65 masculinity.
+		 * Herm: everything else.
+		 * 
+		 * How you deal with androgynous and herm is up to you. Note that b/c this is a trap check, something may appear
+		 * to be a herm, but not be (large breasts and a dick, for example, but no vag).
+		 * 
+		*/
+		public Gender trappyGender
+		{
+			get
+			{
+				//noticable bulge and breasts
+				if (BiggestTitSize() > CupSize.B && BiggestCockSize() >= 6)
+				{
+					return Gender.HERM;
+				}
+				//noticable breasts and sufficiently female
+				else if (BiggestTitSize() > CupSize.B && !femininity.atLeastSlightlyMasculine)
+				{
+					return Gender.FEMALE;
+				}
+				//noticable dick and sufficiently male
+				else if (BiggestCockSize() >= 6 && !femininity.atLeastSlightlyFeminine)
+				{
+					return Gender.MALE;
+				}
+				//not noticable assets - go by appearance
+				else if (BiggestCockSize() < 6 && BiggestTitSize() <= CupSize.B)
+				{
+					if (femininity.atLeastSlightlyFeminine) return Gender.FEMALE;
+					else if (femininity.atLeastSlightlyMasculine) return Gender.MALE;
+					return Gender.GENDERLESS;
+				}
+				//noticable breasts or dick, but too masculine or feminine. 
+				return Gender.HERM;
+			}
+		}
+		#endregion
+
+		#region Biggest
 		internal CupSize BiggestTitSize()
 		{
 			byte retVal = _breasts.Max((x) => (byte)x.cupSize);
@@ -589,7 +553,8 @@ namespace CoC.Backend.BodyParts
 		{
 			return _cocks.Aggregate((x, y) => y.cockArea > x.cockArea ? y : x);
 		}
-
+		#endregion
+		#region Averages
 		internal float AverageCockSize()
 		{
 			return _cocks.Average(x => x.cockArea);
@@ -609,13 +574,115 @@ namespace CoC.Backend.BodyParts
 		{
 			return (CupSize)(byte)Math.Ceiling(_breasts.Average(x => (double)x.cupSize));
 		}
+		#endregion
+		#region Normalize
+		/// <summary>
+		/// Evens out all breast rows so they are closer to the average nipple length and cup size, rounding up.
+		/// large ones are shrunk, small ones grow. only does one unit of change, unless until even is set, then
+		/// will completely average all values.
+		/// </summary>
+		/// <param name="untilEven">if true, forces all breast rows to average value, if false, only one unit.</param>
+		internal void NormalizeBreasts(bool untilEven = false)
+		{
+			if (numBreastRows == 1)
+			{
+				return;
+			}
+			CupSize averageSize = AverageTitSize();
+			if (untilEven)
+			{
+				foreach (var row in _breasts)
+				{
+					row.setCupSize(averageSize);
+				}
+			}
+			else
+			{
+				foreach (var row in _breasts)
+				{
+					if (row.cupSize > averageSize)
+					{
+						row.ShrinkBreasts(1);
+					}
+					else if (row.cupSize < averageSize)
+					{
+						row.GrowBreasts(1);
+					}
+				}
+			}
+		}
 
+		internal void NormalizeDicks(bool untilEven = false)
+		{
+			if (numCocks == 1)
+			{
+				return;
+			}
+			float avgLength = AverageCockLength();
+			float avgGirth = AverageCockGirth();
+			if (untilEven)
+			{
+				foreach (var cock in _cocks)
+				{
+					cock.SetLengthAndGirth(avgLength, avgGirth);
+				}
+			}
+			else
+			{
+				foreach (var cock in _cocks)
+				{
+					if (cock.cockGirth < avgGirth - 0.5f)
+					{
+						cock.ThickenCock(0.5f);
+					}
+					else if (cock.cockGirth > avgGirth + 0.5f)
+					{
+						cock.ThinCock(0.5f);
+					}
+					else
+					{
+						cock.SetGirth(avgGirth);
+					}
+
+					if (cock.cockLength < avgLength - 1)
+					{
+						cock.LengthenCock(1);
+					}
+					else if (cock.cockLength > avgLength + 1)
+					{
+						cock.ShortenCock(1);
+					}
+					else
+					{
+						cock.SetLength(avgLength);
+					}
+				}
+			}
+		}
+		#endregion
+		#endregion
+		#region Breast Aliases
+
+		#endregion
+		#region Cock Aliases
+
+		#endregion
+		#region Balls Aliases
+
+		#endregion
+		#region Vagina Aliases
+
+		#endregion
+		#region Validation
 		internal override bool Validate(bool correctInvalidData)
 		{
-			#warning FIX ME!
+#warning FIX ME!
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
+		#endregion
+
+		#region Femininity
 		public byte feminize(byte amount)
 		{
 			return femininity.feminize(amount);
@@ -623,14 +690,15 @@ namespace CoC.Backend.BodyParts
 
 		public byte masculinize(byte amount)
 		{
-			return femininity.masculinize(amount);	
+			return femininity.masculinize(amount);
 		}
 
 		public void SetFemininity(byte newValue)
 		{
 			femininity.SetFemininity(newValue);
 		}
-
+		#endregion
+		#region Femininity Aware and Listener
 		internal void SetupFemininityAware(IFemininityAware femininityAware)
 		{
 			femininity.SetupFemininityAware(femininityAware);
@@ -645,6 +713,60 @@ namespace CoC.Backend.BodyParts
 		{
 			return femininity.DeregisterListener(listener);
 		}
+		#endregion
+
+		#region TimeListeners
+
+		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
+		{
+			StringBuilder outputBuilder = new StringBuilder();
+			string outputHelper;
+			//i have no clue how this would work for multi-snatch configs. 
+			foreach (var vagina in _vaginas)
+			{
+				if (DoLazy(vagina, isPlayer, hoursPassed, out outputHelper))
+				{
+					outputBuilder.Append(outputHelper);
+				}
+			}
+			if (DoLazy(ass, isPlayer, hoursPassed, out outputHelper))
+			{
+				outputBuilder.Append(outputHelper);
+			}
+
+#warning TODO: implement this as it becomes possible.
+			//increment time since last orgasm, times since last cock cum (if applicable), time since last milked (if applicable).
+			//if neither are applicable, feel free to reset them.
+
+			//If nipple is inverted or slightly inverted and is pierced.
+			//decrement the pull-out timer. if it's 0 or less, set the nipple status on each breast row accordingly.
+			//append the nipple pulled out by piercing to the output StringBuilder.
+
+			//If lactating and something happened via time passing(full, slowed down, etc), set needs output to true, append 
+			//the result of this to the output string builder.
+			//if some status effect relating to your genitals requires output, parse it and append it.
+
+			return outputBuilder.ToString();
+
+		}
+
+		private bool DoLazy(IBodyPartTimeLazy member, bool isPlayer, byte hoursPassed, out string output)
+		{
+			output = member.reactToTimePassing(isPlayer, hoursPassed);
+			return !string.IsNullOrEmpty(output);
+		}
+
+		#endregion
+		#region Base Perk Data
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			perkModifiers = getter;
+			if (needsLateInit)
+			{
+#error fix me.
+			}
+		}
+		#endregion
 	}
 }
 

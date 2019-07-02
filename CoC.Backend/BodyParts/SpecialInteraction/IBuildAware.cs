@@ -1,4 +1,8 @@
-﻿using System;
+﻿//IBuildAware.cs
+//Description:
+//Author: JustSomeGuy
+//6/25/2019, 1:04 AM
+using System;
 using System.Collections.Generic;
 using System.Text;
 

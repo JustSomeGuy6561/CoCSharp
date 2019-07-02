@@ -3,7 +3,6 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
-
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;

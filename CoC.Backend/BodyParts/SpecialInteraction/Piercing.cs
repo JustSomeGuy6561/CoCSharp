@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Items.Wearables.Piercings;
+﻿//Piercing.cs
+//Description:
+//Author: JustSomeGuy
+//3/27/2019, 11:41 AM
+using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;

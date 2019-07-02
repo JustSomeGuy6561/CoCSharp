@@ -1,4 +1,8 @@
-﻿using System;
+﻿//IMultiLotionable.cs
+//Description:
+//Author: JustSomeGuy
+//4/24/2019, 12:39 AM
+using System;
 using System.Collections.Generic;
 using System.Text;
 

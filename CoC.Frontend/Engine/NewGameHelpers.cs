@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//NewGameHelpers.cs
+//Description:
+//Author: JustSomeGuy
+//6/10/2019, 9:05 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Strings.Engine;

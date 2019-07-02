@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Items.Materials;
+﻿//Industrial.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 10:08 PM
+using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//SpecialEvent.cs
+//Description:
+//Author: JustSomeGuy
+//6/29/2019, 11:55 PM
+using System;
 
 namespace CoC.Backend.Engine.Time
 {

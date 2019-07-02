@@ -1,4 +1,8 @@
-﻿using CoC.Backend.CoC_Colors;
+﻿//IMultiToneable.cs
+//Description:
+//Author: JustSomeGuy
+//4/17/2019, 2:39 AM
+using CoC.Backend.CoC_Colors;
 using System;
 using System.Collections.Generic;
 

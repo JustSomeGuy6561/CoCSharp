@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Encounters;
+﻿//LocationBase.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 4:58 PM
+using CoC.Backend.Encounters;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
 

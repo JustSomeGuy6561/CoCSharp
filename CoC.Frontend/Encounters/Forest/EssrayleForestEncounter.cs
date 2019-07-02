@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Encounters;
+﻿//EssrayleForestEncounter.cs
+//Description:
+//Author: JustSomeGuy
+//4/6/2019, 1:29 AM
+using CoC.Backend.Encounters;
 using CoC.Frontend.Creatures.NPCs;
 using System;
 using System.Collections.Generic;

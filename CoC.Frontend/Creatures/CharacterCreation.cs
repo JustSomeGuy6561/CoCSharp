@@ -1,4 +1,8 @@
-﻿using CoC.Backend.BodyParts;
+﻿//CharacterCreation.cs
+//Description:
+//Author: JustSomeGuy
+//6/7/2019, 1:02 AM
+using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;

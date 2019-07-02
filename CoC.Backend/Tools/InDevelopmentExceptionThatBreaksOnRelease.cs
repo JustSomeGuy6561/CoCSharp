@@ -1,4 +1,8 @@
-﻿#if DEBUG
+﻿//InDevelopmentExceptionThatBreaksOnRelease.cs
+//Description:
+//Author: JustSomeGuy
+//3/21/2019, 12:35 PM
+#if DEBUG
 namespace CoC.Backend.Tools
 {
 	using System;

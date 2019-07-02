@@ -1,8 +1,9 @@
-﻿using CoC.Backend.Creatures;
+﻿//NoAttack.cs
+//Description:
+//Author: JustSomeGuy
+//4/28/2019, 10:05 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoC.Backend.Attacks
 {
@@ -22,7 +23,7 @@ namespace CoC.Backend.Attacks
 		private static NoAttack _instance;
 
 		private NoAttack() : base(GlobalStrings.None)
-		{}
+		{ }
 
 		protected override DescriptorWithArg<CombatCreature> AttackDescription()
 		{

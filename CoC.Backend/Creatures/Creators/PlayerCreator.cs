@@ -1,7 +1,7 @@
-﻿using CoC.Backend.BodyParts;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//PlayerCreator.cs
+//Description:
+//Author: JustSomeGuy
+//3/22/2019, 6:13 PM
 
 namespace CoC.Backend.Creatures
 {
@@ -11,6 +11,6 @@ namespace CoC.Backend.Creatures
 
 		//public WombType wombType;
 
-		public PlayerCreator(string name) : base(name) {}
+		public PlayerCreator(string name) : base(name) { }
 	}
 }

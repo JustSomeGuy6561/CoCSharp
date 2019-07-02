@@ -1,4 +1,8 @@
-﻿using System;
+﻿//OrderedHashSet.cs
+//Description:
+//Author: Andrew Baumher
+//6/29/2019, 3:58 AM
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;

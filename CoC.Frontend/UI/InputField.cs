@@ -1,4 +1,8 @@
-﻿using System;
+﻿//InputField.cs
+//Description:
+//Author: JustSomeGuy
+//6/19/2019, 7:40 PM
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;

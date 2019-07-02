@@ -1,4 +1,8 @@
-﻿using System;
+﻿//BehaviorBase.cs
+//Description:
+//Author: JustSomeGuy
+//3/26/2019, 8:35 PM
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;

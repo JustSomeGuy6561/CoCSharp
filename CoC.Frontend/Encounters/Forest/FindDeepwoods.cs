@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Encounters;
+﻿//FindDeepwoods.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 10:40 PM
+using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
 using CoC.Frontend.Areas.Locations;
 using CoC.Frontend.SaveData;

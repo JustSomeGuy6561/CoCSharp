@@ -1,4 +1,9 @@
-﻿using CoC.Backend.Engine;
+﻿//Womb.cs
+//Description:
+//Author: JustSomeGuy
+//6/28/2019, 10:30 PM
+using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
 
@@ -27,8 +32,10 @@ namespace CoC.Backend.BodyParts
 	//ITimeListener: if pregnant or anal pregnant, run them, check what's going on
 	//IDayListender: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant. output it.
 
-	public sealed partial class PlayerWomb : ITimeActiveListener, ITimeDailyListener, ITimeLazyListener
+	public sealed partial class PlayerWomb : ITimeActiveListener, ITimeDailyListener, ITimeLazyListener, IBaseStatPerkAware
 	{
+
+
 		public readonly PregnancyStore pregnancy = new PregnancyStore(true);
 		public readonly PregnancyStore analPregnancy = new PregnancyStore(false);
 
@@ -40,7 +47,7 @@ namespace CoC.Backend.BodyParts
 
 		public byte eggsEveryXDays { get; private set; } = 15;
 
-
+		#region ITimeListeners
 		byte ITimeDailyListener.hourToTrigger => 0; //midnight.
 
 		EventWrapper ITimeDailyListener.reactToDailyTrigger()
@@ -90,6 +97,7 @@ namespace CoC.Backend.BodyParts
 			}
 			return wrapper;
 		}
+		#endregion
 
 		public void SetEggSize(bool isLarge = true)
 		{
@@ -122,6 +130,12 @@ namespace CoC.Backend.BodyParts
 			{
 				oviposition = false;
 			}
+		}
+
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			pregnancy.GetBasePerkStats(getter);
+			analPregnancy.GetBasePerkStats(getter);
 		}
 	}
 

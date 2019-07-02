@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//BeeSting.cs
+//Description:
+//Author: JustSomeGuy
+//4/29/2019, 1:01 AM
+using CoC.Backend.Creatures;
 using System;
 
 namespace CoC.Backend.Attacks.BodyPartAttacks

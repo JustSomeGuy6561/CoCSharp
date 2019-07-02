@@ -1,4 +1,8 @@
-﻿using System;
+﻿//TailSlap.cs
+//Description:
+//Author: JustSomeGuy
+//4/29/2019, 12:45 AM
+using System;
 using System.Collections.Generic;
 using System.Text;
 using CoC.Backend.Creatures;

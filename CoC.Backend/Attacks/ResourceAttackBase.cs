@@ -1,6 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//ResourceAttackBase.cs
+//Description:
+//Author: JustSomeGuy
+//4/28/2019, 10:05 PM
+
+using System;
 
 namespace CoC.Backend.Attacks
 {
@@ -20,7 +23,7 @@ namespace CoC.Backend.Attacks
 		private readonly Action<ushort> setResources;
 
 		protected ResourceAttackBase(ushort maxResource, ushort maxRechargeRate, ushort initialResource, ushort initialRechargeRate, Func<ushort> getResourceCount, Action<ushort> setResourceCount,
-			SimpleDescriptor attackName) : base(attackName) 
+			SimpleDescriptor attackName) : base(attackName)
 		{
 			this.maxResource = maxResource;
 			this.maxRechargeRate = maxRechargeRate;

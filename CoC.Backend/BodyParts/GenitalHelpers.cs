@@ -1,4 +1,9 @@
-﻿using CoC.Backend.BodyParts.SpecialInteraction;
+﻿//GenitalHelpers.cs
+//Description:
+//Author: JustSomeGuy
+//4/15/2019, 9:13 PM
+
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -177,8 +182,9 @@ namespace CoC.Backend.BodyParts
 
 	//it wraps a byte. I dunno. 
 	//now capping max base fertility to 75. Perks could boost this past the base 75 value. 
-	public sealed class Fertility
+	public sealed class Fertility: IBaseStatPerkAware
 	{
+		public const byte MAX_TOTAL_FERTILITY = byte.MaxValue - 5;
 		public const byte MAX_BASE_FERTILITY = 75;
 		//byte value => something, idk.
 
@@ -229,6 +235,13 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
+		public byte TotalFertility => Math.Min(baseValue.add(perkData?.Invoke().bonusFertility ?? 0), MAX_TOTAL_FERTILITY);
+
+		private PerkStatBonusGetter perkData;
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			perkData = getter;
+		}
 	}
 
 	[Flags]

@@ -1,4 +1,8 @@
-﻿using System;
+﻿//ForestEncounterStrings.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 9:36 PM
+using System;
 using System.Collections.Generic;
 using System.Text;
 

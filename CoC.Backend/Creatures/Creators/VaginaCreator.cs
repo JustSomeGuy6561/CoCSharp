@@ -1,4 +1,8 @@
-﻿using CoC.Backend.BodyParts;
+﻿//VaginaCreator.cs
+//Description:
+//Author: JustSomeGuy
+//6/13/2019, 9:12 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.Items.Wearables.Piercings;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

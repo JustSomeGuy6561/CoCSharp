@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//BackendGlobalData.cs
+//Description:
+//Author: JustSomeGuy
+//4/7/2019, 7:43 PM
 
 namespace CoC.Backend.SaveData
 {

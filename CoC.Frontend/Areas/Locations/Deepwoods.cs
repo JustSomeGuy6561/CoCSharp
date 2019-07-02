@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Areas;
+﻿//Deepwoods.cs
+//Description:
+//Author: JustSomeGuy
+//4/6/2019, 12:03 AM
+using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
 using CoC.Frontend.SaveData;
 using System.Collections.Generic;

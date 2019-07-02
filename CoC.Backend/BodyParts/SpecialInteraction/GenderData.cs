@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Tools;
+﻿//GenderData.cs
+//Description:
+//Author: JustSomeGuy
+//3/24/2019, 1:03 AM
+using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {

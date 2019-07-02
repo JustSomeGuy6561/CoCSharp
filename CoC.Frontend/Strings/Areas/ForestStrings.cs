@@ -1,4 +1,8 @@
-﻿using CoC.Backend;
+﻿//ForestStrings.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 9:48 PM
+using CoC.Backend;
 using CoC.Backend.Areas;
 using System;
 using System.Collections.Generic;

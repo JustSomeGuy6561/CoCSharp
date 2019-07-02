@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Tools;
+﻿//Build.cs
+//Description:
+//Author: JustSomeGuy
+//4/10/2019, 4:44 AM
+using CoC.Backend.Tools;
 using CoC.Backend.BodyParts.SpecialInteraction;
 namespace CoC.Backend.BodyParts
 {

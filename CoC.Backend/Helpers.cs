@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//Helpers.cs
+//Description:
+//Author: JustSomeGuy
+//4/9/2019, 1:26 AM
 
 namespace CoC
 {

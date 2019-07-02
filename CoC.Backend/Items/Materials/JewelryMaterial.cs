@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
+﻿//JewelryMaterial.cs
+//Description:
+//Author: JustSomeGuy
+//4/11/2019, 9:22 PM
 
 namespace CoC.Backend.Items.Materials
 {
-	
+
 	public abstract class JewelryMaterial
 	{
 		public readonly SimpleDescriptor materialName;

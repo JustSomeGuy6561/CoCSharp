@@ -1,4 +1,8 @@
-﻿namespace CoC.Frontend.Items.Materials.Jewelry
+﻿//Ruby.cs
+//Description:
+//Author: JustSomeGuy
+//6/18/2019, 7:21 AM
+namespace CoC.Frontend.Items.Materials.Jewelry
 {
 	internal sealed partial class Ruby
 	{

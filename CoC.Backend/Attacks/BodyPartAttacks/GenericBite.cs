@@ -1,4 +1,8 @@
-﻿using System;
+﻿//GenericBite.cs
+//Description:
+//Author: JustSomeGuy
+//4/28/2019, 10:47 PM
+using System;
 using System.Collections.Generic;
 using System.Text;
 using CoC.Backend.Creatures;

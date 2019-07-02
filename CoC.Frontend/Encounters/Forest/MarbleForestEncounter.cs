@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Encounters;
+﻿//MarbleForestEncounter.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 10:02 PM
+using CoC.Backend.Encounters;
 using CoC.Frontend.Creatures.NPCs;
 using System;
 

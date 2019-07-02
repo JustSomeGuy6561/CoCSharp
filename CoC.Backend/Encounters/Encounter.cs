@@ -1,8 +1,9 @@
-﻿using CoC.Backend.Creatures;
+﻿//Encounter.cs
+//Description:
+//Author: JustSomeGuy
+//4/5/2019, 10:22 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoC.Backend.Encounters
 {
@@ -28,7 +29,7 @@ namespace CoC.Backend.Encounters
 	{
 		internal protected abstract int chances { get; }
 		protected RandomEncounter() : base()
-		{}
+		{ }
 	}
 
 	public abstract class SemiRandomEncounter : Encounter

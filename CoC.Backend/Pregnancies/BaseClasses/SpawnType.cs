@@ -1,5 +1,8 @@
-﻿using CoC.Backend.Engine.Time;
-using CoC.Backend.Tools;
+﻿//SpawnType.cs
+//Description:
+//Author: JustSomeGuy
+//5/1/2019, 9:32 PM
+using CoC.Backend.Engine.Time;
 using System;
 
 namespace CoC.Backend.Pregnancies

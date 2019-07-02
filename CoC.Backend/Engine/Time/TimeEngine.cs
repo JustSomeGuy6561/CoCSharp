@@ -1,9 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CoC.Backend.Tools;
-using System.Linq;
+﻿//TimeEngine.cs
+//Description:
+//Author: JustSomeGuy
+//6/29/2019, 11:55 PM
 using CoC.Backend.Areas;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace CoC.Backend.Engine.Time
 {
@@ -107,7 +110,7 @@ namespace CoC.Backend.Engine.Time
 		private void RunHour()
 		{
 			outputMagic.Clear();
-			
+
 			//Linq magic. Basically, convert all dayMultis currently proccing into a single hour variant, which works with ITimeDailyListener.
 			IEnumerable<ITimeDailyListener> converts = GameEngine.dayMultiListeners.Where((x) => x.triggerHours.Contains(CurrentHour)).Select((x) => x.ToSingleDay(CurrentHour));
 			//then we union that together with the current OrderedHashSet
@@ -166,7 +169,7 @@ namespace CoC.Backend.Engine.Time
 		//If i read the code correctly, that's what we currently do, but if that's not the desired result, we can fix it. 
 		//To do so, uncomment the first iteration code in NextEvent, then toggle the NextEvent functions in CatchUpLazies and RunHour to their 
 		//boolean variants. (comment out current, uncomment one with 'true')
-		
+
 
 		private void NextEvent(/*bool firstIteration = false*/)
 		{
@@ -182,7 +185,7 @@ namespace CoC.Backend.Engine.Time
 				//}
 				//else
 				//{
-					item.BuildInitialScene(next);
+				item.BuildInitialScene(next);
 				//}
 			}
 			else if (hoursPassed > 0)

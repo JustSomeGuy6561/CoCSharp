@@ -1,4 +1,8 @@
-﻿using System;
+﻿//Tamani.cs
+//Description:
+//Author: JustSomeGuy
+//4/6/2019, 1:48 AM
+using System;
 using System.Collections.Generic;
 using System.Text;
 using CoC.Frontend.SaveData;

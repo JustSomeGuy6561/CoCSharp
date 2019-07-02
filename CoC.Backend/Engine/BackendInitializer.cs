@@ -1,4 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿//BackendInitializer.cs
+//Description:
+//Author: JustSomeGuy
+//3/21/2019, 5:56 AM
+using CoC.Backend.Creatures;
 using CoC.Backend.SaveData;
 
 namespace CoC.Backend.Engine
