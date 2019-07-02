@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoC.Backend.Areas
 {
@@ -12,5 +10,11 @@ namespace CoC.Backend.Areas
 		{
 			name = areaName ?? throw new ArgumentNullException();
 		}
+
+		public abstract void RunArea();
+
+#warning Should make this virtual later.
+		public abstract void Unlock();
+
 	}
 }

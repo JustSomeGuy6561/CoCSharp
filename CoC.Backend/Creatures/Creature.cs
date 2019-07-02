@@ -2,7 +2,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Engine;
-using CoC.Backend.Tools;
+using CoC.Backend.Engine.Time;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -359,12 +359,9 @@ namespace CoC.Backend.Creatures
 			public readonly IBodyPartTimeLazy listener;
 			private readonly bool isPlayer;
 
-			public bool reactToTimePassing(byte hoursPassed, out OutputWrapper output, out bool outputOnOwnPage)
+			public EventWrapper reactToTimePassing(byte hoursPassed)
 			{
-				outputOnOwnPage = false;
-				bool retVal = listener.reactToTimePassing(isPlayer, hoursPassed, out string text);
-				output = (OutputWrapper)text;
-				return retVal;
+				return new EventWrapper(listener.reactToTimePassing(isPlayer, hoursPassed));
 			}
 
 			public LazyWrapper(bool player, IBodyPartTimeLazy lazyMember)
@@ -379,12 +376,9 @@ namespace CoC.Backend.Creatures
 			public readonly IBodyPartTimeActive listener;
 			private readonly bool isPlayer;
 
-			public bool reactToHourPassing(out OutputWrapper output, out bool outputOnOwnPage)
+			public EventWrapper reactToHourPassing()
 			{
-				outputOnOwnPage = false;
-				bool retVal = listener.reactToHourPassing(isPlayer, out string text);
-				output = (OutputWrapper)text;
-				return retVal;
+				return new EventWrapper(listener.reactToHourPassing(isPlayer));
 			}
 
 			public ActiveWrapper(bool player, IBodyPartTimeActive activeMember)
@@ -401,12 +395,9 @@ namespace CoC.Backend.Creatures
 
 			public byte hourToTrigger => listener.hourToTrigger;
 
-			public bool reactToDailyTrigger(out OutputWrapper output, out bool outputOnOwnPage)
+			public EventWrapper reactToDailyTrigger()
 			{
-				outputOnOwnPage = false;
-				bool retVal = listener.reactToDailyTrigger(isPlayer, out string text);
-				output = (OutputWrapper)text;
-				return retVal;
+				return new EventWrapper(listener.reactToDailyTrigger(isPlayer));
 			}
 
 			public DailyWrapper(bool player, IBodyPartTimeDaily activeMember)
@@ -423,12 +414,9 @@ namespace CoC.Backend.Creatures
 
 			public byte[] triggerHours => listener.triggerHours;
 
-			public bool reactToTrigger(byte currHour, out OutputWrapper output, out bool outputOnOwnPage)
+			public EventWrapper reactToTrigger(byte currHour)
 			{
-				outputOnOwnPage = false;
-				bool retVal = listener.reactToTrigger(isPlayer, currHour, out string text);
-				output = (OutputWrapper)text;
-				return retVal;
+				return new EventWrapper(listener.reactToTrigger(isPlayer, currHour));
 			}
 
 			public DayMultiWrapper(bool player, IBodyPartTimeDayMulti activeMember)

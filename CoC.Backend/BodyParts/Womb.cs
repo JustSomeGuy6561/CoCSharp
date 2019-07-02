@@ -1,10 +1,6 @@
-﻿using CoC.Backend.Creatures;
-using CoC.Backend.BodyParts.SpecialInteraction;
+﻿using CoC.Backend.Engine;
+using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
-using CoC.Backend.Tools;
-using System.Collections.Generic;
-using System.Text;
-using CoC.Backend.Engine;
 
 
 //
@@ -13,13 +9,122 @@ using CoC.Backend.Engine;
 // CLEAN UP MINOR ERRORS. TRY TO BUILD AND CLEAN UP MAJOR ERRORS THEN DO THE SAME WITH FRONTEND
 
 //womb breaks all the fucking rules. it's a body part, but giving birth probably deserves its own page.
-//similarly, when NPCs and such get eggs due to their anatomy
+//similarly, when NPCs and such get eggs and what the do with them varies due to their anatomy and implementations. There's no common rules to anything. Fuck it.
+
+//Pregnancy Store is generic. it can be used for anyone, by anything. but the SpawnType variable should be unique for player->NPC, NPC->player, or NPC->NPC (or other) spawns. 
+//if the spawnType is not unique, it must provide a constructor that lets the user determine which behavior it will have (like an ENUM or pair of bools or something, idk)
+//it's not my job to make sure you give the right SpawnType to the right PregnancyStore, but it's pretty straightforward imo.
+
+//Womb is now player specific, and a "helper" - i don't _need_ it, but it's convenient. As such, it's handled Differently. We'll save it like a body part, but
+//it gets its own wiring in player. 
+
+//If you want to wrap pregnancy stores in generic "Wombs" for random NPCs, and give them their own rules, go for it, but wiring it up to the system is on your.
+
 
 namespace CoC.Backend.BodyParts
 {
 	//even though technically butt pregnancies dont occur in the womb, i'm going to store them here. 
 	//ITimeListener: if pregnant or anal pregnant, run them, check what's going on
 	//IDayListender: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant. output it.
+
+	public sealed partial class PlayerWomb : ITimeActiveListener, ITimeDailyListener, ITimeLazyListener
+	{
+		public readonly PregnancyStore pregnancy = new PregnancyStore(true);
+		public readonly PregnancyStore analPregnancy = new PregnancyStore(false);
+
+		//egg related.
+		public bool laysEggs => basiliskWomb || oviposition;
+		private bool oviposition = false;
+		//prevents laysEggs from being false;
+		public bool basiliskWomb { get; private set; } = false;
+
+		public byte eggsEveryXDays { get; private set; } = 15;
+
+
+		byte ITimeDailyListener.hourToTrigger => 0; //midnight.
+
+		EventWrapper ITimeDailyListener.reactToDailyTrigger()
+		{
+			if (!pregnancy.isPregnant && laysEggs && GameEngine.CurrentDay % eggsEveryXDays == 0)
+			{
+				pregnancy.attemptKnockUp(1, new PlayerEggPregnancy());
+				return new EventWrapper(EggSpawnText());
+			}
+			return null;
+		}
+
+		EventWrapper ITimeActiveListener.reactToHourPassing()
+		{
+			EventWrapper wrapper = null;
+			//iirc we only do anal pregnancy text if it's bigger than regular one. 
+			if (pregnancy.isPregnant)
+			{
+				wrapper = pregnancy.reactToHourPassing();
+			}
+			if (analPregnancy.isPregnant)
+			{
+				EventWrapper analEvent = analPregnancy.reactToHourPassing();
+
+			}
+			return wrapper;
+		}
+
+		EventWrapper ITimeLazyListener.reactToTimePassing(byte hoursPassed)
+		{
+			EventWrapper wrapper = EventWrapper.Empty;
+			if (pregnancy.isPregnant)
+			{
+				wrapper = pregnancy.reactToTimePassing(hoursPassed);
+			}
+			if (analPregnancy.isPregnant)
+			{
+				EventWrapper analWrapper = analPregnancy.reactToTimePassing(hoursPassed);
+				if (wrapper == null)
+				{
+					wrapper = analWrapper;
+				}
+				else
+				{
+					wrapper.Append(analWrapper);
+				}
+			}
+			return wrapper;
+		}
+
+		public void SetEggSize(bool isLarge = true)
+		{
+			pregnancy.SetEggSize(isLarge);
+			analPregnancy.SetEggSize(isLarge);
+		}
+
+		//clears egg size "perk". now eggs are sized randomly. 
+		public void ClearEggSize()
+		{
+			pregnancy.ClearEggSize();
+			analPregnancy.ClearEggSize();
+		}
+
+		public bool GrantBasiliskWomb()
+		{
+			oviposition = true;
+			if (basiliskWomb == true)
+			{
+				return false;
+			}
+			basiliskWomb = true;
+			return true;
+		}
+
+		public void ClearBasiliskWomb(bool clearOviposition = true)
+		{
+			basiliskWomb = false;
+			if (oviposition && clearOviposition)
+			{
+				oviposition = false;
+			}
+		}
+	}
+
 
 	//public sealed class Womb : BehavioralSaveablePart<Womb, WombType>, ITimeActiveListener, IBodyPartTimeDaily
 	//{
@@ -83,13 +188,13 @@ namespace CoC.Backend.BodyParts
 	//	//new Harpy womb perk - old perk never expressly forced you to have eggs. 
 	//	//but made any eggs you had from that point forward always start out large.
 	//	//now, you can force eggs to start out either small or large via this function,
-		
+
 	//	//Note that this is a wrapper for the pregnancy store function, as it's internal and there's no other way to access it.
 	//	//this is so that we can make it work for both pregnancy stores at once, and only give you one place to call it. 
 	//	//it's easier to debug if there's only one way to make something happen. this also forces this to apply to anal pregnancies if eggs are ever allowed there
 	//	//it's possible to have something lay eggs in your ass right now, though they're already fertilized, or they dissolve over time, making both irrelevant.
 	//	//i have no idea if future changes may allow anal egg laying, but if it does happen, this perk will affect it. 
-		
+
 	//	public void SetEggSize(bool isLarge = true)
 	//	{
 	//		pregnancy.SetEggSize(isLarge);
@@ -183,7 +288,7 @@ namespace CoC.Backend.BodyParts
 	//		StringBuilder outputBuilder = new StringBuilder();
 
 	//		PregnancyStore[] pregnancyStores = new PregnancyStore[] { pregnancy, analPregnancy };
-			
+
 	//		foreach (PregnancyStore store in pregnancyStores)
 	//		{
 	//			if (store is ITimeListenerWithShortOutput outputListener)

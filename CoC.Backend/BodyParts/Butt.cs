@@ -58,14 +58,14 @@ namespace CoC.Backend.BodyParts
 		public byte GrowButt(byte amount = 1)
 		{
 			byte oldSize = size;
-			size += amount;
+			size = size.add(amount);
 			return size.subtract(oldSize);
 		}
 
 		public byte ShrinkButt(byte amount = 1)
 		{
 			byte oldSize = size;
-			size -= amount;
+			size = size.subtract(amount);
 			return oldSize.subtract(size);
 		}
 

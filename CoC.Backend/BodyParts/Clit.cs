@@ -14,15 +14,17 @@ namespace CoC.Backend.BodyParts
 
 	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
-	public sealed class Clit : SimpleSaveablePart<Clit>, IGrowShrinkable //IPerkAware
+	public sealed class Clit : SimpleSaveablePart<Clit>, IGrowShrinkable, IBaseStatPerkAware
 	{
-		//TODO: make it work with large clit perk, percing fetish perk if i make that a perk.
-
+		private float clitGrowthMultiplier => basePerkData?.Invoke().ClitGrowthMultiplier ?? 1;
+		private float clitShrinkMultiplier => basePerkData?.Invoke().ClitShrinkMultiplier ?? 1;
+		
 		private static readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
 		private const JewelryType SUPPORTED_CLIT_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 
-		private bool piercingFestish => BackendSessionData.data.piercingFetish;
+		private bool piercingFetish => BackendSessionData.data.piercingFetish;
 
+		private BasePerkDataGetter basePerkData;
 
 		public const float MIN_CLIT_SIZE = 0.25f;
 		public const float DEFAULT_CLIT_SIZE = 0.25f;
@@ -33,8 +35,7 @@ namespace CoC.Backend.BodyParts
 			get => _length;
 			private set
 			{
-				Utils.Clamp(ref value, MIN_CLIT_SIZE, MAX_CLIT_SIZE);
-				_length = value;
+				_length = Utils.Clamp2(value, MIN_CLIT_SIZE, MAX_CLIT_SIZE);
 			}
 		}
 		private float _length;
@@ -43,7 +44,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<ClitPiercings> clitPiercings;
 
-		private Clit(float clitSize = DEFAULT_CLIT_SIZE)
+		private Clit(float clitSize = MIN_CLIT_SIZE)
 		{
 			length = clitSize;
 			omnibusClit = false;
@@ -79,7 +80,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return true;
 			}
-			else if (!piercingFestish)
+			else if (!piercingFetish)
 			{
 				return false;
 			}
@@ -137,25 +138,42 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public float growClit(float amount)
+		public float growClit(float amount, bool ignorePerks = false)
 		{
 			if (length >= MAX_CLIT_SIZE || amount <= 0)
 			{
 				return 0;
 			}
+			
+			//hope this never matters but floats don't wrap. which means we're fine, though if it ever happens in debug land, we'll know.
 			float oldLength = length;
-			length += amount;
+			if (!ignorePerks)
+			{
+				length += amount * clitGrowthMultiplier;
+			}
+			else
+			{
+				length += amount;
+			}
 			return length - oldLength;
 		}
 
-		public float shrinkClit(float amount)
+		public float shrinkClit(float amount, bool ignorePerks = false)
 		{
 			if (length <= MIN_CLIT_SIZE || amount <= 0)
 			{
 				return 0;
 			}
+			//hope this never matters but floats don't wrap. which means we're fine, though if it ever happens in debug land, we'll know.
 			float oldLength = length;
-			length -= amount;
+			if (!ignorePerks)
+			{
+				length -= amount * clitShrinkMultiplier;
+			}
+			else
+			{
+				length -= amount;
+			}
 			return oldLength - length;
 		}
 
@@ -200,5 +218,14 @@ namespace CoC.Backend.BodyParts
 
 
 		#endregion
+
+		void IBaseStatPerkAware.GetBasePerkStats(BasePerkDataGetter getter)
+		{
+			basePerkData = getter;
+			if (length < getter().MinNewClitSize)
+			{
+				length = getter().MinNewClitSize;
+			} 
+		}
 	}
 }

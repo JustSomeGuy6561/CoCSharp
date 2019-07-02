@@ -26,11 +26,7 @@ namespace CoC.Backend.BodyParts
 		public byte tailCount
 		{
 			get => _tailCount;
-			private set
-			{
-				Utils.Clamp(ref value, type.initialTailCount, type.maxTailCount);
-				_tailCount = value;
-			}
+			private set => _tailCount = Utils.Clamp2(value, type.initialTailCount, type.maxTailCount);
 		}
 		private byte _tailCount = 0;
 

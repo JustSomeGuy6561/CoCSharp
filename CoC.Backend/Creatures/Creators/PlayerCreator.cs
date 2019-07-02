@@ -9,7 +9,7 @@ namespace CoC.Backend.Creatures
 	{
 		public int gems = 0;
 
-		public WombType wombType;
+		//public WombType wombType;
 
 		public PlayerCreator(string name) : base(name) {}
 	}

@@ -85,6 +85,31 @@ namespace CoC.Backend.Tools
 			return val;
 		}
 
+		public static T ClampEnum2<T>(T value, T min, T max) where T : System.Enum
+		{
+			if (value.CompareTo(max) > 0)
+			{
+				return max;
+			}
+			else if (value.CompareTo(min) < 0)
+			{
+				return min;
+			}
+			return value;
+		}
+
+		public static void ClampEnum<T>(ref T value, T min, T max) where T : System.Enum
+		{
+			if (value.CompareTo(max) > 0)
+			{
+				value = max;
+			}
+			else if (value.CompareTo(min) < 0)
+			{
+				value = min;
+			}
+		}
+
 		public static IEnumerable<T> AsIterable<T>() where T: Enum
 		{
 			return Enum.GetValues(typeof(T)).Cast<T>();

@@ -21,10 +21,7 @@ namespace CoC.Backend.BodyParts
 			get => _cupSize;
 			private set
 			{
-				//weird workaround because enums aren't actually icomparabale. they do allow < or > though. idk.
-				//force the value to be valid. only really applies with enum arithmatic.
-				byte val = Utils.Clamp2((byte)_cupSize, (byte)CupSize.FLAT, (byte)CupSize.JACQUES00);
-				_cupSize = (CupSize)val;
+				_cupSize = Utils.ClampEnum2(value, CupSize.FLAT, CupSize.JACQUES00); //enums: icomparable, but not really. woooo!
 			}
 		}
 		private CupSize _cupSize;
@@ -67,9 +64,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return 0;
 			}
-			Utils.Clamp<byte>(ref byAmount, 0, byte.MaxValue);
 			CupSize oldSize = cupSize;
-			cupSize += byAmount;
+			cupSize = cupSize.ByteEnumAdd(byAmount);
 			return cupSize - oldSize;
 		}
 
@@ -79,16 +75,14 @@ namespace CoC.Backend.BodyParts
 			{
 				return 0;
 			}
-			Utils.Clamp<byte>(ref byAmount, 0, byte.MaxValue);
 			CupSize oldSize = cupSize;
-			cupSize -= byAmount;
+			cupSize = cupSize.ByteEnumSubtract(byAmount);
 			return cupSize - oldSize;
 		}
 
 		internal void setCupSize(CupSize size)
 		{
-			byte val = Utils.Clamp2((byte)size, (byte)CupSize.FLAT, (byte)CupSize.JACQUES00);
-			cupSize = size;
+			cupSize = Utils.ClampEnum2(size, CupSize.FLAT, CupSize.JACQUES00);
 		}
 
 		bool IGrowShrinkable.CanGrowPlus()
@@ -121,7 +115,14 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			CupSize oldSize = cupSize;
-			cupSize -= (byte)(!hasBigTitPerk && Utils.RandBool() ? 2 : 1); //if big tits perk: -1. otherwise -1 or -2, 50% split.
+			if (cupSize == CupSize.A || hasBigTitPerk || Utils.RandBool())
+			{
+				cupSize--;
+			}
+			else
+			{
+				cupSize -= 2;
+			}
 			return oldSize - cupSize;
 		}
 

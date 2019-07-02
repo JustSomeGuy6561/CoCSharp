@@ -23,15 +23,34 @@ namespace CoC.Backend.BodyParts
 	//i have, however, renamed these. gaping-wide-> gaping. gaping-> roomy. could even rename clown car to gaping-wide if clown car is a little too bizarre, but i'm kinda fond of its bizarre-ness.
 	public enum VaginalLooseness : byte { TIGHT, NORMAL, LOOSE, ROOMY, GAPING, CLOWN_CAR_WIDE }
 
-	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, IBodyPartTimeLazy
+	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, IBodyPartTimeLazy, IBaseStatPerkAware
 	{
 		private const JewelryType SUPPORTED_LABIA_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 		public readonly Clit clit;
+
+		private BasePerkDataGetter baseStats;
+
+		private VaginalLooseness minLooseness => baseStats?.Invoke().minVaginalLooseness ?? VaginalLooseness.TIGHT; //now safe for initializers.
+		private VaginalLooseness maxLooseness => baseStats?.Invoke().maxVaginalLooseness ?? VaginalLooseness.CLOWN_CAR_WIDE; //see above.
+
+		private VaginalWetness minWetness => baseStats?.Invoke().minVaginalWetness ?? VaginalWetness.DRY;
+		private VaginalWetness maxWetness => baseStats?.Invoke().minVaginalWetness ?? VaginalWetness.SLAVERING;
+
+		public VaginalWetness wetness
+		{
+			get => _wetness;
+			private set => _wetness = Utils.ClampEnum2(value, minWetness, maxWetness);
+		}
+		private VaginalWetness _wetness;
+
+		public VaginalLooseness looseness
+		{
+			get => _looseness;
+			private set => _looseness = Utils.ClampEnum2(value, minLooseness, maxLooseness);
+		}
+		private VaginalLooseness _looseness;
 		public bool virgin { get; private set; }
 
-		public VaginalWetness wetness { get; private set; }
-		public VaginalLooseness looseness { get; private set; }
-		private VaginalLooseness minVaginalLooseness = VaginalLooseness.TIGHT;
 
 		private const ushort LOOSENESS_LOOSE_TIMER = 200;
         private const ushort LOOSENESS_ROOMY_TIMER = 100;
@@ -41,13 +60,14 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<LabiaPiercings> labiaPiercings;
 
+		#region Constructors
 		private Vagina()
 		{
 			clit = Clit.Generate();
 			virgin = true;
 			type = VaginaType.HUMAN;
-			wetness = VaginalWetness.NORMAL;
-			looseness = VaginalLooseness.TIGHT;
+			_wetness = VaginalWetness.NORMAL;
+			_looseness = VaginalLooseness.TIGHT;
 			labiaPiercings = new Piercing<LabiaPiercings>(SUPPORTED_LABIA_JEWELRY, PiercingLocationUnlocked);
 		}
 
@@ -56,13 +76,15 @@ namespace CoC.Backend.BodyParts
 			clit = Clit.GenerateWithLength(clitLength);
 			virgin = true;
 			type = VaginaType.HUMAN;
-			wetness = VaginalWetness.NORMAL;
-			looseness = VaginalLooseness.TIGHT;
+			_wetness = VaginalWetness.NORMAL;
+			_looseness = VaginalLooseness.TIGHT;
 			labiaPiercings = new Piercing<LabiaPiercings>(SUPPORTED_LABIA_JEWELRY, PiercingLocationUnlocked);
 		}
-
+		#endregion
 		public override VaginaType type { get; protected set; }
+		public override bool isDefault => type == VaginaType.HUMAN;
 
+		#region Generate
 		internal static Vagina GenerateFromGender(Gender gender)
 		{
 			if (gender.HasFlag(Gender.FEMALE)) return new Vagina();
@@ -92,8 +114,8 @@ namespace CoC.Backend.BodyParts
 			return new Vagina(clitLength)
 			{
 				virgin = (bool)virgin,
-				looseness = vaginalLooseness,
-				wetness = vaginalWetness,
+				_looseness = vaginalLooseness,
+				_wetness = vaginalWetness,
 				type = vaginaType
 			};
 		}
@@ -109,20 +131,9 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 		
-		
-		public override bool isDefault => type == VaginaType.HUMAN;
+		#endregion
+		#region Update
 
-		internal bool Deflower()
-		{
-			if (!virgin)
-			{
-				return false;
-			}
-			virgin = false;
-			return true;
-		}
-
-		
 		internal bool UpdateType(VaginaType newType)
 		{
 			if (type == newType)
@@ -132,28 +143,7 @@ namespace CoC.Backend.BodyParts
 			type = newType;
 			return true;
 		}
-
-		#region aliases
-		public bool omnibusClit => clit.omnibusClit;
-
-		public bool ActivateOmnibusClit()
-		{
-			return clit.ActivateOmnibusClit();
-		}
-
-		public bool DeactivateOmnibusClit()
-		{
-			return clit.DeactivateOmnibusClit();
-		}
 		#endregion
-
-		#region Piercing-Related
-		private bool PiercingLocationUnlocked(LabiaPiercings piercingLocation)
-		{
-			return true;
-		}
-		#endregion
-
 		#region Restore
 		internal override bool Restore()
 		{
@@ -167,6 +157,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
+		#region Validate
 		internal override bool Validate(bool correctInvalidData)
 		{
 			VaginaType vaginaType = type;
@@ -181,6 +172,40 @@ namespace CoC.Backend.BodyParts
 			}
 			return valid;
 		}
+		#endregion
+		#region Vagina-Specific
+		internal bool Deflower()
+		{
+			if (!virgin)
+			{
+				return false;
+			}
+			virgin = false;
+			return true;
+		}
+
+		//public 
+
+		#endregion
+		#region Clit Helpers
+		public bool omnibusClit => clit.omnibusClit;
+
+		public bool ActivateOmnibusClit()
+		{
+			return clit.ActivateOmnibusClit();
+		}
+
+		public bool DeactivateOmnibusClit()
+		{
+			return clit.DeactivateOmnibusClit();
+		}
+		#endregion
+		#region Piercing-Related
+		private bool PiercingLocationUnlocked(LabiaPiercings piercingLocation)
+		{
+			return true;
+		}
+		#endregion
 
 		#region ITimeListener
 
@@ -211,21 +236,30 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-
-
-		bool IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed, out string output)
+		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
 		{
-			bool needsOutput = false;
 			StringBuilder sb = new StringBuilder();
-			//if has a perk that makes vagina a certain looseness
-			//parse it. set any output flags accordingly.
-			/*else */ if (looseness > VaginalLooseness.NORMAL && looseness > minVaginalLooseness) //whichever is greator.
+
+			if (looseness < minLooseness)
+			{
+				looseness = minLooseness;
+				vaginaTightenTimer = 0;
+			}
+			else if (looseness > maxLooseness)
+			{
+				looseness = maxLooseness;
+				vaginaTightenTimer = 0;
+			}
+
+			else if (looseness > VaginalLooseness.NORMAL && looseness > minLooseness) //whichever is greator.
 			{
 				vaginaTightenTimer += hoursPassed;
 				if (vaginaTightenTimer >= timerAmount)
 				{
-					sb.Append(VaginaTightenedUpDueToInactivity(looseness));
-					needsOutput = true;
+					if (isPlayer)
+					{
+						sb.Append(VaginaTightenedUpDueToInactivity(looseness));
+					}
 					looseness--;
 					vaginaTightenTimer = 0;
 				}
@@ -236,16 +270,27 @@ namespace CoC.Backend.BodyParts
 				vaginaTightenTimer = 0;
 			}
 
-			//if a perk exists that sets wetness to a certain level, parse it.
-			//append to sb accordingly.
+			if (wetness < minWetness)
+			{
+				wetness = minWetness;
+			}
+			else if (wetness > maxWetness)
+			{
+				wetness = maxWetness;
+			}
 
-			//if any perk exists that sets a minimum/maximum clit length, parse it.
-			//append to sb accordingly.
+			//if we decide to change behavior so that clit size is forced, call clit react to time passing, appending its result to ours.
 
-			output = sb.ToString();
-			return isPlayer && needsOutput;
+			return sb.ToString();
 		}
 
+		#endregion
+
+		#region Base Stat Perk
+		void IBaseStatPerkAware.GetBasePerkStats(BasePerkDataGetter getter)
+		{
+			baseStats = getter;
+		}
 		#endregion
 	}
 

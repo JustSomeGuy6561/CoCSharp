@@ -12,10 +12,10 @@ using System.Collections.Generic;
 namespace CoC.Backend.BodyParts
 {
 	//may once have been multidyeable, as we skip button location 4; location 3 is wings.
-	public sealed class Wings : BehavioralSaveablePart<Wings, WingType>, IDyeable, IMultiToneable //IPerkaware? idk, there's some combat bonus for wings with running, but i feel like that can just be hard-coded.
+	public sealed class Wings : BehavioralSaveablePart<Wings, WingType>, IDyeable, IMultiToneable //if combat grants a boost to running via wings, just add a hasWings check.
 	{
-		//add to creature. 
-		//public bool hasWings => wings.type != WingType.NONE;
+		//add to creature as well.
+		public bool hasWings => type != WingType.NONE;
 
 		public override WingType type
 		{

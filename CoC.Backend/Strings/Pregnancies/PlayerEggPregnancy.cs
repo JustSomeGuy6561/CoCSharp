@@ -26,7 +26,6 @@ namespace CoC.Backend.Pregnancies
 		private string BirthStr(bool gainsOviMax)
 		{
 			StringBuilder sb = new StringBuilder();
-			bool oviMaxOverdoseGainedOviPerk = false;
 
 			//if (gainsOviMax)
 			//{
@@ -140,9 +139,8 @@ namespace CoC.Backend.Pregnancies
 				}
 
 				sb.Append("\n\nYou gaze down at the mess, counting " + eggDescript() + ".");
-				//mother.orgasm('Vaginal');
 			}
-			if (gainedOviMax)
+			if (gainsOviMax)
 			{
 				sb.Append("\n\n(<b>Perk Gained: Oviposition</b>)");
 			}

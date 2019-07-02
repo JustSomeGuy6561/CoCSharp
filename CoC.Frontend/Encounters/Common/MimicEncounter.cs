@@ -10,7 +10,6 @@ namespace CoC.Frontend.Encounters.Common
 	class MimicEncounter : RandomEncounter
 	{
 		private const int CHANCES = 10;
-		private static Player player => GameEngine.currentPlayer;
 
 		private readonly SimpleDescriptor introText;
 

@@ -3,7 +3,10 @@
 //Author: JustSomeGuy
 //1/5/2019, 5:21 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Perks;
+using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
+using System;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
@@ -18,94 +21,85 @@ namespace CoC.Backend.BodyParts
 	//Pretty sure normal for ass size is pretty tight. so
 
 	public enum AnalLooseness : byte { NORMAL, LOOSE, ROOMY, STRETCHED, GAPING } //if you want to add a clown car level here, may i suggest RENT_ASUNDER?
-	public sealed partial class Ass: IBodyPartTimeLazy //, IPerkAware
+	public sealed partial class Ass : IBodyPartTimeLazy, IBaseStatPerkAware
 	{
+		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
 		public const ushort MAX_ANAL_CAPACITY = ushort.MaxValue;
 
 		private const byte LOOSENESS_LOOSE_TIMER = 72;
 		private const byte LOOSENESS_ROOMY_TIMER = 48;
 		private const byte LOOSENESS_STRETCHED_TIMER = 24;
 		private const byte LOOSENESS_GAPING_TIMER = 12;
+		private BackendSessionData saveData => BackendSessionData.data;
 
 		private byte buttTightenTimer = 0;
+
+		private AnalLooseness maxLooseness => baseStats().maxAnalLooseness;
+		private AnalLooseness minLooseness => baseStats().minAnalLooseness;
+
+		private AnalWetness minWetness => baseStats().minAnalWetness;
+		private AnalWetness maxWetness => baseStats().maxAnalWetness;
 
 		public AnalWetness wetness
 		{
 			get => _analWetness;
-			private set
-			{
-				byte val = (byte)value;
-				Utils.Clamp(ref val, (byte)AnalWetness.NORMAL, (byte)AnalWetness.SLIME_DROOLING);
-				_analWetness = (AnalWetness)val;
-			}
+			private set => _analWetness = Utils.ClampEnum2(value, minWetness, maxWetness);
 		}
-		private AnalWetness _analWetness = 0;
+
+		private AnalWetness _analWetness = AnalWetness.NORMAL;
 
 		public AnalLooseness looseness
 		{
 			get => _analLooseness;
 			private set
 			{
-				byte val = (byte)value;
 				//if we shrink or grow the looseness, reset the timer. 
 				if (value != _analLooseness)
 				{
 					buttTightenTimer = 0;
 				}
-				Utils.Clamp(ref val, (byte)minAnalLooseness, (byte)AnalLooseness.GAPING);
-				_analLooseness = (AnalLooseness)val;
+				_analLooseness = Utils.ClampEnum2(value, minLooseness, maxLooseness);
 			}
 		}
 		private AnalLooseness _analLooseness = AnalLooseness.NORMAL;
 
-		private AnalLooseness minAnalLooseness = AnalLooseness.NORMAL;
+		public ushort bonusAnalCapacity { get; private set; } = 0;
 
-		public ushort bonusAnalCapacity { get; private set; }
-
+		private ushort perkBonusAnalCapacity => baseStats?.Invoke().PerkBasedBonusAnalCapacity ?? 0;
 		public ushort analCapacity()
 		{
-			ushort capacity = 0;
 
 			byte loose = (byte)looseness;
-			byte wet = (byte)wetness;
-			//get current bonus capacity from perks
-			uint cap = (uint)(capacity + bonusAnalCapacity + experience / 10 + 6 * loose * loose * (1 + wet) / 10);
-			if (cap > ushort.MaxValue)
+			if (!virgin)
 			{
-				return ushort.MaxValue;
+				loose++;
+			}
+			byte wet = ((byte)wetness).add(1);
+			uint cap = (uint)Math.Floor(BASE_CAPACITY + bonusAnalCapacity + perkBonusAnalCapacity /*+ experience / 10*/ + 6 * loose * loose * wet / 10.0);
+			if (cap > MAX_ANAL_CAPACITY)
+			{
+				return MAX_ANAL_CAPACITY;
 			}
 			return (ushort)cap;
 		}
 
-		//how "experienced" the character is with anal sex. not used atm. as of now, it just increases by 1 with each experience. 
-		//idk, maybe change this.
-		public byte experience
-		{
-			get => _experience;
-			set
-			{
-				_experience = Utils.Clamp2<byte>(value, 0, 100);
-			}
-		}
-		private byte _experience;
+		public ushort numTimesAnal { get; private set; } = 0;
 
-
-		public ushort numTimesAnal
-		{
-			get; private set;
-		}
 		public bool virgin { get; private set; } = true;
 
-		SimpleDescriptor shortDescription => shortDesc;
-		SimpleDescriptor fullDescription => fullDesc;
+		public SimpleDescriptor shortDescription => shortDesc;
+		public SimpleDescriptor fullDescription => fullDesc;
 
+		#region Constructor
 		private Ass()
 		{
-			looseness = 0;
-			wetness = 0;
+			looseness = AnalLooseness.NORMAL;
+			wetness = AnalWetness.NORMAL;
+			virgin = true;
 			numTimesAnal = 0;
 		}
-
+		#endregion
+		#region Generate
 		internal static Ass GenerateDefault()
 		{
 			return new Ass();
@@ -113,7 +107,7 @@ namespace CoC.Backend.BodyParts
 
 		//default behavior is to let the ass determine if it's still virgin.
 		//allows PC to masturbate/"practice" w/o losing anal virginity.
-		//if set to false, it will be ignored if looseness is still virgin.
+		//if set to false, it will be ignored if looseness is still normal.
 		//nothing here can be null so we're fine.
 		internal static Ass Generate(AnalWetness analWetness, AnalLooseness analLooseness, bool? virginAnus = null)
 		{
@@ -133,37 +127,31 @@ namespace CoC.Backend.BodyParts
 			}
 			return ass;
 		}
-
-		internal byte StretchAnus(byte amount = 1, bool permanent = false)
+		#endregion
+		#region Update Variables - Ass-Specific
+		internal byte StretchAnus(byte amount = 1)
 		{
-			byte oldLooseness = (byte)looseness;
-			looseness += amount;
-			return ((byte)looseness).subtract(oldLooseness);
+
+			AnalLooseness oldLooseness = looseness;
+			looseness = looseness.ByteEnumAdd(amount);
+			return looseness - oldLooseness;
 		}
 
 		internal byte ShrinkAnus(byte amount = 1)
 		{
-			byte oldLooseness = (byte)looseness;
-			looseness -= amount;
-			return oldLooseness.subtract((byte)looseness);
-		}
 
-		internal void SetMinAnalLooseness(AnalLooseness minLooseness)
-		{
-			minAnalLooseness = minLooseness;
-			if (looseness < minAnalLooseness)
-			{
-				looseness = minLooseness;
-			}
+			AnalLooseness oldLooseness = looseness;
+			looseness = looseness.ByteEnumSubtract(amount);
+			return oldLooseness - looseness;
 		}
 
 		internal bool SetAnalLooseness(AnalLooseness analLooseness, bool forceIfLessThanCurrentMin = false)
 		{
-			if (forceIfLessThanCurrentMin && analLooseness < minAnalLooseness)
+			if (forceIfLessThanCurrentMin && analLooseness < minLooseness)
 			{
-				minAnalLooseness = analLooseness;
+				return true;
 			}
-			if (analLooseness >= minAnalLooseness)
+			else if (analLooseness >= minLooseness)
 			{
 				looseness = analLooseness;
 				return true;
@@ -173,45 +161,54 @@ namespace CoC.Backend.BodyParts
 
 		internal byte AddWetness(byte amount = 1)
 		{
-			byte oldWetness = (byte)wetness;
-			wetness += amount;
-			return ((byte)wetness).subtract(oldWetness);
+			AnalWetness oldWetness = wetness;
+			wetness = wetness.ByteEnumAdd(amount);
+			return wetness - oldWetness;
 		}
 
 		internal byte SubtractWetness(byte amount = 1)
 		{
-			byte oldWetness = (byte)wetness;
-			wetness -= amount;
-			return oldWetness.subtract((byte)wetness);
+			AnalWetness oldWetness = wetness;
+			wetness = wetness.ByteEnumSubtract(amount);
+			return oldWetness - wetness;
 		}
-
 		internal void ForceAnalWetness(AnalWetness analWetness)
 		{
 			wetness = analWetness;
 		}
-		
 
+		internal ushort AddBonusCapacity(ushort amountToAdd)
+		{
+			ushort currentCapacity = bonusAnalCapacity;
+			bonusAnalCapacity = bonusAnalCapacity.add(amountToAdd);
+			return bonusAnalCapacity.subtract(currentCapacity);
+		}
 
-		//move this helper to the creature class.
-		////takes a cock, optionally attempting to impregnate the character with it. 
-		//internal bool analSex(Cock cock, bool canPreggers = false, byte analExperienceGained = 1)
-		//{
-		//	numTimesAnal++;
-		//	return analPenetrate(cock.CockArea(), analExperienceGained);
-		//	//todo: hold off return until attempted knockup. 
-		//}
-
-		//allows non-dicks to count - finger/fist/large clits/dildo, idk.
-		internal bool analPenetrate(ushort penetratorArea, bool takeAnalVirginity = false, byte analExperiencedGained = 1)
+		internal ushort SubtractBonusCapacity(ushort amountToRemove)
+		{
+			ushort currentCapacity = bonusAnalCapacity;
+			bonusAnalCapacity = bonusAnalCapacity.subtract(amountToRemove);
+			return bonusAnalCapacity.subtract(currentCapacity);
+		}
+		#endregion
+		//Alias these in the creature class, adding the relevant features not in Ass itself (knockup, orgasm)
+		#region Unique Functions
+		internal bool analSex(ushort penetratorArea)
+		{
+			numTimesAnal++;
+			return analPenetrate(penetratorArea, true);
+		}
+		internal bool analPenetrate(ushort penetratorArea, bool takeAnalVirginity = false/*, byte analExperiencedGained = 1*/)
 		{
 
-			experience += analExperiencedGained;
+			//experience = experience.add(analExperiencedGained);
 			AnalLooseness oldLooseness = looseness;
 			ushort capacity = analCapacity();
 
+			//don't have to worry about overflow, as +1 will never overflow our artificial max.
 			if (penetratorArea >= capacity * 1.5f)
 			{
-				looseness++;
+				looseness++; 
 			}
 			else if (penetratorArea >= capacity && Utils.RandBool())
 			{
@@ -235,6 +232,9 @@ namespace CoC.Backend.BodyParts
 			}
 			return oldLooseness != looseness;
 		}
+		#endregion
+
+		#region BodyPartTime
 		private byte timerAmount
 		{
 			get
@@ -262,35 +262,65 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		bool IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed, out string output)
+		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
 		{
-			bool needsOutput = false;
 			StringBuilder outputBuilder = new StringBuilder();
-			//if has a perk that makes ass a certain looseness
-			//parse it. set any output flags accordingly.
-			/*else */if (looseness > minAnalLooseness)
+
+			PassiveStatModifiers perkStats = baseStats();
+			//these should be done automatically by the perk that activated them, but if it's missed, we'll silently correct it. 
+			if (looseness < minLooseness)
 			{
-				buttTightenTimer += hoursPassed;
+				looseness = minLooseness;
+				buttTightenTimer = 0;
+			}
+			else if (looseness > maxLooseness)
+			{
+				looseness = maxLooseness;
+				buttTightenTimer = 0;
+			}
+			//normal stuff.
+			else if (looseness > minLooseness)
+			{
+				buttTightenTimer.addIn(hoursPassed);
 				if (buttTightenTimer >= timerAmount)
 				{
 					if (isPlayer)
 					{
-						needsOutput = true;
 						outputBuilder.Append(AssTightenedUpDueToInactivity(looseness));
 					}
 					looseness--;
 					buttTightenTimer = 0;
 				}
 			}
-
 			else if (buttTightenTimer > 0)
 			{
 				buttTightenTimer = 0;
 			}
 
-			output = outputBuilder.ToString();
-			return needsOutput;
+			return outputBuilder.ToString();
 		}
+		#endregion
+		#region BasePerkStats
+		private BasePerkDataGetter baseStats;
 
+		void IBaseStatPerkAware.GetBasePerkStats(BasePerkDataGetter getter)
+		{
+			baseStats = getter;
+		}
+		#endregion
+
+		#region Not Implemented - Ideas
+		//how "experienced" the character is with anal sex. not used atm. as of now, it just increases by 1 with each experience. 
+		//idk, maybe change this.
+		//public byte experience
+		//{
+		//	get => _experience;
+		//	set
+		//	{
+		//		_experience = Utils.Clamp2<byte>(value, 0, 100);
+		//	}
+		//}
+		//private byte _experience;
+		#endregion
 	}
 }

@@ -7,8 +7,6 @@ namespace CoC.Frontend.Encounters.Forest
 {
 	internal sealed partial class TripOnRoot : RandomEncounter
 	{
-		private static Player player => GameEngine.currentPlayer;
-
 
 		private const int CHANCES = 20;
 		public TripOnRoot() : base() { }

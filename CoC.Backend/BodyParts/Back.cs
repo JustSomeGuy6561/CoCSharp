@@ -173,16 +173,16 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region ITimeListener
-		bool IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed, out string output)
+		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
 		{
 			if (_attack is ResourceAttackBase resourceAttack && resources < maxCharges) //slight optimization. make sure we aren't at max.
 			{
-				resources += (ushort)regenRate.mult(hoursPassed);
-				if (resources > maxCharges) resources = maxCharges;
+				uint regen = regenRate.mult(hoursPassed);
+				ushort newCount = (ushort)Math.Min(regen + resources, maxCharges);
+				resources = newCount;
 			}
 			//no output.
-			output = "";
-			return false;
+			return "";
 		}
 		#endregion
 	}

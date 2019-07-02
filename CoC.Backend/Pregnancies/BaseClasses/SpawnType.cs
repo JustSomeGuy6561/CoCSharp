@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CoC.Backend.Engine.Time;
+using CoC.Backend.Tools;
+using System;
 
 namespace CoC.Backend.Pregnancies
 {
@@ -26,51 +28,42 @@ namespace CoC.Backend.Pregnancies
 
 		protected float percentAlong(ushort currentTimeLeft) => 1 - (currentTimeLeft / hoursToBirth);
 
-		//handle birth is always called. if the birth requires output directly to the player, set birthRequiresOutput to true.
-		//after handle birth, BirthText will immediately be called and invoked, if birthRequiresOutput is true. 
-		//if birthRequiresOutput is false, BirthText will not be called externally. You may still find it useful, though, 
-		//as a place to store text for other calls - for example, you could have the text be used the next time the PC visits an NPC
-		//by adding the birth text to an event queue or whatever equivalent tool we end up using. 
+		//handle birth is always called. If there is text to display, return true, false otherwise. The text to display should be set in outputWrapper, and if the output requires its own page,
+		//set outputOnOwnPage to true. If you return false, outputWrapper and outputOnOwnPage will be ignored. Due to the "out" parameter, you must set them to something. i'd recommend OutputWrapper.Empty
+		//and "false" be the defaults, and change them to whatever you need if it actually needs to spit out text.
 
-		//handle birth is also required to take care of unique things that happen, like maxing lust when birthing eggs, or growing a new anemone cock from anemone births. 
-		protected internal abstract void HandleBirth(bool isVaginal);
-		protected internal abstract bool birthRequiresOutput { get; }
-		protected internal abstract SimpleDescriptor BirthText { get; }
+		protected internal abstract EventWrapper HandleBirth(bool isVaginal);
 
-		//similarly, notifyTimePassed is always called. This provides a means to do anything the pregnancy advancing causes, including (but not limited to) telling the game
-		//you have flavor text to display (via the needOutputDueToTimePassed flag). Other examples may include things such as Marbe constructing a nursery during PC Marble pregnancy (for example)
-		//immediately after the completion of NotifyTimePassed, NeedsOutputDueToTimePassed will be checked, and TimePassedText will be invoked and appended to the output if it's true. 
+		//similarly, notifyTimePassed is always called. Generally, this will just be used to tell the game whether or not you have progress text to display, and what it is, but there may be cases where
+		//you want to do additional things as the pregnancy progresses. For example, when the PC is pregnant w/ Marble's kid, Marble will attempt to build a nursery, but it depends on how much time she has
+		//and how often she gets to check in with the PC. Note that this will not run every hour, to prevent edge cases where in the same waiting span, you see two progress texts. Instead, it will be "lazy"
+		//and run as often as the pc is aware that time passed. So if the PC gets knocked out for 8 hours, it'll only run once, in the last hour of that 8 hour span. 
 
-		protected internal abstract void NotifyTimePassed(bool isVaginal, ushort hoursToBirth, ushort previousHoursToBirth);
-		protected internal abstract bool NeedsOutputDueToTimePassed { get; }
-		protected internal abstract SimpleDescriptor TimePassedText { get; }
+		protected internal abstract EventWrapper NotifyTimePassed(bool isVaginal, float hoursToBirth, float previousHoursToBirth);
 
 		//by default, will advance pregnancy to a certain point, and return the amount of time the pregnancy advanced, if any.
 		//If you want to change this behavior or add additional behavior (like adding additional eggs in the case of egg pregnancy)
 		//override this function. It's recommended you do still call the base if you want the advancing of pregnancy to still happen.
-		protected internal virtual float HandleOviElixir(ref ushort timeToBirth, byte strength = 1)
+		protected internal virtual string HandleOviElixir(ref ushort timeToBirth, byte strength = 1)
 		{
 			ushort currTime = timeToBirth;
-			if (timeToBirth > 20)
+			if (timeToBirth > 20 && strength == 1)
 			{
-				if (strength == 1)
+				timeToBirth -= (ushort)Math.Floor(timeToBirth * 0.3 + 10); //worst case this is 21- 16 = 5
+			}
+			else if (timeToBirth > 20 && strength > 1)
+			{
+				if (timeToBirth > 34)
 				{
-					timeToBirth -= (ushort)Math.Floor(timeToBirth * 0.3 + 10); //worst case this is 21- 16 = 5
+					timeToBirth -= (ushort)Math.Floor(timeToBirth * 0.5 + 15); //has to be 30 or more to be positive, but we care more about < 2. that's at 34.
 				}
-				else if (strength != 0)
+				else
 				{
-					timeToBirth -= (ushort)Math.Floor(timeToBirth * 0.5 + 15); //worst case this is 21- 16 = 5
-					if (timeToBirth < 2) timeToBirth = 2;
+					timeToBirth = 2;
 				}
 			}
-			return currTime - timeToBirth;
+
+			return DefaultOviText(currTime - timeToBirth, strength);
 		}
-
-		//This is called immediately after HandleOviElixir, taking the amount it returned as a parameter. By default, it just says consuming the ovi Elixir advanced your pregnancy.
-		//or if it can't do so anymore, some generic text about not doing anything. 
-		//generally if you override the handle above, you should override this and explain what really happened. 
-		protected internal virtual SimpleDescriptor OviElixirText(float advancedBy, byte strength) => () => DefaultOviText(advancedBy, strength);
-
-
 	}
 }

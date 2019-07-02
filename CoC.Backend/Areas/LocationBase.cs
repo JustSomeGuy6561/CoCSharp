@@ -132,6 +132,5 @@ namespace CoC.Backend.Areas
 			}
 		}
 
-		public abstract void Unlock();
 	}
 }

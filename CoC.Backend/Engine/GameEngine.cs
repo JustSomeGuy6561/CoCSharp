@@ -1,13 +1,16 @@
 ﻿using CoC.Backend.Areas;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
+using System;
+using System.IO;
+using CoC.Backend.Engine.Time;
 
 namespace CoC.Backend.Engine
 {
 	public static class GameEngine
 	{
 		//NYI
-		public static LocationBase currentLocation;
+		public static AreaBase currentLocation;
 
 		//NYI
 		public static Player currentPlayer
@@ -26,21 +29,55 @@ namespace CoC.Backend.Engine
 		}
 		private static Player _currentPlayer;
 
-		//NYI
-		public static byte CurrentHour;
-		public static int CurrentDay;
 
-		public static void Run()
+		//Time
+		private static TimeEngine timeEngine;
+		public static byte CurrentHour => timeEngine.CurrentHour;
+		public static int CurrentDay => timeEngine.CurrentDay;
+
+		public static void RemainInLocationUseHours(byte hours)
 		{
+			timeEngine.UseHours(hours);
+		}
 
+		public static void GoToLocationThenUseHours(AreaBase location, byte hours)
+		{
+			currentLocation = location;
+			timeEngine.GoToLocationAndUseHours(location, hours);
+		}
+
+		public static void UseHoursThenGoToLocation(AreaBase location, byte hours)
+		{
+			timeEngine.UseHours(hours);
+			currentLocation = location;
+		}
+
+
+		public static void InitializeBackend(Action<Action> DoNext, Action<string> OutputText)
+		{
+			timeEngine = new TimeEngine(OutputText, DoNext);
+			currentLocation = null;
+			_currentPlayer = null;
+		}
+
+		public static void LoadFileBackend(FileInfo file)
+		{
+			//open file, do magic parsing shit. 
+			//timeEngine.LoadInSavedTime(file.whatever.hours, file.whatever.days);
+			//currPlater = Player.LoadFromFile(file);
+			//currLocation = file.whatever.location;
+			//load all the save datas. 
+			//
+
+			//currLocation.Initialize();
 		}
 
 		//what i would do for a linked hashset in C#. Update: Nevermind, That's what friends (and beer, apparently) are for. -JSG
 
-		private static readonly OrderedHashSet<ITimeLazyListener> lazyListeners = new OrderedHashSet<ITimeLazyListener>();
-		private static readonly OrderedHashSet<ITimeActiveListener> activeListeners = new OrderedHashSet<ITimeActiveListener>();
-		private static readonly OrderedHashSet<ITimeDailyListener> dailyListeners = new OrderedHashSet<ITimeDailyListener>();
-		private static readonly OrderedHashSet<ITimeDayMultiListener> dayMultiListeners = new OrderedHashSet<ITimeDayMultiListener>();
+		internal static readonly OrderedHashSet<ITimeLazyListener> lazyListeners = new OrderedHashSet<ITimeLazyListener>();
+		internal static readonly OrderedHashSet<ITimeActiveListener> activeListeners = new OrderedHashSet<ITimeActiveListener>();
+		internal static readonly OrderedHashSet<ITimeDailyListener> dailyListeners = new OrderedHashSet<ITimeDailyListener>();
+		internal static readonly OrderedHashSet<ITimeDayMultiListener> dayMultiListeners = new OrderedHashSet<ITimeDayMultiListener>();
 
 		public static bool RegisterLazyListener(ITimeLazyListener listener)
 		{
@@ -81,5 +118,6 @@ namespace CoC.Backend.Engine
 		{
 			return dayMultiListeners.Remove(listener);
 		}
+
 	}
 }

@@ -9,7 +9,6 @@ namespace CoC.Frontend.Encounters.Common
 {
 	internal sealed class BigJunkEncounter : RandomEncounter
 	{
-		private static Player player => GameEngine.currentPlayer;
 
 		private readonly SimpleDescriptor bigJunkText;
 

@@ -138,6 +138,12 @@ namespace CoC.Backend.BodyParts
 			return " the hair that forms your highlights";
 		}
 
+		private string NoMoreAcceleratedGrowthFrownyFace()
+		{
+			return Environment.NewLine + SafelyFormattedString.FormattedText("The tingling on your scalp slowly fades away as the hair extension serum wears off. " +
+				"Maybe it's time to go get some more?", StringFormats.BOLD);
+		}
+
 		private string NoLongerBaldStr()
 		{
 			return Environment.NewLine + Tools.SafelyFormattedString.FormattedText("You are no longer bald. You now have " + fullDescription() + " coating your head.", StringFormats.BOLD) + Environment.NewLine;

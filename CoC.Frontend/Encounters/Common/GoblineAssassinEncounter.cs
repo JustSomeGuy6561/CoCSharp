@@ -10,7 +10,6 @@ namespace CoC.Frontend.Encounters.Common
 {
 	internal sealed class GoblinAssassinEncounter : RandomEncounter
 	{
-		private static Player player => GameEngine.currentPlayer;
 		protected override int chances => Utils.LerpRound(player.level, 10, player.level, 10, 40);
 
 		protected override bool encounterDisabled()

@@ -1,8 +1,4 @@
-﻿using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {
 	//body part variant of time listeners. these have a unique bool so different actions can be taken if it's not the player. 
@@ -11,28 +7,28 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	//the game, here we are.
 
 	//Additionally, because body parts are relatively small, they WILL NOT go on their own page. If you have some crazy event that 
-	//only applies to one body part, and ends in a game over or some shit, take care of that on your own. This also means we use strings, not OutputWrappers.
+	//only applies to one body part, and ends in a game over or some shit, take care of that on your own. This also means we use strings, not EventWrappers.
 
 	internal interface IBodyPartTimeLazy
 	{
-		bool reactToTimePassing(bool isPlayer, byte hoursPassed, out string output);
+		string reactToTimePassing(bool isPlayer, byte hoursPassed);
 	}
 
 	internal interface IBodyPartTimeActive
 	{
-		bool reactToHourPassing(bool isPlayer, out string output);
+		string reactToHourPassing(bool isPlayer);
 	}
 
 	internal interface IBodyPartTimeDaily
 	{
 		byte hourToTrigger { get; }
 
-		bool reactToDailyTrigger(bool isPlayer, out string output);
+		string reactToDailyTrigger(bool isPlayer);
 	}
 
 	internal interface IBodyPartTimeDayMulti
 	{
 		byte[] triggerHours { get; }
-		bool reactToTrigger(bool isPlayer, byte currHour, out string output);
+		string reactToTrigger(bool isPlayer, byte currHour);
 	}
 }

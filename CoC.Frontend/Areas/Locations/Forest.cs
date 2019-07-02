@@ -55,10 +55,18 @@ namespace CoC.Frontend.Areas.Locations
 			triggeredOccurances.Add(new FindDeepwoods());
 		}
 
+		public override void RunArea()
+		{
+			//set up the text and whatnot for what happens when the player enters the forest.
+		}
+
 		public override void Unlock()
 		{
-			FrontendSessionSave.data.ForestUnlocked = true;
-			OutputText(ForestUnlock());
+			if (!forestUnlocked)
+			{
+				FrontendSessionSave.data.ForestUnlocked = true;
+				OutputText(ForestUnlock());
+			}
 		}
 	}
 }

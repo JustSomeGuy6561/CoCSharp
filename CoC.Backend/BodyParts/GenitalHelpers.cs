@@ -149,7 +149,7 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			byte oldFemininity = value;
-			value += amount;
+			value = value.add(amount);
 			return value.subtract(oldFemininity);
 		}
 
@@ -160,7 +160,7 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			byte oldFemininity = value;
-			value -= amount;
+			value = value.subtract(amount);
 			return oldFemininity.subtract(value);
 		}
 
@@ -195,14 +195,14 @@ namespace CoC.Backend.BodyParts
 		public byte increaseFertility(byte amount = 1)
 		{
 			byte oldAmount = baseValue;
-			baseValue += amount;
+			baseValue = baseValue.add(amount);
 			return baseValue.subtract(oldAmount);
 		}
 
 		public byte decreaseFertility(byte amount = 1)
 		{
 			byte oldAmount = baseValue;
-			baseValue -= amount;
+			baseValue = baseValue.subtract(amount);
 			return oldAmount.subtract(baseValue);
 		}
 

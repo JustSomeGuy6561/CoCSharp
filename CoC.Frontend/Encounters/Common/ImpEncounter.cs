@@ -8,7 +8,6 @@ namespace CoC.Frontend.Encounters.Common
 {
 	internal sealed class ImpEncounter : RandomEncounter
 	{
-		private static Player player => GameEngine.currentPlayer;
 
 		internal static RandomEncounter[] AllImpEncounters()
 		{

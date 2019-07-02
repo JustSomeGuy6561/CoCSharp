@@ -135,14 +135,14 @@ namespace CoC.Backend.BodyParts
 		public byte GainMuscle(byte amount = 1)
 		{
 			byte oldTone = muscleTone;
-			muscleTone += amount;
+			muscleTone = muscleTone.add(amount);
 			return muscleTone.subtract(oldTone);
 		}
 
 		public byte LoseMuscle(byte amount = 1)
 		{
 			byte oldTone = muscleTone;
-			muscleTone -= amount;
+			muscleTone = muscleTone.subtract(amount);
 			return oldTone.subtract(muscleTone);
 		}
 
@@ -154,14 +154,14 @@ namespace CoC.Backend.BodyParts
 		public byte GetThicker(byte amount = 1)
 		{
 			byte oldThickness = thickness;
-			thickness += amount;
+			thickness = thickness.add(amount);
 			return thickness.subtract(oldThickness);
 		}
 
 		public byte GetThinner(byte amount = 1)
 		{
 			byte oldThickness = thickness;
-			thickness -= amount;
+			thickness = thickness.add(amount);
 			return oldThickness.subtract(thickness);
 		}
 

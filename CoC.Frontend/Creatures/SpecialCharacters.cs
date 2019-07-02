@@ -169,7 +169,7 @@ namespace CoC.Frontend.Creatures
 				//interpreted the valentines perks as not being a virgin, considering their whole attitude on sex. also, 4 labia piercings on each side (of a possible 6), and a horizontal clit hood piercing
 				vaginas = new VaginaCreator[]
 				{
-					new VaginaCreator(isVirgin: false,
+					new VaginaCreator(vaginalLooseness: VaginalLooseness.NORMAL, isVirgin: false,
 						clitJewelry: new PiercingData<ClitPiercings>(){ [ClitPiercings.HOOD_HORIZONTAL] = new PiercingJewelry(JewelryType.RING, new Emerald(), false)},
 						labiaJewelry: new PiercingData<LabiaPiercings>()
 						{
@@ -177,7 +177,7 @@ namespace CoC.Frontend.Creatures
 							[LabiaPiercings.RIGHT_1] = labiaPiercing(), [LabiaPiercings.RIGHT_2] = labiaPiercing(), [LabiaPiercings.RIGHT_5] = labiaPiercing(), [LabiaPiercings.RIGHT_6] = labiaPiercing()
 						})
 				},
-				analLooseness = AnalLooseness.NORMAL,
+				analLooseness = AnalLooseness.LOOSE,
 				assVirgin = false,
 				tailType = TailType.FOX,
 				tailCount = 9,
@@ -564,7 +564,8 @@ namespace CoC.Frontend.Creatures
 				},
 				//creator.createPerk(PerkLib.PiercedFertite, 5, 0, 0, 0);
 				//- and one tight asshole
-				analLooseness = AnalLooseness.VIRGIN,
+				analLooseness = AnalLooseness.NORMAL,
+				assVirgin = true,
 				//- kitsune
 				//- moderately long white hair (9 inches)
 				hairLength = 9,
@@ -653,7 +654,8 @@ namespace CoC.Frontend.Creatures
 				thickness = 65,
 				complexion = Tones.OLIVE,
 				hairColor = HairFurColors.BLACK,
-				analLooseness = AnalLooseness.VIRGIN,
+				analLooseness = AnalLooseness.NORMAL,
+				assVirgin = true,
 				heightInInches = 67
 			};
 		}
@@ -1028,7 +1030,8 @@ namespace CoC.Frontend.Creatures
 				vaginas = new VaginaCreator[] { new VaginaCreator(0.2f, VaginalWetness.WET) },
 				//fertility 30 
 				//virgin bum
-				analLooseness = 0,
+				analLooseness = AnalLooseness.NORMAL,
+				assVirgin = true,
 				//anal wetness 1
 				analWetness = AnalWetness.DAMP,
 				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 11, 2, 1.2f) },

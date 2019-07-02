@@ -200,23 +200,20 @@ namespace CoC.Backend.BodyParts
 		}
 		#region TimeListeners
 
-		bool IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed, out string output)
+		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
 		{
-			bool needsOutput = false;
 			StringBuilder outputBuilder = new StringBuilder();
 			string outputHelper;
 			//i have no clue how this would work for multi-snatch configs. 
 			foreach (var vagina in _vaginas)
 			{
-				if (DoLazy(vagina, isPlayer, hoursPassed, out outputHelper) && !string.IsNullOrWhiteSpace(outputHelper))
+				if (DoLazy(vagina, isPlayer, hoursPassed, out outputHelper))
 				{
-					needsOutput = true;
 					outputBuilder.Append(outputHelper);
 				}
 			}
 			if (DoLazy(ass, isPlayer, hoursPassed, out outputHelper))
 			{
-				needsOutput = true;
 				outputBuilder.Append(outputHelper);
 			}
 
@@ -232,13 +229,14 @@ namespace CoC.Backend.BodyParts
 			//the result of this to the output string builder.
 			//if some status effect relating to your genitals requires output, parse it and append it.
 
-			output = outputBuilder.ToString();
-			return needsOutput;
+			return outputBuilder.ToString();
+			
 		}
 
 		private bool DoLazy(IBodyPartTimeLazy member, bool isPlayer, byte hoursPassed, out string output)
 		{
-			return member.reactToTimePassing(isPlayer, hoursPassed, out output);
+			output = member.reactToTimePassing(isPlayer, hoursPassed);
+			return !string.IsNullOrEmpty(output);
 		}
 
 		#endregion
@@ -614,7 +612,7 @@ namespace CoC.Backend.BodyParts
 
 		internal override bool Validate(bool correctInvalidData)
 		{
-			#error FIX ME!
+			#warning FIX ME!
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 

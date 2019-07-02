@@ -10,7 +10,6 @@ namespace CoC.Frontend.Encounters.Common
 {
 	class GoblinEncounter : RandomEncounter
 	{
-		private static Player player => GameEngine.currentPlayer;
 
 
 		internal static RandomEncounter[] AllGoblinEncounters()

@@ -12,7 +12,7 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 		private readonly byte biteStrength;
 		private readonly SimpleDescriptor teeth;
 
-		protected override ushort attackCost => ((byte)biteStrength.mult(5)).add(10);
+		protected override ushort attackCost => biteStrength.mult(5).add(10);
 
 		public GenericBite(SimpleDescriptor teethName, byte strength = 1) : base(Attack)
 		{

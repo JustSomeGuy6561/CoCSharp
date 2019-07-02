@@ -4,6 +4,7 @@
 //12/28/2018, 1:35 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Tools;
+using System;
 
 namespace CoC.Backend.BodyParts
 {
@@ -39,14 +40,14 @@ namespace CoC.Backend.BodyParts
 		public byte GrowHips(byte amount = 1)
 		{
 			byte oldSize = size;
-			size += amount;
+			size = size.add(amount);
 			return size.subtract(oldSize);
 		}
 
 		public byte ShrinkHips(byte amount = 1)
 		{
 			byte oldSize = size;
-			size -= amount;
+			size = size.subtract(amount);
 			return oldSize.subtract(size);
 		}
 
@@ -69,7 +70,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				size -= (byte)(Utils.Rand(3) + 1);
+				size -= Math.Min((byte)(Utils.Rand(3) + 1), size);
 			}
 			return oldSize - size;
 		}

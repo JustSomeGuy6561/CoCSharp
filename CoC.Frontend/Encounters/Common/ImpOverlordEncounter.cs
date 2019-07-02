@@ -10,7 +10,6 @@ namespace CoC.Frontend.Encounters.Common
 {
 	internal sealed class ImpOverlordEncounter : RandomEncounter
 	{
-		private static Player player => GameEngine.currentPlayer;
 		protected override int chances => Utils.LerpRound(12, 20, player.level, 10, 60);
 
 		protected override bool encounterDisabled()

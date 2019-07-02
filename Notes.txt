@@ -2,6 +2,11 @@ This is a strong-typed, event-based, object-oriented revision of CoC. This does 
 despite the jump to C# and more heavy emphasis on Object-Oriented patterns, we aren't losing the event-based functional programming of the original flash version. C# is flexible enough
 to allow this without being overly complicated. a quick caveat - we do use delegates, which are typed callbacks, as well as action and func, which are typed, but anonymous, callbacks.
 
+Also, a quick note about numbers: we use floats, as we generally don't need crazy precision. Regardless of float or double, be aware of floating point errors: 0.1 + 0.2 != 0.3 in floating point, unlike real life. 
+We also use unsigned values. C# has a rather unsavory behavior of wrapping unsigned values; subtracting beyond 0 yields MaxValue, and going above MaxValue yields 0, or throw an error, depending on settings. 
+Personally, i'd prefer it NOT WRAP and NOT THROW, but c'est la vie. For DEBUG, the setting is to throw on any overflow. for RELEASE, it simply silently overflows. I've provided helper functions for all signed 
+types that DO NOT WRAP and are DON'T THROW, but this means you'll need to use them instead of normal operators (+,-,/,*, and their convenience equivalence ++,--,+=,-=,*=,/=) in the CoC namespace. Best i can do.
+
 Design Philosophy: Generally speaking, I use "SICkLE" as my guideline (SImple, CLean, and Elegant), though this is generally up to your best judgement. However, in this scope, keep the following in mind:
 
 All code should be self-contained. This means that all functions relating to a certain body part or NPC or whatever should be stored within that class or series of classes, not wherever it's referenced.

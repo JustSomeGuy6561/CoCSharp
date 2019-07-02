@@ -621,15 +621,14 @@ CanGrowPlus())
 				//feminine and horns are at or above max length for feminine characters.
 				else if (masculinity.isFemale && hornLength >= maxFeminineLength)
 				{
-					byte amount = (byte)byAmount;
-					feminizeHorns(ref amount, ref hornLength);
-					if (amount > 1)
+					feminizeHorns(ref byAmount, ref hornLength);
+					if (byAmount > 1)
 					{
 						numHorns = 0;
 						hornLength = 0;
 						return true;
 					}
-					else if (amount == 1)
+					else if (byAmount == 1)
 					{
 						hornLength = minHornLength;
 					}
@@ -771,7 +770,7 @@ CanGrowPlus())
 				{
 					return false;
 				}
-				while (byAmount > 0 && (hornLength < 12 || numHorns < maxHorns))
+				while (byAmount-- > 0 && (hornLength < 12 || numHorns < maxHorns))
 				{
 					if (hornLength < 12)
 					{
@@ -781,7 +780,6 @@ CanGrowPlus())
 					{
 						numHorns = maxHorns;
 					}
-					byAmount--;
 				}
 				return true;
 
@@ -789,7 +787,7 @@ CanGrowPlus())
 			//if 4 horns, become 2 horns. then shrink horns to 6in. then remove them completely.
 			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in Femininity masculinity)
 			{
-				while (byAmount > 0 && hornLength > 0)
+				while (byAmount-- > 0 && hornLength > 0)
 				{
 					if (numHorns > minHorns)
 					{
@@ -803,7 +801,6 @@ CanGrowPlus())
 					{
 						hornLength = 0;
 					}
-					byAmount--;
 				}
 				return hornLength == 0;
 			}
@@ -1248,8 +1245,7 @@ CanGrowPlus())
 						lottery.addItems(2, 3, 4, 5, 6);
 					}
 					Utils.Clamp<byte>(ref byAmount, 0, byte.MaxValue);
-					byte amount = (byte)byAmount;
-					while (amount-- > 0 && hornLength < maxLength)
+					while (byAmount-- > 0 && hornLength < maxLength)
 					{
 						hornLength += lottery.Select();
 					}

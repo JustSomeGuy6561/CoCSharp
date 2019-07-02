@@ -10,7 +10,6 @@ namespace CoC.Frontend.Encounters.Common
 {
 	class EasterEggImpEncounter : RandomEncounter
 	{
-		private static Player player => GameEngine.currentPlayer;
 		protected override int chances => Utils.LerpRound(1, 20, player.level, 2, 0);
 			
 		protected override bool encounterDisabled()

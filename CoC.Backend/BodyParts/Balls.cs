@@ -182,7 +182,7 @@ namespace CoC.Backend.BodyParts
 			}
 			if (hasBalls)
 			{
-				addAmount += count;
+				addAmount += count; 
 			}
 			byte oldCount = count;
 			setBalls(true, addAmount, size);
@@ -232,7 +232,14 @@ namespace CoC.Backend.BodyParts
 				count++;
 			}
 			byte originalSize = size;
-			size += amount;
+			if (amount >= MAX_BALLS_SIZE)
+			{
+				size = MAX_BALLS_SIZE;
+			}
+			else
+			{
+				size += amount;
+			}
 			return size.subtract(originalSize);
 		}
 
@@ -243,7 +250,14 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			byte originalSize = size;
-			size -= amount;
+			if (size - amount < MIN_BALLS_SIZE) //we actually want this as an int compare b/c negative numbers.
+			{
+				size = MIN_BALLS_SIZE;
+			}
+			else
+			{
+				size -= amount;
+			}
 			return originalSize.subtract(size);
 		}
 
@@ -258,7 +272,7 @@ namespace CoC.Backend.BodyParts
 			//even chance of 2 - 5.
 			if (((IGrowShrinkable)this).CanReducto())
 			{
-				size -= (byte)(Utils.Rand(4) + 2);
+				size = size.subtract((byte)(Utils.Rand(4) + 2));
 			}
 			return startVal - size;
 		}

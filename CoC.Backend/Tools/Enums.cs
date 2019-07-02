@@ -13,5 +13,19 @@ namespace CoC.Backend.Tools
 		{
 			return Enum.GetNames(typeof(T)).Length;
 		}
+
+		public static T ByteEnumAdd<T>(this T val, byte amount) where T : Enum
+		{
+			byte amt = Convert.ToByte(val);
+			amt.addIn(amount);
+			return (T)Enum.Parse(typeof(T), amt.ToString());
+		}
+
+		public static T ByteEnumSubtract<T>(this T val, byte amount) where T : Enum
+		{
+			byte amt = Convert.ToByte(val);
+			amt.subtractOff(amount);
+			return (T)Enum.Parse(typeof(T), amt.ToString());
+		}
 	}
 }

@@ -7,7 +7,6 @@ namespace CoC.Frontend.Encounters.Forest
 {
 	internal sealed class SuccubusEncounter : RandomEncounter
 	{
-		private static Player player = GameEngine.currentPlayer;
 		private const int CHANCES = 10;
 		public SuccubusEncounter() : base() { }
 

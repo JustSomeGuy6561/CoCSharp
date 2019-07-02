@@ -51,8 +51,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (type.hasKnot)
 				{
-					Utils.Clamp(ref value, MIN_KNOT_MULTIPLIER, MAX_KNOT_MULTIPLIER);
-					_knotMultiplier = value;
+					_knotMultiplier = Utils.Clamp2(value, MIN_KNOT_MULTIPLIER, MAX_KNOT_MULTIPLIER);
 				}
 				else _knotMultiplier = 0;
 			}

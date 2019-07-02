@@ -1,8 +1,12 @@
-﻿namespace CoC.Backend.Creatures
+﻿using CoC.Backend.Perks;
+
+namespace CoC.Backend.Creatures
 {
 
 	public abstract class CombatCreature : Creature
 	{
+		public readonly PerkCollection perks;
+
 		public int level { get; private protected set; } = 1;
 
 		public int corruption { get; private protected set; } = 0;

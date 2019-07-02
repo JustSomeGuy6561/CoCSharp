@@ -3,7 +3,6 @@ using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using CoC.Frontend.Engine;
 using CoC.Frontend.SaveData;
 using CoC.Frontend.UI;
 using CoC.UI;
@@ -46,6 +45,7 @@ namespace CoC.Frontend.Creatures
 		//bool genderLocked, occupationLocked, buildLocked, complexionLocked, hairLocked,
 
 		private readonly PlayerCreator creator;
+#warning Make sure to set the locked values for history, endowment when implemented.
 		private readonly bool genderLocked, buildLocked, complexionLocked, furLocked, hairLocked, historyLocked, endowmentLocked;
 		private readonly bool heightLocked, eyesLocked, beardLocked, cockLocked, clitLocked, breastsLocked;
 		private Gender chosenGender;
@@ -1386,12 +1386,12 @@ namespace CoC.Frontend.Creatures
 			ClearOutput();
 			OutputText(ChooseBreastStr());
 
-			buttonMaker(0,  CupSize.FLAT, creator.femininity < 50);
-			buttonMaker(1,  CupSize.A, creator.femininity < 60);
-			buttonMaker(2,  CupSize.B, creator.femininity >= 40);
-			buttonMaker(3,  CupSize.C, creator.femininity >= 50);
-			buttonMaker(4,  CupSize.D, creator.femininity >= 60);
-			buttonMaker(5,  CupSize.DD, creator.femininity >= 70);
+			buttonMaker(0, CupSize.FLAT, creator.femininity < 50);
+			buttonMaker(1, CupSize.A, creator.femininity < 60);
+			buttonMaker(2, CupSize.B, creator.femininity >= 40);
+			buttonMaker(3, CupSize.C, creator.femininity >= 50);
+			buttonMaker(4, CupSize.D, creator.femininity >= 60);
+			buttonMaker(5, CupSize.DD, creator.femininity >= 70);
 			AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
 		}
 
@@ -1411,7 +1411,7 @@ namespace CoC.Frontend.Creatures
 			GenericStyleCustomizeMenu();
 		}
 		#endregion
-		
+
 		private void ChooseEndowment()
 		{
 			ClearOutput();
@@ -1430,241 +1430,241 @@ namespace CoC.Frontend.Creatures
 
 		private void CreatePlayer()
 		{
-			#warning TODO: make sure all data is correct and ready in creator before creating the player
+#warning TODO: make sure all data is correct and ready in creator before creating the player
 			/*
 			Player player = new Player(creator);
 			NewGameHelpers.StartTheGame(player);
 			*/
 		}
-/*
-		private void chooseEndowment()
-		{
-			ClearOutput();
-			OutputText(images.showImage("event-question"));
-			OutputText("Every person is born with a gift.  What's yours?");
-			menu();
-			var totalStartingPerks:int = 0;
-			var button:int = 0;
-			//Attribute Perks
-			var endowmentPerks:Array = PerkLists.ENDOWMENT_ATTRIBUTE;
-			//Endowment Perks
-			if (creator.hasCock())
-			{
-				endowmentPerks = endowmentPerks.concat(PerkLists.ENDOWMENT_COCK);
-			}
-			if (creator.hasVagina())
-			{
-				endowmentPerks = endowmentPerks.concat(PerkLists.ENDOWMENT_VAGINA);
-			}
-			//Add buttons
-			for each(var p: Object in endowmentPerks)
-			{
-				if (!creator.hasPerk(p.perk))
+		/*
+				private void chooseEndowment()
 				{
-					AddButton(button++, p.text, confirmEndowment, p.perk);
+					ClearOutput();
+					OutputText(images.showImage("event-question"));
+					OutputText("Every person is born with a gift.  What's yours?");
+					menu();
+					var totalStartingPerks:int = 0;
+					var button:int = 0;
+					//Attribute Perks
+					var endowmentPerks:Array = PerkLists.ENDOWMENT_ATTRIBUTE;
+					//Endowment Perks
+					if (creator.hasCock())
+					{
+						endowmentPerks = endowmentPerks.concat(PerkLists.ENDOWMENT_COCK);
+					}
+					if (creator.hasVagina())
+					{
+						endowmentPerks = endowmentPerks.concat(PerkLists.ENDOWMENT_VAGINA);
+					}
+					//Add buttons
+					for each(var p: Object in endowmentPerks)
+					{
+						if (!creator.hasPerk(p.perk))
+						{
+							AddButton(button++, p.text, confirmEndowment, p.perk);
+						}
+						else
+						{
+							AddButtonDisabled(button++, p.text, "You already have this starting perk.");
+							totalStartingPerks++;
+						}
+					}
+					if (totalStartingPerks >= 4) //option to skip if you have enough starting perks
+						AddButton(14, "Skip", chooseHistory);
 				}
-				else
+
+				private void confirmEndowment(choice:PerkType)
 				{
-					AddButtonDisabled(button++, p.text, "You already have this starting perk.");
-					totalStartingPerks++;
+					ClearOutput();
+					OutputText(images.showImage("event-question"));
+					switch (choice)
+					{
+						//Attributes
+						case PerkLib.Strong: OutputText("Are you stronger than normal? (+5 Strength)\n\nStrength increases your combat damage, and your ability to hold on to an enemy or pull yourself away."); break;
+						case PerkLib.Tough: OutputText("Are you unusually tough? (+5 Toughness)\n\nToughness gives you more HP and increases the chances an attack against you will fail to wound you."); break;
+						case PerkLib.Fast: OutputText("Are you very quick?  (+5 Speed)\n\nSpeed makes it easier to escape combat and grapples.  It also boosts your chances of evading an enemy attack and successfully catching up to enemies who try to run."); break;
+						case PerkLib.Smart: OutputText("Are you a quick learner?  (+5 Intellect)\n\nIntellect can help you avoid dangerous monsters or work with machinery.  It will also boost the power of any spells you may learn in your travels."); break;
+						case PerkLib.Lusty: OutputText("Do you have an unusually high sex-drive?  (+5 Libido)\n\nLibido affects how quickly your lust builds over time.  You may find a high libido to be more trouble than it's worth..."); break;
+						case PerkLib.Sensitive: OutputText("Is your skin unusually sensitive?  (+5 Sensitivity)\n\nSensitivity affects how easily touches and certain magics will raise your lust.  Very low sensitivity will make it difficult to orgasm."); break;
+						case PerkLib.Pervert: OutputText("Are you unusually perverted?  (+5 Corruption)\n\Corruption affects certain scenes and having a higher corruption makes you more prone to Bad Ends.\n"); break;
+						//Gender-specific
+						case PerkLib.BigCock: OutputText("Do you have a big cock?  (+2\" Cock Length)\n\nA bigger cock will make it easier to get off any sexual partners, but only if they can take your size."); break;
+						case PerkLib.MessyOrgasms: OutputText("Are your orgasms particularly messy?  (+50% Cum Multiplier)\n\nA higher cum multiplier will cause your orgasms to be messier."); break;
+						case PerkLib.BigTits: OutputText("Are your breasts bigger than average? (+1 Cup Size)\n\nLarger breasts will allow you to lactate greater amounts, tit-fuck larger cocks, and generally be a sexy bitch."); break;
+						case PerkLib.BigClit: OutputText("Do you have a big clit?  (1\" Long)\n\nA large enough clit may eventually become as large as a cock.  It also makes you gain lust much faster during oral or manual stimulation."); break;
+						case PerkLib.Fertile: OutputText("Is your family particularly fertile?  (+15% Fertility)\n\nA high fertility will cause you to become pregnant much more easily.  Pregnancy may result in: Strange children, larger bust, larger hips, a bigger ass, and other weirdness."); break;
+						case PerkLib.WetPussy: OutputText("Does your pussy get particularly wet?  (+1 Vaginal Wetness)\n\nVaginal wetness will make it easier to take larger cocks, in turn helping you bring the well-endowed to orgasm quicker."); break;
+						default: OutputText("Something broke!");
+					}
+					menu();
+					AddButton(0, "Yes", setEndowment, choice);
+					AddButton(1, "No", chooseEndowment);
 				}
-			}
-			if (totalStartingPerks >= 4) //option to skip if you have enough starting perks
-				AddButton(14, "Skip", chooseHistory);
-		}
 
-		private void confirmEndowment(choice:PerkType)
-		{
-			ClearOutput();
-			OutputText(images.showImage("event-question"));
-			switch (choice)
-			{
-				//Attributes
-				case PerkLib.Strong: OutputText("Are you stronger than normal? (+5 Strength)\n\nStrength increases your combat damage, and your ability to hold on to an enemy or pull yourself away."); break;
-				case PerkLib.Tough: OutputText("Are you unusually tough? (+5 Toughness)\n\nToughness gives you more HP and increases the chances an attack against you will fail to wound you."); break;
-				case PerkLib.Fast: OutputText("Are you very quick?  (+5 Speed)\n\nSpeed makes it easier to escape combat and grapples.  It also boosts your chances of evading an enemy attack and successfully catching up to enemies who try to run."); break;
-				case PerkLib.Smart: OutputText("Are you a quick learner?  (+5 Intellect)\n\nIntellect can help you avoid dangerous monsters or work with machinery.  It will also boost the power of any spells you may learn in your travels."); break;
-				case PerkLib.Lusty: OutputText("Do you have an unusually high sex-drive?  (+5 Libido)\n\nLibido affects how quickly your lust builds over time.  You may find a high libido to be more trouble than it's worth..."); break;
-				case PerkLib.Sensitive: OutputText("Is your skin unusually sensitive?  (+5 Sensitivity)\n\nSensitivity affects how easily touches and certain magics will raise your lust.  Very low sensitivity will make it difficult to orgasm."); break;
-				case PerkLib.Pervert: OutputText("Are you unusually perverted?  (+5 Corruption)\n\Corruption affects certain scenes and having a higher corruption makes you more prone to Bad Ends.\n"); break;
-				//Gender-specific
-				case PerkLib.BigCock: OutputText("Do you have a big cock?  (+2\" Cock Length)\n\nA bigger cock will make it easier to get off any sexual partners, but only if they can take your size."); break;
-				case PerkLib.MessyOrgasms: OutputText("Are your orgasms particularly messy?  (+50% Cum Multiplier)\n\nA higher cum multiplier will cause your orgasms to be messier."); break;
-				case PerkLib.BigTits: OutputText("Are your breasts bigger than average? (+1 Cup Size)\n\nLarger breasts will allow you to lactate greater amounts, tit-fuck larger cocks, and generally be a sexy bitch."); break;
-				case PerkLib.BigClit: OutputText("Do you have a big clit?  (1\" Long)\n\nA large enough clit may eventually become as large as a cock.  It also makes you gain lust much faster during oral or manual stimulation."); break;
-				case PerkLib.Fertile: OutputText("Is your family particularly fertile?  (+15% Fertility)\n\nA high fertility will cause you to become pregnant much more easily.  Pregnancy may result in: Strange children, larger bust, larger hips, a bigger ass, and other weirdness."); break;
-				case PerkLib.WetPussy: OutputText("Does your pussy get particularly wet?  (+1 Vaginal Wetness)\n\nVaginal wetness will make it easier to take larger cocks, in turn helping you bring the well-endowed to orgasm quicker."); break;
-				default: OutputText("Something broke!");
-			}
-			menu();
-			AddButton(0, "Yes", setEndowment, choice);
-			AddButton(1, "No", chooseEndowment);
-		}
-
-		protected void setEndowment(choice:PerkType)
-		{
-			switch (choice)
-			{
-				//Attribute-specific
-				case PerkLib.Strong:
-					creator.strength += 5;
-					creator.muscleDefinition += 7;
-					creator.thickness += 3;
-					creator.createPerk(PerkLib.Strong, 0.25, 0, 0, 0);
-					break;
-				case PerkLib.Tough:
-					creator.toughness += 5;
-					creator.muscleDefinition += 5;
-					creator.thickness += 5;
-					creator.createPerk(PerkLib.Tough, 0.25, 0, 0, 0);
-					creator.restoreHP();
-					break;
-				case PerkLib.Fast:
-					creator.speed += 5;
-					creator.muscleDefinition += 10;
-					creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
-					break;
-				case PerkLib.Smart:
-					creator.inte += 5;
-					creator.thickness -= 5;
-					creator.createPerk(PerkLib.Smart, 0.25, 0, 0, 0);
-					break;
-				case PerkLib.Lusty:
-					creator.lib += 5;
-					creator.createPerk(PerkLib.Lusty, 0.25, 0, 0, 0);
-					break;
-				case PerkLib.Sensitive:
-					creator.sens += 5;
-					creator.createPerk(PerkLib.Sensitive, 0.25, 0, 0, 0);
-					break;
-				case PerkLib.Pervert:
-					creator.cor += 5;
-					creator.createPerk(PerkLib.Pervert, 0.25, 0, 0, 0);
-					break;
-				//Genital-specific
-				case PerkLib.BigCock:
-					creator.femininity -= 5;
-					creator.cocks[0].cockLength = 8;
-					creator.cocks[0].cockThickness = 1.5;
-					creator.createPerk(PerkLib.BigCock, 1.25, 0, 0, 0);
-					break;
-				case PerkLib.MessyOrgasms:
-					creator.femininity -= 2;
-					creator.cumMultiplier = 1.5;
-					creator.createPerk(PerkLib.MessyOrgasms, 1.25, 0, 0, 0);
-					break;
-				case PerkLib.BigTits:
-					creator.femininity += 5;
-					creator.breastRows[0].breastRating += 2;
-					creator.createPerk(PerkLib.BigTits, 1.5, 0, 0, 0);
-					break;
-				case PerkLib.BigClit:
-					creator.femininity -= 5;
-					creator.setClitLength(1);
-					creator.createPerk(PerkLib.BigClit, 1.25, 0, 0, 0);
-					break;
-				case PerkLib.Fertile:
-					creator.femininity += 5;
-					creator.fertility += 25;
-					creator.hipSize += 2;
-					creator.createPerk(PerkLib.Fertile, 1.5, 0, 0, 0);
-					break;
-				case PerkLib.WetPussy:
-					creator.femininity += 7;
-					creator.vaginas[0].vaginalWetness = Vagina.WETNESS_WET;
-					creator.createPerk(PerkLib.WetPussy, 2, 0, 0, 0);
-					break;
-				default: //move along, nothing happens in this defaultness
-			}
-			chooseHistory();
-		}
-		//----------------- HISTORY PERKS -----------------
-		public void chooseHistory()
-		{
-			ClearOutput();
-			OutputText(images.showImage("event-question"));
-			if (flags[kFLAGS.HISTORY_PERK_SELECTED] !== 0) //this flag can only be non-zero if chooseHistory is called from camp.as
-				OutputText("<b>New history perks are available during creation.  Since this character was created before they were available, you may choose one now!</b>\n\n");
-			OutputText("Before you became a champion, you had other plans for your life.  What were you doing before?");
-			menu();
-			var totalHistoryPerks:int = 0;
-			var button:int = 0;
-			//Attribute Perks
-			for each(var p: Object in PerkLists.HISTORY)
-			{
-				if (!creator.hasPerk(p.perk))
-					AddButton(button++, p.text, confirmHistory, p.perk);
-				else
+				protected void setEndowment(choice:PerkType)
 				{
-					AddButtonDisabled(button++, p.text, "You already have this history perk.");
-					totalHistoryPerks++;
+					switch (choice)
+					{
+						//Attribute-specific
+						case PerkLib.Strong:
+							creator.strength += 5;
+							creator.muscleDefinition += 7;
+							creator.thickness += 3;
+							creator.createPerk(PerkLib.Strong, 0.25, 0, 0, 0);
+							break;
+						case PerkLib.Tough:
+							creator.toughness += 5;
+							creator.muscleDefinition += 5;
+							creator.thickness += 5;
+							creator.createPerk(PerkLib.Tough, 0.25, 0, 0, 0);
+							creator.restoreHP();
+							break;
+						case PerkLib.Fast:
+							creator.speed += 5;
+							creator.muscleDefinition += 10;
+							creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
+							break;
+						case PerkLib.Smart:
+							creator.inte += 5;
+							creator.thickness -= 5;
+							creator.createPerk(PerkLib.Smart, 0.25, 0, 0, 0);
+							break;
+						case PerkLib.Lusty:
+							creator.lib += 5;
+							creator.createPerk(PerkLib.Lusty, 0.25, 0, 0, 0);
+							break;
+						case PerkLib.Sensitive:
+							creator.sens += 5;
+							creator.createPerk(PerkLib.Sensitive, 0.25, 0, 0, 0);
+							break;
+						case PerkLib.Pervert:
+							creator.cor += 5;
+							creator.createPerk(PerkLib.Pervert, 0.25, 0, 0, 0);
+							break;
+						//Genital-specific
+						case PerkLib.BigCock:
+							creator.femininity -= 5;
+							creator.cocks[0].cockLength = 8;
+							creator.cocks[0].cockThickness = 1.5;
+							creator.createPerk(PerkLib.BigCock, 1.25, 0, 0, 0);
+							break;
+						case PerkLib.MessyOrgasms:
+							creator.femininity -= 2;
+							creator.cumMultiplier = 1.5;
+							creator.createPerk(PerkLib.MessyOrgasms, 1.25, 0, 0, 0);
+							break;
+						case PerkLib.BigTits:
+							creator.femininity += 5;
+							creator.breastRows[0].breastRating += 2;
+							creator.createPerk(PerkLib.BigTits, 1.5, 0, 0, 0);
+							break;
+						case PerkLib.BigClit:
+							creator.femininity -= 5;
+							creator.setClitLength(1);
+							creator.createPerk(PerkLib.BigClit, 1.25, 0, 0, 0);
+							break;
+						case PerkLib.Fertile:
+							creator.femininity += 5;
+							creator.fertility += 25;
+							creator.hipSize += 2;
+							creator.createPerk(PerkLib.Fertile, 1.5, 0, 0, 0);
+							break;
+						case PerkLib.WetPussy:
+							creator.femininity += 7;
+							creator.vaginas[0].vaginalWetness = Vagina.WETNESS_WET;
+							creator.createPerk(PerkLib.WetPussy, 2, 0, 0, 0);
+							break;
+						default: //move along, nothing happens in this defaultness
+					}
+					chooseHistory();
 				}
-			}
-			if (totalHistoryPerks >= 3) AddButton(14, "Skip", completeCharacterCreation);
-		}
-
-		private void confirmHistory(choice:PerkType)
-		{
-			ClearOutput();
-			OutputText(images.showImage("event-question"));
-			switch (choice)
-			{
-				case PerkLib.HistoryAlchemist: OutputText("You spent some time as an alchemist's assistant, and alchemical items always seem to be more reactive in your hands.  Is this your history?"); break;
-				case PerkLib.HistoryFighter: OutputText("You spent much of your time fighting other children, and you had plans to find work as a guard when you grew up.  You do 10% more damage with physical attacks.  You will also start out with 50 gems.  Is this your history?"); break;
-				case PerkLib.HistoryFortune: OutputText("You always feel lucky when it comes to fortune.  Because of that, you have always managed to save up gems until whatever's needed and how to make the most out it (+15% gems on victory).  You will also start out with 250 gems.  Is this your history?"); break;
-				case PerkLib.HistoryHealer: OutputText("You often spent your free time with the village healer, learning how to tend to wounds.  Healing items and effects are 20% more effective.  Is this your history?"); break;
-				case PerkLib.HistoryReligious: OutputText("You spent a lot of time at the village temple, and learned how to meditate.  The 'masturbation' option is replaced with 'meditate' when corruption is at or below 66.  Is this your history?"); break;
-				case PerkLib.HistoryScholar: OutputText("You spent much of your time in school, and even begged the richest man in town, Mr. " + (silly() ? "Savin" : "Sellet") + ", to let you read some of his books.  You are much better at focusing, and spellcasting uses 20% less fatigue.  Is this your history?"); break;
-				case PerkLib.HistorySlacker: OutputText("You spent a lot of time slacking, avoiding work, and otherwise making a nuisance of yourself.  Your efforts at slacking have made you quite adept at resting, so your fatigue will lower 20% faster.  Is this your history?"); break;
-				case PerkLib.HistorySlut: OutputText("You managed to spend most of your time having sex.  Quite simply, when it came to sex, you were the village bicycle - everyone got a ride.  Because of this, your body is a bit more resistant to penetrative stretching, and has a higher upper limit on what exactly can be inserted.  Is this your history?"); break;
-				case PerkLib.HistorySmith: OutputText("You managed to get an apprenticeship with the local blacksmith.  Because of your time spent at the blacksmith's side, you've learned how to fit armor for maximum protection.  Is this your history?"); break;
-				default: OutputText("You managed to find work as a whore.  Because of your time spent trading seduction for profit, you're more effective at teasing (+15% tease damage).  Is this your history?");
-			}
-			menu();
-			AddButton(0, "Yes", setHistory, choice);
-			AddButton(1, "No", chooseHistory);
-		}
-
-		private void setHistory(choice:PerkType)
-		{
-			creator.createPerk(choice, 0, 0, 0, 0);
-			if (choice == PerkLib.HistorySlut || choice == PerkLib.HistoryWhore)
-			{
-				if (creator.hasVagina())
+				//----------------- HISTORY PERKS -----------------
+				public void chooseHistory()
 				{
-					creator.vaginas[0].virgin = false;
-					creator.vaginas[0].vaginalLooseness = Vagina.LOOSENESS_LOOSE;
+					ClearOutput();
+					OutputText(images.showImage("event-question"));
+					if (flags[kFLAGS.HISTORY_PERK_SELECTED] !== 0) //this flag can only be non-zero if chooseHistory is called from camp.as
+						OutputText("<b>New history perks are available during creation.  Since this character was created before they were available, you may choose one now!</b>\n\n");
+					OutputText("Before you became a champion, you had other plans for your life.  What were you doing before?");
+					menu();
+					var totalHistoryPerks:int = 0;
+					var button:int = 0;
+					//Attribute Perks
+					for each(var p: Object in PerkLists.HISTORY)
+					{
+						if (!creator.hasPerk(p.perk))
+							AddButton(button++, p.text, confirmHistory, p.perk);
+						else
+						{
+							AddButtonDisabled(button++, p.text, "You already have this history perk.");
+							totalHistoryPerks++;
+						}
+					}
+					if (totalHistoryPerks >= 3) AddButton(14, "Skip", completeCharacterCreation);
 				}
-				creator.ass.analLooseness = 1;
-			}
-			if (choice == PerkLib.HistoryFighter || choice == PerkLib.HistoryWhore) creator.gems += 50;
-			if (choice == PerkLib.HistoryFortune) creator.gems += 250;
-			if (flags[kFLAGS.HISTORY_PERK_SELECTED] == 0)
-			{
-				flags[kFLAGS.HISTORY_PERK_SELECTED] = 1;
-				completeCharacterCreation();
-			}
-			else
-			{
-				flags[kFLAGS.HISTORY_PERK_SELECTED] = 1; //Special escape clause for very old saves that do not have a history perk. This is used to allow them the chance to select a perk at camp on load
-				creatorMenu();
-			}
-		}
 
-		private void completeCharacterCreation()
-		{
-			ClearOutput();
-			if (customcreatorProfile !== null)
-			{
-				customcreatorProfile();
-				if (flags[kFLAGS.NEW_GAME_PLUS_LEVEL] == 0) doNext(chooseGameModes);
-				else doNext(startTheGame);
-				return;
-			}
-			if (flags[kFLAGS.NEW_GAME_PLUS_LEVEL] == 0) chooseGameModes();
-			else startTheGame();
-		}
-	*/
+				private void confirmHistory(choice:PerkType)
+				{
+					ClearOutput();
+					OutputText(images.showImage("event-question"));
+					switch (choice)
+					{
+						case PerkLib.HistoryAlchemist: OutputText("You spent some time as an alchemist's assistant, and alchemical items always seem to be more reactive in your hands.  Is this your history?"); break;
+						case PerkLib.HistoryFighter: OutputText("You spent much of your time fighting other children, and you had plans to find work as a guard when you grew up.  You do 10% more damage with physical attacks.  You will also start out with 50 gems.  Is this your history?"); break;
+						case PerkLib.HistoryFortune: OutputText("You always feel lucky when it comes to fortune.  Because of that, you have always managed to save up gems until whatever's needed and how to make the most out it (+15% gems on victory).  You will also start out with 250 gems.  Is this your history?"); break;
+						case PerkLib.HistoryHealer: OutputText("You often spent your free time with the village healer, learning how to tend to wounds.  Healing items and effects are 20% more effective.  Is this your history?"); break;
+						case PerkLib.HistoryReligious: OutputText("You spent a lot of time at the village temple, and learned how to meditate.  The 'masturbation' option is replaced with 'meditate' when corruption is at or below 66.  Is this your history?"); break;
+						case PerkLib.HistoryScholar: OutputText("You spent much of your time in school, and even begged the richest man in town, Mr. " + (silly() ? "Savin" : "Sellet") + ", to let you read some of his books.  You are much better at focusing, and spellcasting uses 20% less fatigue.  Is this your history?"); break;
+						case PerkLib.HistorySlacker: OutputText("You spent a lot of time slacking, avoiding work, and otherwise making a nuisance of yourself.  Your efforts at slacking have made you quite adept at resting, so your fatigue will lower 20% faster.  Is this your history?"); break;
+						case PerkLib.HistorySlut: OutputText("You managed to spend most of your time having sex.  Quite simply, when it came to sex, you were the village bicycle - everyone got a ride.  Because of this, your body is a bit more resistant to penetrative stretching, and has a higher upper limit on what exactly can be inserted.  Is this your history?"); break;
+						case PerkLib.HistorySmith: OutputText("You managed to get an apprenticeship with the local blacksmith.  Because of your time spent at the blacksmith's side, you've learned how to fit armor for maximum protection.  Is this your history?"); break;
+						default: OutputText("You managed to find work as a whore.  Because of your time spent trading seduction for profit, you're more effective at teasing (+15% tease damage).  Is this your history?");
+					}
+					menu();
+					AddButton(0, "Yes", setHistory, choice);
+					AddButton(1, "No", chooseHistory);
+				}
+
+				private void setHistory(choice:PerkType)
+				{
+					creator.createPerk(choice, 0, 0, 0, 0);
+					if (choice == PerkLib.HistorySlut || choice == PerkLib.HistoryWhore)
+					{
+						if (creator.hasVagina())
+						{
+							creator.vaginas[0].virgin = false;
+							creator.vaginas[0].vaginalLooseness = Vagina.LOOSENESS_LOOSE;
+						}
+						creator.ass.analLooseness = 1;
+					}
+					if (choice == PerkLib.HistoryFighter || choice == PerkLib.HistoryWhore) creator.gems += 50;
+					if (choice == PerkLib.HistoryFortune) creator.gems += 250;
+					if (flags[kFLAGS.HISTORY_PERK_SELECTED] == 0)
+					{
+						flags[kFLAGS.HISTORY_PERK_SELECTED] = 1;
+						completeCharacterCreation();
+					}
+					else
+					{
+						flags[kFLAGS.HISTORY_PERK_SELECTED] = 1; //Special escape clause for very old saves that do not have a history perk. This is used to allow them the chance to select a perk at camp on load
+						creatorMenu();
+					}
+				}
+
+				private void completeCharacterCreation()
+				{
+					ClearOutput();
+					if (customcreatorProfile !== null)
+					{
+						customcreatorProfile();
+						if (flags[kFLAGS.NEW_GAME_PLUS_LEVEL] == 0) doNext(chooseGameModes);
+						else doNext(startTheGame);
+						return;
+					}
+					if (flags[kFLAGS.NEW_GAME_PLUS_LEVEL] == 0) chooseGameModes();
+					else startTheGame();
+				}
+			*/
 		/*
 				public const MAX_TOLERANCE_LEVEL:int = 20;
 				public const MAX_MORALSHIFTER_LEVEL:int = 10;

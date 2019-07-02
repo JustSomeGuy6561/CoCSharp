@@ -52,11 +52,7 @@ namespace CoC.Backend.BodyParts
 		public float length
 		{
 			get => _length;
-			private set
-			{
-				Utils.Clamp(ref value, MIN_NIPPLE_LENGTH, MAX_NIPPLE_LENGTH);
-				_length = value;
-			}
+			private set => _length = Utils.Clamp2(value, MIN_NIPPLE_LENGTH, MAX_NIPPLE_LENGTH);
 		}
 		private float _length;
 

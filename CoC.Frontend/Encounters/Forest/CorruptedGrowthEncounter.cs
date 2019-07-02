@@ -29,7 +29,6 @@ namespace CoC.Frontend.Encounters.Forest
 	internal sealed class CorruptedGrowthEncounter : RandomEncounter
 	{
 		private static FrontendSessionSave data = FrontendSessionSave.data;
-		private static Player player = GameEngine.currentPlayer;
 		public static byte amountDestroyed
 		{
 			get => data.corruptedGladesDestroyed;
