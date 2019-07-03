@@ -63,7 +63,14 @@ namespace CoC.Backend.BodyParts
 
 		private Balls(byte ballCount, byte ballSize)
 		{
-			setBalls(true, ballCount, ballSize);
+			if (ballCount == 0)
+			{
+				setBalls(false);
+			}
+			else
+			{
+				setBalls(true, ballCount, ballSize);
+			}
 		}
 
 		//use this to initialize the balls object when the creature has balls.
@@ -72,7 +79,6 @@ namespace CoC.Backend.BodyParts
 			return new Balls(gender.HasFlag(Gender.MALE));
 		}
 
-		//balls with a size of <1 are allowed, but only if the ballcount is 1
 		internal static Balls GenerateBalls(byte ballCount = DEFAULT_BALLS_COUNT, byte ballSize = DEFAULT_BALLS_SIZE)
 		{
 			return new Balls(ballCount, ballSize);
@@ -94,35 +100,7 @@ namespace CoC.Backend.BodyParts
 		//public DescriptorWithArg<Balls> fullDescription => BallsFullDesc;
 		//public TypeAndPlayerDelegate<Balls> TypeAndPlayerDelegate => BallsPlayerStr;
 
-		internal override bool Validate(bool correctInvalidData)
-		{
-			bool valid = true;
-			//auto-Validate;
-			size = size;
-			
-			//validate uniball. default corrective behavior is to remove uniball.
-			if (uniBall && size > UNIBALL_SIZE_THRESHOLD)
-			{
-				if (correctInvalidData)
-				{
-					count++;
-				}
-				valid = false;
-			}
-			if (valid || correctInvalidData)
-			{
-				byte oldCount = count;
-				Utils.Clamp(ref oldCount, UNIBALL_COUNT, MAX_BALLS_COUNT);
-
-				valid &= count == oldCount;
-				if (correctInvalidData)
-				{
-					count = oldCount;
-				}
-			}
-			return valid;
-		}
-
+		#region Unique Functions and Updating Properties
 		//Grows a pair of balls. returns false if it already has balls. 
 		internal bool growBalls()
 		{
@@ -280,7 +258,38 @@ namespace CoC.Backend.BodyParts
 			}
 			return originalSize.subtract(size);
 		}
+#endregion
 
+		internal override bool Validate(bool correctInvalidData)
+		{
+			bool valid = true;
+			//auto-Validate;
+			size = size;
+			
+			//validate uniball. default corrective behavior is to remove uniball.
+			if (uniBall && size > UNIBALL_SIZE_THRESHOLD)
+			{
+				if (correctInvalidData)
+				{
+					count++;
+				}
+				valid = false;
+			}
+			if (valid || correctInvalidData)
+			{
+				byte oldCount = count;
+				Utils.Clamp(ref oldCount, UNIBALL_COUNT, MAX_BALLS_COUNT);
+
+				valid &= count == oldCount;
+				if (correctInvalidData)
+				{
+					count = oldCount;
+				}
+			}
+			return valid;
+		}
+
+		#region IGrowShrinkable
 		bool IGrowShrinkable.CanReducto()
 		{
 			return size > MIN_BALLS_SIZE;
@@ -322,7 +331,15 @@ namespace CoC.Backend.BodyParts
 			}
 			return size - startVal;
 		}
-
+		#endregion
+		#region PerkAware
+		//remember, we don't have the perks on creation, so we can't do it there.
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			perkData = getter;
+		}
+		#endregion
+		#region Helpers
 		private void setBalls(bool balls, byte numBalls = 0, byte ballSize = 0)
 		{
 			if (balls)
@@ -359,11 +376,6 @@ namespace CoC.Backend.BodyParts
 				size = 0;
 			}
 		}
-
-		//remember, we don't have the perks on creation, so we can't do it there. we can, however, do it in a lateInit, which this will function as. 
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			perkData = getter;
-		}
+		#endregion
 	}
 }

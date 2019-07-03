@@ -21,7 +21,7 @@ namespace CoC.Backend.BodyParts
 	//Pretty sure normal for ass size is pretty tight. so
 
 	public enum AnalLooseness : byte { NORMAL, LOOSE, ROOMY, STRETCHED, GAPING } //if you want to add a clown car level here, may i suggest RENT_ASUNDER?
-	public sealed partial class Ass : IBodyPartTimeLazy, IBaseStatPerkAware
+	public sealed partial class Ass : SimpleSaveablePart<Ass>, IBodyPartTimeLazy, IBaseStatPerkAware
 	{
 		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
 		public const ushort MAX_ANAL_CAPACITY = ushort.MaxValue;
@@ -347,6 +347,18 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
+		#region Validate
+		internal override bool Validate(bool correctInvalidData)
+		{
+			looseness = looseness;
+			wetness = wetness;
+			if (numTimesAnal > 0 && virgin) //i'm going to let this one go silently.
+			{
+				virgin = false;
+			}
+			return true;
+		}
+		#endregion
 		#region BodyPartTime
 		private byte timerAmount
 		{
@@ -419,6 +431,7 @@ namespace CoC.Backend.BodyParts
 		{
 			baseStats = getter;
 		}
+
 		#endregion
 
 		#region Not Implemented - Ideas

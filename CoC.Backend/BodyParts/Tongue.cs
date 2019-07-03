@@ -16,6 +16,16 @@ namespace CoC.Backend.BodyParts
 	public sealed class Tongue : BehavioralSaveablePart<Tongue, TongueType> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
 	{
 		public const JewelryType TongueJewelry = JewelryType.BARBELL_STUD;
+
+		public readonly Piercing<TonguePiercingLocation> tonguePiercings;
+
+		public override TongueType type { get; protected set; }
+		public override bool isDefault => type == TongueType.HUMAN;
+
+
+		public bool isLongTongue => type.longTongue;
+		public int length => type.length;
+
 		private Tongue()
 		{
 			type = TongueType.HUMAN;
@@ -23,26 +33,6 @@ namespace CoC.Backend.BodyParts
 			tonguePiercings = new Piercing<TonguePiercingLocation>(TongueJewelry, PiercingLocationUnlocked);
 		}
 
-		public override TongueType type { get; protected set; }
-
-
-		public readonly Piercing<TonguePiercingLocation> tonguePiercings;
-
-		public bool isLongTongue => type.longTongue;
-		public int length => type.length;
-		public override bool isDefault => type == TongueType.HUMAN;
-
-		internal override bool Validate(bool correctInvalidData)
-		{
-			var tongueType = type;
-			bool valid = TongueType.Validate(ref tongueType, correctInvalidData);
-			type = tongueType;
-			if (valid || correctInvalidData)
-			{
-				valid &= tonguePiercings.Validate(correctInvalidData);
-			}
-			return valid;
-		}
 
 		internal static Tongue GenerateDefault()
 		{
@@ -75,6 +65,17 @@ namespace CoC.Backend.BodyParts
 			}
 			type = TongueType.HUMAN;
 			return true;
+		}
+		internal override bool Validate(bool correctInvalidData)
+		{
+			var tongueType = type;
+			bool valid = TongueType.Validate(ref tongueType, correctInvalidData);
+			type = tongueType;
+			if (valid || correctInvalidData)
+			{
+				valid &= tonguePiercings.Validate(correctInvalidData);
+			}
+			return valid;
 		}
 
 		//could be a one-liner. written this way because maybe people wanna change it, idk.

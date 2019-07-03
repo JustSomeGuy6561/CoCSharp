@@ -34,11 +34,6 @@ namespace CoC.Backend.BodyParts
 		public EpidermalData epidermis => type.GetPrimaryEpidermis(bodyData());
 		public EpidermalData secondaryEpidermis => type.GetSecondaryEpidermis(bodyData());
 
-		private Arms(ArmType type)
-		{
-			_type = type ?? throw new ArgumentNullException();
-			hands = Hands.Generate(type.handType, (x) => x ? epidermis : secondaryEpidermis);
-		}
 
 		public override ArmType type
 		{
@@ -50,16 +45,16 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private ArmType _type;
-
 		public override bool isDefault => type == ArmType.HUMAN;
-		internal override bool Validate(bool correctInvalidData)
-		{
-			ArmType armType = type;
-			bool retVal = ArmType.Validate(ref armType, correctInvalidData);
-			type = armType; //automatically sets hand.
-			return retVal;
-		}
 
+		public bool usesTone => type is ToneArms;
+		public bool usesFur => type is FurArms;
+
+		private Arms(ArmType type)
+		{
+			_type = type ?? throw new ArgumentNullException();
+			hands = Hands.Generate(type.handType, (x) => x ? epidermis : secondaryEpidermis);
+		}
 
 		internal static Arms GenerateDefault()
 		{
@@ -69,6 +64,16 @@ namespace CoC.Backend.BodyParts
 		internal static Arms GenerateDefaultOfType(ArmType type)
 		{
 			return new Arms(type);
+		}
+
+		internal bool UpdateArms(ArmType armType)
+		{
+			if (armType == null || type == armType)
+			{
+				return false;
+			}
+			type = armType; //auto-updates hands.
+			return true;
 		}
 
 		internal override bool Restore()
@@ -82,19 +87,13 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal bool UpdateArms(ArmType armType)
+		internal override bool Validate(bool correctInvalidData)
 		{
-			if (armType == null || type == armType)
-			{
-				return false;
-			}
-			type = armType; //auto-updates hands.
-			return true;
+			ArmType armType = type;
+			bool retVal = ArmType.Validate(ref armType, correctInvalidData);
+			type = armType; //automatically sets hand.
+			return retVal;
 		}
-
-		public bool usesTone => type is ToneArms;
-		public bool usesFur => type is FurArms;
-
 		#region IBodyAware
 		void IBodyAware.GetBodyData(BodyDataGetter getter)
 		{

@@ -25,6 +25,8 @@ namespace CoC.Backend.BodyParts
 			private set => _hipsize = Utils.Clamp2(value, BOYISH, INHUMANLY_WIDE);
 		}
 		private byte _hipsize;
+		public SimpleDescriptor AsText => AsStr;
+		public SimpleDescriptor ShortDescription => ShortDesc;
 
 		private Hips(byte hipSize)
 		{
@@ -56,6 +58,12 @@ namespace CoC.Backend.BodyParts
 			size = newSize;
 		}
 
+		internal override bool Validate(bool correctInvalidData)
+		{
+			size = size;
+			return true;
+		}
+
 		bool IGrowShrinkable.CanReducto()
 		{
 			return size > SLENDER;
@@ -85,13 +93,5 @@ namespace CoC.Backend.BodyParts
 			return 0;
 		}
 
-		public SimpleDescriptor AsText => AsStr;
-		public SimpleDescriptor ShortDescription => ShortDesc;
-
-		internal override bool Validate(bool correctInvalidData)
-		{
-			size = size;
-			return true;
-		}
 	}
 }

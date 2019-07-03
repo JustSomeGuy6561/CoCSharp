@@ -86,6 +86,8 @@ namespace CoC.Backend.BodyParts
 		private ushort vaginaTightenTimer = 0;
 
 		public readonly Piercing<LabiaPiercings> labiaPiercings;
+		public override VaginaType type { get; protected set; }
+		public override bool isDefault => type == VaginaType.HUMAN;
 
 		#region Constructors
 		private Vagina()
@@ -108,8 +110,6 @@ namespace CoC.Backend.BodyParts
 			labiaPiercings = new Piercing<LabiaPiercings>(SUPPORTED_LABIA_JEWELRY, PiercingLocationUnlocked);
 		}
 		#endregion
-		public override VaginaType type { get; protected set; }
-		public override bool isDefault => type == VaginaType.HUMAN;
 
 		#region Generate
 		internal static Vagina GenerateFromGender(Gender gender)
@@ -171,33 +171,45 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 		#endregion
-		#region Restore
-		internal override bool Restore()
+		#region Unique Functions
+		internal bool VaginalSex(ushort penetratorArea)
 		{
-			clit.Restore();
-			if (type == VaginaType.HUMAN)
-			{
-				return false;
-			}
-			type = VaginaType.HUMAN;
-			return true;
+			numTimesVaginal++;
+			return PenetrateVagina(penetratorArea, true);
 		}
-
-		#endregion
-		#region Validate
-		internal override bool Validate(bool correctInvalidData)
+		internal bool PenetrateVagina(ushort penetratorArea, bool takeVirginity = false)
 		{
-			VaginaType vaginaType = type;
-			bool valid = VaginaType.Validate(ref vaginaType, correctInvalidData);
-			if (valid || correctInvalidData)
+
+			//experience = experience.add(ExperiencedGained);
+			VaginalLooseness oldLooseness = looseness;
+			ushort capacity = VaginalCapacity();
+
+			//don't have to worry about overflow, as +1 will never overflow our artificial max.
+			if (penetratorArea >= capacity * 1.5f)
 			{
-				valid &= labiaPiercings.Validate(correctInvalidData); // = x & so we're fine.
+				looseness++;
 			}
-			if (valid || correctInvalidData)
+			else if (penetratorArea >= capacity && Utils.RandBool())
 			{
-				valid &= clit.Validate(correctInvalidData);
+				looseness++;
 			}
-			return valid;
+			else if (penetratorArea >= capacity * 0.9f && Utils.Rand(4) == 0)
+			{
+				looseness++;
+			}
+			else if (penetratorArea >= capacity * 0.75f && Utils.Rand(10) == 0)
+			{
+				looseness++;
+			}
+			if (penetratorArea >= capacity / 2)
+			{
+				vaginaTightenTimer = 0;
+			}
+			if (virgin && takeVirginity)
+			{
+				virgin = false;
+			}
+			return oldLooseness != looseness;
 		}
 		#endregion
 		#region Vagina-Specific
@@ -386,48 +398,6 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
-		#region Unique Functions
-		internal bool VaginalSex(ushort penetratorArea)
-		{
-			numTimesVaginal++;
-			return PenetrateVagina(penetratorArea, true);
-		}
-		internal bool PenetrateVagina(ushort penetratorArea, bool takeVirginity = false)
-		{
-
-			//experience = experience.add(ExperiencedGained);
-			VaginalLooseness oldLooseness = looseness;
-			ushort capacity = VaginalCapacity();
-
-			//don't have to worry about overflow, as +1 will never overflow our artificial max.
-			if (penetratorArea >= capacity * 1.5f)
-			{
-				looseness++;
-			}
-			else if (penetratorArea >= capacity && Utils.RandBool())
-			{
-				looseness++;
-			}
-			else if (penetratorArea >= capacity * 0.9f && Utils.Rand(4) == 0)
-			{
-				looseness++;
-			}
-			else if (penetratorArea >= capacity * 0.75f && Utils.Rand(10) == 0)
-			{
-				looseness++;
-			}
-			if (penetratorArea >= capacity / 2)
-			{
-				vaginaTightenTimer = 0;
-			}
-			if (virgin && takeVirginity)
-			{
-				virgin = false;
-			}
-			return oldLooseness != looseness;
-		}
-		#endregion
-
 		#region Clit Helpers
 		public bool omnibusClit => clit.omnibusClit;
 
@@ -441,13 +411,41 @@ namespace CoC.Backend.BodyParts
 			return clit.DeactivateOmnibusClit();
 		}
 		#endregion
+		#region Restore
+		internal override bool Restore()
+		{
+			clit.Restore();
+			if (type == VaginaType.HUMAN)
+			{
+				return false;
+			}
+			type = VaginaType.HUMAN;
+			return true;
+		}
+
+		#endregion
+		#region Validate
+		internal override bool Validate(bool correctInvalidData)
+		{
+			VaginaType vaginaType = type;
+			bool valid = VaginaType.Validate(ref vaginaType, correctInvalidData);
+			if (valid || correctInvalidData)
+			{
+				valid &= labiaPiercings.Validate(correctInvalidData); // = x & so we're fine.
+			}
+			if (valid || correctInvalidData)
+			{
+				valid &= clit.Validate(correctInvalidData);
+			}
+			return valid;
+		}
+		#endregion
 		#region Piercing-Related
 		private bool PiercingLocationUnlocked(LabiaPiercings piercingLocation)
 		{
 			return true;
 		}
 		#endregion
-
 		#region ITimeListener
 
 		private ushort timerAmount

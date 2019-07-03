@@ -6,6 +6,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
 
 namespace CoC.Backend.BodyParts
@@ -27,6 +28,8 @@ namespace CoC.Backend.BodyParts
 	{
 		//TODO: Make this iperkaware for big cock perk.
 
+		#region Consts
+
 		public const float MAX_COCK_LENGTH = 240f;
 		public const float MAX_COCK_THICKNESS = 50f;
 		public const float MIN_COCK_THICKNESS = 0.2f;
@@ -35,16 +38,18 @@ namespace CoC.Backend.BodyParts
 		public const float MIN_COCK_LENGTH = 3.0f;
 
 		public const float DEFAULT_COCK_LENGTH = 5.5f;
-		public const float DEFAULT_BIG_COCK_LENGTH = 8f;
+		//public const float DEFAULT_BIG_COCK_LENGTH = 8f;
 		public const float DEFAULT_COCK_GIRTH = 1.25f;
-		public const float DEFAULT_BIG_COCK_GIRTH = 1.5f;
+		//public const float DEFAULT_BIG_COCK_GIRTH = 1.5f;
 
 		public const JewelryType SUPPORTED_COCK_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
+		#endregion
 
-#warning Correct this when perks  are implemented.
-		private bool hasBigCockPerk => SaveData.BackendSessionData.data.hasBigCockPerk;
+		#region Properties
+		//private bool hasBigCockPerk => SaveData.BackendSessionData.data.hasBigCockPerk;
 
-		public float cockArea => cockGirth * cockLength;
+		public readonly Piercing<CockPiercings> cockPiercings;
+		
 		public float knotMultiplier
 		{
 			get => _knotMultiplier;
@@ -58,13 +63,16 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private float _knotMultiplier;
+		public float knotLength => type.knotSize(cockGirth, knotMultiplier);
 
 		public float cockLength => _cockLength;
 		private float _cockLength;
 
 		public float cockGirth => _cockGirth;
 		private float _cockGirth;
-		public float knotLength => cockGirth * knotMultiplier;
+		public float cockArea => cockGirth * cockLength;
+
+		private PerkStatBonusGetter perkModifiers; //used for perks that alter how the cock grows or shrinks.
 
 		public override CockType type
 		{
@@ -79,22 +87,14 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private CockType _type = CockType.HUMAN;
-
-		public readonly Piercing<CockPiercings> cockPiercings;
-
+		public override bool isDefault => type == CockType.HUMAN;
+		#endregion
+		#region Constructors
 		private Cock()
 		{
 			type = CockType.HUMAN;
-			if (hasBigCockPerk)
-			{
-				_cockLength = DEFAULT_BIG_COCK_LENGTH;
-				_cockGirth = DEFAULT_BIG_COCK_GIRTH;
-			}
-			else
-			{
-				_cockLength = DEFAULT_COCK_LENGTH;
-				_cockGirth = DEFAULT_COCK_GIRTH;
-			}
+			_cockLength = DEFAULT_COCK_LENGTH;
+			_cockGirth = DEFAULT_COCK_GIRTH;
 
 			knotMultiplier = type.baseKnotMultiplier;
 
@@ -104,14 +104,7 @@ namespace CoC.Backend.BodyParts
 		private Cock(CockType cockType)
 		{
 			type = cockType;
-			if (hasBigCockPerk)
-			{
-				updateLengthAndGirth(DEFAULT_BIG_COCK_LENGTH, DEFAULT_BIG_COCK_GIRTH);
-			}
-			else
-			{
-				updateLengthAndGirth(DEFAULT_COCK_LENGTH, DEFAULT_COCK_GIRTH);
-			}
+			updateLengthAndGirth(DEFAULT_COCK_LENGTH, DEFAULT_COCK_GIRTH);
 			knotMultiplier = type.baseKnotMultiplier;
 
 			cockPiercings = new Piercing<CockPiercings>(SUPPORTED_COCK_JEWELRY, PiercingLocationUnlocked);
@@ -125,9 +118,9 @@ namespace CoC.Backend.BodyParts
 
 			cockPiercings = new Piercing<CockPiercings>(SUPPORTED_COCK_JEWELRY, PiercingLocationUnlocked);
 		}
+		#endregion
 
-		public override bool isDefault => type == CockType.HUMAN;
-
+		#region Generate
 		internal static Cock GenerateFromGender(Gender gender)
 		{
 			if (gender.HasFlag(Gender.MALE))
@@ -164,7 +157,8 @@ namespace CoC.Backend.BodyParts
 				knotMultiplier = knotMultiplier
 			};
 		}
-
+		#endregion
+		#region Restore
 		internal override bool Restore()
 		{
 			if (type == CockType.HUMAN)
@@ -175,17 +169,85 @@ namespace CoC.Backend.BodyParts
 			updateLengthAndGirth(DEFAULT_COCK_LENGTH, DEFAULT_COCK_GIRTH);
 			return true;
 		}
+		#endregion
+		#region Update
 
-		internal float LengthenCock(float lengthenAmount)
+		internal bool UpdateCockType(CockType newType)
+		{
+			if (type == newType)
+			{
+				return false;
+			}
+			type = newType;
+			return true;
+		}
+
+		internal bool UpdateCockTypeWithLength(CockType cockType, float newLength)
+		{
+			if (type == cockType)
+			{
+				return false;
+			}
+			type = cockType;
+			SetLength(newLength);
+			return true;
+		}
+
+		internal bool UpdateCockTypeWithLengthAndGirth(CockType cockType, float newLength, float newGirth)
+		{
+			if (type == cockType)
+			{
+				return false;
+			}
+			type = cockType;
+			SetLengthAndGirth(newLength, newGirth);
+			return true;
+		}
+
+		internal bool UpdateCockTypeWithKnotMultiplier(CockType cockType, float newKnotMultiplier)
+		{
+			if (type == cockType)
+			{
+				return false;
+			}
+			type = cockType;
+			knotMultiplier = newKnotMultiplier;
+			return true;
+		}
+
+		internal bool UpdateCockTypeWithAll(CockType cockType, float newLength, float newGirth, float newKnotMultiplier)
+		{
+			if (type == cockType)
+			{
+				return false;
+			}
+			type = cockType;
+			SetLengthAndGirth(newLength, newGirth);
+			knotMultiplier = newKnotMultiplier;
+			return true;
+		}
+
+		#endregion
+		#region Attribute Updates
+
+		internal float LengthenCock(float lengthenAmount, bool ignorePerk = false)
 		{
 			float oldLength = cockLength;
+			if (!ignorePerk)
+			{
+				lengthenAmount *= perkModifiers().CockGrowthMultiplier;
+			}
 			updateLength(cockLength + lengthenAmount);
 			return cockLength - oldLength;
 		}
 
-		internal float ShortenCock(float shortenAmount)
+		internal float ShortenCock(float shortenAmount, bool ignorePerk = false)
 		{
 			float oldLength = cockLength;
+			if (!ignorePerk)
+			{
+				shortenAmount *= perkModifiers().CockShrinkMultiplier;
+			}
 			updateLength(cockLength - shortenAmount);
 			return oldLength - cockLength;
 		}
@@ -219,7 +281,49 @@ namespace CoC.Backend.BodyParts
 			updateLengthAndGirth(newLength, newGirth);
 		}
 
+		internal float IncreaseKnotMultiplier(float amount)
+		{
+			if (!type.hasKnot)
+			{
+				return 0;
+			}
+			float oldMultiplier = knotMultiplier;
+			knotMultiplier += amount;
+			return knotMultiplier - amount;
+		}
 
+		internal float DecreaseKnotMultiplier(float amount)
+		{
+			if (!type.hasKnot)
+			{
+				return 0;
+			}
+			float oldMultiplier = knotMultiplier;
+			knotMultiplier -= amount;
+			return amount - knotMultiplier;
+		}
+
+		internal bool SetKnotMultiplier(float multiplier)
+		{
+			if (multiplier < MIN_KNOT_MULTIPLIER)
+			{
+				return multiplier == 0 && !type.hasKnot;
+			}
+			else if (type.hasKnot)
+			{
+				if (multiplier > MAX_KNOT_MULTIPLIER)
+				{
+					multiplier = MAX_KNOT_MULTIPLIER;
+				}
+				knotMultiplier = multiplier;
+				return true;
+			}
+			return false;
+
+		}
+
+		#endregion
+		#region Validate
 		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;
@@ -238,12 +342,14 @@ namespace CoC.Backend.BodyParts
 			}
 			return valid;
 		}
-
-
+		#endregion
+		#region Piercings
 		private bool PiercingLocationUnlocked(CockPiercings piercingLocation)
 		{
 			return true;
 		}
+		#endregion
+		#region IGrowShrinkable
 
 		bool IGrowShrinkable.CanReducto()
 		{
@@ -257,7 +363,8 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			float oldLength = cockLength;
-			updateLength(cockLength * 2.0f / 3);
+			float multiplier = 2.0f / 3 * perkModifiers().CockShrinkMultiplier;
+			updateLength(cockLength * multiplier);
 			return oldLength - cockLength;
 
 		}
@@ -277,9 +384,20 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			float oldCockLength = cockLength;
-			if (hasBigCockPerk)
+
+			if (perkModifiers().CockGrowthMultiplier != 1)
 			{
-				updateLength(cockLength + 1 + Utils.Rand(9) / 4.0f);
+				float multiplier = perkModifiers().CockGrowthMultiplier;
+				int rand;
+				if (multiplier < 1)
+				{
+					rand = (int)Math.Floor(multiplier * 4);
+				}
+				else
+				{
+					rand = (int)Math.Ceiling(multiplier * 4) + 1;
+				}
+				updateLength(cockLength + 1 + Utils.Rand(rand) / 4.0f);
 			}
 			else
 			{
@@ -295,7 +413,16 @@ namespace CoC.Backend.BodyParts
 			}
 			return cockLength - oldCockLength;
 		}
-
+		#endregion
+		#region PerkAware
+		private IBaseStatPerkAware perkAware => this;
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			perkModifiers = getter;
+		}
+		internal void GetBasePerkStats(PerkStatBonusGetter getter) => perkAware.GetBasePerkStats(getter);
+		#endregion
+		#region Helpers
 		private void updateLength(float newLength)
 		{
 			_cockLength = newLength;
@@ -323,6 +450,7 @@ namespace CoC.Backend.BodyParts
 		private float minGirth => _cockLength * type.minGirthToLengthRatio;
 		private float minLength => _cockGirth / type.maxGirthToLengthRatio;
 		private float maxLength => _cockGirth / type.minGirthToLengthRatio;
+		#endregion
 	}
 
 
@@ -350,6 +478,10 @@ namespace CoC.Backend.BodyParts
 		//i'm aware this breaks all the rules with length and girth, but tentacles need to tentacle things, so. 
 		//I'm hanging the lampshade in the tentacle and goo descriptions, saying that they can extend to crazy lengths, but they only feel pleasure at the tip (which happens to be length long and girth wide)
 		public virtual bool flexibleOrStretchyCock => false;
+
+		//you can now alter the formula for knots. Iirc, the text for dragon cock knots said it didn't swell with size like the others, but still used the formula. if it's important enough to you to change this,
+		//you can. 
+		public virtual float knotSize(float girth, float multiplier) => girth * multiplier;
 
 		private protected CockType(CockGroup cockGroup,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,

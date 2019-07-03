@@ -97,48 +97,6 @@ namespace CoC.Backend.BodyParts
 		{
 			cupSize = Utils.ClampEnum2(size, CupSize.FLAT, CupSize.JACQUES00);
 		}
-
-		bool IGrowShrinkable.CanGrowPlus()
-		{
-			return cupSize < CupSize.JACQUES00;
-		}
-
-		bool IGrowShrinkable.CanReducto()
-		{
-			return cupSize > CupSize.FLAT;
-		}
-
-		float IGrowShrinkable.UseGroPlus()
-		{
-			if (!((IGrowShrinkable)this).CanGrowPlus())
-			{
-				return 0;
-			}
-			CupSize oldSize = cupSize;
-			this.cupSize += (byte)(Utils.Rand(2) + 1);
-			//c# is a bitch in that all numbers are treated as ints or doubles unless explicitly cast - byte me
-			this.cupSize += (byte)(makeBigTits && Utils.RandBool() ? 1 : 0); //add one for big tits perk 50% of the time
-			return cupSize - oldSize;
-		}
-
-		float IGrowShrinkable.UseReducto()
-		{
-			if (!((IGrowShrinkable)this).CanReducto())
-			{
-				return 0;
-			}
-			CupSize oldSize = cupSize;
-			if (cupSize == CupSize.A || !makeSmallTits || Utils.RandBool())
-			{
-				cupSize--;
-			}
-			else
-			{
-				cupSize -= 2;
-			}
-			return oldSize - cupSize;
-		}
-
 		public bool MakeMale(bool removeStatus = true)
 		{
 			if (isMale)
@@ -180,6 +138,49 @@ namespace CoC.Backend.BodyParts
 			cupSize = cupSize;
 			return nipples.Validate(correctInvalidData);
 		}
+
+		#region IGrowShrinkable
+		bool IGrowShrinkable.CanGrowPlus()
+		{
+			return cupSize < CupSize.JACQUES00;
+		}
+
+		bool IGrowShrinkable.CanReducto()
+		{
+			return cupSize > CupSize.FLAT;
+		}
+
+		float IGrowShrinkable.UseGroPlus()
+		{
+			if (!((IGrowShrinkable)this).CanGrowPlus())
+			{
+				return 0;
+			}
+			CupSize oldSize = cupSize;
+			this.cupSize += (byte)(Utils.Rand(2) + 1);
+			//c# is a bitch in that all numbers are treated as ints or doubles unless explicitly cast - byte me
+			this.cupSize += (byte)(makeBigTits && Utils.RandBool() ? 1 : 0); //add one for big tits perk 50% of the time
+			return cupSize - oldSize;
+		}
+
+		float IGrowShrinkable.UseReducto()
+		{
+			if (!((IGrowShrinkable)this).CanReducto())
+			{
+				return 0;
+			}
+			CupSize oldSize = cupSize;
+			if (cupSize == CupSize.A || !makeSmallTits || Utils.RandBool())
+			{
+				cupSize--;
+			}
+			else
+			{
+				cupSize -= 2;
+			}
+			return oldSize - cupSize;
+		}
+		#endregion
 
 		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{

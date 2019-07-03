@@ -21,13 +21,6 @@ namespace CoC.Backend.BodyParts
 			type = antennaeType ?? throw new ArgumentNullException();
 		}
 		public override bool isDefault => type == AntennaeType.NONE;
-		internal override bool Validate(bool correctInvalidData)
-		{
-			AntennaeType antennae = type;
-			bool retVal = AntennaeType.Validate(ref antennae, correctInvalidData);
-			type = antennae;
-			return retVal;
-		}
 
 		internal static Antennae GenerateDefault()
 		{
@@ -58,15 +51,23 @@ namespace CoC.Backend.BodyParts
 			type = AntennaeType.NONE;
 			return true;
 		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			AntennaeType antennae = type;
+			bool retVal = AntennaeType.Validate(ref antennae, correctInvalidData);
+			type = antennae;
+			return retVal;
+		}
 	}
 
-	public partial class AntennaeType : SaveableBehavior<AntennaeType, Antennae>
+	public sealed partial class AntennaeType : SaveableBehavior<AntennaeType, Antennae>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<AntennaeType> antennaes = new List<AntennaeType>();
 
 		//C# 7.2 magic. basically, prevents it from being messed with except internally.
-		private protected AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,
+		private AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,
 			ChangeType<Antennae> transformMessage, RestoreType<Antennae> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
 		{
 			_index = indexMaker++;

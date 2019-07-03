@@ -96,37 +96,8 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		//called after deserialization. We're making the following assumptions: If the bodyType is not null, its Init was called. this should be true, because we control
-		//deserialization, though i suppose if we use a method of serialization that doesn't call constructors, that wouldn't apply. Honestly though, using a serialization technique that
-		//doesnt call constructors would invite so many problems due to readonlys that it wouldn't be all that smart. If the bodyType is null, assumes mainSkin and mainFur are not null.
-		//also assumes the hairData getter has been connected already. 
 
-		internal override bool Validate(bool correctInvalidData)
-		{
-			BodyType bodyType = type;
-			bool valid = BodyType.Validate(ref bodyType, mainSkin, mainFur, ref primary, ref secondary, hairData(), correctInvalidData);
-			type = bodyType;
-			if (valid || correctInvalidData)
-			{
-				valid &= navelPiercings.Validate(correctInvalidData);
-			}
-			return valid;
-		}
 
-		private bool PiercingLocationUnlocked(NavelPiercingLocation piercingLocation)
-		{
-			return true;
-		}
-
-		private BodyData ToBodyData()
-		{
-			return new BodyData(primary, secondary, mainFur, mainSkin, hairData(), type);
-		}
-
-		internal void SetupBodyAware(IBodyAware bodyAware)
-		{
-			bodyAware.GetBodyData(ToBodyData);
-		}
 
 		#region Generate
 		internal static Body GenerateDefault()
@@ -484,7 +455,41 @@ namespace CoC.Backend.BodyParts
 			return UpdateBody(BodyType.HUMANOID);
 		}
 		#endregion
+		
+		#region Validate
+		//called after deserialization. We're making the following assumptions: If the bodyType is not null, its Init was called. this should be true, because we control
+		//deserialization, though i suppose if we use a method of serialization that doesn't call constructors, that wouldn't apply. Honestly though, using a serialization technique that
+		//doesnt call constructors would invite so many problems due to readonlys that it wouldn't be all that smart. If the bodyType is null, assumes mainSkin and mainFur are not null.
+		//also assumes the hairData getter has been connected already. 
+		internal override bool Validate(bool correctInvalidData)
+		{
+			BodyType bodyType = type;
+			bool valid = BodyType.Validate(ref bodyType, mainSkin, mainFur, ref primary, ref secondary, hairData(), correctInvalidData);
+			type = bodyType;
+			if (valid || correctInvalidData)
+			{
+				valid &= navelPiercings.Validate(correctInvalidData);
+			}
+			return valid;
+		}
+		#endregion
+		#region Piercing Helper
+		private bool PiercingLocationUnlocked(NavelPiercingLocation piercingLocation)
+		{
+			return true;
+		}
+		#endregion
+		#region BodyAware
+		private BodyData ToBodyData()
+		{
+			return new BodyData(primary, secondary, mainFur, mainSkin, hairData(), type);
+		}
 
+		internal void SetupBodyAware(IBodyAware bodyAware)
+		{
+			bodyAware.GetBodyData(ToBodyData);
+		}
+		#endregion
 
 		#region IMultiDyeable
 		//DYES

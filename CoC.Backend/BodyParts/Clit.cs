@@ -75,35 +75,6 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
-		{
-
-			if (!requiresFetish.Contains(piercingLocation))
-			{
-				return true;
-			}
-			else if (!piercingFetish)
-			{
-				return false;
-			}
-			else if (piercingLocation == ClitPiercings.LARGE_CLIT_1)
-			{
-				return length >= 3;
-			}
-			else if (piercingLocation == ClitPiercings.LARGE_CLIT_2)
-			{
-				return length >= 5;
-			}
-			else if (piercingLocation == ClitPiercings.LARGE_CLIT_3)
-			{
-				return length >= 7;
-			}
-#if DEBUG
-			Debug.WriteLine("Hit some edge case. probably should fix this as it always returns false.");
-#endif
-			return false;
-		}
-
 		public Cock AsCock()
 		{
 			if (!omnibusClit)
@@ -184,6 +155,36 @@ namespace CoC.Backend.BodyParts
 			length = length;
 			return clitPiercings.Validate(correctInvalidData);
 		}
+
+		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
+		{
+
+			if (!requiresFetish.Contains(piercingLocation))
+			{
+				return true;
+			}
+			else if (!piercingFetish)
+			{
+				return false;
+			}
+			else if (piercingLocation == ClitPiercings.LARGE_CLIT_1)
+			{
+				return length >= 3;
+			}
+			else if (piercingLocation == ClitPiercings.LARGE_CLIT_2)
+			{
+				return length >= 5;
+			}
+			else if (piercingLocation == ClitPiercings.LARGE_CLIT_3)
+			{
+				return length >= 7;
+			}
+#if DEBUG
+			Debug.WriteLine("Hit some edge case. probably should fix this as it always returns false.");
+#endif
+			return false;
+		}
+
 
 		#region Grow/Shrinkable
 		bool IGrowShrinkable.CanGrowPlus()

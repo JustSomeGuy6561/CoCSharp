@@ -27,7 +27,7 @@ namespace CoC.Backend.Creatures
 
 
 		public ushort initialXP = 0;
-		public ushort initialLevel = 1; //probably could be a byte.
+		public byte initialLevel = 1;
 		protected CombatCreatureCreator(string name) : base(name)
 		{
 

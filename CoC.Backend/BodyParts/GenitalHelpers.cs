@@ -16,7 +16,7 @@ using System.Collections.Generic;
 //Honestly, if this thing costs more than a few mbs (if that) i'll be very surprised. 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class Femininity
+	public sealed class Femininity : SimpleSaveablePart<Femininity>
 	{
 		public const byte FEMININE_MAX = 100;
 		public const byte MASCULINE_MAX = 0;
@@ -178,11 +178,17 @@ namespace CoC.Backend.BodyParts
 		{
 			value = other.value;
 		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			value = value;
+			return true;
+		}
 	}
 
 	//it wraps a byte. I dunno. 
 	//now capping max base fertility to 75. Perks could boost this past the base 75 value. 
-	public sealed class Fertility: IBaseStatPerkAware
+	public sealed class Fertility: SimpleSaveablePart<Fertility>,  IBaseStatPerkAware
 	{
 		public const byte MAX_TOTAL_FERTILITY = byte.MaxValue - 5;
 		public const byte MAX_BASE_FERTILITY = 75;
@@ -241,6 +247,12 @@ namespace CoC.Backend.BodyParts
 		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			perkData = getter;
+		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			baseValue = baseValue;
+			return true;
 		}
 	}
 

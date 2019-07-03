@@ -29,13 +29,6 @@ namespace CoC.Backend.BodyParts
 		public ushort maxCharges => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxResource : (ushort)0;
 		public ushort maxRegen => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxRechargeRate : (ushort)0;
 
-
-		private Back(BackType backType)
-		{
-			_type = backType ?? throw new ArgumentNullException();
-			_type.ParseEpidermis(epidermis);
-		}
-
 		public override BackType type
 		{
 			get => _type;
@@ -63,14 +56,11 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == BackType.NORMAL;
 
-		internal override bool Validate(bool correctInvalidData)
+		private Back(BackType backType)
 		{
-			BackType backType = type;
-			bool retVal = BackType.Validate(ref backType, epidermis, correctInvalidData);
-			type = backType;
-			return retVal;
+			_type = backType ?? throw new ArgumentNullException();
+			_type.ParseEpidermis(epidermis);
 		}
-
 
 		internal static Back GenerateDefault()
 		{
@@ -89,16 +79,6 @@ namespace CoC.Backend.BodyParts
 				newBack.epidermis.ChangeFur(maneColor);
 			}
 			return newBack;
-		}
-
-		internal override bool Restore()
-		{
-			if (type != BackType.NORMAL)
-			{
-				type = BackType.NORMAL;
-				return true;
-			}
-			return false;
 		}
 
 		internal bool UpdateBack(BackType newType)
@@ -124,6 +104,23 @@ namespace CoC.Backend.BodyParts
 				epidermis.ChangeFur(maneColor);
 			}
 			return true;
+		}
+		internal override bool Restore()
+		{
+			if (type != BackType.NORMAL)
+			{
+				type = BackType.NORMAL;
+				return true;
+			}
+			return false;
+		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			BackType backType = type;
+			bool retVal = BackType.Validate(ref backType, epidermis, correctInvalidData);
+			type = backType;
+			return retVal;
 		}
 
 		#region IDyeable

@@ -14,8 +14,11 @@ namespace CoC.Backend.BodyParts
 	//may once have been multidyeable, as we skip button location 4; location 3 is wings.
 	public sealed class Wings : BehavioralSaveablePart<Wings, WingType>, IDyeable, IMultiToneable //if combat grants a boost to running via wings, just add a hasWings check.
 	{
-		//add to creature as well.
-		public bool hasWings => type != WingType.NONE;
+		public HairFurColors featherColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
+		public Tones wingTone { get; private set; } = Tones.NOT_APPLICABLE;
+		public Tones wingBoneTone { get; private set; } = Tones.NOT_APPLICABLE;
+
+		public bool isLarge { get; private set; } = false;
 
 		public override WingType type
 		{
@@ -30,11 +33,10 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private WingType _type;
-		public HairFurColors featherColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
-		public Tones wingTone { get; private set; } = Tones.NOT_APPLICABLE;
-		public Tones wingBoneTone { get; private set; } = Tones.NOT_APPLICABLE;
+		public override bool isDefault => type == WingType.NONE;
 
-		public bool isLarge { get; private set; } = false;
+		public bool hasWings => type != WingType.NONE;
+		public bool canFly => type != WingType.NONE && isLarge;
 
 		private Wings()
 		{
@@ -53,23 +55,8 @@ namespace CoC.Backend.BodyParts
 			type = wingType;
 			featherColor = color;
 		}
-		public bool canFly => type != WingType.NONE && isLarge;
 
-		public override bool isDefault => type == WingType.NONE;
 
-		internal override bool Validate(bool correctInvalidData)
-		{
-			WingType wingType = type;
-			var feather = featherColor;
-			var tone = wingTone;
-			var boneTone = wingBoneTone;
-			bool valid = WingType.Validate(ref wingType, ref feather, ref tone, ref boneTone, correctInvalidData);
-			type = wingType;
-			featherColor = feather;
-			wingTone = tone;
-			wingBoneTone = boneTone;
-			return valid;
-		}
 
 		internal static Wings GenerateDefault()
 		{
@@ -247,7 +234,6 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-
 		internal bool GrowLarge()
 		{
 			if (!type.canChangeSize || isLarge)
@@ -276,6 +262,20 @@ namespace CoC.Backend.BodyParts
 			}
 			type = WingType.NONE;
 			return true;
+		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			WingType wingType = type;
+			var feather = featherColor;
+			var tone = wingTone;
+			var boneTone = wingBoneTone;
+			bool valid = WingType.Validate(ref wingType, ref feather, ref tone, ref boneTone, correctInvalidData);
+			type = wingType;
+			featherColor = feather;
+			wingTone = tone;
+			wingBoneTone = boneTone;
+			return valid;
 		}
 
 		bool IDyeable.allowsDye()

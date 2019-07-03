@@ -73,6 +73,12 @@ namespace CoC.Backend.BodyParts
 		{
 			size = newSize;
 		}
+		internal override bool Validate(bool correctInvalidData)
+		{
+			//auto-validates data.
+			size = size;
+			return true;
+		}
 
 		bool IGrowShrinkable.CanReducto()
 		{
@@ -111,11 +117,5 @@ namespace CoC.Backend.BodyParts
 			return 0;
 		}
 
-		internal override bool Validate(bool correctInvalidData)
-		{
-			//auto-validates data.
-			size = size;
-			return true;
-		}
 	}
 }

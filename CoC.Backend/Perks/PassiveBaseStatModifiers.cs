@@ -59,32 +59,36 @@ namespace CoC.Backend.Perks
 		//unless otherwise noted, these are added to the base stats. If you fuck up and the min > max, behavior is undefined. 
 		//note that regardless of bonus values here, some stats may be capped at an absolute bonus level. Note that all of these could change over development (particularly maxes, notably lust)
 
+		//new way of dealing with initial endowments - they are permanent. so if you pick smart, you get +5 int and your min intelligence is now 5.
 
-		public sbyte bonusMinStrength;
+		public ushort bonusMaxHP;
+		
+		public byte minStrength;
 		public sbyte bonusMaxStrength;
 
-		public sbyte bonusMinSpeed;
+		public byte minSpeed;
 		public sbyte bonusMaxSpeed;
 
-		public sbyte bonusMinIntelligence;
+		public byte minIntelligence;
 		public sbyte bonusMaxIntelligence;
 
-		public sbyte bonusMinToughness;
+		public byte minToughness;
 		public sbyte bonusMaxToughness;
 
-		public sbyte bonusMinSensitivity;
+		public byte minSensitivity;
 		public sbyte bonusMaxSensitivity;
 
+		public byte minLust;
 		public sbyte bonusMaxLust;
-		public sbyte bonusMinLust;
 
-		public sbyte bonusMinLibido;
+		public byte minLibido;
 		public sbyte bonusMaxLibido;
 
-		public sbyte bonusMinCorruption;
+		public byte minCorruption;
 		public sbyte bonusMaxCorruption;
 
-		public sbyte bonusMinHunger;
+		public sbyte bonusMaxFatigue;
+
 		public sbyte bonusMaxHunger;
 		//bonus pregnancy speed stacked additively. We're going to do the same, but we're going to be up-front about it. 
 		//a perk can increase or decrease pregnancy speed, and we now support half gains. Max speed is 63.5, min speed -64.
@@ -123,8 +127,6 @@ namespace CoC.Backend.Perks
 		public float CockGrowthMultiplier; //how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
 		public float CockShrinkMultiplier; //how much more/less should we shrink a cock over base amount? //big cock, cockSock;
 		public float NewCockDefaultSize; //minimum size for any new cocks; //bro/futa perks for now
-		
-
 
 		public float NewClitSizeDelta; //how much do we add or remove to base amount for new Clits? //NYI, but BigClit Perks
 		public float ClitGrowthMultiplier; //how much more/less should we grow a Clit over the base amount?

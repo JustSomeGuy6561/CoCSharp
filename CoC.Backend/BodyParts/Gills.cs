@@ -21,13 +21,6 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == GillType.NONE;
 
-		internal override bool Validate(bool correctInvalidData)
-		{
-			GillType gillType = type;
-			bool valid = GillType.Validate(ref gillType, correctInvalidData);
-			type = gillType;
-			return valid;
-		}
 
 		internal static Gills GenerateDefault()
 		{
@@ -62,6 +55,13 @@ namespace CoC.Backend.BodyParts
 			}
 			type = GillType.NONE;
 			return type == GillType.NONE;
+		}
+		internal override bool Validate(bool correctInvalidData)
+		{
+			GillType gillType = type;
+			bool valid = GillType.Validate(ref gillType, correctInvalidData);
+			type = gillType;
+			return valid;
 		}
 	}
 

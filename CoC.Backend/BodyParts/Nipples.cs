@@ -84,25 +84,6 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal override bool Validate(bool correctInvalidData)
-		{
-			//self-validating.
-			bool valid = true;
-			length = length;
-			if (!Enum.IsDefined(typeof(NippleStatus), nippleStatus))
-			{
-				if (correctInvalidData)
-				{
-					nippleStatus = NippleStatus.NORMAL;
-				}
-				valid = false;
-			}
-			if (valid || correctInvalidData)
-			{
-				valid &= nipplePiercing.Validate(correctInvalidData);
-			}
-			return valid;
-		}
 
 		internal float GrowNipple(float growAmount, bool ignorePerk = false)
 		{
@@ -140,6 +121,27 @@ namespace CoC.Backend.BodyParts
 		{
 			nippleStatus = status;
 		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			//self-validating.
+			bool valid = true;
+			length = length;
+			if (!Enum.IsDefined(typeof(NippleStatus), nippleStatus))
+			{
+				if (correctInvalidData)
+				{
+					nippleStatus = NippleStatus.NORMAL;
+				}
+				valid = false;
+			}
+			if (valid || correctInvalidData)
+			{
+				valid &= nipplePiercing.Validate(correctInvalidData);
+			}
+			return valid;
+		}
+
 		private bool PiercingLocationUnlocked(NipplePiercings piercingLocation)
 		{
 			return true;

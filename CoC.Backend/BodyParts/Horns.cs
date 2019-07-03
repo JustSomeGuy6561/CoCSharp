@@ -20,12 +20,13 @@ namespace CoC.Backend.BodyParts
 	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowShrinkable, IFemininityListener, ICanAttackWith
 	{
 		private readonly Femininity hornMasculinity = Femininity.GenerateDefault();
-		public override HornType type { get; protected set; }
 
 		public byte significantHornSize => _significantHornSize;
 		private byte _significantHornSize;
 		public byte numHorns => _numHorns;
 		private byte _numHorns;
+		public override HornType type { get; protected set; }
+		public override bool isDefault => type == HornType.NONE;
 
 		#region Constructors
 		private Horns()
@@ -49,15 +50,6 @@ namespace CoC.Backend.BodyParts
 			_numHorns = hornCount;
 		}
 		#endregion
-		public override bool isDefault => type == HornType.NONE;
-
-		internal override bool Validate(bool correctInvalidData)
-		{
-			HornType hornType = type;
-			bool valid = HornType.Validate(ref hornType, ref _numHorns, ref _significantHornSize, in hornMasculinity, correctInvalidData);
-			type = hornType;
-			return valid;
-		}
 
 		#region Generate
 		internal static Horns GenerateDefault()
@@ -108,19 +100,6 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 		#endregion
-		#region Restore
-		internal override bool Restore()
-		{
-			if (type == HornType.NONE)
-			{
-				return false;
-			}
-			type = HornType.NONE;
-			_numHorns = 0;
-			_significantHornSize = 0;
-			return true;
-		}
-		#endregion
 		#region Horn Specific Methods
 		public bool CanStrengthen()
 		{
@@ -159,6 +138,26 @@ namespace CoC.Backend.BodyParts
 			return removeHorns;
 		}
 		#endregion
+		#region Restore
+		internal override bool Restore()
+		{
+			if (type == HornType.NONE)
+			{
+				return false;
+			}
+			type = HornType.NONE;
+			_numHorns = 0;
+			_significantHornSize = 0;
+			return true;
+		}
+		#endregion
+		internal override bool Validate(bool correctInvalidData)
+		{
+			HornType hornType = type;
+			bool valid = HornType.Validate(ref hornType, ref _numHorns, ref _significantHornSize, in hornMasculinity, correctInvalidData);
+			type = hornType;
+			return valid;
+		}
 		
 		#region IGenderListener
 		void IFemininityAware.GetFemininityData(FemininityDataGetter getter)

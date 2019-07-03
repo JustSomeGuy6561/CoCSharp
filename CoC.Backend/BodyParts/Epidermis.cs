@@ -134,32 +134,6 @@ namespace CoC.Backend.BodyParts
 			skinTexture = other.skinTexture;
 		}
 
-		public EpidermalData GetEpidermalData()
-		{
-			if (type.usesFur) return new EpidermalData(type, fur, furTexture);
-			else if (type.usesTone) return new EpidermalData(type, tone, skinTexture);
-			else return new EpidermalData();
-		}
-
-		internal bool Validate(bool correctInvalidData)
-		{
-			EpidermisType epidermis = type;
-			Tones tones = tone;
-
-			bool valid = EpidermisType.Validate(ref epidermis, fur, ref tones, correctInvalidData);
-			tone = tones;
-			type = epidermis;
-			return valid;
-		}
-
-		public void Reset()
-		{
-			type = EpidermisType.EMPTY;
-			fur.Reset();
-			tone = Tones.NOT_APPLICABLE;
-			furTexture = FurTexture.NONDESCRIPT;
-			skinTexture = SkinTexture.NONDESCRIPT;
-		}
 
 		#region Updates
 		public bool UpdateEpidermis(EpidermisType epidermisType)
@@ -348,6 +322,32 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
+		public void Reset()
+		{
+			type = EpidermisType.EMPTY;
+			fur.Reset();
+			tone = Tones.NOT_APPLICABLE;
+			furTexture = FurTexture.NONDESCRIPT;
+			skinTexture = SkinTexture.NONDESCRIPT;
+		}
+
+		internal bool Validate(bool correctInvalidData)
+		{
+			EpidermisType epidermis = type;
+			Tones tones = tone;
+
+			bool valid = EpidermisType.Validate(ref epidermis, fur, ref tones, correctInvalidData);
+			tone = tones;
+			type = epidermis;
+			return valid;
+		}
+
+		public EpidermalData GetEpidermalData()
+		{
+			if (type.usesFur) return new EpidermalData(type, fur, furTexture);
+			else if (type.usesTone) return new EpidermalData(type, tone, skinTexture);
+			else return new EpidermalData();
+		}
 
 	}
 

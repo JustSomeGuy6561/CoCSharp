@@ -32,15 +32,6 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<TailPiercings> tailPiercings;
 		public bool isPierced => tailPiercings.isPierced;
-
-		private Tail()
-		{
-			type = TailType.NONE;
-			tailPiercings = new Piercing<TailPiercings>(SUPPORTED_TAIL_PIERCINGS, PiercingLocationUnlocked);
-		}
-
-		public override bool isDefault => type == TailType.NONE;
-
 		public override TailType type
 		{
 			get => _type;
@@ -55,6 +46,13 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private TailType _type;
+		public override bool isDefault => type == TailType.NONE;
+
+		private Tail()
+		{
+			type = TailType.NONE;
+			tailPiercings = new Piercing<TailPiercings>(SUPPORTED_TAIL_PIERCINGS, PiercingLocationUnlocked);
+		}
 
 		internal static Tail GenerateDefault()
 		{

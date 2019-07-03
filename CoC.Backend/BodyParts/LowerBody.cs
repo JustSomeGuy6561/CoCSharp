@@ -28,16 +28,6 @@ namespace CoC.Backend.BodyParts
 		public const byte SEXTOPED_LEG_COUNT = 6; //for squids/octopi, if i implement them. technically, an octopus is 2 legs and 6 arms, but i like the 6 legs 2 arms because legs have a count, arms dont.
 		public const byte OCTOPED_LEG_COUNT = 8;
 
-		public EpidermalData primaryEpidermis => type.ParseEpidermis(bodyData());
-		public EpidermalData secondaryEpidermis => type.ParseEpidermis(bodyData());
-		public int legCount => type.legCount;
-
-		private LowerBody(LowerBodyType type)
-		{
-			_type = type;
-			feet = Feet.GenerateDefault(type.footType);
-		}
-
 		public override LowerBodyType type
 		{
 			get => _type;
@@ -47,10 +37,26 @@ namespace CoC.Backend.BodyParts
 				feet.UpdateType(value.footType);
 			}
 		}
+		private LowerBodyType _type;
 
 		public override bool isDefault => type == LowerBodyType.HUMAN;
 
-		private LowerBodyType _type;
+		public EpidermalData primaryEpidermis => type.ParseEpidermis(bodyData());
+		public EpidermalData secondaryEpidermis => type.ParseEpidermis(bodyData());
+		public int legCount => type.legCount;
+
+		public bool isMonoped => legCount == MONOPED_LEG_COUNT;
+		public bool isBiped => legCount == BIPED_LEG_COUNT;
+		public bool isQuadruped => legCount == QUADRUPED_LEG_COUNT;
+		public bool isSextoped => legCount == SEXTOPED_LEG_COUNT;
+		public bool isOctoped => legCount == OCTOPED_LEG_COUNT;
+
+
+		private LowerBody(LowerBodyType type)
+		{
+			_type = type;
+			feet = Feet.GenerateDefault(type.footType);
+		}
 
 		internal static LowerBody GenerateDefault()
 		{
@@ -82,7 +88,6 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-
 		internal override bool Validate(bool correctInvalidData)
 		{
 			LowerBodyType lowerBodyType = type;
@@ -90,6 +95,7 @@ namespace CoC.Backend.BodyParts
 			type = lowerBodyType;
 			return valid;
 		}
+
 		private BodyDataGetter bodyData;
 
 		void IBodyAware.GetBodyData(BodyDataGetter getter)
@@ -100,11 +106,6 @@ namespace CoC.Backend.BodyParts
 		AttackBase ICanAttackWith.attack => type.attack;
 		bool ICanAttackWith.canAttackWith() => type.canAttackWith;
 
-		public bool isMonoped => legCount == MONOPED_LEG_COUNT;
-		public bool isBiped => legCount == BIPED_LEG_COUNT;
-		public bool isQuadruped => legCount == QUADRUPED_LEG_COUNT;
-		public bool isSextoped => legCount == SEXTOPED_LEG_COUNT;
-		public bool isOctoped => legCount == OCTOPED_LEG_COUNT;
 
 		internal void SetupLowerBodyAware(ILowerBodyAware lowerBodyAware)
 		{

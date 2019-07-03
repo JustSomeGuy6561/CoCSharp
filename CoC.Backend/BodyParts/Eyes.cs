@@ -59,33 +59,6 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == EyeType.HUMAN;
 
-		internal override bool Validate(bool correctInvalidData)
-		{
-			var eyeType = type;
-			bool valid = EyeType.Validate(ref eyeType, correctInvalidData);
-			type = eyeType;
-			//check left eye. skip this if the data is already invalid and we aren't correcting invalid data.
-			//checks to see if the value is out of range for the Enum (C# doesn't check enums)
-			if ((valid || correctInvalidData) && !Enum.IsDefined(typeof(EyeColor), (int)leftIrisColor))
-			{
-				if (correctInvalidData)
-				{
-					leftIrisColor = EyeColor.AMBER;
-				}
-				valid = false;
-			}
-			//check right eye. skip this if the data is already invalid and we aren't correcting invalid data.
-			//checks to see if the value is out of range for the Enum (C# doesn't check enums)
-			if ((valid || correctInvalidData) && !Enum.IsDefined(typeof(EyeColor), (int)rightIrisColor))
-			{
-				if (correctInvalidData)
-				{
-					rightIrisColor = EyeColor.AMBER;
-				}
-				valid = false;
-			}
-			return valid;
-		}
 
 		internal static Eyes GenerateDefault()
 		{
@@ -152,12 +125,6 @@ namespace CoC.Backend.BodyParts
 			return type.EyeChangeSpecial(leftIrisColor, leftEye, rightIrisColor, rightEye);
 		}
 
-		internal void Reset()
-		{
-			type = EyeType.HUMAN;
-			leftIrisColor = type.defaultColor;
-			rightIrisColor = type.defaultColor;
-		}
 
 		internal override bool Restore()
 		{
@@ -167,6 +134,41 @@ namespace CoC.Backend.BodyParts
 			}
 			type = EyeType.HUMAN;
 			return true;
+		}
+
+		internal void Reset()
+		{
+			type = EyeType.HUMAN;
+			leftIrisColor = type.defaultColor;
+			rightIrisColor = type.defaultColor;
+		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			var eyeType = type;
+			bool valid = EyeType.Validate(ref eyeType, correctInvalidData);
+			type = eyeType;
+			//check left eye. skip this if the data is already invalid and we aren't correcting invalid data.
+			//checks to see if the value is out of range for the Enum (C# doesn't check enums)
+			if ((valid || correctInvalidData) && !Enum.IsDefined(typeof(EyeColor), (int)leftIrisColor))
+			{
+				if (correctInvalidData)
+				{
+					leftIrisColor = EyeColor.AMBER;
+				}
+				valid = false;
+			}
+			//check right eye. skip this if the data is already invalid and we aren't correcting invalid data.
+			//checks to see if the value is out of range for the Enum (C# doesn't check enums)
+			if ((valid || correctInvalidData) && !Enum.IsDefined(typeof(EyeColor), (int)rightIrisColor))
+			{
+				if (correctInvalidData)
+				{
+					rightIrisColor = EyeColor.AMBER;
+				}
+				valid = false;
+			}
+			return valid;
 		}
 
 		AttackBase ICanAttackWith.attack => type.attack;

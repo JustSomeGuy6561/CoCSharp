@@ -76,15 +76,6 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal override bool Restore()
-		{
-			if (type == NeckType.HUMANOID)
-			{
-				return false;
-			}
-			type = NeckType.HUMANOID;
-			return true;
-		}
 
 		internal bool UpdateNeck(NeckType neckType)
 		{
@@ -112,6 +103,15 @@ namespace CoC.Backend.BodyParts
 		public bool canGrowNeck()
 		{
 			return type.canGrowNeck(length);
+		}
+		internal override bool Restore()
+		{
+			if (type == NeckType.HUMANOID)
+			{
+				return false;
+			}
+			type = NeckType.HUMANOID;
+			return true;
 		}
 
 		internal override bool Validate(bool correctInvalidData)

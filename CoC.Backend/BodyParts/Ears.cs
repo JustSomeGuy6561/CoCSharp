@@ -53,40 +53,14 @@ namespace CoC.Backend.BodyParts
 
 		public override bool isDefault => type == EarType.HUMAN;
 
-		internal override bool Validate(bool correctInvalidData)
-		{
-			EarType earType = type;
-			bool valid = EarType.Validate(ref earType, correctInvalidData);
-			type = earType;
-			if (valid || correctInvalidData)
-			{
-				valid &= earPiercings.Validate(correctInvalidData);
-			}
-			return valid;
-		}
-
-		private bool PiercingLocationUnlocked(EarPiercings piercingLocation)
-		{
-			return true;
-		}
-
 		internal static Ears GenerateDefault()
 		{
 			return new Ears();
 		}
+
 		internal static Ears GenerateDefaultOfType(EarType earType)
 		{
 			return new Ears() { type = earType };
-		}
-
-		internal override bool Restore()
-		{
-			if (type == EarType.HUMAN)
-			{
-				return false;
-			}
-			type = EarType.HUMAN;
-			return true;
 		}
 
 		internal bool UpdateEars(EarType earType)
@@ -103,6 +77,33 @@ namespace CoC.Backend.BodyParts
 		void IBodyAware.GetBodyData(BodyDataGetter getter)
 		{
 			bodyData = getter;
+		}
+
+		internal override bool Restore()
+		{
+			if (type == EarType.HUMAN)
+			{
+				return false;
+			}
+			type = EarType.HUMAN;
+			return true;
+		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			EarType earType = type;
+			bool valid = EarType.Validate(ref earType, correctInvalidData);
+			type = earType;
+			if (valid || correctInvalidData)
+			{
+				valid &= earPiercings.Validate(correctInvalidData);
+			}
+			return valid;
+		}
+
+		private bool PiercingLocationUnlocked(EarPiercings piercingLocation)
+		{
+			return true;
 		}
 	}
 

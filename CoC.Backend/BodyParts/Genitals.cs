@@ -13,7 +13,7 @@ using System.Text;
 namespace CoC.Backend.BodyParts
 {
 	// this is a fucking mess. 
-	// need to: handle a late init to use correct mindefault values for cock, vagina, breasts, nipples.
+	// need to: handle a late init to use correct minDefault values for cock, vagina, breasts, nipples.
 	// implement time aware - nipple piercings changing nipple status. 
 	// alias every fucking function to make values here there and everywhere increase. 
 	// every time we get a new cock, set it to default length if one not provided. increase length by delta, regardless.

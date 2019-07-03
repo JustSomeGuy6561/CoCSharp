@@ -32,7 +32,7 @@ namespace CoC.Backend.BodyParts
 	//ITimeListener: if pregnant or anal pregnant, run them, check what's going on
 	//IDayListender: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant. output it.
 
-	public sealed partial class PlayerWomb : ITimeActiveListener, ITimeDailyListener, ITimeLazyListener, IBaseStatPerkAware
+	public sealed partial class PlayerWomb : SimpleSaveablePart<PlayerWomb>, ITimeActiveListener, ITimeDailyListener, ITimeLazyListener, IBaseStatPerkAware
 	{
 
 
@@ -46,6 +46,62 @@ namespace CoC.Backend.BodyParts
 		public bool basiliskWomb { get; private set; } = false;
 
 		public byte eggsEveryXDays { get; private set; } = 15;
+
+		public bool eggSizeKnown => pregnancy.eggSizeKnown;
+		public bool defaultKnownEggSize => pregnancy.eggsLarge;
+
+		private PlayerWomb()
+		{
+
+		}
+
+		internal static PlayerWomb GenerateDefault()
+		{
+			return new PlayerWomb();
+		}
+
+		public void SetEggSize(bool isLarge)
+		{
+			pregnancy.SetEggSize(isLarge);
+			analPregnancy.SetEggSize(isLarge);
+		}
+
+		//clears egg size "perk". now eggs are sized randomly. 
+		public void ClearEggSize()
+		{
+			pregnancy.ClearEggSize();
+			analPregnancy.ClearEggSize();
+		}
+
+		public bool GrantBasiliskWomb()
+		{
+			oviposition = true;
+			if (basiliskWomb == true)
+			{
+				return false;
+			}
+			basiliskWomb = true;
+			return true;
+		}
+
+		public void ClearBasiliskWomb(bool clearOviposition = true)
+		{
+			basiliskWomb = false;
+			if (oviposition && clearOviposition)
+			{
+				oviposition = false;
+			}
+		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			bool valid = pregnancy.Validate(correctInvalidData);
+			if (valid || correctInvalidData)
+			{
+				valid &= analPregnancy.Validate(correctInvalidData);
+			}
+			return valid;
+		}
 
 		#region ITimeListeners
 		byte ITimeDailyListener.hourToTrigger => 0; //midnight.
@@ -98,40 +154,6 @@ namespace CoC.Backend.BodyParts
 			return wrapper;
 		}
 		#endregion
-
-		public void SetEggSize(bool isLarge = true)
-		{
-			pregnancy.SetEggSize(isLarge);
-			analPregnancy.SetEggSize(isLarge);
-		}
-
-		//clears egg size "perk". now eggs are sized randomly. 
-		public void ClearEggSize()
-		{
-			pregnancy.ClearEggSize();
-			analPregnancy.ClearEggSize();
-		}
-
-		public bool GrantBasiliskWomb()
-		{
-			oviposition = true;
-			if (basiliskWomb == true)
-			{
-				return false;
-			}
-			basiliskWomb = true;
-			return true;
-		}
-
-		public void ClearBasiliskWomb(bool clearOviposition = true)
-		{
-			basiliskWomb = false;
-			if (oviposition && clearOviposition)
-			{
-				oviposition = false;
-			}
-		}
-
 		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			pregnancy.GetBasePerkStats(getter);
