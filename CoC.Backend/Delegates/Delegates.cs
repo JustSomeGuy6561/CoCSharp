@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/29/2018, 11:03 AM
 
+using CoC.Backend.Areas;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 
@@ -27,4 +28,6 @@ namespace CoC.Backend
 
 	//every function that uses a button will follow this format. note that with lambdas they can take virtually anything.
 	public delegate void PlayerFunction(Player player);
+
+	public delegate void ResumeTimeCallback(byte hoursRemaining, AreaBase currentLocation);
 }

@@ -5,10 +5,13 @@
 
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -37,39 +40,41 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class Ears : BehavioralSaveablePart<Ears, EarType>, IBodyAware
 	{
-		private const JewelryType VALID_EAR_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.DANGLER | JewelryType.HOOP | JewelryType.RING | JewelryType.HORSESHOE | JewelryType.SPECIAL;
 		private FurColor earFur => type.ParseFurColor(_earFur, bodyData());
 		private readonly FurColor _earFur = new FurColor();
 
+		public ReadOnlyFurColor earFurColor => new ReadOnlyFurColor(earFur);
+
 		public readonly Piercing<EarPiercings> earPiercings;
 
-		private Ears()
+		private Ears(EarType earType)
 		{
-			type = EarType.HUMAN;
-			earPiercings = new Piercing<EarPiercings>(VALID_EAR_PIERCINGS, PiercingLocationUnlocked);
+			type = earType ?? throw new ArgumentNullException(nameof(earType));
+			earPiercings = new Piercing<EarPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
 		public override EarType type { get; protected set; }
 
-		public override bool isDefault => type == EarType.HUMAN;
+		public static EarType defaultType => EarType.HUMAN;
+		public override bool isDefault => type == defaultType;
 
 		internal static Ears GenerateDefault()
 		{
-			return new Ears();
+			return new Ears(defaultType);
 		}
 
 		internal static Ears GenerateDefaultOfType(EarType earType)
 		{
-			return new Ears() { type = earType };
+			return new Ears(earType);
 		}
 
-		internal bool UpdateEars(EarType earType)
+		internal override bool UpdateType(EarType newType)
 		{
-			if (type == earType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
-			type = earType;
+			type = newType;
 			return true;
 		}
 
@@ -105,12 +110,43 @@ namespace CoC.Backend.BodyParts
 		{
 			return true;
 		}
+
+		private JewelryType SupportedJewelryByLocation(EarPiercings piercingLocation)
+		{
+			switch (piercingLocation)
+			{
+				//these are grouped by "location." so some return identical things, but it's done this way to make it easier to update it if needed.
+				case EarPiercings.LEFT_LOBE_1:
+				case EarPiercings.RIGHT_LOBE_1:
+				case EarPiercings.LEFT_LOBE_2:
+				case EarPiercings.RIGHT_LOBE_2:
+					return JewelryType.BARBELL_STUD | JewelryType.DANGLER | JewelryType.HOOP | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
+				case EarPiercings.LEFT_LOBE_3:
+				case EarPiercings.RIGHT_LOBE_3:
+				case EarPiercings.LEFT_UPPER_LOBE:
+				case EarPiercings.RIGHT_UPPER_LOBE:
+					return JewelryType.BARBELL_STUD | JewelryType.DANGLER | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
+				case EarPiercings.LEFT_HELIX_1:
+				case EarPiercings.RIGHT_HELIX_1:
+				case EarPiercings.LEFT_HELIX_2:
+				case EarPiercings.RIGHT_HELIX_2:
+				case EarPiercings.LEFT_HELIX_3:
+				case EarPiercings.RIGHT_HELIX_3:
+					return JewelryType.BARBELL_STUD | JewelryType.DANGLER | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
+				case EarPiercings.LEFT_ANTI_HELIX:
+				case EarPiercings.RIGHT_ANTI_HELIX:
+					return JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
+				default:
+					return JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
+			}
+		}
 	}
 
 	public partial class EarType : SaveableBehavior<EarType, Ears>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EarType> ears = new List<EarType>();
+		public static readonly ReadOnlyCollection<EarType> availableTypes = new ReadOnlyCollection<EarType>(ears);
 		private readonly int _index;
 
 		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, TypeAndPlayerDelegate<Ears> playerDesc,
@@ -205,6 +241,18 @@ namespace CoC.Backend.BodyParts
 			}
 			current.UpdateFurColor(color);
 			return current;
+		}
+	}
+
+	public static class EarHelpers
+	{
+		public static PiercingJewelry GenerateEarJewelry(this Ears ears, EarPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (ears.earPiercings.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
 		}
 	}
 }

@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //4/7/2019, 7:27 PM
 using CoC.Backend.Creatures;
+using System;
 
 namespace CoC.Backend.SaveData
 {
@@ -22,5 +23,10 @@ namespace CoC.Backend.SaveData
 		internal Player player; //read all player data from this. probably wont be stored as player, but w/e. 
 
 		public bool SFW_Mode = false;
+
+		public byte difficulty = 0;
+		public byte NumTimeNewGamePlus = 0;
+		public byte NewGamePlusLevel => Math.Min(NumTimeNewGamePlus, (byte)4);
 	}
+
 }

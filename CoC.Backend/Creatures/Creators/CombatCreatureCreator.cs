@@ -22,8 +22,6 @@ namespace CoC.Backend.Creatures
 		//lust is immediately altered the moment the game starts, and fatigue is reset to 0.
 		//public ushort? lust;
 		//public byte? fatigue;
-		//hidden stat.
-		public byte? fertility;
 
 
 		public ushort initialXP = 0;

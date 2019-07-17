@@ -4,6 +4,9 @@
 //1/5/2019, 3:16 AM
 
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Engine.Time;
+using CoC.Backend.Perks;
+using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,12 +17,26 @@ namespace CoC.Backend.BodyParts
 {
 	// this is a fucking mess. 
 	// need to: handle a late init to use correct minDefault values for cock, vagina, breasts, nipples.
-	// implement time aware - nipple piercings changing nipple status. 
 	// alias every fucking function to make values here there and everywhere increase. 
 	// every time we get a new cock, set it to default length if one not provided. increase length by delta, regardless.
 	// every time we get a vagina set its default wetness, looseness, and clitSize to defaults, unless provided. 
 	// breasts - figure out how the fuck we're gonna add new breast rows. 
 
+	//EVERY PIERCING NOW NEEDS TO ALIAS THE PIERCINGS! WOOOO!
+
+	//I had the relatively brilliant idea of storing the GameTime for when something happened - last milking, etc. it means we don't need to update it every hour - we just need to update it when it happens.
+	//it's a relatively simple calculation to get the current hours since - we just diff GameTime now and stored time. Granted, it's now a byte and int instead of just one int, but w/e. I'll trade
+	//an extra byte of memory (or 4 bytes if C# does the whole align things to word boundaries, idk on its optimizations) for less maintenance and less cycles managing the data. 
+
+	public enum LactationStatus { NOT_LACTATING, LIGHT, MODERATE, STRONG, HEAVY, EPIC }
+
+	//Genitals is the new "master class" for all things sex-related. NPCs that don't require the whole creature class can just use this if they can impregnate. I'll create a base class for this.
+	//Note that you could just use cock or vagina or whatever if that's all that's important, but this provides an automated process for all things - it automates milking, time since sexing, 
+	//descriptions, knock-ups, etc, which allows you to not have to worry about it. The only downside so far is that BreastStore != BreastRow, so i've combined them and had to deal with the headache 
+	//that caused. some variables are available in here to allow PC behavior (namely, 48 hours until full breasts, regardless of how high the lactation multiplier is) or normal behavior (breasts fill quicker
+	//the higher the lactation multiplier is). Remember, this ruleset works across all NPCs, because lactation amount dependant on breast size, breast count, and lactation multiplier. 
+	//which means that despite the fact that Marble and Katherine can have the same lactation multiplier, Marble would take longer to fill up and not be complaining every 3 hours she needs a milking.
+	//RIP katherine, lol.
 
 	public sealed class Genitals : SimpleSaveablePart<Genitals>, IBodyPartTimeLazy, IBaseStatPerkAware //for now all the stuff it contains is lazy, so that's all we need.
 	{
@@ -32,8 +49,14 @@ namespace CoC.Backend.BodyParts
 		//i'm not being a dick and reverting that. 4 it is.
 		public const int MAX_BREAST_ROWS = 4;
 
+		public const float LACTATION_THRESHOLD = 1.0f;
+		public const float MODERATE_LACTATION_THRESHOLD = 2.0f;
+		public const float STRONG_LACTATION_THRESHOLD = 3.0f;
+		public const float HEAVY_LACTATION_THRESHOLD = 5.0f;
+		public const float EPIC_LACTATION_THRESHOLD = 7.5f;
+		
 		private readonly bool needsLateInit;
-		private readonly bool needsDelta;
+
 
 		public readonly Ass ass;
 		public readonly Balls balls;
@@ -47,6 +70,8 @@ namespace CoC.Backend.BodyParts
 		private readonly List<Breasts> _breasts = new List<Breasts>(MAX_BREAST_ROWS);
 		private readonly List<Cock> _cocks = new List<Cock>(MAX_COCKS);
 		private readonly List<Vagina> _vaginas = new List<Vagina>(MAX_VAGINAS);
+
+		//public readonly Womb womb;
 
 		#region public properties for Cock/Breast/Vagina
 		public readonly ReadOnlyCollection<Cock> cocks;
@@ -106,20 +131,166 @@ namespace CoC.Backend.BodyParts
 		private NippleStatus _nippleType;
 		#endregion
 		//breasts
-#warning NYI
-		public ushort lactationAmount { get; private set; }
+		//Lactation: we're gonna create a new ruleset. It's more realistic (i guess), this way, but also more uniform for both the PC and any random NPC that uses this. Allows one nice ruleset. 
+		//amount you can carry is gonna be a capacity multiplier (capped, idk at what) * total breast volume
+		//idk on how we'll do volume. 
+		//lactation multiplier affects how quickly you fill up. this allows creatures with ungodly amounts of milk capacity to fill up in a reasonable time, or smaller capacities to fill slowly
+		//or quickly, depending on the scenario. we'll also use it to make the PC take roughly 48 hours to get full 
+		//formula is roughly numBreasts * baseFillRate * lactationMultiplier.
+
+		//we'll also use the lactation multiplier for how much milk is released when being suckled or otherwise stimulated. it'll likely be a percent of overall fill rate, multiplied by how long 
+		//the stimulation lasts and some factor of character's sensitivity
+
+		//also, we can now allow partial milking, so one NPC doesn't milk the PC's 4 rows of Q Cups dry in one sitting (realism op), though obviously the cow milker would do that.  
+		//Two options for this: a duration - how long are they at it? or a flat, maximum amount, where the creature is drained up to that maximum value.  
+
+		//Also, we'll alter how the creature produces milk based on consumption - if the character is often drained to empty, we'll increase production after a time. if they're overful for a period of time
+		//it'll decrease. allows characters to induce lactation, and also causes lactation to stop after a period of inactivity.
+		//we'll also provide the option to prevent decrease or increase, for things like the feeder perk or its opposite (notably, the PC telling an NPC to prevent it from being to high). 
+
+		//we'll need to rework some items to increase either the capacity multiplier or refill rate, or both. 
+
+		//overall maximum capacity. you can produce more than your current capacity, and be overful, but not past your overall max. when this is hit,
+		//it really slows down your production rate, unless otherwise prevented. 
+		public float maximumLactationCapacity => capacityMultiplier * (float)breasts.Sum(x => volumeFromCupSize(x.cupSize) * x.numBreasts);
+		//current maximum capacity. if you aren't lactating, this is 0. 
+		public float lactationCapacity => maximumLactationCapacity * lactationRate;
+		private double volumeFromCupSize(CupSize cup)
+		{
+			//fun fact, i'm now more versed in how cup size works than most women - apparently 60% don't get proper fitting cup/bra measures. The more you know. 
+			//Short version: actual capacity varies by figure, notably how wide the person is. basically, cupsize is the delta from measurement at sternum and across the breasts at the nipple level.
+			//for our calculations, we're gonna assume a "true" cup size - that is, ~a 30inch measurement at sternum, or a 34band size. 
+
+			//we'll simulate storage by using breast size combined with the internals that don't exactly show on a person's physique, so flat/a cups will still have some lactation, albeit very low amounts.
+
+			byte cupByte = (byte)cup;
+
+			//fudging this - basically, cupsize ~= measurement@nipples - (measurement@sternum+4) which roughly means breast height is 1/2 the cupsize value, but b/c breasts are curved, it's actually even less
+			//so we fudge it to ~1/2.54. then we convert that to CM, and it cancels out. i figure that conversion is probably a little off, so i fudge back in an extra .25cm. 
+			double height = cupByte + .25;
+
+			//radius of the breast where it meets the chest. we'll assume the figure gets slightly more accomodating as the breasts get bigger, so we widen the radius slightly per cup size.
+			double chestRadius = 2.5 + cupByte / 40.0;
+
+			//note: 
+
+			//tiny, not enough volume to be spherical. using an ellipsoid instead. the heights are small enough here that we can use a full ellipsoid and chalk it up to internal storage. 
+			if (cupByte < 3)
+			{
+				return 2 * chestRadius * chestRadius * height * 2 / 3 * Math.PI;
+			}
+			//big enough to have volume, but still small enough to remain firm and thus are roughly spherical. 
+			if (cupByte < 5)
+			{
+				double breastRadius = cupByte;
+				//this might over-estimate internal storage a little, but this isn't precision math for rocket science, so cut me some slack lol. 
+				return 4 / 3 * Math.PI * Math.Pow(breastRadius, 3);
+			}
+			//biggest formula. no longer spherical, because gravity. we'll use a truncated sphere (think cylinder that gets wider as it goes along), that ends in a half-ellipsoid. 
+			//i'm more or less ignoring internal storage here because we have so much of it outside. i just add an extra 10 and call it a day. 
+			else
+			{
+				//ellipsoid at the end.
+				double breastRadius = 5 + cupByte / 16.0f;
+				double breastHeight = breastRadius / 2;
+				//the length of the cone part
+				double breastLength = height - breastRadius;
+				//radius of cone at base: chestRadius. radius at end: breastRadius
+
+				return 10 + Math.PI / 3 * (2 * breastHeight * Math.Pow(breastRadius, 2) + Math.Pow(breastRadius + chestRadius, 2) * breastLength);
+			}
+
+		}
+		//how much over base can you handle? i'd assume some items will update this.
+		public float capacityMultiplier { get; private set; } = 0;
+
+		//how much are you lactating? this value will change naturally depending on how often you sate your needs - if you're constantly overful, your body will produce less.
+		//this will combine with your capacity multiplier to fill your breasts over time. 
+		public float lactationModifier
+		{
+			get => _lactationModifier;
+			private set
+			{
+				_lactationModifier = Utils.Clamp2(value, 0, 10f);
+				_breasts.ForEach(x => x.SetLactation(_lactationModifier));
+			}
+		}
+		private float _lactationModifier = 0;
+
+		//use this to explain how crazy your nipple leakage/scene whatever is. 
+		public LactationStatus lactationStatus
+		{
+			get
+			{
+				if (lactationModifier < LACTATION_THRESHOLD)
+				{
+					return LactationStatus.NOT_LACTATING;
+				}
+				else if (lactationModifier < MODERATE_LACTATION_THRESHOLD)
+				{
+					return LactationStatus.LIGHT;
+				}
+				else if (lactationModifier < STRONG_LACTATION_THRESHOLD)
+				{
+					return LactationStatus.MODERATE;
+				}
+				else if (lactationModifier < HEAVY_LACTATION_THRESHOLD)
+				{
+					return LactationStatus.STRONG;
+				}
+				else if (lactationModifier < EPIC_LACTATION_THRESHOLD)
+				{
+					return LactationStatus.HEAVY;
+				}
+				else
+				{
+					return LactationStatus.EPIC;
+				}
+			}
+		}
+
+		public bool isLactating => lactationStatus != LactationStatus.NOT_LACTATING;
+		private float lactationRate => Utils.Lerp((byte)LactationStatus.NOT_LACTATING, (byte)LactationStatus.EPIC, (byte)lactationStatus, 0, 1.0f);
+
+		public LactationStatus setLactationTo(LactationStatus newStatus)
+		{
+			lactationModifier = newStatus.MinThreshold();
+			return lactationStatus;
+		}
+
+		public bool clearLactation()
+		{
+			return setLactationTo(LactationStatus.NOT_LACTATING) == LactationStatus.NOT_LACTATING;
+		}
+
+		public float boostLactation(float byAmount = 0.1f)
+		{
+			var modifier = lactationModifier;
+			lactationModifier += byAmount;
+			return lactationModifier - modifier;
+		}
+
+		private GameDateTime timeLastMilked;
+		public int hoursSinceLastMilked => timeLastMilked.hoursToNow();
+
+#warning TODO: implement time aware for this to fill up over time, a milking and/or suckling method. a means to min/max lactationStatus. 
+		//likely need a times ran out of m
+
 
 #warning NYI
-		public ushort multiplier { get; private set; }
+		public ushort cumMultiplier { get; private set; }
 
-#warning NYI
-		public ushort hoursSinceCum { get; private set; }
+		private GameDateTime timeLastCum { get; set; }
+		public int hoursSinceLastCum => timeLastCum.hoursToNow();
+		private GameDateTime timeLastOrgasm { get; set; }
+		public int hoursSinceLastOrgasm => timeLastOrgasm.hoursToNow();
 
-		private bool alwaysAtMax => perkModifiers?.Invoke().AlwaysProducesMaxCum ?? false;
+		private bool alwaysAtMax => perkModifiers().AlwaysProducesMaxCum;
 
 		private uint perkCumAdd => perkModifiers().BonusCumAdded;
 		private float perkCumMultiply => perkModifiers().BonusCumStacked;
 
+		//we use mL for amount here, but store ball size in inches. Let's do it right, no? 1cm^3 = 1mL
 		public int cumAmount
 		{
 			get
@@ -131,16 +302,16 @@ namespace CoC.Backend.BodyParts
 				double baseValue = 0;
 				if (!balls.hasBalls)
 				{
-					baseValue = 1 / 4 * multiplier;
+					baseValue = 1 / 4 * cumMultiplier;
 				}
 				else
 				{
-					baseValue = 2.54f * balls.size;
-					baseValue = 4.0 / 3 * Math.PI * Math.Pow(baseValue / 2, 3) * balls.count * multiplier;
+					baseValue = balls.size * Measurement.TO_CENTIMETERS;
+					baseValue = 4.0 / 3 * Math.PI * Math.Pow(baseValue / 2, 3) * balls.count * cumMultiplier;
 				}
-				if (hoursSinceCum < 12 && !alwaysAtMax) //i'd do 24 but this is Mareth, so.
+				if (hoursSinceLastCum < 12 && !alwaysAtMax) //i'd do 24 but this is Mareth, so.
 				{
-					baseValue *= hoursSinceCum / 12.0;
+					baseValue *= hoursSinceLastCum / 12.0;
 				}
 				baseValue *= perkCumMultiply;
 				baseValue += perkCumAdd;
@@ -149,6 +320,10 @@ namespace CoC.Backend.BodyParts
 				{
 					return int.MaxValue;
 				}
+				else if (baseValue < 2)
+				{
+					baseValue = 2;
+				}
 				return (int)Math.Floor(baseValue);
 			}
 		}
@@ -156,6 +331,7 @@ namespace CoC.Backend.BodyParts
 #warning NYI
 		public ushort largestVaginalCapacity { get; private set; }
 
+		//ass is readonly, always exists. we don't need any alias magic for it. 
 		public uint timesHadAnalSex => ass.numTimesAnal;
 #warning NYI
 		public uint timesHadVaginalSex { get; private set; } = 0;
@@ -198,6 +374,9 @@ namespace CoC.Backend.BodyParts
 		private bool _hasClitCock = false;
 
 		#region Constructors
+
+		private Gender GetGender() => gender;
+
 		private Genitals(Gender gender)
 		{
 			ass = Ass.GenerateDefault();
@@ -205,29 +384,29 @@ namespace CoC.Backend.BodyParts
 			balls = Balls.GenerateFromGender(gender);
 			_cocks.Add(Cock.GenerateFromGender(gender));
 			_vaginas.Add(Vagina.GenerateFromGender(gender));
-			femininity = Femininity.GenerateFromGender(gender);
-			fertility = Fertility.GenerateDefault();
+			initHelper(out cocks, out vaginas, out breasts);
+
+			femininity = Femininity.Generate(GetGender);
+			fertility = Fertility.GenerateDefault(gender);
 
 			needsLateInit = true;
-			needsDelta = true;
 
-			initHelper(out cocks, out vaginas, out breasts);
 		}
 
-		private Genitals(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, Femininity femininity, Fertility fertility)
+		private Genitals(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, byte? femininity, Fertility fertility)
 		{
 			this.ass = ass;
 			CleanCopy(breasts, _breasts, MAX_BREAST_ROWS);
 			this.balls = balls;
 			CleanCopy(cocks, _cocks, MAX_COCKS);
 			CleanCopy(vaginas, _vaginas, MAX_VAGINAS);
-			this.femininity = femininity;
+			initHelper(out this.cocks, out this.vaginas, out this.breasts);
+
+			this.femininity = femininity != null ? Femininity.Generate(GetGender, (byte)femininity) : Femininity.Generate(GetGender);
 			this.fertility = fertility;
 
 			needsLateInit = false;
-			needsDelta = true;
 
-			initHelper(out this.cocks, out this.vaginas, out this.breasts);
 
 		}
 
@@ -244,13 +423,15 @@ namespace CoC.Backend.BodyParts
 		//it will, however, ignore any null values in the source, so the destination is "clean", and may therefore be shorter than the source.
 		private void CleanCopy<T>(in T[] source, List<T> destination, int maxEntries)
 		{
-			int min = Math.Min(source.Length, maxEntries);
+			if (source is null) return;
+
 			int y = 0;
-			for (int x = 0; x < min; x++)
+			for (int x = 0; x < source.Length; x++)
 			{
 				if (source[x] != null)
 				{
-					destination[y++] = source[x];
+					destination.Add(source[x]);
+					if (++y == maxEntries) return;
 				}
 			}
 		}
@@ -264,10 +445,16 @@ namespace CoC.Backend.BodyParts
 		//in deserialization land or creator constructor, generate the shit beforehand, then pass it in here. 
 		//ideally we should use copy constructors on the passed in data, but fuck it, it's internal, so it's "guarenteed" to be valid.
 		//and not referenced anywhere that would fuck this shit up.
-		internal static Genitals Generate(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, Femininity femininity, Fertility fertility)
+		internal static Genitals Generate(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, byte? femininity, Fertility fertility)
 		{
 			return new Genitals(ass, breasts, cocks, balls, vaginas, femininity, fertility);
 		}
+
+		//internal static Genitals GenerateWithWomb(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, Femininity femininity, Fertility fertility)
+		//{
+		//	return new Genitals(ass, breasts, cocks, balls, vaginas, femininity, fertility);
+		//}
+
 		#endregion
 		#region Update
 		#region Add
@@ -734,17 +921,20 @@ namespace CoC.Backend.BodyParts
 				outputBuilder.Append(outputHelper);
 			}
 
-#warning TODO: implement this as it becomes possible.
-			//increment time since last orgasm, times since last cock cum (if applicable), time since last milked (if applicable).
-			//if neither are applicable, feel free to reset them.
+			if (nipples[0].DoPiercingTimeNonsense(isPlayer, hoursPassed, numBreastRows > 1, out outputHelper))
+			{
+				nippleType = nipples[0].nippleStatus;
+				outputBuilder.Append(outputHelper);
+			}
 
-			//If nipple is inverted or slightly inverted and is pierced.
-			//decrement the pull-out timer. if it's 0 or less, set the nipple status on each breast row accordingly.
-			//append the nipple pulled out by piercing to the output StringBuilder.
+			if (DoLazy(femininity, isPlayer, hoursPassed, out outputHelper))
+			{
+				outputBuilder.Append(outputHelper);
+			}
+
 
 			//If lactating and something happened via time passing(full, slowed down, etc), set needs output to true, append 
 			//the result of this to the output string builder.
-			//if some status effect relating to your genitals requires output, parse it and append it.
 
 			return outputBuilder.ToString();
 
@@ -761,11 +951,30 @@ namespace CoC.Backend.BodyParts
 		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			perkModifiers = getter;
+			BasePerkModifiers data = getter();
+			PassOnBasePerkStatsGetter(ass, getter);
+			_cocks.ForEach(x => PassOnBasePerkStatsGetter(x, getter));
+			_vaginas.ForEach(x => PassOnBasePerkStatsGetter(x, getter));
+			_breasts.ForEach(x => PassOnBasePerkStatsGetter(x, getter));
+			PassOnBasePerkStatsGetter(balls, getter);
+			PassOnBasePerkStatsGetter(fertility, getter);
+			PassOnBasePerkStatsGetter(femininity, getter);
+
 			if (needsLateInit)
 			{
-#error fix me.
+				_vaginas.ForEach(x => x.DoLateInit(data));
+				_cocks.ForEach(x => x.DoLateInit(data));
+				_breasts.ForEach(x => x.DoLateInit(data));
+				balls.DoLateInit(data);
+				femininity.DoLateInit(gender, data);
 			}
 		}
+
+		private void PassOnBasePerkStatsGetter(IBaseStatPerkAware perkAware, PerkStatBonusGetter getter)
+		{
+			perkAware.GetBasePerkStats(getter);
+		}
+
 		#endregion
 	}
 }

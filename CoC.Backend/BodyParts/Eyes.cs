@@ -9,6 +9,7 @@ using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -38,26 +39,24 @@ namespace CoC.Backend.BodyParts
 		public override EyeType type { get; protected set; }
 
 
-		private Eyes(EyeType eyetype)
+		private Eyes(EyeType eyeType)
 		{
-			type = eyetype;
+			type = eyeType ?? throw new ArgumentNullException(nameof(eyeType));
 			leftIrisColor = type.defaultColor;
 			rightIrisColor = type.defaultColor;
 		}
-		private Eyes(EyeType eyetype, EyeColor color)
+
+		private Eyes(EyeType eyeType, EyeColor color) : this (eyeType, color, color)
+		{ }
+		private Eyes(EyeType eyeType, EyeColor leftEye, EyeColor rightEye)
 		{
-			type = eyetype;
-			leftIrisColor = color;
-			rightIrisColor = color;
-		}
-		private Eyes(EyeType eyetype, EyeColor leftEye, EyeColor rightEye)
-		{
-			type = eyetype;
+			type = eyeType ?? throw new ArgumentNullException(nameof(eyeType));
 			leftIrisColor = leftEye;
 			rightIrisColor = rightEye;
 		}
 
-		public override bool isDefault => type == EyeType.HUMAN;
+		public static EyeType defaultType => EyeType.HUMAN;
+		public override bool isDefault => type == defaultType;
 
 
 		internal static Eyes GenerateDefault()
@@ -83,6 +82,15 @@ namespace CoC.Backend.BodyParts
 		//note that there's no update type that takes new eye colors - remember, new eye types are supposed to respect the old eye color.
 		//if you REALLY want to change this, just call update, then call change. You'll probably want some unique flavor text, though, as
 		//the calls to change color str and update str are not really designed with being called back to back in mind and may sound weird, idk.
+		internal override bool UpdateType(EyeType newType)
+		{
+			if (newType == null || type == newType)
+			{
+				return false;
+			}
+			type = newType;
+			return true;
+		}
 
 		internal bool ChangeEyeColor(EyeColor color)
 		{
@@ -105,15 +113,6 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal bool UpdateEyeType(EyeType newtype)
-		{
-			if (type == newtype)
-			{
-				return false;
-			}
-			type = newtype;
-			return true;
-		}
 
 		public string EyeColorChangeFlavorText(EyeColor newColor)
 		{
@@ -185,6 +184,7 @@ namespace CoC.Backend.BodyParts
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EyeType> eyes = new List<EyeType>();
+		public static readonly ReadOnlyCollection<EyeType> availableTypes = new ReadOnlyCollection<EyeType>(eyes);
 
 		//Normally the white of the human eye
 		//Generally, animals' sclera are nearly invisible

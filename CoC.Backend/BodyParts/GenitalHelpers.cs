@@ -4,6 +4,9 @@
 //4/15/2019, 9:13 PM
 
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Items.Materials;
+using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -16,10 +19,10 @@ using System.Collections.Generic;
 //Honestly, if this thing costs more than a few mbs (if that) i'll be very surprised. 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class Femininity : SimpleSaveablePart<Femininity>
+	public sealed partial class Femininity : SimpleSaveablePart<Femininity>, IBaseStatPerkAware, IBodyPartTimeLazy
 	{
-		public const byte FEMININE_MAX = 100;
-		public const byte MASCULINE_MAX = 0;
+		public const byte MOST_FEMININE = 100;
+		public const byte MOST_MASCULINE = 0;
 
 		public const byte MIN_ANDROGYNOUS = 35;
 		public const byte ANDROGYNOUS = 50;
@@ -28,10 +31,13 @@ namespace CoC.Backend.BodyParts
 		public const byte SLIGHTLY_FEMININE = 60;
 		public const byte FEMININE = 70;
 		public const byte HYPER_FEMININE = 90;
-		
+
 		public const byte SLIGHTLY_MASCULINE = 40;
 		public const byte MASCULINE = 30;
 		public const byte HYPER_MASCULINE = 10;
+
+		private const byte HERM_GENDERLESS_MIN = 20;
+		private const byte HERM_GENDERLESS_MAX = 85;
 
 		public byte value
 		{
@@ -40,20 +46,29 @@ namespace CoC.Backend.BodyParts
 			{
 				if (value != _value)
 				{
-					_value = Utils.Clamp2(value, MASCULINE_MAX, FEMININE_MAX);
+					_value = Utils.Clamp2(value, MOST_MASCULINE, MOST_FEMININE);
 					femininityChanged(); //notify everyone.
 				}
 			}
 		}
 		private byte _value;
 
+		public bool femininityLimitedByGender => perkStats?.Invoke().femininityLockedByGender ?? true;
+
 		public static implicit operator byte(Femininity femininity)
 		{
 			return femininity.value;
 		}
 
-		private Femininity(Gender gender)
+		private readonly Func<Gender> genderAccessor;
+
+		internal Gender currentGender => genderAccessor();
+
+		private Femininity(Func<Gender> genderGetter)
 		{
+			genderAccessor = genderGetter;
+			Gender gender = genderGetter();
+
 			if (gender == Gender.GENDERLESS)
 			{
 				_value = 50;
@@ -72,24 +87,27 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private Femininity(byte femininity)
+		//by default, we don't know if we have androgyny. so we'll just allow all the data. 
+		private Femininity(Func<Gender> genderGetter, byte femininity)
 		{
-			_value = Utils.Clamp2(femininity, MASCULINE_MAX, FEMININE_MAX);
+			genderAccessor = genderGetter;
+			_value = Utils.Clamp2(femininity, MOST_MASCULINE, MOST_FEMININE);
 		}
 
-		internal static Femininity GenerateFromGender(Gender gender)
+		private Femininity(Femininity other)
 		{
-			return new Femininity(gender);
+			_value = other.value;
+			genderAccessor = other.genderAccessor;
 		}
 
-		internal static Femininity GenerateDefault()
+		internal static Femininity Generate(Func<Gender> genderGetter)
 		{
-			return new Femininity(50);
+			return new Femininity(genderGetter);
 		}
 
-		internal static Femininity Generate(byte femininity)
+		internal static Femininity Generate(Func<Gender> genderGetter, byte femininity)
 		{
-			return new Femininity(femininity);
+			return new Femininity(genderGetter, femininity);
 		}
 
 		internal Femininity copy()
@@ -147,36 +165,47 @@ namespace CoC.Backend.BodyParts
 		public bool atLeastMasculine => value <= MASCULINE;
 		public bool isHyperMasculine => value <= HYPER_MASCULINE;
 
-		public byte feminize(byte amount)
+		public static bool valueIsFemale(byte fem) => valueAtLeastSlightlyFeminine(fem);
+		public static bool valueIsMale(byte fem) => valueAtLeastSlightlyMasculine(fem);
+
+		public static bool valueIsAndrogynous(byte fem) => fem >= MIN_ANDROGYNOUS && fem <= MAX_ANDROGYNOUS;
+
+		public static bool valueIsSlightlyFeminine(byte fem) => fem >= SLIGHTLY_FEMININE && fem < FEMININE;
+		public static bool valueAtLeastSlightlyFeminine(byte fem) => fem >= SLIGHTLY_FEMININE && fem < FEMININE;
+		public static bool valueIsFeminine(byte fem) => fem >= FEMININE && fem < HYPER_FEMININE;
+		public static bool valueAtLeastFeminine(byte fem) => fem >= FEMININE;
+		public static bool valueIsHyperFeminine(byte fem) => fem >= HYPER_FEMININE;
+		public static bool valueIsSlightlyMasculine(byte fem) => fem <= SLIGHTLY_MASCULINE && fem > MASCULINE;
+		public static bool valueAtLeastSlightlyMasculine(byte fem) => fem <= SLIGHTLY_MASCULINE;
+		public static bool valueIsMasculine(byte fem) => fem <= MASCULINE && fem > HYPER_MASCULINE;
+		public static bool valueAtLeastMasculine(byte fem) => fem <= MASCULINE;
+		public static bool valueIsHyperMasculine(byte fem) => fem <= HYPER_MASCULINE;
+
+		internal byte feminize(byte amount)
 		{
-			if (value >= FEMININE_MAX)
+			if (value >= MOST_FEMININE)
 			{
 				return 0;
 			}
 			byte oldFemininity = value;
-			value = value.add(amount);
+			UpdateFemininity(value.add(amount));
 			return value.subtract(oldFemininity);
 		}
 
-		public byte masculinize(byte amount)
+		internal byte masculinize(byte amount)
 		{
 			if (value == 0)
 			{
 				return 0;
 			}
 			byte oldFemininity = value;
-			value = value.subtract(amount);
+			UpdateFemininity(value.subtract(amount));
 			return oldFemininity.subtract(value);
 		}
 
-		public void SetFemininity(byte newValue)
+		internal void SetFemininity(byte newValue)
 		{
-			value = newValue;
-		}
-
-		public void Update(Femininity other)
-		{
-			value = other.value;
+			UpdateFemininity(newValue);
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -184,11 +213,60 @@ namespace CoC.Backend.BodyParts
 			value = value;
 			return true;
 		}
+
+		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
+		{
+			if (femininityLimitedByGender)
+			{
+
+				short diff = UpdateFemininity(value);
+				if (isPlayer && diff != 0)
+				{
+					return FemininityChangedDueToGenderHormonesStr(diff);
+				}
+			}
+			return "";
+		}
+
+		private short UpdateFemininity(byte newValue)
+		{
+			//set current min, max based on gender;
+			byte minVal, maxVal;
+			switch (currentGender)
+			{
+				case Gender.MALE:
+					minVal = MOST_MASCULINE; maxVal = FEMININE; break;
+				case Gender.FEMALE:
+					minVal = MASCULINE; maxVal = MOST_FEMININE; break;
+				case Gender.GENDERLESS:
+				case Gender.HERM:
+					minVal = HERM_GENDERLESS_MIN; maxVal = HERM_GENDERLESS_MAX; break;
+				default:
+					throw new ArgumentException("Current gender not recognized");
+			}
+			byte oldValue = value;
+			value = Utils.Clamp2(newValue, minVal, maxVal);
+			return value.diff(oldValue);
+		}
+
+		private PerkStatBonusGetter perkStats;
+
+		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		{
+			perkStats = getter;
+		}
+		internal void DoLateInit(Gender currentGender, BasePerkModifiers statModifiers)
+		{
+			if (statModifiers.femininityLockedByGender)
+			{
+				UpdateFemininity(value);
+			}
+		}
 	}
 
 	//it wraps a byte. I dunno. 
 	//now capping max base fertility to 75. Perks could boost this past the base 75 value. 
-	public sealed class Fertility: SimpleSaveablePart<Fertility>,  IBaseStatPerkAware
+	public sealed class Fertility : SimpleSaveablePart<Fertility>, IBaseStatPerkAware
 	{
 		public const byte MAX_TOTAL_FERTILITY = byte.MaxValue - 5;
 		public const byte MAX_BASE_FERTILITY = 75;
@@ -204,41 +282,45 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _baseValue;
 
-		public byte increaseFertility(byte amount = 1)
+		public byte IncreaseFertility(byte amount = 1)
 		{
 			byte oldAmount = baseValue;
 			baseValue = baseValue.add(amount);
 			return baseValue.subtract(oldAmount);
 		}
 
-		public byte decreaseFertility(byte amount = 1)
+		public byte DecreaseFertility(byte amount = 1)
 		{
 			byte oldAmount = baseValue;
 			baseValue = baseValue.subtract(amount);
 			return oldAmount.subtract(baseValue);
 		}
 
-		public void setFertility(byte newValue)
+		public void SetFertility(byte newValue)
 		{
 			baseValue = newValue;
 		}
 
-		private Fertility()
+		private Fertility(Gender gender, bool artificiallyInfertile = false)
 		{
+#warning fix me!
 			baseValue = 5;
 		}
 
-		internal static Fertility GenerateDefault()
+		private Fertility(byte value, bool artificiallyInfertile = false)
 		{
-			return new Fertility();
+#warning fix me!
+			baseValue = value;
 		}
 
-		internal static Fertility Generate(byte fertility)
+		internal static Fertility GenerateDefault(Gender gender, bool artificiallyInfertile = false)
 		{
-			return new Fertility()
-			{
-				baseValue = fertility
-			};
+			return new Fertility(gender, artificiallyInfertile);
+		}
+
+		internal static Fertility Generate(byte fertility, bool artificiallyInfertile = false)
+		{
+			return new Fertility(fertility, artificiallyInfertile);
 		}
 
 		public byte TotalFertility => Math.Min(baseValue.add(perkData?.Invoke().bonusFertility ?? 0), MAX_TOTAL_FERTILITY);
@@ -347,6 +429,60 @@ namespace CoC.Backend.BodyParts
 			return cupText[(int)cupSize];
 		}
 
+		public static float MinThreshold(this LactationStatus lactationStatus)
+		{
+			switch (lactationStatus)
+			{
+				case LactationStatus.EPIC:
+					return Genitals.EPIC_LACTATION_THRESHOLD;
+				case LactationStatus.HEAVY:
+					return Genitals.HEAVY_LACTATION_THRESHOLD;
+				case LactationStatus.STRONG:
+					return Genitals.STRONG_LACTATION_THRESHOLD;
+				case LactationStatus.MODERATE:
+					return Genitals.MODERATE_LACTATION_THRESHOLD;
+				case LactationStatus.LIGHT:
+					return Genitals.LACTATION_THRESHOLD;
+				case LactationStatus.NOT_LACTATING:
+				default:
+					return 0;
+			}
+		}
 
+		public static PiercingJewelry GenerateCockJewelry(this Cock cock, CockPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (cock.cockPiercings.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
+		}
+
+		public static PiercingJewelry GenerateClitJewelry(this Clit clit, ClitPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (clit.clitPiercings.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
+		}
+
+		public static PiercingJewelry GenerateLabiaJewelry(this Vagina vagina, LabiaPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (vagina.labiaPiercings.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
+		}
+
+		public static PiercingJewelry GenerateNippleJewelry(this Breasts breasts, NipplePiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (breasts.nipples.nipplePiercing.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
+		}
 	}
 }

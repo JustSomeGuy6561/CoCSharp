@@ -81,7 +81,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SpiderPlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermis.FullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves from a distance.";
+			return arm.epidermis.fullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves from a distance.";
 		}
 		private static string SpiderTransformStr(Arms oldArms, Player player)
 		{
@@ -118,7 +118,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string BeePlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermis.FullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves ended with a yellow fuzz from a distance.";
+			return arm.epidermis.fullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves ended with a yellow fuzz from a distance.";
 		}
 		private static string BeeTransformStr(Arms oldArms, Player player)
 		{
@@ -258,7 +258,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SalamanderPlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermis.FullDescription() + "cover your arms from the biceps down, and your fingernails are now " + arm.hands.fullDescription();
+			return arm.epidermis.fullDescription() + "cover your arms from the biceps down, and your fingernails are now " + arm.hands.fullDescription();
 		}
 		private static string SalamanderTransformStr(Arms oldArms, Player player)
 		{
@@ -284,7 +284,7 @@ namespace CoC.Backend.BodyParts
 		private static string WolfPlayerStr(Arms arm, Player player)
 		{
 			return "Your arms are shaped like a wolf's, overly muscular at your shoulders and biceps before quickly slimming down."
-				+ " They're covered in " + arm.epidermis.FullDescription() + " and end in paws with just enough flexibility to be used as hands."
+				+ " They're covered in " + arm.epidermis.fullDescription() + " and end in paws with just enough flexibility to be used as hands."
 				+ " They're rather difficult to move in directions besides back and forth.";
 		}
 		//based off dog. it was never implemented in game, even though there was text for the PC having them. 
@@ -338,10 +338,10 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CockatricePlayerStr(Arms arm, Player player)
 		{
-			return "Your arms are covered in " + arm.epidermis.FullDescription()
+			return "Your arms are covered in " + arm.epidermis.fullDescription()
 		  + " from the shoulder down to the elbow where they stop in a fluffy cuff. A handful of long feathers grow from your"
 		  + " elbow in the form of vestigial wings, and while they may not let you fly, they certainly help you jump. Your lower"
-		  + " arm is coated in " + arm.secondaryEpidermis.FullDescription() + " and your fingertips terminate in " + arm.hands.shortDescription() + ".";
+		  + " arm is coated in " + arm.secondaryEpidermis.fullDescription() + " and your fingertips terminate in " + arm.hands.shortDescription() + ".";
 		}
 		private static string CockatriceTransformStr(Arms oldArms, Player player)
 		{
@@ -365,7 +365,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RedPandaFullDesc(Arms arm)
 		{
-			return arm.epidermis.FullDescription() + "panda-arms";
+			return arm.epidermis.fullDescription() + "panda-arms";
 		}
 		private static string RedPandaPlayerStr(Arms arm, Player player)
 		{
@@ -390,7 +390,7 @@ namespace CoC.Backend.BodyParts
 		private static string FerretPlayerStr(Arms arm, Player player)
 		{
 			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms, turning into "
-				+ arm.secondaryEpidermis.FullDescription() + " from elbows to paws."
+				+ arm.secondaryEpidermis.fullDescription() + " from elbows to paws."
 				+ " The latter have " + arm.hands.fullDescription();
 		}
 		private static string FerretTransformStr(Arms oldArms, Player player)

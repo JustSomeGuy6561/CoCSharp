@@ -19,12 +19,22 @@ namespace CoC.Backend.Perks
 	public abstract class PerkBase
 	{
 		//the creature that has this perk. Note that this is NULL until the perk is activated by the creature.
-		protected CombatCreature sourceCreature { get; private set; } = null;
+		protected Creature sourceCreature { get; private set; } = null;
 		//Giving you these means you have access to all the perks the creature currently has, and the base stat multipliers. They should only be used in this context; don't misuse this.
 		protected PerkCollection basicData => sourceCreature.perks; //gives you access to hasPerk. allows you to hard-code other checks, to prevent mutual exclusives.
-		protected PassiveBaseStatModifiers baseModifiers => basicData.baseModifiers; //allows you to update base stats. 
+		public BasePerkModifiers baseModifiers => basicData.baseModifiers; //allows you to update base stats. 
 
-		internal void Activate(CombatCreature source)
+		public readonly SimpleDescriptor name;
+		public readonly SimpleDescriptor hasPerkText;
+
+
+		public PerkBase(SimpleDescriptor perkName, SimpleDescriptor havePerkText)
+		{
+			name = perkName;
+			hasPerkText = havePerkText;
+		}
+
+		internal void Activate(Creature source)
 		{
 			sourceCreature = source;
 			OnActivation();
@@ -42,5 +52,7 @@ namespace CoC.Backend.Perks
 		//called when the perk is removed from the perk collection. sourceCreature is guarenteed to be NOT NULL.
 		//after this is called, sourceCreature WILL BE NULL. 
 		protected internal abstract void OnRemoval();
+
+		protected internal abstract bool KeepOnAscension { get; }
 	}
 }

@@ -36,6 +36,10 @@ namespace CoC
 			return (byte)(first - second);
 		}
 		//there's probably some unchecked magic i can do here. not gonna even try.
+		public static short diff(this byte first, byte second)
+		{
+			return (short)(first - second);
+		}
 		public static byte delta(this byte first, sbyte second)
 		{
 			if (second >= 0)

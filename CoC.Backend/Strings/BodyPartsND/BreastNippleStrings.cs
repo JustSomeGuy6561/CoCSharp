@@ -47,6 +47,28 @@ namespace   CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private string NipplesLessInvertedDueToPiercingInThem(bool hasOtherBreastRows)
+		{
+			string otherStr = "";
+			if (hasOtherBreastRows)
+			{
+				otherStr = " A quick check tells you your remaining nipples seem to have followed suit. That's curious.";
+			}
+			return "You notice the tug from the jewelry in your " + shortDesc() + " has lessened slightly, and after close inspection you can confirm your nipples are less inverted." + otherStr;
+		}
+
+		private string NipplesNoLongerInvertedDueToPiercingInThem(bool hasOtherBreastRows)
+		{
+			string otherStr = "";
+			if (hasOtherBreastRows)
+			{
+				otherStr = " Not to be outdone, your remaining nipples seem to have followed suit.";
+			}
+			return "You pause for a moment as your nipples seem a bit more sensitive than normal. You quickly locate the cause - it seems your piercings have done their work, " +
+				"as your nipples are no longer inverted!" + otherStr;
+			
+		}
 		//	private string fullDesc(Creature creature)
 		//	{
 		//		var description:String = "";

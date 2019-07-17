@@ -2,19 +2,35 @@
 //Description:
 //Author: JustSomeGuy
 //3/21/2019, 5:56 AM
+using CoC.Backend.Areas;
 using CoC.Backend.Creatures;
+using CoC.Backend.Perks;
 using CoC.Backend.SaveData;
+using System;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.Engine
 {
 	public static class BackendInitializer
 	{
-		public static void Init()
+		//rundown: to allow you to do whatever you want in the frontend, some data needs to be passed back here. 
+
+		public static void Init(
+			Action<Action> DoNext, Action<string> OutputText, //Time Engine
+			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, //AreaEngine
+			BasePerkModifiers perkModifiers, ReadOnlyDictionary<Type, Func<PerkBase>> perkList, ReadOnlyDictionary<Type, Func<AttainablePerk>> attainablePerks, //Perks
+			ReadOnlyCollection<GameDifficulty> gameDifficulties) //Game Difficulty Engine.
 		{
-			SaveSystem.AddGlobalSave(new BackendGlobalData());
+			//initialize the saves. 
 			SaveSystem.AddSessionSave(new BackendSessionData());
-			Player initialPlayer = new Player(creator: null);
-			BackendSessionData.data.player = initialPlayer;
+			SaveSystem.AddGlobalSave(new BackendGlobalData());
+			#warning Add method to read file and load global backend game data. 
+
+
+
+			//initialize game engine.
+			GameEngine.InitializeEngine(DoNext, OutputText, gamePlaces, gameLocations, gameDifficulties);
+
 		}
 	}
 }

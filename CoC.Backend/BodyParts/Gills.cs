@@ -6,11 +6,11 @@ using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
 //using CoC.
 namespace CoC.Backend.BodyParts
 {
-	
+
 	public sealed class Gills : BehavioralSaveablePart<Gills, GillType>
 	{
 		private Gills()
@@ -19,7 +19,8 @@ namespace CoC.Backend.BodyParts
 		}
 		public override GillType type { get; protected set; }
 
-		public override bool isDefault => type == GillType.NONE;
+		public static GillType defaultType => GillType.NONE;
+		public override bool isDefault => type == defaultType;
 
 
 		internal static Gills GenerateDefault()
@@ -32,18 +33,18 @@ namespace CoC.Backend.BodyParts
 		{
 			return new Gills()
 			{
-				type = gillType
+				type = gillType ?? throw new ArgumentNullException(nameof(gillType)),
 			};
 		}
 
-		internal bool UpdateGills(GillType gillType)
+		internal override bool UpdateType(GillType newType)
 		{
-			if (type == gillType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
-			type = gillType;
-			return type == gillType;
+			type = newType;
+			return type == newType;
 
 		}
 
@@ -69,6 +70,7 @@ namespace CoC.Backend.BodyParts
 	{
 		private static int indexMaker = 0;
 		private static readonly List<GillType> gills = new List<GillType>();
+		public static readonly ReadOnlyCollection<GillType> availableTypes = new ReadOnlyCollection<GillType>(gills);
 		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<Gills> fullDesc, TypeAndPlayerDelegate<Gills> playerDesc,
 			ChangeType<Gills> transform, RestoreType<Gills> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{

@@ -6,11 +6,13 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -40,18 +42,22 @@ namespace CoC.Backend.BodyParts
 				if (_type != value)
 				{
 					_tailCount = value.initialTailCount;
-
+					if (!value.supportsTailPiercing && tailPiercings.isPierced)
+					{
+						tailPiercings.Reset();
+					}
 				}
 				_type = value;
 			}
 		}
 		private TailType _type;
-		public override bool isDefault => type == TailType.NONE;
+		public static TailType defaultType => TailType.NONE;
+		public override bool isDefault => type == defaultType;
 
 		private Tail()
 		{
-			type = TailType.NONE;
-			tailPiercings = new Piercing<TailPiercings>(SUPPORTED_TAIL_PIERCINGS, PiercingLocationUnlocked);
+			_type = TailType.NONE;
+			tailPiercings = new Piercing<TailPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
 		internal static Tail GenerateDefault()
@@ -67,13 +73,22 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal bool UpdateTail(TailType tailType)
+		internal static Tail GenerateWithCount(TailType tailType, byte count)
 		{
-			if (type == tailType)
+			return new Tail()
+			{
+				type = tailType,
+				tailCount = count
+			};
+		}
+
+		internal override bool UpdateType(TailType newType)
+		{
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
-			type = tailType;
+			type = newType;
 			return true;
 		}
 
@@ -85,6 +100,17 @@ namespace CoC.Backend.BodyParts
 			}
 			tailCount++;
 			return true;
+		}
+
+		internal byte GrowMultipleAdditionalTails(byte amount = 1)
+		{
+			if (!type.hasMultipleTails || tailCount >= type.maxTailCount)
+			{
+				return 0;
+			}
+			byte oldCount = tailCount;
+			tailCount = tailCount.add(amount);
+			return tailCount.subtract(oldCount);
 		}
 
 		internal override bool Restore()
@@ -115,6 +141,11 @@ namespace CoC.Backend.BodyParts
 			return type.supportsTailPiercing && piercingFetish;
 		}
 
+		private JewelryType SupportedJewelryByLocation(TailPiercings piercingLocation)
+		{
+			return JewelryType.RING;
+		}
+
 		void IBodyAware.GetBodyData(BodyDataGetter getter)
 		{
 			bodyData = getter;
@@ -135,7 +166,8 @@ namespace CoC.Backend.BodyParts
 	public abstract partial class TailType : SaveableBehavior<TailType, Tail>
 	{
 		private static int indexMaker = 0;
-		private static List<TailType> tails = new List<TailType>();
+		private static readonly List<TailType> tails = new List<TailType>();
+		public static readonly ReadOnlyCollection<TailType> availableTypes = new ReadOnlyCollection<TailType>(tails);
 		//public readonly AttackBase attack;
 		public readonly bool mutable;
 
@@ -154,7 +186,7 @@ namespace CoC.Backend.BodyParts
 
 		internal virtual AttackBase attack => AttackBase.NO_ATTACK;
 		internal virtual bool canAttackWith => attack != AttackBase.NO_ATTACK;
-		
+
 		public bool hasMultipleTails => maxTailCount > 1;
 
 		public virtual bool supportsTailPiercing => false;
@@ -248,6 +280,7 @@ namespace CoC.Backend.BodyParts
 		private class FurryTail : TailType
 		{
 			public readonly FurColor defaultFur;
+			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 			public FurryTail(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable,
 				SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
 				RestoreType<Tail> restore) : base(furType, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
@@ -270,13 +303,15 @@ namespace CoC.Backend.BodyParts
 						color = new FurColor(bodyData.hairColor);
 					}
 				}
-				return new EpidermalData(epidermisType, color, FurTexture.NONDESCRIPT);
+				return new EpidermalData(primaryEpidermis, color, FurTexture.NONDESCRIPT);
 			}
 		}
 
 		public class ToneTail : TailType
 		{
 			public readonly Tones defaultTone;
+			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
+
 			public ToneTail(ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable,
 		SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
 		RestoreType<Tail> restore) : base(toneType, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
@@ -287,15 +322,15 @@ namespace CoC.Backend.BodyParts
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
 				Tones color = mutable ? bodyData.main.tone : defaultTone;
-				return new EpidermalData(epidermisType, color, SkinTexture.NONDESCRIPT);
+				return new EpidermalData(primaryEpidermis, color, SkinTexture.NONDESCRIPT);
 			}
 		}
 
 		private class FurryTailWithWhip : FurryTail
 		{
-			public FurryTailWithWhip(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, 
-				TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore) 
-				: base(furType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore)	{ }
+			public FurryTailWithWhip(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc,
+				TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
+				: base(furType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase attack => TAIL_WHIP;
 		}
@@ -303,8 +338,8 @@ namespace CoC.Backend.BodyParts
 		private class ToneTailWithWhip : ToneTail
 		{
 			public ToneTailWithWhip(ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc,
-				TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore) 
-				: base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore) {}
+				TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
+				: base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase attack => TAIL_WHIP;
 		}
@@ -312,7 +347,7 @@ namespace CoC.Backend.BodyParts
 		private class SalamanderTail : ToneTail
 		{
 			public SalamanderTail() : base(EpidermisType.SCALES, Species.SALAMANDER.defaultTailTone, false, SalamanderShortDesc, SalamanderFullDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr)
-			{}
+			{ }
 
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new TailSlap();
@@ -322,8 +357,8 @@ namespace CoC.Backend.BodyParts
 		{
 			internal override AttackBase attack => _attack;
 			private readonly TailSlam _attack;
-			public ToneTailWithSlam(byte attackStrength, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, SimpleDescriptor shortDesc, 
-				DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore) 
+			public ToneTailWithSlam(byte attackStrength, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, SimpleDescriptor shortDesc,
+				DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
 				: base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				_attack = new TailSlam(shortDesc, attackStrength);
@@ -348,7 +383,7 @@ namespace CoC.Backend.BodyParts
 
 		private class FoxTail : FurryTail
 		{
-			public FoxTail() : base(EpidermisType.FUR, Species.FOX.defaultTailFur, true, FoxShortDesc, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) {}
+			public FoxTail() : base(EpidermisType.FUR, Species.FOX.defaultTailFur, true, FoxShortDesc, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
 			public override byte maxTailCount => 9;
 		}
 
@@ -361,6 +396,13 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	public static class TailHelpers
+	{
+		public static PiercingJewelry GenerateTailJewelry(this Body body, JewelryMaterial jewelryMaterial)
+		{
+				return new GenericPiercing(JewelryType.RING, jewelryMaterial);
+		}
+	}
 
 
 }

@@ -50,7 +50,7 @@ namespace CoC.Backend.BodyParts
 		{
 			length = clitSize;
 			omnibusClit = false;
-			clitPiercings = new Piercing<ClitPiercings>(SUPPORTED_CLIT_PIERCINGS, PiercingLocationUnlocked);
+			clitPiercings = new Piercing<ClitPiercings>(PiercingLocationUnlocked, JewelryTypeSupported);
 		}
 
 		public static Clit Generate()
@@ -63,11 +63,11 @@ namespace CoC.Backend.BodyParts
 			return new Clit(clitLength);
 		}
 
-		public static Clit GenerateOmnibusClit(float clitLength = 5.0f)
+		public static Clit GenerateOmnibusClit(float clitLength = 2.0f)
 		{
-			if (clitLength < 5)
+			if (clitLength < 2)
 			{
-				clitLength = 5;
+				clitLength = 2;
 			}
 			return new Clit(clitLength)
 			{
@@ -81,10 +81,18 @@ namespace CoC.Backend.BodyParts
 			{
 				return null;
 			}
-			clitCock.SetLength(length + 4);
+
+			if (clitCock == null)
+			{
+				clitCock = Cock.GenerateClitCock(this);
+			}
+			else
+			{
+				clitCock.SetLength(length + 5);
+			}
 			return clitCock;
 		}
-		private Cock clitCock = Cock.GenerateClitCock();
+		private Cock clitCock = null;
 		public void Restore()
 		{
 			length = MIN_CLIT_SIZE;
@@ -155,7 +163,7 @@ namespace CoC.Backend.BodyParts
 			length = length;
 			return clitPiercings.Validate(correctInvalidData);
 		}
-
+		#region Piercing Related
 		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
 		{
 
@@ -185,7 +193,17 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
+		private JewelryType JewelryTypeSupported(ClitPiercings piercingLocation)
+		{
+			return SUPPORTED_CLIT_PIERCINGS;
+		}
 
+		public bool isPierced => clitPiercings.isPierced;
+
+		public bool wearingJewelry => clitPiercings.wearingJewelry;
+
+
+		#endregion
 		#region Grow/Shrinkable
 		bool IGrowShrinkable.CanGrowPlus()
 		{
@@ -225,13 +243,15 @@ namespace CoC.Backend.BodyParts
 		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			basePerkData = getter;
+		}
 
-			PassiveBaseStatModifiers data = getter();
-			float minLength = data.MinNewClitSize + data.NewClitSizeDelta;
+		internal void DoLateInit(BasePerkModifiers statModifiers)
+		{
+			float minLength = statModifiers.MinNewClitSize + statModifiers.NewClitSizeDelta;
 			if (length < minLength)
 			{
 				length = minLength;
-			} 
+			}
 		}
 
 		private IBaseStatPerkAware perkAware => this;

@@ -205,6 +205,10 @@ namespace CoC.Backend.Tools
 
 			return numRemoved;
 		}
+
+		//allows you to iterate and remove at the same time. 
+		public LinkedListNode<T> First => order.First;
+		public LinkedListNode<T> Last => order.Last;
 		#endregion
 		#region ISet
 

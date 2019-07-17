@@ -6,12 +6,14 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -28,9 +30,9 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class Face : BehavioralSaveablePart<Face, FaceType>, IBodyAware, ILotionable, ICanAttackWith
 	{
-		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING;
-		private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.HORSESHOE;
-		private const JewelryType SUPPORTED_EYEBROW_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING;
+		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
+		//private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.HORSESHOE; //can't use as nose is a pain.
+		private const JewelryType SUPPORTED_EYEBROW_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
 
 		public readonly Piercing<LipPiercingLocation> lipPiercings;
 		public readonly Piercing<NosePiercingLocation> nosePiercings;
@@ -66,73 +68,68 @@ namespace CoC.Backend.BodyParts
 
 		Tones epidermisTone => bodyData().mainSkin.tone;
 
-		private Face()
+		private Face(FaceType faceType)
 		{
-			type = FaceType.HUMAN;
+			type = faceType ?? throw new ArgumentNullException(nameof(faceType));
 			isFullMorph = false;
-			lipPiercings = new Piercing<LipPiercingLocation>(SUPPORTED_LIP_JEWELRY, LipPiercingUnlocked);
-			nosePiercings = new Piercing<NosePiercingLocation>(SUPPORTED_NOSE_JEWELRY, NosePiercingUnlocked);
-			eyebrowPiercings = new Piercing<EyebrowPiercingLocation>(SUPPORTED_EYEBROW_JEWELRY, EyebrowPiercingUnlocked);
+			lipPiercings = new Piercing<LipPiercingLocation>(LipPiercingUnlocked, LipSupportedJewelry);
+			nosePiercings = new Piercing<NosePiercingLocation>(NosePiercingUnlocked, NoseSupportedJewelryByLocation);
+			eyebrowPiercings = new Piercing<EyebrowPiercingLocation>(EyebrowPiercingUnlocked, EyebrowSupportedJewelry);
 		}
 
-		public override bool isDefault => type == FaceType.HUMAN;
+		public static FaceType defaultType => FaceType.HUMAN;
+		public override bool isDefault => type == defaultType;
 
 
 		internal static Face GenerateDefault()
 		{
-			return new Face();
+			return new Face(defaultType);
 		}
 
 		internal static Face GenerateDefaultOfType(FaceType faceType)
 		{
-			return new Face()
-			{
-				type = faceType
-			};
+			return new Face(faceType);
 		}
 
 		internal static Face GenerateWithMorph(FaceType faceType, bool fullMorph)
 		{
-			return new Face()
+			return new Face(faceType)
 			{
-				type = faceType,
-				isFullMorph = faceType.hasSecondLevel ? fullMorph : false
+				isFullMorph = faceType.hasSecondLevel ? fullMorph : false,
 			};
 		}
 
 		internal static Face GenerateWithComplexion(FaceType faceType, SkinTexture complexion)
 		{
-			return new Face()
+			return new Face(faceType)
 			{
-				type = faceType,
 				skinTexture = complexion
 			};
 		}
 
 		internal static Face GenerateWithSizeAndComplexion(FaceType faceType, bool fullMorph, SkinTexture complexion)
 		{
-			return new Face()
+			return new Face(faceType)
 			{
-				type = faceType,
 				skinTexture = complexion,
 				isFullMorph = faceType.hasSecondLevel ? fullMorph : false,
 			};
 		}
 
-		internal bool UpdateFace(FaceType faceType)
+		internal override bool UpdateType(FaceType newType)
 		{
-			if (type == faceType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
-			type = faceType;
+			type = newType;
 			isFullMorph = type.MorphStrengthPostTransform(isFullMorph);
 			return true;
 		}
 
 		internal bool UpdateFaceWithMorph(FaceType faceType, bool fullMorph)
 		{
-			if (type == faceType)
+			if (faceType == null || type == faceType)
 			{
 				return false;
 			}
@@ -143,7 +140,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateFaceWithComplexion(FaceType faceType, SkinTexture complexion)
 		{
-			if (type == faceType)
+			if (faceType == null || type == faceType)
 			{
 				return false;
 			}
@@ -154,7 +151,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateFaceWithMorphAndComplexion(FaceType faceType, bool fullMorph, SkinTexture complexion)
 		{
-			if (type == faceType)
+			if (faceType == null || type == faceType)
 			{
 				return false;
 			}
@@ -230,14 +227,38 @@ namespace CoC.Backend.BodyParts
 		{
 			return true;
 		}
+
+		private JewelryType LipSupportedJewelry(LipPiercingLocation piercingLocation)
+		{
+			return SUPPORTED_LIP_JEWELRY;
+		}
+
 		private bool NosePiercingUnlocked(NosePiercingLocation piercingLocation)
 		{
 			return true;
 		}
 
+		private JewelryType NoseSupportedJewelryByLocation(NosePiercingLocation piercingLocation)
+		{
+			switch (piercingLocation)
+			{
+				case NosePiercingLocation.BRIDGE:
+					return JewelryType.BARBELL_STUD;
+				case NosePiercingLocation.SEPTIMUS:
+					return JewelryType.HORSESHOE | JewelryType.RING;
+				default:
+					return JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
+			}
+		}
+
 		private bool EyebrowPiercingUnlocked(EyebrowPiercingLocation piercingLocation)
 		{
 			return true;
+		}
+
+		private JewelryType EyebrowSupportedJewelry(EyebrowPiercingLocation piercingLocation)
+		{
+			return SUPPORTED_EYEBROW_JEWELRY;
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -316,7 +337,8 @@ namespace CoC.Backend.BodyParts
 
 	public abstract partial class FaceType : SaveableBehavior<FaceType, Face>
 	{
-		private static List<FaceType> faces = new List<FaceType>();
+		private static readonly List<FaceType> faces = new List<FaceType>();
+		private static readonly ReadOnlyCollection<FaceType> availableTypes = new ReadOnlyCollection<FaceType>(faces);
 		private static int indexMaker = 0;
 
 		public readonly bool hasSecondLevel;
@@ -428,6 +450,7 @@ namespace CoC.Backend.BodyParts
 
 		private class ToneFace : FaceType
 		{
+			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 			public ToneFace(ToneBasedEpidermisType epidermisType, SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr,
 				ChangeType<Face> transform, RestoreType<Face> restore) : base(epidermisType, shortDesc, fullDesc, playerStr, transform, restore) { }
 
@@ -439,7 +462,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
-				return new EpidermalData(epidermisType, bodyData.mainSkin.tone, complexion);
+				return new EpidermalData(primaryEpidermis, bodyData.mainSkin.tone, complexion);
 			}
 		}
 
@@ -466,13 +489,15 @@ namespace CoC.Backend.BodyParts
 			{
 				Tones tone = !bodyData.supplementary.tone.isEmpty ? bodyData.supplementary.tone : defaultSecondaryTone;
 				SkinTexture texture = bodyData.supplementary.usesTone ? bodyData.supplementary.skinTexture : SkinTexture.NONDESCRIPT;
-				return new EpidermalData(epidermisType, tone, texture);
+				return new EpidermalData(primaryEpidermis, tone, texture);
 			}
 		}
 
 		private class FurFace : FaceType
 		{
 			public readonly FurColor defaultColor;
+
+			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 
 			public FurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor,
 				SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, TypeAndPlayerDelegate<Face> playerStr, ChangeType<Face> transform,
@@ -501,7 +526,7 @@ namespace CoC.Backend.BodyParts
 				{
 					color = new FurColor(bodyData.activeHairColor);
 				}
-				return new EpidermalData(epidermisType, color, texture);
+				return new EpidermalData(primaryEpidermis, color, texture);
 			}
 		}
 
@@ -531,7 +556,7 @@ namespace CoC.Backend.BodyParts
 				FurColor color = secondaryDefaultColor;
 				FurTexture texture = FurTexture.NONDESCRIPT;
 				////make sure the fur color is not the same as the primary, and that it is valid.s
-				if (!bodyData.supplementary.fur.isEmpty && bodyData.supplementary.fur != primary.fur)
+				if (!bodyData.supplementary.fur.isEmpty && !bodyData.supplementary.fur.Equals(primary.fur))
 				{
 					color = bodyData.supplementary.fur;
 					texture = bodyData.supplementary.furTexture;
@@ -542,7 +567,7 @@ namespace CoC.Backend.BodyParts
 					color = new FurColor(bodyData.hairColor);
 				}
 
-				return new EpidermalData(epidermisType, color, texture);
+				return new EpidermalData(primaryEpidermis, color, texture);
 			}
 		}
 
@@ -594,7 +619,7 @@ namespace CoC.Backend.BodyParts
 
 		private sealed class CockatriceFace : FurFace
 		{
-			private readonly EpidermisType secondaryEpidermis = EpidermisType.SCALES;
+			private readonly ToneBasedEpidermisType secondaryEpidermis = EpidermisType.SCALES;
 			private readonly Tones defaultUnderTone = Species.COCKATRICE.defaultScaleTone;
 			public CockatriceFace() : base(EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, CockatriceShortDesc,
 				CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
@@ -626,8 +651,38 @@ namespace CoC.Backend.BodyParts
 				{
 					color = new FurColor(bodyData.activeHairColor);
 				}
-				return new EpidermalData(epidermisType, color, FurTexture.SOFT);
+				return new EpidermalData(primaryEpidermis, color, FurTexture.SOFT);
 			}
+		}
+	}
+
+	public static class FaceHelpers
+	{
+		public static PiercingJewelry GenerateEyebrowJewelry(this Face face, EyebrowPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (face.eyebrowPiercings.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
+		}
+
+		public static PiercingJewelry GenerateLipJewelry(this Face face, LipPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (face.lipPiercings.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
+		}
+
+		public static PiercingJewelry GenerateNoseJewelry(this Face face, NosePiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (face.nosePiercings.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
 		}
 	}
 }

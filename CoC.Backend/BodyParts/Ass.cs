@@ -33,11 +33,11 @@ namespace CoC.Backend.BodyParts
 
 		private byte buttTightenTimer = 0;
 
-		public AnalLooseness minLooseness { get; private set; } = AnalLooseness.NORMAL;
-		public AnalLooseness maxLooseness { get; private set; } = AnalLooseness.GAPING;
+		public AnalLooseness minLooseness => baseStats?.Invoke().minAnalLooseness ?? AnalLooseness.NORMAL;
+		public AnalLooseness maxLooseness => baseStats?.Invoke().maxAnalLooseness ?? AnalLooseness.GAPING;
 
-		public AnalWetness minWetness { get; private set; } = AnalWetness.NORMAL;
-		public AnalWetness maxWetness { get; private set; } = AnalWetness.SLIME_DROOLING;
+		public AnalWetness minWetness => baseStats?.Invoke().minAnalWetness ?? AnalWetness.NORMAL;
+		public AnalWetness maxWetness => baseStats?.Invoke().maxAnalWetness ?? AnalWetness.SLIME_DROOLING;
 
 		public AnalWetness wetness
 		{
@@ -192,117 +192,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
-		{
-			AnalLooseness looseness = minLooseness;
-			minLooseness = minLooseness.ByteEnumAdd(amount);
-			if (minLooseness > maxLooseness)
-			{
-				if (forceIncreaseMax)
-				{
-					maxLooseness = minLooseness;
-				}
-				else
-				{
-					minLooseness = maxLooseness;
-				}
-			}
-			return minLooseness - looseness;
-		}
-		internal byte DecreaseMinimumLooseness(byte amount = 1)
-		{
-			AnalLooseness looseness = minLooseness;
-			minLooseness = minLooseness.ByteEnumSubtract(amount);
-			return looseness - minLooseness;
-		}
-		internal void SetMinLoosness(AnalLooseness newValue)
-		{
-			minLooseness = newValue;
-		}
 
-		internal byte IncreaseMaximumLooseness(byte amount = 1)
-		{
-			AnalLooseness looseness = maxLooseness;
-			maxLooseness = maxLooseness.ByteEnumSubtract(amount);
-			return maxLooseness - looseness;
-		}
-		internal byte DecreaseMaximumLooseness(byte amount = 1, bool forceDecreaseMin = false)
-		{
-			AnalLooseness looseness = minLooseness;
-			maxLooseness = maxLooseness.ByteEnumSubtract(amount);
-			if (minLooseness > maxLooseness)
-			{
-				if (forceDecreaseMin)
-				{
-					minLooseness = maxLooseness;
-				}
-				else
-				{
-					maxLooseness = minLooseness;
-				}
-			}
-			return looseness - maxLooseness;
-		}
-		internal void SetMaxLoosness(AnalLooseness newValue)
-		{
-			maxLooseness = newValue;
-		}
-
-
-		internal byte IncreaseMinimumWetness(byte amount = 1, bool forceIncreaseMax = false)
-		{
-			AnalWetness wetness = minWetness;
-			minWetness = minWetness.ByteEnumAdd(amount);
-			if (minWetness > maxWetness)
-			{
-				if (forceIncreaseMax)
-				{
-					maxWetness = minWetness;
-				}
-				else
-				{
-					minWetness = maxWetness;
-				}
-			}
-			return minWetness - wetness;
-		}
-		internal byte DecreaseMinimumWetness(byte amount = 1)
-		{
-			AnalWetness wetness = minWetness;
-			minWetness = minWetness.ByteEnumSubtract(amount);
-			return wetness - minWetness;
-		}
-		internal void SetMinWetness(AnalWetness newValue)
-		{
-			minWetness = newValue;
-		}
-		internal byte IncreaseMaximumWetness(byte amount = 1)
-		{
-			AnalWetness wetness = maxWetness;
-			maxWetness = maxWetness.ByteEnumSubtract(amount);
-			return maxWetness - wetness;
-		}
-		internal byte DecreaseMaximumWetness(byte amount = 1, bool forceDecreaseMin = false)
-		{
-			AnalWetness wetness = minWetness;
-			maxWetness = maxWetness.ByteEnumSubtract(amount);
-			if (minWetness > maxWetness)
-			{
-				if (forceDecreaseMin)
-				{
-					minWetness = maxWetness;
-				}
-				else
-				{
-					maxWetness = minWetness;
-				}
-			}
-			return wetness - maxWetness;
-		}
-		internal void SetMaxWetness(AnalWetness newValue)
-		{
-			maxWetness = newValue;
-		}
 		#endregion
 		//Alias these in the creature class, adding the relevant features not in Ass itself (knockup, orgasm)
 		#region Unique Functions
@@ -431,7 +321,6 @@ namespace CoC.Backend.BodyParts
 		{
 			baseStats = getter;
 		}
-
 		#endregion
 
 		#region Not Implemented - Ideas
@@ -446,6 +335,120 @@ namespace CoC.Backend.BodyParts
 		//	}
 		//}
 		//private byte _experience;
+
+		//minimum and maximum looseness/wetness are locked to perks. it's theoretically possible to not do that, but umm... fuck it. 
+
+		//internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
+		//{
+		//	AnalLooseness looseness = minLooseness;
+		//	minLooseness = minLooseness.ByteEnumAdd(amount);
+		//	if (minLooseness > maxLooseness)
+		//	{
+		//		if (forceIncreaseMax)
+		//		{
+		//			maxLooseness = minLooseness;
+		//		}
+		//		else
+		//		{
+		//			minLooseness = maxLooseness;
+		//		}
+		//	}
+		//	return minLooseness - looseness;
+		//}
+		//internal byte DecreaseMinimumLooseness(byte amount = 1)
+		//{
+		//	AnalLooseness looseness = minLooseness;
+		//	minLooseness = minLooseness.ByteEnumSubtract(amount);
+		//	return looseness - minLooseness;
+		//}
+		//internal void SetMinLoosness(AnalLooseness newValue)
+		//{
+		//	minLooseness = newValue;
+		//}
+
+		//internal byte IncreaseMaximumLooseness(byte amount = 1)
+		//{
+		//	AnalLooseness looseness = maxLooseness;
+		//	maxLooseness = maxLooseness.ByteEnumSubtract(amount);
+		//	return maxLooseness - looseness;
+		//}
+		//internal byte DecreaseMaximumLooseness(byte amount = 1, bool forceDecreaseMin = false)
+		//{
+		//	AnalLooseness looseness = minLooseness;
+		//	maxLooseness = maxLooseness.ByteEnumSubtract(amount);
+		//	if (minLooseness > maxLooseness)
+		//	{
+		//		if (forceDecreaseMin)
+		//		{
+		//			minLooseness = maxLooseness;
+		//		}
+		//		else
+		//		{
+		//			maxLooseness = minLooseness;
+		//		}
+		//	}
+		//	return looseness - maxLooseness;
+		//}
+		//internal void SetMaxLoosness(AnalLooseness newValue)
+		//{
+		//	maxLooseness = newValue;
+		//}
+
+
+		//internal byte IncreaseMinimumWetness(byte amount = 1, bool forceIncreaseMax = false)
+		//{
+		//	AnalWetness wetness = minWetness;
+		//	minWetness = minWetness.ByteEnumAdd(amount);
+		//	if (minWetness > maxWetness)
+		//	{
+		//		if (forceIncreaseMax)
+		//		{
+		//			maxWetness = minWetness;
+		//		}
+		//		else
+		//		{
+		//			minWetness = maxWetness;
+		//		}
+		//	}
+		//	return minWetness - wetness;
+		//}
+		//internal byte DecreaseMinimumWetness(byte amount = 1)
+		//{
+		//	AnalWetness wetness = minWetness;
+		//	minWetness = minWetness.ByteEnumSubtract(amount);
+		//	return wetness - minWetness;
+		//}
+		//internal void SetMinWetness(AnalWetness newValue)
+		//{
+		//	minWetness = newValue;
+		//}
+		//internal byte IncreaseMaximumWetness(byte amount = 1)
+		//{
+		//	AnalWetness wetness = maxWetness;
+		//	maxWetness = maxWetness.ByteEnumSubtract(amount);
+		//	return maxWetness - wetness;
+		//}
+		//internal byte DecreaseMaximumWetness(byte amount = 1, bool forceDecreaseMin = false)
+		//{
+		//	AnalWetness wetness = minWetness;
+		//	maxWetness = maxWetness.ByteEnumSubtract(amount);
+		//	if (minWetness > maxWetness)
+		//	{
+		//		if (forceDecreaseMin)
+		//		{
+		//			minWetness = maxWetness;
+		//		}
+		//		else
+		//		{
+		//			maxWetness = minWetness;
+		//		}
+		//	}
+		//	return wetness - maxWetness;
+		//}
+		//internal void SetMaxWetness(AnalWetness newValue)
+		//{
+		//	maxWetness = newValue;
+		//}
 		#endregion
 	}
 }

@@ -19,7 +19,7 @@ namespace CoC.Backend.BodyParts
 	public sealed partial class Balls : SimpleSaveablePart<Balls>, IGrowShrinkable, IBaseStatPerkAware //perks are handled by genitals - kinda. 
 	{
 		PerkStatBonusGetter perkData;
-		PassiveBaseStatModifiers modifiers => perkData();
+		BasePerkModifiers modifiers => perkData();
 
 		public const byte MAX_BALLS_SIZE = 30;
 		public const byte MIN_BALLS_SIZE = 1;
@@ -71,6 +71,11 @@ namespace CoC.Backend.BodyParts
 			{
 				setBalls(true, ballCount, ballSize);
 			}
+		}
+
+		internal static Balls GenerateDefault(bool hasBalls)
+		{
+			return new Balls(hasBalls);
 		}
 
 		//use this to initialize the balls object when the creature has balls.
@@ -337,6 +342,14 @@ namespace CoC.Backend.BodyParts
 		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			perkData = getter;
+		}
+
+		internal void DoLateInit(BasePerkModifiers statModifiers)
+		{
+			if (hasBalls && !uniBall)
+			{
+				setBalls(true, count, statModifiers.NewBallsDefaultSize.add(statModifiers.NewBallsSizeDelta));
+			}
 		}
 		#endregion
 		#region Helpers

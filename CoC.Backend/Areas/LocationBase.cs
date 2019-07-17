@@ -34,10 +34,12 @@ namespace CoC.Backend.Areas
 			triggerScenes = triggers;
 		}
 
-		public abstract int timesExplored { get; protected set; }
+		internal override void RunArea()
+		{
+			RollScene();
+		}
 
-
-		internal void RollScene()
+		protected virtual void RollScene()
 		{
 			Encounter currentScene;
 			//check trigger scenes, add them if not already in queue.

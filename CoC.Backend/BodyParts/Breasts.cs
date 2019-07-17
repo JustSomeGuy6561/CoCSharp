@@ -3,9 +3,13 @@
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Perks;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -18,6 +22,18 @@ namespace CoC.Backend.BodyParts
 		private float tinyTiddyMultiplier => modifierData().TitsShrinkMultiplier;
 		private bool makeBigTits => bigTiddyMultiplier > 1.1f;
 		private bool makeSmallTits => tinyTiddyMultiplier > 1.1f;
+
+		public float lactationMultiplier { get; private set; }
+
+		internal void SetLactation(float lactationAmount)
+		{
+			lactationMultiplier = lactationAmount;
+		}
+
+
+		public const byte NUM_BREASTS = 2;
+		public byte numBreasts => NUM_BREASTS;
+
 
 		public CupSize cupSize
 		{
@@ -56,7 +72,7 @@ namespace CoC.Backend.BodyParts
 			return new Breasts(gender.HasFlag(Gender.FEMALE));
 		}
 
-		internal static Breasts Generate(CupSize cup, float nippleLength)
+		internal static Breasts Generate(CupSize cup, float nippleLength, ReadOnlyDictionary<NipplePiercings, PiercingJewelry> piercings = null)
 		{
 			return new Breasts(cup, nippleLength);
 		}
@@ -186,6 +202,12 @@ namespace CoC.Backend.BodyParts
 		{
 			modifierData = getter;
 			nipples.GetBasePerkStats(getter);
+		}
+
+		internal void DoLateInit(BasePerkModifiers statModifiers)
+		{
+			cupSize = (CupSize)((byte)statModifiers.FemaleNewBreastDefaultCupSize).delta(statModifiers.FemaleNewBreastCupSizeDelta);
+			nipples.DoLateInit(statModifiers);
 		}
 	}
 }

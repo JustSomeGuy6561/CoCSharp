@@ -538,11 +538,11 @@ namespace CoC.Backend.BodyParts
 		private static string DragonPlayerStr(Tail tail, Player player)
 		{
 			if (tail.epidermis.epidermisType != tail.secondaryEpidermis.epidermisType
-				|| (tail.epidermis.usesFur && tail.epidermis.fur != tail.secondaryEpidermis.fur)
+				|| (tail.epidermis.usesFur && !tail.epidermis.fur.Equals(tail.secondaryEpidermis.fur))
 				|| (tail.epidermis.usesTone && tail.epidermis.tone != tail.secondaryEpidermis.tone))
 			{
-				return "A thick, muscular, reptilian tail covered in " + tail.epidermis.FullDescription() + " with "
-					+ tail.secondaryEpidermis.FullDescription() + " along its underside, almost as long as you are tall,"
+				return "A thick, muscular, reptilian tail covered in " + tail.epidermis.fullDescription() + " with "
+					+ tail.secondaryEpidermis.fullDescription() + " along its underside, almost as long as you are tall,"
 					+ " swishes slowly from side to side behind you. Its tip menaces with sharp spikes of bone, "
 					+ "and could easily cause serious harm with a good sweep.";
 			}

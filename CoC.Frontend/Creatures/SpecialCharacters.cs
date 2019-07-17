@@ -8,8 +8,11 @@ using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using CoC.Frontend.Items.Materials.Jewelry;
+using CoC.Frontend.Perks.Endowment;
+using CoC.Frontend.Perks.History;
 using CoC.Frontend.Strings.Items.Wearables.Piercings;
 using System;
 using System.Collections.Generic;
@@ -146,13 +149,16 @@ namespace CoC.Frontend.Creatures
 				hipSize = 17,
 				buttSize = 17,
 				tailType = TailType.DEMONIC,
-				lowerBodyType = LowerBodyType.DEMONIC_HIGH_HEELS
+				lowerBodyType = LowerBodyType.DEMONIC_HIGH_HEELS,
 
 				////Equipment: Starts with spiked fist
 				//creator.setWeapon(weapons.S_GAUN0);
 				////Perks: Fighter and Lotsa Jizz"	Annetta
-				//creator.createPerk(PerkLib.HistoryFighter, 0, 0, 0, 0);
-				//creator.createPerk(PerkLib.MessyOrgasms, 1.25, 0, 0, 0);
+				perks = new List<Backend.Perks.PerkBase>()
+				{
+					new Fighter(),
+					new MessyOrgasms(),
+				},
 			};
 
 		}
@@ -164,7 +170,7 @@ namespace CoC.Frontend.Creatures
 			//(on a side note how much do you think it would cost to add bell nipple,labia and clit piercings as well as an option for belly button piercings would like to see belly button piecings with a few different options as well. 
 			//Also would love to have handcuff ear piercings.)"	Would like the bimbo brain and bimbo body perks as well as the nine tail PerkLib. demonic high heels, pink skin, obscenely long pink hair would like her to be a kitsune with the nine tails.
 			//pink fur. starting equipment would like to be the succubus whip and nurse's outfit. Also would like the xmas perk and all three Vday perks. Aria
-			PiercingJewelry labiaPiercing() => new PiercingJewelry(JewelryType.RING, new Ruby(), false);
+			PiercingJewelry labiaPiercing() => new PiercingJewelry(JewelryType.RING, new Ruby(), true);
 			return new PlayerCreator("Aria")
 			{
 				defaultGender = Gender.FEMALE,
@@ -174,7 +180,7 @@ namespace CoC.Frontend.Creatures
 				vaginas = new VaginaCreator[]
 				{
 					new VaginaCreator(vaginalLooseness: VaginalLooseness.NORMAL, isVirgin: false,
-						clitJewelry: new PiercingData<ClitPiercings>(){ [ClitPiercings.HOOD_HORIZONTAL] = new PiercingJewelry(JewelryType.RING, new Emerald(), false)},
+						clitJewelry: new PiercingData<ClitPiercings>(){ [ClitPiercings.HOOD_HORIZONTAL] = new PiercingJewelry(JewelryType.RING, new Emerald(), true)},
 						labiaJewelry: new PiercingData<LabiaPiercings>()
 						{
 							[LabiaPiercings.LEFT_1] = labiaPiercing(), [LabiaPiercings.LEFT_2] = labiaPiercing(), [LabiaPiercings.LEFT_5] = labiaPiercing(), [LabiaPiercings.LEFT_6] = labiaPiercing(),
@@ -208,7 +214,8 @@ namespace CoC.Frontend.Creatures
 				{
 					[EarPiercings.LEFT_LOBE_1] = new Handcuffs(),
 					[EarPiercings.RIGHT_LOBE_1] = new Handcuffs()
-				}
+				},
+
 			};
 			//flags[kFLAGS.PC_FETISH] = 2;
 			//creator.createPerk(PerkLib.EnlightenedNinetails, 0, 0, 0, 0);
@@ -245,8 +252,8 @@ namespace CoC.Frontend.Creatures
 		private static PlayerCreator customCeveo()
 		{
 			//Pair<CockPiercings, PiercingJewelry> silverAlbert = [CockPiercings.ALBERT] );
-			CockCreator createCock() => new CockCreator(CockType.HUMAN, 12, 5.5f, cockJewelry: new PiercingData<CockPiercings> { [CockPiercings.ALBERT] = new PiercingJewelry(JewelryType.RING, new Silver(), false) });
-			PiercingJewelry silverStuds() => new PiercingJewelry(JewelryType.BARBELL_STUD, new Silver(), false);
+			CockCreator createCock() => new CockCreator(CockType.HUMAN, 12, 5.5f, cockJewelry: new PiercingData<CockPiercings> { [CockPiercings.ALBERT] = new PiercingJewelry(JewelryType.RING, new Silver(), true) });
+			PiercingJewelry silverStuds() => new PiercingJewelry(JewelryType.BARBELL_STUD, new Silver(), true);
 
 			//finally, a character with a description that can reasonably allow the player to choose their gender.
 			return new PlayerCreator("Ceveo")
@@ -262,7 +269,7 @@ namespace CoC.Frontend.Creatures
 				//vagina defined to allow players to override gender and still keep the whole piercing theme. will be ignored if male.
 				vaginas = new VaginaCreator[]
 				{
-					new VaginaCreator(2.0f, isVirgin:true, clitJewelry:new Dictionary<ClitPiercings, PiercingJewelry>(){[ClitPiercings.HOOD_VERTICAL] = new PiercingJewelry(JewelryType.HORSESHOE, new Silver(), false) })
+					new VaginaCreator(2.0f, isVirgin:true, clitJewelry:new Dictionary<ClitPiercings, PiercingJewelry>(){[ClitPiercings.HOOD_VERTICAL] = new PiercingJewelry(JewelryType.HORSESHOE, new Silver(), true) })
 				},
 				//"Androgynous face, large brown eyes, long black hair down to about ass level, full lips, pirced with one silver ring ass itself is round and thick, chest is flat, only two nipples, about nickel sized pierced with silver studs, skin of a pale ghostly transparent complexion, rest of the body is not notably muscular or chubby in any definite way, feet seem to taper off into full transparency. Full body housed in the lewd Inquisitor Armor, wielding a Wizard Staff. Starting at level 5 with tank, regeneration, healing, smarts, channeling, mage and incorperability perks, a full knowledge of 
 				heightInInches = 72,
@@ -270,7 +277,7 @@ namespace CoC.Frontend.Creatures
 				hairLength = 35,
 				leftEyeColor = EyeColor.BROWN,
 				hairColor = HairFurColors.BLACK,
-				lipPiercings = new PiercingData<LipPiercingLocation>() { [LipPiercingLocation.LABRET] = new PiercingJewelry(JewelryType.RING, new Silver(), false) },
+				lipPiercings = new PiercingData<LipPiercingLocation>() { [LipPiercingLocation.LABRET] = new PiercingJewelry(JewelryType.RING, new Silver(), true) },
 				buttSize = 8,
 				hipSize = 8,
 				breasts = new BreastCreator[]
@@ -291,7 +298,12 @@ namespace CoC.Frontend.Creatures
 				strength = 10,
 				corruption = 30,
 				libido = 30,
-				sensitivity = 10
+				sensitivity = 10,
+				perks = new List<Backend.Perks.PerkBase>()
+				{
+					new Smart(),
+					new Healer(),
+				},
 			};
 
 			//creator.createPerk(PerkLib.Incorporeality, 0, 0, 0, 0);
@@ -299,10 +311,8 @@ namespace CoC.Frontend.Creatures
 			//creator.setWeapon(weapons.W_STAFF);
 
 			//creator.createPerk(PerkLib.Regeneration, 0, 0, 0, 0);
-			//creator.createPerk(PerkLib.Smart, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.Channeling, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.Mage, 0, 0, 0, 0);
-			//creator.createPerk(PerkLib.HistoryHealer, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.Tank, 0, 0, 0, 0);
 			//creator.createStatusEffect(StatusEffects.KnowsArouse,0,0,0,0);
 			//creator.createStatusEffect(StatusEffects.KnowsHeal,0,0,0,0);
@@ -397,8 +407,18 @@ namespace CoC.Frontend.Creatures
 				//A pair of 8-inch balls
 				numBalls = 2,
 				ballSize = 8,
-				//A virility boost would be nice too if possible.
-				cumMultiplier = 50
+				//removed these and replaced them with messy orgasm. same effect, but now has an endowment perk.
+				////A virility boost would be nice too if possible.
+				//cumMultiplier = 50 
+
+				//Is it possible to get extra starting perks added? If so, I'd like History: Religious added to whatever is selected on creation. If not, please ignore this line.
+				//i mean, i guess it's possible. For reasons unknown, has fighter and whore. could remove them and do some magic to make religious added on. 
+				perks = new List<PerkBase>
+				{
+					new Fighter(),
+					new Whore(),
+					new MessyOrgasms(),
+				},
 			};
 
 			//creator.teaseLevel = 1;
@@ -413,8 +433,6 @@ namespace CoC.Frontend.Creatures
 			//creator.createKeyItem("Bow",0,0,0,0);
 			//Bow skill 100 (Sorry Kelt, I can't hear your insults over my mad Robin Hood skillz)
 			//creator.createStatusEffect(StatusEffects.Kelt,100,0,0,0);
-			//Is it possible to get extra starting perks added? If so, I'd like History: Religious added to whatever is selected on creation. If not, please ignore this line.
-			//i mean, i guess it's possible. 
 			//creator.createPerk(PerkLib.HistoryFighter, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.HistoryWhore, 0, 0, 0, 0);
 		}
@@ -531,7 +549,7 @@ namespace CoC.Frontend.Creatures
 					{
 						continue;
 					}
-					retVal.Add(location, new PiercingJewelry(JewelryType.BARBELL_STUD, material, false));
+					retVal.Add(location, new PiercingJewelry(JewelryType.BARBELL_STUD, material, true));
 				}
 				return retVal;
 			};
@@ -541,16 +559,7 @@ namespace CoC.Frontend.Creatures
 			{
 				defaultGender = Gender.MALE,
 				forceDefaultGender = true,
-				//- gift: fast
 				speed = 20,
-				//creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
-				////- history: religion 
-				//creator.createPerk(PerkLib.HistoryReligious,0,0,0,0);
-				////(and if possible)
-				////- history: fighter
-				//creator.createPerk(PerkLib.HistoryFighter,0,0,0,0);
-				////- history: smith
-				//creator.createPerk(PerkLib.HistorySmith,0,0,0,0);
 				//in my ar, Issac was born to a disgraced priestess (she was raped by marauders) and raised by her alone until she died from an illness and was pretty much left to fend for and earn a living for himself (hence the fighter and smith background's too) until, years later he was chosen as 'champion'~
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				//sex - male
@@ -566,7 +575,6 @@ namespace CoC.Frontend.Creatures
 					new CockCreator(CockType.FOX, 12, 2.8f, 1.8f, ladderPiercings(new Fertite())),
 					new CockCreator(CockType.CAT, 10, 2.5f, null, ladderPiercings(new Emerald()))
 				},
-				//creator.createPerk(PerkLib.PiercedFertite, 5, 0, 0, 0);
 				//- and one tight asshole
 				analLooseness = AnalLooseness.NORMAL,
 				assVirgin = true,
@@ -592,7 +600,24 @@ namespace CoC.Frontend.Creatures
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.FLAT, 0.2f) },
 				//- three fox tails
 				tailType = TailType.FOX,
-				tailCount = 3
+				tailCount = 3,
+				//- gift: fast
+				//creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
+				////- history: religion 
+				//creator.createPerk(PerkLib.HistoryReligious,0,0,0,0);
+				////(and if possible)
+				////- history: fighter
+				//creator.createPerk(PerkLib.HistoryFighter,0,0,0,0);
+				////- history: smith
+				//creator.createPerk(PerkLib.HistorySmith,0,0,0,0);
+
+				perks = new List<PerkBase>()
+				{
+					new Fast(),
+					new Religious(),
+					new Fighter(),
+					new Smith(),
+				},
 			};
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			//equipment;
@@ -638,7 +663,6 @@ namespace CoC.Frontend.Creatures
 				//creator.itemSlot1.setItemAndQty(consumables.B__BOOK, 1);
 				//creator.itemSlot2.setItemAndQty(consumables.W__BOOK, 2);
 
-				//creator.createPerk(PerkLib.HistoryScholar, 0, 0, 0, 0);
 
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.D) },
 				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f) },
@@ -660,7 +684,13 @@ namespace CoC.Frontend.Creatures
 				hairColor = HairFurColors.BLACK,
 				analLooseness = AnalLooseness.NORMAL,
 				assVirgin = true,
-				heightInInches = 67
+				heightInInches = 67,
+
+				perks = new List<PerkBase>()
+				{
+					new Scholar(),
+					new Smart(),
+				},
 			};
 		}
 
@@ -726,7 +756,13 @@ namespace CoC.Frontend.Creatures
 				bodyType = BodyType.SIMPLE_FUR,
 				furColor = new FurColor(HairFurColors.BLUE),
 				tone = 88,
-				tongueType = TongueType.DRACONIC
+				tongueType = TongueType.DRACONIC,
+
+				perks = new List<PerkBase>()
+				{
+					new Fighter(),
+					new MessyOrgasms(),
+				},
 			};
 			//gel plate armor, warhammer, 88 body tone, 1 breast row, flat manly breasts, 0.2 inch nipples, 1 on each breast, draconic tongue, short hair-blue, light skin."	Lukaz
 			//creator.createPerk(PerkLib.HistoryFighter, 0, 0, 0, 0);
@@ -759,13 +795,17 @@ namespace CoC.Frontend.Creatures
 				earType = EarType.BUNNY,
 				tailType = TailType.RABBIT,
 				complexion = Tones.TAN,
-				hairColor = HairFurColors.PLATINUM_BLONDE
+				hairColor = HairFurColors.PLATINUM_BLONDE,
+
+				perks = new List<PerkBase>()
+				{
+					new Slut(),
+					new BigTits(),
+				},
 			};
 
-			//creator.createPerk(PerkLib.HistorySlut, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.BimboBody, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.BimboBrains, 0, 0, 0, 0);
-			//creator.createPerk(PerkLib.BigTits, 1.5, 0, 0, 0);
 			//creator.teaseLevel = 3;
 		}
 
@@ -809,7 +849,14 @@ namespace CoC.Frontend.Creatures
 				tailType = TailType.CAT,
 				heightInInches = 55,
 				thickness = 10,
-				tone = 75
+				tone = 75,
+
+				perks = new List<PerkBase>()
+				{
+					new Fast(),
+					new Fertile(),
+					new Scholar(),
+				},
 			};
 
 			//creator.teaseLevel = 4;
@@ -817,10 +864,8 @@ namespace CoC.Frontend.Creatures
 			//creator.createPerk(PerkLib.Agility, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.Evade, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.Runner, 0, 0, 0, 0);
-			//creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
-			//creator.createPerk(PerkLib.Fertile, 1.5, 0, 0, 0);
+
 			//creator.createPerk(PerkLib.Flexibility, 0, 0, 0, 0);
-			//creator.createPerk(PerkLib.HistoryScholar, 0, 0, 0, 0);
 			//Posted everything above sorry if it wasn't supposed to go there.
 			//starting equipment: black leather armor surrounded by voluminous robes
 			//starting weapon: Spellblade if not gamebreaking otherwise spear is fine.
@@ -858,10 +903,14 @@ namespace CoC.Frontend.Creatures
 				//Gender = Herm
 				//Ears = Horse
 				earType = EarType.HORSE,
+				//we'll give you a unicorn horn over dragon, you're welcome i guess.
 				//Horns = Dragon
-				hornType = HornType.DRACONIC,
-				hornCount = 4,
-				hornSize = 12,
+				hornType = HornType.UNICORN,
+				additionalHornTransformStrength = 0,
+
+				//hornType = HornType.DRACONIC,
+				//hornCount = 4,
+				//hornSize = 12,
 				//Face = Horse
 				faceType = FaceType.HORSE,
 				//Skin type = Black Fur
@@ -876,14 +925,18 @@ namespace CoC.Frontend.Creatures
 				//Tail type = Dragon
 				tailType = TailType.DRACONIC,
 
-				cumMultiplier = 5.5f
+				cumMultiplier = 5.5f,
+
+				//Herm, lots of jizz.
+				perks = new List<PerkBase>()
+				{
+					new MessyOrgasms(),
+					new Whore(),
+				},
 			};
 			//creator.teaseLevel = 1;
 			//Beautiful Sword & Wizard Robe
 			//creator.setArmor(armors.W_ROBES);
-			//Herm, lots of jizz.
-			//creator.createPerk(PerkLib.MessyOrgasms, 1.25, 0, 0, 0);
-			//creator.createPerk(PerkLib.HistoryWhore, 0, 0, 0, 0);
 		}
 
 		private static PlayerCreator customNami()
@@ -932,7 +985,15 @@ namespace CoC.Frontend.Creatures
 				intelligence = 40,
 				strength = 20,
 				speed = 25,
-				toughness = 15
+				toughness = 15,
+
+				perks = new List<PerkBase>()
+				{
+					////Gift Perk- Smarts
+					////History- Schooling
+					new Smart(),
+					new Scholar(),
+				}
 			};
 
 			////Starting Equipment: Wizard's Robe, Wizards Staff, and one White and one Black book in inventory.
@@ -940,10 +1001,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setArmor(armors.W_ROBES);
 
 			//creator.setWeapon(weapons.W_STAFF);
-			////Gift Perk- Smarts
-			//creator.createPerk(PerkLib.Smart, 0, 0, 0, 0);
-			////History- Schooling
-			//creator.createPerk(PerkLib.HistoryScholar, 0, 0, 0, 0);
+
 			//creator.itemSlot1.setItemAndQty(consumables.W__BOOK, 1);
 			//creator.itemSlot2.setItemAndQty(consumables.B__BOOK, 1);
 			//clearOutput();
@@ -1002,7 +1060,7 @@ namespace CoC.Frontend.Creatures
 				tailType = TailType.FOX,
 				tailCount = 9,
 				lowerBodyType = LowerBodyType.DRAGON,
-				tongueType = TongueType.DRACONIC
+				tongueType = TongueType.DRACONIC,
 			};
 
 			//creator.createStatusEffect(StatusEffects.BonusVCapacity, 132, 0, 0, 0);
@@ -1074,7 +1132,17 @@ namespace CoC.Frontend.Creatures
 				faceType = FaceType.DOG,
 				lowerBodyType = LowerBodyType.DOG,
 				tailType = TailType.DOG,
-				earType = EarType.DOG
+				earType = EarType.DOG,
+
+				//fertility AND messy orgasm (hope that's not pushing it)
+				//fighting history
+				perks = new List<PerkBase>()
+				{
+					new Fertile(),
+					new MessyOrgasms(),
+					new Fighter(),
+				},
+
 			};
 			////"	"I'm picturing a tall, feminine German-Shepherd morph, solid white and gorgeous. She has both sets of genitals, with no balls, and a large set of breasts. She wields a large claymore and is dressed in a full chain vest and pants. 
 			////large claymore (and the strength to use it)
@@ -1082,12 +1150,7 @@ namespace CoC.Frontend.Creatures
 			//creator.strength = 40;
 			////full chain
 			//creator.setArmor(armors.FULLCHN);
-			////-Perks
-			////fertility AND messy orgasm (hope that's not pushing it)
-			//creator.createPerk(PerkLib.MessyOrgasms, 1.25, 0, 0, 0);
-			//creator.createPerk(PerkLib.Fertile, 1.5, 0, 0, 0);
-			////fighting history
-			//creator.createPerk(PerkLib.HistoryFighter, 0, 0, 0, 0);
+
 			////3 starting perk points
 			//creator.perkPoints = 3;
 			//outputText("As a German-Shepherd morph, the rest of the village never really knew what to do with you... until they sent you through the portal to face whatever's on the other side...");
@@ -1122,12 +1185,18 @@ namespace CoC.Frontend.Creatures
 				//She has a demonic tail and small demonic wings thanks to some encounters early on with succubus milk (that stuff is delicious!) but is otherwise still human.
 				wingType = WingType.BAT_LIKE,
 				largeWings = false,
-				tailType = TailType.DEMONIC
+				tailType = TailType.DEMONIC,
+
+				perks = new List<PerkBase>()
+				{
+					new Fast(),
+					//i interpreted the initially corrupt as this. sorry if that's not what you want. 
+					new Pervert(),
+				}
+				//creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
 			};
 			////I feel really weird talking about all this, so if there's anything you need to change or can't do, or if I totally misinterpreted this, just shoot me an email! jordie.wierenga@gmail.com . Thanks in advance... I'm a big fan. "	Prismere
-			//flags[kFLAGS.HISTORY_PERK_SELECTED] = 0;
 			////Perk is speed, she was a scout, and it'd be neat (if possible) to give her something akin to the Runner perk. She might not start out very strong or tough, but at least she's fast.
-			//creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
 			//creator.createPerk(PerkLib.Runner, 0, 0, 0, 0);
 		}
 
@@ -1148,9 +1217,13 @@ namespace CoC.Frontend.Creatures
 				femininity = 100,
 				thickness = 25,
 				tone = 65,
-				heightInInches = 65
+				heightInInches = 65,
+
+				perks = new List<PerkBase>()
+				{
+					new Slacker(),
+				},
 			};
-			//creator.createPerk(PerkLib.HistorySlacker, 0, 0, 0, 0);
 		}
 
 		private static PlayerCreator customRope()
@@ -1202,12 +1275,15 @@ namespace CoC.Frontend.Creatures
 				wingType = WingType.BAT_LIKE,
 				largeWings = true,
 				cumMultiplier = 5.5f,
+				//Gift: Lotz of Jizz
+				//History: Schooling
+				perks = new List<PerkBase>()
+				{
+					new Scholar(),
+					new MessyOrgasms(),
+				},
 			};
 			//creator.teaseLevel = 1
-			////Gift: Lotz of Jizz
-			////History: Schooling
-			//creator.createPerk(PerkLib.MessyOrgasms, 1.25, 0, 0, 0);
-			//creator.createPerk(PerkLib.HistoryScholar, 0, 0, 0, 0);
 			////Items: Katana, Leather Armor
 			//creator.setWeapon(weapons.KATANA0);
 			//creator.setArmor(armors.URTALTA);
@@ -1322,7 +1398,7 @@ namespace CoC.Frontend.Creatures
 				//added a tongue piercing because seemed relevant to demon tongue and whorish nature, idk.
 				tonguePiercings = new PiercingData<TonguePiercingLocation>()
 				{
-					[TonguePiercingLocation.MIDDLE_CENTER] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), false)
+					[TonguePiercingLocation.MIDDLE_CENTER] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), true)
 				},
 				earType = EarType.CAT,
 				//Body: Very muscular, average weight, plump ass, above average thighs, cat tail and cat paws
@@ -1339,13 +1415,19 @@ namespace CoC.Frontend.Creatures
 				//Perks: Slut and Fertile"	
 
 				speed = 18,
-				intelligence = 17
+				intelligence = 17,
+
+				perks = new List<PerkBase>()
+				{
+					new Slut(),
+					new Fertile(),
+				},
 			};
 
-			//creator.createPerk(PerkLib.HistorySlut, 0, 0, 0, 0);
-			//creator.createPerk(PerkLib.Fertile, 1.5, 0, 0, 0);
 			//creator.teaseLevel = 3;
 		}
+
+		//this champ is so friggin overpowered holy shit. 
 
 		private static PlayerCreator customVahdunbrii()
 		{
@@ -1355,7 +1437,7 @@ namespace CoC.Frontend.Creatures
 				defaultGender = Gender.FEMALE,
 				forceDefaultGender = false,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.C) },
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f, VaginalWetness.WET) },
 				cocks = new CockCreator[] { new CockCreator(8.5f, 1.5f) },
 				fertility = 10,
 				hipSize = 7,
@@ -1383,14 +1465,27 @@ namespace CoC.Frontend.Creatures
 				hornType = HornType.DRACONIC,
 				additionalHornTransformStrength = 1,
 				faceType = FaceType.SPIDER,
-				isFullMorph = false,
+				isFaceFullMorph = false,
 				hairLength = 69,
 				hairColor = HairFurColors.DARK_BLUE,
 				hairType = HairType.NORMAL,
 				hairTransparent = true,
 				skinTexture = SkinTexture.SMOOTH,
 				complexion = Tones.SANGUINE,
-				gems = 300
+				gems = 300,
+
+				perks = new List<PerkBase>()
+				{
+					new Scholar(),
+					new Religious(),
+
+					new WetPussy(),
+					new Tough(),
+					new Strong(),
+					new Fast(),
+					new Smart(),
+
+				}
 			};
 
 			//creator.createPerk(PerkLib.Incorporeality, 0, 0, 0, 0);
@@ -1411,17 +1506,12 @@ namespace CoC.Frontend.Creatures
 			//creator.createKeyItem("Equipment Rack - Armor", 0, 0, 0, 0);
 			////(Flexibility), (Incorporeality), History: Religious, Dragonfire, Brood Mother, Magical Fertility, Wet Pussy, Tough, Strong, Fast, Smart, History: Scholar, History: Slacker, Strong Back, Strong Back 2: Stronger Harder
 			//creator.createPerk(PerkLib.Flexibility, 0, 0, 0, 0);
-			//creator.createPerk(PerkLib.HistoryReligious, 0, 0, 0, 0);
+
 			//creator.createPerk(PerkLib.Dragonfire, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.BroodMother, 0, 0, 0, 0);
 			//creator.createPerk(PerkLib.Fertile, 1.5, 0, 0, 0);
 			//creator.vaginas[0].vaginalWetness = Vagina.WETNESS_WET;
-			//creator.createPerk(PerkLib.WetPussy, 2, 0, 0, 0);
-			//creator.createPerk(PerkLib.Tough, 0.25, 0, 0, 0);
-			//creator.createPerk(PerkLib.Strong, 0.25, 0, 0, 0);
-			//creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
-			//creator.createPerk(PerkLib.Smart, 0.25, 0, 0, 0);
-			//creator.createPerk(PerkLib.HistoryScholar, 0, 0, 0, 0);
+
 			//creator.createPerk(PerkLib.StrongBack, 0, 0, 0, 0);
 			//creator.itemSlot4.unlocked = true;
 			//creator.itemSlot5.unlocked = true;
@@ -1436,12 +1526,12 @@ namespace CoC.Frontend.Creatures
 
 		private static PlayerCreator customEtis()
 		{
-			Dictionary<EarPiercings, PiercingJewelry> earPiercings(params EarPiercings[] locations)
+			Dictionary<EarPiercings, PiercingJewelry> makeEarPiercings(params EarPiercings[] locations)
 			{
 				Dictionary<EarPiercings, PiercingJewelry> retVal = new Dictionary<EarPiercings, PiercingJewelry>();
 				foreach (var location in locations)
 				{
-					retVal.Add(location, new PiercingJewelry(JewelryType.RING, new Crimstone(), false));
+					retVal.Add(location, new PiercingJewelry(JewelryType.RING, new Crimstone(), true));
 				}
 				return retVal;
 			}
@@ -1489,7 +1579,7 @@ namespace CoC.Frontend.Creatures
 
 				faceType = FaceType.FOX,
 				earType = EarType.FOX,
-				earPiercings = earPiercings
+				earPiercings = makeEarPiercings
 				(
 					EarPiercings.LEFT_LOBE_1, EarPiercings.LEFT_LOBE_2, EarPiercings.LEFT_UPPER_LOBE,
 					EarPiercings.RIGHT_LOBE_1, EarPiercings.RIGHT_LOBE_3, EarPiercings.RIGHT_HELIX_1
@@ -1514,7 +1604,18 @@ namespace CoC.Frontend.Creatures
 				libido = 100, // yes, you have problems
 				corruption = 41, // have high initial corruption, but also have religious history to meditate
 
-				gems = 20
+				gems = 20,
+
+				perks = new List<PerkBase>()
+				{
+					new Religious(), // abandoned religion after obtaining nine tails
+					new AlchemicalMastery(), // and resorted to your hobby - alchemy
+					new Fast(),
+					new Smart(),
+					new Lusty(),
+					new Pervert(),
+					new Healer(),  // with religious and alchemical knowledge you are skilled healer
+				}
 			};
 
 			//creator.createStatusEffect(StatusEffects.BonusACapacity, 100, 0, 0, 0);
@@ -1524,19 +1625,13 @@ namespace CoC.Frontend.Creatures
 			//if (creator.hasKeyItem("Backpack") < 0) creator.createKeyItem("Backpack", 5, 0, 0, 0);
 
 			//// have lots of different traits
-			//creator.createPerkIfNotHasPerk(PerkLib.HistoryReligious); // abandoned religion after obtaining nine tails
+
+
 			//creator.createPerkIfNotHasPerk(PerkLib.EnlightenedNinetails);
-			//creator.createPerkIfNotHasPerk(PerkLib.HistoryAlchemist); // and resorted to your hobby - alchemy
-			//creator.createPerkIfNotHasPerk(PerkLib.TransformationResistance);  // tf resistance and alchemist are actually mutually nullifying each other - this is flavor mostly
-			//creator.createPerkIfNotHasPerk(PerkLib.HistoryHealer);  // with religious and alchemical knowledge you are skilled healer
 			//creator.createPerkIfNotHasPerk(PerkLib.Medicine); // able to treat wounds and poisoning alike
 			//creator.createPerkIfNotHasPerk(PerkLib.AscensionWisdom, 5); // learns quickly
 			//creator.createPerkIfNotHasPerk(PerkLib.AscensionTolerance, 10); // but in the same time your enlightment keeps you from really turning to demon, so corruption level does not really affect you much
-			//creator.createPerkIfNotHasPerk(PerkLib.Fast, 0.25); // gaining speed is pain in ass... this one is not for history flavor
-			//creator.createPerkIfNotHasPerk(PerkLib.Smart, 0.25); // int is easy to get, just for history flavor
-			//creator.createPerkIfNotHasPerk(PerkLib.Lusty, 0.25); // have a lust problem
 			//creator.createPerkIfNotHasPerk(PerkLib.HotBlooded, 20); // even with your willpower and religious training you sometimes struggling to restrain your impulse
-			//creator.createPerkIfNotHasPerk(PerkLib.Pervert, 0.25); // you always ready for something VERY lewd
 			//creator.createPerkIfNotHasPerk(PerkLib.Masochist); // with your knowledge of healing and innatural body it is easy for you to enjoy things which would be really painful for others
 			//creator.createPerkIfNotHasPerk(PerkLib.Sadist); // and you are always ready to return favor
 			//creator.createPerkIfNotHasPerk(PerkLib.SensualLover); // still you tend to care about mutual enjoyment - there are difference between extreme entertainment and torture, and you are mischievous, not evil
@@ -1814,13 +1909,14 @@ namespace CoC.Frontend.Creatures
 		//		*/
 		private static PlayerCreator customPeone()
 		{
-			//OutputText("Being chosen as champion is just the latest in a series of crazy and unlikely events that have defined your life. While born female, an alchemical 'accident' has given you a decent sized cock, shrunk your formerly well-endowed breasts, and caused spurs to grow out of your feet " +
-			//"like permanent high-heels. While this killed some of your sexual appeal, your friends are an understanding bunch, and you've managed to remain relatively social. You've found life in Ingram to be mostly boring, though that changed once you old enough to go out drinking." +
-			//" Much to the enjoyment of your friends, you're a total lightweight, and can be easily persuaded when drunk, which obviously doesn't always end well. One more memorable example started with your friends mentioning a tattoo and the next thing you remember was waking up " +
-			//"two days later with a headache as piercing as the new studs in your ears... and the one along your cock. Another time you were roused from your drunken stupor by the lustful moans of one of your friends as she lost her virginity atop your generous length. Much to your relief (and her disappointment), " + 
-			//"you both discovered that you shoot blanks, which makes some sense considering your lack of balls and corrupting influences. Your relief was short-lived, however, as news of your cock's infertility spread more quickly than you'd like." +
-			//"Combine this with your natural understanding of feminine wiles and your total inability to handle liquor, and more than a few women (and even the curious boy or two) have popped their cherries atop your rod, though no one has yet to return the favor." +
-			//"Unfortunately, the latest girl you deflowered also happens to be the girlfriend of an elder's grandson, and you were 'randomly chosen' as champion shortly thereafter. While rightfully unhappy with your circumstances, you're secretly excited to experience more misadventures that undoubtedly await on the other side of the portal.");
+			//OutputText("Being chosen as champion is just the latest in a series of crazy events that have defined your life. As a young girl, your susceptibility to tonics was discovered when an herbal rememdy turned your skin green, " +
+			//"though thankfully the village alchemist was able to reverse the effects. It was decided you'd be the ideal subject to help test the elixirs so something like this would never happen to anyone else, and for a time, all was well. " +
+			//"That all changed when an alchemical 'accident' shrunk your formerly well-endowed breasts, caused high-heel shaped spurs to grow out of your feet... and granted you a rather large cock. Your sex appeal naturally took a bit of a hit, " +
+			//but most of your friends were sympathetic, though your drunken antics probably helped with that. With not much else to do, you frequent the local tavern, but you're an absolute lightweight and more often than not that doesn't end well. " +
+			//"One such night started with a mention of a tattoo and ended with you waking up several days later with a piercing headache to match several new ones in your ear, and one along your cock. Another time you were roused from your drunken stupor " +
+			//"by the lustful moans of one of your friends as she lost her virginity atop your rod. Fortunately, your lack of balls and other corrupting influences means you shoot blanks, but this discovery soon meant others seeking risk-free sex would seek you out. "
+			//"Before long, more than a few women (and even the curious boy or two) had popped their cherries atop your rod. You don't mind the attention, though you wish at least one of them would return the favor - the only action your holes have seen are from sex toys. "
+			//"Your new role drew the ire of most of the men in your village, notably an elder's granson, whose girlfriend you recently deflowered. You were 'randomly chosen' as champion shortly thereafter.");
 
 
 			return new PlayerCreator("Peone")
@@ -1834,7 +1930,7 @@ namespace CoC.Frontend.Creatures
 				cocks = new CockCreator[]
 				{
 					new CockCreator(7, 1.2f, null, new PiercingData<CockPiercings>(){
-					[CockPiercings.FRENUM_UPPER_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), false) })
+					[CockPiercings.FRENUM_UPPER_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), true) })
 				},
 				cockVirgin = false,
 
@@ -1862,11 +1958,11 @@ namespace CoC.Frontend.Creatures
 				//three studs in the upper part of left ear. rings in both lobes. an industrial bar in the right ear.
 				earPiercings = new PiercingData<EarPiercings>()
 				{
-					[EarPiercings.LEFT_HELIX_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Ruby(), false),
-					[EarPiercings.LEFT_HELIX_2] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Sapphire(), false),
-					[EarPiercings.LEFT_HELIX_3] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Emerald(), false),
-					[EarPiercings.LEFT_LOBE_1] = new PiercingJewelry(JewelryType.RING, new Obsidian(), false),
-					[EarPiercings.RIGHT_LOBE_1] = new PiercingJewelry(JewelryType.RING, new Obsidian(), false),
+					[EarPiercings.LEFT_HELIX_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Ruby(), true),
+					[EarPiercings.LEFT_HELIX_2] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Sapphire(), true),
+					[EarPiercings.LEFT_HELIX_3] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Emerald(), true),
+					[EarPiercings.LEFT_LOBE_1] = new PiercingJewelry(JewelryType.RING, new Obsidian(), true),
+					[EarPiercings.RIGHT_LOBE_1] = new PiercingJewelry(JewelryType.RING, new Obsidian(), true),
 					[EarPiercings.RIGHT_AURICAL_3] = new Industrial(new Steel()),
 					[EarPiercings.RIGHT_ANTI_HELIX] = new Industrial(new Steel())
 				},
@@ -1880,20 +1976,27 @@ namespace CoC.Frontend.Creatures
 				//golden dangly belly button piercing
 				navelPiercings = new PiercingData<NavelPiercingLocation>()
 				{
-					[NavelPiercingLocation.BOTTOM] = new PiercingJewelry(JewelryType.DANGLER, new Gold(), false),
+					[NavelPiercingLocation.BOTTOM] = new PiercingJewelry(JewelryType.DANGLER, new Gold(), true),
 				},
 				complexion = Tones.FAIR,
 				skinTexture = SkinTexture.SOFT,
 
 
 				//concentrated incubus draft but no TF changes? that makes no sense. Have some demonic high-heels
-				lowerBodyType = LowerBodyType.DEMONIC_HIGH_HEELS
+				lowerBodyType = LowerBodyType.DEMONIC_HIGH_HEELS,
+
+				//perk : Alchemist - Guniea Pig (makes you more sucsceptible to TFs) also slacker, as it seems to fit her backstory. 
+				//endowment: sensitivity
+				perks = new List<PerkBase>()
+				{
+					new Slacker(),
+					new TestSubject(),
+					new Sensitive(),
+				},
 			};
 
 			//wearing: torn thong, comfortable bra. torn thong is like a normal thong, but with a hole for easy access to pussy or to let a herm's dick hang free
 
-			//perk : Alchemist - Guniea Pig (makes you more sucsceptible to TFs)
-			//endowment: sensitivity
 			//extra trait: lightweight (bad with liquor)
 			//fetish (NYI): submissive. also piercings. receiving anal sex, or giving anal sex to males.
 			//dislikes (NYI): big clits. other subs. over-large cocks.

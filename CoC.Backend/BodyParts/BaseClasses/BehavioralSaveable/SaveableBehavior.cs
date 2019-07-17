@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
+using System;
+
 namespace CoC.Backend.BodyParts
 {
 	/* Behavior or ruleset base class.
@@ -43,10 +45,10 @@ namespace CoC.Backend.BodyParts
 		private protected SaveableBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc,
 			TypeAndPlayerDelegate<ContainerClass> playerDesc, ChangeType<ContainerClass> transform, RestoreType<ContainerClass> restore) : base(shortDesc)
 		{
-			fullDescription = fullDesc;
-			playerDescription = playerDesc;
-			transformFrom = transform;
-			restoreString = restore;
+			fullDescription = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
+			playerDescription = playerDesc ?? throw new ArgumentNullException(nameof(playerDesc));
+			transformFrom = transform ?? throw new ArgumentNullException(nameof(transform));
+			restoreString = restore ?? throw new ArgumentNullException(nameof(restore));
 		}
 
 	}

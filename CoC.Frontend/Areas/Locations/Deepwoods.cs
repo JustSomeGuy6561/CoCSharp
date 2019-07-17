@@ -36,14 +36,6 @@ namespace CoC.Frontend.Areas.Locations
 			protected set => FrontendSessionSave.data.DeepwoodsExplorationCount = value;
 		}
 
-		public override void RunArea()
-		{
-			//set up the text and whatnot for what happens when the player enters the deepwoods.
-		}
-
-
-
-
 		public override void Unlock()
 		{
 			if (!Unlocked)

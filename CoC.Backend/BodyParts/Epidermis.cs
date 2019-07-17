@@ -7,7 +7,11 @@ using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("CoCBackendUnitTests")]
+[assembly: InternalsVisibleTo("Testing")]
 namespace CoC.Backend.BodyParts
 {
 	//Epidermis represents the equivalent to skin on all species.
@@ -239,7 +243,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool ChangeFur(FurColor furColor)
 		{
-			if (fur != furColor && type.updateable && !FurColor.IsNullOrEmpty(furColor)) //can be null
+			if (!fur.Equals(furColor) && type.updateable && !FurColor.IsNullOrEmpty(furColor)) //can be null
 			{
 				fur.UpdateFurColor(furColor);
 				return true;
@@ -344,8 +348,8 @@ namespace CoC.Backend.BodyParts
 
 		public EpidermalData GetEpidermalData()
 		{
-			if (type.usesFur) return new EpidermalData(type, fur, furTexture);
-			else if (type.usesTone) return new EpidermalData(type, tone, skinTexture);
+			if (type.usesFur) return new EpidermalData((FurBasedEpidermisType)type, fur, furTexture);
+			else if (type.usesTone) return new EpidermalData((ToneBasedEpidermisType)type, tone, skinTexture);
 			else return new EpidermalData();
 		}
 
@@ -357,6 +361,7 @@ namespace CoC.Backend.BodyParts
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EpidermisType> epidermi = new List<EpidermisType>();
+		public static readonly ReadOnlyCollection<EpidermisType> availableTypes = new ReadOnlyCollection<EpidermisType>(epidermi);
 		public abstract bool usesTone { get; }
 		public virtual bool usesFur => !usesTone;
 
@@ -516,10 +521,12 @@ namespace CoC.Backend.BodyParts
 		/// <param name="furColor"></param>
 		/// <param name="texture"></param>
 		/// <exception cref="ArgumentNullException">Thrown if type or tones is null</exception>
-		internal EpidermalData(EpidermisType type, FurColor furColor, FurTexture texture)
+		/// <exception cref="ArgumentException">Thrown if fur color is empty</exception>
+		internal EpidermalData(FurBasedEpidermisType type, FurColor furColor, FurTexture texture)
 		{
 			epidermisType = type ?? throw new ArgumentNullException();
 			if (furColor == null) throw new ArgumentNullException();
+			if (furColor.isEmpty) throw new ArgumentException("Fur Color cannot be empty");
 			_fur = new FurColor(furColor);
 			_tone = Tones.NOT_APPLICABLE;
 			_furTexture = texture;
@@ -533,10 +540,12 @@ namespace CoC.Backend.BodyParts
 		/// <param name="tones"></param>
 		/// <param name="texture"></param>
 		/// <exception cref="ArgumentNullException">Thrown is type or tones is null</exception>
-		internal EpidermalData(EpidermisType type, Tones tones, SkinTexture texture)
+		/// <exception cref="ArgumentException">Thrown if tones is empty</exception>
+		internal EpidermalData(ToneBasedEpidermisType type, Tones tones, SkinTexture texture)
 		{
 			epidermisType = type ?? throw new ArgumentNullException();
 			_tone = tones ?? throw new ArgumentNullException();
+			if (tones.isEmpty) throw new ArgumentException("Tone cannot be empty");
 			_fur = new FurColor();
 			_skinTexture = texture;
 			_furTexture = FurTexture.NONDESCRIPT;
@@ -555,6 +564,8 @@ namespace CoC.Backend.BodyParts
 		public bool usesFur => epidermisType.usesFur;
 		public bool usesTone => epidermisType.usesTone;
 
+		public bool isEmpty => epidermisType == EpidermisType.EMPTY;
+
 		public FurColor fur => epidermisType.usesFur ? _fur : new FurColor();
 		public Tones tone => epidermisType.usesTone ? _tone : Tones.NOT_APPLICABLE;
 
@@ -565,7 +576,8 @@ namespace CoC.Backend.BodyParts
 		{
 			return epidermisType.shortDescription();
 		}
-		public string FullDescription()
+
+		public string fullDescription()
 		{
 			if (epidermisType == EpidermisType.EMPTY) return "";
 			else if (epidermisType.usesTone) return fullStr(skinTexture.AsString(), tone, epidermisType.shortDescription);

@@ -29,6 +29,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//standard implementations.
+		//public static BehaviorType defaultType;
 		public abstract bool isDefault { get; }
 
 		//statics cannot be created here, but they'll appear as follows
@@ -44,6 +45,8 @@ namespace CoC.Backend.BodyParts
 		//otherwise, they will do all the update stuff and return true.
 		//if there are addition parameters that can be set via update, you MUST implement the change functions
 		//so that these can be set if the type is identical and update will immediately return false.
+
+		internal abstract bool UpdateType(BehaviorClass newType);
 
 		internal abstract bool Restore();
 

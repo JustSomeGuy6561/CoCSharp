@@ -21,11 +21,11 @@ namespace CoC.Backend.Creatures
 		public bool virgin;
 		public float validClitLength => clitLength ?? Clit.DEFAULT_CLIT_SIZE;
 
-		public VaginaCreator(float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool isVirgin = false,
-			Dictionary<ClitPiercings, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
+		public VaginaCreator(float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, 
+			bool isVirgin = true, Dictionary<ClitPiercings, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
 			: this(VaginaType.HUMAN, clitLengthInInches, vaginalWetness, vaginalLooseness, isVirgin, clitJewelry, labiaJewelry) { }
 		public VaginaCreator(VaginaType vaginaType, float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT,
-			bool isVirgin = false, Dictionary<ClitPiercings, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
+			bool isVirgin = true, Dictionary<ClitPiercings, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
 		{
 			type = vaginaType;
 			clitLength = clitLengthInInches;

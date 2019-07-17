@@ -13,6 +13,6 @@ namespace CoC.Frontend.Strings.Items.Wearables.Piercings
 {
 	internal sealed class Handcuffs : PiercingJewelry
 	{
-		public Handcuffs() : base(JewelryType.SPECIAL, new Emerald(), false) {}
+		public Handcuffs() : base(JewelryType.SPECIAL, new Emerald(), true) {}
 	}
 }

@@ -184,7 +184,7 @@ namespace CoC.Backend.Races
 		{
 			FurColor[] primaryColors = availablePrimaryFurColors;
 			FurColor[] secondaryColors = availableSecondaryFurColors;
-			bool predicate(FurColor x) => x == primaryColor;
+			bool predicate(FurColor x) => x.Equals(primaryColor);
 			int y = Array.FindIndex(primaryColors, predicate);
 			if (y != -1)
 			{
@@ -316,7 +316,7 @@ namespace CoC.Backend.Races
 
 		public FurColor defaultFacialFur => defaultUnderFur;
 		public FurColor defaultSecondaryFacialFur => new FurColor(HairFurColors.WHITE);
-		public FurColor defaultTailFur =>defaultUnderFur;
+		public FurColor defaultTailFur => defaultUnderFur;
 
 		internal Ferret() : base(FerretStr) { }
 	}
@@ -541,7 +541,7 @@ namespace CoC.Backend.Races
 		public FurColor defaultFur => new FurColor(HairFurColors.CHOCOLATE);
 		public FurColor defaultFacialFur => defaultFur;
 
-		public FurColor defaultTailFur =>defaultFur;
+		public FurColor defaultTailFur => defaultFur;
 		internal Mouse() : base(MouseStr) { }
 	}
 
@@ -651,7 +651,7 @@ namespace CoC.Backend.Races
 
 		public FurColor defaultUnderFur => new FurColor(HairFurColors.BLACK);
 		public FurColor defaultFur => new FurColor(HairFurColors.AUBURN);
-		
+
 		internal RedPanda() : base(RedPandaStr) { }
 	}
 
@@ -713,7 +713,7 @@ namespace CoC.Backend.Races
 		public EyeColor defaultEyeColor => EyeColor.BLACK;
 
 		public Tones defaultTone => Tones.BLACK;
-		public Tones defaultAbdomenTone =>Tones.BLACK;
+		public Tones defaultAbdomenTone => Tones.BLACK;
 		internal Spider() : base(SpiderStr) { }
 	}
 

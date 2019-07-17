@@ -6,8 +6,8 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -39,7 +39,8 @@ namespace CoC.Backend.BodyParts
 		private NeckType _type = NeckType.HUMANOID;
 		public HairFurColors neckColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
 
-		public override bool isDefault => type == NeckType.HUMANOID;
+		public static NeckType defaultType => NeckType.HUMANOID;
+		public override bool isDefault => type == defaultType;
 
 		private Neck()
 		{
@@ -77,20 +78,20 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		internal bool UpdateNeck(NeckType neckType)
+		internal override bool UpdateType(NeckType newType)
 		{
-			if (type == neckType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
-			type = neckType;
+			type = newType;
 			return true;
 		}
 
 
 		internal byte GrowNeck(byte amount)
 		{
-			if (canGrowNeck())
+			if (canGrowNeck)
 			{
 				byte neckLength = length;
 				byte retVal = type.StrengthenTransform(ref neckLength, amount);
@@ -100,10 +101,8 @@ namespace CoC.Backend.BodyParts
 			return 0;
 		}
 
-		public bool canGrowNeck()
-		{
-			return type.canGrowNeck(length);
-		}
+		public bool canGrowNeck => type.canGrowNeck(length);
+
 		internal override bool Restore()
 		{
 			if (type == NeckType.HUMANOID)
@@ -168,6 +167,7 @@ namespace CoC.Backend.BodyParts
 
 		private static int indexMaker = 0;
 		private static readonly List<NeckType> necks = new List<NeckType>();
+		public static readonly ReadOnlyCollection<NeckType> availableTypes = new ReadOnlyCollection<NeckType>(necks);
 		private readonly int _index;
 
 		public readonly byte maxNeckLength;

@@ -7,6 +7,7 @@ using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -16,11 +17,16 @@ namespace CoC.Backend.BodyParts
 
 		public override AntennaeType type { get; protected set; }
 
+		public static AntennaeType defaultType => AntennaeType.NONE;
+		public override bool isDefault => type == defaultType;
+
+		public bool hasAntennae => type != AntennaeType.NONE;
+
 		private Antennae(AntennaeType antennaeType)
 		{
 			type = antennaeType ?? throw new ArgumentNullException();
 		}
-		public override bool isDefault => type == AntennaeType.NONE;
+
 
 		internal static Antennae GenerateDefault()
 		{
@@ -32,7 +38,7 @@ namespace CoC.Backend.BodyParts
 			return new Antennae(antennaeType);
 		}
 
-		internal bool UpdateAntennae(AntennaeType newType)
+		internal override bool UpdateType(AntennaeType newType)
 		{
 			if (newType == null || type == newType)
 			{
@@ -65,6 +71,7 @@ namespace CoC.Backend.BodyParts
 	{
 		private static int indexMaker = 0;
 		private static readonly List<AntennaeType> antennaes = new List<AntennaeType>();
+		public static readonly ReadOnlyCollection<AntennaeType> availableTypes = new ReadOnlyCollection<AntennaeType>(antennaes);
 
 		//C# 7.2 magic. basically, prevents it from being messed with except internally.
 		private AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,

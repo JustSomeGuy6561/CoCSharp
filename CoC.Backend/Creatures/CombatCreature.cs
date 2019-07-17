@@ -2,7 +2,6 @@
 //Description:
 //Author: JustSomeGuy
 //2/20/2019, 4:14 PM
-using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.Creatures
@@ -35,21 +34,19 @@ namespace CoC.Backend.Creatures
 		internal const byte BASE_MAX_FATIGUE = 100;
 		//internal const byte BASE_MAX_HUNGER = 100;
 
-		public readonly PerkCollection perks = new PerkCollection();
 
-		protected PassiveBaseStatModifiers modifiers => perks.baseModifiers;
 
 		public byte level { get; private protected set; } = 1;
 
 		public uint experience { get; private protected set; } = 0;
 
 
-		public ushort currentHealth
+		public uint currentHealth
 		{
 			get => _currentHealth;
-			private protected set => _currentHealth = Utils.Clamp2(value, (ushort)0, maxHealth);
+			private protected set => _currentHealth = Utils.Clamp2(value, (uint)0, maxHealth);
 		}
-		private ushort _currentHealth = 0;
+		private uint _currentHealth = 0;
 		public byte strength
 		{
 			get => _strength;
@@ -123,7 +120,7 @@ namespace CoC.Backend.Creatures
 		public byte minFatigue => 0;
 		//public byte minHunger => 0;
 
-		public abstract ushort maxHealth { get; }
+		public abstract uint maxHealth { get; }
 		public virtual byte maxStrength => BASE_MAX_STRENGTH.delta(modifiers.bonusMaxStrength);
 		public virtual byte maxToughness => BASE_MAX_TOUGHNESS.delta(modifiers.bonusMaxToughness);
 		public virtual byte maxSpeed => BASE_MAX_SPEED.delta(modifiers.bonusMaxSpeed);
@@ -142,6 +139,31 @@ namespace CoC.Backend.Creatures
 		//Equipment
 		//Inventory
 
+		public int gems { get; protected set; }
+
+		public int addGems(uint amount)
+		{
+			int oldGems = gems;
+			gems += amount > int.MaxValue ? int.MaxValue : (int)amount;
+			return gems - oldGems;
+		}
+
+		public int removeGems(uint amount, bool canGoNegative = false)
+		{
+			int lossAmt = amount > int.MaxValue ? int.MaxValue : (int)amount;
+			int oldGems = gems;
+			if (gems < 0 && !canGoNegative)
+			{
+				return 0;
+			}
+			gems -= lossAmt;
+			if (gems < 0 && !canGoNegative)
+			{
+				gems = 0;
+			}
+			return gems - oldGems; //i can flip this if we want.
+
+		}
 
 		public CombatCreature(CombatCreatureCreator creator) : base(creator)
 		{
@@ -161,7 +183,9 @@ namespace CoC.Backend.Creatures
 			fatigue = DEFAULT_FATIGUE;
 			//hunger = DEFAULT_HUNGER;
 
-			currentHealth = maxHealth;
+#warning reset this once debugging is done.
+			//currentHealth = maxHealth;
+			_currentHealth = 1; //
 		}
 
 		public float spellCost(double baseCost)
@@ -174,7 +198,7 @@ namespace CoC.Backend.Creatures
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		public float availableStamina => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//public float availableStamina => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 
 		public bool hasEnoughStamina(double baseCost, bool isPhysical)
 		{

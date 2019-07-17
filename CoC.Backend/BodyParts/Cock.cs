@@ -5,9 +5,11 @@
 
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -42,14 +44,15 @@ namespace CoC.Backend.BodyParts
 		public const float DEFAULT_COCK_GIRTH = 1.25f;
 		//public const float DEFAULT_BIG_COCK_GIRTH = 1.5f;
 
-		public const JewelryType SUPPORTED_COCK_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
+		public const JewelryType SUPPORTED_JEWELRY_FRENUM = JewelryType.BARBELL_STUD | JewelryType.RING;
+		public const JewelryType SUPPORTED_JEWELRY_ALBERT = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
 		#endregion
 
 		#region Properties
 		//private bool hasBigCockPerk => SaveData.BackendSessionData.data.hasBigCockPerk;
 
 		public readonly Piercing<CockPiercings> cockPiercings;
-		
+
 		public float knotMultiplier
 		{
 			get => _knotMultiplier;
@@ -63,6 +66,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private float _knotMultiplier;
+
+		public bool hasKnot => knotMultiplier >= 1.1f;
+
 		public float knotLength => type.knotSize(cockGirth, knotMultiplier);
 
 		public float cockLength => _cockLength;
@@ -81,42 +87,29 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_type != value && value.hasKnot != _type.hasKnot)
 				{
-					knotMultiplier = value.baseKnotMultiplier;
+					_knotMultiplier = value.baseKnotMultiplier;
 				}
 				_type = value;
 			}
 		}
 		private CockType _type = CockType.HUMAN;
-		public override bool isDefault => type == CockType.HUMAN;
+		public static CockType defaultType => CockType.HUMAN;
+		public override bool isDefault => type == defaultType;
 		#endregion
 		#region Constructors
-		private Cock()
-		{
-			type = CockType.HUMAN;
-			_cockLength = DEFAULT_COCK_LENGTH;
-			_cockGirth = DEFAULT_COCK_GIRTH;
-
-			knotMultiplier = type.baseKnotMultiplier;
-
-			cockPiercings = new Piercing<CockPiercings>(SUPPORTED_COCK_JEWELRY, PiercingLocationUnlocked);
-		}
-
-		private Cock(CockType cockType)
-		{
-			type = cockType;
-			updateLengthAndGirth(DEFAULT_COCK_LENGTH, DEFAULT_COCK_GIRTH);
-			knotMultiplier = type.baseKnotMultiplier;
-
-			cockPiercings = new Piercing<CockPiercings>(SUPPORTED_COCK_JEWELRY, PiercingLocationUnlocked);
-		}
+		private Cock() : this(CockType.HUMAN)
+		{ }
+		
+		private Cock(CockType cockType) : this (cockType, DEFAULT_COCK_LENGTH, DEFAULT_COCK_GIRTH)
+		{ }
 
 		private Cock(CockType cockType, float length, float girth)
 		{
-			type = cockType;
+			type = cockType ?? throw new ArgumentNullException(nameof(cockType));
 			updateLengthAndGirth(length, girth);
 			knotMultiplier = type.baseKnotMultiplier;
 
-			cockPiercings = new Piercing<CockPiercings>(SUPPORTED_COCK_JEWELRY, PiercingLocationUnlocked);
+			cockPiercings = new Piercing<CockPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 		#endregion
 
@@ -135,9 +128,10 @@ namespace CoC.Backend.BodyParts
 			return new Cock();
 		}
 
-		internal static Cock GenerateClitCock()
+		internal static Cock GenerateClitCock(Clit clit)
 		{
-			return new Cock(CockType.HUMAN, 5f, 1f);
+			if (clit == null) throw new ArgumentNullException(nameof(clit));
+			return new Cock(CockType.HUMAN, clit.length + 5f, 1f);
 		}
 
 		internal static Cock GenerateDefaultOfType(CockType cockType)
@@ -145,7 +139,7 @@ namespace CoC.Backend.BodyParts
 			return new Cock(cockType);
 		}
 
-		internal static Cock Generate(CockType cockType, float length, float girth, bool virginCock = true)
+		internal static Cock Generate(CockType cockType, float length, float girth)
 		{
 			return new Cock(cockType, length, girth);
 		}
@@ -156,6 +150,12 @@ namespace CoC.Backend.BodyParts
 			{
 				knotMultiplier = knotMultiplier
 			};
+		}
+
+		internal void InitializePiercings(Dictionary<CockPiercings, PiercingJewelry> piercings)
+		{
+#warning Implement Me!
+			//throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Restore
@@ -172,9 +172,9 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Update
 
-		internal bool UpdateCockType(CockType newType)
+		internal override bool UpdateType(CockType newType)
 		{
-			if (type == newType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
@@ -184,7 +184,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateCockTypeWithLength(CockType cockType, float newLength)
 		{
-			if (type == cockType)
+			if (cockType == null || type == cockType)
 			{
 				return false;
 			}
@@ -195,7 +195,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateCockTypeWithLengthAndGirth(CockType cockType, float newLength, float newGirth)
 		{
-			if (type == cockType)
+			if (cockType == null || type == cockType)
 			{
 				return false;
 			}
@@ -206,7 +206,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateCockTypeWithKnotMultiplier(CockType cockType, float newKnotMultiplier)
 		{
-			if (type == cockType)
+			if (cockType == null || type == cockType)
 			{
 				return false;
 			}
@@ -217,7 +217,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateCockTypeWithAll(CockType cockType, float newLength, float newGirth, float newKnotMultiplier)
 		{
-			if (type == cockType)
+			if (cockType == null || type == cockType)
 			{
 				return false;
 			}
@@ -348,6 +348,19 @@ namespace CoC.Backend.BodyParts
 		{
 			return true;
 		}
+
+		private JewelryType SupportedJewelryByLocation(CockPiercings piercingLocation)
+		{
+			if (piercingLocation == CockPiercings.ALBERT)
+			{
+				return SUPPORTED_JEWELRY_ALBERT;
+			}
+			else
+			{
+				return SUPPORTED_JEWELRY_FRENUM;
+			}
+		}
+
 		#endregion
 		#region IGrowShrinkable
 
@@ -421,6 +434,12 @@ namespace CoC.Backend.BodyParts
 			perkModifiers = getter;
 		}
 		internal void GetBasePerkStats(PerkStatBonusGetter getter) => perkAware.GetBasePerkStats(getter);
+
+		internal void DoLateInit(BasePerkModifiers statModifiers)
+		{
+			updateLength(statModifiers.NewCockDefaultSize + statModifiers.NewCockSizeDelta);
+		}
+
 		#endregion
 		#region Helpers
 		private void updateLength(float newLength)
@@ -460,8 +479,11 @@ namespace CoC.Backend.BodyParts
 
 		private static int indexMaker = 0;
 		private static readonly List<CockType> types = new List<CockType>();
+		public static readonly ReadOnlyCollection<CockType> availableTypes = new ReadOnlyCollection<CockType>(types);
 		public override int index => _index;
 		private readonly int _index;
+
+		public const float MAX_INITIAL_MULTIPLIER = 2.5f;
 
 		public bool hasKnot => baseKnotMultiplier != 0f;
 		public readonly float baseKnotMultiplier;
@@ -498,7 +520,7 @@ namespace CoC.Backend.BodyParts
 			ChangeType<Cock> transform, RestoreType<Cock> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
-			Utils.Clamp(ref initialKnotMultiplier, 1.1f, 2.5f);
+			Utils.Clamp(ref initialKnotMultiplier, Cock.MIN_KNOT_MULTIPLIER, MAX_INITIAL_MULTIPLIER);
 			baseKnotMultiplier = initialKnotMultiplier;
 			types.AddAt(this, _index);
 		}
@@ -541,11 +563,11 @@ namespace CoC.Backend.BodyParts
 		private class FlexiCock : CockType
 		{
 			public override bool flexibleOrStretchyCock => true;
-			public FlexiCock(CockGroup cockGroup, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc, 
-				ChangeType<Cock> transform, RestoreType<Cock> restore) : base(cockGroup, shortDesc, fullDesc, playerDesc, transform, restore) {}
+			public FlexiCock(CockGroup cockGroup, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,
+				ChangeType<Cock> transform, RestoreType<Cock> restore) : base(cockGroup, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
-			public FlexiCock(CockGroup cockGroup, float initialKnotMultiplier, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc, 
-				ChangeType<Cock> transform, RestoreType<Cock> restore) : base(cockGroup, initialKnotMultiplier, shortDesc, fullDesc, playerDesc, transform, restore) {}
+			public FlexiCock(CockGroup cockGroup, float initialKnotMultiplier, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,
+				ChangeType<Cock> transform, RestoreType<Cock> restore) : base(cockGroup, initialKnotMultiplier, shortDesc, fullDesc, playerDesc, transform, restore) { }
 		}
 	}
 }

@@ -7,10 +7,12 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
+using CoC.Backend.SaveData;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CoC.Backend.BodyParts
@@ -46,10 +48,13 @@ namespace CoC.Backend.BodyParts
 
 	public enum NavelPiercingLocation { TOP, BOTTOM }
 
+	public enum HipPiercingLocation { LEFT_TOP, LEFT_CENTER, LEFT_BOTTOM, RIGHT_TOP, RIGHT_CENTER, RIGHT_BOTTOM }
+
 	public sealed partial class Body : BehavioralSaveablePart<Body, BodyType>, IHairAware, IMultiDyeableCustomText, IPatternable, ISimultaneousMultiToneable, IMultiLotionableCustomText
 	{
 
 		private const JewelryType AVAILABLE_NAVEL_PIERCINGS = JewelryType.HORSESHOE | JewelryType.DANGLER | JewelryType.RING | JewelryType.BARBELL_STUD | JewelryType.SPECIAL;
+		private const JewelryType AVAILABLE_HIP_PIERCINGS = JewelryType.BARBELL_STUD;
 		//Hair, Fur, Tone
 		//private HairFurColors hairColor => hairData().hairColor;
 
@@ -70,7 +75,8 @@ namespace CoC.Backend.BodyParts
 		//private readonly Epidermis secondaryEpidermis;
 
 		public readonly Piercing<NavelPiercingLocation> navelPiercings;
-
+		public readonly Piercing<HipPiercingLocation> hipPiercings;
+		private bool piercingFetish => BackendSessionData.data.piercingFetish;
 		//use these if the part does not care on the state of the body, but just needs the main color. 
 
 		private readonly Epidermis mainFur; //stores the current fur that is primarily used. if it's a multi-fur, the secondary fur is stored in supplementary epidermis. if it's no-fur, this is empty.
@@ -84,7 +90,8 @@ namespace CoC.Backend.BodyParts
 
 		public override BodyType type { get; protected set; }
 
-		public override bool isDefault => type == BodyType.HUMANOID;
+		public static BodyType defaultType => BodyType.HUMANOID;
+		public override bool isDefault => type == defaultType;
 
 		private Body(BodyType bodyType)
 		{
@@ -92,12 +99,9 @@ namespace CoC.Backend.BodyParts
 
 			bodyType.Init(out mainSkin, out mainFur, out primary, out secondary);
 
-			navelPiercings = new Piercing<NavelPiercingLocation>(AVAILABLE_NAVEL_PIERCINGS, PiercingLocationUnlocked);
+			navelPiercings = new Piercing<NavelPiercingLocation>(NavelLocationUnlocked, NavelSupportedJewelry);
+			hipPiercings = new Piercing<HipPiercingLocation>(HipLocationUnlocked, HipSupportedJewelry);
 		}
-
-
-
-
 
 		#region Generate
 		internal static Body GenerateDefault()
@@ -205,6 +209,16 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Updates
 
+		internal override bool UpdateType(BodyType newType)
+		{
+			if (!UpdateHelper(newType))
+			{
+				return false;
+			}
+			type = newType;
+			return true;
+		}
+
 		internal bool UpdateBody(CockatriceBodyType cockatriceBodyType, FurTexture? featherTexture = null, SkinTexture? scaleTexture = null)
 		{
 			return UpdateBody(cockatriceBodyType, null, null, featherTexture, scaleTexture);
@@ -266,7 +280,6 @@ namespace CoC.Backend.BodyParts
 			{
 				mainFur.ChangeTexture((FurTexture)furTexture);
 			}
-
 
 			type = kitsuneBodyType;
 			return true;
@@ -455,7 +468,7 @@ namespace CoC.Backend.BodyParts
 			return UpdateBody(BodyType.HUMANOID);
 		}
 		#endregion
-		
+
 		#region Validate
 		//called after deserialization. We're making the following assumptions: If the bodyType is not null, its Init was called. this should be true, because we control
 		//deserialization, though i suppose if we use a method of serialization that doesn't call constructors, that wouldn't apply. Honestly though, using a serialization technique that
@@ -474,9 +487,25 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Piercing Helper
-		private bool PiercingLocationUnlocked(NavelPiercingLocation piercingLocation)
+
+		private JewelryType NavelSupportedJewelry(NavelPiercingLocation piercingLocation)
+		{
+			return AVAILABLE_NAVEL_PIERCINGS;
+		}
+
+		private bool NavelLocationUnlocked(NavelPiercingLocation piercingLocation)
 		{
 			return true;
+		}
+
+		private JewelryType HipSupportedJewelry(HipPiercingLocation piercingLocation)
+		{
+			return AVAILABLE_HIP_PIERCINGS;
+		}
+
+		private bool HipLocationUnlocked(HipPiercingLocation piercingLocation)
+		{
+			return piercingFetish;
 		}
 		#endregion
 		#region BodyAware
@@ -655,7 +684,7 @@ namespace CoC.Backend.BodyParts
 			}
 			//if the secondary can pattern in the future, combine the first check with this.
 			//if secondary can pattern in the future, check if the secondary uses fur, and we arent dyeing both parts. 
-			return indices.Contains<byte>(0) != indices.Contains<byte>(1); 
+			return indices.Contains<byte>(0) != indices.Contains<byte>(1);
 		}
 
 		//remember, applying a dye in a pattern is perfectly legal, even if it's the same pattern currently used. 
@@ -932,8 +961,15 @@ namespace CoC.Backend.BodyParts
 
 	public abstract partial class BodyType : SaveableBehavior<BodyType, Body>
 	{
+
+		static BodyType()
+		{
+
+		}
+
 		private static int indexMaker = 0;
 		private static readonly List<BodyType> bodyTypes = new List<BodyType>();
+		public static readonly ReadOnlyCollection<BodyType> availableTypes = new ReadOnlyCollection<BodyType>(bodyTypes);
 
 		public override int index => _index;
 		private readonly int _index;
@@ -1148,15 +1184,19 @@ namespace CoC.Backend.BodyParts
 
 			internal BodyMember(EpidermisType epidermis, SimpleDescriptor shortDesc, SimpleDescriptor descriptionText)
 			{
-				if (epidermis == null || epidermis == EpidermisType.EMPTY)
-				{
-					throw new ArgumentException();
-				}
+				epidermisType = epidermis ?? throw new ArgumentNullException(nameof(epidermis));
 
 				shortDescription = shortDesc;
-				epidermisType = epidermis;
 				dyeOrToneDescriptor = descriptionText;
 			}
+
+			//internal BodyMember()
+			//{
+			//	shortDescription = GlobalStrings.None;
+			//	epidermisType = EpidermisType.EMPTY;
+			//	dyeOrToneDescriptor = GlobalStrings.None;
+			//}
+
 			internal BodyMember(EpidermisType epidermis, SimpleDescriptor shortDesc)
 			{
 				if (epidermis == null || epidermis == EpidermisType.EMPTY)
@@ -1413,6 +1453,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	//consider making this public when dealing with the body data bullshit.
 	internal sealed class BodyData
 	{
 

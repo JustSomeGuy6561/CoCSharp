@@ -4,10 +4,12 @@
 //1/5/2019, 5:57 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Perks;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
@@ -35,11 +37,11 @@ namespace CoC.Backend.BodyParts
 
 		private PerkStatBonusGetter baseStats;
 
-		public VaginalLooseness minLooseness { get; private set; }
-		public VaginalLooseness maxLooseness { get; private set; }
+		public VaginalLooseness minLooseness => baseStats?.Invoke().minVaginalLooseness ?? VaginalLooseness.TIGHT;
+		public VaginalLooseness maxLooseness => baseStats?.Invoke().maxVaginalLooseness ?? VaginalLooseness.CLOWN_CAR_WIDE;
 
-		public VaginalWetness minWetness { get; private set; }
-		public VaginalWetness maxWetness { get; private set; }
+		public VaginalWetness minWetness => baseStats?.Invoke().minVaginalWetness ?? VaginalWetness.DRY;
+		public VaginalWetness maxWetness => baseStats?.Invoke().maxVaginalWetness ?? VaginalWetness.SLAVERING;
 
 		public VaginalWetness wetness
 		{
@@ -87,7 +89,8 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<LabiaPiercings> labiaPiercings;
 		public override VaginaType type { get; protected set; }
-		public override bool isDefault => type == VaginaType.HUMAN;
+		public static VaginaType defaultType => VaginaType.HUMAN;
+		public override bool isDefault => type == defaultType;
 
 		#region Constructors
 		private Vagina()
@@ -97,7 +100,8 @@ namespace CoC.Backend.BodyParts
 			type = VaginaType.HUMAN;
 			_wetness = VaginalWetness.NORMAL;
 			_looseness = VaginalLooseness.TIGHT;
-			labiaPiercings = new Piercing<LabiaPiercings>(SUPPORTED_LABIA_JEWELRY, PiercingLocationUnlocked);
+
+			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
 		private Vagina(float clitLength)
@@ -107,7 +111,7 @@ namespace CoC.Backend.BodyParts
 			type = VaginaType.HUMAN;
 			_wetness = VaginalWetness.NORMAL;
 			_looseness = VaginalLooseness.TIGHT;
-			labiaPiercings = new Piercing<LabiaPiercings>(SUPPORTED_LABIA_JEWELRY, PiercingLocationUnlocked);
+			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 		#endregion
 
@@ -161,9 +165,9 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Update
 
-		internal bool UpdateType(VaginaType newType)
+		internal override bool UpdateType(VaginaType newType)
 		{
-			if (type == newType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
@@ -286,116 +290,7 @@ namespace CoC.Backend.BodyParts
 			return bonusVaginalCapacity.subtract(currentCapacity);
 		}
 
-		internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
-		{
-			VaginalLooseness looseness = minLooseness;
-			minLooseness = minLooseness.ByteEnumAdd(amount);
-			if (minLooseness > maxLooseness)
-			{
-				if (forceIncreaseMax)
-				{
-					maxLooseness = minLooseness;
-				}
-				else
-				{
-					minLooseness = maxLooseness;
-				}
-			}
-			return minLooseness - looseness;
-		}
-		internal byte DecreaseMinimumLooseness(byte amount = 1)
-		{
-			VaginalLooseness looseness = minLooseness;
-			minLooseness = minLooseness.ByteEnumSubtract(amount);
-			return looseness - minLooseness;
-		}
-		internal void SetMinLoosness(VaginalLooseness newValue)
-		{
-			minLooseness = newValue;
-		}
 
-		internal byte IncreaseMaximumLooseness(byte amount = 1)
-		{
-			VaginalLooseness looseness = maxLooseness;
-			maxLooseness = maxLooseness.ByteEnumSubtract(amount);
-			return maxLooseness - looseness;
-		}
-		internal byte DecreaseMaximumLooseness(byte amount = 1, bool forceDecreaseMin = false)
-		{
-			VaginalLooseness looseness = minLooseness;
-			maxLooseness = maxLooseness.ByteEnumSubtract(amount);
-			if (minLooseness > maxLooseness)
-			{
-				if (forceDecreaseMin)
-				{
-					minLooseness = maxLooseness;
-				}
-				else
-				{
-					maxLooseness = minLooseness;
-				}
-			}
-			return looseness - maxLooseness;
-		}
-		internal void SetMaxLoosness(VaginalLooseness newValue)
-		{
-			maxLooseness = newValue;
-		}
-
-		internal byte IncreaseMinimumWetness(byte amount = 1, bool forceIncreaseMax = false)
-		{
-			VaginalWetness wetness = minWetness;
-			minWetness = minWetness.ByteEnumAdd(amount);
-			if (minWetness > maxWetness)
-			{
-				if (forceIncreaseMax)
-				{
-					maxWetness = minWetness;
-				}
-				else
-				{
-					minWetness = maxWetness;
-				}
-			}
-			return minWetness - wetness;
-		}
-		internal byte DecreaseMinimumWetness(byte amount = 1)
-		{
-			VaginalWetness wetness = minWetness;
-			minWetness = minWetness.ByteEnumSubtract(amount);
-			return wetness - minWetness;
-		}
-		internal void SetMinWetness(VaginalWetness newValue)
-		{
-			minWetness = newValue;
-		}
-		internal byte IncreaseMaximumWetness(byte amount = 1)
-		{
-			VaginalWetness wetness = maxWetness;
-			maxWetness = maxWetness.ByteEnumSubtract(amount);
-			return maxWetness - wetness;
-		}
-		internal byte DecreaseMaximumWetness(byte amount = 1, bool forceDecreaseMin = false)
-		{
-			VaginalWetness wetness = minWetness;
-			maxWetness = maxWetness.ByteEnumSubtract(amount);
-			if (minWetness > maxWetness)
-			{
-				if (forceDecreaseMin)
-				{
-					minWetness = maxWetness;
-				}
-				else
-				{
-					maxWetness = minWetness;
-				}
-			}
-			return wetness - maxWetness;
-		}
-		internal void SetMaxWetness(VaginalWetness newValue)
-		{
-			maxWetness = newValue;
-		}
 
 		#endregion
 		#region Clit Helpers
@@ -445,6 +340,26 @@ namespace CoC.Backend.BodyParts
 		{
 			return true;
 		}
+
+		private JewelryType SupportedJewelryByLocation(LabiaPiercings piercingLocation)
+		{
+			return SUPPORTED_LABIA_JEWELRY;
+		}
+
+		public bool isPierced => clit.isPierced || labiaPiercings.isPierced;
+		public bool isClitPierced => clit.isPierced;
+		public bool isLabiaPierced => labiaPiercings.isPierced;
+
+		public bool wearingAnyJewelry => clit.wearingJewelry || labiaPiercings.wearingJewelry;
+		public bool clitWearingJewelry => clit.wearingJewelry;
+		public bool labiaWearingJewelry => labiaPiercings.wearingJewelry;
+
+		internal void InitializePiercings(Dictionary<ClitPiercings, PiercingJewelry> clitPiercings, Dictionary<LabiaPiercings, PiercingJewelry> labiaPiercings)
+		{
+#warning Implement Me!
+			//throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		#endregion
 		#region ITimeListener
 
@@ -531,6 +446,127 @@ namespace CoC.Backend.BodyParts
 			baseStats = getter;
 			clit.GetBasePerkStats(getter);
 		}
+
+		internal void DoLateInit(BasePerkModifiers statModifiers)
+		{
+			wetness = statModifiers.NewVaginaDefaultWetness;
+			looseness = statModifiers.NewVaginaDefaultLooseness;
+			clit.DoLateInit(statModifiers);
+		}
+
+		#endregion
+		#region NYI or Potential Ideas
+		//min and max looseness/wetness are locked to perks. because reasons. 
+		//internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
+		//{
+		//	VaginalLooseness looseness = minLooseness;
+		//	minLooseness = minLooseness.ByteEnumAdd(amount);
+		//	if (minLooseness > maxLooseness)
+		//	{
+		//		if (forceIncreaseMax)
+		//		{
+		//			maxLooseness = minLooseness;
+		//		}
+		//		else
+		//		{
+		//			minLooseness = maxLooseness;
+		//		}
+		//	}
+		//	return minLooseness - looseness;
+		//}
+		//internal byte DecreaseMinimumLooseness(byte amount = 1)
+		//{
+		//	VaginalLooseness looseness = minLooseness;
+		//	minLooseness = minLooseness.ByteEnumSubtract(amount);
+		//	return looseness - minLooseness;
+		//}
+		//internal void SetMinLoosness(VaginalLooseness newValue)
+		//{
+		//	minLooseness = newValue;
+		//}
+
+		//internal byte IncreaseMaximumLooseness(byte amount = 1)
+		//{
+		//	VaginalLooseness looseness = maxLooseness;
+		//	maxLooseness = maxLooseness.ByteEnumSubtract(amount);
+		//	return maxLooseness - looseness;
+		//}
+		//internal byte DecreaseMaximumLooseness(byte amount = 1, bool forceDecreaseMin = false)
+		//{
+		//	VaginalLooseness looseness = minLooseness;
+		//	maxLooseness = maxLooseness.ByteEnumSubtract(amount);
+		//	if (minLooseness > maxLooseness)
+		//	{
+		//		if (forceDecreaseMin)
+		//		{
+		//			minLooseness = maxLooseness;
+		//		}
+		//		else
+		//		{
+		//			maxLooseness = minLooseness;
+		//		}
+		//	}
+		//	return looseness - maxLooseness;
+		//}
+		//internal void SetMaxLoosness(VaginalLooseness newValue)
+		//{
+		//	maxLooseness = newValue;
+		//}
+
+		//internal byte IncreaseMinimumWetness(byte amount = 1, bool forceIncreaseMax = false)
+		//{
+		//	VaginalWetness wetness = minWetness;
+		//	minWetness = minWetness.ByteEnumAdd(amount);
+		//	if (minWetness > maxWetness)
+		//	{
+		//		if (forceIncreaseMax)
+		//		{
+		//			maxWetness = minWetness;
+		//		}
+		//		else
+		//		{
+		//			minWetness = maxWetness;
+		//		}
+		//	}
+		//	return minWetness - wetness;
+		//}
+		//internal byte DecreaseMinimumWetness(byte amount = 1)
+		//{
+		//	VaginalWetness wetness = minWetness;
+		//	minWetness = minWetness.ByteEnumSubtract(amount);
+		//	return wetness - minWetness;
+		//}
+		//internal void SetMinWetness(VaginalWetness newValue)
+		//{
+		//	minWetness = newValue;
+		//}
+		//internal byte IncreaseMaximumWetness(byte amount = 1)
+		//{
+		//	VaginalWetness wetness = maxWetness;
+		//	maxWetness = maxWetness.ByteEnumSubtract(amount);
+		//	return maxWetness - wetness;
+		//}
+		//internal byte DecreaseMaximumWetness(byte amount = 1, bool forceDecreaseMin = false)
+		//{
+		//	VaginalWetness wetness = minWetness;
+		//	maxWetness = maxWetness.ByteEnumSubtract(amount);
+		//	if (minWetness > maxWetness)
+		//	{
+		//		if (forceDecreaseMin)
+		//		{
+		//			minWetness = maxWetness;
+		//		}
+		//		else
+		//		{
+		//			maxWetness = minWetness;
+		//		}
+		//	}
+		//	return wetness - maxWetness;
+		//}
+		//internal void SetMaxWetness(VaginalWetness newValue)
+		//{
+		//	maxWetness = newValue;
+		//}
 		#endregion
 	}
 
@@ -538,6 +574,7 @@ namespace CoC.Backend.BodyParts
 	{
 		private static int indexMaker = 0;
 		private static readonly List<VaginaType> types = new List<VaginaType>();
+		public static readonly ReadOnlyCollection<VaginaType> availableTypes = new ReadOnlyCollection<VaginaType>(types);
 		public readonly int typeCapacityBonus;
 		private VaginaType(int capacityBonus,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Vagina> fullDesc, TypeAndPlayerDelegate<Vagina> playerDesc,

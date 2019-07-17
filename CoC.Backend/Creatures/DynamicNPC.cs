@@ -6,12 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Backend.Creatures.Creators
+namespace CoC.Backend.Creatures
 {
-	//NOTE: This is 100% not implemented or tested in game. but if you want dynamic NPCs that exist in game (generally Randomly or Proceduraly generated)
-	//that have their own adventures (or simulated ones, again random or procedural), and therefore react to certain things (like being pregnant or eating a TF item or whatever)
-	//feel free to use this. Note that if you do you're essentially creating a whole new experience, and that's frankly a lot of work. Not gonna lie, that'd be cool as hell, but 
-	//it's well out of my skillset, so you'd well and truly be on your own. 
+	//NOTE: This is untested, but should work. This would allow you to create NPCs that can update or change, just like the player. It'd be useful to simulate
+	//other, random inhabitants of Mareth or possibly other adventurers. As of now, NPCs don't need this, as they can just be hard-coded or "hacked" in. 
+	//For example: We always know what Urta looks like, so we don't need the whole creature class for her - maybe just the Genitals class if we want to use it for fertility and such.
+	//as such, we can get away with describing Urta manually, as we aren't going to use the generic text anyway. 
+	//Even the more complicated cases, like Katherine or Rubi, which do change appearance based on what the PC gives them, can be stored in a few variables and parsed manually.
+	//Of course, if doing so is too complicated (katherine, for example, is a complicated mess to the uninformed), you can always use this - the cost really isn't that bad, all things considered. 
+	//Alternatively, you may add a character that is genuinely dynamic - they may completely change their appearance over time, possibly w/o the player causing it - that would likely require this.
+	//Note, you can derive this class and add stuff beyond the base creature class, like a custom womb, for example. 
 
 	public class DynamicNPC : Creature
 	{

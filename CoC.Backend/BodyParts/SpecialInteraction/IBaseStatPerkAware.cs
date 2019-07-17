@@ -9,7 +9,7 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {
-	internal delegate PassiveBaseStatModifiers PerkStatBonusGetter();
+	public delegate BasePerkModifiers PerkStatBonusGetter();
 	internal interface IBaseStatPerkAware
 	{
 		void GetBasePerkStats(PerkStatBonusGetter getter);

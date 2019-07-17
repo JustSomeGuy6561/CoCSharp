@@ -10,7 +10,7 @@ namespace CoC.Backend.CoC_Colors
 {
 	public enum FurMulticolorPattern { NO_PATTERN, STRIPED, SPOTTED, MIXED }
 
-	public class FurColor : IEquatable<FurColor>
+	public class FurColor : IEquatable<FurColor>, IEquatable<HairFurColors>
 	{
 		public FurMulticolorPattern multiColorPattern { get; protected set; }
 		public HairFurColors primaryColor { get; protected set; }
@@ -122,20 +122,9 @@ namespace CoC.Backend.CoC_Colors
 
 		public bool IsIdenticalTo(HairFurColors hairColor)
 		{
-			return (isEmpty && hairColor.isEmpty) || (!isMultiColored && hairColor == primaryColor);
+			return (isEmpty && hairColor?.isEmpty == true) || (!isMultiColored && hairColor == primaryColor);
 		}
 
-		public static bool operator ==(FurColor first, FurColor second)
-		{
-			return first.primaryColor == second.primaryColor && first.secondaryColor == second.secondaryColor && first.multiColorPattern == second.multiColorPattern;
-		}
-
-		public static bool operator !=(FurColor first, FurColor second)
-		{
-			return first.primaryColor != second.primaryColor || first.secondaryColor != second.secondaryColor || first.multiColorPattern == second.multiColorPattern;
-		}
-
-		//ToDo: move these strings to a strings class.
 		public string AsString()
 		{
 			if (!isMultiColored)
@@ -160,14 +149,6 @@ namespace CoC.Backend.CoC_Colors
 			}
 		}
 
-		public override bool Equals(object obj)
-		{
-			var color = obj as FurColor;
-			return color != null &&
-				   multiColorPattern == color.multiColorPattern &&
-				   EqualityComparer<HairFurColors>.Default.Equals(primaryColor, color.primaryColor) &&
-				   EqualityComparer<HairFurColors>.Default.Equals(secondaryColor, color.secondaryColor);
-		}
 
 		public bool Equals(FurColor color)
 		{
@@ -177,13 +158,9 @@ namespace CoC.Backend.CoC_Colors
 				   EqualityComparer<HairFurColors>.Default.Equals(secondaryColor, color.secondaryColor);
 		}
 
-		public override int GetHashCode()
+		public bool Equals(HairFurColors other)
 		{
-			var hashCode = -1882447767;
-			hashCode = hashCode * -1521134295 + multiColorPattern.GetHashCode();
-			hashCode = hashCode * -1521134295 + EqualityComparer<HairFurColors>.Default.GetHashCode(primaryColor);
-			hashCode = hashCode * -1521134295 + EqualityComparer<HairFurColors>.Default.GetHashCode(secondaryColor);
-			return hashCode;
+			return IsIdenticalTo(other);
 		}
 	}
 
@@ -204,5 +181,47 @@ namespace CoC.Backend.CoC_Colors
 			}
 			throw new NotImplementedException("A new fur pattern was added, but the AsString function was not updated.");
 		}
+	}
+
+	public class ReadOnlyFurColor : IEquatable<ReadOnlyFurColor>, IEquatable<FurColor>, IEquatable<HairFurColors>
+	{
+		public readonly HairFurColors primary;
+		public readonly HairFurColors secondary;
+		public readonly FurMulticolorPattern pattern;
+
+		public bool isMultiColored => !secondary.isEmpty && primary != secondary;
+
+
+		public ReadOnlyFurColor(FurColor source)
+		{
+
+			primary = source?.primaryColor ?? HairFurColors.NO_HAIR_FUR;
+			secondary = source?.secondaryColor ?? HairFurColors.NO_HAIR_FUR;
+			pattern = source?.multiColorPattern ?? FurMulticolorPattern.NO_PATTERN;
+		}
+
+		public static ReadOnlyFurColor GenerateAllowNulls(FurColor source)
+		{
+			if (source == null)
+			{
+				return null;
+			}
+			return new ReadOnlyFurColor(source);
+		}
+
+		public bool Equals(ReadOnlyFurColor other)
+		{
+			return other != null && primary == other.primary && secondary == other.secondary && pattern == other.pattern;
+		}
+		public bool Equals(FurColor other)
+		{
+			return other != null && primary == other.primaryColor && secondary == other.secondaryColor && pattern == other.multiColorPattern;
+		}
+
+		public bool Equals(HairFurColors other)
+		{
+			return other != null && primary == other && secondary.isEmpty;
+		}
+
 	}
 }

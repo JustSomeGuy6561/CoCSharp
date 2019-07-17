@@ -281,8 +281,10 @@ Restore() : boolean function. takes nothing
 this sets your type back to the default. if it already was default, return false.
 otherwise return true.
 _________________________________________
-GenerateDefault() : MyDataClass function. takes nothing
-returns a new instance of your data class. fill it with the default type and set any values to their defaults, using the default type
+GenerateDefault(<optional values = null>) : MyDataClass function.
+returns a new instance of your data class. fill it with the default type and set any values to their defaults, using the default type. Note that generally, it's expected that a default type won't have any variables,
+	but it's possible for even a default type to be able to parse data. for example, the body class defaults to HUMANOID, which could use a skin tone and skin complexion, so we should allow the default generator to
+	allow us to pass those in. However, if we don't know those, we obviously can't pass them in, so this function needs to either provide default values or be overloaded with a version that takes no parameters.
 _________________________________________
 GenerateDefaultOfType(MyBehaviorClass type) MyDataClass function. takes a behavior class type.
 returns a new instance of your data class, but with the type set to whatever's passed in. values are set according to this passed in type.

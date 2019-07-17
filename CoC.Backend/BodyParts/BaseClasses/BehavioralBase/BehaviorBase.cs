@@ -17,7 +17,7 @@ namespace CoC.Backend.BodyParts
 		public readonly SimpleDescriptor shortDescription;
 		private protected BehaviorBase(SimpleDescriptor shortDesc)
 		{
-			shortDescription = shortDesc;
+			shortDescription = shortDesc ?? throw new ArgumentNullException(nameof(shortDesc));
 		}
 	}
 }

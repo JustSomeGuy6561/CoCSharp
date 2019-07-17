@@ -27,7 +27,12 @@ namespace CoC.Backend.Areas
 			}
 		}
 
-		internal void LoadPlace()
+		internal override void RunArea()
+		{
+			LoadPlace();
+		}
+
+		protected virtual void LoadPlace()
 		{
 			bool interrupted = false;
 			foreach (var interrupt in interrupts)

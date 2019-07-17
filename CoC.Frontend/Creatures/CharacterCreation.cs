@@ -129,6 +129,10 @@ namespace CoC.Frontend.Creatures
 			if (creator.libido == null) creator.libido = 15;
 			if (creator.corruption == null) creator.corruption = 15;
 
+			//clean up any invalid data set in the player creator.
+			creator.womb = new PlayerWomb();
+			if (creator.lowerBodyType == LowerBodyType.NO_LEG_MONSTERS) creator.lowerBodyType = null;
+			creator.artificiallyInfertile = false;
 
 			//move these do player constructor. afaik theres not reason not to have these as default. 
 			//if (creator.lust == null) creator.lust = 15;

@@ -10,6 +10,7 @@ using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
@@ -106,7 +107,7 @@ namespace CoC.Backend.BodyParts
 
 		public float length
 		{
-			get => length;
+			get => _length;
 			private set => _length = Utils.Clamp2(value, MIN_LENGTH, MAX_LENGTH);
 		}
 		private float _length = 10;
@@ -137,20 +138,11 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Constructors
-		private Hair()
-		{
-			length = 0.0f;
-			type = HairType.NO_HAIR;
-			hairColor = type.defaultColor;
-			highlightColor = HairFurColors.NO_HAIR_FUR;
-			isSemiTransparent = false;
-			style = HairStyle.NO_STYLE;
-		}
 
 		private Hair(HairType hairType)
 		{
-			type = hairType;
-			length = type.defaultHairLength;
+			_type = hairType ?? throw new ArgumentNullException(nameof(hairType));
+			_length = type.defaultHairLength;
 			hairColor = type.defaultColor;
 			isSemiTransparent = false;
 			style = HairStyle.NO_STYLE;
@@ -173,7 +165,8 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private HairType _type;
-		public override bool isDefault => type == HairType.NORMAL;
+		public static HairType defaultType => HairType.NORMAL;
+		public override bool isDefault => type == defaultType;
 		#endregion
 		#region  Generate
 
@@ -215,9 +208,9 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Update
 
-		internal bool UpdateType(HairType newType)
+		internal override bool UpdateType(HairType newType)
 		{
-			if (type == newType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
@@ -233,7 +226,7 @@ namespace CoC.Backend.BodyParts
 		//this is to prevent overriding when calling the tf on change effects. 
 		internal bool UpdateType(HairType newType, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null, float? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
 		{
-			if (type == newType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
@@ -246,26 +239,27 @@ namespace CoC.Backend.BodyParts
 				//if we can cut it and our new length is shorter, or if we can lengthen and our length is longer, the length is not already correct
 				if ((type.canCut && validLength < length) || (type.canLengthen && validLength > length) || (validLength != length && ignoreCanLengthenOrCut))
 				{
-					ChangeHairLength(validLength);
+					SetHairLength(validLength);
 				}
 				//otherwise, we can't do anything or we're already the correct length, so do nothing.
 			}
 			if (!HairFurColors.IsNullOrEmpty(newHairColor))
 			{
-				ChangeHairColor(newHairColor);
+				SetHairColor(newHairColor);
 			}
 			if (newHighlightColor != null)
 			{
-				ChangeHighlightColor(newHighlightColor);
+				SetHighlightColor(newHighlightColor);
 			}
 			if (newStyle != null)
 			{
-				ChangeHairStyle((HairStyle)newStyle);
+				SetHairStyle((HairStyle)newStyle);
 			}
 			return true;
 		}
 
-		internal bool ChangeHairColor(HairFurColors newHairColor, bool clearHighlights = false)
+		//only returns false if it cannot 
+		internal bool SetHairColor(HairFurColors newHairColor, bool clearHighlights = false)
 		{
 			if (!type.canDye)
 			{
@@ -275,7 +269,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal bool ChangeHighlightColor(HairFurColors newHighlightColor)
+		internal bool SetHighlightColor(HairFurColors newHighlightColor)
 		{
 			if (!type.canDye)
 			{
@@ -286,15 +280,15 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//returns false if either fail. returns true if both succeed. as of now, it's either both or none, though.
-		internal bool ChangeBothHairColors(HairFurColors hairColor, HairFurColors highlightColor)
+		internal bool SetBothHairColors(HairFurColors hairColor, HairFurColors highlightColor)
 		{
 			//single &: force both to run. double &: don't run right if left is false. 99% of time && is ideal. not here.
-			return ChangeHairColor(hairColor) & ChangeHighlightColor(highlightColor);
+			return SetHairColor(hairColor) & SetHighlightColor(highlightColor);
 		}
 
 		//sets the hair style to the new value, returning true if the hairStyle is now the newStyle.
 		//will return false if the current hair type cannot be styled.
-		internal bool ChangeHairStyle(HairStyle newStyle)
+		internal bool SetHairStyle(HairStyle newStyle)
 		{
 			if (type.canStyle)
 			{
@@ -311,7 +305,7 @@ namespace CoC.Backend.BodyParts
 		//variables such as can cut or can lengthen will be ignored. 
 		//of course, if the type has a single, fixed size for hair length, this will not be possible, and therefore return false.
 		//otherwise, it will return true. 
-		internal bool ChangeHairLength(float newLength)
+		internal bool SetHairLength(float newLength)
 		{
 			if (type.isFixedLength)
 			{
@@ -320,6 +314,12 @@ namespace CoC.Backend.BodyParts
 			length = newLength;
 			return true;
 
+		}
+
+		internal bool SetTransparency(bool isTransparent)
+		{
+			isSemiTransparent = isTransparent;
+			return true;
 		}
 
 		//Use these if you want to directly change your hair's length. if you want to do it naturally, alter the growth rate.
@@ -568,7 +568,8 @@ namespace CoC.Backend.BodyParts
 
 	public abstract partial class HairType : SaveableBehavior<HairType, Hair>
 	{
-		private static List<HairType> hairTypes = new List<HairType>();
+		private static readonly List<HairType> hairTypes = new List<HairType>();
+		private static readonly ReadOnlyCollection<HairType> availableTypes = new ReadOnlyCollection<HairType>(hairTypes);
 		private static int indexMaker = 0;
 
 
@@ -755,7 +756,7 @@ namespace CoC.Backend.BodyParts
 			//one exception is that some hair types act differently when transforming. some keep the hair length, some reset it to a specific length, 
 			//and still others force the hair to be at least a certain length, or they will grow to that length. So, we use a function callback here to set the size on transform
 			//and this solves our problem. 
-			private readonly Func<float, float> ChangeHairLengthOnTransform;
+			private readonly Func<float, float> SetHairLengthOnTransform;
 
 			//this allows you to define text for magically growing hair, or cutting hair. It's supposed to be useable for anything, but right now the only place this happens is the hair salon.
 			//i'll modify existing text to a sort of generic intro text for both the hair you can cut, and the hair you can't. this will be appended on to it. 
@@ -771,7 +772,7 @@ namespace CoC.Backend.BodyParts
 				SimpleDescriptor cutStr, ChangeType<Hair> transform, RestoreType<Hair> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, fullDesc, playerDesc, growStr, cutStr, transform, restore)
 			{
-				ChangeHairLengthOnTransform = handleHairLengthOnTransform;
+				SetHairLengthOnTransform = handleHairLengthOnTransform;
 			}
 
 			public override bool growsOverTime => true;
@@ -796,7 +797,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override void changeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle)
 			{
-				length = ChangeHairLengthOnTransform(length);
+				length = SetHairLengthOnTransform(length);
 				if (HairFurColors.IsNullOrEmpty(primaryColor))
 				{
 					primaryColor = defaultColor;

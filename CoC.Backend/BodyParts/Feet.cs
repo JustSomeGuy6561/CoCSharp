@@ -20,7 +20,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateType(FootType newType)
 		{
-			if (type == newType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}

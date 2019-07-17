@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Perks;
 using System.Collections.Generic;
 
 namespace CoC.Backend.Creatures
@@ -57,7 +58,7 @@ namespace CoC.Backend.Creatures
 		public EarType earType;
 		//Face
 		public FaceType faceType;
-		public bool isFullMorph = false;
+		public bool? isFaceFullMorph = null;
 		//Eyes
 		public EyeType eyeType;
 		//Gills
@@ -104,6 +105,7 @@ namespace CoC.Backend.Creatures
 		//Body
 		public SkinTexture? skinTexture = null;
 		public Dictionary<NavelPiercingLocation, PiercingJewelry> navelPiercings = null;
+		//may add hip piercings because that's a thing (in my experience it's more popular in erotic art than reality, but this is a fantasy game and my experience isn't global)
 		//Ears
 		public Dictionary<EarPiercings, PiercingJewelry> earPiercings = null;
 		//Face
@@ -120,7 +122,7 @@ namespace CoC.Backend.Creatures
 		public HairFurColors hairColor;
 		public HairFurColors hairHighlightColor;
 		public float? hairLength = null;
-		public HairStyle hairStyle = HairStyle.NO_STYLE;
+		public HairStyle? hairStyle = null;
 		//Tongue
 		public Dictionary<TonguePiercingLocation, PiercingJewelry> tonguePiercings = null;
 
@@ -143,6 +145,7 @@ namespace CoC.Backend.Creatures
 
 		//You have the option to set a default gender. Players have the ability to override this, however. You can prevent this by setting the forceDefaultGender to true.
 		//If defaultGender is null, force default is ignored. Note that this is the only means for Neuter characters being created, as it's not an option in game. 
+		//Note that for non-player characters, we will default to Male, though this is really not ideal imo. 
 		public Gender? defaultGender = null;
 		public bool forceDefaultGender = false;
 
@@ -165,6 +168,18 @@ namespace CoC.Backend.Creatures
 		public byte? numBalls;
 		public byte? ballSize;
 
+		//Womb
+
+		//Note: womb is a weird edge case, I'm aware. Short version: if womb is not expressly set (or null), it checks the canImpregnateIfFemale boolean. 
+		//if this is true, it will generate the default, Generic Womb, that allows this creature to get pregnant if they have a vagina, and potentially anally pregnant
+		//if they have an ass, and the source creature attempting the anal pregnancy has satyr sexuality (or the equivalent thereof). 
+		//if it is false, it will generate an Empty Womb, which prevents the creature from getting pregnant ever. 
+		//Of course, if womb is set, it will be used and the canImpregnateIfFemale bool will be ignored.
+		//Additionally, Special Player Characters should not bother with this value, as it will be ignored. The player will always use the special PlayerWomb.
+		public bool canImpregnateIfFemale = true;
+		public Womb womb;
+
+
 		//BUILD:
 
 		//Using the above gender information, the build is then determined. 
@@ -181,6 +196,10 @@ namespace CoC.Backend.Creatures
 
 		//Femininity 
 		public byte? femininity;
+		//Fertility
+		public byte? fertility;
+		public bool artificiallyInfertile = false; //taking contraceptives or something? ignored for player characters. 
+		
 		//Build data
 		public byte? thickness;
 		public byte? tone;
@@ -194,5 +213,7 @@ namespace CoC.Backend.Creatures
 		public bool blackNipples = false;
 		public bool quadNipples = false;
 		public float lactationMultiplier = 0;
+
+		public List<PerkBase> perks;
 	}
 }

@@ -4,6 +4,7 @@
 //1/6/2019, 1:27 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 
@@ -42,13 +43,24 @@ namespace CoC.Backend.BodyParts
 
 		public const float LACTATION_THRESHOLD = 1f;
 
-		public const short INVERTED_COUNTDOWN_TIMER = 24 * 7 / 2; //3.5 Days.
+		internal const ushort INVERTED_COUNTDOWN_TIMER = 24 * 7 / 2; //3.5 Days.
 
 
 		//i guess we'll call tassels danglers - idk. 
-		public const JewelryType SUPPORTED_NIPPLE_JEWELRY = JewelryType.RING | JewelryType.BARBELL_STUD | JewelryType.SPECIAL | JewelryType.DANGLER | JewelryType.HORSESHOE;
 
-		public NippleStatus nippleStatus { get; private set; }
+		public NippleStatus nippleStatus
+		{
+			get => _nippleStatus;
+			private set
+			{
+				if (value != _nippleStatus && (value == NippleStatus.FULLY_INVERTED || value == NippleStatus.SLIGHTLY_INVERTED))
+				{
+					SetupPiercingMagic();
+				}
+				_nippleStatus = value;
+			}
+		}
+		private NippleStatus _nippleStatus;
 		public float length
 		{
 			get => _length;
@@ -61,6 +73,9 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<NipplePiercings> nipplePiercing;
 
+		public bool isPierced => nipplePiercing.isPierced;
+		public bool wearingJewelry => nipplePiercing.wearingJewelry;
+
 		private Nipples()
 		{
 			nippleStatus = NippleStatus.NORMAL;
@@ -68,7 +83,9 @@ namespace CoC.Backend.BodyParts
 			blackNipples = false;
 			quadNipples = false;
 
-			nipplePiercing = new Piercing<NipplePiercings>(SUPPORTED_NIPPLE_JEWELRY, PiercingLocationUnlocked);
+			nipplePiercing = new Piercing<NipplePiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+
+			SetupPiercingMagic();
 		}
 
 		internal static Nipples Generate()
@@ -147,6 +164,60 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
+		private JewelryType SupportedJewelryByLocation(NipplePiercings piercingLocation)
+		{
+			switch (piercingLocation)
+			{
+				case NipplePiercings.LEFT_HORIZONTAL:
+				case NipplePiercings.RIGHT_HORIZONTAL:
+					//i guess we'll consider tassels danglers, idk.
+					return JewelryType.RING | JewelryType.BARBELL_STUD | JewelryType.SPECIAL | JewelryType.DANGLER | JewelryType.HORSESHOE;
+				default:
+					return JewelryType.BARBELL_STUD | JewelryType.SPECIAL;
+			}
+		}
+
+		public bool EquipOrPierceAt(NipplePiercings piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
+		{
+			bool retVal = nipplePiercing.EquipPiercingJewelryAndPierceIfNotPierced(piercingLocation, jewelry, forceIfEnabled);
+			SetupPiercingMagic();
+			return retVal;
+		}
+		public bool EquipPiercingJewelry(NipplePiercings piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
+		{
+			bool retVal = nipplePiercing.EquipPiercingJewelry(piercingLocation, jewelry, forceIfEnabled);
+			SetupPiercingMagic();
+			return retVal;
+		}
+		public bool Pierce(NipplePiercings location, PiercingJewelry jewelry)
+		{
+			bool retVal = nipplePiercing.Pierce(location, jewelry);
+			SetupPiercingMagic();
+			return retVal;
+		}
+
+		public PiercingJewelry RemovePiercingJewelry(NipplePiercings location, bool forceRemove = false)
+		{
+			PiercingJewelry jewelry = nipplePiercing.RemovePiercingJewelry(location, forceRemove);
+			SetupPiercingMagic();
+			return jewelry;
+		}
+
+		private void SetupPiercingMagic()
+		{
+			if (wearingJewelry && (nippleStatus == NippleStatus.SLIGHTLY_INVERTED || nippleStatus == NippleStatus.FULLY_INVERTED))
+			{
+				if (invertedNippleCounter == null)
+				{
+					invertedNippleCounter = 0;
+				}
+			}
+			else
+			{
+				invertedNippleCounter = null;
+			}
+		}
+
 		#region GrowShrink
 		bool IGrowShrinkable.CanGrowPlus()
 		{
@@ -199,41 +270,50 @@ namespace CoC.Backend.BodyParts
 		{
 			aware.GetBasePerkStats(getter);
 		}
+
+		internal void DoLateInit(BasePerkModifiers statModifiers)
+		{
+			length = statModifiers.NewNippleDefaultLength + statModifiers.NewNippleSizeDelta;
+		}
+
 		#endregion
 
-		//revert inverted nipple with piercing countdown/countup timer.
-		//	public void ReactToTimePassing(uint hoursPassed)
-		//	{
-		//		//if you're fully inverted, pull it out slightly immediately.
-		//		if (nippleStatus == NippleStatus.FULLY_INVERTED && currentJewelryCount > 0)
-		//		{
-		//			nippleStatus = NippleStatus.SLIGHTLY_INVERTED;
-		//		}
-		//		//if it's slightly inverted, pierced, and the countdown is > 0, decrement the counter
-		//		else if (nippleStatus.IsInverted() && currentJewelryCount > 0 && invertedNippleCountDown > 0)
-		//		{
-		//			invertedNippleCountDown -= (short)hoursPassed;
-		//			if (invertedNippleCountDown < 0)
-		//			{
-		//				invertedNippleCountDown = 0;
-		//				nippleStatus = NippleStatus.NORMAL;
-		//			}
-		//		}
-		//		//if slightly inverted, pierced, and countdown is <= 0, revert to normal.
-		//		else if (nippleStatus.IsInverted() && currentJewelryCount > 0)
-		//		{
-		//			nippleStatus = NippleStatus.NORMAL;
-		//		}
-		//		//if slightly inverted, countdown started, but it's no longer pierced, increment the count.
-		//		else if (nippleStatus.IsInverted() && currentJewelryCount == 0 && invertedNippleCountDown < INVERTED_COUNTDOWN_TIMER)
-		//		{
-		//			invertedNippleCountDown += (short)hoursPassed;
-		//			if (invertedNippleCountDown > INVERTED_COUNTDOWN_TIMER)
-		//			{
-		//				invertedNippleCountDown = INVERTED_COUNTDOWN_TIMER;
-		//			}
-		//		}
-		//	}
+		private ushort? invertedNippleCounter = null;
+
+		internal bool DoPiercingTimeNonsense(bool isPlayer, byte hoursPassed, bool hasOtherBreastRows, out string output)
+		{
+
+
+			if (nippleStatus == NippleStatus.FULLY_INVERTED && wearingJewelry)
+			{
+				nippleStatus = NippleStatus.SLIGHTLY_INVERTED;
+				output = NipplesLessInvertedDueToPiercingInThem(hasOtherBreastRows);
+				invertedNippleCounter = 0;
+				return true;
+			}
+			else if (invertedNippleCounter != null)
+			{
+				invertedNippleCounter = ((ushort)invertedNippleCounter).add(hoursPassed);
+				if (invertedNippleCounter > INVERTED_COUNTDOWN_TIMER)
+				{
+					nippleStatus = NippleStatus.NORMAL;
+					output = NipplesNoLongerInvertedDueToPiercingInThem(hasOtherBreastRows);
+					invertedNippleCounter = null;
+					return true;
+				}
+				else
+				{
+					output = "";
+					return false;
+				}
+			}
+			else
+			{
+				invertedNippleCounter = null;
+				output = "";
+				return false;
+			}
+		}
 
 		//	//logic: if not normal or inverted, but small enough to be fully inverted => fully inverted
 		//	//same as above, but too large for fully inverted, but too small to be fuckable => slightly inverted

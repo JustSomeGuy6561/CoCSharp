@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //4/25/2019, 12:30 AM
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Items.Materials;
+using CoC.Backend.Items.Wearables.Piercings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,6 +60,20 @@ namespace CoC.Backend.BodyParts
 				return primary;
 			}
 			else return fallback;
+		}
+
+		public static PiercingJewelry GenerateNavelJewelry(this Body body, NavelPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		{
+			if (body.navelPiercings.CanWearThisJewelryType(location, jewelryType))
+			{
+				return new GenericPiercing(jewelryType, jewelryMaterial);
+			}
+			return null;
+		}
+
+		public static PiercingJewelry GenerateHipJewelry(this Body body, JewelryMaterial jewelryMaterial)
+		{
+			return new NonRemovablePiercing(JewelryType.BARBELL_STUD, jewelryMaterial);
 		}
 	}
 }

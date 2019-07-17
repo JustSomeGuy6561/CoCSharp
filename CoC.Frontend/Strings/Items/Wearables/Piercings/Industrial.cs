@@ -12,6 +12,6 @@ namespace CoC.Frontend.Strings.Items.Wearables.Piercings
 {
 	public sealed class Industrial : PiercingJewelry
 	{
-		public Industrial(JewelryMaterial jewelryMaterial) : base(JewelryType.SPECIAL, jewelryMaterial, false) {}
+		public Industrial(JewelryMaterial jewelryMaterial) : base(JewelryType.SPECIAL, jewelryMaterial, true) {}
 	}
 }

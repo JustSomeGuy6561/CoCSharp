@@ -38,5 +38,7 @@ namespace CoC.Frontend.SaveData
 
 		internal bool TamaniIsDisabled = false;
 
+		internal bool SillyMode = false;
+
 	}
 }

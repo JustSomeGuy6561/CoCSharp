@@ -3,10 +3,6 @@
 //Author: JustSomeGuy
 //6/30/2019, 7:45 PM
 using CoC.Backend.BodyParts;
-using CoC.Backend.Creatures;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoC.Backend.Perks
 {
@@ -29,7 +25,7 @@ namespace CoC.Backend.Perks
 	//You can, of course, simply ignore this, and just do what you normally do, and add checks to the time events, but this is cleaner.
 
 	//A few non-perk examples:
-	
+
 	//For example, a Weapon may subscribe to the Strength attribute when equipped. If the player drops below a certain strength level, the Weapon generates a Reaction that uneqipts the weapon and returns it
 	//to your inventory, and unsubscribes to the strength attribute. It also notifies the player that they're too weak to lift it with some unique flavor text.
 
@@ -43,7 +39,7 @@ namespace CoC.Backend.Perks
 	//WARNING: Beware of runaway changes/self referencing/infinite loops. It's generally bad practice to change something that just notified you it changed - that'll cause it to notify you it changed AGAIN
 	//(because it did change again). If you're not careful when doing this, it'll cause an infinite loop. So, in the above example of Bro/Bimbo/Futa perks, immediately adding back the missing junk would cause
 	//it to notify you it changed again. In this case, we need to do it, so we need to make sure the _second_ time it notifies us we just ignore it. 
-	
+
 	//Even worse is a contradiction - imagine you had A perk that forced you to be female, and thus removed all cocks, while at the same time having Bro Body, which forces you to have a cock. These two would
 	//constantly interact, hanging the game. The first would remove a cock, causing the GenitalsChanged to fire, which would proc the Bro Body perk, which would add the cock back, again causing the GenitalsChanged
 	//to fire, which would proc the FemaleOnly perk to proc, which would remove the cock, and so on. 
@@ -52,7 +48,12 @@ namespace CoC.Backend.Perks
 	//But be careful you aren't causing infinite loops, either by contradicting something else, or by creating a situation where your changes cause you to get notified again (which causes you to change them again, etc)
 	//If this scares you or is beyond your current programming level, feel free to do it the old way. 
 
-	public sealed class PassiveBaseStatModifiers
+	//NOTE: every one of these is likely to be altered, as no validation occurs on the data - multiple perks that stack one stat could incorrectly set a value if they didnt realize 
+	//another perk had already or has since updated the value. I'm just jotting these down like this so i can get something working for now - i'll worry about validation later. 
+	//we also need to update values that depend on these. for example, if the minimum speed is updated (or any min value), the corresponding creature's speed (or equivalent) must
+	//be checked and updated if necessary to reflect this new minimum. 
+	
+	public abstract class BasePerkModifiers
 	{
 		//The game uses the following variables to 
 
@@ -62,34 +63,60 @@ namespace CoC.Backend.Perks
 		//new way of dealing with initial endowments - they are permanent. so if you pick smart, you get +5 int and your min intelligence is now 5.
 
 		public ushort bonusMaxHP;
-		
+
 		public byte minStrength;
 		public sbyte bonusMaxStrength;
+		public float StrengthGainMultiplier = 1.0f;
+		public float StrengthLossMultiplier = 1.0f;
 
 		public byte minSpeed;
 		public sbyte bonusMaxSpeed;
+		public float SpeedGainMultiplier = 1.0f;
+		public float SpeedLossMultiplier = 1.0f;
 
 		public byte minIntelligence;
 		public sbyte bonusMaxIntelligence;
+		public float IntelligenceGainMultiplier = 1.0f;
+		public float IntelligenceLossMultiplier = 1.0f;
 
 		public byte minToughness;
 		public sbyte bonusMaxToughness;
+		public float ToughnessGainMultiplier = 1.0f;
+		public float ToughnessLossMultiplier = 1.0f;
 
 		public byte minSensitivity;
 		public sbyte bonusMaxSensitivity;
+		public float SensitivityGainMultiplier = 1.0f;
+		public float SensitivityLossMultiplier = 1.0f;
 
 		public byte minLust;
 		public sbyte bonusMaxLust;
+		public float LustGainMultiplier = 1.0f;
+		public float LustLossMultiplier = 1.0f;
 
 		public byte minLibido;
 		public sbyte bonusMaxLibido;
+		public float LibidoGainMultiplier = 1.0f;
+		public float LibidoLossMultiplier = 1.0f;
 
 		public byte minCorruption;
+		public float CorruptionGainMultiplier = 1.0f;
+		public float CorruptionLossMultiplier = 1.0f;
 		public sbyte bonusMaxCorruption;
 
 		public sbyte bonusMaxFatigue;
 
 		public sbyte bonusMaxHunger;
+
+		public float combatDamageModifier = 1.0f;
+
+		public float magicalSpellCost = 1.0f;
+		public float physicalSpellCost = 1.0f;
+
+		public float fatigueRegenMultiplier = 1.0f;
+
+		public float armorEffectivenessMultiplier = 1.0f;
+
 		//bonus pregnancy speed stacked additively. We're going to do the same, but we're going to be up-front about it. 
 		//a perk can increase or decrease pregnancy speed, and we now support half gains. Max speed is 63.5, min speed -64.
 		//behind the scenes, this is stored as a sbyte, not a float, so we can avoid floating point, and we just double the amount added. 
@@ -117,11 +144,13 @@ namespace CoC.Backend.Perks
 		private sbyte bonusPregnancySpeedCounter = 0;
 		public float bonusPregnancySpeed => bonusPregnancySpeedCounter / 2.0f;
 		//below is the actual formula. 
-		internal float pregnancyMultiplier => bonusPregnancySpeed >= 0 ? bonusPregnancySpeed + 1 : -1.0f / (bonusPregnancySpeed - 1); 
+		internal float pregnancyMultiplier => bonusPregnancySpeed >= 0 ? bonusPregnancySpeed + 1 : -1.0f / (bonusPregnancySpeed - 1);
 		//0: no change;  0.5: 1.5x faster;  1: 2x faster... etc
 		//0: no change; -0.5: 1.5x slower; -1: 2x slower... etc
 
-		//Default size is only used if the size is not provided. 
+		//For the following endowments - the behavior is different based on how the endowment is generated - 
+		//if no size is provided, the size will be the default new value. 
+		//if a size is provided, the delta value will be added to it. if this value is still lower than the default new value, the default new value will be used instead.
 
 		public float NewCockSizeDelta; //how much do we add or remove for new cocks? //big cock perk for now. would allow a small cock perk as well
 		public float CockGrowthMultiplier; //how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
@@ -132,11 +161,21 @@ namespace CoC.Backend.Perks
 		public float ClitGrowthMultiplier; //how much more/less should we grow a Clit over the base amount?
 		public float ClitShrinkMultiplier; //how much more/less should we shrink a Clit over base amount?
 		public float MinNewClitSize; //minimum size for any new Clits; //bro/futa perks for now
+		public float MinClitSize; //minimum size for any Clit; //bro/futa perks for now
 
-		public byte NewBreastCupSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
+		//These are split by gender. Note that herms use female, and genderless use male. 
+
+		public sbyte FemaleNewBreastCupSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
+		public CupSize FemaleNewBreastDefaultCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
+		public sbyte MaleNewBreastCupSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
+		public CupSize MaleNewBreastDefaultCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
+
+		public CupSize FemaleMinCupSize = CupSize.FLAT;
+		public CupSize MaleMinCupSize = CupSize.FLAT;
+
+		//these are used regardless of gender. 
 		public float TitsGrowthMultiplier; //how much more/less should we grow the breasts over the base amount?
 		public float TitsShrinkMultiplier; //how much more/less should we shrink the breasts over base amount?
-		public CupSize NewBreastDefaultCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
 
 		public float NewNippleSizeDelta; //how much do we add or remove to base amount for new Nipples? //NYI, but BigNipple Perks
 		public float NippleGrowthMultiplier; //how much more/less should we grow a Nipple over the base amount?
@@ -161,6 +200,19 @@ namespace CoC.Backend.Perks
 
 		public ushort PerkBasedBonusVaginalCapacity; //vag of holding, elastic innards
 		public ushort PerkBasedBonusAnalCapacity; //elastic innards
+
+		public AnalLooseness minAnalLooseness = AnalLooseness.NORMAL;
+		public AnalLooseness maxAnalLooseness = AnalLooseness.GAPING;
+
+		public AnalWetness minAnalWetness = AnalWetness.NORMAL;
+		public AnalWetness maxAnalWetness = AnalWetness.SLIME_DROOLING;
+
+		public VaginalLooseness minVaginalLooseness = VaginalLooseness.TIGHT;
+		public VaginalLooseness maxVaginalLooseness = VaginalLooseness.CLOWN_CAR_WIDE;
+
+		public VaginalWetness minVaginalWetness = VaginalWetness.DRY;
+		public VaginalWetness maxVaginalWetness = VaginalWetness.SLAVERING;
+
 
 		//values that would cause issues (min cock size, vag wetness, etc) are purposely excluded. see top argument. 
 		//it'd be possible to have a perk that forces this to course correct almost immediately, if that's your desire - create a reaction that fires ASAP.

@@ -205,7 +205,6 @@ namespace CoC.Backend.Tools
 			}
 			else return x.ToString();
 		}
-
 	}
 
 	public class Pair<T, U>
@@ -242,6 +241,18 @@ namespace CoC.Backend.Tools
 	public class Triple<T> : Triple<T, T, T>
 	{
 		public Triple(T f, T s, T t) : base(f, s, t) {}
+	}
+
+	public sealed class ValueDifference<T>
+	{
+		public readonly T oldValue;
+		public readonly T newValue;
+
+		public ValueDifference(T old, T newVal)
+		{
+			oldValue = old;
+			newValue = newVal;
+		}
 	}
 }
 

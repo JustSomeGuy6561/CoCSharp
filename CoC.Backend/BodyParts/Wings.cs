@@ -8,6 +8,7 @@ using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -33,7 +34,8 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private WingType _type;
-		public override bool isDefault => type == WingType.NONE;
+		public static WingType defaultType => WingType.NONE;
+		public override bool isDefault => type == defaultType;
 
 		public bool hasWings => type != WingType.NONE;
 		public bool canFly => type != WingType.NONE && isLarge;
@@ -121,7 +123,7 @@ namespace CoC.Backend.BodyParts
 		//base hair color or skin tone. afaik, it'd only used by special characters
 		//but w/e. i could have prevented this with itoneaware and ifuraware, but 
 		//frankly, i'm fine with them doing this. this applies to all of these.
-		internal bool UpdateWings(WingType wingType)
+		internal override bool UpdateType(WingType wingType)
 		{
 			if (type == wingType)
 			{
@@ -195,19 +197,19 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			bool retVal = UpdateWings(wingType);
+			bool retVal = UpdateType(wingType);
 			isLarge = large;
 			return retVal;
 		}
 
 
-		internal bool UpdateWingsForceSizeChangeColor(FeatheredWings featheredWing, HairFurColors featherColor, bool large)
+		internal bool UpdateWingsForceSizeChangeColor(FeatheredWings featheredWings, HairFurColors featherColor, bool large)
 		{
-			if (type == featheredWing)
+			if (type == featheredWings)
 			{
 				return false;
 			}
-			bool retVal = UpdateWingsAndChangeColor(featheredWing, featherColor);
+			bool retVal = UpdateWingsAndChangeColor(featheredWings, featherColor);
 			isLarge = large;
 			return retVal;
 		}
@@ -401,6 +403,8 @@ namespace CoC.Backend.BodyParts
 
 		private static int indexMaker = 0;
 		private static readonly List<WingType> wings = new List<WingType>();
+		public static readonly ReadOnlyCollection<WingType> availableTypes = new ReadOnlyCollection<WingType>(wings);
+
 		private readonly int _index;
 
 		protected readonly BehaviorOnTransform transformBehavior;

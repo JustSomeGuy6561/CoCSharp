@@ -4,10 +4,11 @@
 //1/6/2019, 1:26 AM
 
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
-using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -20,7 +21,8 @@ namespace CoC.Backend.BodyParts
 		public readonly Piercing<TonguePiercingLocation> tonguePiercings;
 
 		public override TongueType type { get; protected set; }
-		public override bool isDefault => type == TongueType.HUMAN;
+		public static TongueType defaultType => TongueType.HUMAN;
+		public override bool isDefault => type == defaultType;
 
 
 		public bool isLongTongue => type.longTongue;
@@ -30,7 +32,7 @@ namespace CoC.Backend.BodyParts
 		{
 			type = TongueType.HUMAN;
 
-			tonguePiercings = new Piercing<TonguePiercingLocation>(TongueJewelry, PiercingLocationUnlocked);
+			tonguePiercings = new Piercing<TonguePiercingLocation>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
 
@@ -47,9 +49,9 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal bool UpdateTongue(TongueType newType)
+		internal override bool UpdateType(TongueType newType)
 		{
-			if (type == newType)
+			if (newType == null || type == newType)
 			{
 				return false;
 			}
@@ -92,11 +94,20 @@ namespace CoC.Backend.BodyParts
 			}
 			else return true;
 		}
+
+		//these are the piercings for standard gameplay - if you want to create a scene where it's a giant ring and the PC gets dragged around by it
+		//because you're into German dungeon porn, that's fine. just do it via text and give them a stud afterward. or just pierce it and leave it open
+		//so the next time your kinky scene is called you can omit the bit where you pierce their tongue or whatever. 
+		private JewelryType SupportedJewelryByLocation(TonguePiercingLocation piercingLocation)
+		{
+			return JewelryType.BARBELL_STUD;
+		}
 	}
 	public partial class TongueType : SaveableBehavior<TongueType, Tongue>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<TongueType> tongues = new List<TongueType>();
+		public static readonly ReadOnlyCollection<TongueType> availableTypes = new ReadOnlyCollection<TongueType>(tongues);
 		private readonly int _index;
 		public readonly short length;
 
@@ -149,5 +160,13 @@ namespace CoC.Backend.BodyParts
 		public static readonly TongueType ECHIDNA = new TongueType(12, EchidnaDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
 		public static readonly TongueType LIZARD = new TongueType(12, LizardDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
 		public static readonly TongueType CAT = new TongueType(4, CatDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+	}
+
+	public static class TongueHelpers
+	{
+		public static PiercingJewelry GenerateTongueJewelry(this Tongue tongue, TonguePiercingLocation location, JewelryMaterial jewelryMaterial)
+		{
+			return new GenericPiercing(JewelryType.BARBELL_STUD, jewelryMaterial);
+		}
 	}
 }

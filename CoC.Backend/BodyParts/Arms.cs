@@ -9,6 +9,7 @@ using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -45,7 +46,8 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private ArmType _type;
-		public override bool isDefault => type == ArmType.HUMAN;
+		public static ArmType defaultType => ArmType.HUMAN;
+		public override bool isDefault => type == defaultType;
 
 		public bool usesTone => type is ToneArms;
 		public bool usesFur => type is FurArms;
@@ -66,7 +68,7 @@ namespace CoC.Backend.BodyParts
 			return new Arms(type);
 		}
 
-		internal bool UpdateArms(ArmType armType)
+		internal override bool UpdateType(ArmType armType)
 		{
 			if (armType == null || type == armType)
 			{
@@ -106,6 +108,7 @@ namespace CoC.Backend.BodyParts
 	{
 		private static int indexMaker = 0;
 		private static readonly List<ArmType> arms = new List<ArmType>();
+		public static readonly ReadOnlyCollection<ArmType> availableTypes = new ReadOnlyCollection<ArmType>(arms);
 
 		public readonly HandType handType;
 		public readonly EpidermisType epidermisType;
@@ -118,6 +121,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return new EpidermalData();
 		}
+
+		internal abstract bool hasPrimaryFur { get; }
+		internal virtual bool hasSecondaryFur => false;
+		internal abstract bool hasPrimaryTone { get; }
+		internal virtual bool hasSecondaryTone => false;
 
 		public override int index => _index;
 		private readonly int _index;
@@ -190,8 +198,9 @@ namespace CoC.Backend.BodyParts
 		private sealed class FerretArms : FurArms
 		{
 			private readonly FurColor defaultSecondaryColor = Species.FERRET.defaultUnderFur;
-			public FerretArms() : base(HandType.FERRET, EpidermisType.FUR, Species.FERRET.defaultFur, FurTexture.NONDESCRIPT, 
-				true, FerretDescStr, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr) { }
+			public FerretArms() : base(HandType.FERRET, EpidermisType.FUR, Species.FERRET.defaultFur, FurTexture.NONDESCRIPT,
+				true, FerretDescStr, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr)
+			{ }
 
 			internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
 			{
@@ -204,8 +213,10 @@ namespace CoC.Backend.BodyParts
 				{
 					color = new FurColor(bodyData.activeFur.fur);
 				}
-				return new EpidermalData(epidermisType, color, defaultTexture);
+				return new EpidermalData(primaryEpidermis, color, defaultTexture);
 			}
+
+			internal override bool hasSecondaryFur => true;
 
 			internal override EpidermalData GetSecondaryEpidermis(in BodyData bodyData)
 			{
@@ -221,11 +232,11 @@ namespace CoC.Backend.BodyParts
 
 				//make sure the ferret is actually two-toned. not strictly speaking necessary, but whatever.
 				EpidermalData primary = GetPrimaryEpidermis(bodyData);
-				if (primary.fur == color)
+				if (primary.fur.Equals(color))
 				{
-					color = color == defaultSecondaryColor ? defaultColor : defaultSecondaryColor;
+					color = color.Equals(defaultSecondaryColor) ? defaultColor : defaultSecondaryColor;
 				}
-				return new EpidermalData(epidermisType, color, defaultTexture);
+				return new EpidermalData(primaryEpidermis, color, defaultTexture);
 			}
 		}
 
@@ -239,6 +250,8 @@ namespace CoC.Backend.BodyParts
 			public CockatriceArms() : base(HandType.COCKATRICE, EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, FurTexture.NONDESCRIPT, true,
 				CockatriceDescStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 			{ }
+
+			internal override bool hasSecondaryTone => true;
 
 			internal override EpidermalData GetSecondaryEpidermis(in BodyData bodyData)
 			{
@@ -257,7 +270,7 @@ namespace CoC.Backend.BodyParts
 				{
 					color = new FurColor(bodyData.hairColor);
 				}
-				return new EpidermalData(epidermisType, color, defaultTexture);
+				return new EpidermalData(primaryEpidermis, color, defaultTexture);
 			}
 		}
 		public bool isPredatorArms()
@@ -270,7 +283,10 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly FurColor defaultColor;
 		public readonly FurTexture defaultTexture;
+		protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 		protected readonly bool mutable;
+
+
 		internal FurArms(HandType hand, FurBasedEpidermisType epidermis, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, TypeAndPlayerDelegate<Arms> playerDesc, ChangeType<Arms> transform, RestoreType<Arms> restore) :
 			base(hand, epidermis, shortDesc, fullDesc, playerDesc, transform, restore)
@@ -279,6 +295,9 @@ namespace CoC.Backend.BodyParts
 			defaultTexture = defaultFurTexture;
 			mutable = canChange;
 		}
+
+		internal override bool hasPrimaryFur => true;
+		internal override bool hasPrimaryTone => false;
 
 		internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
 		{
@@ -299,8 +318,10 @@ namespace CoC.Backend.BodyParts
 					color = new FurColor(bodyData.hairColor);
 				}
 			}
-			return new EpidermalData(epidermisType, color, defaultTexture);
+			return new EpidermalData(primaryEpidermis, color, defaultTexture);
 		}
+
+
 	}
 
 	public class ToneArms : ArmType
@@ -308,6 +329,7 @@ namespace CoC.Backend.BodyParts
 		public readonly SkinTexture defaultTexture;
 		public readonly bool mutable;
 		public readonly Tones defaultTone;
+		protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 		internal ToneArms(HandType hand, ToneBasedEpidermisType epidermis, Tones defTone, SkinTexture defaultSkinTexture, bool canChange,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, TypeAndPlayerDelegate<Arms> playerDesc, ChangeType<Arms> transform, RestoreType<Arms> restore) :
 			base(hand, epidermis, shortDesc, fullDesc, playerDesc, transform, restore)
@@ -317,10 +339,13 @@ namespace CoC.Backend.BodyParts
 			mutable = canChange;
 		}
 
+		internal override bool hasPrimaryFur => false;
+		internal override bool hasPrimaryTone => true;
+
 		internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
 		{
 			Tones color = mutable ? bodyData.mainSkin.tone : defaultTone;
-			return new EpidermalData(epidermisType, color, defaultTexture);
+			return new EpidermalData(primaryEpidermis, color, defaultTexture);
 		}
 	}
 

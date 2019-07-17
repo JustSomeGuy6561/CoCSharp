@@ -13,29 +13,29 @@ namespace CoC.Frontend.Strings.Items.Wearables.Piercings
 {
 	internal sealed class CeraphEarPiercings : PiercingJewelry
 	{
-		public CeraphEarPiercings() : base(JewelryType.BARBELL_STUD, new Obsidian(), true) { }
+		public CeraphEarPiercings() : base(JewelryType.BARBELL_STUD, new Obsidian(), false) { }
 	}
 
 
 	internal sealed class CeraphNipplePiercings : PiercingJewelry
 	{
-		public CeraphNipplePiercings() : base(JewelryType.BARBELL_STUD, new Obsidian(), true) {}
+		public CeraphNipplePiercings() : base(JewelryType.BARBELL_STUD, new Obsidian(), false) {}
 	}
 
 	//Prince albert
 	internal sealed class CeraphCockPiercing : PiercingJewelry
 	{
-		public CeraphCockPiercing() : base(JewelryType.RING, new Obsidian(), true) { }
+		public CeraphCockPiercing() : base(JewelryType.RING, new Obsidian(), false) { }
 	}
 
 	//Clit Itself (ceraph is cruel like that)
 	internal sealed class CeraphClitPiercing : PiercingJewelry
 	{
-		public CeraphClitPiercing() : base(JewelryType.RING, new Obsidian(), true) { }
+		public CeraphClitPiercing() : base(JewelryType.RING, new Obsidian(), false) { }
 	}
 
 	internal sealed class CeraphEyebrowPiercing : PiercingJewelry
 	{
-		public CeraphEyebrowPiercing() : base(JewelryType.BARBELL_STUD, new Obsidian(), true) { }
+		public CeraphEyebrowPiercing() : base(JewelryType.BARBELL_STUD, new Obsidian(), false) { }
 	}
 }
