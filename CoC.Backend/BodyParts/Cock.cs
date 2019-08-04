@@ -26,7 +26,7 @@ namespace CoC.Backend.BodyParts
 	//well, mostly. knots were still a pain.
 	//whoever decided to use the AS3 equivalent hack for an enum, though, not so much. that was some ugly ass shit.
 
-	public sealed class Cock : BehavioralSaveablePart<Cock, CockType>, IGrowShrinkable, IBaseStatPerkAware
+	public sealed class Cock : BehavioralSaveablePart<Cock, CockType>, IGrowable, IShrinkable, IBaseStatPerkAware
 	{
 		//TODO: Make this iperkaware for big cock perk.
 
@@ -169,6 +169,20 @@ namespace CoC.Backend.BodyParts
 			updateLengthAndGirth(DEFAULT_COCK_LENGTH, DEFAULT_COCK_GIRTH);
 			return true;
 		}
+
+		internal void Reset(bool resetPiercings = true)
+		{
+			type = CockType.HUMAN;
+			float length = perkModifiers?.Invoke().NewCockDefaultSize ?? DEFAULT_COCK_LENGTH;
+			float girth = DEFAULT_COCK_GIRTH;
+			updateLengthAndGirth(length, girth);
+
+			if (resetPiercings)
+			{
+				cockPiercings.Reset();
+			}
+		}
+
 		#endregion
 		#region Update
 
@@ -252,9 +266,10 @@ namespace CoC.Backend.BodyParts
 			return oldLength - cockLength;
 		}
 
-		internal void SetLength(float newLength)
+		internal float SetLength(float newLength)
 		{
 			updateLength(newLength);
+			return cockLength;
 		}
 
 		internal float ThickenCock(float thickenAmount)
@@ -271,9 +286,10 @@ namespace CoC.Backend.BodyParts
 			return oldGirth - cockGirth;
 		}
 
-		internal void SetGirth(float newGirth)
+		internal float SetGirth(float newGirth)
 		{
 			updateGirth(newGirth);
+			return cockGirth;
 		}
 
 		internal void SetLengthAndGirth(float newLength, float newGirth)
@@ -364,14 +380,14 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region IGrowShrinkable
 
-		bool IGrowShrinkable.CanReducto()
+		bool IShrinkable.CanReducto()
 		{
 			return cockArea > 6;
 		}
 
-		float IGrowShrinkable.UseReducto()
+		float IShrinkable.UseReducto()
 		{
-			if (!((IGrowShrinkable)this).CanReducto())
+			if (!((IShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
@@ -382,7 +398,7 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		bool IGrowShrinkable.CanGrowPlus()
+		bool IGrowable.CanGroPlus()
 		{
 			return cockLength < MAX_COCK_LENGTH;
 		}
@@ -390,9 +406,9 @@ namespace CoC.Backend.BodyParts
 		//grows cock 1-2 inches, in increments of 0.25. 
 		//automatically increases cockGirth to min value.
 		//if possible, will also increase cockGirth, up to 0.5 inches
-		float IGrowShrinkable.UseGroPlus()
+		float IGrowable.UseGroPlus()
 		{
-			if (!((IGrowShrinkable)this).CanGrowPlus())
+			if (!((IGrowable)this).CanGroPlus())
 			{
 				return 0;
 			}
@@ -435,9 +451,16 @@ namespace CoC.Backend.BodyParts
 		}
 		internal void GetBasePerkStats(PerkStatBonusGetter getter) => perkAware.GetBasePerkStats(getter);
 
-		internal void DoLateInit(BasePerkModifiers statModifiers)
+		internal void DoLateInit(BasePerkModifiers statModifiers, bool initWasNew)
 		{
-			updateLength(statModifiers.NewCockDefaultSize + statModifiers.NewCockSizeDelta);
+			if (initWasNew)
+			{
+				updateLength(statModifiers.NewCockDefaultSize);
+			}
+			else
+			{
+				updateLength(cockLength + statModifiers.NewCockSizeDelta);
+			}
 		}
 
 		#endregion

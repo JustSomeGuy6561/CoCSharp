@@ -11,6 +11,7 @@ using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -54,30 +55,27 @@ namespace CoC.Backend.BodyParts
 		public static TailType defaultType => TailType.NONE;
 		public override bool isDefault => type == defaultType;
 
-		private Tail()
+		private Tail(TailType tailType)
 		{
-			_type = TailType.NONE;
+			_type = tailType ?? throw new ArgumentNullException(nameof(tailType));
+			_tailCount = _type.initialTailCount;
 			tailPiercings = new Piercing<TailPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
 		internal static Tail GenerateDefault()
 		{
-			return new Tail();
+			return new Tail(TailType.NONE);
 		}
 
 		internal static Tail GenerateDefaultOfType(TailType tailType)
 		{
-			return new Tail()
-			{
-				type = tailType
-			};
+			return new Tail(tailType);
 		}
 
 		internal static Tail GenerateWithCount(TailType tailType, byte count)
 		{
-			return new Tail()
+			return new Tail(tailType)
 			{
-				type = tailType,
 				tailCount = count
 			};
 		}

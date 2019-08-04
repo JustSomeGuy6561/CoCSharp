@@ -34,7 +34,7 @@ namespace CoC.Frontend.Encounters.Common
 		protected override void Run()
 		{
 			//changeStats;
-			OutputText(bigJunkText());
+			AddOutput(bigJunkText);
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 

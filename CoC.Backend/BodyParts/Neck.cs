@@ -6,6 +6,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -42,38 +43,33 @@ namespace CoC.Backend.BodyParts
 		public static NeckType defaultType => NeckType.HUMANOID;
 		public override bool isDefault => type == defaultType;
 
-		private Neck()
+		private Neck(NeckType neckType)
 		{
-			type = NeckType.HUMANOID;
+			type = neckType ?? throw new ArgumentNullException(nameof(neckType));
 			length = NeckType.MIN_NECK_LENGTH;
 			neckColor = HairFurColors.NO_HAIR_FUR;
 		}
 
 		internal static Neck GenerateDefault()
 		{
-			return new Neck();
+			return new Neck(NeckType.HUMANOID);
 		}
 
 		internal static Neck GenerateDefaultOfType(NeckType neckType)
 		{
-			return new Neck()
-			{
-				type = neckType,
-			};
+			return new Neck(neckType);
 		}
 
 		internal static Neck GenerateNonDefault(NeckType neckType, byte neckLength = NeckType.MIN_NECK_LENGTH)
 		{
 			if (neckType == NeckType.HUMANOID)
 			{
-				return new Neck();
+				return new Neck(neckType);
 			}
-			Utils.Clamp(ref neckLength, NeckType.MIN_NECK_LENGTH, neckType.maxNeckLength);
-			return new Neck()
+			return new Neck(neckType)
 			{
-				type = neckType,
 				neckColor = neckType.defaultColor,
-				length = neckLength
+				length = Utils.Clamp2(neckLength, NeckType.MIN_NECK_LENGTH, neckType.maxNeckLength),
 			};
 		}
 

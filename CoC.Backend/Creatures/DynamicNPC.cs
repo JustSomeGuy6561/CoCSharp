@@ -19,7 +19,7 @@ namespace CoC.Backend.Creatures
 
 	public class DynamicNPC : Creature
 	{
-		public DynamicNPC(CreatureCreator creator) : base(creator)
+		public DynamicNPC(DynamicNPC_Creator creator) : base(creator)
 		{
 			//now set up all the listeners.
 			//if any listeners are DynamicNPC specific, add them here.

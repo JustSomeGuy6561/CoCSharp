@@ -6,6 +6,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 {
 	internal interface IFemininityListener : IFemininityAware
 	{
-		void reactToChangeInFemininity();
+		//output a string to match whatever you did. If it's not the player, this string will not be used. 
+		string reactToChangeInFemininity(byte oldFemininity);
 	}
 }

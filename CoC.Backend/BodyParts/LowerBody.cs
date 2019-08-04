@@ -10,8 +10,10 @@ using CoC.Backend.CoC_Colors;
 using CoC.Backend.Races;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
@@ -42,9 +44,7 @@ namespace CoC.Backend.BodyParts
 
 		public static LowerBodyType defaultType => LowerBodyType.HUMAN;
 
-		public override bool isDefault => type == expectedType;
-
-		private LowerBodyType expectedType => hasLegs ? LowerBodyType.HUMAN : LowerBodyType.NO_LEG_MONSTERS;
+		public override bool isDefault => type == defaultType;
 
 		public EpidermalData primaryEpidermis => type.ParseEpidermis(bodyData());
 		public EpidermalData secondaryEpidermis => type.ParseEpidermis(bodyData());
@@ -56,13 +56,10 @@ namespace CoC.Backend.BodyParts
 		public bool isSextoped => legCount == SEXTOPED_LEG_COUNT;
 		public bool isOctoped => legCount == OCTOPED_LEG_COUNT;
 
-		public bool hasLegs { get; }
-
 		private LowerBody(LowerBodyType type)
 		{
-			_type = type;
+			_type = type ?? throw new ArgumentNullException(nameof(type));
 			feet = Feet.GenerateDefault(type.footType);
-			hasLegs = type == LowerBodyType.NO_LEG_MONSTERS;
 		}
 
 		internal static LowerBody GenerateDefault()
@@ -81,14 +78,6 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			else if (hasLegs && newType == LowerBodyType.NO_LEG_MONSTERS)
-			{
-				return false;
-			}
-			else if (!hasLegs)
-			{
-				return false;
-			}
 			else
 			{
 				type = newType;
@@ -98,11 +87,11 @@ namespace CoC.Backend.BodyParts
 
 		internal override bool Restore()
 		{
-			if (type == expectedType)
+			if (type == defaultType)
 			{
 				return false;
 			}
-			type = expectedType;
+			type = defaultType;
 			return true;
 		}
 
@@ -150,7 +139,7 @@ namespace CoC.Backend.BodyParts
 
 		private static int indexMaker = 0;
 		private static readonly List<LowerBodyType> lowerBodyTypes = new List<LowerBodyType>();
-		public static readonly ReadOnlyCollection<LowerBodyType> availableTypes = new ReadOnlyCollection<LowerBodyType>(lowerBodyTypes);
+		public static ReadOnlyCollection<LowerBodyType> availableTypes => new ReadOnlyCollection<LowerBodyType>(lowerBodyTypes.Where(x => x != null).ToList());
 
 		public readonly FootType footType;
 		public readonly EpidermisType epidermisType;
@@ -250,10 +239,6 @@ namespace CoC.Backend.BodyParts
 		//public static readonly LowerBodyType KID_OR_SQUID = new ToneLowerBody(FootType.TENDRIL, EpidermisType.SKIN, SEXTOPED, Species.TENTACLE_BEAST.defaultTone, SkinTexture.SLIMY, true, OctoDesc, OctoFullDesc, OctoPlayerStr, OctiTransformStr, OctoRestoreStr);
 		public static readonly LowerBodyType COCKATRICE = new CockatriceLowerBody();
 		public static readonly LowerBodyType RED_PANDA = new RedPandaLowerBody();
-
-		//monsters that don't have feet, like an aquatic creature or something. vines also apply, unless you go all piranna plant or something.
-		public static readonly NoLeg NO_LEG_MONSTERS = new NoLeg();
-
 
 		private class FurLowerBody : LowerBodyType
 		{
@@ -401,23 +386,6 @@ namespace CoC.Backend.BodyParts
 				FurTexture texture = bodyData.supplementary.usesFur && bodyData.supplementary.furTexture != FurTexture.NONDESCRIPT ? bodyData.supplementary.furTexture : defaultTexture;
 				return new EpidermalData(primaryEpidermis, color, texture);
 			}
-		}
-	}
-
-	public sealed class NoLeg : LowerBodyType
-	{
-		public NoLeg() : base(FootType.NONE, EpidermisType.SKIN, 0, GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => GlobalStrings.None())
-		{
-		}
-
-		internal override EpidermalData ParseEpidermis(in BodyData bodyData)
-		{
-			return new EpidermalData();
-		}
-
-		internal override EpidermalData ParseSecondaryEpidermis(in BodyData bodyData)
-		{
-			return new EpidermalData();
 		}
 	}
 

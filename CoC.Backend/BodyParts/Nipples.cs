@@ -32,7 +32,7 @@ namespace CoC.Backend.BodyParts
 
 	public enum NippleStatus { NORMAL, FULLY_INVERTED, SLIGHTLY_INVERTED, FUCKABLE, DICK_NIPPLE }
 	public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
-	public sealed partial class Nipples : SimpleSaveablePart<Nipples>, IGrowShrinkable, IBaseStatPerkAware
+	public sealed partial class Nipples : SimpleSaveablePart<Nipples>, IGrowable, IShrinkable, IBaseStatPerkAware
 	{
 		public const float MIN_NIPPLE_LENGTH = 0.25f;
 		public const float MAX_NIPPLE_LENGTH = 50f;
@@ -219,19 +219,19 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region GrowShrink
-		bool IGrowShrinkable.CanGrowPlus()
+		bool IGrowable.CanGroPlus()
 		{
 			return length < MAX_NIPPLE_LENGTH;
 		}
 
-		bool IGrowShrinkable.CanReducto()
+		bool IShrinkable.CanReducto()
 		{
 			return length > MIN_NIPPLE_LENGTH;
 		}
 
-		float IGrowShrinkable.UseGroPlus()
+		float IGrowable.UseGroPlus()
 		{
-			if (!((IGrowShrinkable)this).CanGrowPlus())
+			if (!((IGrowable)this).CanGroPlus())
 			{
 				return 0;
 			}
@@ -240,9 +240,9 @@ namespace CoC.Backend.BodyParts
 			return length - oldLength; //returns that change in value. limited only if it reaches the max. 
 		}
 
-		float IGrowShrinkable.UseReducto()
+		float IShrinkable.UseReducto()
 		{
-			if (!((IGrowShrinkable)this).CanReducto())
+			if (!((IShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
@@ -271,9 +271,16 @@ namespace CoC.Backend.BodyParts
 			aware.GetBasePerkStats(getter);
 		}
 
-		internal void DoLateInit(BasePerkModifiers statModifiers)
+		internal void DoLateInit(Gender currGender, BasePerkModifiers statModifiers, bool isInit)
 		{
-			length = statModifiers.NewNippleDefaultLength + statModifiers.NewNippleSizeDelta;
+			if (isInit)
+			{
+				length = statModifiers.NewNippleDefaultLength;
+			}
+			else
+			{
+				length += statModifiers.NewNippleSizeDelta;
+			}
 		}
 
 		#endregion

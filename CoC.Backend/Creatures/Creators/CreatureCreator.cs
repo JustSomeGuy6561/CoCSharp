@@ -6,6 +6,7 @@ using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Perks;
+using System;
 using System.Collections.Generic;
 
 namespace CoC.Backend.Creatures
@@ -105,7 +106,8 @@ namespace CoC.Backend.Creatures
 		//Body
 		public SkinTexture? skinTexture = null;
 		public Dictionary<NavelPiercingLocation, PiercingJewelry> navelPiercings = null;
-		//may add hip piercings because that's a thing (in my experience it's more popular in erotic art than reality, but this is a fantasy game and my experience isn't global)
+		//may add hip piercings because that's a thing (more common in art than reality in my experience but whatever) Edit: added.
+		public Dictionary<HipPiercingLocation, PiercingJewelry> hipPiercings = null;
 		//Ears
 		public Dictionary<EarPiercings, PiercingJewelry> earPiercings = null;
 		//Face
@@ -122,15 +124,15 @@ namespace CoC.Backend.Creatures
 		public HairFurColors hairColor;
 		public HairFurColors hairHighlightColor;
 		public float? hairLength = null;
-		public HairStyle? hairStyle = null;
+		public HairStyle hairStyle = HairStyle.NO_STYLE;
 		//Tongue
 		public Dictionary<TonguePiercingLocation, PiercingJewelry> tonguePiercings = null;
 
 		//Ass
 		public AnalLooseness analLooseness = AnalLooseness.NORMAL;
 		public AnalWetness analWetness = AnalWetness.NORMAL;
-		public bool? assVirgin = null;
-		public byte analExperience = 0;
+		public bool assVirgin = true;
+		public bool? hasAnalPractice = null;
 
 		//Note: The following have no default values, and therefore cannot be determined. The player's decisions during character creation determine these values.
 		//HOWEVER, You may choose to define these yourself, in which case the game will use these instead.
@@ -161,7 +163,7 @@ namespace CoC.Backend.Creatures
 		public VaginaCreator[] vaginas = null;
 		public float? cumMultiplier = null; //if have cocks, defaults to 1, otherwise 0.
 
-		//i suppose this kinda a perk, but w/e.
+		//i suppose this could be a perk (and may make more sense that way), but w/e.
 		public bool hasOmnibusClit = false;
 
 		//Balls
@@ -174,10 +176,10 @@ namespace CoC.Backend.Creatures
 		//if this is true, it will generate the default, Generic Womb, that allows this creature to get pregnant if they have a vagina, and potentially anally pregnant
 		//if they have an ass, and the source creature attempting the anal pregnancy has satyr sexuality (or the equivalent thereof). 
 		//if it is false, it will generate an Empty Womb, which prevents the creature from getting pregnant ever. 
-		//Of course, if womb is set, it will be used and the canImpregnateIfFemale bool will be ignored.
+		//Of course, if womb is set and does not return null, it will be used and the canImpregnateIfFemale bool will be ignored.
 		//Additionally, Special Player Characters should not bother with this value, as it will be ignored. The player will always use the special PlayerWomb.
 		public bool canImpregnateIfFemale = true;
-		public Womb womb;
+		public Func<Womb> wombMaker = null; //complicated, but only way to make it work for multiple instances of one creator. write () => new <whatever> instead of new <whatever>
 
 
 		//BUILD:

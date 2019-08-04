@@ -14,7 +14,7 @@ namespace CoC.Frontend
 		{
 			if (player.antennae.type != newType)
 			{
-				OutputText(player.antennae.transformInto(newType, player));
+				AddOutput(() => player.antennae.transformInto(newType, player));
 				return player.UpdateAntennae(newType);
 			}
 			return false;
@@ -24,7 +24,7 @@ namespace CoC.Frontend
 		{
 			if (!player.antennae.isDefault)
 			{
-				OutputText(player.antennae.restoreString(player));
+				AddOutput(() => player.antennae.restoreString(player));
 				return player.RestoreAntennae();
 			}
 			return false;
@@ -34,7 +34,7 @@ namespace CoC.Frontend
 		{
 			if (player.arms.type != newType)
 			{
-				OutputText(player.arms.transformInto(newType, player));
+				AddOutput(() => player.arms.transformInto(newType, player));
 			}
 			return player.UpdateArms(newType);
 		}
@@ -43,7 +43,7 @@ namespace CoC.Frontend
 		{
 			if (!player.arms.isDefault)
 			{
-				OutputText(player.arms.restoreString(player));
+				AddOutput(() => player.arms.restoreString(player));
 				return player.RestoreArms();
 			}
 			return false;
@@ -53,7 +53,7 @@ namespace CoC.Frontend
 		{
 			if (player.eyes.type != newType)
 			{
-				OutputText(player.eyes.transformInto(newType, player));
+				AddOutput(() => player.eyes.transformInto(newType, player));
 				return player.UpdateEyes(newType);
 			}
 			return false;
@@ -63,7 +63,7 @@ namespace CoC.Frontend
 		{
 			if (!player.eyes.isDefault)
 			{
-				OutputText(player.eyes.restoreString(player));
+				AddOutput(() => player.eyes.restoreString(player));
 				return player.RestoreEyes();
 			}
 			return false;
@@ -73,7 +73,7 @@ namespace CoC.Frontend
 		{
 			if (player.tongue.type != newType)
 			{
-				OutputText(player.tongue.transformInto(newType, player));
+				AddOutput(() => player.tongue.transformInto(newType, player));
 				return player.UpdateTongue(newType);
 			}
 			return false;
@@ -83,7 +83,7 @@ namespace CoC.Frontend
 		{
 			if (!player.tongue.isDefault)
 			{
-				OutputText(player.tongue.restoreString(player));
+				AddOutput(() => player.tongue.restoreString(player));
 				return player.RestoreTongue();
 			}
 			return false;

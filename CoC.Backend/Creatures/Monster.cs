@@ -30,13 +30,14 @@ namespace CoC.Backend.Creatures
 				hp += perks.baseModifiers.bonusMaxHP;
 
 				hp *= GameEngine.difficulties[BackendSessionData.data.difficulty].monsterHPMultiplier();
-				if (hp > ushort.MaxValue)
+				hp = Math.Round(hp);
+				if (hp >= ushort.MaxValue)
 				{
 					return ushort.MaxValue;
 				}
 				else
 				{
-					return (ushort) Math.Round(hp);
+					return (ushort)hp;
 				}
 			}
 		}

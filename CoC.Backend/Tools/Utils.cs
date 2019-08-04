@@ -135,7 +135,7 @@ namespace CoC.Backend.Tools
 			}
 		}
 
-		public static float Lerp(int min, int max, float percent)
+		public static double Lerp(int min, int max, double percent)
 		{
 			if (percent <= 0)
 			{
@@ -148,6 +148,18 @@ namespace CoC.Backend.Tools
 			return min + (max - min) * percent;
 		}
 
+		public static double Lerp(uint min, uint max, double percent)
+		{
+			if (percent <= 0)
+			{
+				return min;
+			}
+			else if (percent >= 1)
+			{
+				return max;
+			}
+			return min + (max - min) * percent;
+		}
 
 		public static float Lerp(int minX, int maxX, float x, int minY, int maxY)
 		{

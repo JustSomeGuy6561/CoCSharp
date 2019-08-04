@@ -183,9 +183,7 @@ namespace CoC.Backend.Creatures
 			fatigue = DEFAULT_FATIGUE;
 			//hunger = DEFAULT_HUNGER;
 
-#warning reset this once debugging is done.
-			//currentHealth = maxHealth;
-			_currentHealth = 1; //
+			currentHealth = maxHealth;
 		}
 
 		public float spellCost(double baseCost)

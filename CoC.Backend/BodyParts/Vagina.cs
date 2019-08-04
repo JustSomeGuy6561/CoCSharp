@@ -93,22 +93,29 @@ namespace CoC.Backend.BodyParts
 		public override bool isDefault => type == defaultType;
 
 		#region Constructors
-		private Vagina()
+		private Vagina(VaginaType vaginaType)
 		{
 			clit = Clit.Generate();
 			virgin = true;
-			type = VaginaType.HUMAN;
+			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
 			_wetness = VaginalWetness.NORMAL;
 			_looseness = VaginalLooseness.TIGHT;
 
 			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
-		private Vagina(float clitLength)
+		private Vagina(VaginaType vaginaType, float clitLength, bool omnibus = false)
 		{
-			clit = Clit.GenerateWithLength(clitLength);
+			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
+			if (omnibus)
+			{
+				clit = Clit.GenerateOmnibusClit(clitLength);
+			}
+			else
+			{
+				clit = Clit.GenerateWithLength(clitLength);
+			}
 			virgin = true;
-			type = VaginaType.HUMAN;
 			_wetness = VaginalWetness.NORMAL;
 			_looseness = VaginalLooseness.TIGHT;
 			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
@@ -118,21 +125,18 @@ namespace CoC.Backend.BodyParts
 		#region Generate
 		internal static Vagina GenerateFromGender(Gender gender)
 		{
-			if (gender.HasFlag(Gender.FEMALE)) return new Vagina();
+			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(VaginaType.HUMAN);
 			else return null;
 		}
 
 		internal static Vagina GenerateDefault()
 		{
-			return new Vagina();
+			return new Vagina(VaginaType.HUMAN);
 		}
 
 		internal static Vagina GenerateDefaultOfType(VaginaType vaginaType)
 		{
-			return new Vagina()
-			{
-				type = vaginaType
-			};
+			return new Vagina(vaginaType);
 		}
 
 		internal static Vagina Generate(VaginaType vaginaType, float clitLength, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, VaginalWetness vaginalWetness = VaginalWetness.NORMAL, bool? virgin = null)
@@ -142,24 +146,23 @@ namespace CoC.Backend.BodyParts
 				virgin = vaginalLooseness == VaginalLooseness.TIGHT;
 			}
 
-			return new Vagina(clitLength)
+			return new Vagina(vaginaType, clitLength)
 			{
 				virgin = (bool)virgin,
 				_looseness = vaginalLooseness,
 				_wetness = vaginalWetness,
-				type = vaginaType
 			};
 		}
 
-		internal static Vagina GenerateOmnibus(VaginaType vaginaType, float clitLength = 5.0f, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT,
-			VaginalWetness vaginalWetness = VaginalWetness.NORMAL, bool virgin = false, bool clitCockVirgin = true)
+		internal static Vagina GenerateOmnibus(VaginaType vaginaType, float clitLength = 2.0f, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT,
+			VaginalWetness vaginalWetness = VaginalWetness.NORMAL, bool virgin = false)
 		{
-			Vagina retVal = new Vagina(clitLength)
+			return new Vagina(vaginaType, clitLength, true)
 			{
-				type = vaginaType,
+				virgin = virgin,
+				_looseness = vaginalLooseness,
+				_wetness = vaginalWetness,
 			};
-			retVal.ActivateOmnibusClit();
-			return retVal;
 		}
 
 		#endregion
@@ -447,11 +450,14 @@ namespace CoC.Backend.BodyParts
 			clit.GetBasePerkStats(getter);
 		}
 
-		internal void DoLateInit(BasePerkModifiers statModifiers)
+		internal void DoLateInit(BasePerkModifiers statModifiers, bool initWasNew)
 		{
-			wetness = statModifiers.NewVaginaDefaultWetness;
-			looseness = statModifiers.NewVaginaDefaultLooseness;
-			clit.DoLateInit(statModifiers);
+			if (initWasNew)
+			{
+				wetness = statModifiers.NewVaginaDefaultWetness;
+				looseness = statModifiers.NewVaginaDefaultLooseness;
+			}
+			clit.DoLateInit(statModifiers, initWasNew);
 		}
 
 		#endregion

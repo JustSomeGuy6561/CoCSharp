@@ -22,7 +22,7 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override void Run()
 		{
-			GameEngine.currentLocation = new Deepwoods();
+			GameEngine.GoToLocation<Deepwoods>();
 			GameEngine.currentLocation.Unlock();
 		}
 

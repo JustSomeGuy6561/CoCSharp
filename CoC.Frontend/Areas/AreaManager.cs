@@ -21,14 +21,20 @@ namespace CoC.Frontend.Areas
 			AddLocationHelper(() => new Deepwoods());
 		}
 
-		private static KeyValuePair<Type, Func<PlaceBase>> AddPlaceHelper<T>(Func<T> constructorCallback) where T : PlaceBase
+		private static void AddPlaceHelper<T>(Func<T> constructorCallback) where T : PlaceBase
 		{
-			return new KeyValuePair<Type, Func<PlaceBase>>(typeof(T), constructorCallback);
+			if (constructorCallback is null) throw new ArgumentNullException(nameof(constructorCallback));
+			else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
+			if (typeof(T).IsAbstract) throw new ArgumentException("Cannot add an abstract type to the list of possible places");
+			places.Add(typeof(T), constructorCallback);
 		}
 
-		private static KeyValuePair<Type, Func<LocationBase>> AddLocationHelper<T>(Func<T> constructorCallback) where T : LocationBase
+		private static void AddLocationHelper<T>(Func<T> constructorCallback) where T : LocationBase
 		{
-			return new KeyValuePair<Type, Func<LocationBase>>(typeof(T), constructorCallback);
+			if (constructorCallback is null) throw new ArgumentNullException(nameof(constructorCallback));
+			else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
+			if (typeof(T).IsAbstract) throw new ArgumentException("Cannot add an abstract type to the list of possible locations");
+			locations.Add(typeof(T), constructorCallback);
 		}
 
 	}

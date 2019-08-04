@@ -20,7 +20,7 @@ namespace CoC.Backend.BodyParts
 		public byte heightInInches
 		{
 			get => _heightInInches;
-			set => _heightInInches = Utils.Clamp2(value, MIN_HEIGHT, MAX_HEIGHT);
+			private set => _heightInInches = Utils.Clamp2(value, MIN_HEIGHT, MAX_HEIGHT);
 		}
 		private byte _heightInInches;
 
@@ -80,6 +80,8 @@ namespace CoC.Backend.BodyParts
 
 		private Build(byte heightInches, byte characterThickness, byte characterTone, byte characterHipSize, byte characterButtSize)
 		{
+			heightInInches = heightInches;
+
 			thickness = characterThickness;
 			muscleTone = characterTone;
 			butt = Butt.Generate(characterButtSize);
@@ -116,9 +118,10 @@ namespace CoC.Backend.BodyParts
 			return butt.ShrinkButt(amount);
 		}
 
-		public void SetButtSize(byte size)
+		public byte SetButtSize(byte size)
 		{
 			butt.SetButtSize(size);
+			return butt.size;
 		}
 
 		public byte GrowHips(byte amount = 1)
@@ -131,9 +134,10 @@ namespace CoC.Backend.BodyParts
 			return hips.ShrinkHips(amount);
 		}
 
-		public void SetHipSize(byte size)
+		public byte SetHipSize(byte size)
 		{
 			hips.SetHipSize(size);
+			return hips.size;
 		}
 
 		public byte GainMuscle(byte amount = 1)
@@ -150,9 +154,10 @@ namespace CoC.Backend.BodyParts
 			return oldTone.subtract(muscleTone);
 		}
 
-		public void SetMuscleTone(byte tone)
+		public byte SetMuscleTone(byte tone)
 		{
 			muscleTone = tone;
+			return muscleTone;
 		}
 
 		public byte GetThicker(byte amount = 1)
@@ -165,13 +170,34 @@ namespace CoC.Backend.BodyParts
 		public byte GetThinner(byte amount = 1)
 		{
 			byte oldThickness = thickness;
-			thickness = thickness.add(amount);
+			thickness = thickness.subtract(amount); //rip. caught in debug testing.
 			return oldThickness.subtract(thickness);
 		}
 
-		public void SetThickness(byte newThickness)
+		public byte SetThickness(byte newThickness)
 		{
 			thickness = newThickness;
+			return thickness;
+		}
+
+		public byte GetTaller(byte increaseInInches = 1)
+		{
+			byte oldHeight = heightInInches;
+			heightInInches = heightInInches.add(increaseInInches);
+			return heightInInches.subtract(oldHeight);
+		}
+
+		public byte GetShorter(byte decreaseInInches = 1)
+		{
+			byte oldHeight = heightInInches;
+			heightInInches = heightInInches.subtract(decreaseInInches);
+			return oldHeight.subtract(heightInInches);
+		}
+
+		public byte SetHeight(byte newHeightInInches)
+		{
+			heightInInches = newHeightInInches;
+			return heightInInches;
 		}
 
 		internal override bool Validate(bool correctInvalidData)

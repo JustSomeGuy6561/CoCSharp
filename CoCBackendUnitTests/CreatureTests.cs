@@ -13,17 +13,15 @@ namespace CoCBackendUnitTests
 	//and provide a listener, but that's still an integration into creature. however, extra data
 	//that the creature needs via external systems is faked with dummy objects. 
 
-
+	//for all intents and purposes, DynamicNPC, when left alone, is a perfect dummy class for our unit tests. I'd fully expect it to
+	//be overridden for NPCs, but if it's not, it'll still work flawlessly in the game, and in its base state, we can use it to test creature without needing a fake.
 	[TestClass]
 	public class CreatureUnitTests
 	{
-		#warning Consider moving everything to DynamicNPC to allow simpler unit tests. DynamicNPC is kinda a dummy for Creature
-
-
 		[TestMethod]
 		public void Creature_NewWithNull_ShouldThrowNullArgment()
 		{
-			Assert.ThrowsException<ArgumentNullException>(() => new Player(null));
+			Assert.ThrowsException<ArgumentNullException>(() => new DynamicNPC(null));
 		}
 
 		internal class PerkDummy : BasePerkModifiers
@@ -36,7 +34,7 @@ namespace CoCBackendUnitTests
 		public void Creature_InitializationTest()
 		{
 			GameEngine.constructPerkModifier = () => new PerkDummy();
-			Player player = new Player(new PlayerCreator("Batman"));
+			DynamicNPC npc = new DynamicNPC(new DynamicNPC_Creator("Batman"));
 		}
 
 		[TestMethod]
@@ -46,24 +44,24 @@ namespace CoCBackendUnitTests
 			//so i can run unit tests without 
 			GameEngine.constructPerkModifier = () => new PerkDummy();
 
-			Player player = new Player(new PlayerCreator("Batman"));
-			Assert.AreEqual(player.antennae.type, Antennae.defaultType);
-			Assert.AreEqual(player.arms.type, Arms.defaultType);
-			Assert.AreEqual(player.back.type, Back.defaultType);
-			Assert.AreEqual(player.body.type, Body.defaultType);
-			//Assert.AreEqual(player.build.type, <>.defaultType);
-			Assert.AreEqual(player.ears.type, Ears.defaultType);
-			Assert.AreEqual(player.eyes.type, Eyes.defaultType);
-			Assert.AreEqual(player.face.type, Face.defaultType);
-			//Assert.AreEqual(player.genitals.type, <>.defaultType);
-			Assert.AreEqual(player.gills.type, Gills.defaultType);
-			Assert.AreEqual(player.hair.type, Hair.defaultType);
-			Assert.AreEqual(player.horns.type, Horns.defaultType);
-			Assert.AreEqual(player.lowerBody.type, LowerBody.defaultType);
-			Assert.AreEqual(player.neck.type, Neck.defaultType);
-			Assert.AreEqual(player.tail.type, Tail.defaultType);
-			Assert.AreEqual(player.tongue.type, Tongue.defaultType);
-			Assert.AreEqual(player.wings.type, Wings.defaultType);
+			DynamicNPC npc = new DynamicNPC(new DynamicNPC_Creator("Batman"));
+			Assert.AreEqual(npc.antennae.type, Antennae.defaultType);
+			Assert.AreEqual(npc.arms.type, Arms.defaultType);
+			Assert.AreEqual(npc.back.type, Back.defaultType);
+			Assert.AreEqual(npc.body.type, Body.defaultType);
+			//Assert.AreEqual(npc.build.type, <>.defaultType);
+			Assert.AreEqual(npc.ears.type, Ears.defaultType);
+			Assert.AreEqual(npc.eyes.type, Eyes.defaultType);
+			Assert.AreEqual(npc.face.type, Face.defaultType);
+			//Assert.AreEqual(npc.genitals.type, <>.defaultType);
+			Assert.AreEqual(npc.gills.type, Gills.defaultType);
+			Assert.AreEqual(npc.hair.type, Hair.defaultType);
+			Assert.AreEqual(npc.horns.type, Horns.defaultType);
+			Assert.AreEqual(npc.lowerBody.type, LowerBody.defaultType);
+			Assert.AreEqual(npc.neck.type, Neck.defaultType);
+			Assert.AreEqual(npc.tail.type, Tail.defaultType);
+			Assert.AreEqual(npc.tongue.type, Tongue.defaultType);
+			Assert.AreEqual(npc.wings.type, Wings.defaultType);
 
 		}
 
@@ -90,25 +88,25 @@ namespace CoCBackendUnitTests
 
 
 			GameEngine.constructPerkModifier = () => new PerkDummy();
-			Player player = new Player(new PlayerCreator("Batman"));
-			player.SubscribeToAntennaeChanged(OnAntennaeChangeEvent);
+			DynamicNPC npc = new DynamicNPC(new DynamicNPC_Creator("Batman"));
+			npc.SubscribeToAntennaeChanged(OnAntennaeChangeEvent);
 
-			Assert.IsTrue(player.UpdateAntennae(AntennaeType.BEE));
+			Assert.IsTrue(npc.UpdateAntennae(AntennaeType.BEE));
 			Assert.IsTrue(checkHit());
 
-			Assert.IsTrue(player.RestoreAntennae());
+			Assert.IsTrue(npc.RestoreAntennae());
 			Assert.IsTrue(checkHit());
 
-			player.UnSubscribeToAntennaeChanged(OnAntennaeChangeEvent);
-			Assert.IsTrue(player.UpdateAntennae(AntennaeType.COCKATRICE));
+			npc.UnSubscribeToAntennaeChanged(OnAntennaeChangeEvent);
+			Assert.IsTrue(npc.UpdateAntennae(AntennaeType.COCKATRICE));
 			Assert.IsFalse(checkHit());
 
-			player.SubscribeToAntennaeChanged(OnAntennaeChangeEvent);
-			Assert.IsTrue(player.RestoreAntennae());
+			npc.SubscribeToAntennaeChanged(OnAntennaeChangeEvent);
+			Assert.IsTrue(npc.RestoreAntennae());
 			Assert.IsTrue(checkHit());
-			Assert.IsFalse(player.UpdateAntennae(Antennae.defaultType));
+			Assert.IsFalse(npc.UpdateAntennae(Antennae.defaultType));
 			Assert.IsFalse(checkHit());
-			player.UnSubscribeToAntennaeChanged(OnAntennaeChangeEvent);
+			npc.UnSubscribeToAntennaeChanged(OnAntennaeChangeEvent);
 
 		}
 	}

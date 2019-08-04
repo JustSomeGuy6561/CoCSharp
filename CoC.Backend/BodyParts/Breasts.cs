@@ -14,7 +14,7 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 
-	public sealed class Breasts : SimpleSaveablePart<Breasts>, IGrowShrinkable, IBaseStatPerkAware
+	public sealed class Breasts : SimpleSaveablePart<Breasts>, IGrowable, IShrinkable, IBaseStatPerkAware
 	{
 		PerkStatBonusGetter modifierData;
 
@@ -25,9 +25,10 @@ namespace CoC.Backend.BodyParts
 
 		public float lactationMultiplier { get; private set; }
 
-		internal void SetLactation(float lactationAmount)
+		internal float SetLactation(float lactationAmount)
 		{
 			lactationMultiplier = lactationAmount;
+			return lactationMultiplier;
 		}
 
 
@@ -156,19 +157,19 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region IGrowShrinkable
-		bool IGrowShrinkable.CanGrowPlus()
+		bool IGrowable.CanGroPlus()
 		{
 			return cupSize < CupSize.JACQUES00;
 		}
 
-		bool IGrowShrinkable.CanReducto()
+		bool IShrinkable.CanReducto()
 		{
 			return cupSize > CupSize.FLAT;
 		}
 
-		float IGrowShrinkable.UseGroPlus()
+		float IGrowable.UseGroPlus()
 		{
-			if (!((IGrowShrinkable)this).CanGrowPlus())
+			if (!((IGrowable)this).CanGroPlus())
 			{
 				return 0;
 			}
@@ -179,9 +180,9 @@ namespace CoC.Backend.BodyParts
 			return cupSize - oldSize;
 		}
 
-		float IGrowShrinkable.UseReducto()
+		float IShrinkable.UseReducto()
 		{
-			if (!((IGrowShrinkable)this).CanReducto())
+			if (!((IShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
@@ -204,10 +205,21 @@ namespace CoC.Backend.BodyParts
 			nipples.GetBasePerkStats(getter);
 		}
 
-		internal void DoLateInit(BasePerkModifiers statModifiers)
+		internal void DoLateInit(Gender gender, BasePerkModifiers statModifiers, bool initWasNew)
 		{
-			cupSize = (CupSize)((byte)statModifiers.FemaleNewBreastDefaultCupSize).delta(statModifiers.FemaleNewBreastCupSizeDelta);
-			nipples.DoLateInit(statModifiers);
+			if (gender.HasFlag(Gender.FEMALE))
+			{
+				if (initWasNew)
+				{
+					cupSize = statModifiers.FemaleNewBreastDefaultCupSize;
+				}
+				else
+				{
+
+					cupSize = cupSize.ByteEnumDelta(statModifiers.FemaleNewBreastCupSizeDelta);
+				}
+			}
+			nipples.DoLateInit(gender, statModifiers, initWasNew);
 		}
 	}
 }

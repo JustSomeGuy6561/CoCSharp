@@ -56,6 +56,5 @@ namespace CoC.Backend.SaveData
 			}
 			throw new ArgumentException("Argument does not exist in current save system. make sure you added it during the initialization phase.");
 		}
-
 	}
 }

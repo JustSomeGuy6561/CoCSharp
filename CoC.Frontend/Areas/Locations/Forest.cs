@@ -64,7 +64,7 @@ namespace CoC.Frontend.Areas.Locations
 			if (!forestUnlocked)
 			{
 				FrontendSessionSave.data.ForestUnlocked = true;
-				OutputText(ForestUnlock());
+				AddOutput(ForestUnlock);
 			}
 		}
 	}

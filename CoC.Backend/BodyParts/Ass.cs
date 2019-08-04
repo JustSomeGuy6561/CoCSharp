@@ -3,8 +3,6 @@
 //Author: JustSomeGuy
 //1/5/2019, 5:21 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Perks;
-using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
 using System.Text;
@@ -69,12 +67,12 @@ namespace CoC.Backend.BodyParts
 		{
 
 			byte loose = (byte)looseness;
-			if (!virgin)
+			if (everPracticedAnal)
 			{
 				loose++;
 			}
 			byte wet = ((byte)wetness).add(1);
-			uint cap = (uint)Math.Floor(BASE_CAPACITY + bonusAnalCapacity + perkBonusAnalCapacity /*+ experience / 10*/ + 6 * loose * loose * wet / 10.0);
+			uint cap = (uint)Math.Round(BASE_CAPACITY + bonusAnalCapacity + perkBonusAnalCapacity /*+ experience / 10*/ + 6 * loose * loose * wet / 10.0);
 			if (cap > MAX_ANAL_CAPACITY)
 			{
 				return MAX_ANAL_CAPACITY;
@@ -85,6 +83,7 @@ namespace CoC.Backend.BodyParts
 		public ushort numTimesAnal { get; private set; } = 0;
 
 		public bool virgin { get; private set; } = true;
+		public bool everPracticedAnal { get; private set; } = false;
 
 		public SimpleDescriptor shortDescription => shortDesc;
 		public SimpleDescriptor fullDescription => fullDesc;
@@ -108,7 +107,7 @@ namespace CoC.Backend.BodyParts
 		//allows PC to masturbate/"practice" w/o losing anal virginity.
 		//if set to false, it will be ignored if looseness is still normal.
 		//nothing here can be null so we're fine.
-		internal static Ass Generate(AnalWetness analWetness, AnalLooseness analLooseness, bool? virginAnus = null)
+		internal static Ass Generate(AnalWetness analWetness, AnalLooseness analLooseness, bool virginAnus, bool? everPracticedAnal = null)
 		{
 			Ass ass = new Ass()
 			{
@@ -116,14 +115,13 @@ namespace CoC.Backend.BodyParts
 				looseness = analLooseness
 			};
 			//if not set or explicitly null
-			if (virginAnus == null)
+			if (everPracticedAnal == null)
 			{
-				ass.virgin = analLooseness == AnalLooseness.NORMAL;
+				everPracticedAnal = analLooseness != AnalLooseness.NORMAL;
 			}
-			else
-			{
-				ass.virgin = (bool)virginAnus;
-			}
+
+			ass.everPracticedAnal = (bool)everPracticedAnal;
+			ass.virgin = virginAnus;
 			return ass;
 		}
 		#endregion
@@ -151,7 +149,11 @@ namespace CoC.Backend.BodyParts
 				looseness = analLooseness;
 				return true;
 			}
-			return false;
+			else
+			{
+				looseness = Utils.ClampEnum2(analLooseness, minLooseness, maxLooseness);
+				return false;
+			}
 		}
 
 		internal byte MakeWetter(byte amount = 1)
@@ -174,7 +176,11 @@ namespace CoC.Backend.BodyParts
 				wetness = analWetness;
 				return true;
 			}
-			return false;
+			else
+			{
+				wetness = Utils.ClampEnum2(analWetness, minWetness, maxWetness);
+				return false;
+			}
 		}
 
 		internal ushort AddBonusCapacity(ushort amountToAdd)
@@ -208,26 +214,34 @@ namespace CoC.Backend.BodyParts
 			AnalLooseness oldLooseness = looseness;
 			ushort capacity = analCapacity();
 
-			//don't have to worry about overflow, as +1 will never overflow our artificial max.
-			if (penetratorArea >= capacity * 1.5f)
+			//don't have to worry about overflow, as +1 or +2 will never overflow our artificial max.
+			if (penetratorArea >= capacity * 3f)
 			{
-				looseness++; 
+				looseness += 2;
 			}
-			else if (penetratorArea >= capacity && Utils.RandBool())
+			else if (penetratorArea >= capacity * 1.5f)
 			{
 				looseness++;
 			}
-			else if (penetratorArea >= analCapacity() * 0.9f && Utils.Rand(4) == 0)
+			else if (penetratorArea >= capacity)
 			{
-				looseness++;
+				if (Utils.RandBool()) looseness++;
 			}
-			else if (penetratorArea >= analCapacity() * 0.75f && Utils.Rand(10) == 0)
+			else if (penetratorArea >= analCapacity() * 0.9f)
 			{
-				looseness++;
+				if (Utils.Rand(4) == 0) looseness++;
+			}
+			else if (penetratorArea >= analCapacity() * 0.75f)
+			{
+				if (Utils.Rand(10) == 0) looseness++;
 			}
 			if (penetratorArea >= capacity / 2)
 			{
 				buttTightenTimer = 0;
+			}
+			if (!everPracticedAnal)
+			{
+				everPracticedAnal = true;
 			}
 			if (virgin && takeAnalVirginity)
 			{

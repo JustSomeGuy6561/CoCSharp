@@ -21,7 +21,7 @@ namespace CoC.Frontend.Encounters.Common
 			return new RandomEncounter[] { new GoblinEncounter(), new GoblinAssassinEncounter(), new GoblinWarriorEncounter(), new GoblinShamanEncounter(), new GoblinElderEncounter() };
 		}
 
-		protected override int chances => Utils.LerpRound(1, 20, player.level, 20, 10);
+		protected override int chances => Utils.LerpRound(1, 20, (int)player.level, 20, 10);
 
 		protected override bool encounterDisabled()
 		{

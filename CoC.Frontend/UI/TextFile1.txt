@@ -1,0 +1,7 @@
+﻿NOTE: Anything in the UI Folder, especially the Controller Data folder, is very sensitive to editing. The GUI layer uses this data to determine what to do. Do Not edit these
+unless you're willing to fix whatever you break in GUI as well. The short answer is don't touch these, the longer answer is don't touch these unless it's a major content change
+that requires GUI to parse new data in a unique way. For example, the prison data requires its own special means of displaying, so creating a specific content related class
+with prison data makes sense. However, it also required manually implementing HOW it was displayed in EACH GUI, so do so at your own risk. 
+
+Honestly, the GUI is not designed to be flexible - buttons can only have 12 characters, for example, and there's only space for 15 of them on one page. Realistically,
+the current number of player stats is the most the game can support in current UI layout, forcing things like the prison system to require a unique layout. 

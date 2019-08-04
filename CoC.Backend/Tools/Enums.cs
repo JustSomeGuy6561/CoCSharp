@@ -27,5 +27,12 @@ namespace CoC.Backend.Tools
 			amt.subtractOff(amount);
 			return (T)Enum.Parse(typeof(T), amt.ToString());
 		}
+
+		public static T ByteEnumDelta<T>(this T val, sbyte delta) where T : Enum
+		{
+			byte amt = Convert.ToByte(val);
+			amt.delta(delta);
+			return (T)Enum.Parse(typeof(T), amt.ToString());
+		}
 	}
 }

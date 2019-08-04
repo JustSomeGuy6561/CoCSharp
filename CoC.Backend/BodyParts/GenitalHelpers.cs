@@ -10,6 +10,7 @@ using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 //most of these are simply bytes, though a few do have extra behavior. An common software engineering practice is to never use primitives directly - this can be
 //confusing or arbitrary - 5 could mean 5 years, 5 decades, 5 score, 5 centuries, etc. While i don't agree with that assessment 100%, it sometimes has merit. 
@@ -19,7 +20,7 @@ using System.Collections.Generic;
 //Honestly, if this thing costs more than a few mbs (if that) i'll be very surprised. 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Femininity : SimpleSaveablePart<Femininity>, IBaseStatPerkAware, IBodyPartTimeLazy
+	public sealed partial class Femininity : SimpleSaveablePart<Femininity>, IBaseStatPerkAware, IBodyPartTimeLazy, IGenderListener
 	{
 		public const byte MOST_FEMININE = 100;
 		public const byte MOST_MASCULINE = 0;
@@ -39,6 +40,12 @@ namespace CoC.Backend.BodyParts
 		private const byte HERM_GENDERLESS_MIN = 20;
 		private const byte HERM_GENDERLESS_MAX = 85;
 
+		public const byte FEMALE_DEFAULT = 75;
+		public const byte MALE_DEFAULT = 25;
+		public const byte GENDERLESS_DEFAULT = ANDROGYNOUS;
+		public const byte HERM_DEFAULT = SLIGHTLY_FEMININE;
+
+
 		public byte value
 		{
 			get => _value;
@@ -46,8 +53,8 @@ namespace CoC.Backend.BodyParts
 			{
 				if (value != _value)
 				{
+					byte oldValue = _value;
 					_value = Utils.Clamp2(value, MOST_MASCULINE, MOST_FEMININE);
-					femininityChanged(); //notify everyone.
 				}
 			}
 		}
@@ -60,24 +67,23 @@ namespace CoC.Backend.BodyParts
 			return femininity.value;
 		}
 
-		private readonly Func<Gender> genderAccessor;
+		private GenderGetter genderAccessor;
 
 		internal Gender currentGender => genderAccessor();
 
-		private Femininity(Func<Gender> genderGetter)
+		private Femininity(Gender initialGender)
 		{
-			genderAccessor = genderGetter;
-			Gender gender = genderGetter();
+			genderAccessor = () => initialGender;
 
-			if (gender == Gender.GENDERLESS)
+			if (initialGender == Gender.GENDERLESS)
 			{
 				_value = 50;
 			}
-			else if (gender == Gender.HERM)
+			else if (initialGender == Gender.HERM)
 			{
 				_value = 60;
 			}
-			else if (gender == Gender.MALE)
+			else if (initialGender == Gender.MALE)
 			{
 				_value = 25;
 			}
@@ -88,9 +94,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//by default, we don't know if we have androgyny. so we'll just allow all the data. 
-		private Femininity(Func<Gender> genderGetter, byte femininity)
+		private Femininity(Gender initialGender, byte femininity)
 		{
-			genderAccessor = genderGetter;
+			genderAccessor = () => initialGender;
 			_value = Utils.Clamp2(femininity, MOST_MASCULINE, MOST_FEMININE);
 		}
 
@@ -98,22 +104,19 @@ namespace CoC.Backend.BodyParts
 		{
 			_value = other.value;
 			genderAccessor = other.genderAccessor;
+			femininityListeners = other.femininityListeners;
 		}
 
-		internal static Femininity Generate(Func<Gender> genderGetter)
+		internal static Femininity Generate(Gender initialGender)
 		{
-			return new Femininity(genderGetter);
+			return new Femininity(initialGender);
 		}
 
-		internal static Femininity Generate(Func<Gender> genderGetter, byte femininity)
+		internal static Femininity Generate(Gender initialGender, byte femininity)
 		{
-			return new Femininity(genderGetter, femininity);
+			return new Femininity(initialGender, femininity);
 		}
 
-		internal Femininity copy()
-		{
-			return new Femininity(this);
-		}
 		private readonly HashSet<IFemininityListener> femininityListeners = new HashSet<IFemininityListener>();
 		internal bool RegisterListener(IFemininityListener listener)
 		{
@@ -136,12 +139,14 @@ namespace CoC.Backend.BodyParts
 			femininityAware.GetFemininityData(ToFemininityData);
 		}
 
-		private void femininityChanged()
+		private string femininityChanged(byte oldValue)
 		{
+			StringBuilder sb = new StringBuilder();
 			foreach (IFemininityListener listener in femininityListeners)
 			{
-				listener.reactToChangeInFemininity();
+				sb.Append(listener.reactToChangeInFemininity(oldValue));
 			}
+			return sb.ToString();
 		}
 
 		private FemininityData ToFemininityData()
@@ -203,9 +208,40 @@ namespace CoC.Backend.BodyParts
 			return oldFemininity.subtract(value);
 		}
 
-		internal void SetFemininity(byte newValue)
+		internal byte SetFemininity(byte newValue)
 		{
 			UpdateFemininity(newValue);
+			return value;
+		}
+
+		internal byte feminizeWithOutput(byte amount, out string output)
+		{
+			if (value >= MOST_FEMININE)
+			{
+				output = "";
+				return 0;
+			}
+			byte oldFemininity = value;
+			output = UpdateFemininity(value.add(amount));
+			return value.subtract(oldFemininity);
+		}
+
+		internal byte masculinizeWithOutput(byte amount, out string output)
+		{
+			if (value == 0)
+			{
+				output = "";
+				return 0;
+			}
+			byte oldFemininity = value;
+			output = UpdateFemininity(value.subtract(amount));
+			return oldFemininity.subtract(value);
+		}
+
+		internal byte SetFemininityWithOutput(byte newValue, out string output)
+		{
+			output = UpdateFemininity(newValue);
+			return value;
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -218,35 +254,51 @@ namespace CoC.Backend.BodyParts
 		{
 			if (femininityLimitedByGender)
 			{
-
-				short diff = UpdateFemininity(value);
+				byte oldValue = value;
+				string output = UpdateFemininity(value);
+				short diff = value.diff(oldValue);
 				if (isPlayer && diff != 0)
 				{
-					return FemininityChangedDueToGenderHormonesStr(diff);
+					return FemininityChangedDueToGenderHormonesStr(diff) + output;
 				}
 			}
 			return "";
 		}
 
-		private short UpdateFemininity(byte newValue)
+		private string UpdateFemininity(byte newValue, bool doNotProcListeners = false)
 		{
 			//set current min, max based on gender;
 			byte minVal, maxVal;
-			switch (currentGender)
+			if (perkStats?.Invoke().femininityLockedByGender == true)
 			{
-				case Gender.MALE:
-					minVal = MOST_MASCULINE; maxVal = FEMININE; break;
-				case Gender.FEMALE:
-					minVal = MASCULINE; maxVal = MOST_FEMININE; break;
-				case Gender.GENDERLESS:
-				case Gender.HERM:
-					minVal = HERM_GENDERLESS_MIN; maxVal = HERM_GENDERLESS_MAX; break;
-				default:
-					throw new ArgumentException("Current gender not recognized");
+				switch (currentGender)
+				{
+					case Gender.MALE:
+						minVal = MOST_MASCULINE; maxVal = FEMININE; break;
+					case Gender.FEMALE:
+						minVal = MASCULINE; maxVal = MOST_FEMININE; break;
+					case Gender.GENDERLESS:
+					case Gender.HERM:
+						minVal = HERM_GENDERLESS_MIN; maxVal = HERM_GENDERLESS_MAX; break;
+					default:
+						throw new ArgumentException("Current gender not recognized");
+				}
+			}
+			else
+			{
+				minVal = MOST_MASCULINE;
+				maxVal = MOST_FEMININE;
 			}
 			byte oldValue = value;
 			value = Utils.Clamp2(newValue, minVal, maxVal);
-			return value.diff(oldValue);
+			if (oldValue != value && !doNotProcListeners)
+			{
+				return femininityChanged(oldValue);
+			}
+			else
+			{
+				return "";
+			}
 		}
 
 		private PerkStatBonusGetter perkStats;
@@ -255,12 +307,25 @@ namespace CoC.Backend.BodyParts
 		{
 			perkStats = getter;
 		}
-		internal void DoLateInit(Gender currentGender, BasePerkModifiers statModifiers)
+
+		//doesn't care if was new or delta, though we know for a fact that new
+		//will not be invalid. 
+		internal void DoLateInit(BasePerkModifiers statModifiers)
 		{
 			if (statModifiers.femininityLockedByGender)
 			{
-				UpdateFemininity(value);
+				UpdateFemininity(value, true);
 			}
+		}
+
+		string IGenderListener.reactToChangeInGender(Gender oldGender)
+		{
+			return UpdateFemininity(value);
+		}
+
+		void IGenderAware.GetGenderData(GenderGetter getter)
+		{
+			genderAccessor = getter;
 		}
 	}
 
@@ -270,9 +335,12 @@ namespace CoC.Backend.BodyParts
 	{
 		public const byte MAX_TOTAL_FERTILITY = byte.MaxValue - 5;
 		public const byte MAX_BASE_FERTILITY = 75;
+
 		//byte value => something, idk.
 
-		public byte baseValue
+		public bool isInfertile { get; private set; }
+
+		public byte baseFertility
 		{
 			get => _baseValue;
 			private set
@@ -282,38 +350,32 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _baseValue;
 
-		public byte IncreaseFertility(byte amount = 1)
-		{
-			byte oldAmount = baseValue;
-			baseValue = baseValue.add(amount);
-			return baseValue.subtract(oldAmount);
-		}
+		public byte totalFertility => Math.Min(MAX_TOTAL_FERTILITY, baseFertility.add(perkData?.Invoke().bonusFertility ?? 0));
+		public byte currentFertility => isInfertile ? (byte)0 : totalFertility;
 
-		public byte DecreaseFertility(byte amount = 1)
-		{
-			byte oldAmount = baseValue;
-			baseValue = baseValue.subtract(amount);
-			return oldAmount.subtract(baseValue);
-		}
-
-		public void SetFertility(byte newValue)
-		{
-			baseValue = newValue;
-		}
 
 		private Fertility(Gender gender, bool artificiallyInfertile = false)
 		{
-#warning fix me!
-			baseValue = 5;
+			switch (gender)
+			{
+				case Gender.FEMALE:
+				case Gender.HERM:
+					baseFertility = 10; break;
+				case Gender.MALE:
+				case Gender.GENDERLESS:
+				default:
+					baseFertility = 5; break;
+			}
+			isInfertile = artificiallyInfertile;
 		}
 
 		private Fertility(byte value, bool artificiallyInfertile = false)
 		{
-#warning fix me!
-			baseValue = value;
+			baseFertility = value;
+			isInfertile = artificiallyInfertile;
 		}
 
-		internal static Fertility GenerateDefault(Gender gender, bool artificiallyInfertile = false)
+		internal static Fertility GenerateFromGender(Gender gender, bool artificiallyInfertile = false)
 		{
 			return new Fertility(gender, artificiallyInfertile);
 		}
@@ -323,7 +385,57 @@ namespace CoC.Backend.BodyParts
 			return new Fertility(fertility, artificiallyInfertile);
 		}
 
-		public byte TotalFertility => Math.Min(baseValue.add(perkData?.Invoke().bonusFertility ?? 0), MAX_TOTAL_FERTILITY);
+
+		public byte IncreaseFertility(byte amount = 1, bool increaseIfInfertile = true)
+		{
+			if (!isInfertile || increaseIfInfertile)
+			{
+				byte oldAmount = baseFertility;
+				baseFertility = baseFertility.add(amount);
+				return baseFertility.subtract(oldAmount);
+			}
+			return 0;
+		}
+
+		public byte DecreaseFertility(byte amount = 1, bool decreaseIfInfertile = true)
+		{
+			if (!isInfertile || decreaseIfInfertile)
+			{
+				byte oldAmount = baseFertility;
+				baseFertility = baseFertility.subtract(amount);
+				return oldAmount.subtract(baseFertility);
+			}
+			return 0;
+		}
+
+		public byte SetFertility(byte newValue, bool changeIfInfertile = true)
+		{
+			if (!isInfertile || changeIfInfertile)
+			{
+				baseFertility = newValue;
+			}
+			return baseFertility;
+		}
+
+		public bool MakeInfertile()
+		{
+			if (isInfertile)
+			{
+				return false;
+			}
+			isInfertile = true;
+			return true;
+		}
+
+		public bool MakeFertile()
+		{
+			if (!isInfertile)
+			{
+				return false;
+			}
+			isInfertile = false;
+			return true;
+		}
 
 		private PerkStatBonusGetter perkData;
 		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
@@ -333,7 +445,7 @@ namespace CoC.Backend.BodyParts
 
 		internal override bool Validate(bool correctInvalidData)
 		{
-			baseValue = baseValue;
+			baseFertility = baseFertility;
 			return true;
 		}
 	}

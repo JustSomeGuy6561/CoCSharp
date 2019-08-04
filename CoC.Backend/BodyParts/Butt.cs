@@ -11,10 +11,9 @@ namespace CoC.Backend.BodyParts
 	//it's literally just a wrapper for an int.
 	//but now it has validation! woo!
 	//oh, and a descriptor.
-	public sealed partial class Butt : SimpleSaveablePart<Butt>, IGrowShrinkable
+	public sealed partial class Butt : SimpleSaveablePart<Butt>, IShrinkable //Gro+ doesnt work on butt.
 	{
 		public const byte BUTTLESS = 0;
-
 		public const byte TIGHT = 2;
 		public const byte AVERAGE = 4;
 		public const byte NOTICEABLE = 6;
@@ -24,13 +23,16 @@ namespace CoC.Backend.BodyParts
 		public const byte HUGE = 16;
 		public const byte INCONCEIVABLY_BIG = 20;
 
-		public bool hasButt => size >= TIGHT;
+		public readonly bool hasButt;// => size >= TIGHT;
 		public int index => size;
+
+		private byte minVal => hasButt ? TIGHT : BUTTLESS;
+		private byte maxVal => hasButt ? INCONCEIVABLY_BIG : BUTTLESS;
 
 		public byte size
 		{
 			get => _buttSize;
-			private set => _buttSize = Utils.Clamp2(value, TIGHT, INCONCEIVABLY_BIG);
+			private set => _buttSize = Utils.Clamp2(value, minVal, maxVal);
 		}
 		private byte _buttSize;
 
@@ -38,14 +40,23 @@ namespace CoC.Backend.BodyParts
 		{
 			if (size < TIGHT)
 			{
+				hasButt = false;
 				_buttSize = BUTTLESS;
 			}
 			else
 			{
-				this.size = size;
+				hasButt = true;
+				_buttSize = size;
 			}
 		}
-
+		internal static Butt GenerateButtless()
+		{
+			return new Butt(0);
+		}
+		internal static Butt GenerateDefault()
+		{
+			return new Butt(AVERAGE);
+		}
 		internal static Butt Generate(byte size = AVERAGE)
 		{
 			return new Butt(size);
@@ -69,9 +80,10 @@ namespace CoC.Backend.BodyParts
 			return oldSize.subtract(size);
 		}
 
-		public void SetButtSize(byte newSize)
+		public byte SetButtSize(byte newSize)
 		{
 			size = newSize;
+			return size;
 		}
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -80,12 +92,12 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		bool IGrowShrinkable.CanReducto()
+		bool IShrinkable.CanReducto()
 		{
 			return size > TIGHT;
 		}
 
-		float IGrowShrinkable.UseReducto()
+		float IShrinkable.UseReducto()
 		{
 			int oldSize = size;
 			if (size >= HUGE)
@@ -105,17 +117,5 @@ namespace CoC.Backend.BodyParts
 			}
 			return oldSize - size;
 		}
-
-		//apparently gro+ doesnt work on butt or hips.
-		bool IGrowShrinkable.CanGrowPlus()
-		{
-			return false;
-		}
-
-		float IGrowShrinkable.UseGroPlus()
-		{
-			return 0;
-		}
-
 	}
 }

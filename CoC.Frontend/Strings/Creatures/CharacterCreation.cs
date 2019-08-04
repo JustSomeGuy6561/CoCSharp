@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //6/10/2019, 8:41 PM
+using CoC.Backend;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Strings;
@@ -106,9 +107,10 @@ namespace CoC.Frontend.Creatures
 			new Triple<string>("Mas. Girly", "Androgynous build." + Environment.NewLine + Environment.NewLine + "A bit masculine, but soft and slender.", "Masculine, Girly") //8
 		};
 
-		private Triple<string> HermButtonData(int index)
+		private Triple<SimpleDescriptor> HermButtonData(int index)
 		{
-			return HERM_BUILDS[index];
+			Triple<string> value = HERM_BUILDS[index];
+			return new Triple<SimpleDescriptor>(() => value.first, () => value.second, () => value.third);
 		}
 
 		private readonly Triple<string>[] GENDERLESS_BUILDS =
@@ -118,9 +120,10 @@ namespace CoC.Frontend.Creatures
 			new Triple<string>("Androgynous", "Will make you appear truly androgynous.", "")
 		};
 
-		private Triple<string> GenderlessButtonData(int index)
+		private Triple<SimpleDescriptor> GenderlessButtonData(int index)
 		{
-			return GENDERLESS_BUILDS[index];
+			var value = GENDERLESS_BUILDS[index];
+			return new Triple<SimpleDescriptor>(() => value.first, () => value.second, () => value.third);
 		}
 
 		private static string DefaultBuildHint()
@@ -140,7 +143,7 @@ namespace CoC.Frontend.Creatures
 
 		private string ConfirmComplexionText(Tones choice)
 		{
-			return "You selected a " + choice.AsString() + " complexion.";
+			return "You selected a " + choice.AsString() + " complexion." + Environment.NewLine + Environment.NewLine;
 		}
 
 		private string ChooseFurStr(bool isPrimary)

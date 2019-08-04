@@ -1,9 +1,11 @@
 ﻿using CoC.Backend.Perks;
+using CoC.Backend.SaveData;
+using CoC.Frontend.Areas;
+using CoC.Frontend.Areas.Locations;
 using CoC.Frontend.Perks;
+using CoC.Frontend.SaveData;
 using CoC.Frontend.UI;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace CoC.Frontend.Engine
 {
@@ -11,10 +13,18 @@ namespace CoC.Frontend.Engine
 	//overall engine. This the most technical part of the frontend, but it's necessary to allow you to create and alter content here in the frontend, but still have it work in the backend. 
 	public static class FrontendInitalizer
 	{
-		public static void Init()
+		public static void Init(FileInfo globalDataFile)
 		{
+			SaveSystem.AddGlobalSave(new FrontendGlobalSave());
+			SaveSystem.AddSessionSave(new FrontendSessionSave());
+
 			BasePerkModifiers getExtraData() => new ExtraPerkModifiers();
-			//Backend.Engine.BackendInitializer.Init(MenuHelpers.DoNext, TextOutput.OutputText, );
+
+			Backend.Engine.BackendInitializer.Init(globalDataFile, MenuHelpers.DoNext, TextOutput.AddOutput, 
+				AreaManager.placeCollection, AreaManager.locationCollection, getExtraData, DifficultyManager.difficultyCollection);
+
+
+			#warning Parse global File Data accordingly. note it may be null if file does not exist.
 		}
 
 

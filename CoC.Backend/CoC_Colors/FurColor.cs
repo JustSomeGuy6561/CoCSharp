@@ -149,6 +149,22 @@ namespace CoC.Backend.CoC_Colors
 			}
 		}
 
+		public override bool Equals(object other)
+		{
+			if (other is null || !(other is FurColor || other is HairFurColors))
+			{
+				return false;
+			}
+			else if (other is FurColor furColor)
+			{
+				return Equals(furColor);
+			}
+			else if (other is HairFurColors hairFur)
+			{
+				return Equals(hairFur);
+			}
+			return false;
+		}
 
 		public bool Equals(FurColor color)
 		{
@@ -161,6 +177,18 @@ namespace CoC.Backend.CoC_Colors
 		public bool Equals(HairFurColors other)
 		{
 			return IsIdenticalTo(other);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = -1882447767;
+				hashCode = hashCode * -1521134295 + multiColorPattern.GetHashCode();
+				hashCode = hashCode * -1521134295 + EqualityComparer<HairFurColors>.Default.GetHashCode(primaryColor);
+				hashCode = hashCode * -1521134295 + EqualityComparer<HairFurColors>.Default.GetHashCode(secondaryColor);
+				return hashCode;
+			}
 		}
 	}
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CoC.UI;
+using CoCWinDesktop.ModelView;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,26 +24,6 @@ namespace CoCWinDesktop
 		public MainWindow()
 		{
 			InitializeComponent();
-		}
-
-		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-		{
-			System.Diagnostics.Process.Start(e.Uri.ToString());
-		}
-
-		private void ContinueBtn_Click(object sender, RoutedEventArgs e)
-		{
-
-		}
-
-		private void DataBtn_Click(object sender, RoutedEventArgs e)
-		{
-			Settings.SetBackgroundImage((Settings.currBackground+1) % 6);
-		}
-
-		private void ModThreadBtn_Click(object sender, RoutedEventArgs e)
-		{
-			System.Diagnostics.Process.Start("https://forum.fenoxo.com/threads/coc-revamp-mod.3/");
 		}
 	}
 }

@@ -6,27 +6,32 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Strings.Engine;
+using CoC.Frontend.UI;
 using CoC.UI;
-using static CoC.Frontend.UI.ButtonData;
+using static CoC.Frontend.UI.ButtonManager;
 using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Engine
 {
-	internal static class NewGameHelpers
+	public static class NewGameHelpers
 	{
 		public static void NewGame()
 		{
+			Controller.SetPlayerStatus(PlayerStatus.IDLE);
+			ViewOptions.HideMenu();
+			ViewOptions.HideStats();
+
 			ClearOutput();
 			ClearButtons();
-			OutputText(NewGameHelperText.IntroText());
-			//enable input field. Leave blank
+			AddOutput(NewGameHelperText.IntroText);
+			InputField.ActivateInputField(null, "", "");
 			//enable drop-list. auto-fill name on selection (left to GUI layer).
-			AddButton(0, GlobalStrings.OK(), ChooseName);
+			AddButton(0, GlobalStrings.OK, ChooseName);
 		}
 
 		private static void ChooseName()
 		{
-			if (string.IsNullOrEmpty(ModelView.instance.inputText))
+			if (string.IsNullOrWhiteSpace(Controller.instance.inputText))
 			{
 				return;
 			}
@@ -34,7 +39,7 @@ namespace CoC.Frontend.Engine
 			{
 				ClearOutput();
 				//disable input field.
-				string playerName = ModelView.instance.inputText.Trim();
+				string playerName = Controller.instance.inputText.Trim();
 				string check = playerName.CapitalizeFirstLetter();
 				PlayerCreator pc;
 				if (!SpecialCharacters.specialCharacterLookup.ContainsKey(check))
@@ -52,9 +57,9 @@ namespace CoC.Frontend.Engine
 
 		private static void PromptSpecial(string specialName)
 		{
-			OutputText(NewGameHelperText.PromptSpecial());
-			AddButton(0, NewGameHelperText.SpecialName(), () => ParseSpecial(specialName, true));
-			AddButton(1, NewGameHelperText.ContinueOn(), () => ParseSpecial(specialName, false));
+			AddOutput(NewGameHelperText.PromptSpecial);
+			AddButton(0, NewGameHelperText.SpecialName, () => ParseSpecial(specialName, true));
+			AddButton(1, NewGameHelperText.ContinueOn, () => ParseSpecial(specialName, false));
 		}
 
 		private static void ParseSpecial(string name, bool useSpecial)

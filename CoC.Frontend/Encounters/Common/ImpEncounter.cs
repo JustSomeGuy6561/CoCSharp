@@ -20,7 +20,7 @@ namespace CoC.Frontend.Encounters.Common
 
 		public ImpEncounter() : base() { }
 
-		protected override int chances => Utils.LerpRound(1,  20, player.level, 20, 10);
+		protected override int chances => Utils.LerpRound(1,  20, (int)player.level, 20, 10);
 		protected override void Run()
 		{
 			throw new NotImplementedException();

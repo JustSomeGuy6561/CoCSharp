@@ -246,4 +246,19 @@ namespace CoC
 		public static ulong addIn(ref this ulong val, ulong amount) => val = add(val, amount);
 		public static ulong subtractOff(ref this ulong val, ulong other) => val = subtract(val, other);
 	}
+
+	public static class StringExtensions
+	{
+		public static string Truncate(this string text, int length)
+		{
+			if (text.Length < length)
+			{
+				return text;
+			}
+			else
+			{
+				return text.Substring(0, length);
+			}
+		}
+	}
 }

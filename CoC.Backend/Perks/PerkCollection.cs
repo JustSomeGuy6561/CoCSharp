@@ -16,17 +16,17 @@ namespace CoC.Backend.Perks
 		//the creature that has this perk collection. technically a circular reference, but it may be useful info, idk. 
 		private readonly Creature source;
 
-		public static ReadOnlyDictionary<Type, Func<PerkBase>> perkList => GameEngine.perkList;
+		//public static ReadOnlyDictionary<Type, Func<PerkBase>> perkList => GameEngine.perkList;
 
 		//the perks this creature has.
 		private readonly Dictionary<Type, PerkBase> perks = new Dictionary<Type, PerkBase>();
 
 		internal readonly BasePerkModifiers baseModifiers;
 
-		internal PerkCollection(Creature sourceCreature, BasePerkModifiers modifiers, params PerkBase[] basePerks)
+		internal PerkCollection(Creature sourceCreature, params PerkBase[] basePerks)
 		{
-			source = sourceCreature;
-			baseModifiers = modifiers;
+			source = sourceCreature ?? throw new ArgumentNullException(nameof(sourceCreature));
+			baseModifiers = GameEngine.constructPerkModifier();
 
 			if (basePerks != null)
 			{

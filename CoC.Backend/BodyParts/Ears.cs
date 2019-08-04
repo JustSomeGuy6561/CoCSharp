@@ -94,6 +94,12 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
+		internal void Reset()
+		{
+			Restore();
+			earPiercings.Reset();
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			EarType earType = type;

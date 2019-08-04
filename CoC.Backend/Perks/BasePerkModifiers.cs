@@ -153,13 +153,13 @@ namespace CoC.Backend.Perks
 		//if a size is provided, the delta value will be added to it. if this value is still lower than the default new value, the default new value will be used instead.
 
 		public float NewCockSizeDelta; //how much do we add or remove for new cocks? //big cock perk for now. would allow a small cock perk as well
-		public float CockGrowthMultiplier; //how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
-		public float CockShrinkMultiplier; //how much more/less should we shrink a cock over base amount? //big cock, cockSock;
+		public float CockGrowthMultiplier = 1f; //how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
+		public float CockShrinkMultiplier = 1f; //how much more/less should we shrink a cock over base amount? //big cock, cockSock;
 		public float NewCockDefaultSize; //minimum size for any new cocks; //bro/futa perks for now
 
 		public float NewClitSizeDelta; //how much do we add or remove to base amount for new Clits? //NYI, but BigClit Perks
-		public float ClitGrowthMultiplier; //how much more/less should we grow a Clit over the base amount?
-		public float ClitShrinkMultiplier; //how much more/less should we shrink a Clit over base amount?
+		public float ClitGrowthMultiplier = 1f; //how much more/less should we grow a Clit over the base amount?
+		public float ClitShrinkMultiplier = 1f; //how much more/less should we shrink a Clit over base amount?
 		public float MinNewClitSize; //minimum size for any new Clits; //bro/futa perks for now
 		public float MinClitSize; //minimum size for any Clit; //bro/futa perks for now
 
@@ -174,17 +174,17 @@ namespace CoC.Backend.Perks
 		public CupSize MaleMinCupSize = CupSize.FLAT;
 
 		//these are used regardless of gender. 
-		public float TitsGrowthMultiplier; //how much more/less should we grow the breasts over the base amount?
-		public float TitsShrinkMultiplier; //how much more/less should we shrink the breasts over base amount?
+		public float TitsGrowthMultiplier = 1f; //how much more/less should we grow the breasts over the base amount?
+		public float TitsShrinkMultiplier = 1f; //how much more/less should we shrink the breasts over base amount?
 
 		public float NewNippleSizeDelta; //how much do we add or remove to base amount for new Nipples? //NYI, but BigNipple Perks
-		public float NippleGrowthMultiplier; //how much more/less should we grow a Nipple over the base amount?
-		public float NippleShrinkMultiplier; //how much more/less should we shrink a Nipple over base amount?
+		public float NippleGrowthMultiplier = 1.0f; //how much more/less should we grow a Nipple over the base amount?
+		public float NippleShrinkMultiplier = 1.0f; //how much more/less should we shrink a Nipple over base amount?
 		public float NewNippleDefaultLength; //minimum size for any new Nipples; //bro/futa perks for now
 
 		public byte NewBallsSizeDelta; //how much do we add or remove to base amount for new Balls? //note, will only go to max size for uniball if uniball. 
-		public float BallsGrowthMultiplier; //how much more/less should we grow the Balls over the base amount? 1-3, expecting roughly 1.5
-		public float BallsShrinkMultiplier; //how much more/less should we shrink the Balls over base amount? 1-3, expecting roughly 1.5
+		public float BallsGrowthMultiplier = 1.0f; //how much more/less should we grow the Balls over the base amount? 1-3, expecting roughly 1.5
+		public float BallsShrinkMultiplier = 1.0f; //how much more/less should we shrink the Balls over base amount? 1-3, expecting roughly 1.5
 		public byte NewBallsDefaultSize; //note: will only go to uniball max if uniball.
 
 		public bool AlwaysProducesMaxCum; //pilgrim perk

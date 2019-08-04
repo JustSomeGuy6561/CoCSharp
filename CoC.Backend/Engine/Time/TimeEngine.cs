@@ -13,7 +13,7 @@ namespace CoC.Backend.Engine.Time
 {
 	public sealed class TimeEngine
 	{
-		private readonly Action<string> OutputText;
+		private readonly Action<SimpleDescriptor> OutputText;
 		private readonly Action<Action> DoNext;
 
 		//what i would do for a linked hashset in C#. Update: Nevermind, That's what friends (and beer, apparently) are for. -JSG
@@ -53,11 +53,11 @@ namespace CoC.Backend.Engine.Time
 		internal byte CurrentHour { get; private set; }
 		internal int CurrentDay { get; private set; }
 
-		public TimeEngine(Action<string> textWriter, Action<Action> buttonMaker, AreaEngine areaEngineReference)
+		public TimeEngine(Action<SimpleDescriptor> textWriter, Action<Action> buttonMaker, AreaEngine areaEngineReference)
 		{
-			OutputText = textWriter;
-			DoNext = buttonMaker;
-			areaEngine = areaEngineReference;
+			OutputText = textWriter ?? throw new ArgumentNullException(nameof(textWriter));
+			DoNext = buttonMaker ?? throw new ArgumentNullException(nameof(buttonMaker));
+			areaEngine = areaEngineReference ?? throw new ArgumentNullException(nameof(areaEngineReference));
 		}
 
 		public void UseHours(byte hours)
@@ -200,7 +200,7 @@ namespace CoC.Backend.Engine.Time
 			if (outputMagic.Length != 0)
 			{
 				hasAnyOutput = true;
-				OutputText(outputMagic.ToString());
+				OutputText(outputMagic.ToString);
 				outputMagic.Clear();
 			}
 			//will we need a new page for the next hour/lazies if caught up?
@@ -287,7 +287,7 @@ namespace CoC.Backend.Engine.Time
 			if (outputMagic.Length != 0)
 			{
 				hasAnyOutput = true;
-				OutputText(outputMagic.ToString());
+				OutputText(outputMagic.ToString);
 				outputMagic.Clear();
 			}
 			//NextEvent(true);

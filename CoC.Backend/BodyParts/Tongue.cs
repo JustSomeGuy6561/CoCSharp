@@ -7,6 +7,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -28,9 +29,9 @@ namespace CoC.Backend.BodyParts
 		public bool isLongTongue => type.longTongue;
 		public int length => type.length;
 
-		private Tongue()
+		private Tongue(TongueType tongueType)
 		{
-			type = TongueType.HUMAN;
+			type = tongueType ?? throw new ArgumentNullException(nameof(tongueType));
 
 			tonguePiercings = new Piercing<TonguePiercingLocation>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
@@ -38,15 +39,12 @@ namespace CoC.Backend.BodyParts
 
 		internal static Tongue GenerateDefault()
 		{
-			return new Tongue();
+			return new Tongue(TongueType.HUMAN);
 		}
 
 		internal static Tongue GenerateDefaultOfType(TongueType tongueType)
 		{
-			return new Tongue()
-			{
-				type = tongueType
-			};
+			return new Tongue(tongueType);
 		}
 
 		internal override bool UpdateType(TongueType newType)

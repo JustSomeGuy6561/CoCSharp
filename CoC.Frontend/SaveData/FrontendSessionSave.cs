@@ -9,6 +9,7 @@ namespace CoC.Frontend.SaveData
 	internal sealed class FrontendSessionSave : Backend.SaveData.SaveData
 	{
 
+
 		public static FrontendSessionSave data => SaveSystem.getSessionSave<FrontendSessionSave>();
 
 		internal bool ForestUnlocked = false;

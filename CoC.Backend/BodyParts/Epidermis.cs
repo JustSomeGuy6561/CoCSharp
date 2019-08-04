@@ -569,8 +569,8 @@ namespace CoC.Backend.BodyParts
 		public FurColor fur => epidermisType.usesFur ? _fur : new FurColor();
 		public Tones tone => epidermisType.usesTone ? _tone : Tones.NOT_APPLICABLE;
 
+		public FurTexture furTexture => epidermisType.usesFur ? _furTexture : FurTexture.NONDESCRIPT;
 		public SkinTexture skinTexture => epidermisType.usesTone ? _skinTexture : SkinTexture.NONDESCRIPT;
-		public FurTexture furTexture => epidermisType.usesTone ? _furTexture : FurTexture.NONDESCRIPT;
 
 		public string shortDescription()
 		{

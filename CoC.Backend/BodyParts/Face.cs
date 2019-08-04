@@ -107,7 +107,7 @@ namespace CoC.Backend.BodyParts
 			};
 		}
 
-		internal static Face GenerateWithSizeAndComplexion(FaceType faceType, bool fullMorph, SkinTexture complexion)
+		internal static Face GenerateWithMorphAndComplexion(FaceType faceType, bool fullMorph, SkinTexture complexion)
 		{
 			return new Face(faceType)
 			{
@@ -338,7 +338,7 @@ namespace CoC.Backend.BodyParts
 	public abstract partial class FaceType : SaveableBehavior<FaceType, Face>
 	{
 		private static readonly List<FaceType> faces = new List<FaceType>();
-		private static readonly ReadOnlyCollection<FaceType> availableTypes = new ReadOnlyCollection<FaceType>(faces);
+		public static readonly ReadOnlyCollection<FaceType> availableTypes = new ReadOnlyCollection<FaceType>(faces);
 		private static int indexMaker = 0;
 
 		public readonly bool hasSecondLevel;
@@ -360,6 +360,7 @@ namespace CoC.Backend.BodyParts
 			_index = indexMaker++;
 			secondLevelShortDescription = secondLevelShortDesc;
 			morphText = strengthenWeakenMorphText;
+			hasSecondLevel = true;
 			faces.AddAt(this, _index);
 		}
 
@@ -370,13 +371,14 @@ namespace CoC.Backend.BodyParts
 			_index = indexMaker++;
 			secondLevelShortDescription = GlobalStrings.None;
 			morphText = x => "";
+			hasSecondLevel = false;
 			faces.AddAt(this, _index);
 		}
 		internal virtual bool isHumanoid(bool isSecondLevel)
 		{
 			if (hasSecondLevel)
 			{
-				return isSecondLevel;
+				return !isSecondLevel;
 			}
 			return false;
 		}

@@ -20,7 +20,7 @@ namespace CoC.Frontend.Encounters.Forest
 		protected override void Run()
 		{
 			//player.TakeDamage(10);
-			OutputText(flavorText());
+			AddOutput(flavorText);
 		}
 
 		protected override bool encounterDisabled()

@@ -11,12 +11,15 @@ using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Tracing;
 using System.IO;
 
 namespace CoC.Backend.Engine
 {
 	public static class GameEngine
 	{
+		public static event EventHandler LanguageChanged;
+
 		public static AreaBase currentLocation => areaEngine.currentArea;
 
 		//NYI
@@ -25,8 +28,7 @@ namespace CoC.Backend.Engine
 			get => _currentPlayer;
 			private set
 			{
-				//only necessary b/c garbage collection may not be instant and if events are firing due to new player loaded and playing. I'd bet my 
-				//house (or apartment, whatever) that this would never actually happen. But now it won't, guarenteed.
+				//unfortunately, this is probably necessary. No weak 
 				if (_currentPlayer != value)
 				{
 					_currentPlayer.CleanupCreatureForDeletion();
@@ -47,7 +49,7 @@ namespace CoC.Backend.Engine
 
 		internal static Func<BasePerkModifiers> constructPerkModifier;
 
-		internal static ReadOnlyDictionary<Type, Func<PerkBase>> perkList;
+		//internal static ReadOnlyDictionary<Type, Func<PerkBase>> perkList;
 
 		public static byte CurrentHour => timeEngine.CurrentHour;
 		public static int CurrentDay => timeEngine.CurrentDay;
@@ -98,17 +100,29 @@ namespace CoC.Backend.Engine
 			timeEngine.IdleHours(hours, resumeCallback);
 		}
 
+		public static void GoToLocation<T>() where T : AreaBase
+		{
+			areaEngine.SetArea<T>();
+		}
+
 		public static void InitializeEngine(
-			Action<Action> DoNext, Action<string> OutputText, //Time Engine
+			Action<Action> DoNext, Action<SimpleDescriptor> OutputText, //Time Engine
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, //AreaEngine
+			Func<BasePerkModifiers> perkVariables, //perk data for creatures to use. 
 			ReadOnlyCollection<GameDifficulty> gameDifficulties) //Game Difficulty Collections.
 		{
 			areaEngine = new AreaEngine(gamePlaces, gameLocations);
 			timeEngine = new TimeEngine(OutputText, DoNext, areaEngine);
-			difficulties = gameDifficulties;
+			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
+			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
+			if (perkVariables() is null)
+			{
+				throw new ArgumentException("perk variables cannot be null.");
+			}
 			_currentPlayer = null;
 		}
 
+		//local save data.
 		public static void LoadFileBackend(FileInfo file)
 		{
 			//open file, do magic parsing shit. 

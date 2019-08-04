@@ -161,6 +161,8 @@ namespace CoC.Backend.BodyParts
 					value.changeTypeFrom(_type, ref len, ref _hairColor, ref _highlightColor, ref sty);
 					style = sty;
 					length = len;
+
+					_type = value;
 				}
 			}
 		}
@@ -181,29 +183,26 @@ namespace CoC.Backend.BodyParts
 		}
 		internal static Hair GenerateWithLength(HairType hairType, float hairLength)
 		{
-			return new Hair(hairType)
-			{
-				length = hairLength
-			};
+			Hair retVal = new Hair(hairType);
+			retVal.SetHairLength(hairLength);
+			return retVal;
 		}
 
 		internal static Hair GenerateWithColor(HairType hairType, HairFurColors color, float? hairLength = null)
 		{
-			return new Hair(hairType)
-			{
-				length = hairLength ?? hairType.defaultHairLength,
-				hairColor = color,
-			};
+			Hair retVal = new Hair(hairType);
+			if (hairLength != null) retVal.SetHairLength((float)hairLength);
+			retVal.SetHairColor(color);
+			return retVal;
 		}
 
 		internal static Hair GenerateWithColorAndHighlight(HairType hairType, HairFurColors color, HairFurColors highlight, float? hairLength = null)
 		{
-			return new Hair(hairType)
-			{
-				length = hairLength ?? hairType.defaultHairLength,
-				hairColor = color,
-				highlightColor = highlight,
-			};
+			Hair retVal = new Hair(hairType);
+			if (hairLength != null) retVal.SetHairLength((float)hairLength);
+			retVal.SetHairColor(color);
+			retVal.SetHighlightColor(highlight);
+			return retVal;
 		}
 		#endregion
 		#region Update
@@ -261,7 +260,7 @@ namespace CoC.Backend.BodyParts
 		//only returns false if it cannot 
 		internal bool SetHairColor(HairFurColors newHairColor, bool clearHighlights = false)
 		{
-			if (!type.canDye)
+			if (!type.canDye || HairFurColors.IsNullOrEmpty(newHairColor))
 			{
 				return false;
 			}
@@ -271,7 +270,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool SetHighlightColor(HairFurColors newHighlightColor)
 		{
-			if (!type.canDye)
+			if (!type.canDye || HairFurColors.IsNullOrEmpty(newHighlightColor))
 			{
 				return false;
 			}
@@ -358,19 +357,19 @@ namespace CoC.Backend.BodyParts
 		#region Restore
 		internal override bool Restore()
 		{
-			if (type == HairType.NO_HAIR)
+			if (type == HairType.NORMAL)
 			{
 				return false;
 			}
-			type = HairType.NO_HAIR;
+			type = HairType.NORMAL;
 			return true;
 		}
 		internal void Reset()
 		{
-			type = HairType.NO_HAIR;
+			type = HairType.NORMAL;
 			length = 0f;
 			style = HairStyle.NO_STYLE;
-			hairColor = DEFAULT_COLOR;
+			hairColor = type.defaultColor;
 			highlightColor = HairFurColors.NO_HAIR_FUR;
 		}
 		#endregion
@@ -569,7 +568,7 @@ namespace CoC.Backend.BodyParts
 	public abstract partial class HairType : SaveableBehavior<HairType, Hair>
 	{
 		private static readonly List<HairType> hairTypes = new List<HairType>();
-		private static readonly ReadOnlyCollection<HairType> availableTypes = new ReadOnlyCollection<HairType>(hairTypes);
+		public static readonly ReadOnlyCollection<HairType> availableTypes = new ReadOnlyCollection<HairType>(hairTypes);
 		private static int indexMaker = 0;
 
 
@@ -842,7 +841,7 @@ namespace CoC.Backend.BodyParts
 
 			public override bool canStyle => true; //i dunno, you may want to prevent this. for now i'll allow it.
 
-			internal override AttackBase attack => attack;
+			internal override AttackBase attack => _attack; //caught a stack overflow here because attack was attack.
 			private readonly AttackBase _attack;
 
 			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc,

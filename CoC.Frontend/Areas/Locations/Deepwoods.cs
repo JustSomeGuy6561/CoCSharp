@@ -41,7 +41,7 @@ namespace CoC.Frontend.Areas.Locations
 			if (!Unlocked)
 			{
 				FrontendSessionSave.data.DeepwoodsUnlocked = true;
-				OutputText(UnlockText());
+				AddOutput(UnlockText);
 			}
 		}
 	}

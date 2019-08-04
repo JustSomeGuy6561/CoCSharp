@@ -25,6 +25,11 @@ namespace CoC.Backend.Creatures
 			//TODO: Add player specific items or whatever.
 		}
 
+		public string Appearance()
+		{
+			throw new NotImplementedException();
+		}
+
 		public override uint maxHealth
 		{
 			get

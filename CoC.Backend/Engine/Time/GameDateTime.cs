@@ -43,6 +43,12 @@ namespace CoC.Backend.Engine.Time
 			return new GameDateTime(newDay, newHour);
 		}
 
+		public string GetFormattedHourString()
+		{
+#warning add a 12 hour option, and also cultural variants based on weird places like using commas instead of colons. 
+			return hour.ToString() + ":00";
+		}
+
 		public static GameDateTime HoursFromNow(int hours)
 		{
 			return Now.delta(hours);

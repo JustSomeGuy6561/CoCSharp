@@ -86,11 +86,11 @@ namespace CoC.Backend.BodyParts
 			StringBuilder sb = new StringBuilder();
 			//virgin looseness: 100%
 
-			if (full || (looseness == AnalLooseness.NORMAL && (virgin || Utils.Rand(4) != 0)) || Utils.Rand(4) == 0)
+			if (full || Utils.Rand(4) == 0)
 			{
 				sb.Append(looseness.AsDescriptor());
 			}
-			if ((full || Utils.Rand(3) != 0) && wetness > AnalWetness.DAMP)
+			if (wetness > AnalWetness.DAMP && (full || Utils.Rand(3) != 0))
 			{
 				if (sb.Length != 0)
 				{
@@ -98,7 +98,27 @@ namespace CoC.Backend.BodyParts
 				}
 				sb.Append(wetness.AsText());
 			}
-			if (SaveData.BackendSessionData.data.SFW_Mode)
+			if (!everPracticedAnal)
+			{
+				if (sb.Length != 0)
+				{
+					sb.Append(" ");
+				}
+				sb.Append("untounched");
+			}
+			else if (virgin)
+			{
+				if (sb.Length != 0)
+				{
+					sb.Append(" ");
+				}
+				sb.Append("virgin");
+			}
+			if (sb.Length != 0)
+			{
+				sb.Append(" ");
+			}
+			if (SaveData.BackendSessionData.data.SFW_Mode == true)
 			{
 				sb.Append(Utils.RandomChoice("rear end", "backdoor"));
 			}

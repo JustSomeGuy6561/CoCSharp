@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/12/2019, 3:34 AM
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 
@@ -69,6 +70,13 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private string BullHornsReactToFemDeltaStr(byte oldLength, in byte newLength, byte oldMasculinity, in FemininityData femininity)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+
 		private static string DragonShortDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();

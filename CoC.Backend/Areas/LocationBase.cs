@@ -27,6 +27,7 @@ namespace CoC.Backend.Areas
 
 			randomScenes = randoms;
 			semiRandomContainer = semiRandoms;
+			semiRandomScenes = new Dictionary<SemiRandomEncounter, int>();
 			foreach (var elem in semiRandoms)
 			{
 				semiRandomScenes.Add(elem, 0);

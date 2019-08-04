@@ -16,7 +16,7 @@ namespace CoC.Backend.BodyParts
 
 	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
-	public sealed class Clit : SimpleSaveablePart<Clit>, IGrowShrinkable, IBaseStatPerkAware
+	public sealed class Clit : SimpleSaveablePart<Clit>, IGrowable, IShrinkable, IBaseStatPerkAware
 	{
 		private float clitGrowthMultiplier => basePerkData?.Invoke().ClitGrowthMultiplier ?? 1;
 		private float clitShrinkMultiplier => basePerkData?.Invoke().ClitShrinkMultiplier ?? 1;
@@ -29,20 +29,45 @@ namespace CoC.Backend.BodyParts
 		private PerkStatBonusGetter basePerkData;
 
 		public const float MIN_CLIT_SIZE = 0.25f;
+		public const float MIN_CLITCOCK_SIZE = 2f;
 		public const float DEFAULT_CLIT_SIZE = 0.25f;
 		public const float MAX_CLIT_SIZE = 100f;
 
+		private float minSize
+		{
+			get
+			{
+				float currMin = basePerkData?.Invoke().MinClitSize ?? MIN_CLIT_SIZE;
+				if (omnibusClit && currMin < MIN_CLITCOCK_SIZE)
+				{
+					return MIN_CLITCOCK_SIZE;
+				}
+				return Math.Max(MIN_CLIT_SIZE, currMin);
+			}
+		}
 		public float length
 		{
 			get => _length;
 			private set
 			{
-				_length = Utils.Clamp2(value, MIN_CLIT_SIZE, MAX_CLIT_SIZE);
+				_length = Utils.Clamp2(value, minSize, MAX_CLIT_SIZE);
 			}
 		}
 		private float _length;
 
-		public bool omnibusClit { get; private set; }
+		public bool omnibusClit
+		{
+			get => _omnibusClit;
+			private set
+			{
+				if (value && !_omnibusClit && length < MIN_CLITCOCK_SIZE)
+				{
+					_length = MIN_CLITCOCK_SIZE;
+				}
+				_omnibusClit = value;
+			}
+		}
+		private bool _omnibusClit;
 
 		public readonly Piercing<ClitPiercings> clitPiercings;
 
@@ -95,8 +120,14 @@ namespace CoC.Backend.BodyParts
 		private Cock clitCock = null;
 		public void Restore()
 		{
-			length = MIN_CLIT_SIZE;
 			omnibusClit = false;
+			length = MIN_CLIT_SIZE;
+		}
+
+		public void Reset()
+		{
+			Restore();
+			clitPiercings.Reset();
 		}
 
 		public bool ActivateOmnibusClit()
@@ -158,6 +189,12 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
+		public float SetClitSize(float newSize)
+		{
+			length = newSize;
+			return length;
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			length = length;
@@ -205,19 +242,19 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Grow/Shrinkable
-		bool IGrowShrinkable.CanGrowPlus()
+		bool IGrowable.CanGroPlus()
 		{
 			return length < MAX_CLIT_SIZE;
 		}
 
-		bool IGrowShrinkable.CanReducto()
+		bool IShrinkable.CanReducto()
 		{
-			return length > MIN_CLIT_SIZE;
+			return length > minSize;
 		}
 
-		float IGrowShrinkable.UseGroPlus()
+		float IGrowable.UseGroPlus()
 		{
-			if (!((IGrowShrinkable)this).CanGrowPlus())
+			if (!((IGrowable)this).CanGroPlus())
 			{
 				return 0;
 			}
@@ -226,9 +263,9 @@ namespace CoC.Backend.BodyParts
 			return length - oldLength;
 		}
 
-		float IGrowShrinkable.UseReducto()
+		float IShrinkable.UseReducto()
 		{
-			if (!((IGrowShrinkable)this).CanReducto())
+			if (!((IShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
@@ -245,12 +282,19 @@ namespace CoC.Backend.BodyParts
 			basePerkData = getter;
 		}
 
-		internal void DoLateInit(BasePerkModifiers statModifiers)
+		internal void DoLateInit(BasePerkModifiers statModifiers, bool isInit)
 		{
-			float minLength = statModifiers.MinNewClitSize + statModifiers.NewClitSizeDelta;
-			if (length < minLength)
+			if (isInit)
 			{
-				length = minLength;
+				float minLength = statModifiers.MinNewClitSize;
+				if (length < minLength)
+				{
+					length = minLength;
+				}
+			}
+			else
+			{
+				length += statModifiers.NewClitSizeDelta;
 			}
 		}
 

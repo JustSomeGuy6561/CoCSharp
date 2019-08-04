@@ -39,8 +39,8 @@ namespace CoC.Backend.Engine
 
 		internal AreaEngine(ReadOnlyDictionary<Type, Func<PlaceBase>> places, ReadOnlyDictionary<Type, Func<LocationBase>> locations)
 		{
-			placeLookup = places;
-			locationLookup = locations;
+			placeLookup = places ?? throw new ArgumentNullException(nameof(places));
+			locationLookup = locations ?? throw new ArgumentNullException(nameof(locations));
 			foreach (var key in places.Keys)
 			{
 				placeReactionStorage.Add(key, new PriorityQueue<PlaceReaction>());

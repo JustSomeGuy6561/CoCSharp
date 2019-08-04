@@ -18,62 +18,89 @@ namespace CoC.Backend.BodyParts
 	//This class is so much harder to implement than i thought it'd be.
 	//Edit so much later: This class is probably the most complicated i've implemented to date. I still need to add attack data.
 
-	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowShrinkable, IFemininityListener, ICanAttackWith
+	public sealed class Horns : BehavioralSaveablePart<Horns, HornType>, IGrowable, IShrinkable, IFemininityListener, ICanAttackWith
 	{
+
+		//initialized to point to a default value passed in to the constructor.
+		//after the data is bound, this will always be accurate. This allows us to use the full functionality we need during the constructor phase
+		//and not have to bend over backwards everywhere to check if femininity getter is null. It also allows us to not deal with late inits. 
+		private FemininityDataGetter dataGetter; 
 		private FemininityData hornMasculinity => dataGetter();
 
 		public byte significantHornSize => _significantHornSize;
-		private byte _significantHornSize;
+		private byte _significantHornSize = 0;
 		public byte numHorns => _numHorns;
-		private byte _numHorns;
-		public override HornType type { get; protected set; }
+		private byte _numHorns = 0;
+		public override HornType type
+		{
+			get => _type;
+			protected set
+			{
+				if (_type != value)
+				{
+					value.onTypeChange(_type, ref _numHorns, ref _significantHornSize, hornMasculinity);
+					_type = value;
+				}
+			}
+		}
+		private HornType _type = HornType.NONE;
 		public static HornType defaultType => HornType.NONE;
 		public override bool isDefault => type == defaultType;
 
 		#region Constructors
-		private Horns()
+		private Horns(FemininityData initialFemininity)
 		{
+			if (initialFemininity == null) throw new ArgumentNullException(nameof(initialFemininity));
+			dataGetter = () => initialFemininity;
+
 			type = HornType.NONE;
-			_numHorns = 0;
-			_significantHornSize = 0;
 		}
 
-		private Horns(HornType hornType)
+		private Horns(HornType hornType, FemininityData initialFemininity)
 		{
-			type = hornType;
-			_numHorns = type.defaultHorns;
-			_significantHornSize = type.defaultLength;
+			if (initialFemininity == null) throw new ArgumentNullException(nameof(initialFemininity));
+			dataGetter = () => initialFemininity;
+
+			type = hornType ?? throw new ArgumentNullException(nameof(hornType));
 		}
 
-		private Horns(HornType hornType, byte hornLength, byte hornCount)
+		//i suppose it's possible to use this for saves, though i'd personally not recommend it. It may be possible to save with invalid horn data
+		//due to a recent femininity change, and we wouldn't want it to auto-validate. I suppose this could lead to a player alterin their horn save data
+		//and it being considered valid, but that's not for us to police. 
+		private Horns(HornType hornType, FemininityData initialFemininity, byte hornLength, byte hornCount)
 		{
-			type = hornType;
+			if (initialFemininity == null) throw new ArgumentNullException(nameof(initialFemininity));
+			dataGetter = () => initialFemininity;
+
+			_type = hornType ?? throw new ArgumentNullException(nameof(hornType));
 			_significantHornSize = hornLength;
 			_numHorns = hornCount;
+			Validate(true); //check if the horn count/size is valid, given initial femininity. correct it if not. 
 		}
+
 		#endregion
 
 		#region Generate
-		internal static Horns GenerateDefault()
+		internal static Horns GenerateDefault(FemininityData initialFemininity)
 		{
-			return new Horns();
+			return new Horns(initialFemininity);
 		}
 
-		internal static Horns GenerateDefaultOfType(HornType hornType)
+		internal static Horns GenerateDefaultOfType(HornType hornType, FemininityData initialFemininity)
 		{
-			return new Horns(hornType);
+			return new Horns(hornType, initialFemininity);
 		}
 
-		internal static Horns GenerateWithStrength(HornType hornType, byte hornStrength, bool uniform = false)
+		internal static Horns GenerateWithExtraStrength(HornType hornType, FemininityData initialFemininity, byte additionalStrengthLevel, bool uniform = false)
 		{
-			Horns retVal = new Horns(hornType);
-			retVal.StrengthenTransform(hornStrength);
+			Horns retVal = new Horns(hornType, initialFemininity);
+			retVal.StrengthenTransform(additionalStrengthLevel, uniform);
 			return retVal;
 		}
 
-		internal static Horns GenerateOverride(HornType hornType, byte hornLength, byte numHorns)
+		internal static Horns GenerateOverride(HornType hornType, FemininityData initialFemininity, byte hornLength, byte numHorns)
 		{
-			return new Horns(hornType, hornLength, numHorns);
+			return new Horns(hornType, initialFemininity, hornLength, numHorns);
 		}
 		#endregion
 		#region Update
@@ -84,34 +111,30 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			type = newType;
-			_numHorns = type.defaultHorns;
-			_significantHornSize = type.defaultLength;
 			return true;
 		}
 
-		internal bool UpdateAndStrengthenHorns(HornType newType, byte byAmount)
+		internal bool UpdateAndStrengthenHorns(HornType newType, byte byAmount, bool uniform = false)
 		{
 			if (newType == null || type == newType)
 			{
 				return false;
 			}
 			type = newType;
-			_numHorns = type.defaultHorns;
-			_significantHornSize = type.defaultLength;
-			StrengthenTransform(byAmount);
+			StrengthenTransform(byAmount, uniform);
 			return true;
 		}
 		#endregion
 		#region Horn Specific Methods
 		public bool CanStrengthen => type.CanGrow(numHorns, significantHornSize, hornMasculinity);
 
-		internal bool StrengthenTransform(byte numberOfTimes = 1)
+		internal bool StrengthenTransform(byte numberOfTimes = 1, bool uniform = false)
 		{
 			if (numberOfTimes == 0)
 			{
 				return false;
 			}
-			return type.StrengthenTransform(numberOfTimes, ref _numHorns, ref _significantHornSize, hornMasculinity);
+			return type.StrengthenTransform(numberOfTimes, ref _numHorns, ref _significantHornSize, hornMasculinity, uniform);
 		}
 
 		public bool CanWeaken => type.CanShrink(numHorns, significantHornSize, hornMasculinity);
@@ -160,23 +183,22 @@ namespace CoC.Backend.BodyParts
 		{
 			dataGetter = getter;
 		}
-		private FemininityDataGetter dataGetter;
 
-		void IFemininityListener.reactToChangeInFemininity()
+		string IFemininityListener.reactToChangeInFemininity(byte oldValue)
 		{
-			type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, hornMasculinity);
+			return type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, oldValue, hornMasculinity);
 		}
 		#endregion
 
 		#region IGrowShrinkable
-		bool IGrowShrinkable.CanReducto()
+		bool IShrinkable.CanReducto()
 		{
 			return type.AllowsReducto && CanWeaken;
 		}
 
-		float IGrowShrinkable.UseReducto()
+		float IShrinkable.UseReducto()
 		{
-			if (!((IGrowShrinkable)this).CanReducto())
+			if (!((IShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
@@ -185,15 +207,14 @@ namespace CoC.Backend.BodyParts
 			return len - significantHornSize;
 		}
 
-		bool IGrowShrinkable.CanGrowPlus()
+		bool IGrowable.CanGroPlus()
 		{
 			return type.AllowsGroPlus && CanStrengthen;
 		}
 
-		float IGrowShrinkable.UseGroPlus()
+		float IGrowable.UseGroPlus()
 		{
-			if (!((IGrowShrinkable)this).
-CanGrowPlus())
+			if (!((IGrowable)this).CanGroPlus())
 			{
 				return 0;
 			}
@@ -249,19 +270,12 @@ CanGrowPlus())
 			ChangeType<Horns> transform, RestoreType<Horns> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			//Woo data cleanup.
-			Utils.Clamp(ref maximumHorns, (byte)0, byte.MaxValue);
-			Utils.Clamp(ref minimumHorns, (byte)0, maximumHorns);
-			Utils.Clamp(ref maxLength, (byte)0, MAX_HORN_LENGTH);
-			Utils.Clamp(ref minLength, (byte)0, maxLength);
-			Utils.Clamp(ref defaultHornCount, minHorns, maxHorns);
-			Utils.Clamp(ref defaultHornLength, minLength, maxLength);
-			//and now set them. finally
-			maxHorns = maximumHorns;
-			minHorns = minimumHorns;
-			maxHornLength = maxLength;
-			minHornLength = minLength;
-			defaultHorns = defaultHornCount;
-			defaultLength = defaultHornLength;
+			maxHorns = Utils.Clamp2(maximumHorns, (byte)0, byte.MaxValue);
+			minHorns = Utils.Clamp2(minimumHorns, (byte)0, maxHorns);
+			maxHornLength = Utils.Clamp2(maxLength, (byte)0, MAX_HORN_LENGTH);
+			minHornLength = Utils.Clamp2(minLength, (byte)0, maxHornLength);
+			defaultHorns = Utils.Clamp2(defaultHornCount, minHorns, maxHorns);
+			defaultLength = Utils.Clamp2(defaultHornLength, minHornLength, maxHornLength);
 			//and the static magic.
 			_index = indexMaker++;
 			horns.AddAt(this, _index);
@@ -271,7 +285,7 @@ CanGrowPlus())
 		{
 			if (index < 0 || index >= horns.Count)
 			{
-				throw new System.ArgumentException("index for horn type deserialize out of range");
+				throw new IndexOutOfRangeException("index for horn type deserialize out of range");
 			}
 			else
 			{
@@ -282,7 +296,7 @@ CanGrowPlus())
 				}
 				else
 				{
-					throw new System.ArgumentException("index for horn type pobytes to an object that does not exist. this may be due to obsolete code");
+					throw new ArgumentException("index for horn type pobytes to an object that does not exist. this may be due to obsolete code");
 				}
 			}
 		}
@@ -331,7 +345,16 @@ CanGrowPlus())
 			return valid;
 		}
 
-		internal virtual void reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, in FemininityData masculinity) { }
+		internal virtual void onTypeChange(HornType oldType, ref byte hornCount, ref byte hornLength, in FemininityData masculinity)
+		{
+			hornCount = defaultHorns;
+			hornLength = defaultLength;
+		}
+
+		internal virtual string reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, byte oldMasculinity, in FemininityData masculinity)
+		{
+			return "";
+		}
 		internal virtual bool CanGrow(byte numHorns, byte largestHornLength, in FemininityData masculinity)
 		{
 			return numHorns < maxHorns || largestHornLength < maxHornLength;
@@ -489,8 +512,10 @@ CanGrowPlus())
 
 			internal override bool AllowsReducto => true;
 
-			internal override void reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, in FemininityData femininity)
+			internal override string reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, byte oldMasculinity, in FemininityData femininity)
 			{
+				byte oldLength = hornLength;
+
 				if (femininity.isHyperFeminine)
 				{
 					byte x = 2;
@@ -515,7 +540,7 @@ CanGrowPlus())
 						hornLength++;
 					}
 				}
-
+				return BullHornsReactToFemDeltaStr(oldLength, in hornLength, oldMasculinity, in femininity);
 			}
 
 			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
@@ -765,7 +790,7 @@ CanGrowPlus())
 				{
 					return false;
 				}
-				while (byAmount-- > 0 && (hornLength < 12 || numHorns < maxHorns))
+				while (byAmount > 0 && (hornLength < 12 || numHorns < maxHorns)) //caught arithmatic overflow in test. wouldn't have broken anything, but still not desired.
 				{
 					if (hornLength < 12)
 					{
@@ -775,6 +800,7 @@ CanGrowPlus())
 					{
 						numHorns = maxHorns;
 					}
+					byAmount--;
 				}
 				return true;
 

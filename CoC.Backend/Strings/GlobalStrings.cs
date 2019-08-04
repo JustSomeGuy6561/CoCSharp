@@ -59,11 +59,11 @@ namespace CoC.Backend.Strings
 		{
 			if (string.IsNullOrEmpty(text))
 			{
-				#if DEBUG
+#if DEBUG
 				return "Warning: You called capitalize on a null or empty string";
-				#else
+#else
 				return text;
-				#endif
+#endif
 			}
 			char[] chars = text.ToCharArray();
 			chars[0] = char.ToUpper(chars[0]);
@@ -77,65 +77,97 @@ namespace CoC.Backend.Strings
 			return s[s.Length - 1] == 's';
 		}
 
-		public static string YES(bool capital = true)
+		public static string YES() => YES(true);
+		public static string NO() => NO(true);
+		public static string OK() => OK(true);
+		public static string BACK() => BACK(true);
+		public static string CANCEL() => CANCEL(true);
+		public static string MAN() => MAN(true);
+		public static string WOMAN() => WOMAN(true);
+		public static string HERM() => HERM(true);
+		public static string DEFAULT() => DEFAULT(true);
+		public static string NEXT() => NEXT(true);
+		public static string PREVIOUS() => PREVIOUS(true);
+		public static string NEXT_PAGE() => NEXT_PAGE(true);
+		public static string PREVIOUS_PAGE() => PREVIOUS_PAGE(true);
+		public static string CONTINUE() => CONTINUE(true);
+		public static string RETURN() => RETURN(true);
+		public static string CONFIRM() => CONFIRM(true);
+
+		public static string YES(bool capital)
 		{
 			return capital ? "Yes" : "yes";
 		}
 
-		public static string NO(bool capital = true)
+		public static string NO(bool capital)
 		{
 			return capital ? "No" : "no";
 		}
 
-		public static string OK(bool capital = true)
+		public static string OK(bool capital)
 		{
-			return capital ? "Ok" : "ok";
+			return capital ? "OK" : "ok";
 		}
 
-		public static string BACK(bool capital = true)
+		public static string BACK(bool capital)
 		{
 			return capital ? "Back" : "back";
 		}
 
-		public static string CANCEL(bool capital = true)
+		public static string CANCEL(bool capital)
 		{
 			return capital ? "Cancel" : "cancel";
 		}
 
-		public static string MAN(bool capital = true)
+		public static string MAN(bool capital)
 		{
 			return capital ? "Man" : "man";
 		}
-		public static string WOMAN(bool capital = true)
+		public static string WOMAN(bool capital)
 		{
 			return capital ? "Woman" : "woman";
 		}
-		public static string HERM(bool capital = true)
+		public static string HERM(bool capital)
 		{
 			return capital ? "Herm" : "herm";
 		}
 
-		public static string DEFAULT(bool capital = true)
+		public static string DEFAULT(bool capital)
 		{
 			return capital ? "Default" : "default";
 		}
 
-		public static string NEXT(bool capital = true)
+		public static string NEXT(bool capital)
 		{
 			return capital ? "Next" : "next";
 		}
 
-		public static string CONTINUE(bool capital = true)
+		public static string NEXT_PAGE(bool capital)
+		{
+			return capital ? "Next Page" : "next page";
+		}
+
+		public static string PREVIOUS(bool capital)
+		{
+			return capital ? "Previous" : "previous";
+		}
+
+		public static string PREVIOUS_PAGE(bool capital)
+		{
+			return capital ? "PreviousPage" : "previouspage";
+		}
+
+		public static string CONTINUE(bool capital)
 		{
 			return capital ? "Continue" : "continue";
 		}
 
-		public static string RETURN(bool capital = true)
+		public static string RETURN(bool capital)
 		{
 			return capital ? "Return" : "return";
 		}
 
-		public static string CONFIRM(bool capital = true)
+		public static string CONFIRM(bool capital)
 		{
 			return capital ? "Confirm" : "confirm";
 		}

@@ -17,6 +17,8 @@ using System.Linq;
 
 namespace CoC.Backend.Creatures
 {
+	//creature class breaks with non-standard creatures - it's generall 
+	public enum CreatureType { STANDARD, PRIMITIVE, ARTIFICIAL}
 
 	public abstract class Creature
 	{
@@ -94,7 +96,7 @@ namespace CoC.Backend.Creatures
 				SkinTexture primary = creator.skinTexture ?? SkinTexture.NONDESCRIPT;
 				SkinTexture secondary = creator.underBodySkinTexture ?? SkinTexture.NONDESCRIPT;
 
-				body = Body.GenerateToneWithUnderbody(compoundToneBodyType, creator.complexion, creator.underTone, primary, secondary);
+				body = Body.GenerateTonedWithUnderbody(compoundToneBodyType, creator.complexion, creator.underTone, primary, secondary);
 			}
 			else if (creator.bodyType is SimpleFurBodyType simpleFur)
 			{
@@ -163,7 +165,7 @@ namespace CoC.Backend.Creatures
 				genitals = Genitals.GenerateDefault(gender);
 			}
 
-			Ass ass = Ass.Generate(creator.analWetness, creator.analLooseness, creator.assVirgin);
+			Ass ass = Ass.Generate(creator.analWetness, creator.analLooseness, creator.assVirgin, creator.hasAnalPractice);
 			Breasts[] breasts = creator.breasts?.Select(x => Breasts.Generate(x.cupSize, x.validNippleLength, x.nipplePiercings))?.ToArray();
 			Balls balls;
 			if (creator.numBalls != null && creator.ballSize != null)
@@ -178,7 +180,7 @@ namespace CoC.Backend.Creatures
 			Fertility fertility;
 			if (creator.fertility == null)
 			{
-				fertility = Fertility.GenerateDefault(gender, creator.artificiallyInfertile);
+				fertility = Fertility.GenerateFromGender(gender, creator.artificiallyInfertile);
 			}
 			else
 			{
@@ -203,7 +205,7 @@ namespace CoC.Backend.Creatures
 				Vagina retVal;
 				if (creator.hasOmnibusClit)
 				{
-					retVal = Vagina.GenerateOmnibus(v, c, l, w, i, creator.cockVirgin);
+					retVal = Vagina.GenerateOmnibus(v, c, l, w, i);
 				}
 				else retVal = Vagina.Generate(v, c, l, w, i);
 
@@ -305,7 +307,7 @@ namespace CoC.Backend.Creatures
 			}
 			else if (creator.facialSkinTexture != null && creator.isFaceFullMorph != null)
 			{
-				face = Face.GenerateWithSizeAndComplexion(creator.faceType, (bool)creator.isFaceFullMorph, (SkinTexture)creator.facialSkinTexture);
+				face = Face.GenerateWithMorphAndComplexion(creator.faceType, (bool)creator.isFaceFullMorph, (SkinTexture)creator.facialSkinTexture);
 			}
 			else if (creator.facialSkinTexture != null)
 			{
@@ -367,22 +369,24 @@ namespace CoC.Backend.Creatures
 				hair.SetHairStyle((HairStyle)creator.hairStyle);
 			}
 
+			FemininityData femininityData = new FemininityData(genitals.femininity);
+
 			//horns
 			if (creator?.hornType == null)
 			{
-				horns = Horns.GenerateDefault();
+				horns = Horns.GenerateDefault(femininityData);
 			}
 			else if (creator.hornCount != null && creator.hornSize != null)
 			{
-				horns = Horns.GenerateOverride(creator.hornType, (byte)creator.hornSize, (byte)creator.hornCount);
+				horns = Horns.GenerateOverride(creator.hornType, femininityData, (byte)creator.hornSize, (byte)creator.hornCount);
 			}
 			else if (creator.additionalHornTransformStrength != 0)
 			{
-				horns = Horns.GenerateWithStrength(creator.hornType, creator.additionalHornTransformStrength, creator.forceUniformHornGrowthOnCreate);
+				horns = Horns.GenerateWithExtraStrength(creator.hornType, femininityData, creator.additionalHornTransformStrength, creator.forceUniformHornGrowthOnCreate);
 			}
 			else
 			{
-				horns = Horns.GenerateDefaultOfType(creator.hornType);
+				horns = Horns.GenerateDefaultOfType(creator.hornType, femininityData);
 			}
 			//Lower Body
 			lowerBody = creator.lowerBodyType != null ? LowerBody.GenerateDefaultOfType(creator.lowerBodyType) : LowerBody.GenerateDefault();
@@ -468,7 +472,7 @@ namespace CoC.Backend.Creatures
 
 			//tail.InitializePiercings(creator?.tailPiercings);
 
-			perks = new PerkCollection(this, GameEngine.constructPerkModifier(), creator.perks?.ToArray());
+			perks = new PerkCollection(this, creator.perks?.ToArray());
 
 			SetupBindings();
 		}

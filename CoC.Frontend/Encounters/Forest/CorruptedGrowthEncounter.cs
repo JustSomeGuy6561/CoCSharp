@@ -32,7 +32,7 @@ namespace CoC.Frontend.Encounters.Forest
 	
 	internal sealed class CorruptedGrowthEncounter : RandomEncounter
 	{
-		private static FrontendSessionSave data = FrontendSessionSave.data;
+		private static FrontendSessionSave data => FrontendSessionSave.data;
 		public static byte amountDestroyed
 		{
 			get => data.corruptedGladesDestroyed;

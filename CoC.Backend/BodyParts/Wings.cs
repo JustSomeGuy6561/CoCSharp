@@ -33,28 +33,26 @@ namespace CoC.Backend.BodyParts
 				_type = value;
 			}
 		}
-		private WingType _type;
+		private WingType _type = WingType.NONE;
 		public static WingType defaultType => WingType.NONE;
 		public override bool isDefault => type == defaultType;
 
 		public bool hasWings => type != WingType.NONE;
 		public bool canFly => type != WingType.NONE && isLarge;
 
-		private Wings()
+		private Wings(WingType wingType)
 		{
-			_type = WingType.NONE; //not using the property. set to small, which is irrelevant.
+			type = wingType ?? throw new ArgumentNullException(nameof(wingType));
 		}
 
-		private Wings(TonableWings wingType, Tones tone, Tones boneTone)
+		private Wings(TonableWings wingType, Tones tone, Tones boneTone) : this(wingType)
 		{
-			type = wingType; //sets isLarge automatically.
 			wingTone = Tones.IsNullOrEmpty(tone) ? wingType.defaultTone : tone;
-			wingBoneTone = Tones.IsNullOrEmpty(tone) ? wingTone : tone;
+			wingBoneTone = Tones.IsNullOrEmpty(boneTone) ? wingTone : boneTone; //caught via testing. was the same as original tone.
 		}
 
-		private Wings(FeatheredWings wingType, HairFurColors color)
+		private Wings(FeatheredWings wingType, HairFurColors color) : this(wingType)
 		{
-			type = wingType;
 			featherColor = color;
 		}
 
@@ -62,24 +60,18 @@ namespace CoC.Backend.BodyParts
 
 		internal static Wings GenerateDefault()
 		{
-			return new Wings();
+			return new Wings(WingType.NONE);
 		}
 
 		internal static Wings GenerateDefaultOfType(WingType wingType)
 		{
-			return new Wings()
-			{
-				type = wingType
-			};
+			return new Wings(wingType);
 		}
 
 		internal static Wings GenerateDefaultWithSize(WingType wingType, bool large)
 		{
-			Wings retVal = new Wings()
-			{
-				type = wingType
-			};
-			retVal.isLarge = retVal.type.canChangeSize ? large : retVal.isLarge;
+			Wings retVal = new Wings(wingType);
+			if (retVal.type.canChangeSize) retVal.isLarge = large;
 			return retVal;
 		}
 
@@ -96,14 +88,14 @@ namespace CoC.Backend.BodyParts
 		internal static Wings GenerateColoredWithSize(TonableWings tonableWings, Tones tone, bool large)
 		{
 			Wings retVal = new Wings(tonableWings, tone, tone);
-			retVal.isLarge = retVal.type.canChangeSize ? large : retVal.isLarge;
+			if (retVal.type.canChangeSize) retVal.isLarge = large;
 			return retVal;
 		}
 
 		internal static Wings GenerateColoredWithSize(TonableWings tonableWings, Tones tone, Tones boneTone, bool large)
 		{
 			Wings retVal = new Wings(tonableWings, tone, boneTone);
-			retVal.isLarge = retVal.type.canChangeSize ? large : retVal.isLarge;
+			if (retVal.type.canChangeSize) retVal.isLarge = large;
 			return retVal;
 		}
 
@@ -115,7 +107,7 @@ namespace CoC.Backend.BodyParts
 		internal static Wings GenerateColoredWithSize(FeatheredWings featheredWings, HairFurColors feathers, bool large)
 		{
 			Wings retVal = new Wings(featheredWings, feathers);
-			retVal.isLarge = retVal.type.canChangeSize ? large : retVal.isLarge;
+			if (retVal.type.canChangeSize) retVal.isLarge = large;
 			return retVal;
 		}
 
@@ -125,7 +117,7 @@ namespace CoC.Backend.BodyParts
 		//frankly, i'm fine with them doing this. this applies to all of these.
 		internal override bool UpdateType(WingType wingType)
 		{
-			if (type == wingType)
+			if (wingType == null || type == wingType)
 			{
 				return false;
 			}
@@ -147,7 +139,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateWingsAndChangeColor(FeatheredWings featheredWings, HairFurColors featherCol)
 		{
-			if (type == featheredWings)
+			if (featheredWings == null || type == featheredWings)
 			{
 				return false;
 			}
@@ -166,7 +158,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateWingsAndChangeColor(TonableWings toneWings, Tones tone)
 		{
-			if (type == toneWings)
+			if (toneWings == null || type == toneWings)
 			{
 				return false;
 			}
@@ -181,7 +173,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateWingsAndChangeColor(TonableWings toneWings, Tones tone, Tones boneTone)
 		{
-			if (type == toneWings)
+			if (toneWings == null || type == toneWings)
 			{
 				return false;
 			}
@@ -193,7 +185,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateWingsForceSize(WingType wingType, bool large)
 		{
-			if (type == wingType)
+			if (wingType == null || type == wingType)
 			{
 				return false;
 			}
@@ -205,7 +197,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateWingsForceSizeChangeColor(FeatheredWings featheredWings, HairFurColors featherColor, bool large)
 		{
-			if (type == featheredWings)
+			if (featheredWings == null || type == featheredWings)
 			{
 				return false;
 			}
@@ -216,7 +208,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateWingsForceSizeChangeColor(TonableWings toneWings, Tones wingTone, bool large)
 		{
-			if (type == toneWings)
+			if (toneWings == null || type == toneWings)
 			{
 				return false;
 			}
@@ -227,7 +219,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateWingsForceSizeChangeColor(TonableWings toneWings, Tones wingTone, Tones wingBoneTone, bool large)
 		{
-			if (type == toneWings)
+			if (toneWings == null || type == toneWings)
 			{
 				return false;
 			}
@@ -432,7 +424,7 @@ namespace CoC.Backend.BodyParts
 		{
 			_index = indexMaker++;
 			wings.AddAt(this, _index);
-			transformBehavior = BehaviorOnTransform.CONVERT_TO_SMALL;
+			transformBehavior = canFly ? BehaviorOnTransform.CONVERT_TO_LARGE : BehaviorOnTransform.CONVERT_TO_SMALL; //was wrong, caught in testing.
 			canChangeSize = false;
 		}
 		//wings that support large wings need to define a behavior on transform - do they keep the large wings?

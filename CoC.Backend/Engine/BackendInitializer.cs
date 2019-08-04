@@ -8,6 +8,7 @@ using CoC.Backend.Perks;
 using CoC.Backend.SaveData;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace CoC.Backend.Engine
 {
@@ -15,22 +16,20 @@ namespace CoC.Backend.Engine
 	{
 		//rundown: to allow you to do whatever you want in the frontend, some data needs to be passed back here. 
 
-		public static void Init(
-			Action<Action> DoNext, Action<string> OutputText, //Time Engine
+		public static void Init(FileInfo globalDataFile,
+			Action<Action> DoNext, Action<SimpleDescriptor> OutputText, //Time Engine
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, //AreaEngine
-			BasePerkModifiers perkModifiers, ReadOnlyDictionary<Type, Func<PerkBase>> perkList, ReadOnlyDictionary<Type, Func<AttainablePerk>> attainablePerks, //Perks
-			ReadOnlyCollection<GameDifficulty> gameDifficulties) //Game Difficulty Engine.
+			Func<BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties) //Game Difficulty Engine.
 		{
 			//initialize the saves. 
 			SaveSystem.AddSessionSave(new BackendSessionData());
 			SaveSystem.AddGlobalSave(new BackendGlobalData());
+
+
 			#warning Add method to read file and load global backend game data. 
 
-
-
 			//initialize game engine.
-			GameEngine.InitializeEngine(DoNext, OutputText, gamePlaces, gameLocations, gameDifficulties);
-
+			GameEngine.InitializeEngine(DoNext, OutputText, gamePlaces, gameLocations, perkModifiers, gameDifficulties);
 		}
 	}
 }

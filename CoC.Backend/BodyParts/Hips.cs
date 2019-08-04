@@ -8,7 +8,7 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Hips : SimpleSaveablePart<Hips>, IGrowShrinkable
+	public sealed partial class Hips : SimpleSaveablePart<Hips>, IShrinkable //Gro+ doesn't work on hips.
 	{
 		public const byte BOYISH = 0;
 		public const byte SLENDER = 2;
@@ -53,9 +53,10 @@ namespace CoC.Backend.BodyParts
 			return oldSize.subtract(size);
 		}
 
-		public void SetHipSize(byte newSize)
+		public byte SetHipSize(byte newSize)
 		{
 			size = newSize;
+			return size;
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -64,14 +65,19 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		bool IGrowShrinkable.CanReducto()
+		bool IShrinkable.CanReducto()
 		{
 			return size > SLENDER;
 		}
 
-		float IGrowShrinkable.UseReducto()
+		float IShrinkable.UseReducto()
 		{
+			if (!((IShrinkable)this).CanReducto())
+			{
+				return 0;
+			}
 			byte oldSize = size;
+
 			if (size > CURVY)
 			{
 				size -= 3;
@@ -82,16 +88,5 @@ namespace CoC.Backend.BodyParts
 			}
 			return oldSize - size;
 		}
-
-		bool IGrowShrinkable.CanGrowPlus()
-		{
-			return false;
-		}
-
-		float IGrowShrinkable.UseGroPlus()
-		{
-			return 0;
-		}
-
 	}
 }

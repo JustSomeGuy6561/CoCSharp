@@ -16,10 +16,10 @@ namespace CoC.Backend.BodyParts
 
 	//I'VE GOT BIG BALLS! OH, I'VE GOT BIG BALLS! THERE SUCH BIG BALLS! DIRTY BIG BALLS! HE'S GOT BIG BALLS! AND SHE'S GOT BIG BALLS! BUT WE'VE GOT THE BIGGEST BALLS OF THEM ALL!
 	//i'll see if i can hide this as an easter egg is some text somewhere. 
-	public sealed partial class Balls : SimpleSaveablePart<Balls>, IGrowShrinkable, IBaseStatPerkAware //perks are handled by genitals - kinda. 
+	public sealed partial class Balls : SimpleSaveablePart<Balls>, IGrowable, IShrinkable, IBaseStatPerkAware //perks are handled by genitals - kinda. 
 	{
 		PerkStatBonusGetter perkData;
-		BasePerkModifiers modifiers => perkData();
+		//BasePerkModifiers modifiers => perkData();
 
 		public const byte MAX_BALLS_SIZE = 30;
 		public const byte MIN_BALLS_SIZE = 1;
@@ -33,6 +33,11 @@ namespace CoC.Backend.BodyParts
 		public const byte DEFAULT_BALLS_COUNT = 2;
 		public int index => size;
 
+		private byte newDefaultSize => perkData?.Invoke().NewBallsDefaultSize ?? DEFAULT_BALLS_SIZE;
+		private byte newNonDefaultSize(byte size) => size.add(perkData?.Invoke().NewBallsSizeDelta ?? 0);
+
+		private float shrinkMultiplier => perkData?.Invoke().BallsShrinkMultiplier ?? 1.0f;
+		private float growthMultiplier => perkData?.Invoke().BallsGrowthMultiplier ?? 1.0f;
 
 		//recommend saving the hasBalls bool even though it is a determined property - in the event of malformed data, it allows an additional way to catch
 		//if the save should have balls. 
@@ -116,9 +121,7 @@ namespace CoC.Backend.BodyParts
 			else
 			{
 				byte numBalls = 2;
-				var data = perkData();
-				byte newSize = data.NewBallsDefaultSize.add(data.NewBallsSizeDelta);
-				setBalls(true, numBalls, newSize);
+				setBalls(true, numBalls, newDefaultSize);
 			}
 			return true;
 		}
@@ -132,7 +135,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				setBalls(true, numBalls, newSize);
+				setBalls(true, numBalls, newNonDefaultSize(newSize));
 				return true;
 			}
 		}
@@ -163,6 +166,19 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		internal bool makeStandard()
+		{
+			if (hasBalls && !uniBall)
+			{
+				return false;
+			}
+			else
+			{
+				setBalls(true);
+				return true;
+			}
+		}
+
 		internal byte addBalls(byte addAmount)
 		{
 			Utils.Clamp(ref addAmount, (byte)0, MAX_BALLS_COUNT);
@@ -181,7 +197,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//
-		internal int removeBalls(byte removeAmount)
+		internal byte removeBalls(byte removeAmount)
 		{
 			Utils.Clamp(ref removeAmount, (byte)0, MAX_BALLS_COUNT);
 			if (!hasBalls || removeAmount == 0)
@@ -226,7 +242,7 @@ namespace CoC.Backend.BodyParts
 			if (!ignorePerks)
 			{
 				//multiply it by the perk. float should be sanitized within passiveBaseStatModifier class.
-				ushort val = (ushort)Math.Round(modifiers.BallsGrowthMultiplier * amount);
+				ushort val = (ushort)Math.Round(growthMultiplier * amount);
 				amount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
 			}
 
@@ -250,7 +266,7 @@ namespace CoC.Backend.BodyParts
 			byte originalSize = size;
 			if (!ignorePerks)
 			{
-				ushort val = (ushort)Math.Round(amount * modifiers.BallsShrinkMultiplier);
+				ushort val = (ushort)Math.Round(amount * shrinkMultiplier);
 				amount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
 			}
 			if (size - amount < MIN_BALLS_SIZE) //we actually want this as an int compare b/c negative numbers.
@@ -263,7 +279,7 @@ namespace CoC.Backend.BodyParts
 			}
 			return originalSize.subtract(size);
 		}
-#endregion
+		#endregion
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -295,32 +311,32 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region IGrowShrinkable
-		bool IGrowShrinkable.CanReducto()
+		bool IShrinkable.CanReducto()
 		{
 			return size > MIN_BALLS_SIZE;
 		}
 
-		float IGrowShrinkable.UseReducto()
+		float IShrinkable.UseReducto()
 		{
 			byte startVal = size;
 			//even chance of 2 - 5, or 3-6 if we have a somewhat large shrink multiplier. 
-			if (((IGrowShrinkable)this).CanReducto())
+			if (((IShrinkable)this).CanReducto())
 			{
 				size = size.subtract((byte)(Utils.Rand(4) + 2));
 			}
 			return startVal - size;
 		}
 
-		bool IGrowShrinkable.CanGrowPlus()
+		bool IGrowable.CanGroPlus()
 		{
 			return size < MAX_BALLS_SIZE;
 		}
 
 		//executive deicision: GRO+ always removes uniball. idgaf.
-		float IGrowShrinkable.UseGroPlus()
+		float IGrowable.UseGroPlus()
 		{
 			int startVal = size;
-			if (((IGrowShrinkable)this).CanGrowPlus())
+			if (((IGrowable)this).CanGroPlus())
 			{
 				if (uniBall)
 				{
@@ -344,11 +360,18 @@ namespace CoC.Backend.BodyParts
 			perkData = getter;
 		}
 
-		internal void DoLateInit(BasePerkModifiers statModifiers)
+		internal void DoLateInit(BasePerkModifiers statModifiers, bool initWasNew)
 		{
 			if (hasBalls && !uniBall)
 			{
-				setBalls(true, count, statModifiers.NewBallsDefaultSize.add(statModifiers.NewBallsSizeDelta));
+				if (initWasNew)
+				{
+					setBalls(true, count, statModifiers.NewBallsDefaultSize);
+				}
+				else
+				{
+					setBalls(true, count, size.add(statModifiers.NewBallsSizeDelta));
+				}
 			}
 		}
 		#endregion

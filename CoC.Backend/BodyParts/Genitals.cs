@@ -28,6 +28,8 @@ namespace CoC.Backend.BodyParts
 	//it's a relatively simple calculation to get the current hours since - we just diff GameTime now and stored time. Granted, it's now a byte and int instead of just one int, but w/e. I'll trade
 	//an extra byte of memory (or 4 bytes if C# does the whole align things to word boundaries, idk on its optimizations) for less maintenance and less cycles managing the data. 
 
+#warning Make sure to raise events for gender change and pass it along to femininity. 
+
 	public enum LactationStatus { NOT_LACTATING, LIGHT, MODERATE, STRONG, HEAVY, EPIC }
 
 	//Genitals is the new "master class" for all things sex-related. NPCs that don't require the whole creature class can just use this if they can impregnate. I'll create a base class for this.
@@ -54,8 +56,9 @@ namespace CoC.Backend.BodyParts
 		public const float STRONG_LACTATION_THRESHOLD = 3.0f;
 		public const float HEAVY_LACTATION_THRESHOLD = 5.0f;
 		public const float EPIC_LACTATION_THRESHOLD = 7.5f;
-		
+
 		private readonly bool needsLateInit;
+		private readonly bool lateInitNew;//true: new. false: delta
 
 
 		public readonly Ass ass;
@@ -375,7 +378,6 @@ namespace CoC.Backend.BodyParts
 
 		#region Constructors
 
-		private Gender GetGender() => gender;
 
 		private Genitals(Gender gender)
 		{
@@ -386,10 +388,11 @@ namespace CoC.Backend.BodyParts
 			_vaginas.Add(Vagina.GenerateFromGender(gender));
 			initHelper(out cocks, out vaginas, out breasts);
 
-			femininity = Femininity.Generate(GetGender);
-			fertility = Fertility.GenerateDefault(gender);
+			femininity = Femininity.Generate(gender);
+			fertility = Fertility.GenerateFromGender(gender);
 
 			needsLateInit = true;
+			lateInitNew = true;
 
 		}
 
@@ -402,12 +405,11 @@ namespace CoC.Backend.BodyParts
 			CleanCopy(vaginas, _vaginas, MAX_VAGINAS);
 			initHelper(out this.cocks, out this.vaginas, out this.breasts);
 
-			this.femininity = femininity != null ? Femininity.Generate(GetGender, (byte)femininity) : Femininity.Generate(GetGender);
+			this.femininity = femininity != null ? Femininity.Generate(gender, (byte)femininity) : Femininity.Generate(gender);
 			this.fertility = fertility;
 
-			needsLateInit = false;
-
-
+			needsLateInit = true;
+			lateInitNew = false;
 		}
 
 		//delta not needed when we load from a save. 
@@ -880,9 +882,9 @@ namespace CoC.Backend.BodyParts
 			return femininity.masculinize(amount);
 		}
 
-		public void SetFemininity(byte newValue)
+		public byte SetFemininity(byte newValue)
 		{
-			femininity.SetFemininity(newValue);
+			return femininity.SetFemininity(newValue);
 		}
 		#endregion
 		#region Femininity Aware and Listener
@@ -948,6 +950,10 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Base Perk Data
+
+		//in the rare case this matters (see femininity)
+		//perks are hooked up AFTER Body Part Awares/Listeners. so 
+		//if it matters, you an assume that any listeners are already active when running late perk inits.
 		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
 		{
 			perkModifiers = getter;
@@ -962,11 +968,11 @@ namespace CoC.Backend.BodyParts
 
 			if (needsLateInit)
 			{
-				_vaginas.ForEach(x => x.DoLateInit(data));
-				_cocks.ForEach(x => x.DoLateInit(data));
-				_breasts.ForEach(x => x.DoLateInit(data));
-				balls.DoLateInit(data);
-				femininity.DoLateInit(gender, data);
+				_vaginas.ForEach(x => x.DoLateInit(data, lateInitNew));
+				_cocks.ForEach(x => x.DoLateInit(data, lateInitNew));
+				_breasts.ForEach(x => x.DoLateInit(gender, data, lateInitNew));
+				balls.DoLateInit(data, lateInitNew);
+				femininity.DoLateInit(data);
 			}
 		}
 

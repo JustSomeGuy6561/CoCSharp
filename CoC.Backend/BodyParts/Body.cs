@@ -151,6 +151,10 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
+		//Disclaimer: The generates are confusing - i know. realistically, i could just do one generate with all the possible variables passed in and simply only take what i need and ignore the rest
+		//but instead i've done this monstrosity. Unless you're creating a new body type or messing with this stuff, just trust that we'll call the right one and it'll work.
+		//We've created a bunch of Unit Tests to make sure of this. 
+
 		internal static Body GenerateTonedNoUnderbody(SimpleToneBodyType toneBody, Tones tone, SkinTexture texture = SkinTexture.NONDESCRIPT)
 		{
 			Body retVal = new Body(toneBody);
@@ -161,7 +165,7 @@ namespace CoC.Backend.BodyParts
 			retVal.mainSkin.ChangeTexture(texture);
 			return retVal;
 		}
-		internal static Body GenerateToneWithUnderbody(CompoundToneBodyType toneBody, Tones primaryTone, Tones secondaryTone,
+		internal static Body GenerateTonedWithUnderbody(CompoundToneBodyType toneBody, Tones primaryTone, Tones secondaryTone,
 			SkinTexture primaryTexture = SkinTexture.NONDESCRIPT, SkinTexture secondaryTexture = SkinTexture.NONDESCRIPT)
 		{
 			Body retVal = new Body(toneBody);
@@ -467,6 +471,13 @@ namespace CoC.Backend.BodyParts
 			}
 			return UpdateBody(BodyType.HUMANOID);
 		}
+
+		internal void Reset()
+		{
+			Restore();
+			hipPiercings.Reset();
+			navelPiercings.Reset();
+		}
 		#endregion
 
 		#region Validate
@@ -710,7 +721,6 @@ namespace CoC.Backend.BodyParts
 		}
 
 		private IPatternable patternable => this;
-
 
 		string IMultiDyeableCustomText.ApplyMultiDye(HairFurColors dyeColor, params byte[] index)
 		{

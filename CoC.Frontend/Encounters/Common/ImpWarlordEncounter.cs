@@ -14,7 +14,7 @@ namespace CoC.Frontend.Encounters.Common
 {
 	class ImpWarlordEncounter : RandomEncounter
 	{
-		protected override int chances => Utils.LerpRound(16, 20, player.level, 10, 80);
+		protected override int chances => Utils.LerpRound(16, 20, (int)player.level, 10, 80);
 
 		protected override bool encounterDisabled()
 		{
