@@ -9,19 +9,14 @@
 //1/19/2019, 8:01 PM
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
-using CoC.Backend.Strings.Creatures;
 using CoC.Frontend.UI;
 using CoC.Frontend.UI.ControllerData;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
+using System.Linq;
 using System.Text;
 
 namespace CoC.UI
 {
-	public enum PlayerStatus { IDLE, EXPLORING, TALKING, COMBAT, PRISON, INGRAM }
-
 
 	//consider firing custom events instead of INotifyPropertyChanged. 
 	//or, implement inotifypropertychanged, but instead of firing each time, add each property name to a hashset each time they change. then, when the code is ready
@@ -30,33 +25,54 @@ namespace CoC.UI
 	{
 #warning Consider moving all static functions for buttons, output, input, selector here. makes it easier to link everything in.
 
-		public static Controller instance
+		public static void ClearOutput()
 		{
-			get
-			{
-				if (_controller is null)
-					_controller = new Controller();
-				return _controller;
-			}
+			TextOutput.ClearText();
+			ButtonManager.ClearButtons();
+			InputField.DeactivateInputField();
+			DropDownMenu.DeactivateDropDownMenu();
 		}
-		private static Controller _controller;
+
+		public static Controller instance { get; } = new Controller();
 
 		public bool displayStats => ViewOptions.showStats;
 		public bool displayTopMenu => ViewOptions.showStandardMenu;
+		public PlayerStatus playerStatus => ViewOptions.playerStatus;
 
 		//public Image outputImage; 
-		public string outputImagePath => TextOutput.image;
-		public StringBuilder outputField => TextOutput.data;
+		public string outputImagePath { get => _outputImagePath; }
+		private string _outputImagePath;
+		public StringBuilder outputField => _outputField;
+		private StringBuilder _outputField;
+		public bool outputChanged => TextOutput.QueryData(out _outputField, out _outputImagePath);
 
-		public ReadOnlyCollection<ButtonData> buttons => ButtonManager.buttons;
+		public ReadOnlyCollection<ButtonData> buttons { get => _buttons; }
+		private ReadOnlyCollection<ButtonData> _buttons;
+		public bool buttonsChanged => ButtonManager.QueryButtons(out _buttons);
+		public int ValidButtons => buttons.Count(x => x != null);
+		//do this later. for now fuck it.
 
-		public InputField inputField => InputField.instance;
+
+		public InputField inputField { get => _inputField; }
+		private InputField _inputField;
+		public bool inputFieldChanged => InputField.QueryStatus(out _inputField);
 		//WILL THROW NULL REFERENCE EXCEPTION IF INPUT FIELD IS NULL. it'd do so if you accessed inputField and asked for it there, so this seems the most consistent.
 		//may return null, though this is GUI dependant and hopefully wont happen. empty string is preferable.
 		internal string inputText => inputField.input;
 
-		public DropDownMenu dropDownMenu => DropDownMenu.instance;
+		public void setOutputFromUI(string output)
+		{
+			inputField.UpdateInputFromOutput(output);
+		}
 
+		public DropDownMenu dropDownMenu { get => _dropDownMenu; }
+		private DropDownMenu _dropDownMenu;
+		public bool dropDownMenuItemsChanged => DropDownMenu.QueryStatus(out _dropDownMenu);
+
+		public string postControlText { get => _postControlText; }
+		private string _postControlText;
+
+		public bool dropDownPostTextChanged => DropDownMenu.QueryPostText(out _postControlText);
 		public bool hasPlayer => GameEngine.currentPlayer != null;
 
 		//i'll need to update this whenever stats are changed in player. should be simple, so long as i subscribe to player change and data change events. 
@@ -92,13 +108,12 @@ namespace CoC.UI
 
 		private Controller()
 		{
-		}
+			InputField.QueryStatus(out _inputField);
+			ButtonManager.QueryButtons(out _buttons);
+			TextOutput.QueryData(out _outputField, out _outputImagePath);
+			DropDownMenu.QueryStatus(out _dropDownMenu);
+			DropDownMenu.QueryPostText(out _postControlText);
 
-		public PlayerStatus playerStatus { get; private set; } = PlayerStatus.IDLE;
-
-		internal static void SetPlayerStatus(PlayerStatus status)
-		{
-			instance.playerStatus = status;
 		}
 
 		public void TestShit()

@@ -9,6 +9,8 @@
 			 xmlns:Help="clr-namespace:CoCWinDesktop.ModelView.Helpers"
 			 xmlns:sys ="clr-namespace:System;assembly=mscorlib"
 			 Name="_this">
+			 <!--xmlns:Behave="clr-namespace:CoCWinDesktop.Behaviors"
+			 Behave:FocusBehavior.FocusFirst="True"-->
 	<UserControl.Resources>
 		<Conv:DrawingColorToMediaColorIgnoreAlpha x:Key="ColorConverter" />
 		<Conv:VisibilityFromIsNull x:Key="NullToVis"/>
@@ -20,7 +22,7 @@
 		<sys:Double x:Key="ContentWidth">769</sys:Double>
 		<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">15</sys:Double>
 		<sys:Double x:Key="ContentContainerWidth">754</sys:Double>
-		
+
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
 			<Style.Triggers>
 				<Trigger Property="IsEnabled" Value="False">
@@ -36,43 +38,6 @@
 				RegularColor="{Binding Path=RegularColor, TargetNullValue={StaticResource RegDefault}}" 
 				MinimumValue="{Binding Path=Minimum, TargetNullValue=0}" MaximumValue="{Binding Path=Maximum, TargetNullValue=100}" Value="{Binding Path=Value}" />
 		</DataTemplate>
-		<ControlTemplate x:Key="TextViewTemplate" TargetType="{x:Type CC:TextView}">
-			<Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
-			        Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-				<ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" 
-				              VerticalScrollBarVisibility="Hidden" Template="{DynamicResource TextViewScrollTemplate}"/>
-			</Border>
-			<ControlTemplate.Triggers>
-				<Trigger Property="IsEnabled" Value="False">
-					<Setter Property="Opacity" TargetName="border" Value="0.56"/>
-				</Trigger>
-				<Trigger Property="IsMouseOver" Value="True">
-					<Setter Property="BorderBrush" TargetName="border" Value="#FF7EB4EA"/>
-				</Trigger>
-				<Trigger Property="IsKeyboardFocused" Value="True">
-					<Setter Property="BorderBrush" TargetName="border" Value="#FF569DE5"/>
-				</Trigger>
-			</ControlTemplate.Triggers>
-		</ControlTemplate>
-		<ControlTemplate x:Key="TextViewScrollTemplate" TargetType="{x:Type ScrollViewer}">
-			<Grid x:Name="Grid" Background="{TemplateBinding Background}">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="*"/>
-					<RowDefinition Height="Auto"/>
-				</Grid.RowDefinitions>
-				<Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
-				<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" 
-					CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" 
-					Margin="{TemplateBinding Padding}" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top"
-					Width="{StaticResource ContentContainerWidth}"/>
-				<ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
-				<ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
-			</Grid>
-		</ControlTemplate>
 	</UserControl.Resources>
 	<Canvas Style="{StaticResource CoCCanvas}">
 		<Grid Name="TopRowButtons" Width="982" Canvas.Left="0" Height="50" Visibility="{Binding Path=showTopRow, Converter={StaticResource BoolToVis}, Mode=OneWay}">
@@ -84,38 +49,44 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
-			<Button Grid.Column="0" Content="Main Menu" Command="{Binding Path=GoToMainMenu, Mode=OneTime}">
+			<Button Grid.Column="0" Content="Main Menu"
+ Command="{Binding Path=GoToMainMenu, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="1" Content="Data" Command="{Binding Path=GoToDataScreen, Mode=OneTime}">
+			<Button Grid.Column="1" Content="Data"
+ Command="{Binding Path=GoToDataScreen, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button1.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="2" Content="Stats" Command="{Binding Path=DoStats, Mode=OneTime}">
+			<Button Grid.Column="2" Content="Stats"
+ Command="{Binding Path=DoStats, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button2.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="3" Content="{Binding Path=LevelUpText, FallbackValue='Level Up'}" Command="{Binding Path=DoLeveling, Mode=OneTime}">
+			<Button Grid.Column="3" Content="{Binding Path=LevelUpText, FallbackValue='Level Up'}"
+ Command="{Binding Path=DoLeveling, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button3.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="4" Content="Perks" Command="{Binding Path=DoPerks, Mode=OneTime}">
+			<Button Grid.Column="4" Content="Perks"
+ Command="{Binding Path=DoPerks, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button4.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="5" Content="Appearance" Command="{Binding Path=DoAppearance, Mode=OneTime}">
+			<Button Grid.Column="5" Content="Appearance"
+ Command="{Binding Path=DoAppearance, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button5.jpg"/>
 				</Button.Background>
 			</Button>
 		</Grid>
-		<Canvas Style="{StaticResource Sidebar}">
+		<Canvas Style="{StaticResource Sidebar}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}">
 			<StackPanel Name="StatBar" Canvas.Left="5" Canvas.Top="5" Width="195" Height="590">
 				<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,1,0,3" FontSize="22" Text="{Binding Path=nameText, Mode=OneWay}"/>
 				<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,2,0,3" FontSize="22" Text="{Binding Path=coreStatText, Mode=OneWay}"/>
@@ -133,16 +104,17 @@
 			<TextBlock Style="{StaticResource CoCText}" Canvas.Top="24" Canvas.Left="0" FontSize="16" FontFamily="Arial" Text="{Binding Path=authorText, Mode=OneWay}"/>
 		</Canvas>
 		<Image Canvas.Left="4" Canvas.Bottom="4" Height="80" Width="80" StretchDirection="Both" Stretch="Uniform" Source="{Binding Path=sprite, Mode=OneWay, TargetNullValue={x:Null}}"/>
-		<CC:TextView Style="{StaticResource SimpleTextZone}"
-		               MainText="{Binding Path=output, Mode=OneWay}" 
-		               MainImage="{Binding Path=bitmap, Mode=OneWay}"
-		               PostControlText="{Binding Path=postControlText, Mode=OneWay}"
-		               ExtraUIControls="{Binding Path=extraControls, Mode=OneWay}" Template="{DynamicResource TextViewTemplate}">
-			<CC:TextView.Resources>
-				<Style TargetType="FlowDocument" BasedOn="{StaticResource MainOutputDoc}"/>
-			</CC:TextView.Resources>
-
-		</CC:TextView>
+		<CC:TextView Style="{StaticResource SimpleTextZoneVersion2}"
+				MainText="{Binding Path=output, Mode=OneWay}" 
+				MainImage="{Binding Path=bitmap, Mode=OneWay}"
+				PostControlText="{Binding Path=postControlText, Mode=OneWay}"
+				InputFieldVisible="{Binding Path=InputInUse, Mode=OneWay}"
+				InputCalculatedWidth="{Binding Path=InputWidth, Mode=OneWay}"
+				InputFieldMaxLength="{Binding Path=InputMaxLen, Mode=OneWay}"
+				LimitCharactersRegex="{Binding Path=InputCharRegex, Mode=OneWay}"
+				InputFieldText="{Binding Path=InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				DropdownVisible="{Binding Path=DropdownInUse, Mode=OneWay}"
+				DropdownContainer="{Binding Path=DropdownWrapper, Mode=OneWay}" />
 		<Grid Canvas.Left="208" Canvas.Bottom="0" Width="{StaticResource ContentWidth}" Height="132">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
@@ -156,77 +128,123 @@
 				<RowDefinition/>
 				<RowDefinition/>
 			</Grid.RowDefinitions>
-			<Button Grid.Column="0" Grid.Row="0" Visibility ="{Binding Path=BottomButtons[0].visibility}" Content="{Binding Path=BottomButtons[0].Title, FallbackValue='Button 0'}" Command="{Binding Path=BottomButtons[0].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="0" Grid.Row="0" IsTabStop="True" TabIndex="10" Visibility ="{Binding Path=BottomButtons[0].visibility}"
+					Content="{Binding Path=BottomButtons[0].Title, FallbackValue='Button 0'}"
+					Command="{Binding Path=BottomButtons[0].ClickCommand, Mode=OneTime}"
+					IsDefault="True">
+				<!--IsDefault="{Binding Path=BottomButtons[0].isDefault, FallbackValue = false}">-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="1" Grid.Row="0" Visibility ="{Binding Path=BottomButtons[1].visibility}" Content="{Binding Path=BottomButtons[1].Text, FallbackValue='Button 1'}" Command="{Binding Path=BottomButtons[1].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="1" Grid.Row="0" IsTabStop="True" TabIndex="11" Visibility ="{Binding Path=BottomButtons[1].visibility}"
+					Content="{Binding Path=BottomButtons[1].Title, FallbackValue='Button 1'}"
+					Command="{Binding Path=BottomButtons[1].ClickCommand, Mode=OneTime}">
+				<!--IsDefault="{Binding Path=BottomButtons[1].isDefault, FallbackValue = false}">-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button1.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="2" Grid.Row="0" Visibility ="{Binding Path=BottomButtons[2].visibility}" Content="{Binding Path=BottomButtons[2].Text, FallbackValue='Button 2'}" Command="{Binding Path=BottomButtons[2].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="2" Grid.Row="0" IsTabStop="True" TabIndex="12" Visibility ="{Binding Path=BottomButtons[2].visibility}"
+					Content="{Binding Path=BottomButtons[2].Title, FallbackValue='Button 2'}"
+					Command="{Binding Path=BottomButtons[2].ClickCommand, Mode=OneTime}">
+				<!--IsDefault="{Binding Path=BottomButtons[2].isDefault, FallbackValue = false}">-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button2.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="3" Grid.Row="0" Visibility ="{Binding Path=BottomButtons[3].visibility}" Content="{Binding Path=BottomButtons[3].Text, FallbackValue='Button 3'}" Command="{Binding Path=BottomButtons[3].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="3" Grid.Row="0" IsTabStop="True" TabIndex="13" Visibility ="{Binding Path=BottomButtons[3].visibility}"
+					Content="{Binding Path=BottomButtons[3].Title, FallbackValue='Button 3'}"
+					Command="{Binding Path=BottomButtons[3].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[3].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button3.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="4" Grid.Row="0" Visibility ="{Binding Path=BottomButtons[4].visibility}" Content="{Binding Path=BottomButtons[4].Text, FallbackValue='Button 4'}" Command="{Binding Path=BottomButtons[4].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="4" Grid.Row="0" IsTabStop="True" TabIndex="14" Visibility ="{Binding Path=BottomButtons[4].visibility}"
+					Content="{Binding Path=BottomButtons[4].Title, FallbackValue='Button 4'}"
+					Command="{Binding Path=BottomButtons[4].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[4].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button4.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="0" Grid.Row="1" Visibility ="{Binding Path=BottomButtons[5].visibility}" Content="{Binding Path=BottomButtons[5].Text, FallbackValue='Button 5'}" Command="{Binding Path=BottomButtons[5].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="0" Grid.Row="1" IsTabStop="True" TabIndex="15" Visibility ="{Binding Path=BottomButtons[5].visibility}"
+					Content="{Binding Path=BottomButtons[5].Title, FallbackValue='Button 5'}"
+					Command="{Binding Path=BottomButtons[5].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[5].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button5.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="1" Grid.Row="1" Visibility ="{Binding Path=BottomButtons[6].visibility}" Content="{Binding Path=BottomButtons[6].Text, FallbackValue='Button 6'}" Command="{Binding Path=BottomButtons[6].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="1" Grid.Row="1" IsTabStop="True" TabIndex="16" Visibility ="{Binding Path=BottomButtons[6].visibility}"
+					Content="{Binding Path=BottomButtons[6].Title, FallbackValue='Button 6'}"
+					Command="{Binding Path=BottomButtons[6].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[6].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button6.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="2" Grid.Row="1" Visibility ="{Binding Path=BottomButtons[7].visibility}" Content="{Binding Path=BottomButtons[7].Text, FallbackValue='Button 7'}" Command="{Binding Path=BottomButtons[7].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="2" Grid.Row="1" IsTabStop="True" TabIndex="17" Visibility ="{Binding Path=BottomButtons[7].visibility}"
+					Content="{Binding Path=BottomButtons[7].Title, FallbackValue='Button 7'}"
+					Command="{Binding Path=BottomButtons[7].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[7].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button7.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="3" Grid.Row="1" Visibility ="{Binding Path=BottomButtons[8].visibility}" Content="{Binding Path=BottomButtons[8].Text, FallbackValue='Button 8'}" Command="{Binding Path=BottomButtons[8].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="3" Grid.Row="1" IsTabStop="True" TabIndex="18" Visibility ="{Binding Path=BottomButtons[8].visibility}"
+					Content="{Binding Path=BottomButtons[8].Title, FallbackValue='Button 8'}"
+					Command="{Binding Path=BottomButtons[8].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[8].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button8.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="4" Grid.Row="1" Visibility ="{Binding Path=BottomButtons[9].visibility}" Content="{Binding Path=BottomButtons[9].Text, FallbackValue='Button 9'}" Command="{Binding Path=BottomButtons[9].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="4" Grid.Row="1" IsTabStop="True" TabIndex="19" Visibility ="{Binding Path=BottomButtons[9].visibility}"
+					Content="{Binding Path=BottomButtons[9].Title, FallbackValue='Button 9'}"
+					Command="{Binding Path=BottomButtons[9].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[9].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button9.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="0" Grid.Row="2" Visibility ="{Binding Path=BottomButtons[10].visibility}" Content="{Binding Path=BottomButtons[10].Text, FallbackValue='Button 10'}" Command="{Binding Path=BottomButtons[10].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="0" Grid.Row="2" IsTabStop="True" TabIndex="20" Visibility ="{Binding Path=BottomButtons[10].visibility}"
+					Content="{Binding Path=BottomButtons[10].Title, FallbackValue='Button 10'}"
+					Command="{Binding Path=BottomButtons[10].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[10].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="1" Grid.Row="2" Visibility ="{Binding Path=BottomButtons[11].visibility}" Content="{Binding Path=BottomButtons[11].Text, FallbackValue='Button 11'}" Command="{Binding Path=BottomButtons[11].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="1" Grid.Row="2" IsTabStop="True" TabIndex="21" Visibility ="{Binding Path=BottomButtons[11].visibility}"
+					Content="{Binding Path=BottomButtons[11].Title, FallbackValue='Button 11'}"
+					Command="{Binding Path=BottomButtons[11].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[11].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button1.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="2" Grid.Row="2" Visibility ="{Binding Path=BottomButtons[12].visibility}" Content="{Binding Path=BottomButtons[12].Text, FallbackValue='Button 12'}" Command="{Binding Path=BottomButtons[12].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="2" Grid.Row="2" IsTabStop="True" TabIndex="22" Visibility ="{Binding Path=BottomButtons[12].visibility}"
+					Content="{Binding Path=BottomButtons[12].Title, FallbackValue='Button 12'}"
+					Command="{Binding Path=BottomButtons[12].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[12].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button2.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="3" Grid.Row="2" Visibility ="{Binding Path=BottomButtons[13].visibility}" Content="{Binding Path=BottomButtons[13].Text, FallbackValue='Button 13'}" Command="{Binding Path=BottomButtons[13].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="3" Grid.Row="2" IsTabStop="True" TabIndex="23" Visibility ="{Binding Path=BottomButtons[13].visibility}"
+					Content="{Binding Path=BottomButtons[13].Title, FallbackValue='Button 13'}"
+					Command="{Binding Path=BottomButtons[13].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[13].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button3.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="4" Grid.Row="2" Visibility ="{Binding Path=BottomButtons[14].visibility}" Content="{Binding Path=BottomButtons[14].Text, FallbackValue='Button 14'}" Command="{Binding Path=BottomButtons[14].ClickCommand, Mode=OneTime}">
+			<Button Grid.Column="4" Grid.Row="2" IsTabStop="True" TabIndex="24" Visibility ="{Binding Path=BottomButtons[14].visibility}"
+					Content="{Binding Path=BottomButtons[14].Title, FallbackValue='Button 14'}"
+					Command="{Binding Path=BottomButtons[14].ClickCommand, Mode=OneTime}">
+<!--					IsDefault="{Binding Path=BottomButtons[14].isDefault, FallbackValue = false}"-->
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button4.jpg"/>
 				</Button.Background>

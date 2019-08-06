@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:local="clr-namespace:CoCWinDesktop">
+			 <!--xmlns:Behave="clr-namespace:CoCWinDesktop.Behaviors"
+			 Behave:FocusBehavior.FocusFirst="True"-->
 	<UserControl.Resources>
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
 			<Setter Property="Background">

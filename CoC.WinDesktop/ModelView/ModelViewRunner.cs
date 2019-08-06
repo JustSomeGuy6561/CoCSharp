@@ -9,6 +9,12 @@ namespace CoCWinDesktop.ModelView
 {
 	public sealed class ModelViewRunner : INotifyPropertyChanged
 	{
+		//Aside from being the runner, this class also stores "global" settings - backgrounds, font colors, etc. Note that some stuff is set from code-behind, so this provides
+		//a universal means to get data in both contexts. For example, a Flow Document loaded from RTF will ignore all of it's contained classes flags (except for align, for some reason)
+		//so we have to set these through code-behind, notably font color. However, for the stuff that DOES respect font color (like sidebar), we also need to be able to bind it.
+		//so i'm just storing them here. Note that it's entirely possible to do these in the class that defines them, but that always seems to work sporadically, so i'm just putting it here.
+
+
 		private static readonly string[] backgrounds = { Path.Combine("resources", "background1.png"), Path.Combine("resources", "background2.png"), Path.Combine("resources", "background3.png"), Path.Combine("resources", "background4.png"), null, Path.Combine("resources", "backgroundKaizo.png") };
 
 		private static readonly string[] sidebars = { Path.Combine("resources", "sidebar1.png"), Path.Combine("resources", "sidebar2.png"), Path.Combine("resources", "sidebar3.png"), Path.Combine("resources", "sidebar4.png"), null, Path.Combine("resources", "sidebarKaizo.png") };
@@ -103,6 +109,20 @@ namespace CoCWinDesktop.ModelView
 		}
 		private SolidColorBrush _TextBackground = textBgs[0];
 
+		public FontFamily TextFontFamily
+		{
+			get => _textFontFamily;
+			private set
+			{
+				if (_textFontFamily != value)
+				{
+					_textFontFamily = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+		private FontFamily _textFontFamily = new FontFamily("Times New Roman");
+
 		public SolidColorBrush FontColor
 		{
 			get => _FontColor;
@@ -144,6 +164,9 @@ namespace CoCWinDesktop.ModelView
 			}
 		}
 		private double _fontSize = 15;
+
+		public int FontEmSize => (int)Math.Round(FontSize * 2);
+
 
 		public bool IsDarkMode => BackgroundImage == backgrounds[4] || BackgroundImage == backgrounds[3];
 

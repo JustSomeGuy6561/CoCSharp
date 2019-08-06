@@ -398,11 +398,11 @@ namespace CoC.Frontend.Creatures
 			sb.Append("Eyes: ");
 			if (creator.leftEyeColor != creator.rightEyeColor && creator.rightEyeColor != null)
 			{
-				sb.Append("Monochromatic - Both are " + ((EyeColor)creator.leftEyeColor).AsString());
+				sb.Append("Heterochromatic: The left is" + ((EyeColor)creator.leftEyeColor).AsString() + ", the right is " + ((EyeColor)creator.rightEyeColor).AsString());
 			}
 			else
 			{
-				sb.Append("Heterochromatic: The left is" + ((EyeColor)creator.leftEyeColor).AsString() + ", the right is " + ((EyeColor)creator.rightEyeColor).AsString());
+				sb.Append("Monochromatic - Both are " + ((EyeColor)creator.leftEyeColor).AsString());
 			}
 
 			if (chosenGender.HasFlag(Gender.MALE))

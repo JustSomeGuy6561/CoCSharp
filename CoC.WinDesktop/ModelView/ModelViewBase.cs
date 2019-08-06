@@ -1,6 +1,7 @@
 ﻿using CoC.UI;
 using System;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace CoCWinDesktop.ModelView
 {
@@ -14,6 +15,9 @@ namespace CoCWinDesktop.ModelView
 
 		internal void ParseData()
 		{
+			//Initialize Classes and related info.
+			Keyboard.ClearFocus();
+
 			ParseDataForDisplay();
 		}
 

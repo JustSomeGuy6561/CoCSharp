@@ -144,7 +144,6 @@ namespace CoCWinDesktop.CustomControls
 		public StatBar()
 		{
 			InitializeComponent();
-			Console.WriteLine(DataContext?.ToString() ?? "null");
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

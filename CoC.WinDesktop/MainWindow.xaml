@@ -5,6 +5,7 @@
 		xmlns:local="clr-namespace:CoCWinDesktop"
 		xmlns:Views="clr-namespace:CoCWinDesktop.Views"
 		xmlns:MV="clr-namespace:CoCWinDesktop.ModelView"
+		FocusVisualStyle="{x:Null}"
 		Title="Corruption of Champions" Height="839" Width="1016">
 	<Window.Background>
 		<SolidColorBrush Color="Black"/>
@@ -26,7 +27,7 @@
 	</Window.Resources>
 	<!--Content-->
 	<Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" StretchDirection="Both">
-		<ContentControl DataContext="{StaticResource Runner}" Content="{Binding Path=ModelView, Mode=OneWay}"/>
+		<ContentControl DataContext="{StaticResource Runner}" FocusVisualStyle="{x:Null}" Content="{Binding Path=ModelView, Mode=OneWay}"/>
 	</Viewbox>
 	<!--End Content-->
 </Window>

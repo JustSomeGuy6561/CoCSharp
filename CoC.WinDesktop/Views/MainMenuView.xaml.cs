@@ -21,6 +21,7 @@ namespace CoCWinDesktop.Views
 	/// </summary>
 	public partial class MainMenuView : UserControl
 	{
+		
 		ModelViewRunner runner;
 		public MainMenuView()
 		{

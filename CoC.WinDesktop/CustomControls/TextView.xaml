@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="CoCWinDesktop.CustomControls.TextView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CoCWinDesktop.CustomControls"
+			 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="400"
+			 Name="_this"
+			 Focusable="False"
+			 Background="{Binding TextBackground, Mode=OneWay, Source={StaticResource Runner}}">
+	<UserControl.Resources>
+		<Conv:SubtractValueConverter x:Key="Subtractor" x:Name="Subtractor"/>
+		<Conv:VisibilityFromBoolCollapsed x:Key="BoolToVisCollapsed"/>
+		<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">15</sys:Double>
+		<Style TargetType="{x:Type RichTextBox}">
+			<Setter Property="AcceptsReturn" Value="False"/>
+			<Setter Property="AcceptsTab" Value="False"/>
+			<Setter Property="Height" Value="Auto"/>
+			<Setter Property="Focusable" Value="False"/>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+			<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+			<Setter Property="IsReadOnly" Value="True"/>
+			<Setter Property="IsReadOnlyCaretVisible" Value="False"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+		<Style TargetType="{x:Type FlowDocument}">
+			<Setter Property="IsEnabled" Value="True"/>
+			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
+			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
+			<Setter Property="FontSize" Value="{Binding FontSize, Mode=OneWay, Source={StaticResource Runner}}"/>
+			<Setter Property="TextAlignment" Value="Left"/>
+			<!-- For multiLanguage, may want to bind this to RTL or LTR bool-->
+			<!--Bind this to runner value when implemented-->
+		</Style>
+		<Style TargetType="local:LimitedInputTextBox">
+			<Setter Property="AllowDrop" Value="False"/>
+			<Setter Property="AcceptsTab" Value="False"/>
+			<Setter Property="Background" Value="White" />
+			<Setter Property="Height" Value="Auto" />
+			<Setter Property="HorizontalAlignment" Value="Left" />
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<Setter Property="IsTabStop" Value="true" />
+			<Setter Property="Padding" Value="2"/>
+			<!--buttons at top i'm giving lowest priority. i suppose this should have a tab index of 0" /> idk. i'll need to test it.-->
+			<Setter Property="TabIndex" Value="5" />
+			<Setter Property="TextWrapping" Value="Wrap"/>
+			<Setter Property="Focusable" Value="true" />
+			<Setter Property="FontFamily" Value="{Binding Path=TextFontFamily, Source={StaticResource Runner}, Mode=OneWay}"/>
+			<Setter Property="FontSize" Value="{Binding Path=FontSize, Source={StaticResource Runner}, Mode=OneWay}" />
+			<Setter Property="IsReadOnly" Value="false" />
+			<Setter Property="Margin" Value="5" />
+			<!--<Setter Property="MaxLines" Value="1" />-->
+			<Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
+			<Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+			<Setter Property="Width" Value="{Binding InputCalculatedWidth, ElementName=_this, Mode=OneWay}"/>
+		</Style>
+		<Style TargetType="ComboBox">
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="Height" Value="25"/>
+			<Setter Property="Margin" Value="5,0,0,0"/>
+			<Setter Property="Focusable" Value="true" />
+			<Setter Property="FontFamily" Value="{Binding Path=TextFontFamily, Source={StaticResource Runner}, Mode=OneWay}"/>
+			<Setter Property="FontSize" Value="{Binding Path=FontSize, Source={StaticResource Runner}, Mode=OneWay}" />
+			<Setter Property="Foreground" Value="Black"/>
+		</Style>
+	</UserControl.Resources>
+	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="{Binding Height, ElementName=_this}" Width="{Binding Width, ElementName=_this}">
+		<Grid HorizontalAlignment="Left" Focusable="False">
+			<Grid.Width>
+				<MultiBinding Converter="{StaticResource Subtractor}">
+					<Binding Path="Width" ElementName="_this"/>
+					<Binding Source="{StaticResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+				</MultiBinding>
+			</Grid.Width>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<RichTextBox Padding="-3,1,0,0" Name="PrimaryText" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"/>
+
+			<local:LimitedInputTextBox x:Name="InputField" Grid.Row="1" Text="{Binding InputFieldText, ElementName=_this, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" 
+				Visibility="{Binding InputFieldVisible, ElementName=_this, Converter={StaticResource BoolToVisCollapsed}}" MaxLength="{Binding InputFieldMaxLength, ElementName=_this, Mode=OneWay}" 
+				LimitCharactersRegex="{Binding LimitCharactersRegex, ElementName=_this, Mode=OneWay}"/>
+			<ComboBox Name="DropDown" Grid.Column="1" Grid.Row="1" Visibility="{Binding DropdownVisible, ElementName=_this, Converter={StaticResource BoolToVisCollapsed}}"
+				HorizontalAlignment="Left" ItemsSource="{Binding DropdownContainer.items, ElementName=_this, Mode=OneWay}"
+				DisplayMemberPath="Title" SelectedItem="{Binding DropdownContainer.SelectedItem, ElementName=_this, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+			<RichTextBox Name="SecondaryText" Margin="-3,20,0,0" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" />
+		</Grid>
+	</ScrollViewer>
+</UserControl>

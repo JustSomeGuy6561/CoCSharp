@@ -5,11 +5,41 @@
 			 xmlns:MV="clr-namespace:CoCWinDesktop.ModelView"
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
+			 xmlns:sys="clr-namespace:System;assembly=mscorlib"
 			 Startup="App_Startup">
 	<Application.Resources>
 		<MV:ModelViewRunner x:Key="Runner" />
+
+		<Style TargetType="{x:Type Control}">
+			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+		</Style>
+
+		<Style TargetType="{x:Type FrameworkElement}">
+			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+		</Style>
+
+		<Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
+			<Setter Property="Control.Template">
+				<Setter.Value>
+					<ControlTemplate>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="ButtonFocusVisual">
+			<Setter Property="Control.Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Rectangle StrokeThickness="3"  
+							Stroke="Yellow"  
+							SnapsToDevicePixels="true"/>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
 		
 		<Style x:Key="CoCButton" TargetType="{x:Type Button}">
+			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
 			<Setter Property="Width" Value="150" />
 			<Setter Property="Height" Value="40" />
 			<Setter Property="FontSize" Value="18" />
@@ -48,42 +78,11 @@
 			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
 		</Style>
 
-		<Style x:Key="SimpleTextZone" TargetType="{x:Type CC:TextView}">
+		<Style x:Key="SimpleTextZoneVersion2" TargetType="{x:Type CC:TextView}">
 			<Setter Property="Canvas.Left" Value="208" />
 			<Setter Property="Canvas.Top" Value="52" />
 			<Setter Property="Width" Value="769" />
 			<Setter Property="Height" Value="602" />
-			<Setter Property="Focusable" Value="False"/>
-			<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-			<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-			<Setter Property="IsReadOnly" Value="True"/>
-			<Setter Property="IsReadOnlyCaretVisible" Value="False"/>
-			<Setter Property="BorderThickness" Value="0"/>
-			<Setter Property="BorderBrush" Value="Transparent"/>
-			<Setter Property="Padding" Value="-3,1,0,0"/>
-			<Setter Property="Background" Value="{Binding TextBackground, Mode=OneWay, Source={StaticResource Runner}}" />
-			<Style.Resources>
-				<Style TargetType="ScrollContentPresenter">
-					<Setter Property="Width" Value="754"/>
-					<Setter Property="VerticalAlignment" Value="Top"/>
-					<Setter Property="HorizontalAlignment" Value="Left"/>
-				</Style>
-			</Style.Resources>
-		</Style>
-		<Style x:Key="MainOutputDoc" TargetType="{x:Type FlowDocument}">
-			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
-			<Setter Property="FontFamily" Value="Times New Roman"/>
-			<Setter Property="FontSize" Value="20"/>
-			<Setter Property="TextAlignment" Value="Left"/>
-			<Style.Resources>
-				
-				<Style TargetType="Paragraph">
-					<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
-					<Setter Property="FontFamily" Value="Times New Roman"/>
-					<Setter Property="FontSize" Value="20"/>
-				</Style>
-			</Style.Resources>
-			<!--Bind this to runner value when implemented-->
 		</Style>
 
 		<Style x:Key="CoCSidebarText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}">

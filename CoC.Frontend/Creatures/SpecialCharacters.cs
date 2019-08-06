@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //3/25/2019, 12:08 AM
+using CoC.Backend;
 using CoC.Backend.BodyParts;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
@@ -13,7 +14,9 @@ using CoC.Backend.Tools;
 using CoC.Frontend.Items.Materials.Jewelry;
 using CoC.Frontend.Perks.Endowment;
 using CoC.Frontend.Perks.History;
+using CoC.Frontend.Strings.Creatures;
 using CoC.Frontend.Strings.Items.Wearables.Piercings;
+using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
 
@@ -32,39 +35,72 @@ namespace CoC.Frontend.Creatures
 
 		public static Dictionary<string, Func<PlayerCreator>> specialCharacterLookup = new Dictionary<string, Func<PlayerCreator>>();
 
+		public static Dictionary<string, SimpleDescriptor> nameAndFlavorText = new Dictionary<string, SimpleDescriptor>();
+
+		public static DropDownEntry[] SpecialCharacterDropDownList()
+		{
+			DropDownEntry[] retVal = new DropDownEntry[nameAndFlavorText.Count];//+2 later for helpers.
+
+			int x = 0;
+			Action OnSelect(string name, SimpleDescriptor text)
+			{
+				return () =>
+				{
+					InputField.UpdateInputText(name);
+					DropDownMenu.SetPostDropDownMenuText(text);
+				};
+			}
+			foreach (var entry in nameAndFlavorText)
+			{
+				retVal[x] = new DropDownEntry(entry.Key, OnSelect(entry.Key, entry.Value));
+				x++;
+			}
+			return retVal;
+		}
+
+
 		static SpecialCharacters()
 		{
-			specialCharacterLookup.Add("Annetta", customAnnetta);
-			specialCharacterLookup.Add("Aria", customAria);
-			specialCharacterLookup.Add("Bertram", customBertram);
-			specialCharacterLookup.Add("Ceveo", customCeveo);
-			specialCharacterLookup.Add("Charaun", customCharaun);
-			specialCharacterLookup.Add("Charlie", customCharlie);
-			specialCharacterLookup.Add("Cody", customCody);
-			specialCharacterLookup.Add("Etis", customEtis);
-			specialCharacterLookup.Add("Galatea", customGalatea);
-			specialCharacterLookup.Add("Gundam", customGundam);
-			specialCharacterLookup.Add("Hikari", customHikari);
-			specialCharacterLookup.Add("Isaac", customIsaac);
-			specialCharacterLookup.Add("Katti", customKatti);
-			specialCharacterLookup.Add("Leah", customLeah);
-			specialCharacterLookup.Add("Lucina", customLucina);
-			specialCharacterLookup.Add("Lukaz", customLukaz);
-			specialCharacterLookup.Add("Mara", customMara);
-			specialCharacterLookup.Add("Mihari", customMihari);
-			specialCharacterLookup.Add("Mirvanna", customMirvanna);
-			specialCharacterLookup.Add("Nami", customNami);
-			specialCharacterLookup.Add("Navorn", customNavorn);
-			specialCharacterLookup.Add("Nixi", customNixi);
-			specialCharacterLookup.Add("Peone", customPeone);
-			specialCharacterLookup.Add("Prismere", customPrismere);
-			specialCharacterLookup.Add("Rann Rayla", customRannRayla);
-			specialCharacterLookup.Add("Rope", customRope);
-			specialCharacterLookup.Add("Sera", customSera);
-			specialCharacterLookup.Add("Siveen", customSiveen);
-			specialCharacterLookup.Add("Sora", customSora);
-			specialCharacterLookup.Add("Tyriana", customTyriana);
-			specialCharacterLookup.Add("Vahdunbrii", customVahdunbrii);
+			//
+			AddCustomCharacter("Annetta", AnnettaFlavorText, customAnnetta);
+			AddCustomCharacter("Aria", AriaFlavorText, customAria);
+			AddCustomCharacter("Bertram", BertramFlavorText, customBertram);
+			AddCustomCharacter("Ceveo", CeveoFlavorText, customCeveo);
+			AddCustomCharacter("Charaun", CharaunFlavorText, customCharaun);
+			AddCustomCharacter("Charlie", CharlieFlavorText, customCharlie);
+			AddCustomCharacter("Cody", CodyFlavorText, customCody);
+			AddCustomCharacter("Etis", EtisFlavorText, customEtis);
+			AddCustomCharacter("Galatea", GalateaFlavorText, customGalatea);
+
+			AddCustomCharacter("Gundam", GundamFlavorText, customGundam);
+			AddCustomCharacter("Hikari", HikariFlavorText, customHikari);
+			AddCustomCharacter("Isaac", IsaacFlavorText, customIsaac);
+			AddCustomCharacter("Katti", KattiFlavorText, customKatti);
+			AddCustomCharacter("Leah", LeahFlavorText, customLeah);
+			AddCustomCharacter("Lucina", LucinaFlavorText, customLucina);
+			AddCustomCharacter("Lukaz", LukazFlavorText, customLukaz);
+			AddCustomCharacter("Mara", MaraFlavorText, customMara);
+			AddCustomCharacter("Mihari", MihariFlavorText, customMihari);
+			AddCustomCharacter("Mirvanna", MirvannaFlavorText, customMirvanna);
+			AddCustomCharacter("Nami", NamiFlavorText, customNami);
+			AddCustomCharacter("Navorn", NavornFlavorText, customNavorn);
+			AddCustomCharacter("Nixi", NixiFlavorText, customNixi);
+			AddCustomCharacter("Peone", PeoneFlavorText, customPeone);
+			AddCustomCharacter("Prismere", PrismereFlavorText, customPrismere);
+			AddCustomCharacter("Rann Rayla", RannRaylaFlavorText, customRannRayla);
+			AddCustomCharacter("Rope", RopeFlavorText, customRope);
+			AddCustomCharacter("Sera", SeraFlavorText, customSera);
+			AddCustomCharacter("Siveen", SiveenFlavorText, customSiveen);
+			AddCustomCharacter("Sora", SoraFlavorText, customSora);
+			AddCustomCharacter("Tyriana", TyrianaFlavorText, customTyriana);
+			AddCustomCharacter("Vahdunbrii", VahdunbriiFlavorText, customVahdunbrii);
+		}
+
+		private static void AddCustomCharacter(string name, SimpleDescriptor selectFlavorText, Func<PlayerCreator> createCharacterFunction)
+		{
+			if (selectFlavorText is null) throw new ArgumentNullException(nameof(selectFlavorText));
+			specialCharacterLookup.Add(name, createCharacterFunction);
+			nameAndFlavorText.Add(name, selectFlavorText);
 		}
 		/*
 				public PlayerCreator CharSpecial() { }
@@ -73,42 +109,10 @@ namespace CoC.Frontend.Creatures
 			public const customs:Array = [
 					// 
 			[ "Without pre-defined history:", null, false, "" ],
-					[ARIA_NAME, customAria, false, "It's really no surprise that you were sent through the portal to deal with the demons - you look enough like one as-is.  Your numerous fetish-inducing piercings, magical fox-tails, and bimbo-licious personality were all the motivation the elders needed to keep you from corrupting the village youth." ],
-					[ "Betram", customBetram, false, "You're quite the foxy herm, and as different as you were compared to the rest of Ingnam, it's no surprise you were sent through first." ],
-					[CHARAUN_NAME, customCharaun, false, "As a gifted fox with a juicy, thick knot, a wet cunt, and magical powers, you have no problems with being chosen as champion." ],
-					[ "Cody", customCody, false, "Your orange and black tiger stripes make you cut a more imposing visage than normal, and with your great strength, armor, and claymore, you're a natural pick for champion." ],
-					[GALATEA_NAME, customGalatea, false, "You've got large breasts prone to lactation.  You aren't sure WHY you got chosen as a champion, but with your considerable strength, you're sure you'll do a good job protecting Ingnam." ],
-					[ "Gundam", customGundam, false, "You're fabulously rich, thanks to a rather well-placed bet on who would be the champion.  Hopefully you can buy yourself out of any trouble you might get in." ],
-					[HIKARI_NAME, customHikari, false, "As a herm with a super-thick cat-cock, D-cup breasts, and out-of-this-world armor, you're a natural pick for champion." ],
-					[KATTI_NAME, customKatti, false, "You have big breasts with big, fuckable nipples on them, and no matter what, your vagina always seems to be there to keep you company." ],
-					[LUCINA_NAME, customLucina, false, "You're a blond, fair-skinned lass with a well-made bow and the skills to use it.  You have D-cup breasts and a very moist cunt that's seen a little action.  You're fit and trim, but not too thin, nor too well-muscled.  All in all, you're a good fit for championing your village's cause." ],
-					[NAVORN_NAME, customNavorn, false, "There's been something special about you since day one, whether it's your numerous sexual endowments or your supernatural abilities.  You're a natural pick for champion." ],
-					[ "Rope", customRope, false, "Despite outward appearances, you're actually something of a neuter, with shark-like teeth, an androgynous face, and a complete lack of genitalia." ],
-					[ "Sora", customSora, false, "As a Kitsune, you always got weird looks, but none could doubt your affinity for magic..." ],
-
-					[ "With pre-defined history:", null, false, "" ],
-					[ "Annetta", customAnnetta, true, "You're a rather well-endowed hermaphrodite that sports a thick, dog-knotted cock, an unused pussy, and a nice, stretchy butt-hole.  You've also got horns and demonic high-heels on your feet.  It makes you wonder why you would ever get chosen to be champion!" ],
-					[ "Ceveo", customCeveo, true, "As a wandering mage you had found your way into no small amount of trouble in the search for knowledge." ],
-					[ "Charlie", customCharlie, true, "You're strong, smart, fast, and tough.  It also helps that you've got four dongs well beyond what others have lurking in their trousers.  With your wings, bow, weapon, and tough armor, you're a natural for protecting the town." ],
-					[CHIMERA_NAME, customChimera, true, "Your body is wrecked by your own experiments with otherworldly transformation items, and now you have no more money to buy any more from smugglers... But you would make your body as strong as your will. Or die trying." ],
-					[ETIS_NAME, customEtis, true, "Kitsune-dragon hybrid with 3 tentacle cocks, tentacle hair, tentacle (well, draconic) tongue and very strong magic affinity." ],
-					[ "Isaac", customIsaac, true, "Born of a disgraced priestess, Isaac was raised alone until she was taken by illness.  He worked a number of odd jobs until he was eventually chosen as champion." ],
-					//[ "Kitteh6660", customKitteh6660, true, "" ],
-					[LEAH_NAME, customLeah, true, "No Notes Available." ],
-					[LUKAZ_NAME, customLukaz, true, "No Notes Available." ],
-					[MARA_NAME, customMara, true, "You're a bunny-girl with bimbo-tier curves, jiggly and soft, a curvy, wet girl with a bit of a flirty past." ],
-					[ "Mihari", customMihari, true, "The portal is not something you fear, not with your imposing armor and inscribed spellblade.  You're much faster and stronger than every champion that came before you, but will it be enough?" ],
-					[MIRVANNA_NAME, customMirvanna, true, "You're an equine dragon-herm with a rather well-proportioned body.  Ingnam is certainly going to miss having you whoring yourself out around town.  You don't think they'll miss cleaning up all the messy sex, though." ],
-					[ "Nami", customNami, true, "Your exotic appearance caused you some trouble growing up, but you buried your nose in books until it came time to go through the portal." ],
-					[NIXI_NAME, customNixi, true, "As a German-Shepherd morph, the rest of the village never really knew what to do with you... until they sent you through the portal to face whatever's on the other side..." ],
-					[ "Prismere", customPrismere, true, "You're more of a scout than a fighter, but you still feel confident you can handle your responsibilities as champion.  After all, what's to worry about when you can outrun everything you encounter?  You have olive skin, deep red hair, and a demonic tail and wings to blend in with the locals." ],
-					[ "Rann Rayla", customRannRayla, true, "You're a young, fiery redhead who\'s utterly feminine.  You've got C-cup breasts and long red hair.  Being a champion can\'t be that bad, right?" ],
-					[ "Sera", customSera, true, "You're something of a shemale - three rows of C-cup breasts matched with three, plump, juicy cocks.  Some decent sized balls, bat wings, and cat-like ears round out the package." ],
-					[ "Siveen", customSiveen, true, "You are a literal angel from beyond, and you take the place of a vilage's champion for your own reasons..." ],
-					[ "Tyriana", customTyriana, true, "Your many, posh tits, incredible fertility, and well-used cunt made you more popular than the village bicycle.  With your cat-like ears, paws, and tail, you certainly had a feline appeal.  It's time to see how you fare in the next chapter of your life." ],
-					[VAHDUNBRII_NAME, customVahdunbrii, true, "You're something of a powerhouse, and you wager that between your odd mutations, power strong enough to threaten the village order, and talents, you're the natural choice to send through the portal." ],
+					
 				]
 				*/
+		private static SimpleDescriptor AnnettaFlavorText => SpecialCharacterStrings.AnnettaText;
 		private static PlayerCreator customAnnetta()
 		{
 			//outputText("You're a rather well-endowed hermaphrodite that sports a thick, dog-knotted cock, an unused pussy, and a nice, stretchy butt-hole.  You've also got horns and demonic high-heels on your feet.  It makes you wonder why you would ever get chosen to be champion!");
@@ -163,9 +167,11 @@ namespace CoC.Frontend.Creatures
 
 		}
 
+
+
+		private static SimpleDescriptor AriaFlavorText => SpecialCharacterStrings.AriaText;
 		private static PlayerCreator customAria()
 		{
-			//outputText("It's really no surprise that you were sent through the portal to deal with the demons - you look enough like one as-is.  Your numerous fetish-inducing piercings, magical fox-tails, and bimbo-licious personality were all the motivation the elders needed to keep you from corrupting the village youth.");
 			//2/26/2013 8:18:21	rdolave@gmail.com	Character Creation	"female DD breasts feminity 100 butt size 5 hip size 5 body thickness 10 clit I would like her nipples pierced with Ceraphs piercing
 			//(on a side note how much do you think it would cost to add bell nipple,labia and clit piercings as well as an option for belly button piercings would like to see belly button piecings with a few different options as well. 
 			//Also would love to have handcuff ear piercings.)"	Would like the bimbo brain and bimbo body perks as well as the nine tail PerkLib. demonic high heels, pink skin, obscenely long pink hair would like her to be a kitsune with the nine tails.
@@ -229,6 +235,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setArmor(armors.NURSECL);
 		}
 
+		private static SimpleDescriptor BertramFlavorText => SpecialCharacterStrings.BertramText;
 		private static PlayerCreator customBertram()
 		{
 			//Character Creation	
@@ -249,6 +256,7 @@ namespace CoC.Frontend.Creatures
 			//outputText("You're quite the foxy herm, and as different as you were compared to the rest of Ingnam, it's no surprise you were sent through first.");
 		}
 
+		private static SimpleDescriptor CeveoFlavorText => SpecialCharacterStrings.CeveoText;
 		private static PlayerCreator customCeveo()
 		{
 			//Pair<CockPiercings, PiercingJewelry> silverAlbert = [CockPiercings.ALBERT] );
@@ -324,9 +332,9 @@ namespace CoC.Frontend.Creatures
 			//outputText("As a wandering mage you had found your way into no small amount of trouble in the search for knowledge.  A strange tome here, a ritual there, most people found your pale form unsettling. They would be further troubled if they could see your feet!  Lets not even begin on the blood magic.  Yes, your interest in examining every aspect of magic has run you down a strange path, so when you wandered into Ingnam and began to hear of the exile of the Champion, and the superstitions that surrounded it you were intrigued, as every little rumor and ritual often had a grain of truth.  You snuck into the cave prior to the ritual, where the old man supposedly led every Champion, and there you found a strange portal that emanated a certain degree of spacial transparency -  more than the portal's own.  Within it must have been a whole new world!  Throwing caution to the wind, your curiosities engulfing you, you dove in with nary a thought for the consequences.");
 		}
 
+		private static SimpleDescriptor CharaunFlavorText => SpecialCharacterStrings.CharaunText;
 		private static PlayerCreator customCharaun()
 		{
-			//outputText("As a gifted fox with a juicy, thick knot, a wet cunt, and magical powers, you have no problems with being chosen as champion.");
 			//Herm, Fox Cock: (27"l x 1.4"w, knot multiplier 3.6), No Balls, Cum Multiplier: 7,500, Vaginal Wetness: 5, Clit length: 0.5, Virgin, Fertility: 15	9-tailed "enlightened" kitsune( a pure-blooded kitsune with the "Enlightened Nine-tails" perk and magic specials) 
 			return new PlayerCreator("Charaun")
 			{
@@ -361,6 +369,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setWeapon(weapons.S_BLADE);
 		}
 
+		private static SimpleDescriptor CharlieFlavorText => SpecialCharacterStrings.CharlieText;
 		private static PlayerCreator customCharlie()
 		{
 			//outputText("You're strong, smart, fast, and tough.  It also helps that you've got four dongs well beyond what others have lurking in their trousers.  With your wings, bow, weapon, and tough armor, you're a natural for protecting the town.");
@@ -437,6 +446,7 @@ namespace CoC.Frontend.Creatures
 			//creator.createPerk(PerkLib.HistoryWhore, 0, 0, 0, 0);
 		}
 
+		private static SimpleDescriptor CodyFlavorText => SpecialCharacterStrings.CodyText;
 		private static PlayerCreator customCody()
 		{
 			//outputText("Your orange and black tiger stripes make you cut a more imposing visage than normal, and with your great strength, armor, and claymore, you're a natural pick for champion.");
@@ -460,6 +470,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setWeapon(weapons.CLAYMR0);
 		}
 
+		private static SimpleDescriptor GalateaFlavorText => SpecialCharacterStrings.GalateaText;
 		private static PlayerCreator customGalatea()
 		{
 			//"(Dangit Fenoxo!  Stop adding sexy must-have things to the game!  If it's not too late to update it I've added in that sexy new armor.  Thanks!)		
@@ -510,6 +521,7 @@ namespace CoC.Frontend.Creatures
 		}
 
 		//the easiest player creator ever.
+		private static SimpleDescriptor GundamFlavorText => SpecialCharacterStrings.GundamText;
 		private static PlayerCreator customGundam()
 		{
 			//outputText("You're fabulously rich, thanks to a rather well-placed bet on who would be the champion.  Hopefully you can buy yourself out of any trouble you might get in.");
@@ -520,6 +532,7 @@ namespace CoC.Frontend.Creatures
 			//for my custom character profile i want the name to be gundam all i want is to start out with around 1000-2500 gems like as a gift from the elder or something to help me out.
 		}
 
+		private static SimpleDescriptor HikariFlavorText => SpecialCharacterStrings.HikariText;
 		private static PlayerCreator customHikari()
 		{
 			//Character Creation	If possible I would like a herm with a cat cock that is 10 inches by 4 inches. Anything else is up to you.	I would like a herm catmorph with two large d breasts and shoulder length hair. Also if possible I would like to start with some gel armor. Everything else is fair game.	Hikari
@@ -538,6 +551,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setArmor(armors.GELARMR);
 		}
 
+		private static SimpleDescriptor IsaacFlavorText => SpecialCharacterStrings.IsaacText;
 		private static PlayerCreator customIsaac()
 		{
 			Dictionary<CockPiercings, PiercingJewelry> ladderPiercings(JewelryMaterial material)
@@ -628,6 +642,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setArmor(armors.M_ROBES);
 		}
 
+		private static SimpleDescriptor KattiFlavorText => SpecialCharacterStrings.KattiText;
 		private static PlayerCreator customKatti()
 		{
 			//outputText("You have big breasts with big, fuckable nipples on them, and no matter what, your vagina always seems to be there to keep you company.");
@@ -650,6 +665,7 @@ namespace CoC.Frontend.Creatures
 			};
 		}
 
+		private static SimpleDescriptor LeahFlavorText => SpecialCharacterStrings.LeahText;
 		private static PlayerCreator customLeah()
 		{
 			return new PlayerCreator("Leah")
@@ -694,6 +710,7 @@ namespace CoC.Frontend.Creatures
 			};
 		}
 
+		private static SimpleDescriptor LucinaFlavorText => SpecialCharacterStrings.LucinaText;
 		private static PlayerCreator customLucina()
 		{
 			//outputText("You're a blond, fair-skinned lass with a well-made bow and the skills to use it.  You have D-cup breasts and a very moist cunt that's seen a little action.  You're fit and trim, but not too thin, nor too well-muscled.  All in all, you're a good fit for championing your village's cause.");
@@ -719,6 +736,7 @@ namespace CoC.Frontend.Creatures
 			//creator.createKeyItem("Bow", 0, 0, 0, 0);
 		}
 
+		private static SimpleDescriptor LukazFlavorText => SpecialCharacterStrings.LukazText;
 		private static PlayerCreator customLukaz()
 		{
 			return new PlayerCreator("Lukaz")
@@ -769,6 +787,7 @@ namespace CoC.Frontend.Creatures
 			//creator.createPerk(PerkLib.MessyOrgasms, 1.25, 0, 0, 0);
 		}
 
+		private static SimpleDescriptor MaraFlavorText => SpecialCharacterStrings.MaraText;
 		private static PlayerCreator customMara()
 		{
 			return new PlayerCreator("Mara")
@@ -809,6 +828,7 @@ namespace CoC.Frontend.Creatures
 			//creator.teaseLevel = 3;
 		}
 
+		private static SimpleDescriptor MihariFlavorText => SpecialCharacterStrings.MihariText;
 		private static PlayerCreator customMihari()
 		{
 			//outputText("The portal is not something you fear, not with your imposing armor and inscribed spellblade.  You're much faster and stronger than every champion that came before you, but will it be enough?");
@@ -873,6 +893,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setWeapon(weapons.S_BLADE);
 		}
 
+		private static SimpleDescriptor MirvannaFlavorText => SpecialCharacterStrings.MirvannaText;
 		private static PlayerCreator customMirvanna()
 		{
 			//outputText("You're an equine dragon-morph with a rather well-proportioned body.  Ingnam is certainly going to miss having you whoring yourself out around town.  You don't think they'll miss cleaning up all the messy sex, though.");
@@ -939,6 +960,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setArmor(armors.W_ROBES);
 		}
 
+		private static SimpleDescriptor NamiFlavorText => SpecialCharacterStrings.NamiText;
 		private static PlayerCreator customNami()
 		{
 			return new PlayerCreator("Nami")
@@ -1008,6 +1030,7 @@ namespace CoC.Frontend.Creatures
 			//outputText("Your exotic appearance caused you some trouble growing up, but you buried your nose in books until it came time to go through the portal.");
 		}
 
+		private static SimpleDescriptor NavornFlavorText => SpecialCharacterStrings.NavornText;
 		private static PlayerCreator customNavorn()
 		{
 			BreastCreator newBreastRow() => new BreastCreator(CupSize.D, 4.0f);
@@ -1074,6 +1097,7 @@ namespace CoC.Frontend.Creatures
 			//creator.setWeapon(weapons.CLAYMR0);
 		}
 
+		private static SimpleDescriptor NixiFlavorText => SpecialCharacterStrings.NixiText;
 		private static PlayerCreator customNixi()
 		{
 			return new PlayerCreator("Nixi")
@@ -1156,6 +1180,7 @@ namespace CoC.Frontend.Creatures
 			//outputText("As a German-Shepherd morph, the rest of the village never really knew what to do with you... until they sent you through the portal to face whatever's on the other side...");
 		}
 
+		private static SimpleDescriptor PrismereFlavorText => SpecialCharacterStrings.PrismereText;
 		private static PlayerCreator customPrismere()
 		{
 			//outputText("You're more of a scout than a fighter, but you still feel confident you can handle your responsibilities as champion.  After all, what's to worry about when you can outrun everything you encounter?  You have olive skin, deep red hair, and a demonic tail and wings to blend in with the locals.");
@@ -1200,6 +1225,7 @@ namespace CoC.Frontend.Creatures
 			//creator.createPerk(PerkLib.Runner, 0, 0, 0, 0);
 		}
 
+		private static SimpleDescriptor RannRaylaFlavorText => SpecialCharacterStrings.RannRaylaText;
 		private static PlayerCreator customRannRayla()
 		{
 			//outputText("You're a young, fiery redhead who\'s utterly feminine.  You've got C-cup breasts and long red hair.  Being a champion can\'t be that bad, right?");
@@ -1226,6 +1252,7 @@ namespace CoC.Frontend.Creatures
 			};
 		}
 
+		private static SimpleDescriptor RopeFlavorText => SpecialCharacterStrings.RopeText;
 		private static PlayerCreator customRope()
 		{
 			//outputText("Despite outward appearances, you're actually something of a neuter, with shark-like teeth, an androgynous face, and a complete lack of genitalia.");
@@ -1240,6 +1267,7 @@ namespace CoC.Frontend.Creatures
 
 		}
 
+		private static SimpleDescriptor SeraFlavorText => SpecialCharacterStrings.SeraText;
 		private static PlayerCreator customSera()
 		{
 
@@ -1291,6 +1319,7 @@ namespace CoC.Frontend.Creatures
 			//creator.createKeyItem("Deluxe Dildo", 0, 0, 0, 0);
 		}
 
+		private static SimpleDescriptor SiveenFlavorText => SpecialCharacterStrings.SiveenText;
 		private static PlayerCreator customSiveen()
 		{
 			//outputText("You are a literal angel from beyond, and you take the place of a vilage's champion for your own reasons...");
@@ -1344,6 +1373,7 @@ namespace CoC.Frontend.Creatures
 			//flags[kFLAGS.HISTORY_PERK_SELECTED] = 0;
 		}
 
+		private static SimpleDescriptor SoraFlavorText => SpecialCharacterStrings.SoraText;
 		private static PlayerCreator customSora()
 		{
 			//outputText("As a Kitsune, you always got weird looks, but none could doubt your affinity for magic...");
@@ -1365,6 +1395,7 @@ namespace CoC.Frontend.Creatures
 		}
 #if DEBUG
 		//Debug character. not in final game. feel free to populate this with whatever you need tested.
+		private static SimpleDescriptor TestCharFlavorText => () => "Testing Character. You should never see this!";
 		private static PlayerCreator customTestChar()
 		{
 			return new PlayerCreator("TestChar")
@@ -1373,9 +1404,9 @@ namespace CoC.Frontend.Creatures
 		}
 #endif
 
+		private static SimpleDescriptor TyrianaFlavorText => SpecialCharacterStrings.TyrianaText;
 		private static PlayerCreator customTyriana()
 		{
-			//outputText("Your many, posh tits, incredible fertility, and well-used cunt made you more popular than the village bicycle.  With your cat-like ears, paws, and tail, you certainly had a feline appeal.  It's time to see how you fare in the next chapter of your life.");
 			return new PlayerCreator("Tyriana")
 			{
 				//"Gender: Female
@@ -1429,6 +1460,7 @@ namespace CoC.Frontend.Creatures
 
 		//this champ is so friggin overpowered holy shit. 
 
+		private static SimpleDescriptor VahdunbriiFlavorText => SpecialCharacterStrings.VahdunbriiText;
 		private static PlayerCreator customVahdunbrii()
 		{
 			//outputText("You're something of a powerhouse, and you wager that between your odd mutations, power strong enough to threaten the village order, and talents, you're the natural choice to send through the portal.");
@@ -1519,11 +1551,13 @@ namespace CoC.Frontend.Creatures
 			//creator.createPerk(PerkLib.HistorySlacker, 0, 0, 0, 0);
 		}
 
+		//private static SimpleDescriptor Kitteh6660FlavorText => SpecialCharacterStrings.Kitteh6660Text;
 		//private static PlayerCreator customKitteh6660()
 		//{
 		//	PlayerCreator creator = new PlayerCreator("Kitteh6660"); //Not yet implemented.
 		//}
 
+		private static SimpleDescriptor EtisFlavorText => SpecialCharacterStrings.EtisText;
 		private static PlayerCreator customEtis()
 		{
 			Dictionary<EarPiercings, PiercingJewelry> makeEarPiercings(params EarPiercings[] locations)
@@ -1653,7 +1687,8 @@ namespace CoC.Frontend.Creatures
 			//creator.createStatusEffect(StatusEffects.KnowsHeal, 0, 0, 0, 0); // to compliment history	
 		}
 
-		//	private static PlayerCreator customChimera()
+		//	private static SimpleDescriptor ChimeraFlavorText => SpecialCharacterStrings.ChimeraText;
+		//private static PlayerCreator customChimera()
 		//	{
 
 		//		PlayerCreator creator = new PlayerCreator("Chimera");
@@ -1907,18 +1942,9 @@ namespace CoC.Frontend.Creatures
 		//		}
 
 		//		*/
+		private static SimpleDescriptor PeoneFlavorText => SpecialCharacterStrings.PeoneText;
 		private static PlayerCreator customPeone()
 		{
-			//OutputText("Being chosen as champion is just the latest in a series of crazy events that have defined your life. As a young girl, your susceptibility to tonics was discovered when an herbal rememdy turned your skin green, " +
-			//"though thankfully the village alchemist was able to reverse the effects. It was decided you'd be the ideal subject to help test the elixirs so something like this would never happen to anyone else, and for a time, all was well. " +
-			//"That all changed when an alchemical 'accident' shrunk your formerly well-endowed breasts, caused high-heel shaped spurs to grow out of your feet... and granted you a rather large cock. Your sex appeal naturally took a bit of a hit, " +
-			//but most of your friends were sympathetic, though your drunken antics probably helped with that. With not much else to do, you frequent the local tavern, but you're an absolute lightweight and more often than not that doesn't end well. " +
-			//"One such night started with a mention of a tattoo and ended with you waking up several days later with a piercing headache to match several new ones in your ear, and one along your cock. Another time you were roused from your drunken stupor " +
-			//"by the lustful moans of one of your friends as she lost her virginity atop your rod. Fortunately, your lack of balls and other corrupting influences means you shoot blanks, but this discovery soon meant others seeking risk-free sex would seek you out. "
-			//"Before long, more than a few women (and even the curious boy or two) had popped their cherries atop your rod. You don't mind the attention, though you wish at least one of them would return the favor - the only action your holes have seen are from sex toys. "
-			//"Your new role drew the ire of most of the men in your village, notably an elder's granson, whose girlfriend you recently deflowered. You were 'randomly chosen' as champion shortly thereafter.");
-
-
 			return new PlayerCreator("Peone")
 			{
 				defaultGender = Gender.HERM,

@@ -12,7 +12,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 {
 	public sealed class BottomButtonWrapper : INotifyPropertyChanged
 	{
-		public ICommand clickCommand { get; }
+		public ICommand ClickCommand { get; }
 
 		public Visibility visibility
 		{
@@ -28,11 +28,13 @@ namespace CoCWinDesktop.ModelView.Helpers
 			{
 				if (_onClick != value)
 				{
-					if (_onClick is null != value is null)
+					bool wasNull = _onClick is null;
+					_onClick = value; //needs to update first because otherwise OnClickCommand fails to change properly
+
+					if (wasNull != value is null)
 					{
-						((RelayCommand)clickCommand).RaiseExecuteChanged();
+						((RelayCommand)ClickCommand).RaiseExecuteChanged();
 					}
-					_onClick = value;
 				}
 			}
 		}
@@ -59,14 +61,24 @@ namespace CoCWinDesktop.ModelView.Helpers
 		}
 		private string _toolTipTitle;
 
+		public bool isDefault
+		{
+			get => _isDefault;
+			private set => IHateYouPrimitiveBoat(ref _isDefault, value);
+		}
+		private bool _isDefault;
+
+
 		public event PropertyChangedEventHandler PropertyChanged;
+
+
 
 		public BottomButtonWrapper()
 		{
-			clickCommand = new RelayCommand(ClickCommand, CanClick);
+			ClickCommand = new RelayCommand(OnClickCommand, CanClick);
 		}
 
-		private void ClickCommand()
+		private void OnClickCommand()
 		{
 			onClick?.Invoke();
 		}
@@ -76,7 +88,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 			return onClick != null;
 		}
 
-		public void UpdateButtonEnabled(Action callback, string title, string tip = null, string tipTitle = null)
+		public void UpdateButtonEnabled(Action callback, bool defaultButton, string title, string tip = null, string tipTitle = null)
 		{
 			visibility = Visibility.Visible;
 			Title = title ?? throw new ArgumentNullException(nameof(title));
@@ -86,6 +98,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 			}
 			ToolTip = tip;
 			ToolTipTitle = ToolTip is null ? null : (!string.IsNullOrWhiteSpace(tipTitle) ? tipTitle : Title);
+			isDefault = defaultButton;
 			onClick = callback;
 		}
 
@@ -99,12 +112,14 @@ namespace CoCWinDesktop.ModelView.Helpers
 			}
 			ToolTip = tip;
 			ToolTipTitle = ToolTip is null ? null : (!string.IsNullOrWhiteSpace(tipTitle) ? tipTitle : Title);
+			isDefault = false;
 			onClick = null;
 		}
 
 		public void UpdateButtonHidden()
 		{
 			visibility = Visibility.Hidden;
+			isDefault = false;
 			onClick = null;
 		}
 

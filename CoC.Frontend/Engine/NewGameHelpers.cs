@@ -10,36 +10,34 @@ using CoC.Frontend.UI;
 using CoC.UI;
 using static CoC.Frontend.UI.ButtonManager;
 using static CoC.Frontend.UI.TextOutput;
-
+using static CoC.UI.Controller;
 namespace CoC.Frontend.Engine
 {
 	public static class NewGameHelpers
 	{
 		public static void NewGame()
 		{
-			Controller.SetPlayerStatus(PlayerStatus.IDLE);
+			ViewOptions.SetPlayerStatus(PlayerStatus.IDLE);
 			ViewOptions.HideMenu();
 			ViewOptions.HideStats();
 
 			ClearOutput();
-			ClearButtons();
 			AddOutput(NewGameHelperText.IntroText);
 			InputField.ActivateInputField(null, "", "");
-			//enable drop-list. auto-fill name on selection (left to GUI layer).
+			DropDownMenu.ActivateDropDownMenu(SpecialCharacters.SpecialCharacterDropDownList());
 			AddButton(0, GlobalStrings.OK, ChooseName);
 		}
 
 		private static void ChooseName()
 		{
-			if (string.IsNullOrWhiteSpace(Controller.instance.inputText))
+			if (string.IsNullOrWhiteSpace(InputField.output))
 			{
 				return;
 			}
 			else
 			{
 				ClearOutput();
-				//disable input field.
-				string playerName = Controller.instance.inputText.Trim();
+				string playerName = InputField.output.Trim();
 				string check = playerName.CapitalizeFirstLetter();
 				PlayerCreator pc;
 				if (!SpecialCharacters.specialCharacterLookup.ContainsKey(check))
@@ -52,6 +50,7 @@ namespace CoC.Frontend.Engine
 				{
 					PromptSpecial(check);
 				}
+				InputField.ClearData();
 			}
 		}
 

@@ -25,8 +25,11 @@ namespace CoC.Frontend.UI
 		//	stringWriter = new StringWriter(Console.WriteLine);
 		//}
 
+		private static bool updatedSincePreviousQuery = false;
+
 		public static bool OutputImage(string uniqueImageIdentifier)
 		{
+			updatedSincePreviousQuery = true;
 			if (imageID == null)
 			{
 				imageID = uniqueImageIdentifier;
@@ -41,18 +44,23 @@ namespace CoC.Frontend.UI
 
 		public static void AddOutput(SimpleDescriptor output)
 		{
+			updatedSincePreviousQuery = true;
 			//Controller.
 			textMaker.AddLast(output);
 			//stringWriter(output);
 		}
 
-		public static void ClearOutput()
+		public static void ClearText()
 		{
+			if (textMaker.Count != 0)
+			{
+				updatedSincePreviousQuery = true;
+			}
 			textMaker.Clear();
 		}
 
 		//in the event this class becomes public (it shouldn't), this should still be internal, hence internal
-		internal static StringBuilder data
+		private static StringBuilder data
 		{
 			get
 			{
@@ -66,7 +74,17 @@ namespace CoC.Frontend.UI
 				return sb;
 			}
 		}
-		internal static string image => imageID;
+
+		internal static bool QueryData(out StringBuilder _outputField, out string _outputImagePath)
+		{
+			bool retVal = updatedSincePreviousQuery;
+			updatedSincePreviousQuery = false;
+			_outputField = data;
+			_outputImagePath = imageID;
+			return retVal;
+		}
+
+
 		//public 
 	}
 }

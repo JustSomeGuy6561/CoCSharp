@@ -17,7 +17,7 @@ using System.Diagnostics;
 using static CoC.Frontend.Engine.MenuHelpers;
 using static CoC.Frontend.UI.ButtonManager;
 using static CoC.Frontend.UI.TextOutput;
-
+using static CoC.UI.Controller;
 //minor rework of creator. I'm just going to make this dynamic (meaning you have to instantiate it, even though there's only one at a time)
 //because more often than not this won't be in use and therefore has no reason to be stored in memory. this also allows it to function like a true event-based program. 
 
@@ -168,7 +168,6 @@ namespace CoC.Frontend.Creatures
 		{
 
 			ClearOutput();
-			ClearButtons();
 			if (isSpecial)
 			{
 				//also prints out text for locked or semi-locked characters.
@@ -1006,7 +1005,7 @@ namespace CoC.Frontend.Creatures
 		{
 			ClearOutput();
 			InputField.DeactivateInputField();
-			if (float.TryParse(Controller.instance.inputText, out float parsedInput))
+			if (float.TryParse(InputField.output, out float parsedInput))
 			{
 				if (parsedInput > creator.heightInInches)
 				{
@@ -1268,11 +1267,11 @@ namespace CoC.Frontend.Creatures
 				max = MAX_HEIGHT_CM;
 			}
 			ClearOutput();
-			bool successful = int.TryParse(Controller.instance.inputText, out int parsedInt);
+			bool successful = int.TryParse(InputField.output, out int parsedInt);
 
 			if (!successful)
 			{
-				AddOutput(() => InvalidHeightStr(Controller.instance.inputText));
+				AddOutput(() => InvalidHeightStr(InputField.output));
 			}
 			else if (parsedInt < min || parsedInt > max)
 			{

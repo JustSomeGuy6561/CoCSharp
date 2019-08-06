@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using CoC.Backend;
 using CoC.Backend.Strings;
@@ -16,7 +17,9 @@ namespace CoC.Frontend.UI
 
 		private static readonly Action Nothing = () => { };
 
-		internal static ReadOnlyCollection<ButtonData> buttons { get; }
+		private static bool buttonsChanged = false;
+
+		private static ReadOnlyCollection<ButtonData> buttons { get; }
 
 		static ButtonManager()
 		{
@@ -29,6 +32,8 @@ namespace CoC.Frontend.UI
 
 			if (buttonHelper[index] != null) return false;
 
+			buttonsChanged = true;
+
 			buttonHelper[index] = new ButtonData(title, true, callback);
 			return true;
 		}
@@ -38,6 +43,8 @@ namespace CoC.Frontend.UI
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 
 			if (buttonHelper[index] != null) return false;
+
+			buttonsChanged = true;
 
 			buttonHelper[index] = new ButtonData(title, true, callback, tip, replacementTitle);
 			return true;
@@ -50,6 +57,8 @@ namespace CoC.Frontend.UI
 
 			if (buttonHelper[index] != null) return false;
 
+			buttonsChanged = true;
+
 			buttonHelper[index] = new ButtonData(title, false, Nothing);
 			return true;
 
@@ -60,6 +69,8 @@ namespace CoC.Frontend.UI
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 
 			if (buttonHelper[index] != null) return false;
+
+			buttonsChanged = true;
 
 			buttonHelper[index] = new ButtonData(title, false, Nothing, tip, replacementTitle);
 			return true;
@@ -72,10 +83,20 @@ namespace CoC.Frontend.UI
 
 			Action callback = condition ? enabledCallback : Nothing;
 
+			buttonsChanged = true;
+
 			buttonHelper[index] = new ButtonData(title, condition, callback);
 			return true;
 		}
 
+		internal static bool QueryButtons(out ReadOnlyCollection<ButtonData> buttonCollection)
+		{
+			bool retVal = buttonsChanged;
+
+			buttonsChanged = false;
+			buttonCollection = buttons;
+			return retVal;
+		}
 
 		internal static bool AddButtonIfWithToolTip(byte index, SimpleDescriptor title, bool condition, Action enabledCallback, SimpleDescriptor enabledTip, SimpleDescriptor disabledTip, SimpleDescriptor replacementTitle = null)
 		{
@@ -94,6 +115,10 @@ namespace CoC.Frontend.UI
 				callback = Nothing;
 				tip = disabledTip;
 			}
+
+			buttonsChanged = true;
+
+
 			buttonHelper[index] = new ButtonData(title, condition, callback, tip, replacementTitle);
 			return true;
 		}
@@ -116,6 +141,9 @@ namespace CoC.Frontend.UI
 				callback = Nothing;
 				tip = disabledTip;
 			}
+
+			buttonsChanged = true;
+
 			buttonHelper[index] = new ButtonData(title, condition, callback, tip, replacementTitle);
 			return true;
 		}
@@ -123,6 +151,7 @@ namespace CoC.Frontend.UI
 		internal static void ClearButtons()
 		{
 			Array.Clear(buttonHelper, 0, buttonHelper.Length);
+			buttonsChanged = true;
 		}
 	}
 }
