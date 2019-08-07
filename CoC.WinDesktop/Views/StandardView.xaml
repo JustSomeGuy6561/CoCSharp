@@ -15,9 +15,6 @@
 		<Conv:DrawingColorToMediaColorIgnoreAlpha x:Key="ColorConverter" />
 		<Conv:VisibilityFromIsNull x:Key="NullToVis"/>
 		<Conv:VisibilityFromBool x:Key="BoolToVis"/>
-		<!-- Couldn't figure out how to hard-code these into the targetnullvalues so they're here.-->
-		<SolidColorBrush x:Key="MinDefault" Color="#C00000"/>
-		<SolidColorBrush x:Key="RegDefault" Color="#C07050"/>
 
 		<sys:Double x:Key="ContentWidth">769</sys:Double>
 		<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">15</sys:Double>
@@ -30,14 +27,6 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-		<DataTemplate DataType="{x:Type Help:StatDisplay}">
-			<CC:StatBar Padding="0,0,0,1" Text="{Binding Path=Text}" Visibility="{Binding Path=visibility}"
-				ArrowVisible="{Binding Path=ArrowVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				HasGauge="{Binding Path=needsGauge}" ShowMinOverMax="{Binding Path=showMinOverMax}"
-				MinColor="{Binding Path=MinimumColor, TargetNullValue={StaticResource MinDefault}}" 
-				RegularColor="{Binding Path=RegularColor, TargetNullValue={StaticResource RegDefault}}" 
-				MinimumValue="{Binding Path=Minimum, TargetNullValue=0}" MaximumValue="{Binding Path=Maximum, TargetNullValue=100}" Value="{Binding Path=Value}" />
-		</DataTemplate>
 	</UserControl.Resources>
 	<Canvas Style="{StaticResource CoCCanvas}">
 		<Grid Name="TopRowButtons" Width="982" Canvas.Left="0" Height="50" Visibility="{Binding Path=showTopRow, Converter={StaticResource BoolToVis}, Mode=OneWay}">
@@ -50,55 +39,43 @@
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 			<Button Grid.Column="0" Content="Main Menu"
- Command="{Binding Path=GoToMainMenu, Mode=OneTime}">
+				Command="{Binding Path=GoToMainMenu, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
 				</Button.Background>
 			</Button>
 			<Button Grid.Column="1" Content="Data"
- Command="{Binding Path=GoToDataScreen, Mode=OneTime}">
+				Command="{Binding Path=GoToDataScreen, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button1.jpg"/>
 				</Button.Background>
 			</Button>
 			<Button Grid.Column="2" Content="Stats"
- Command="{Binding Path=DoStats, Mode=OneTime}">
+				Command="{Binding Path=DoStats, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button2.jpg"/>
 				</Button.Background>
 			</Button>
 			<Button Grid.Column="3" Content="{Binding Path=LevelUpText, FallbackValue='Level Up'}"
- Command="{Binding Path=DoLeveling, Mode=OneTime}">
+				Command="{Binding Path=DoLeveling, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button3.jpg"/>
 				</Button.Background>
 			</Button>
 			<Button Grid.Column="4" Content="Perks"
- Command="{Binding Path=DoPerks, Mode=OneTime}">
+				Command="{Binding Path=DoPerks, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button4.jpg"/>
 				</Button.Background>
 			</Button>
 			<Button Grid.Column="5" Content="Appearance"
- Command="{Binding Path=DoAppearance, Mode=OneTime}">
+				Command="{Binding Path=DoAppearance, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button5.jpg"/>
 				</Button.Background>
 			</Button>
 		</Grid>
-		<Canvas Style="{StaticResource Sidebar}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}">
-			<StackPanel Name="StatBar" Canvas.Left="5" Canvas.Top="5" Width="195" Height="590">
-				<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,1,0,3" FontSize="22" Text="{Binding Path=nameText, Mode=OneWay}"/>
-				<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,2,0,3" FontSize="22" Text="{Binding Path=coreStatText, Mode=OneWay}"/>
-				<ItemsControl ItemsSource="{Binding Path=coreStats, Mode=OneTime}"/>
-				<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,2,0,3" FontSize="22" Text="{Binding Path=combatStatText, Mode=OneWay}"/>
-				<ItemsControl ItemsSource="{Binding Path=combatStats, Mode=OneTime}"/>
-				<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,2,0,3" FontSize="22" Text="{Binding Path=advancementStatText, Mode=OneWay}"/>
-				<ItemsControl ItemsSource="{Binding Path=advancementStats, Mode=OneTime}"/>
-				<TextBlock Style="{StaticResource CoCText}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="18" FontFamily="Lucida Sans Typewriter" Text="{Binding Path=dayStr, Mode=OneWay}"/>
-				<TextBlock Style="{StaticResource CoCText}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="18" FontFamily="Lucida Sans Typewriter" Text="{Binding Path=hourStr, Mode=OneWay}"/>
-			</StackPanel>
-		</Canvas>
+		<CC:SideBar Canvas.Top="50" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
 		<Canvas Name="CreditText" Canvas.Left="4" Canvas.Top="654" Height="58" Width="200" Visibility="{Binding Path=authorText, Mode=OneWay, Converter={StaticResource NullToVis}}">
 			<TextBlock Name="SceneBy" Style="{StaticResource CoCText}" Canvas.Top="0" Canvas.Left="0" FontSize="20" FontWeight="Bold" FontFamily="Georgia" Text="Scene By:"/>
 			<TextBlock Style="{StaticResource CoCText}" Canvas.Top="24" Canvas.Left="0" FontSize="16" FontFamily="Arial" Text="{Binding Path=authorText, Mode=OneWay}"/>

@@ -17,7 +17,7 @@ using System.Diagnostics;
 using static CoC.Frontend.Engine.MenuHelpers;
 using static CoC.Frontend.UI.ButtonManager;
 using static CoC.Frontend.UI.TextOutput;
-using static CoC.UI.Controller;
+using static CoC.Frontend.UI.ViewOptions;
 //minor rework of creator. I'm just going to make this dynamic (meaning you have to instantiate it, even though there's only one at a time)
 //because more often than not this won't be in use and therefore has no reason to be stored in memory. this also allows it to function like a true event-based program. 
 
@@ -194,6 +194,7 @@ namespace CoC.Frontend.Creatures
 			else
 			{
 				AddOutput(NotSpecialText);
+				AddOutput(GenderQuestion2);
 				GenderOptions();
 			}
 		}
@@ -969,6 +970,7 @@ namespace CoC.Frontend.Creatures
 
 		private void HairOptions()
 		{
+			ClearOutput();
 			AddOutput(() => HairOptionsText(hitCustomizationMenu));
 			hitHairOptions = true;
 

@@ -10,7 +10,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 {
 	//the lifespan of these objects is actually the same as the base stat stored within it, so we don't need to worry about removing the event here. 
 	//cool. That was shaping up to be a huge hassle. 
-	public sealed class StatDisplay : INotifyPropertyChanged
+	public sealed class StatDisplayItem : INotifyPropertyChanged
 	{
 		private readonly CreatureStat baseStat;
 
@@ -125,7 +125,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 		}
 
 
-		public StatDisplay(CreatureStat creatureStat)
+		public StatDisplayItem(CreatureStat creatureStat)
 		{
 			baseStat = creatureStat ?? throw new ArgumentNullException(nameof(creatureStat));
 

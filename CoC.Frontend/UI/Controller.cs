@@ -25,14 +25,6 @@ namespace CoC.UI
 	{
 #warning Consider moving all static functions for buttons, output, input, selector here. makes it easier to link everything in.
 
-		public static void ClearOutput()
-		{
-			TextOutput.ClearText();
-			ButtonManager.ClearButtons();
-			InputField.DeactivateInputField();
-			DropDownMenu.DeactivateDropDownMenu();
-		}
-
 		public static Controller instance { get; } = new Controller();
 
 		public bool displayStats => ViewOptions.showStats;

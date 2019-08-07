@@ -7,19 +7,18 @@ using CoC.Backend.Strings;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Strings.Engine;
 using CoC.Frontend.UI;
-using CoC.UI;
 using static CoC.Frontend.UI.ButtonManager;
 using static CoC.Frontend.UI.TextOutput;
-using static CoC.UI.Controller;
+using static CoC.Frontend.UI.ViewOptions;
 namespace CoC.Frontend.Engine
 {
 	public static class NewGameHelpers
 	{
 		public static void NewGame()
 		{
-			ViewOptions.SetPlayerStatus(PlayerStatus.IDLE);
-			ViewOptions.HideMenu();
-			ViewOptions.HideStats();
+			SetPlayerStatus(PlayerStatus.IDLE);
+			HideMenu();
+			HideStats();
 
 			ClearOutput();
 			AddOutput(NewGameHelperText.IntroText);

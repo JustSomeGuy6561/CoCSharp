@@ -37,6 +37,7 @@ namespace CoCWinDesktop.ModelView
 		private readonly MainMenuModelView mainMenu;
 		private readonly StandardModelView standard;
 		private readonly CombatModelView combat;
+		private readonly DataModelView data;
 
 
 		public ModelViewBase ModelView
@@ -177,6 +178,7 @@ namespace CoCWinDesktop.ModelView
 			mainMenu = new MainMenuModelView(this);
 			standard = new StandardModelView(this);
 			combat = new CombatModelView(this);
+			data = new DataModelView(this);
 
 			_modelView = mainMenu;
 		}
@@ -210,21 +212,15 @@ namespace CoCWinDesktop.ModelView
 			}
 			else if (resumeCallback != null)
 			{
+				ModelView = standard;
 				resumeCallback();
 			}
 			else
 			{
 				ModelViewBase current = ModelView;
 
-				void action()
-				{
-					ModelView = current;
-				}
-
-
 				ModelView = standard;
-				standard.SetStandardStatus(false);
-				ModelView.OnSwitch(action);
+				ModelView.OnSwitch(resumeCallback);
 			}
 		}
 
@@ -238,12 +234,8 @@ namespace CoCWinDesktop.ModelView
 				ModelView = current;
 				onNonLoadCallback();
 			}
-			if (ModelView != standard)
-			{
-				ModelView = standard;
-			}
 
-			standard.SetStandardStatus(true);
+			ModelView = data;
 			ModelView.OnSwitch(onFail);
 		}
 

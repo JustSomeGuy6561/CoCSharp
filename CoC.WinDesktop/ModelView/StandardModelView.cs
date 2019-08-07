@@ -12,8 +12,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -33,55 +31,74 @@ namespace CoCWinDesktop.ModelView
 
 		public override event PropertyChangedEventHandler PropertyChanged;
 
+		//#region StatBar
+		//#region Stats
+		//public string nameText
+		//{
+		//	get => _nameText;
+		//	private set => IHateYouBoat(ref _nameText, value);
+		//}
+		//private string _nameText = "Name: ";
+
+		//public string coreStatText
+		//{
+		//	get => _coreStatsText;
+		//	private set => IHateYouBoat(ref _coreStatsText, value);
+		//}
+		//private string _coreStatsText = "Core Stats:";
+
+		//public ReadOnlyCollection<StatDisplay> coreStats { get; }
+
+		//public string combatStatText
+		//{
+		//	get => _combatStatsText;
+		//	private set => IHateYouBoat(ref _combatStatsText, value);
+		//}
+		//private string _combatStatsText = "Combat Stats:";
+
+		//public ReadOnlyCollection<StatDisplay> combatStats { get; }
+
+		//public string advancementStatText
+		//{
+		//	get => _advancementStatsText;
+		//	private set => IHateYouBoat(ref _advancementStatsText, value);
+		//}
+		//private string _advancementStatsText = "Advancement:";
+
+		//public ReadOnlyCollection<StatDisplay> advancementStats { get; }
+		//#endregion
+		//public string dayStr
+		//{
+		//	get => _dayStr;
+		//	private set => IHateYouBoat(ref _dayStr, value);
+		//}
+		//private string _dayStr = "";
+
+		//public string hourStr
+		//{
+		//	get => _hourStr;
+		//	private set => IHateYouBoat(ref _hourStr, value);
+		//}
+		//private string _hourStr = "";
+		//#endregion
+
 		#region StatBar
-		#region Stats
-		public string nameText
+		private readonly StatDisplayParser statDisplayParser;
+
+		public SideBarBase sideBar
 		{
-			get => _nameText;
-			private set => IHateYouBoat(ref _nameText, value);
+			get => _sideBar;
+			private set
+			{
+				if (_sideBar != value)
+				{
+					_sideBar = value;
+					NotifyPropertyChanged();
+				}
+			}
 		}
-		private string _nameText = "Name: ";
+		private SideBarBase _sideBar;
 
-		public string coreStatText
-		{
-			get => _coreStatsText;
-			private set => IHateYouBoat(ref _coreStatsText, value);
-		}
-		private string _coreStatsText = "Core Stats:";
-
-		public ReadOnlyCollection<StatDisplay> coreStats { get; }
-
-		public string combatStatText
-		{
-			get => _combatStatsText;
-			private set => IHateYouBoat(ref _combatStatsText, value);
-		}
-		private string _combatStatsText = "Combat Stats:";
-
-		public ReadOnlyCollection<StatDisplay> combatStats { get; }
-
-		public string advancementStatText
-		{
-			get => _advancementStatsText;
-			private set => IHateYouBoat(ref _advancementStatsText, value);
-		}
-		private string _advancementStatsText = "Advancement:";
-
-		public ReadOnlyCollection<StatDisplay> advancementStats { get; }
-		#endregion
-		public string dayStr
-		{
-			get => _dayStr;
-			private set => IHateYouBoat(ref _dayStr, value);
-		}
-		private string _dayStr = "";
-
-		public string hourStr
-		{
-			get => _hourStr;
-			private set => IHateYouBoat(ref _hourStr, value);
-		}
-		private string _hourStr = "";
 		#endregion
 
 		#region Credits And Sprite
@@ -255,7 +272,8 @@ namespace CoCWinDesktop.ModelView
 
 		#region Private 
 
-		private bool isLoadingStatus = false;
+		//private bool isLoadingStatus;
+
 		private Controller controller => Controller.instance;
 
 		private Action lastAction;
@@ -263,35 +281,18 @@ namespace CoCWinDesktop.ModelView
 		//private readonly StringParserUtil parser = StringUtils.GetParser;
 		#endregion
 
-
 		public StandardModelView(ModelViewRunner modelViewRunner) : base(modelViewRunner)
 		{
-			PlayerStatData playerStats = controller.playerStats;
+			Controller controller = modelViewRunner.controller;
+			statDisplayParser = new StatDisplayParser(controller);
 
-#warning ToDo: think of some cleaner way to do this - idk what though.
-			var coreStatList = playerStats.coreStats.Select(x => new StatDisplay(x)).ToList();
-			var combatStatList = playerStats.combatStats.Select(x => new StatDisplay(x)).ToList();
-
-			var HP = combatStatList.Find(x => x.Name == "HP");
-			HP.regColorDefaultOrMax = Color.FromArgb(0xFF, 0xA0, 0xFF, 0x50);
-			HP.regColorMin = Color.FromArgb(0xFF, 0xFF, 0x66, 0x50);
-
-			var lust = combatStatList.Find(x => x.Name == "lust");
-			lust.regColorDefaultOrMax = Color.FromArgb(0xFF, 0xFF, 0x85, 0x69);//0xFFFF8569
-
-			coreStats = new ReadOnlyCollection<StatDisplay>(coreStatList);
-			combatStats = new ReadOnlyCollection<StatDisplay>(combatStatList);
-
-			advancementStats = new ReadOnlyCollection<StatDisplay>(playerStats.advancementStats.Select(x => new StatDisplay(x)).ToList());
-
-			foreach (var stat in coreStats) stat.CheckText();
-			foreach (var stat in combatStats) stat.CheckText();
-			foreach (var stat in advancementStats) stat.CheckText();
+			sideBar = statDisplayParser.GetSideBarBase(true, CoC.Frontend.UI.PlayerStatus.IDLE); //set it to the default to start with.
 
 			for (int x = 0; x < 15; x++)
 			{
 				bottomButtonHolder[x] = new BottomButtonWrapper();
 			}
+
 
 			DropdownWrapper = new ComboBoxWrapper(new List<ComboBoxItemWrapper>());
 
@@ -301,15 +302,8 @@ namespace CoCWinDesktop.ModelView
 
 		protected override bool SwitchToThisModelView(Action lastAction)
 		{
-			if (isLoadingStatus)
-			{
-				return ExecuteLoadDataDisplay();
-			}
-			else
-			{
-				DoNewGame();
-				return true;
-			}
+			DoNewGame();
+			return true;
 		}
 
 		private void DoNewGame()
@@ -318,34 +312,29 @@ namespace CoCWinDesktop.ModelView
 			ParseData();
 		}
 
-		internal void SetStandardStatus(bool loadingData)
-		{
-			isLoadingStatus = loadingData;
-		}
-
 		//standard view run.
 		protected override void ParseDataForDisplay()
 		{
 			//Application.Current.
-			
-			lastAction = ParseDataForDisplay;
-			PlayerStatData stats = controller.playerStats;
 
-			//Handle stats bar data
-			nameText = "Name: " + stats.nameString;
-			coreStatText = "Core Stats:";
-			combatStatText = "Combat Stats:";
-			advancementStatText = "Advancement:";
+			bool needToUpdateDisplay = lastAction != ParseData;
 
-			dayStr = "Date: " + controller.currentTime.day.ToString();
-			hourStr = "Hour: " + controller.currentTime.GetFormattedHourString();
+			lastAction = ParseData;
+
 
 			//handle main menu and stat visibility
 			showTopRow = controller.displayTopMenu;
 			ShowSidebar = controller.displayStats;
+			if (ShowSidebar)
+			{
+				//get the current sidebar;
+				sideBar = statDisplayParser.GetSideBarBase(true, controller.playerStatus);
+				//and update it.
+				sideBar.UpdateSidebar(controller);
+			}
 
 			//handle data that appears in the text view.
-			if (controller.outputChanged)
+			if (controller.outputChanged || needToUpdateDisplay)
 			{
 				output = ParseOutput(controller.outputField);
 			}
@@ -358,7 +347,7 @@ namespace CoCWinDesktop.ModelView
 
 			if (controller.inputField.active)
 			{
-				if (controller.inputFieldChanged)
+				if (controller.inputFieldChanged || needToUpdateDisplay)
 				{
 					InputMaxLen = controller.inputField.maxChars == null || controller.inputField.maxChars >= INPUT_FIELD_MAX_CHARS ? INPUT_FIELD_MAX_CHARS : (int)controller.inputField.maxChars;
 					char[] maxLength = new char[InputMaxLen];
@@ -384,7 +373,7 @@ namespace CoCWinDesktop.ModelView
 
 			if (controller.dropDownMenu.active)
 			{
-				if (controller.dropDownMenuItemsChanged)
+				if (controller.dropDownMenuItemsChanged || needToUpdateDisplay)
 				{
 					List<ComboBoxItemWrapper> wrapper = new List<ComboBoxItemWrapper>();
 					Action WrapCallback(Action entry)
@@ -400,7 +389,7 @@ namespace CoCWinDesktop.ModelView
 					DropdownInUse = true;
 				}
 
-				if (controller.dropDownPostTextChanged)
+				if (controller.dropDownPostTextChanged || needToUpdateDisplay)
 				{
 					postControlText = ParseOutput(new StringBuilder(controller.postControlText));
 				}
@@ -411,24 +400,7 @@ namespace CoCWinDesktop.ModelView
 				postControlText = "";
 			}
 
-
-
-
-			//	if (!extraControls.Contains(inputBox))
-			//	{
-			//		extraControls.Add(inputBox);
-			//	}
-			//}
-			//else if (extraControls.Contains(inputBox))
-			//{
-			//	extraControls.Remove(inputBox);
-			//}
-
-			//handle post element content. much the same way we did that shit.
-			//postControlText = ParseOutput(controller.inputField.)
-			//postControlText = null;
-			//handle bottom buttons
-			if (controller.buttonsChanged)
+			if (controller.buttonsChanged || needToUpdateDisplay)
 			{
 				bool onlyOneButton = controller.ValidButtons == 1;
 				if (controller.buttons.Count <= 15)
@@ -491,6 +463,7 @@ namespace CoCWinDesktop.ModelView
 		}
 
 		private ButtonData[][] tooManyButtonsYouAsshat;
+
 		private void ParseButton(ButtonData button, int index, bool onlyOneButton, bool wrapCallback = true)
 		{
 			if (button != null)
@@ -516,15 +489,9 @@ namespace CoCWinDesktop.ModelView
 			}
 		}
 
-		//special view run for data loading. 
-		private bool ExecuteLoadDataDisplay()
-		{
-			//if load: attempt to load the data. if successful, call runner.ParseData
-			//if save: attempt to save. display results. call resume action.
-			//if cancel: call resume action.
-			return false;
-		}
-
+		//handles output for primary and secondary, based on what is passed in.
+		//we convert our html-like code to RTF, so RichTextBox can just load it as a "document" and keep all our formatting. In reality, we just dump a string into a memory stream
+		//but the converter doesn't know the difference between a memory stream and an inputstream, so we're fine. 
 		private string ParseOutput(StringBuilder outputBuilder)
 		{
 			//"Simple" replace
@@ -645,7 +612,9 @@ namespace CoCWinDesktop.ModelView
 			return FuckOffAndDieRTFIHateYou(partiallyFormatted, runner.TextFontFamily, colors, runner.FontEmSize);
 		}
 
-		private string FuckOffAndDieRTFIHateYou(string text, FontFamily fontFamily, List<Color> colors, int doubleFontSize)
+		//sets the header for the rtf "document" so that it parses correctly. This is faster and simpler to do than manually parsing each <font>/<b>/<i>/<em> or whatever
+		//and manually adding runs, but holy fucking shit was it annoying and finicky. 
+		private string FuckOffAndDieRTFIHateYou(string text, FontFamily fontFamily, List<Color> colors, int fontEmSize)
 		{
 			string font = fontFamily.FamilyNames.FirstOrDefault().Value ?? "Times New Roman";
 
@@ -656,14 +625,26 @@ namespace CoCWinDesktop.ModelView
 			colors.ForEach(x => sb.Append(RTFColor(x)));
 
 			sb.Append("}}" + Environment.NewLine +
-				@"{\fs" + doubleFontSize + @"\fn0\fc0 " + text + @"}");
+				@"{\fs" + fontEmSize + @"\fn0\fc0 " + text + @"}");
 			return sb.ToString();
 			//@"{\expnd-32\expndtw-32\fs" + doubleFontSize + @"\fn0 " + text + @"}";
 		}
 
+		//converts a System.Windows.Media.Color into an RTF color, with the format \redN\blueN\green\N; where N is the respective R/G/B value, in decimal. 
 		private string RTFColor(Color color)
 		{
 			return @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + @";";
+		}
+
+		//helper function to help deal with load data page, be it from the OnSwitch or Internally. 
+		private bool ExecuteLoadDataDisplay()
+		{
+			//our previous action is stored by the caller 
+			lastAction = () => ExecuteLoadDataDisplay();
+			//if load: attempt to load the data. if successful, call runner.ParseData
+			//if save: attempt to save. display results. call resume action.
+			//if cancel: call resume action.
+			return false;
 		}
 
 		private void HandleMainMenu()
@@ -673,9 +654,10 @@ namespace CoCWinDesktop.ModelView
 
 		private void HandleData()
 		{
+			Action previousAction = lastAction;
 			if (!ExecuteLoadDataDisplay())
 			{
-				lastAction();
+				previousAction();
 			}
 		}
 
@@ -689,7 +671,7 @@ namespace CoCWinDesktop.ModelView
 		{
 			lastAction = HandleLeveling;
 
-			
+
 		}
 
 		private void HandlePerksScreen()
@@ -724,19 +706,8 @@ namespace CoCWinDesktop.ModelView
 
 		private void ClearArrows()
 		{
-			foreach (var s in coreStats)
-			{
-				s.ArrowVisibility = Visibility.Hidden;
-			}
+			sideBar.ClearArrows();
 
-			foreach (var s in combatStats)
-			{
-				s.ArrowVisibility = Visibility.Hidden;
-			}
-			foreach (var s in advancementStats)
-			{
-				s.ArrowVisibility = Visibility.Hidden;
-			}
 		}
 
 		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")

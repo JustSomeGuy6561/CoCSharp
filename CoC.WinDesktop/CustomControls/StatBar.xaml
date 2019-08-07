@@ -1,9 +1,7 @@
 ﻿<UserControl x:Class="CoCWinDesktop.CustomControls.StatBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls"
-			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
 			 Name="_this">
 	<Canvas Name="StatBarCanvas" Width="200" Height="28">
 		<TextBlock Name="TitleText" Style="{StaticResource CoCSidebarText}" Height="20" Text="{Binding Text, ElementName=_this}"  Panel.ZIndex="100" Canvas.Top="4" Canvas.Left="6" FontSize="15" />
