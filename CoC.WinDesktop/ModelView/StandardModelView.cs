@@ -99,6 +99,13 @@ namespace CoCWinDesktop.ModelView
 		}
 		private SideBarBase _sideBar;
 
+		public bool ShowSidebar
+		{
+			get => _ShowSidebar;
+			private set => IHateYouBoat(ref _ShowSidebar, value);
+		}
+		private bool _ShowSidebar = true;
+
 		#endregion
 
 		#region Credits And Sprite
@@ -163,13 +170,6 @@ namespace CoCWinDesktop.ModelView
 			private set => IHateYouBoat(ref _showTopRow, value);
 		}
 		private bool _showTopRow = true;
-
-		public bool ShowSidebar
-		{
-			get => _ShowSidebar;
-			private set => IHateYouBoat(ref _ShowSidebar, value);
-		}
-		private bool _ShowSidebar = true;
 
 		public ICommand GoToMainMenu => new RelayCommand(HandleMainMenu, () => true);
 
@@ -284,7 +284,7 @@ namespace CoCWinDesktop.ModelView
 		public StandardModelView(ModelViewRunner modelViewRunner) : base(modelViewRunner)
 		{
 			Controller controller = modelViewRunner.controller;
-			statDisplayParser = new StatDisplayParser(controller);
+			statDisplayParser = new StatDisplayParser(controller.statDataCollection);
 
 			sideBar = statDisplayParser.GetSideBarBase(true, CoC.Frontend.UI.PlayerStatus.IDLE); //set it to the default to start with.
 
@@ -330,7 +330,7 @@ namespace CoCWinDesktop.ModelView
 				//get the current sidebar;
 				sideBar = statDisplayParser.GetSideBarBase(true, controller.playerStatus);
 				//and update it.
-				sideBar.UpdateSidebar(controller);
+				sideBar.UpdateSidebar(controller.statDataCollection);
 			}
 
 			//handle data that appears in the text view.
@@ -707,7 +707,6 @@ namespace CoCWinDesktop.ModelView
 		private void ClearArrows()
 		{
 			sideBar.ClearArrows();
-
 		}
 
 		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")

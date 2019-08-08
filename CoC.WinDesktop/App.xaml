@@ -105,12 +105,7 @@
 			<Setter Property="Width" Value="205" />
 			<Setter Property="Height" Value="600" />
 			<Setter Property="Canvas.Top" Value="50" />
-			<Setter Property="Background">
-				<Setter.Value>
-					<!-- See CoCCanvas. It mirrors it.-->
-					<ImageBrush ImageSource="{Binding SidebarBackgroundImage, Mode=OneWay, Source={StaticResource Runner}, TargetNullValue={x:Null}}" />
-				</Setter.Value>
-			</Setter>
+
 		</Style>
 		
 	</Application.Resources>

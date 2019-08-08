@@ -4,11 +4,15 @@
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:SBV="clr-namespace:CoCWinDesktop.CustomControls.SideBarViews"
 			 xmlns:SBMV="clr-namespace:CoCWinDesktop.CustomControls.SideBarModelViews"
-			 Name="_this">
+			 Name="_this"
+			 Height="595" Width="200">
+	<UserControl.Background>
+		<ImageBrush ImageSource="{Binding SidebarBackgroundImage, Mode=OneWay, Source={StaticResource Runner}, TargetNullValue={x:Null}}" />
+	</UserControl.Background>
 	<UserControl.Resources>
 		<DataTemplate DataType="{x:Type SBMV:StandardSideBarModelView}">
 			<SBV:StandardSideBarView/>
 		</DataTemplate>
 	</UserControl.Resources>
-	<ContentControl Width="195" Height="590" FocusVisualStyle="{x:Null}" Content="{Binding SideBarObject, ElementName=_this, Mode=OneWay}"/>
+	<ContentControl FocusVisualStyle="{x:Null}" Content="{Binding SideBarObject, ElementName=_this, Mode=OneWay}"/>
 </UserControl>

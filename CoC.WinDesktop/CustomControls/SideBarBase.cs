@@ -1,4 +1,5 @@
-﻿using CoC.UI;
+﻿using CoC.Frontend.UI.ControllerData;
+using CoC.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,14 +13,14 @@ namespace CoCWinDesktop.CustomControls
 	{
 		public abstract event PropertyChangedEventHandler PropertyChanged;
 
-		public void UpdateSidebar(Controller controller)
+		public void UpdateSidebar(StatDataCollection statData)
 		{
-			GetData(controller);
+			GetData(statData);
 		}
-		protected abstract void GetData(Controller controller);
+		protected abstract void GetData(StatDataCollection statData);
 		internal abstract void ClearArrows();
 
-		protected SideBarBase(Controller controller)
+		protected SideBarBase(StatDataCollection statData)
 		{
 
 		}

@@ -75,7 +75,9 @@
 				</Button.Background>
 			</Button>
 		</Grid>
-		<CC:SideBar Canvas.Top="50" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
+		<!-- This will show up as SideBarObject in code - i had to remove it to make prison work in a sane fashion - i could have made it all use the same code but that was ugly-->
+		<!-- So instead, it's a custom control with a content control as its base. Naturally that means the designer has no idea what it'll look like until run time. -->
+		<CC:SideBar Canvas.Top="55" Canvas.Left="5" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
 		<Canvas Name="CreditText" Canvas.Left="4" Canvas.Top="654" Height="58" Width="200" Visibility="{Binding Path=authorText, Mode=OneWay, Converter={StaticResource NullToVis}}">
 			<TextBlock Name="SceneBy" Style="{StaticResource CoCText}" Canvas.Top="0" Canvas.Left="0" FontSize="20" FontWeight="Bold" FontFamily="Georgia" Text="Scene By:"/>
 			<TextBlock Style="{StaticResource CoCText}" Canvas.Top="24" Canvas.Left="0" FontSize="16" FontFamily="Arial" Text="{Binding Path=authorText, Mode=OneWay}"/>

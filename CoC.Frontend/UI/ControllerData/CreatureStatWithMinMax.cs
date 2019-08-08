@@ -1,55 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CoC.Backend;
-
-namespace CoC.Frontend.UI.ControllerData
+﻿namespace CoC.Frontend.UI.ControllerData
 {
-	public sealed class CreatureStatWithMinMax : CreatureStat
+	public sealed class CreatureStatWithMinMax : CreatureStatNumeric
 	{
-		public uint maximum
-		{
-			get => _maximum;
-			internal set
-			{
-				if (_maximum != value)
-				{
-					_maximum = value;
-					NotifyPropertyChanged();
-				}
-			}
-		}
-		private uint _maximum = 100;
+		public uint maximum { get; internal set; } = 100;
 
-		public uint? minimum
-		{
-			get => _minimum;
-			internal set
-			{
-				if (_minimum != value)
-				{
-					_minimum = value;
-					NotifyPropertyChanged();
-				}
-			}
-		}
-		private uint? _minimum = null;
+		public uint? minimum { get; internal set; } = null;
 
-		public bool isRatio
-		{
-			get => _isRatio;
-			internal set
-			{
-				if (isRatio != value)
-				{
-					_isRatio = value;
-					NotifyPropertyChanged();
-				}
-			}
-		}
-		private bool _isRatio = false;
+		public bool isRatio { get; internal set; } = false;
 
-		internal CreatureStatWithMinMax(string name, CreatureStatCategory statCategory) : base(name, statCategory)
+		internal CreatureStatWithMinMax(CreatureStatCategory statCategory) : base(statCategory)
 		{
 
 		}

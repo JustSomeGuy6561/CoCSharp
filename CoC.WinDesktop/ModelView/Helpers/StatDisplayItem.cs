@@ -12,13 +12,18 @@ namespace CoCWinDesktop.ModelView.Helpers
 	//cool. That was shaping up to be a huge hassle. 
 	public sealed class StatDisplayItem : INotifyPropertyChanged
 	{
-		private readonly CreatureStat baseStat;
-
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public Visibility visibility => baseStat.enabled ? Visibility.Visible : Visibility.Collapsed;
+		public Visibility visibility { get; private set; }
 
-		internal string Name => baseStat.statName;
+		private string Name { get; set; }
+
+		public bool IsNumeric
+		{
+			get => _isNumeric;
+			private set => IHateYouBoat(ref _isNumeric, value);
+		}
+		private bool _isNumeric;
 
 		public string Text
 		{
@@ -29,13 +34,31 @@ namespace CoCWinDesktop.ModelView.Helpers
 
 		public void CheckText()
 		{
-			Text = LanguageLookup.Lookup(baseStat.statName);
+			Text = LanguageLookup.Lookup(Name);
 		}
 
-		public bool needsGauge => baseStat is CreatureStatWithMinMax;
-		public bool showMinOverMax => (baseStat as CreatureStatWithMinMax)?.isRatio ?? false;
+		public bool needsGauge
+		{
+			get => _needsGauge;
+			private set => IHateYouBoat(ref _needsGauge, value);
+		}
+		private bool _needsGauge;
 
-		public bool displayStatChangeIcon => baseStat.notifyPlayerOfChange;
+		public bool showValueOverMax
+		{
+			get => _showValueOverMax;
+			private set => IHateYouBoat(ref _showValueOverMax, value);
+		}
+		private bool _showValueOverMax;
+
+		public bool displayStatChangeIcon
+		{
+			get => _displayStatChangeIcon;
+			private set => IHateYouBoat(ref _displayStatChangeIcon, value);
+		}
+		private bool _displayStatChangeIcon;
+
+		private readonly bool silent;
 
 		public Color? minColor
 		{
@@ -88,6 +111,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 
 		private Color? _regularColorMin;
 
+		//don't set this. Handled by minColor
 		public SolidColorBrush MinimumColor
 		{
 			get => _MinimumColor;
@@ -95,7 +119,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 		}
 		private SolidColorBrush _MinimumColor = null;
 
-
+		//don't set this. Handled by ChangeRegularColor();
 		public SolidColorBrush RegularColor
 		{
 			get => _RegularColor;
@@ -103,21 +127,30 @@ namespace CoCWinDesktop.ModelView.Helpers
 		}
 		private SolidColorBrush _RegularColor = null;
 
-
-		public uint Value => baseStat.current;
-		private void OnValueChanged()
+		public string Value
 		{
-			OnPropertyChanged(nameof(Value));
-			ChangeRegularColor();
+			get => _value;
+			private set => IHateYouBoat(ref _value, value);
 		}
+		private string _value;
 
-		public uint? Maximum => (baseStat as CreatureStatWithMinMax)?.maximum;
+		public uint? Maximum
+		{
+			get => _maximum;
+			private set => IHateYouBoat(ref _maximum, value);
+		}
+		private uint? _maximum;
 		private void OnMaximumChanged()
 		{
 			OnPropertyChanged(nameof(Maximum));
 			ChangeRegularColor();
 		}
-		public uint? Minimum => (baseStat as CreatureStatWithMinMax)?.minimum;
+		public uint? Minimum
+		{
+			get => _minimum;
+			private set => IHateYouBoat(ref _minimum, value);
+		}
+		private uint? _minimum;
 		private void OnMinimumChanged()
 		{
 			OnPropertyChanged(nameof(Minimum));
@@ -125,17 +158,30 @@ namespace CoCWinDesktop.ModelView.Helpers
 		}
 
 
-		public StatDisplayItem(CreatureStat creatureStat)
+		public StatDisplayItem(CreatureStatBase creatureStat, string displayName, bool isSilent = false)
 		{
-			baseStat = creatureStat ?? throw new ArgumentNullException(nameof(creatureStat));
+			Name = displayName ?? throw new ArgumentNullException(nameof(displayName));
 
-			baseStat.PropertyChanged += BasePropertyChanged;
+			silent = isSilent;
 
+			//updated externally via properties if not default values. 
 			minColor = null;
 			regColorDefaultOrMax = null;
 			regColorMin = null;
 
-			OnPropertyChanged(null);
+			CheckText();
+
+			IsNumeric = creatureStat is CreatureStatNumeric;
+			visibility = creatureStat.enabled ? Visibility.Visible : Visibility.Collapsed;
+			needsGauge = creatureStat is CreatureStatWithMinMax;
+			showValueOverMax = (creatureStat as CreatureStatWithMinMax)?.isRatio ?? false;
+			displayStatChangeIcon = !silent && ((creatureStat as CreatureStatNumeric)?.notifyPlayerOfChange ?? false);
+
+			Maximum = (creatureStat as CreatureStatWithMinMax)?.maximum;
+			Minimum = (creatureStat as CreatureStatWithMinMax)?.minimum;
+			Value = creatureStat.value;
+
+			ChangeRegularColor();
 		}
 
 		public Visibility ArrowVisibility
@@ -153,56 +199,26 @@ namespace CoCWinDesktop.ModelView.Helpers
 		private Visibility _ArrowVisibility = Visibility.Hidden;
 
 
-		private void BasePropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (string.IsNullOrEmpty(e.PropertyName))
-			{
-				OnPropertyChanged(nameof(Value));
-				OnPropertyChanged(nameof(visibility));
-
-				if (baseStat is CreatureStatWithMinMax)
-				{
-					OnPropertyChanged(nameof(showMinOverMax));
-					OnPropertyChanged(nameof(Maximum));
-					OnPropertyChanged(nameof(Minimum));
-					ChangeRegularColor();
-				}
-			}
-			else if (e.PropertyName == nameof(baseStat.current))
-			{
-				OnValueChanged();
-			}
-			else if (e.PropertyName == nameof(baseStat.enabled))
-			{
-				OnPropertyChanged(nameof(visibility));
-			}
-
-			else if (e.PropertyName == nameof(baseStat.notifyPlayerOfChange))
-			{
-				OnPropertyChanged(nameof(displayStatChangeIcon));
-			}
-
-			else if (baseStat is CreatureStatWithMinMax minMax)
-			{
-				if (e.PropertyName == nameof(minMax.isRatio))
-				{
-					OnPropertyChanged(nameof(showMinOverMax));
-				}
-				else if (e.PropertyName == nameof(minMax.maximum))
-				{
-					OnMaximumChanged();
-				}
-				else if (e.PropertyName == nameof(minMax.minimum))
-				{
-					OnMinimumChanged();
-				}
-			}
-
-		}
-
-		private void OnPropertyChanged(string propertyName)
+		private void OnPropertyChanged([CallerMemberName] string propertyName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public void UpdateStats(CreatureStatBase statBase)
+		{
+			CheckText();
+
+			IsNumeric = statBase is CreatureStatNumeric;
+			visibility = statBase.enabled ? Visibility.Visible : Visibility.Collapsed;
+			needsGauge = statBase is CreatureStatWithMinMax;
+			showValueOverMax = (statBase as CreatureStatWithMinMax)?.isRatio ?? false;
+			displayStatChangeIcon = (statBase as CreatureStatNumeric)?.notifyPlayerOfChange ?? false;
+
+			Maximum = (statBase as CreatureStatWithMinMax)?.maximum;
+			Minimum = (statBase as CreatureStatWithMinMax)?.minimum;
+			Value = statBase.value;
+
+			ChangeRegularColor();
 		}
 
 		private void IHateYouBoat(ref SolidColorBrush data, SolidColorBrush newValue, [CallerMemberName] string propertyName = "")
@@ -222,10 +238,22 @@ namespace CoCWinDesktop.ModelView.Helpers
 				OnPropertyChanged(propertyName);
 			}
 		}
+		private void IHateYouBoat<T>(ref T? data, T? newValue, [CallerMemberName] string propertyName = "") where T : struct
+		{
+			if ((data == null) != (newValue == null) || (data != null && !data.Equals(newValue)))
+			{
+				data = newValue;
+				OnPropertyChanged(propertyName);
+			}
+		}
 
 		private void ChangeRegularColor()
 		{
-			if (_regularColorMax == null)
+			if (!IsNumeric)
+			{
+				RegularColor = null;
+			}
+			else if (_regularColorMax == null)
 			{
 				RegularColor = null;
 			}
@@ -246,7 +274,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 				Color minColor = (Color)_regularColorMin;
 				Color maxColor = (Color)_regularColorMax;
 				uint max = (uint)Maximum;
-				uint value = Value;
+				uint value = uint.Parse(Value);
 
 				double percent = 1.0 * value / max;
 				rd = Math.Floor(CoC.Backend.Tools.Utils.Lerp(minColor.R, maxColor.R, percent));
@@ -268,14 +296,5 @@ namespace CoCWinDesktop.ModelView.Helpers
 				}
 			}
 		}
-
-		/*
-		<CC:StatBar Padding="0,0,0,1" Text="{Binding Path=text}" HasGauge="{Binding Path=needsGauge}" ShowMinOverMax="{Binding Path=showMinOverMax}"
-		MinColor="{Binding Path=minColorOverride, Converter={StaticResource ColorConverter}, TargetNullValue={StaticResource MinDefault}}" 
-		RegularColor="{Binding Path=regularColorOverride, Converter={StaticResource ColorConverter}, TargetNullValue={StaticResource RegDefault}}" 
-		ColorRangeMinimum="{Binding Path=regularColorRangeMinValue, Converter={StaticResource ColorConverter}, TargetNullValue=Transparent}"
-		MinimumValue="{Binding Path=minimum, TargetNullValue=0}" MaximumValue="{Binding Path=maximum}" Value="{Binding Path=current}" />
-		 */
-
 	}
 }

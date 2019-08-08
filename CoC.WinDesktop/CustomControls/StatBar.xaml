@@ -10,7 +10,7 @@
 				<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCSidebarText}">
 					<Setter Property="Text" Value="{Binding Value, ElementName=_this}"/>
 					<Style.Triggers>
-						<DataTrigger Binding="{Binding ShowMinOverMax, ElementName=_this}" Value="true">
+						<DataTrigger Binding="{Binding ShowValueOverMax, ElementName=_this}" Value="true">
 							<Setter Property="Text">
 								<Setter.Value>
 									<MultiBinding StringFormat=" {0}/{1} ">

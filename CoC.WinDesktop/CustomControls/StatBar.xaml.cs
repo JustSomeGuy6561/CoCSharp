@@ -31,6 +31,11 @@ namespace CoCWinDesktop.CustomControls
 
 		public string Text { get; set; }
 
+		public static DependencyProperty IsNumericProperty = DependencyProperty.Register("IsNumeric", typeof(bool), typeof(StatBar),
+			new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender));
+
+		public bool IsNumeric { get; set; } = true;
+
 		public static DependencyProperty HasGaugeProperty = DependencyProperty.Register("HasGauge", typeof(bool), typeof(StatBar),
 			new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender));
 
@@ -46,10 +51,10 @@ namespace CoCWinDesktop.CustomControls
 
 		public SolidColorBrush MinColor { get; set; } = new SolidColorBrush(Color.FromArgb(255, 0xD0, 0, 0));
 
-		public static DependencyProperty ShowMinOverMaxProperty = DependencyProperty.Register("ShowMinOverMax", typeof(bool), typeof(StatBar),
+		public static DependencyProperty ShowValueOverMaxProperty = DependencyProperty.Register("ShowValueOverMax", typeof(bool), typeof(StatBar),
 			new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
 
-		public bool ShowMinOverMax { get; set; } = false;
+		public bool ShowValueOverMax { get; set; } = false;
 
 		//#66FF8080 lust
 		//#66600000 rest
@@ -80,15 +85,18 @@ namespace CoCWinDesktop.CustomControls
 			statusBar.MaximumValue = (uint)e.NewValue;
 
 			double width;
-			if (statusBar.Value <= statusBar.MaximumValue)
+			if (statusBar.IsNumeric)
 			{
-				width = statusBar.barWidth * statusBar.Value / statusBar.MaximumValue;
-				if (width < 0) width = 0;
-				statusBar.FillBar.Width = width;
-			}
-			else
-			{
-				OnValueChanged(d, new DependencyPropertyChangedEventArgs(ValueProperty, e.OldValue, e.NewValue));
+				if (statusBar.numericValue <= statusBar.MaximumValue)
+				{
+					width = statusBar.barWidth * statusBar.numericValue / statusBar.MaximumValue;
+					if (width < 0) width = 0;
+					statusBar.FillBar.Width = width;
+				}
+				else
+				{
+					OnValueChanged(d, new DependencyPropertyChangedEventArgs(ValueProperty, e.OldValue, e.NewValue));
+				}
 			}
 			width = statusBar.barWidth * statusBar.MinimumValue / statusBar.MaximumValue;
 			if (width < 0) width = 0;
@@ -100,9 +108,9 @@ namespace CoCWinDesktop.CustomControls
 		{
 			StatBar statusBar = d as StatBar;
 
-			if ((uint)e.NewValue != statusBar.Value)
+			if ((string)e.NewValue != statusBar.Value)
 			{
-				statusBar.Value = (uint)e.NewValue;
+				statusBar.Value = (string)e.NewValue;
 
 				if ((uint)e.OldValue > (uint)e.NewValue)
 				{
@@ -115,10 +123,12 @@ namespace CoCWinDesktop.CustomControls
 
 				d.SetCurrentValue(ArrowVisibleProperty, Visibility.Visible);
 			}
-
-			double width = statusBar.barWidth * statusBar.Value / statusBar.MaximumValue;
-			if (width < 0) width = 0;
-			statusBar.FillBar.Width = width;
+			if (statusBar.IsNumeric)
+			{
+				double width = statusBar.barWidth * statusBar.numericValue / statusBar.MaximumValue;
+				if (width < 0) width = 0;
+				statusBar.FillBar.Width = width;
+			}
 		}
 		private static BitmapImage ArrowUp = new BitmapImage(new Uri(@"pack://application:,,,/resources/arrow-up.png"));
 		private static BitmapImage ArrowDown = new BitmapImage(new Uri(@"pack://application:,,,/resources/arrow-down.png"));
@@ -133,13 +143,9 @@ namespace CoCWinDesktop.CustomControls
 			set => PropertyHelper(ArrowVisibleProperty, value);
 		}
 
-		public uint Value
-		{
-			get => _value;
-			set => _value = Utils.Clamp2(value, MinimumValue, MaximumValue);
-		}
-		private uint _value;
+		public string Value { get; set; }
 
+		private uint numericValue => IsNumeric ? uint.Parse(Value) : 0;
 
 		public StatBar()
 		{

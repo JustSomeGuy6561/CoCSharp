@@ -67,10 +67,15 @@ namespace CoC.UI
 		public bool dropDownPostTextChanged => DropDownMenu.QueryPostText(out _postControlText);
 		public bool hasPlayer => GameEngine.currentPlayer != null;
 
-		//i'll need to update this whenever stats are changed in player. should be simple, so long as i subscribe to player change and data change events. 
-		public readonly PlayerStatData playerStats = new PlayerStatData();
+		private static GameDateTime currTime()
+		{
+			return GameDateTime.Now;
+		}
 
-		public StatisticsData GetStatsData()
+		public readonly StatDataCollection statDataCollection = new StatDataCollection(currTime);
+
+
+		public StatisticsData GetStatistics()
 		{
 			return new StatisticsData();
 		}
@@ -95,9 +100,6 @@ namespace CoC.UI
 			return new AppearanceData();
 		}
 
-
-		public GameDateTime currentTime => GameDateTime.Now;
-
 		private Controller()
 		{
 			InputField.QueryStatus(out _inputField);
@@ -110,13 +112,13 @@ namespace CoC.UI
 
 		public void TestShit()
 		{
-			playerStats.Strength.current = 46;
-			playerStats.Strength.maximum = 85;
-			playerStats.Lust.maximum = 100;
-			playerStats.Lust.current = 23;
-			playerStats.Lust.minimum = 10;
-			playerStats.HP.maximum = 216;
-			playerStats.HP.current = 12;
+			statDataCollection.playerStats.Strength.current = 46;
+			statDataCollection.playerStats.Strength.maximum = 85;
+			statDataCollection.playerStats.Lust.maximum = 100;
+			statDataCollection.playerStats.Lust.current = 23;
+			statDataCollection.playerStats.Lust.minimum = 10;
+			statDataCollection.playerStats.HP.maximum = 216;
+			statDataCollection.playerStats.HP.current = 12;
 			TextOutput.AddOutput(() => "Testing <b>Bold</b>, <i> Italic</i>, and <u>Underline</u>\r\nTesting new line.\nTesting scumbag newline.\\ " +
 				"Testing \\ Slashes\\par\r\n Testing bad tag </u> Testing,,,, Quotes: \" '\r\n" +
 				"Testing list: <ul><li>batman</li><li>robin</li><li>nightwing</li><li>oracle</li></ul>Cool! ");
@@ -124,8 +126,8 @@ namespace CoC.UI
 
 		public void TestShit2()
 		{
-			playerStats.HP.current = 35;
-			playerStats.Strength.current = 40;
+			statDataCollection.playerStats.HP.current = 35;
+			statDataCollection.playerStats.Strength.current = 40;
 		}
 
 		public void DoNewGame()
