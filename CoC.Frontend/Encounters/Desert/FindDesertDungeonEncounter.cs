@@ -4,7 +4,7 @@ namespace CoC.Frontend.Encounters.Desert
 {
 	internal class FindDesertDungeonEncounter : SemiRandomEncounter
 	{
-		public FindDesertDungeonEncounter()
+		public FindDesertDungeonEncounter() : base(9001)
 		{
 		}
 

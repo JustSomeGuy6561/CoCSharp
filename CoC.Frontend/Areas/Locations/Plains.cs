@@ -51,29 +51,25 @@ namespace CoC.Frontend.Areas.Locations
 		static Plains()
 		{
 			//generic
-			randomEncounters.Add(new TripOnRoot());
-			randomEncounters.Add(new WalkInWoods());
-			randomEncounters.Add(new GatherWood());
-			randomEncounters.Add(new BigJunkEncounter(typeof(Plains)));
 			//NPCs
-			randomEncounters.Add(new EssraylePlainsEncounter());
+			randomEncounters.Add(new BunnyEncounter());
+			randomEncounters.Add(new HelXIzzySmashEncounter());
 			//monsters
-			randomEncounters.Add(new BeeGirlEncounter());
-			randomEncounters.Add(new CorruptedGrowthEncounter());
-			randomEncounters.Add(new MimicEncounter(PlainsMimic));
-			randomEncounters.Add(new SuccubusEncounter());
-			randomEncounters.Add(new TamaniEncounter());
-			//all the imps. 
-			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
-			//all the goblins.
-			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
+			randomEncounters.Add(new GnollEncounter());
+			randomEncounters.Add(new GnollSpearThrowerEncounter());
+			randomEncounters.Add(new SatyrEncounter());
 			//items
-
-			//semi-random (NPCs in this case)
-			semiRandomEncounters.Add(new JojoPlainsEncounter());
-			semiRandomEncounters.Add(new MarblePlainsEncounter());
+			//semi-randoms
+			semiRandomEncounters.Add(new IsabellaPlainsEncounter());
+			semiRandomEncounters.Add(new HeliaEncounter());
+			semiRandomEncounters.Add(new SheilaEncounter());
+			semiRandomEncounters.Add(new TaintedNiamhPlainsEncounter());
+			semiRandomEncounters.Add(new FindBazaarEncounter()); //weird, because you can discover it and not enter it b/c corruption. so find. idk.
+			semiRandomEncounters.Add(new DiscoverOwca());
+			semiRandomEncounters.Add(new PolarPeteEncounter());
+			semiRandomEncounters.Add(new CandyCaneEncounter());
 			//triggers
-			triggeredOccurances.Add(new FindDeepwoods());
+			triggeredOccurances.Add(new SheilaCaughtOffGuardEncounter());
 		}
 
 		protected override SimpleDescriptor UnlockText => PlainsUnlock;

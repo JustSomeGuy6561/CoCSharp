@@ -37,6 +37,7 @@ namespace CoC.Backend.Engine
 		private static Player _currentPlayer;
 
 		public static ReadOnlyCollection<GameDifficulty> difficulties;
+		public static int defaultDifficultyIndex { get; private set; }
 
 		//Time
 		private static TimeEngine timeEngine;
@@ -160,16 +161,32 @@ namespace CoC.Backend.Engine
 		//End Note. 
 
 
-		//changes the current area to the provided one. Will occur immediately, even if the game is currently doing time related functions,
-		//so if you do so, be aware of any side effects this may cause. Of course this is perfectly safe during normal gameplay. Returns false if 
-		//the provided area is identical to the current area, true otherwise. 
-		public static bool ChangeArea<T>() where T : AreaBase
+		//changes the current area to the provided one, but do not run the scene. Useful for cases where the game is doing time related shenanigans, or
+		//you want to manually parse the scene. Note that it will occur immediately, even if the game is doing time logic, so be aware of any side effects that may cause.
+		public static bool ChangeAreaSilent<T>() where T : AreaBase
 		{
 			return areaEngine.SetArea<T>();
 		}
 
-		//attempts to unlock the provided area. Returns false if the area is already unlocked, otherwise unlocks the area and does all related
-		//unlock functionality for that area, then returns true. 
+		public static bool ReturnToBaseSilent()
+		{
+			return areaEngine.ReturnToBase();
+		}
+
+		//changes the current area to the provided one, and tells the area engine to run it immediately. Useful for changing areas and doing the expected results. 
+		public static void ChangeAreaRunScene<T>() where T: AreaBase
+		{
+			areaEngine.SetArea<T>();
+			areaEngine.RunArea();
+		}
+
+		public static void ReturnToBaseRunScene()
+		{
+			ReturnToBaseAfter(0);
+		}
+
+		//attempts to unlock the provided area. If the area is already unlocked, it will return false, otherwise it'll return true. Regardless, it'll run
+		//the area 
 		public static bool UnlockArea<T>() where T : VisitableAreaBase
 		{
 			return areaEngine.UnlockArea<T>();
@@ -177,15 +194,15 @@ namespace CoC.Backend.Engine
 
 
 		public static void InitializeEngine(
-			Action<string> OutputText, //Various Engines. 
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> gameHomeBases, //Area Engine
 			Func<BasePerkModifiers> perkVariables, //perk data for creatures to use. 
-			ReadOnlyCollection<GameDifficulty> gameDifficulties, byte defaultDifficulty) //Game Difficulty Collections.
+			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficulty) //Game Difficulty Collections.
 		{
-			areaEngine = new AreaEngine(gamePlaces, gameLocations, gameDungeons, gameHomeBases, OutputText);
-			timeEngine = new TimeEngine(OutputText, areaEngine);
+			areaEngine = new AreaEngine(gamePlaces, gameLocations, gameDungeons, gameHomeBases);
+			timeEngine = new TimeEngine(areaEngine);
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
+			defaultDifficultyIndex = defaultDifficulty;
 			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
 			if (perkVariables() is null)
 			{
@@ -295,6 +312,11 @@ namespace CoC.Backend.Engine
 		public static bool HasLocationReaction(LocationReaction reaction)
 		{
 			return areaEngine.HasReaction(reaction);
+		}
+
+		public static void SetHomeBase<T>() where T: HomeBaseBase
+		{
+			areaEngine.ChangeHomeBase<T>();
 		}
 	}
 }

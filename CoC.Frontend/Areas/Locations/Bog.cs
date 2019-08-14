@@ -1,12 +1,10 @@
-﻿using CoC.Backend.Areas;
+﻿using CoC.Backend;
+using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
-using CoC.Frontend.Encounters.Common;
 using CoC.Frontend.Encounters.Bog;
 using CoC.Frontend.SaveData;
 using System.Collections.Generic;
 using System.Linq;
-using static CoC.Frontend.UI.TextOutput;
-using CoC.Backend;
 
 namespace CoC.Frontend.Areas.Locations
 {
@@ -51,29 +49,18 @@ namespace CoC.Frontend.Areas.Locations
 		static Bog()
 		{
 			//generic
-			randomEncounters.Add(new TripOnRoot());
-			randomEncounters.Add(new WalkInWoods());
-			randomEncounters.Add(new GatherWood());
-			randomEncounters.Add(new BigJunkEncounter(typeof(Bog)));
+			randomEncounters.Add(new WalkThroughBogEncounter());
 			//NPCs
-			randomEncounters.Add(new EssrayleBogEncounter());
+			randomEncounters.Add(new LizanRogueEncounter());
 			//monsters
-			randomEncounters.Add(new BeeGirlEncounter());
-			randomEncounters.Add(new CorruptedGrowthEncounter());
-			randomEncounters.Add(new MimicEncounter(BogMimic));
-			randomEncounters.Add(new SuccubusEncounter());
-			randomEncounters.Add(new TamaniEncounter());
-			//all the imps. 
-			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
-			//all the goblins.
-			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
+			randomEncounters.Add(new FrogGirlEncounter());
+			randomEncounters.Add(new PhoukaEncounter());
+			randomEncounters.Add(item: new ChameleonGirlEncounter());
 			//items
-
-			//semi-random (NPCs in this case)
-			semiRandomEncounters.Add(new JojoBogEncounter());
-			semiRandomEncounters.Add(new MarbleBogEncounter());
+			//semi-randoms
+			semiRandomEncounters.Add(new MurkyChestEncounter());
 			//triggers
-			triggeredOccurances.Add(new FindDeepwoods());
+			triggeredOccurances.Add(new HalloweenPhoukaEncounter());
 		}
 
 		protected override SimpleDescriptor UnlockText => BogUnlock;

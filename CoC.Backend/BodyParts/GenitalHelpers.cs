@@ -160,7 +160,7 @@ namespace CoC.Backend.BodyParts
 		public bool isAndrogynous => value >= MIN_ANDROGYNOUS && value <= MAX_ANDROGYNOUS;
 
 		public bool isSlightlyFeminine => value >= SLIGHTLY_FEMININE && value < FEMININE;
-		public bool atLeastSlightlyFeminine => value >= SLIGHTLY_FEMININE && value < FEMININE;
+		public bool atLeastSlightlyFeminine => value >= SLIGHTLY_FEMININE;
 		public bool isFeminine => value >= FEMININE && value < HYPER_FEMININE;
 		public bool atLeastFeminine => value >= FEMININE;
 		public bool isHyperFeminine => value >= HYPER_FEMININE;

@@ -9,7 +9,7 @@ namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class Scholar : HistoryPerkBase
 	{
-		private static bool silly => FrontendSessionSave.data.SillyMode;
+		private static bool silly => FrontendSessionSave.data.SillyModeLocal ?? false;
 		private static string ScholarStr()
 		{
 			return "History: Scholar";

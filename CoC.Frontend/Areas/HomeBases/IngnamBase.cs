@@ -8,16 +8,11 @@ using System.Text;
 
 namespace CoC.Frontend.Areas.HomeBases
 {
-	public sealed partial class IngnamBase : HomeBaseBase
+	internal sealed partial class IngnamBase : HomeBaseBase
 	{
 		public IngnamBase() : base(IngnamBaseName)
 		{
 		}
-
-		public override bool isUnlocked { get => true; protected set => ; }
-		public override int timesExplored { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
-
-		protected override SimpleDescriptor UnlockText => GlobalStrings.None;
 
 		protected override void OnReload()
 		{
@@ -25,7 +20,7 @@ namespace CoC.Frontend.Areas.HomeBases
 		}
 
 		//guarenteed to derive ICampNPC.
-		protected override SimpleDescriptor OverrideDefaultIdleTextForCampNPC(Creature creature)
+		protected override SimpleDescriptor OverrideDefaultIdleTextForCampNPC(Creature creature, byte currentHour)
 		{
 			return null;
 #warning ToDo: Consider adding custom descriptors for 

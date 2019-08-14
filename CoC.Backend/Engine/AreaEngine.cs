@@ -55,14 +55,12 @@ namespace CoC.Backend.Engine
 		internal HomeBaseBase currentHomeBase { get; private set; }
 
 		internal AreaEngine(ReadOnlyDictionary<Type, Func<PlaceBase>> places, ReadOnlyDictionary<Type, Func<LocationBase>> locations,
-			ReadOnlyDictionary<Type, Func<DungeonBase>> dungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases, Action<string> outputTextFunction)
+			ReadOnlyDictionary<Type, Func<DungeonBase>> dungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases)
 		{
 			placeLookup = places ?? throw new ArgumentNullException(nameof(places));
 			locationLookup = locations ?? throw new ArgumentNullException(nameof(locations));
 			dungeonLookup = dungeons ?? throw new ArgumentNullException(nameof(dungeons));
 			homeBaseLookup = homeBases ?? throw new ArgumentNullException(nameof(homeBases));
-
-			outputText = outputTextFunction ?? throw new ArgumentNullException(nameof(outputTextFunction));
 
 			foreach (var key in places.Keys)
 			{
@@ -129,9 +127,16 @@ namespace CoC.Backend.Engine
 		}
 
 		//only should be called during creation or loading a save. I suppose this could also happen during prologue => normal gameplay. 
-		internal void ChangeHomeBase(HomeBaseBase newHomeBase)
+		internal void ChangeHomeBase<T>() where T: HomeBaseBase
 		{
-			currentHomeBase = newHomeBase;
+			if (!homeBaseLookup.ContainsKey(typeof(T)))
+			{
+				throw new ArgumentException("HomeBase was not initialized into the list of possible home bases. Please do so.");
+			}
+			else
+			{
+				currentHomeBase = homeBaseLookup[typeof(T)]();
+			}
 		}
 		#endregion
 

@@ -4,7 +4,6 @@
 //4/5/2019, 10:40 PM
 using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
-using CoC.Frontend.Areas.Locations;
 using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
@@ -14,7 +13,7 @@ namespace CoC.Frontend.Encounters.Forest
 {
 	internal sealed class FindDeepwoods : TriggeredEncounter
 	{
-		private static bool deepwoodsFound => Deepwoods.Unlocked;
+		private static bool deepwoodsFound => Areas.Locations.Deepwoods.Unlocked;
 		protected override bool isTriggered()
 		{
 			return !deepwoodsFound && Areas.Locations.Forest.timesExploredForest >= 20;
@@ -23,7 +22,7 @@ namespace CoC.Frontend.Encounters.Forest
 		protected override void Run()
 		{
 #warning may want to combine these.
-			GameEngine.FindAndUnlockArea<Deepwoods>();
+			GameEngine.UnlockArea<Areas.Locations.Deepwoods>();
 		}
 
 		protected override bool encounterDisabled()

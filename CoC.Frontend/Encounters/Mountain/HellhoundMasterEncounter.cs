@@ -4,7 +4,7 @@ namespace CoC.Frontend.Encounters.Mountain
 {
 	internal class HellhoundMasterEncounter : SemiRandomEncounter
 	{
-		public HellhoundMasterEncounter()
+		public HellhoundMasterEncounter() : base(9001)
 		{
 		}
 

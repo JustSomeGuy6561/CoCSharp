@@ -2,6 +2,7 @@
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
 using CoC.Frontend.Encounters.Common;
+using CoC.Frontend.Encounters.Mountain;
 using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;

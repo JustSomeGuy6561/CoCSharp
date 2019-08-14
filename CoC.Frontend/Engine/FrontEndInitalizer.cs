@@ -20,8 +20,8 @@ namespace CoC.Frontend.Engine
 
 			BasePerkModifiers getExtraData() => new ExtraPerkModifiers();
 
-			Backend.Engine.BackendInitializer.Init(globalDataFile, MenuHelpers.DoNext, TextOutput.OutputText, 
-				AreaManager.placeCollection, AreaManager.locationCollection, getExtraData, DifficultyManager.difficultyCollection);
+			Backend.Engine.BackendInitializer.Init(globalDataFile, AreaManager.placeCollection, AreaManager.locationCollection, 
+				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, getExtraData, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);
 
 
 			#warning Parse global File Data accordingly. note it may be null if file does not exist.

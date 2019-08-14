@@ -5,9 +5,10 @@
 using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
+using CoC.Frontend.Encounters.Deepwoods;
+using CoC.Frontend.Encounters.Forest;
 using CoC.Frontend.SaveData;
 using System.Collections.Generic;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Locations
 {
@@ -21,14 +22,37 @@ namespace CoC.Frontend.Areas.Locations
 
 		public static bool Unlocked => FrontendSessionSave.data.DeepwoodsUnlocked;
 
+		public override bool isUnlocked
+		{
+			get => FrontendSessionSave.data.DeepwoodsUnlocked;
+			protected set => FrontendSessionSave.data.DeepwoodsUnlocked = value;
+		}
+
 		static Deepwoods()
 		{
 			//initialize encounters here. 
+			//generic
+			randomEncounters.Add(new WalkInDeepwoods());
+			randomEncounters.Add(new GatherWood());
+			//NPCs
+			randomEncounters.Add(new FaerieEncounter());
+			//monsters
+			randomEncounters.Add(new CorruptedGrowthEncounter());
+			randomEncounters.Add(new TamaniEncounter());
+			randomEncounters.Add(new DryadEncounter());
+			//items
+			
+			//semi-random (NPCs in this case)
+			semiRandomEncounters.Add(new AkbalEncounter());
+			semiRandomEncounters.Add(new AikoDeepwoodsEncounter());
+			//triggers
+			triggeredEncounters.Add(new FeraEncounter());
+			triggeredEncounters.Add(new DiscoverDeepCaveEncounter());
 		}
 
 		public Deepwoods() : base(DeepwoodsName, UNLOCK_LEVEL, randomEncounters, semiRandomEncounters, triggeredEncounters)
 		{
-
+			
 		}
 
 		public override int timesVisited

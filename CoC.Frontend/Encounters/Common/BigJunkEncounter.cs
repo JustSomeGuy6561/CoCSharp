@@ -13,9 +13,6 @@ namespace CoC.Frontend.Encounters.Common
 {
 	internal sealed partial class BigJunkEncounter : RandomEncounter
 	{
-
-		private readonly SimpleDescriptor bigJunkText;
-
 		private readonly Type sourceLocation;
 
 		public BigJunkEncounter(Type location) : base()

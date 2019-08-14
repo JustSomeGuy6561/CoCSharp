@@ -4,7 +4,7 @@ namespace CoC.Frontend.Encounters.Desert
 {
 	internal class FindChestEncounter : SemiRandomEncounter
 	{
-		public FindChestEncounter()
+		public FindChestEncounter() : base(9001)
 		{
 		}
 

@@ -724,6 +724,31 @@ namespace CoC.Backend.BodyParts
 				return Gender.HERM;
 			}
 		}
+
+		//Parses the current gender information and returns a 'normalized' state for things requiring "Male" or "Female"
+		//if you find this term offensive, by all means, rename it - i couldn't think of a better way to explain what i was going for.
+
+		public bool trappyGenderToMaleFemaleIsMale()
+		{
+			Gender trapGender = trappyGender;
+			if (trapGender == Gender.HERM)
+			{
+				return BiggestTitSize() < CupSize.B && femininity < 50 || BiggestTitSize() == CupSize.FLAT && femininity < 75;
+			}
+			else if (trapGender == Gender.MALE)
+			{
+				return true;
+			}
+			else if (trapGender == Gender.FEMALE)
+			{
+				return false;
+			}
+			else
+			{
+				return (BiggestTitSize() < CupSize.C && femininity < 75);
+			}
+			
+		}
 		#endregion
 
 		#region Biggest

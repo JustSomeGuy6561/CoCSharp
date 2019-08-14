@@ -51,32 +51,29 @@ namespace CoC.Frontend.Areas.Locations
 		static GlacialRift()
 		{
 			//generic
-			randomEncounters.Add(new TripOnRoot());
-			randomEncounters.Add(new WalkInWoods());
-			randomEncounters.Add(new GatherWood());
-			randomEncounters.Add(new BigJunkEncounter(typeof(GlacialRift)));
+			randomEncounters.Add(new WalkThroughGlacialRiftEncounter());
 			//NPCs
-			randomEncounters.Add(new EssrayleGlacialRiftEncounter());
+			randomEncounters.Add(new ValeriaAtGlacialRiftEncounter()); //technically you fight her but whatever.
 			//monsters
-			randomEncounters.Add(new BeeGirlEncounter());
-			randomEncounters.Add(new CorruptedGrowthEncounter());
-			randomEncounters.Add(new MimicEncounter(GlacialRiftMimic));
-			randomEncounters.Add(new SuccubusEncounter());
-			randomEncounters.Add(new TamaniEncounter());
-			//all the imps. 
-			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
-			//all the goblins.
-			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
+			randomEncounters.Add(new ValkyrieEncounter());
+			randomEncounters.Add(new FrostGiantEncounter());
+			randomEncounters.Add(new YetiEncounter());
+			randomEncounters.Add(new AmarokEncounter());
 			//items
+			
+			//find godMead;
+			//find Icicle;
 
-			//semi-random (NPCs in this case)
-			semiRandomEncounters.Add(new JojoGlacialRiftEncounter());
-			semiRandomEncounters.Add(new MarbleGlacialRiftEncounter());
+			//semi-randoms
+			semiRandomEncounters.Add(new DiscoverAnzuPalaceEncounter());
+			semiRandomEncounters.Add(new FindOrnateChestEncounter());
 			//triggers
-			triggeredOccurances.Add(new FindDeepwoods());
+			triggeredOccurances.Add(new AprilFoolsGlacialRiftEncounter());
+
+
 		}
 
-		protected override SimpleDescriptor UnlockText => GlacialRiftUnlock();
+		protected override SimpleDescriptor UnlockText => GlacialRiftUnlock;
 	}
 }
 

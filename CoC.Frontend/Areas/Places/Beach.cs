@@ -10,6 +10,14 @@ using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Places
 {
+	//idea: beach is made/maintained by a tentacle demon, Nakborus, who has obvious alterior motives for its existence. At the beginning he's more or 
+	//less not really doing much, which makes the whole deserted beach thing a self-fulfilling prophecy. You have to get her back into it.
+	//Nakborus: Female, but tentacles are more or less dicks - she gets pleasure from using them as such. But she's not really a huge tentacle pervert
+	//monster, and she's actually a little sensitive to the fact everyone thinks so. It just so happens most people react in one of two ways: abject terror
+	//at the rapey tentacle monster, or like huge sluts who are into that kind of thing. She kinda wants someone to see her as more than just a tentacle
+	//monster, so there's the PC's in. Of course, if you're really into tentacle rape, i suppose another option would be to get her to accept her tentacle
+	//monster-ness and just go crazy with the sexings. 
+
 	internal partial class Beach : PlaceBase
 	{
 		private static HashSet<TriggeredEncounter> optionalusInterruptus = new HashSet<TriggeredEncounter>();

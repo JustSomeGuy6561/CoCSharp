@@ -1,12 +1,11 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
-using CoC.Frontend.Encounters.Common;
 using CoC.Frontend.Encounters.HighMountain;
+using CoC.Frontend.Encounters.Mountain;
 using CoC.Frontend.SaveData;
 using System.Collections.Generic;
 using System.Linq;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Locations
 {
@@ -51,29 +50,26 @@ namespace CoC.Frontend.Areas.Locations
 		static HighMountain()
 		{
 			//generic
-			randomEncounters.Add(new TripOnRoot());
-			randomEncounters.Add(new WalkInWoods());
-			randomEncounters.Add(new GatherWood());
-			randomEncounters.Add(new BigJunkEncounter(typeof(HighMountain)));
+			randomEncounters.Add(new HikeOnHighMountainEncounter());
 			//NPCs
-			randomEncounters.Add(new EssrayleHighMountainEncounter());
-			//monsters
-			randomEncounters.Add(new BeeGirlEncounter());
-			randomEncounters.Add(new CorruptedGrowthEncounter());
-			randomEncounters.Add(new MimicEncounter(HighMountainMimic));
-			randomEncounters.Add(new SuccubusEncounter());
-			randomEncounters.Add(new TamaniEncounter());
-			//all the imps. 
-			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
-			//all the goblins.
-			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
+			randomEncounters.Add(new IzumiEncounter());
+			randomEncounters.Add(new SophieMountainEncounter());
+			randomEncounters.Add(new ChickenHarpyEncounter()); //i always thought this was a bunny ngl. 
+															   //monsters
+			randomEncounters.Add(new MinotaurMobEncounter());
+			randomEncounters.Add(new MinotaurEncounter());
+			randomEncounters.Add(new PhoenixEncounter());
+			randomEncounters.Add(new CockatriceEncounter());
+			randomEncounters.Add(new BasiliskEncounter());
+			randomEncounters.Add(new HarpyEncounter());
 			//items
+			//semi-randoms
+			semiRandomEncounters.Add(new DiscoverLethiceKeep());
+			semiRandomEncounters.Add(new DiscoverMinervaTower());
 
-			//semi-random (NPCs in this case)
-			semiRandomEncounters.Add(new JojoHighMountainEncounter());
-			semiRandomEncounters.Add(new MarbleHighMountainEncounter());
 			//triggers
-			triggeredOccurances.Add(new FindDeepwoods());
+			triggeredOccurances.Add(new SnowAngelHighMountainEncounter());
+
 		}
 
 		protected override SimpleDescriptor UnlockText => HighMountainUnlock;

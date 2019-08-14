@@ -14,5 +14,8 @@ namespace CoC.Frontend.SaveData
 		public static FrontendGlobalSave data => SaveSystem.getGlobalSave<FrontendGlobalSave>();
 
 		internal bool UnlockedNewGameHerm = false;
+
+		internal bool? AllowWaterSports = false;
+		internal bool? SillyModeGlobal = null;
 	}
 }

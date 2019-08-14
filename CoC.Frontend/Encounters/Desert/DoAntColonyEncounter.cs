@@ -4,7 +4,7 @@ namespace CoC.Frontend.Encounters.Desert
 {
 	internal class DoAntColonyEncounter : SemiRandomEncounter
 	{
-		public DoAntColonyEncounter()
+		public DoAntColonyEncounter() : base(9001)
 		{
 		}
 

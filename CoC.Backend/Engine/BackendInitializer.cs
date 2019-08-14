@@ -17,10 +17,9 @@ namespace CoC.Backend.Engine
 		//rundown: to allow you to do whatever you want in the frontend, some data needs to be passed back here. 
 
 		public static void Init(FileInfo globalDataFile,
-			Action<Action> DoNext, Action<string> OutputText, //Time Engine
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, 
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases, //AreaEngine
-			Func<BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties, byte defaultDifficultyIndex) //Game Difficulty Engine.
+			Func<BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
 		{
 			//initialize the saves. 
 			SaveSystem.AddSessionSave(new BackendSessionData());
@@ -30,7 +29,7 @@ namespace CoC.Backend.Engine
 			#warning Add method to read file and load global backend game data. 
 
 			//initialize game engine.
-			GameEngine.InitializeEngine(OutputText, gamePlaces, gameLocations, gameDungeons, homeBases, perkModifiers, gameDifficulties, defaultDifficultyIndex);
+			GameEngine.InitializeEngine(gamePlaces, gameLocations, gameDungeons, homeBases, perkModifiers, gameDifficulties, defaultDifficultyIndex);
 		}
 	}
 }

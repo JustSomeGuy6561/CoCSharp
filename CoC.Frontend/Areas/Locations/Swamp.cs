@@ -51,29 +51,20 @@ namespace CoC.Frontend.Areas.Locations
 		static Swamp()
 		{
 			//generic
-			randomEncounters.Add(new TripOnRoot());
-			randomEncounters.Add(new WalkInWoods());
-			randomEncounters.Add(new GatherWood());
-			randomEncounters.Add(new BigJunkEncounter(typeof(Swamp)));
+			randomEncounters.Add(new WalkThroughSwampEncounter());
 			//NPCs
-			randomEncounters.Add(new EssrayleSwampEncounter());
+			randomEncounters.Add(new RogarSwampEncounter());
+			randomEncounters.Add(new KihaXHeliaSmashEncounter());
 			//monsters
-			randomEncounters.Add(new BeeGirlEncounter());
-			randomEncounters.Add(new CorruptedGrowthEncounter());
-			randomEncounters.Add(new MimicEncounter(SwampMimic));
-			randomEncounters.Add(new SuccubusEncounter());
-			randomEncounters.Add(new TamaniEncounter());
-			//all the imps. 
-			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
-			//all the goblins.
-			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
+			randomEncounters.Add(new FemaleSpiderEncounter());
+			randomEncounters.Add(new MaleSpiderEncounter());
+			randomEncounters.Add(new DriderEncounter());
 			//items
-
-			//semi-random (NPCs in this case)
-			semiRandomEncounters.Add(new JojoSwampEncounter());
-			semiRandomEncounters.Add(new MarbleSwampEncounter());
+			//semi-randoms
+			semiRandomEncounters.Add(new KihaSwampEncounter());
+			semiRandomEncounters.Add(new FindEmberEgg());
 			//triggers
-			triggeredOccurances.Add(new FindDeepwoods());
+			triggeredOccurances.Add(new DiscoverBog());
 		}
 
 		protected override SimpleDescriptor UnlockText => SwampUnlock;

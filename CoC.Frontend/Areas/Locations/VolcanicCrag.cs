@@ -1,7 +1,7 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
-using CoC.Frontend.Encounters.Common;
+using CoC.Frontend.Encounters.VolcanicCrag;
 using CoC.Frontend.SaveData;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,27 +50,17 @@ namespace CoC.Frontend.Areas.Locations
 		static VolcanicCrag()
 		{
 			//generic
-			randomEncounters.Add(new TripOnRoot());
-			randomEncounters.Add(new WalkInWoods());
-			randomEncounters.Add(new GatherWood());
+			randomEncounters.Add(new WalkAcrossVolcanicCrag());
 			//NPCs
-			randomEncounters.Add(new EssrayleVolcanicCragEncounter());
+			randomEncounters.Add(new BehemothEncounter());
 			//monsters
-			randomEncounters.Add(new BeeGirlEncounter());
-			randomEncounters.Add(new CorruptedGrowthEncounter());
-			randomEncounters.Add(new SuccubusEncounter());
-			randomEncounters.Add(new TamaniEncounter());
-			//all the imps. 
-			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
-			//all the goblins.
-			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
-			//items
+			
+			//really might want to add in some enemies here. 
 
-			//semi-random (NPCs in this case)
-			semiRandomEncounters.Add(new JojoVolcanicCragEncounter());
-			semiRandomEncounters.Add(new MarbleVolcanicCragEncounter());
+			//items
+			//semi-randoms
 			//triggers
-			triggeredOccurances.Add(new FindDeepwoods());
+			triggeredOccurances.Add(new AprilFoolsCragEncounter());
 		}
 
 		protected override SimpleDescriptor UnlockText => VolcanicCragUnlock;

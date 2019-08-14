@@ -21,9 +21,6 @@ namespace CoC.Frontend.Areas.Dungeons
 
 		public override int timesVisited { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
 
-		protected override void OnDungeonEnter()
-		{
-			throw new NotImplementedException();
-		}
+		protected override SimpleDescriptor UnlockText => throw new NotImplementedException();
 	}
 }

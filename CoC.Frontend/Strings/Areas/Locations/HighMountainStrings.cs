@@ -7,13 +7,13 @@ using System;
 
 namespace CoC.Frontend.Areas.Locations
 {
-	internal sealed partial class HighMountains
+	internal sealed partial class HighMountain
 	{
-		private static string HighMountainsName()
+		private static string HighMountainName()
 		{
 			return "HighMountains";
 		}
-		private static string HighMountainsUnlock()
+		private static string HighMountainUnlock()
 		{
 			return "After exploring the forest so many times, you decide to really push it, and plunge deeper and deeper into the woods. The further you go the darker it gets, " +
 				"but you courageously press on. The plant-life changes too, and you spot more and more lichens and fungi, many of which are luminescent. " +

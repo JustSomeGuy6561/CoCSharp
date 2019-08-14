@@ -1,4 +1,6 @@
-﻿namespace CoC.Frontend.UI
+﻿using CoC.Backend.Engine;
+
+namespace CoC.Frontend.UI
 {
 	public enum PlayerStatus { IDLE, EXPLORING, TALKING, COMBAT, PRISON, INGRAM }
 

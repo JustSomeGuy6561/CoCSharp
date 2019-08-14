@@ -67,6 +67,7 @@ namespace CoC.Frontend.Areas.Locations
 			randomEncounters.Add(new MimicEncounter(ForestMimic));
 			randomEncounters.Add(new SuccubusEncounter());
 			randomEncounters.Add(new TamaniEncounter());
+			randomEncounters.Add(new DryadEncounter());
 			//all the imps. 
 			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
 			//all the goblins.

@@ -139,6 +139,9 @@ namespace CoC.Frontend.Creatures
 			if (creator.libido == null) creator.libido = 15;
 			if (creator.corruption == null) creator.corruption = 15;
 
+			endowmentLocked = creator.perks?.Find(x => x is EndowmentPerkBase) != null;
+			historyLocked = creator.perks?.Find(x => x is HistoryPerkBase) != null;
+
 			//clean up any invalid data set in the player creator.
 			creator.wombMaker = () => new PlayerWomb();
 			creator.artificiallyInfertile = false;
@@ -1548,94 +1551,7 @@ namespace CoC.Frontend.Creatures
 			Player player = new Player(creator);
 			NewGameHelpers.ChooseSettings(player);
 		}
-		/*
-				//----------------- HISTORY PERKS -----------------
-				public void chooseHistory()
-				{
-					ClearOutput();
-					
-					if (flags[kFLAGS.HISTORY_PERK_SELECTED] !== 0) //this flag can only be non-zero if chooseHistory is called from camp.as
-						OutputText("<b>New history perks are available during creation.  Since this character was created before they were available, you may choose one now!</b>\n\n");
-					
-					menu();
-					var totalHistoryPerks:int = 0;
-					var button:int = 0;
-					//Attribute Perks
-					for each(var p: Object in PerkLists.HISTORY)
-					{
-						if (!creator.hasPerk(p.perk))
-							AddButton(button++, p.text, confirmHistory, p.perk);
-						else
-						{
-							AddButtonDisabled(button++, p.text, "You already have this history perk.");
-							totalHistoryPerks++;
-						}
-					}
-					if (totalHistoryPerks >= 3) AddButton(14, "Skip", completeCharacterCreation);
-				}
 
-				private void confirmHistory(choice:PerkType)
-				{
-					ClearOutput();
-					OutputText(images.showImage("event-question"));
-					switch (choice)
-					{
-						case PerkLib.HistoryAlchemist: OutputText("You spent some time as an alchemist's assistant, and alchemical items always seem to be more reactive in your hands.  Is this your history?"); break;
-						case PerkLib.HistoryFighter: OutputText("You spent much of your time fighting other children, and you had plans to find work as a guard when you grew up.  You do 10% more damage with physical attacks.  You will also start out with 50 gems.  Is this your history?"); break;
-						case PerkLib.HistoryFortune: OutputText("You always feel lucky when it comes to fortune.  Because of that, you have always managed to save up gems until whatever's needed and how to make the most out it (+15% gems on victory).  You will also start out with 250 gems.  Is this your history?"); break;
-						case PerkLib.HistoryHealer: OutputText("You often spent your free time with the village healer, learning how to tend to wounds.  Healing items and effects are 20% more effective.  Is this your history?"); break;
-						case PerkLib.HistoryReligious: OutputText("You spent a lot of time at the village temple, and learned how to meditate.  The 'masturbation' option is replaced with 'meditate' when corruption is at or below 66.  Is this your history?"); break;
-						case PerkLib.HistoryScholar: OutputText("You spent much of your time in school, and even begged the richest man in town, Mr. " + (silly() ? "Savin" : "Sellet") + ", to let you read some of his books.  You are much better at focusing, and spellcasting uses 20% less fatigue.  Is this your history?"); break;
-						case PerkLib.HistorySlacker: OutputText("You spent a lot of time slacking, avoiding work, and otherwise making a nuisance of yourself.  Your efforts at slacking have made you quite adept at resting, so your fatigue will lower 20% faster.  Is this your history?"); break;
-						case PerkLib.HistorySlut: OutputText("You managed to spend most of your time having sex.  Quite simply, when it came to sex, you were the village bicycle - everyone got a ride.  Because of this, your body is a bit more resistant to penetrative stretching, and has a higher upper limit on what exactly can be inserted.  Is this your history?"); break;
-						case PerkLib.HistorySmith: OutputText("You managed to get an apprenticeship with the local blacksmith.  Because of your time spent at the blacksmith's side, you've learned how to fit armor for maximum protection.  Is this your history?"); break;
-						default: OutputText("You managed to find work as a whore.  Because of your time spent trading seduction for profit, you're more effective at teasing (+15% tease damage).  Is this your history?");
-					}
-					menu();
-					AddButton(0, "Yes", setHistory, choice);
-					AddButton(1, "No", chooseHistory);
-				}
-
-				private void setHistory(choice:PerkType)
-				{
-					creator.createPerk(choice, 0, 0, 0, 0);
-					if (choice == PerkLib.HistorySlut || choice == PerkLib.HistoryWhore)
-					{
-						if (creator.hasVagina())
-						{
-							creator.vaginas[0].virgin = false;
-							creator.vaginas[0].vaginalLooseness = Vagina.LOOSENESS_LOOSE;
-						}
-						creator.ass.analLooseness = 1;
-					}
-					if (choice == PerkLib.HistoryFighter || choice == PerkLib.HistoryWhore) creator.gems += 50;
-					if (choice == PerkLib.HistoryFortune) creator.gems += 250;
-					if (flags[kFLAGS.HISTORY_PERK_SELECTED] == 0)
-					{
-						flags[kFLAGS.HISTORY_PERK_SELECTED] = 1;
-						completeCharacterCreation();
-					}
-					else
-					{
-						flags[kFLAGS.HISTORY_PERK_SELECTED] = 1; //Special escape clause for very old saves that do not have a history perk. This is used to allow them the chance to select a perk at camp on load
-						creatorMenu();
-					}
-				}
-
-				private void completeCharacterCreation()
-				{
-					ClearOutput();
-					if (customcreatorProfile !== null)
-					{
-						customcreatorProfile();
-						if (flags[kFLAGS.NEW_GAME_PLUS_LEVEL] == 0) doNext(chooseGameModes);
-						else doNext(startTheGame);
-						return;
-					}
-					if (flags[kFLAGS.NEW_GAME_PLUS_LEVEL] == 0) chooseGameModes();
-					else startTheGame();
-				}
-			*/
 		/*
 				public const MAX_TOLERANCE_LEVEL:int = 20;
 				public const MAX_MORALSHIFTER_LEVEL:int = 10;

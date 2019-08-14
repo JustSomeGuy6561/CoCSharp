@@ -4,7 +4,7 @@ namespace CoC.Frontend.Encounters.Mountain
 {
 	internal class DiscoverSalonEncounter : SemiRandomEncounter
 	{
-		public DiscoverSalonEncounter()
+		public DiscoverSalonEncounter() : base(9001)
 		{
 		}
 

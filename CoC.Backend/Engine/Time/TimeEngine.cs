@@ -60,9 +60,8 @@ namespace CoC.Backend.Engine.Time
 		internal byte CurrentHour { get; private set; }
 		internal int CurrentDay { get; private set; }
 
-		public TimeEngine(Action<string> textWriter, AreaEngine areaEngineReference)
+		public TimeEngine(AreaEngine areaEngineReference)
 		{
-			OutputText = textWriter ?? throw new ArgumentNullException(nameof(textWriter));
 			areaEngine = areaEngineReference ?? throw new ArgumentNullException(nameof(areaEngineReference));
 		}
 
