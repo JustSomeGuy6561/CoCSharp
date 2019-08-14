@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Engine;
+using CoC.Backend.SaveData;
 
 namespace CoC.Frontend.Engine.Difficulties
 {

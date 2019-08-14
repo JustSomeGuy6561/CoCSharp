@@ -7,7 +7,7 @@ using CoC.Backend.Strings;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Strings.Engine;
 using CoC.Frontend.UI;
-using static CoC.Frontend.UI.ButtonManager;
+using static CoC.Backend.Engine.ButtonManager;
 using static CoC.Frontend.UI.TextOutput;
 using static CoC.Frontend.UI.ViewOptions;
 namespace CoC.Frontend.Engine
@@ -21,10 +21,10 @@ namespace CoC.Frontend.Engine
 			HideStats();
 
 			ClearOutput();
-			AddOutput(NewGameHelperText.IntroText);
+			OutputText(NewGameHelperText.IntroText());
 			InputField.ActivateInputField(null, "", "");
 			DropDownMenu.ActivateDropDownMenu(SpecialCharacters.SpecialCharacterDropDownList());
-			AddButton(0, GlobalStrings.OK, ChooseName);
+			AddButton(0, GlobalStrings.OK(), ChooseName);
 		}
 
 		private static void ChooseName()
@@ -55,9 +55,9 @@ namespace CoC.Frontend.Engine
 
 		private static void PromptSpecial(string specialName)
 		{
-			AddOutput(NewGameHelperText.PromptSpecial);
-			AddButton(0, NewGameHelperText.SpecialName, () => ParseSpecial(specialName, true));
-			AddButton(1, NewGameHelperText.ContinueOn, () => ParseSpecial(specialName, false));
+			OutputText(NewGameHelperText.PromptSpecial());
+			AddButton(0, NewGameHelperText.SpecialName(), () => ParseSpecial(specialName, true));
+			AddButton(1, NewGameHelperText.ContinueOn(), () => ParseSpecial(specialName, false));
 		}
 
 		private static void ParseSpecial(string name, bool useSpecial)
@@ -74,6 +74,11 @@ namespace CoC.Frontend.Engine
 			CharacterCreation creator = new CharacterCreation(pc, true);
 			creator.SetGenderGeneric();
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		public static void ChooseSettings(Player player)
+		{
+
 		}
 
 		public static void StartTheGame(Player player)

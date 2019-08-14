@@ -336,7 +336,10 @@ namespace CoCWinDesktop.ModelView
 			//handle data that appears in the text view.
 			if (controller.outputChanged || needToUpdateDisplay)
 			{
-				output = ParseOutput(controller.outputField);
+				//deep copy string builder because we fuck it up good while parsing it. in the rare case the game doesn't clear the text before adding more text (generally a mistake,
+				//but may not be the case) it'll break really badly when we go to parse it again (for example: \par becomes \\par which prints out "\par", not a newline).
+				StringBuilder sb = new StringBuilder(controller.outputField.ToString());
+				output = ParseOutput(sb);
 			}
 			//handle extra elements
 

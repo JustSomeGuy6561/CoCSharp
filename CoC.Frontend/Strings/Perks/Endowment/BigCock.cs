@@ -9,7 +9,7 @@ namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class BigCock : EndowmentPerkBase
 	{
-		private static string BigCockStr()
+		public static string BigCockStr()
 		{
 			return "Big Cock";
 		}

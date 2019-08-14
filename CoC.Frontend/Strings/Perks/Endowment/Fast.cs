@@ -9,7 +9,7 @@ namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class Fast : EndowmentPerkBase
 	{
-		private static string FastStr()
+		public static string FastStr()
 		{
 			return "Fast";
 		}

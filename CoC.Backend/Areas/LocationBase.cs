@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace CoC.Backend.Areas
 {
-	public abstract class LocationBase : AreaBase
+	public abstract class LocationBase : VisitableAreaBase
 	{
 
 		public readonly byte unlockLevel;

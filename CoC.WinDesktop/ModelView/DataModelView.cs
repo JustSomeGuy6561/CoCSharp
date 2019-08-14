@@ -41,25 +41,181 @@ namespace CoCWinDesktop.ModelView
 		}
 		private bool _ShowSidebar = true;
 
-		public ReadOnlyCollection<SaveDisplayData> gameSaves { get; }
+		public ReadOnlyCollection<SaveDisplayData> gameSaves
+		{
+			get => _gameSaves;
+			private set
+			{
+				if (_gameSaves != value)
+				{
+					_gameSaves = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+		private ReadOnlyCollection<SaveDisplayData> _gameSaves;
+
 		private List<SaveDisplayData> gameSavesHolder;
+
+		public SaveDisplayData selectedItem
+		{
+			get => _selectedItem;
+			set
+			{
+				if (_selectedItem != value)
+				{
+					_selectedItem = value;
+					NotifyPropertyChanged();
+					displaySource = value?.saveStatData;
+				}
+			}
+		}
+		private SaveDisplayData _selectedItem;
+
+		private StatDataCollection displaySource
+		{
+			get => _displaySource;
+			set
+			{
+				if (value is null)
+				{
+					value = emptyDisplay;
+				}
+
+				if (_displaySource != value)
+				{
+					_displaySource = value;
+					sideBar.UpdateSidebar(value);
+				}
+			}
+		}
+		private StatDataCollection _displaySource;
+
+		private bool optionsView
+		{
+			get => _optionsView;
+			set
+			{
+				_optionsView = value;
+				OptionsTextVisible = value;
+			}
+		}
+		private bool _optionsView = false;
+		public bool OptionsTextVisible
+		{
+			get => _optionsTextVisible;
+			private set
+			{
+				if (_optionsTextVisible != value)
+				{
+					_optionsTextVisible = value;
+					NotifyPropertyChanged();
+					NotifyPropertyChanged(nameof(SaveItemsVisible));
+				}
+			}
+		}
+		private bool _optionsTextVisible = false;
+
+		public bool SaveItemsVisible => !OptionsTextVisible;
+
+		//if language change set this to true; set this to true when options Command is clicked or return is clicked;
+		private bool forceUpdate = true; //initially true so it renders. set to true whenever we leave this view. 
+
+		//on Options command, set this to true.
+
+		private readonly StatDataCollection emptyDisplay = new StatDataCollection(() => new GameDateTime(0, 0));
+
+		private Action onCancel;
 
 		public DataModelView(ModelViewRunner modelViewRunner) : base(modelViewRunner)
 		{
-			statDisplayParser = new StatDisplayParser(new StatDataCollection(() => new GameDateTime(0,0)), true); //what's passed in here is irrelevant, we just need it for formatting.
+			//get last known save location from runner.
+
+			statDisplayParser = new StatDisplayParser(emptyDisplay, true);
 			sideBar = statDisplayParser.GetSideBarBase(true, PlayerStatus.IDLE);
+
+			//load the data into gameSavesHolder
+			gameSavesHolder = new List<SaveDisplayData>();
+			gameSaves = new ReadOnlyCollection<SaveDisplayData>(gameSavesHolder);
+
+			displaySource = emptyDisplay;
 		}
 
 		public override event PropertyChangedEventHandler PropertyChanged;
 
 		protected override void ParseDataForDisplay()
 		{
-			throw new NotImplementedException();
+			if (forceUpdate)
+			{
+				if (!optionsView)
+				{
+					UpdateSavesPage();
+				}
+				else
+				{
+					UpdateOptionsPage();
+				}
+			}
+			forceUpdate = false;
 		}
 
 		protected override bool SwitchToThisModelView(Action lastAction)
 		{
+			onCancel = lastAction;
+#warning TODO: Implement this when saves are actually in place. for now it'll just fail.
+			//ParseData(); return true;
+			return false;
+		}
+
+		private void OnOptionsCommand()
+		{
+			optionsView = true;
+			selectedItem = null;
+
+			forceUpdate = true;
+
+			ParseData();
+		}
+
+		private void OnOptionsAction()
+		{
+			forceUpdate = true;
+
+			ParseData();
+		}
+
+		private void UpdateSavesPage()
+		{
+			//update the buttons text and commands to correct values. 
+
+			//if game save location changed:
+			//update gameSavesHolder, gameSaves
+			//else force it to focus on the selected item, if it's not null.
+
+			sideBar.UpdateSidebar(displaySource);
+		}
+
+		private void UpdateOptionsPage()
+		{
+			//update the buttons text and commands to correct values. 
+
+			//Display the text to notify the player of current settings. 
+
 			throw new NotImplementedException();
+		}
+
+		private void OnReturnFromOptionsCommand()
+		{
+			optionsView = false;
+			forceUpdate = true;
+
+			ParseData();
+		}
+
+		private void OnCancelCommand()
+		{
+			forceUpdate = true;
+			onCancel();
 		}
 
 		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")

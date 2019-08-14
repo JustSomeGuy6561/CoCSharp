@@ -13,8 +13,8 @@ namespace CoC.Backend.Engine.Time
 {
 	public sealed class TimeEngine
 	{
-		private readonly Action<SimpleDescriptor> OutputText;
-		private readonly Action<Action> DoNext;
+		private readonly Action<string> OutputText;
+		private Action<Action> DoNext => MenuHelpers.DoNext;
 
 		//what i would do for a linked hashset in C#. Update: Nevermind, That's what friends (and beer, apparently) are for. -JSG
 		internal readonly OrderedHashSet<ITimeLazyListener> lazyListeners = new OrderedHashSet<ITimeLazyListener>();
@@ -38,8 +38,13 @@ namespace CoC.Backend.Engine.Time
 
 		private bool ranLaziesYet = false;
 
-		private byte hoursPassed = 0;
-		private byte hoursPassedForLazies = 0;
+		internal ushort totalHoursPassed => ((ushort)usedHoursPassed).add(idleHoursPassed);
+		//private ushort hoursPassedForLazies = 0;
+
+		private GameDateTime lastTimeLaziesRan;
+
+		internal byte usedHoursPassed { get; private set; }
+		internal byte idleHoursPassed { get; private set; }
 
 		//private bool canCancel = false;
 
@@ -50,48 +55,73 @@ namespace CoC.Backend.Engine.Time
 
 		//end Event Variables.
 
+		private bool isIdleHour => usedHoursPassed == 0;
+
 		internal byte CurrentHour { get; private set; }
 		internal int CurrentDay { get; private set; }
 
-		public TimeEngine(Action<SimpleDescriptor> textWriter, Action<Action> buttonMaker, AreaEngine areaEngineReference)
+		public TimeEngine(Action<string> textWriter, AreaEngine areaEngineReference)
 		{
 			OutputText = textWriter ?? throw new ArgumentNullException(nameof(textWriter));
-			DoNext = buttonMaker ?? throw new ArgumentNullException(nameof(buttonMaker));
 			areaEngine = areaEngineReference ?? throw new ArgumentNullException(nameof(areaEngineReference));
+		}
+
+		public void SetAsideHours(byte hours)
+		{
+			if (totalHoursPassed == 0)
+			{
+				lastTimeLaziesRan = GameDateTime.Now;
+			}
+
+
+			byte oldValue = usedHoursPassed;
+			usedHoursPassed = usedHoursPassed.add(hours);
+			byte delta = usedHoursPassed.subtract(oldValue);
+
 		}
 
 		public void UseHours(byte hours)
 		{
-			hoursPassed += hours;
-			hoursPassedForLazies = hoursPassed;
+			if (totalHoursPassed == 0)
+			{
+				lastTimeLaziesRan = GameDateTime.Now;
+			}
+
+			byte oldValue = usedHoursPassed;
+			usedHoursPassed = usedHoursPassed.add(hours);
+			byte delta = usedHoursPassed.subtract(oldValue);
+
 			//canCancel = false;
 			Run();
 		}
 
 		public void IdleHours(byte hours, ResumeTimeCallback resumeCallback)
 		{
-			//if (hoursPassed == 0)
-			//{
-			//	canCancel = true;
-			//}
-			hoursPassed += hours;
-			hoursPassedForLazies = hoursPassed;
+			if (totalHoursPassed == 0)
+			{
+				lastTimeLaziesRan = GameDateTime.Now;
+			}
+
+			byte oldValue = idleHoursPassed;
+			idleHoursPassed = idleHoursPassed.add(hours);
+			byte delta = idleHoursPassed.subtract(oldValue);
+
+
 			resumeActionsCallback = resumeCallback;
 			Run();
 		}
 
-		//public bool CancelRemainingHours()
-		//{
-		//	if (canCancel || hoursPassed == 0)
-		//	{
-		//		hoursPassed = 0;
-		//		return true;
-		//	}
-		//	return false;
-		//}
-
 		private void incrementHour()
 		{
+			if (usedHoursPassed > 0)
+			{
+				usedHoursPassed--;
+			}
+			else
+			{
+				idleHoursPassed--;
+			}
+
 			CurrentHour++;
 			if (CurrentHour == 24)
 			{
@@ -100,6 +130,9 @@ namespace CoC.Backend.Engine.Time
 			}
 		}
 
+		//currently, setting aside hours have no means of being ran unless UseHours or IdleHours is called sometime after.
+		//The expected behavior is to simply call UseHours or IdleHours afterward at some point, but this would provide
+		//an alternate means for running the time engine after setting aside hours. Currently unused. 
 		public void ForceRun()
 		{
 			Run();
@@ -107,17 +140,22 @@ namespace CoC.Backend.Engine.Time
 
 		private void Run()
 		{
-			if (!running && hoursPassed > 0)
+			if (!running && totalHoursPassed > 0)
 			{
+				if (lastTimeLaziesRan is null)
+				{
+					lastTimeLaziesRan = GameDateTime.Now;
+				}
+
 				hasAnyOutput = false;
 				running = true;
 				InitializeNewHour();
 			}
 		}
 
+		//assumes we have hours to pass. always precede this with a totalHoursPassed > 0 check.
 		private void InitializeNewHour()
 		{
-			hoursPassed--;
 			incrementHour();
 
 			if (specialEvents != null)
@@ -200,12 +238,20 @@ namespace CoC.Backend.Engine.Time
 			if (outputMagic.Length != 0)
 			{
 				hasAnyOutput = true;
-				OutputText(outputMagic.ToString);
+				OutputText(outputMagic.ToString());
 				outputMagic.Clear();
 			}
 			//will we need a new page for the next hour/lazies if caught up?
 			//NextEvent(true);
 			NextEvent();
+		}
+
+		internal void CancelIdle()
+		{
+			var delta = idleHoursPassed;
+			idleHoursPassed = 0;
+
+			resumeActionsCallback = null;
 		}
 
 		//Currently, the first special event will be on the same page as all the short, non-special stuff.
@@ -222,10 +268,11 @@ namespace CoC.Backend.Engine.Time
 			{
 				//set up the next iteration
 				Action next;
+
 				//if we're the last special event and we have a special resume callback. 
 				if (specialEvents.Count == 1 && resumeActionsCallback != null)
 				{
-					next = () => DoNext(() => { resumeActionsCallback(hoursPassed, areaEngine.currentArea); NextEvent(); });
+					next = () => DoNext(() => { resumeActionsCallback(totalHoursPassed, areaEngine.currentArea); NextEvent(); });
 				}
 				else
 				{
@@ -240,10 +287,10 @@ namespace CoC.Backend.Engine.Time
 				//}
 				//else
 				//{
-				item.BuildInitialScene(next);
+				item.BuildInitialScene(isIdleHour, idleHoursPassed > 0, next);
 				//}
 			}
-			else if (hoursPassed > 0)
+			else if (totalHoursPassed > 0)
 			{
 				InitializeNewHour();
 			}
@@ -264,10 +311,14 @@ namespace CoC.Backend.Engine.Time
 			ranLaziesYet = true;
 			lazyQueue = new Queue<ITimeLazyListener>(lazyListeners);
 
+			int hoursPassed = lastTimeLaziesRan.hoursToNow();
+			byte lazyHoursPassed = hoursPassed > byte.MaxValue ? byte.MaxValue : (byte)hoursPassed;
+
 			while (lazyQueue.Count > 0)
 			{
 				ITimeLazyListener item = lazyQueue.Dequeue();
-				EventWrapper wrapper = item.reactToTimePassing(hoursPassedForLazies);
+
+				EventWrapper wrapper = item.reactToTimePassing(lazyHoursPassed);
 				while (!EventWrapper.IsNullOrEmpty(wrapper))
 				{
 					if (!wrapper.isScene)
@@ -282,12 +333,12 @@ namespace CoC.Backend.Engine.Time
 				}
 			}
 
-			hoursPassedForLazies = 0;
+			lastTimeLaziesRan = GameDateTime.Now;
 
 			if (outputMagic.Length != 0)
 			{
 				hasAnyOutput = true;
-				OutputText(outputMagic.ToString);
+				OutputText(outputMagic.ToString());
 				outputMagic.Clear();
 			}
 			//NextEvent(true);

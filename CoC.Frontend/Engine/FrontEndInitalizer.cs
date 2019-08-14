@@ -20,7 +20,7 @@ namespace CoC.Frontend.Engine
 
 			BasePerkModifiers getExtraData() => new ExtraPerkModifiers();
 
-			Backend.Engine.BackendInitializer.Init(globalDataFile, MenuHelpers.DoNext, TextOutput.AddOutput, 
+			Backend.Engine.BackendInitializer.Init(globalDataFile, MenuHelpers.DoNext, TextOutput.OutputText, 
 				AreaManager.placeCollection, AreaManager.locationCollection, getExtraData, DifficultyManager.difficultyCollection);
 
 

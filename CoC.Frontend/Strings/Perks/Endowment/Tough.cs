@@ -9,7 +9,7 @@ namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class Tough : EndowmentPerkBase
 	{
-		private static string ToughStr()
+		public static string ToughStr()
 		{
 			return "Tough";
 		}

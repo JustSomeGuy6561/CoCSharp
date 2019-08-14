@@ -19,21 +19,23 @@ namespace CoC.Backend.BodyParts
 			switch (style)
 			{
 				case HairStyle.MESSY:
-					return "messy";
+					return "Messy";
 				case HairStyle.BRAIDED:
-					return "braided";
+					return "Braided";
 				case HairStyle.STRAIGHT:
-					return "straight";
+					return "Straight";
 				case HairStyle.WAVY:
-					return "wavy";
+					return "Wavy";
 				case HairStyle.CURLY:
-					return "curly";
+					return "Curly";
 				case HairStyle.COILED:
-					return "coiled";
+					return "Coiled";
+				case HairStyle.PONYTAIL:
+					return "Pony-Tail";
 				case HairStyle.NO_STYLE:
-					return "no style";
+					return "No Style";
 				default:
-					throw new NotImplementedException("A new hair style was added but someone didn't implement it's AsString");
+					throw new NotImplementedException("A new hair style was added but someone didn't implement its AsString");
 			}
 		}
 	}

@@ -119,7 +119,7 @@ namespace CoC.UI
 			statDataCollection.playerStats.Lust.minimum = 10;
 			statDataCollection.playerStats.HP.maximum = 216;
 			statDataCollection.playerStats.HP.current = 12;
-			TextOutput.AddOutput(() => "Testing <b>Bold</b>, <i> Italic</i>, and <u>Underline</u>\r\nTesting new line.\nTesting scumbag newline.\\ " +
+			TextOutput.OutputText("Testing <b>Bold</b>, <i> Italic</i>, and <u>Underline</u>\r\nTesting new line.\nTesting scumbag newline.\\ " +
 				"Testing \\ Slashes\\par\r\n Testing bad tag </u> Testing,,,, Quotes: \" '\r\n" +
 				"Testing list: <ul><li>batman</li><li>robin</li><li>nightwing</li><li>oracle</li></ul>Cool! ");
 		}

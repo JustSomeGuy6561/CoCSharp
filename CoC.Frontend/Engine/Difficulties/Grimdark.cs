@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Engine;
+using CoC.Backend.SaveData;
 
 namespace CoC.Frontend.Engine.Difficulties
 {
@@ -19,6 +20,11 @@ namespace CoC.Frontend.Engine.Difficulties
 		public override double monsterHPMultiplier()
 		{
 			return 2.0;
+		}
+
+		public override void OnGameStart()
+		{
+			GameEngine.SetHomeBase()
 		}
 	}
 }

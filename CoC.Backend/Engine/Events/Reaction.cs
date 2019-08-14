@@ -151,4 +151,38 @@ namespace CoC.Backend.Engine.Events
 	}
 
 
+	//Identical To Location reaction, but specifically for the current home base. 
+	public sealed class HomeBaseReaction : IComparable<HomeBaseReaction>
+	{
+		public byte timesToVisitUntilProccing { get; private set; }
+
+		public Action onTrigger { get; private set; }
+
+		private HomeBaseReaction(Action reaction, byte delay = 0)
+		{
+			onTrigger = reaction;
+			timesToVisitUntilProccing = delay;
+		}
+
+		public static HomeBaseReaction CreateHomeBaseReaction(Action reaction)
+		{
+			return new HomeBaseReaction(reaction);
+		}
+
+		public static HomeBaseReaction CreateHomeBaseReaction(Action reaction, byte delay)
+		{
+			return new HomeBaseReaction(reaction, delay);
+		}
+
+		public int CompareTo(HomeBaseReaction other)
+		{
+			return timesToVisitUntilProccing.CompareTo(other.timesToVisitUntilProccing);
+		}
+
+		internal void VisitLocation()
+		{
+			timesToVisitUntilProccing--;
+		}
+	}
+
 }

@@ -48,11 +48,11 @@ namespace CoC.Frontend.Creatures
 			StringBuilder sb = new StringBuilder("While it's true everyone is unique in their own way, your unique traits are a bit more apparent. ");
 			if (isLocked)
 			{
-				sb.Append("While this means you don't have the same level of flexibility as others, there are still some things you can change about yourself. ");
+				sb.Append("You find yourself unable to change these; they define you, for better or for worse, though you suppose that may change once you're through the portal. ");
 			}
 			else
 			{
-				sb.Append("You find yourself unable to change these; they define you, for better or for worse, though you suppose that may change once you're through the portal. ");
+				sb.Append("While this means you don't have the same level of flexibility as others, there are still some things you can change about yourself. ");
 			}
 			return sb.ToString();
 		}
@@ -107,10 +107,9 @@ namespace CoC.Frontend.Creatures
 			new Triple<string>("Mas. Girly", "Androgynous build." + Environment.NewLine + Environment.NewLine + "A bit masculine, but soft and slender.", "Masculine, Girly") //8
 		};
 
-		private Triple<SimpleDescriptor> HermButtonData(int index)
+		private Triple<string> HermButtonData(int index)
 		{
-			Triple<string> value = HERM_BUILDS[index];
-			return new Triple<SimpleDescriptor>(() => value.first, () => value.second, () => value.third);
+			return HERM_BUILDS[index];
 		}
 
 		private readonly Triple<string>[] GENDERLESS_BUILDS =
@@ -120,10 +119,9 @@ namespace CoC.Frontend.Creatures
 			new Triple<string>("Androgynous", "Will make you appear truly androgynous.", "")
 		};
 
-		private Triple<SimpleDescriptor> GenderlessButtonData(int index)
+		private Triple<string> GenderlessButtonData(int index)
 		{
-			var value = GENDERLESS_BUILDS[index];
-			return new Triple<SimpleDescriptor>(() => value.first, () => value.second, () => value.third);
+			return GENDERLESS_BUILDS[index];
 		}
 
 		private static string DefaultBuildHint()
@@ -315,7 +313,7 @@ namespace CoC.Frontend.Creatures
 			}
 			else
 			{
-				sb.Append("Your hair will grow over time, and certain items or interactions can change your hair during gameplay.");
+				sb.Append(" Your hair will grow over time, and certain items or interactions can change your hair during gameplay.");
 			}
 			sb.Append(Environment.NewLine + Environment.NewLine + "You may also choose to ");
 			sb.Append(isFromCustomization ? "return to" : "continue on to");
@@ -335,18 +333,18 @@ namespace CoC.Frontend.Creatures
 
 		private string HairTooLongStr(float inputValue)
 		{
-			return "The value you entered, " + inputValue + ",  is taller than you! Try again, using a smaller value.";
+			return "The value you entered, " + inputValue + ",  is taller than you! Try again, using a smaller value." + Environment.NewLine;
 		}
 
 		private string NegativeNumberHairStr(float inputValue)
 		{
-			return "The value you entered, " + inputValue + ", is negative, and last we checked, that's not possible. Try again, with a valid length";
+			return "The value you entered, " + inputValue + ", is negative, and last we checked, that's not possible. Try again, with a valid length." + Environment.NewLine;
 		}
 
 		private string NotANumberInput(string input)
 		{
 			//make sure to parse null string. should never happen, but I don't actually control the GUI code, do I?
-			return "The text you entered, " + (input ?? "") + ", could not be parsed as a number. Try again, with a number";
+			return "The text you entered, " + (input ?? "") + ", could not be parsed as a number. Try again, with a number." + Environment.NewLine;
 		}
 
 		private string HairStyleStr()
@@ -362,7 +360,7 @@ namespace CoC.Frontend.Creatures
 		{
 			StringBuilder sb = new StringBuilder("You can finalize your appearance customization before you proceed to perk selection." +
 				" You will be able to alter your appearance through the usage of certain items." + Environment.NewLine + Environment.NewLine +
-				" Height:" + Measurement.ToNearestLargeAndSmallUnit(creator.heightInInches, true) + Environment.NewLine +
+				"Height:" + Measurement.ToNearestLargeAndSmallUnit(creator.heightInInches, true) + Environment.NewLine +
 				"Skin tone: " + creator.complexion.AsString() + Environment.NewLine);
 
 			//Hair is complicated. basically, we build the string in parts, and we can tell if we've added to the string at any point based on if
@@ -533,7 +531,7 @@ namespace CoC.Frontend.Creatures
 				max = MAX_CLIT_IN;
 				unit = " inches";
 			}
-			return "You can choose a clit length between " + min + " and " + max + unit + Environment.NewLine + Environment.NewLine + 
+			return "You can choose a clit length between " + min + " and " + max + unit + Environment.NewLine + Environment.NewLine +
 				"Clit size and other vaginal traits can be altered later in the game through certain items or interactions.";
 		}
 		private string BreastSizeStr()
@@ -573,8 +571,8 @@ namespace CoC.Frontend.Creatures
 			else
 			{
 				unit = "in inches.";
-				min = Measurement.ToNearestLargeAndSmallUnit(MIN_HEIGHT_IN, false) + "(" +Measurement.ToNearestSmallUnit(MIN_HEIGHT_IN, false, false) + ")" ;
-				max = Measurement.ToNearestLargeAndSmallUnit(MAX_HEIGHT_IN, false) + "(" +Measurement.ToNearestSmallUnit(MAX_HEIGHT_IN, false, false) + ")";
+				min = Measurement.ToNearestLargeAndSmallUnit(MIN_HEIGHT_IN, false) + "(" + Measurement.ToNearestSmallUnit(MIN_HEIGHT_IN, false, false) + ")";
+				max = Measurement.ToNearestLargeAndSmallUnit(MAX_HEIGHT_IN, false) + "(" + Measurement.ToNearestSmallUnit(MAX_HEIGHT_IN, false, false) + ")";
 			}
 
 			return "Set your height " + unit + Environment.NewLine + Environment.NewLine + "You can choose any height between " + min + " and " + max;
@@ -601,12 +599,21 @@ namespace CoC.Frontend.Creatures
 
 		private string FurLockedStr()
 		{
-
 			return LockedStr(multiFurred ? "fur colors" : "fur color");
 		}
 		private string LockedStr(string src)
 		{
 			return "The " + src + " for this character cannot be changed";
+		}
+
+		private string EndowmentQuestionStr()
+		{
+			return "Every person is born with a gift. What's yours?";
+		}
+
+		private string HistoryQuestionStr()
+		{
+			return "Before you became a champion, you had other plans for your life. What were you doing before?";
 		}
 	}
 }

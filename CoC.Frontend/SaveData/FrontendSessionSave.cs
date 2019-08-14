@@ -8,15 +8,19 @@ namespace CoC.Frontend.SaveData
 {
 	internal sealed class FrontendSessionSave : Backend.SaveData.SaveData
 	{
-
-
 		public static FrontendSessionSave data => SaveSystem.getSessionSave<FrontendSessionSave>();
 
 		internal bool ForestUnlocked = false;
 		internal bool DeepwoodsUnlocked = false;
+		internal bool LakeUnlocked = false;
+		internal bool DesertUnlocked = false;
+		internal bool MountainUnlocked = false;
 
 		internal int ForestExplorationCount = 0;
 		internal int DeepwoodsExplorationCount = 0;
+		internal int LakeExplorationCount = 0;
+		internal int DesertExplorationCount = 0;
+		internal int MountainExplorationCount = 0;
 
 		internal byte corruptedGladesDestroyed = 0;
 
@@ -40,6 +44,5 @@ namespace CoC.Frontend.SaveData
 		internal bool TamaniIsDisabled = false;
 
 		internal bool SillyMode = false;
-
 	}
 }

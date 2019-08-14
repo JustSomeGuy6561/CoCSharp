@@ -40,7 +40,7 @@ namespace CoC.Backend.BodyParts
 	//which means that despite the fact that Marble and Katherine can have the same lactation multiplier, Marble would take longer to fill up and not be complaining every 3 hours she needs a milking.
 	//RIP katherine, lol.
 
-	public sealed class Genitals : SimpleSaveablePart<Genitals>, IBodyPartTimeLazy, IBaseStatPerkAware //for now all the stuff it contains is lazy, so that's all we need.
+	public sealed partial class Genitals : SimpleSaveablePart<Genitals>, IBodyPartTimeLazy, IBaseStatPerkAware //for now all the stuff it contains is lazy, so that's all we need.
 	{
 		PerkStatBonusGetter perkModifiers;
 
@@ -659,6 +659,14 @@ namespace CoC.Backend.BodyParts
 			}
 			return true;
 		}
+
+		public SimpleDescriptor AllCocksShortDesc => AllCocksShort;
+
+		public SimpleDescriptor AllCocksFullDesc => AllCocksFull;
+
+		public SimpleDescriptor AllVaginasShortDesc => AllVaginasShort;
+		public SimpleDescriptor AllVaginasFullDesc => AllVaginasFull;
+
 		#region ExtraGenderChecks
 		//allows players with clit-dicks (a hard-to-obtain omnibus trait) to appear female, and do female scenes. 
 		//NYI, but also allows players to "surprise" NPCs expecting lesbian sex (or males expecting straight sex)

@@ -30,9 +30,16 @@ namespace CoC.Backend.CoC_Colors
 			value = rgb.Name;
 		}
 
-		public string AsString()
+		public string AsString(bool lowerCase = true)
 		{
-			return value;
+			if (lowerCase)
+			{
+				return value.ToLower();
+			}
+			else
+			{
+				return value;
+			}
 		}
 
 		protected readonly string value;

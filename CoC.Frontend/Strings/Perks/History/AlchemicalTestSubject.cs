@@ -14,13 +14,13 @@
 
 		private static string GuineaPigHint()
 		{
-			return "You spent some time as an alchemist's \"assistant,\" though it'd be more accurate to say you were a test subject. " +
-				"Your body is far more reactive to various elixirs and tonics than normal, and you have no doubt this will continue. Is this your history?";
+			return "Your body is far more reactive to strange chemicals than normal, which you put that to good use testing " +
+				"various elixirs and tonics for the local alchemist. You have little doubt items in Mareth will have similar effects. Is this your history?";
 		}
 
 		private static string GuineaPigDesc()
 		{
-			return "Time spend testing various compounds and elixirs has made your body more reactive to transformative items.";
+			return "Your body is more reactive to transformative items and tonics.";
 		}
 	}
 }

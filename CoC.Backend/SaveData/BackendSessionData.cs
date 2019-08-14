@@ -7,26 +7,28 @@ using System;
 
 namespace CoC.Backend.SaveData
 {
-	internal sealed class BackendSessionData : SaveData
+	public sealed class BackendSessionData : SaveData
 	{
 		internal static BackendSessionData data => SaveSystem.getSessionSave<BackendSessionData>();
 
 		public bool piercingFetish = false; //a perk may set this, but i think it's fine like this.
 
-		//public bool hasBigTitPerk = false;
+		//could be stored in frontend, idk. 
+		public bool HungerEnabled = false;
+		public bool RealismEnabled = false;
 
-		//public bool hasBigCockPerk = false;
-
-		//public ushort timesPCRecievedAnalSex = 0;
-		//public bool isAnalVirgin = true;
-
-		internal Player player; //read all player data from this. probably wont be stored as player, but w/e. 
+		//placeholder. a form of player will be stored in here, but only for saving and loading. it will otherwise be ignored. 
+		//internal Player player; 
 
 		public bool SFW_Mode = false;
 
 		public byte difficulty = 0;
+		public bool hardcoreMode = false;
+
 		public byte NumTimeNewGamePlus = 0;
 		public byte NewGamePlusLevel => Math.Min(NumTimeNewGamePlus, (byte)4);
+
+
 	}
 
 }

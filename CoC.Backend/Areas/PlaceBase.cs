@@ -9,10 +9,9 @@ using System.Text;
 
 namespace CoC.Backend.Areas
 {
-	public abstract class PlaceBase : AreaBase
+	public abstract class PlaceBase : VisitableAreaBase
 	{
-		public abstract bool Unlocked();
-		public abstract bool Disabled();
+		public abstract bool isDisabled { get; protected set; }
 
 		protected abstract void ExplorePlace();
 

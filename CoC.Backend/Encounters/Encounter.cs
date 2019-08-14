@@ -12,8 +12,8 @@ namespace CoC.Backend.Encounters
 		//encounters occur between player and others. so here's a helper!
 		protected Player player => GameEngine.currentPlayer;
 
-		internal protected bool isActive => encounterUnlocked();
-		internal protected bool isCompleted => encounterDisabled();
+		public bool isActive => encounterUnlocked();
+		public bool isCompleted => encounterDisabled();
 
 		internal protected abstract void Run();
 

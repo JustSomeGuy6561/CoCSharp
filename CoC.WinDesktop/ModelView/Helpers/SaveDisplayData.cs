@@ -15,7 +15,9 @@ namespace CoCWinDesktop.ModelView.Helpers
 	{
 		public string Name { get; }
 		public string Notes { get; }
-		public DateTime LastPlayed { get; }
+
+		private readonly DateTime LastPlayedDateTime;
+		public string LastPlayed => LastPlayedDateTime.ToString();
 		public string GenderString => gender.AsText();
 		public string GameDifficultyString => gameDifficulty.difficultyStr();
 

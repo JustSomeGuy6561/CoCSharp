@@ -1,15 +1,12 @@
-﻿using System;
+﻿using CoC.Backend.Strings;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
-using CoC.Backend;
-using CoC.Backend.Strings;
-using CoC.Frontend.UI.ControllerData;
 
-namespace CoC.Frontend.UI
+namespace CoC.Backend.Engine
 {
-	internal static class ButtonManager
+	public static class ButtonManager
 	{
 		public const byte MAX_BUTTONS = 15;
 
@@ -26,7 +23,7 @@ namespace CoC.Frontend.UI
 			buttons = Array.AsReadOnly(buttonHelper);
 		}
 
-		internal static bool AddButton(byte index, SimpleDescriptor title, Action callback)
+		public static bool AddButton(byte index, string title, Action callback)
 		{
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 
@@ -38,7 +35,7 @@ namespace CoC.Frontend.UI
 			return true;
 		}
 
-		internal static bool AddButtonWithToolTip(byte index, SimpleDescriptor title, Action callback, SimpleDescriptor tip, SimpleDescriptor replacementTitle = null)
+		public static bool AddButtonWithToolTip(byte index, string title, Action callback, string tip, string replacementTitle = null)
 		{
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 
@@ -51,7 +48,7 @@ namespace CoC.Frontend.UI
 		}
 
 
-		internal static bool AddButtonDisabled(byte index, SimpleDescriptor title)
+		public static bool AddButtonDisabled(byte index, string title)
 		{
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 
@@ -64,7 +61,7 @@ namespace CoC.Frontend.UI
 
 		}
 
-		internal static bool AddButtonDisabledWithToolTip(byte index, SimpleDescriptor title, SimpleDescriptor tip, SimpleDescriptor replacementTitle = null)
+		public static bool AddButtonDisabledWithToolTip(byte index, string title, string tip, string replacementTitle = null)
 		{
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 
@@ -76,7 +73,7 @@ namespace CoC.Frontend.UI
 			return true;
 		}
 
-		internal static bool AddButtonIf(byte index, SimpleDescriptor title, bool condition, Action enabledCallback)
+		public static bool AddButtonIf(byte index, string title, bool condition, Action enabledCallback)
 		{
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 			if (buttonHelper[index] != null) return false;
@@ -89,7 +86,7 @@ namespace CoC.Frontend.UI
 			return true;
 		}
 
-		internal static bool QueryButtons(out ReadOnlyCollection<ButtonData> buttonCollection)
+		public static bool QueryButtons(out ReadOnlyCollection<ButtonData> buttonCollection)
 		{
 			bool retVal = buttonsChanged;
 
@@ -98,13 +95,13 @@ namespace CoC.Frontend.UI
 			return retVal;
 		}
 
-		internal static bool AddButtonIfWithToolTip(byte index, SimpleDescriptor title, bool condition, Action enabledCallback, SimpleDescriptor enabledTip, SimpleDescriptor disabledTip, SimpleDescriptor replacementTitle = null)
+		public static bool AddButtonIfWithToolTip(byte index, string title, bool condition, Action enabledCallback, string enabledTip, string disabledTip, string replacementTitle = null)
 		{
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 			if (buttonHelper[index] != null) return false;
 
 			Action callback;
-			SimpleDescriptor tip;
+			string tip;
 			if (condition)
 			{
 				callback = enabledCallback;
@@ -123,18 +120,18 @@ namespace CoC.Frontend.UI
 			return true;
 		}
 
-		internal static bool AddButtonOrAddDisabledWithToolTip(byte index, SimpleDescriptor title, bool condition, Action enabledCallback, SimpleDescriptor disabledTip, SimpleDescriptor replacementTitle = null)
+		public static bool AddButtonOrAddDisabledWithToolTip(byte index, string title, bool condition, Action enabledCallback, string disabledTip, string replacementTitle = null)
 		{
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
 			if (buttonHelper[index] != null) return false;
 
 			Action callback;
-			SimpleDescriptor tip;
+			string tip;
 			if (condition)
 			{
 				callback = enabledCallback;
-				tip = GlobalStrings.None;
-				replacementTitle = GlobalStrings.None;
+				tip = "";
+				replacementTitle = "";
 			}
 			else
 			{
@@ -148,10 +145,45 @@ namespace CoC.Frontend.UI
 			return true;
 		}
 
-		internal static void ClearButtons()
+		public static void ClearButtons()
 		{
 			Array.Clear(buttonHelper, 0, buttonHelper.Length);
 			buttonsChanged = true;
+		}
+	}
+
+	public static class MenuHelpers
+	{
+		public static bool ButtonPreviousPage(Action callback, byte location = 10)
+		{
+			return ButtonManager.AddButton(location, PREV_PAGE(), callback);
+		}
+		public static bool ButtonNextPage(Action callback, byte location = 11)
+		{
+			return ButtonManager.AddButton(location, NEXT_PAGE(), callback);
+		}
+		public static void DoNext(Action callback)
+		{
+			ButtonManager.ClearButtons();
+			ButtonManager.AddButton(0, GlobalStrings.NEXT(), callback);
+		}
+
+		public static void DoYesNo(Action yesCallback, Action noCallback)
+		{
+			ButtonManager.ClearButtons();
+			ButtonManager.AddButton(0, GlobalStrings.YES(), yesCallback);
+			ButtonManager.AddButton(1, GlobalStrings.NO(), noCallback);
+		}
+
+
+		private static string NEXT_PAGE()
+		{
+			return "Next Page";
+		}
+
+		private static string PREV_PAGE()
+		{
+			return "Prev Page";
 		}
 	}
 }

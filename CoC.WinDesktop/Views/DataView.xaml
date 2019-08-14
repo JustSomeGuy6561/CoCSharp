@@ -46,7 +46,7 @@
 		<ScrollViewer Canvas.Left="208" Canvas.Top="52" Width="702" Height="668">
 			<ListBox ItemsSource="{Binding Path=SaveItems, Mode=OneWay}" SelectedItem="{Binding Path=SelectedSave, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent">
 				<ListBox.ItemTemplate>
-					<DataTemplate>
+					<DataTemplate DataType="{x:Type Help:SaveDisplayData}">
 						<Help:SaveDisplay/>
 					</DataTemplate>
 				</ListBox.ItemTemplate>
@@ -64,11 +64,11 @@
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 			<!-- These will be bound later, but for now i have them done in this fashion because its easier to design this way. -->
-			<Button Style="{StaticResource CoCButton}" Grid.Column="0" Content="Load"/><!-- Not available when new save is selected. -->
-			<Button Style="{StaticResource CoCButton}" Grid.Column="1" Content="Save"/><!-- When another selected this says overwrite--><!-- Disabled on initial load.-->
-			<Button Style="{StaticResource CoCButton}" Grid.Column="2" Content="Delete"/><!--Not available when new save is selected -->
-			<Button Style="{StaticResource CoCButton}" Grid.Column="3" Content="Options"/><!-- Allows you to alter QuickSave/QuickLoad Options, Enable/Disable Auto-save, and change browsing location for saves-->
-			<Button Style="{StaticResource CoCButton}" Grid.Column="4" Content="Cancel" IsCancel="True"/>
+			<Button Style="{StaticResource CoCButton}" Grid.Column="0" Content="Load"/><!-- Not available when new save is selected. --><!-- Toggles AutoSave on Options menu.-->
+			<Button Style="{StaticResource CoCButton}" Grid.Column="1" Content="Save"/><!-- When another selected this says overwrite--><!-- Disabled on initial load.--><!-- Toggles QuickSave Confirm on Options menu-->
+			<Button Style="{StaticResource CoCButton}" Grid.Column="2" Content="Delete"/><!--Not available when new save is selected --><!-- Toggles QuickLoad Confirm on Options menu-->
+			<Button Style="{StaticResource CoCButton}" Grid.Column="3" Content="Options"/><!-- Allows you to alter QuickSave/QuickLoad Options, Enable/Disable Auto-save, and change browsing location for saves--><!-- Change Directory on Options menu-->
+			<Button Style="{StaticResource CoCButton}" Grid.Column="4" Content="Cancel" IsCancel="True"/><!-- Is "Return" on Options menu-->
 		</Grid>
 	</Canvas>
 </UserControl>

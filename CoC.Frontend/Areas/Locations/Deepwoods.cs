@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //4/6/2019, 12:03 AM
+using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
 using CoC.Frontend.SaveData;
@@ -30,20 +31,13 @@ namespace CoC.Frontend.Areas.Locations
 
 		}
 
-		public override int timesExplored
+		public override int timesVisited
 		{
 			get => FrontendSessionSave.data.DeepwoodsExplorationCount;
 			protected set => FrontendSessionSave.data.DeepwoodsExplorationCount = value;
 		}
 
-		public override void Unlock()
-		{
-			if (!Unlocked)
-			{
-				FrontendSessionSave.data.DeepwoodsUnlocked = true;
-				AddOutput(UnlockText);
-			}
-		}
+		protected override SimpleDescriptor UnlockText => DeepwoodsUnlock;
 	}
 }
 

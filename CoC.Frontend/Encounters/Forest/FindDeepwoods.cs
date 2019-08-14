@@ -22,8 +22,8 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override void Run()
 		{
-			GameEngine.GoToLocation<Deepwoods>();
-			GameEngine.currentLocation.Unlock();
+#warning may want to combine these.
+			GameEngine.FindAndUnlockArea<Deepwoods>();
 		}
 
 		protected override bool encounterDisabled()

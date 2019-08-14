@@ -29,5 +29,11 @@ namespace CoC.Backend
 	//every function that uses a button will follow this format. note that with lambdas they can take virtually anything.
 	public delegate void PlayerFunction(Player player);
 
-	public delegate void ResumeTimeCallback(byte hoursRemaining, AreaBase currentLocation);
+	/// <summary>
+	/// Used to 
+	/// </summary>
+	/// <param name="hoursRemaining"></param>
+	/// <param name="currentLocation"></param>
+	/// <param name="isIdling"></param>
+	public delegate void ResumeTimeCallback(ushort hoursRemaining, AreaBase currentLocation);
 }

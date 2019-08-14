@@ -9,7 +9,7 @@ namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class BigClit : EndowmentPerkBase
 	{
-		private static string BigClitStr()
+		public static string BigClitStr()
 		{
 			return "Big Clit";
 		}
