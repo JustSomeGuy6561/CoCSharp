@@ -1,20 +1,19 @@
-﻿using CoC.Backend.Engine.Time;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CoC.Backend.Engine;
+using CoC.Backend.Engine.Time;
 
 namespace CoC.Frontend.UI.ControllerData
 {
-	public sealed class StatDataCollection
+	public sealed class StatDataCollection : StatDataCollectionBase
 	{
-		public readonly PlayerStatData playerStats = new PlayerStatData();
-		public readonly CombatEnemyStatData enemyStats = new CombatEnemyStatData();
-		public GameDateTime currentTime => getGameTime();
-		private readonly Func<GameDateTime> getGameTime;
-
-		public StatDataCollection(Func<GameDateTime> getTime)
+		public override GameDateTime GetTime()
 		{
-			getGameTime = getTime ?? throw new ArgumentNullException(nameof(getTime));
+			return GameDateTime.Now;
+		}
+
+		public override void ParseData()
+		{
+			this.playerStats.Update(GameEngine.currentPlayer);
+			//for now just ignore enemy stats.
 		}
 	}
 }

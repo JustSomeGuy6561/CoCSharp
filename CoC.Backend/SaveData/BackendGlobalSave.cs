@@ -5,9 +5,9 @@
 
 namespace CoC.Backend.SaveData
 {
-	internal sealed class BackendGlobalData : SaveData
+	internal sealed class BackendGlobalSave : SaveData
 	{
-		internal static BackendGlobalData data => SaveSystem.getGlobalSave<BackendGlobalData>();
+		internal static BackendGlobalSave data => SaveSystem.getGlobalSave<BackendGlobalSave>();
 
 		public bool UsesMetricMeasurements = false;
 

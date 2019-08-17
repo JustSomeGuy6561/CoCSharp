@@ -67,6 +67,8 @@
 			<Setter Property="FontFamily" Value="{Binding Path=TextFontFamily, Source={StaticResource Runner}, Mode=OneWay}"/>
 			<Setter Property="FontSize" Value="{Binding Path=FontSize, Source={StaticResource Runner}, Mode=OneWay}" />
 			<Setter Property="Foreground" Value="Black"/>
+			<Setter Property="IsTabStop" Value="True"/>
+			<Setter Property="TabIndex" Value="6"/>
 		</Style>
 	</UserControl.Resources>
 	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="{Binding Height, ElementName=_this}" Width="{Binding Width, ElementName=_this}">

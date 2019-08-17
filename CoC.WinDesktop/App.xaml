@@ -10,6 +10,13 @@
 	<Application.Resources>
 		<MV:ModelViewRunner x:Key="Runner" />
 
+		<Style x:Key="PageControl" TargetType="{x:Type UserControl}">
+			<Setter Property="Focusable" Value="True" />
+			 <Setter Property="IsTabStop" Value="True" />
+			 <Setter Property="TabIndex" Value="0" />
+			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+		</Style>
+		
 		<Style TargetType="{x:Type Control}">
 			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 		</Style>
@@ -77,7 +84,11 @@
 		<Style x:Key="CoCText" TargetType="{x:Type TextBlock}" >
 			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
 		</Style>
-
+		<Style x:Key="CoCLabel" TargetType="{x:Type Label}" >
+			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
+			<Setter Property="Padding" Value="0"/>
+		</Style>
+		
 		<Style x:Key="SimpleTextZoneVersion2" TargetType="{x:Type CC:TextView}">
 			<Setter Property="Canvas.Left" Value="208" />
 			<Setter Property="Canvas.Top" Value="52" />
@@ -89,6 +100,13 @@
 			<Setter Property="FontFamily" Value="{Binding SidebarFontFamily, Mode=OneWay, Source={StaticResource Runner}}" />
 			<Setter Property="FontWeight" Value="Bold"/>
 			<Setter Property="TextAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Bottom"/>
+		</Style>
+		<Style x:Key="CoCSidebarLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource CoCLabel}">
+			<Setter Property="FontFamily" Value="{Binding SidebarFontFamily, Mode=OneWay, Source={StaticResource Runner}}" />
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="VerticalContentAlignment" Value="Bottom"/>
 			<Setter Property="VerticalAlignment" Value="Bottom"/>
 		</Style>
 		<Style x:Key="CoCCanvas" TargetType="{x:Type Canvas}" >
@@ -104,8 +122,14 @@
 		<Style x:Key="Sidebar" TargetType="{x:Type Canvas}" >
 			<Setter Property="Width" Value="205" />
 			<Setter Property="Height" Value="600" />
-			<Setter Property="Canvas.Top" Value="50" />
-
+			<!--<Setter Property="Background" Value="Fuchsia"/>-->
+			<Setter Property="Background">
+				<Setter.Value>
+					<ImageBrush ImageSource="{Binding SidebarBackgroundImage, Mode=OneWay, Source={StaticResource Runner}, TargetNullValue={x:Null}}" />
+				</Setter.Value>
+			</Setter>
+			<!--<UserControl.Background>
+			</UserControl.Background>-->
 		</Style>
 		
 	</Application.Resources>

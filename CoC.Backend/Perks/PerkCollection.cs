@@ -23,11 +23,14 @@ namespace CoC.Backend.Perks
 
 		internal readonly BasePerkModifiers baseModifiers;
 
-		internal PerkCollection(Creature sourceCreature, params PerkBase[] basePerks)
+		internal PerkCollection(Creature sourceCreature)
 		{
 			source = sourceCreature ?? throw new ArgumentNullException(nameof(sourceCreature));
 			baseModifiers = GameEngine.constructPerkModifier();
+		}
 
+		internal void InitPerks(params PerkBase[] basePerks)
+		{
 			if (basePerks != null)
 			{
 				foreach (var perk in basePerks)

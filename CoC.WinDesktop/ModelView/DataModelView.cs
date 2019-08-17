@@ -1,5 +1,4 @@
-﻿using CoC.Backend.Engine.Time;
-using CoC.Frontend.UI;
+﻿using CoC.Frontend.UI;
 using CoC.Frontend.UI.ControllerData;
 using CoCWinDesktop.CustomControls;
 using CoCWinDesktop.ModelView.Helpers;
@@ -7,10 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CoCWinDesktop.ModelView
 {
@@ -72,7 +68,7 @@ namespace CoCWinDesktop.ModelView
 		}
 		private SaveDisplayData _selectedItem;
 
-		private StatDataCollection displaySource
+		private StatDataCollectionBase displaySource
 		{
 			get => _displaySource;
 			set
@@ -84,12 +80,17 @@ namespace CoCWinDesktop.ModelView
 
 				if (_displaySource != value)
 				{
+					var oldSource = _displaySource;
 					_displaySource = value;
+
+					//if (oldSource != null)
+					//{
 					sideBar.UpdateSidebar(value);
+					//}
 				}
 			}
 		}
-		private StatDataCollection _displaySource;
+		private StatDataCollectionBase _displaySource;
 
 		private bool optionsView
 		{
@@ -123,7 +124,7 @@ namespace CoCWinDesktop.ModelView
 
 		//on Options command, set this to true.
 
-		private readonly StatDataCollection emptyDisplay = new StatDataCollection(() => new GameDateTime(0, 0));
+		private readonly StatDataCollectionBase emptyDisplay = new SaveDataCollection(null);
 
 		private Action onCancel;
 

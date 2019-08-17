@@ -25,7 +25,12 @@ namespace CoC.Frontend.Areas.Locations
 
 		private static HashSet<RandomEncounter> GetRandomEncounters()
 		{
-			return new HashSet<RandomEncounter>(randomEncounters.Where(x => x.isActive && !x.isCompleted));
+			return new HashSet<RandomEncounter>(randomEncounters.Where(x => test(x)));
+		}
+
+		private static bool test(RandomEncounter encounter)
+		{
+			return encounter.isActive && !encounter.isCompleted;
 		}
 
 		private static HashSet<SemiRandomEncounter> GetSemiRandomEncounters()

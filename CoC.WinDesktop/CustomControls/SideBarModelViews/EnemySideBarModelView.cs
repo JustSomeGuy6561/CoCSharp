@@ -11,13 +11,13 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 {
 	public sealed class EnemySideBarModelView : SideBarBase
 	{
-		public EnemySideBarModelView(StatDataCollection stats) : base(stats)
+		public EnemySideBarModelView(StatDataCollectionBase stats) : base(stats)
 		{
 		}
 
 		public override event PropertyChangedEventHandler PropertyChanged;
 
-		protected override void GetData(StatDataCollection statData)
+		protected override void GetData(StatDataCollectionBase statData)
 		{
 			throw new NotImplementedException();
 		}

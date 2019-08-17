@@ -245,6 +245,12 @@ namespace CoC.Backend.Engine.Time
 			NextEvent();
 		}
 
+		internal void InitializeTime(int currDay, byte currHour)
+		{
+			CurrentDay = currDay;
+			CurrentHour = currHour;
+		}
+
 		internal void CancelIdle()
 		{
 			var delta = idleHoursPassed;

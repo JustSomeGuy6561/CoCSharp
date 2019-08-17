@@ -17,14 +17,18 @@ using System.Windows.Shapes;
 namespace CoCWinDesktop.CustomControls
 {
 	/// <summary>
-	/// Interaction logic for UserControl1.xaml
+	/// Interaction logic for SideBar.xaml
 	/// </summary>
 	public partial class SideBar : UserControl
 	{
 		public static readonly DependencyProperty SideBarObjectProperty = DependencyProperty.Register("SideBarObject", typeof(SideBarBase), typeof(SideBar),
 			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
-		public SideBarBase SideBarObject {get; set;}
+		public SideBarBase SideBarObject
+		{
+			get => (SideBarBase)GetValue(SideBarObjectProperty);
+			set => SetCurrentValue(SideBarObjectProperty, value);
+		}
 
 		public SideBar()
 		{

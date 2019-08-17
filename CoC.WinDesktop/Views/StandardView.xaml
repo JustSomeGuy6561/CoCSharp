@@ -2,20 +2,23 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:local="clr-namespace:CoCWinDesktop"
+             xmlns:local="clr-namespace:CoCWinDesktop.Views"
 			 xmlns:MV="clr-namespace:CoCWinDesktop.ModelView"
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
 			 xmlns:Help="clr-namespace:CoCWinDesktop.ModelView.Helpers"
 			 xmlns:sys ="clr-namespace:System;assembly=mscorlib"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 mc:Ignorable="d" 
+			 d:DataContext="{d:DesignInstance Type=MV:StandardModelView}"
+			 Style="{StaticResource PageControl}"
 			 Name="_this">
-			 <!--xmlns:Behave="clr-namespace:CoCWinDesktop.Behaviors"
+	<!--xmlns:Behave="clr-namespace:CoCWinDesktop.Behaviors"
 			 Behave:FocusBehavior.FocusFirst="True"-->
 	<UserControl.Resources>
 		<Conv:DrawingColorToMediaColorIgnoreAlpha x:Key="ColorConverter" />
 		<Conv:VisibilityFromIsNull x:Key="NullToVis"/>
 		<Conv:VisibilityFromBool x:Key="BoolToVis"/>
-
 		<sys:Double x:Key="ContentWidth">769</sys:Double>
 		<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">15</sys:Double>
 		<sys:Double x:Key="ContentContainerWidth">754</sys:Double>
@@ -28,6 +31,16 @@
 			</Style.Triggers>
 		</Style>
 	</UserControl.Resources>
+	<!--<UserControl.CommandBindings>
+		<CommandBinding Command="{x:Static local:StandardView.TestCommand}"
+                    Executed="ExecuteWrappedCommand"
+                    CanExecute="CanExecuteCustomCommand" />
+	</UserControl.CommandBindings>
+	<UserControl.InputBindings>
+		<KeyBinding Key="D1" Command="{x:Static local:StandardView.TestCommand}"/>
+		<KeyBinding Key="D2" Command="{Binding BottomButtons[1].ClickCommand, Mode=OneWay}"/>
+		<KeyBinding Key="D3" Command="{Binding Path=BottomButtons[2].ClickCommand, Mode=OneTime}"/>
+	</UserControl.InputBindings>-->
 	<Canvas Style="{StaticResource CoCCanvas}">
 		<Grid Name="TopRowButtons" Width="982" Canvas.Left="0" Height="50" Visibility="{Binding Path=showTopRow, Converter={StaticResource BoolToVis}, Mode=OneWay}">
 			<Grid.ColumnDefinitions>
@@ -38,13 +51,13 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
-			<Button Grid.Column="0" Content="Main Menu"
+			<Button Name="MainMenuBtn" Grid.Column="0" Content="Main Menu"
 				Command="{Binding Path=GoToMainMenu, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
 				</Button.Background>
 			</Button>
-			<Button Grid.Column="1" Content="Data"
+			<Button Name="" Grid.Column="1" Content="Data"
 				Command="{Binding Path=GoToDataScreen, Mode=OneTime}">
 				<Button.Background>
 					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button1.jpg"/>
@@ -77,13 +90,13 @@
 		</Grid>
 		<!-- This will show up as SideBarObject in code - i had to remove it to make prison work in a sane fashion - i could have made it all use the same code but that was ugly-->
 		<!-- So instead, it's a custom control with a content control as its base. Naturally that means the designer has no idea what it'll look like until run time. -->
-		<CC:SideBar Canvas.Top="55" Canvas.Left="5" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
+		<CC:SideBar Canvas.Top="50" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
 		<Canvas Name="CreditText" Canvas.Left="4" Canvas.Top="654" Height="58" Width="200" Visibility="{Binding Path=authorText, Mode=OneWay, Converter={StaticResource NullToVis}}">
 			<TextBlock Name="SceneBy" Style="{StaticResource CoCText}" Canvas.Top="0" Canvas.Left="0" FontSize="20" FontWeight="Bold" FontFamily="Georgia" Text="Scene By:"/>
 			<TextBlock Style="{StaticResource CoCText}" Canvas.Top="24" Canvas.Left="0" FontSize="16" FontFamily="Arial" Text="{Binding Path=authorText, Mode=OneWay}"/>
 		</Canvas>
 		<Image Canvas.Left="4" Canvas.Bottom="4" Height="80" Width="80" StretchDirection="Both" Stretch="Uniform" Source="{Binding Path=sprite, Mode=OneWay, TargetNullValue={x:Null}}"/>
-		<CC:TextView Style="{StaticResource SimpleTextZoneVersion2}"
+		<CC:TextView x:Name="MainContent" Style="{StaticResource SimpleTextZoneVersion2}"
 				MainText="{Binding Path=output, Mode=OneWay}" 
 				MainImage="{Binding Path=bitmap, Mode=OneWay}"
 				PostControlText="{Binding Path=postControlText, Mode=OneWay}"
@@ -107,7 +120,7 @@
 				<RowDefinition/>
 				<RowDefinition/>
 			</Grid.RowDefinitions>
-			<Button Grid.Column="0" Grid.Row="0" IsTabStop="True" TabIndex="10" Visibility ="{Binding Path=BottomButtons[0].visibility}"
+			<Button Name="TestButton" Grid.Column="0" Grid.Row="0" IsTabStop="True" TabIndex="10" Visibility ="{Binding Path=BottomButtons[0].visibility}"
 					Content="{Binding Path=BottomButtons[0].Title, FallbackValue='Button 0'}"
 					Command="{Binding Path=BottomButtons[0].ClickCommand, Mode=OneTime}"
 					IsDefault="True">

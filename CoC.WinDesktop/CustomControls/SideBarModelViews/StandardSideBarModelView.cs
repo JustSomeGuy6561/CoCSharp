@@ -81,9 +81,8 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		private readonly StatDisplayItem XP;
 		private readonly StatDisplayItem Gems;
 
-		public StandardSideBarModelView(StatDataCollection stats, bool silent = false) : base(stats)
+		public StandardSideBarModelView(StatDataCollectionBase stats, bool silent = false) : base(stats)
 		{
-#warning: Convert this to manually selecting the right elements, this way it will always work correctly, and not be broken and ugly. 
 			PlayerStatData playerStats = stats.playerStats;
 
 			Strength = new StatDisplayItem(playerStats.Strength, nameof(playerStats.Strength), silent);
@@ -134,7 +133,7 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 			advancementStats = new ReadOnlyCollection<StatDisplayItem>(advancementStatList);
 		}
 
-		protected override void GetData(StatDataCollection statData)
+		protected override void GetData(StatDataCollectionBase statData)
 		{
 			PlayerStatData stats = statData.playerStats;
 

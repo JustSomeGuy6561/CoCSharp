@@ -7,9 +7,9 @@ using System;
 
 namespace CoC.Backend.SaveData
 {
-	public sealed class BackendSessionData : SaveData
+	public sealed class BackendSessionSave : SaveData
 	{
-		internal static BackendSessionData data => SaveSystem.getSessionSave<BackendSessionData>();
+		public static BackendSessionSave data => SaveSystem.getSessionSave<BackendSessionSave>();
 
 		public bool piercingFetish = false; //a perk may set this, but i think it's fine like this.
 

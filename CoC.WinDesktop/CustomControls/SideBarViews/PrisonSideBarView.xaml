@@ -15,7 +15,8 @@
 		<DataTemplate DataType="{x:Type Help:StatDisplayItem}">
 			<CC:StatBar Padding="0,0,0,1" Text="{Binding Path=Text}" Visibility="{Binding Path=visibility}"
 				ArrowVisible="{Binding Path=ArrowVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				HasGauge="{Binding Path=needsGauge}" ShowValueOverMax="{Binding Path=showValueOverMax}"
+				HasMinMax="{Binding Path=HasMinMax, Mode=OneTime}"
+				IsNumeric="{Binding Path=IsNumeric}" ShowValueOverMax="{Binding Path=showValueOverMax}"
 				MinColor="{Binding Path=MinimumColor, TargetNullValue={StaticResource MinDefault}}" 
 				RegularColor="{Binding Path=RegularColor, TargetNullValue={StaticResource RegDefault}}" 
 				MinimumValue="{Binding Path=Minimum, TargetNullValue=0}" MaximumValue="{Binding Path=Maximum, TargetNullValue=100}" Value="{Binding Path=Value}" />

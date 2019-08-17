@@ -118,7 +118,7 @@ namespace CoC.Backend.BodyParts
 			{
 				sb.Append(" ");
 			}
-			if (SaveData.BackendSessionData.data.SFW_Mode == true)
+			if (SaveData.BackendSessionSave.data.SFW_Mode == true)
 			{
 				sb.Append(Utils.RandomChoice("rear end", "backdoor"));
 			}

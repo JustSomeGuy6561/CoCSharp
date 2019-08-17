@@ -36,7 +36,7 @@ namespace CoC.Frontend.Areas
 		private static void AddPlaceHelper<T>(Func<T> constructorCallback) where T : PlaceBase
 		{
 			if (constructorCallback is null) throw new ArgumentNullException(nameof(constructorCallback));
-			else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
+			//else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
 			if (typeof(T).IsAbstract) throw new ArgumentException("Cannot add an abstract type to the list of possible places");
 			places.Add(typeof(T), constructorCallback);
 		}
@@ -44,7 +44,7 @@ namespace CoC.Frontend.Areas
 		private static void AddLocationHelper<T>(Func<T> constructorCallback) where T : LocationBase
 		{
 			if (constructorCallback is null) throw new ArgumentNullException(nameof(constructorCallback));
-			else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
+			//else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
 			if (typeof(T).IsAbstract) throw new ArgumentException("Cannot add an abstract type to the list of possible locations");
 			locations.Add(typeof(T), constructorCallback);
 		}
@@ -52,7 +52,7 @@ namespace CoC.Frontend.Areas
 		private static void AddDungeonHelper<T>(Func<T> constructorCallback) where T : DungeonBase
 		{
 			if (constructorCallback is null) throw new ArgumentNullException(nameof(constructorCallback));
-			else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
+			//else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
 			if (typeof(T).IsAbstract) throw new ArgumentException("Cannot add an abstract type to the list of possible dungeons");
 			dungeons.Add(typeof(T), constructorCallback);
 		}
@@ -60,7 +60,7 @@ namespace CoC.Frontend.Areas
 		private static void AddHomeBaseHelper<T>(Func<T> constructorCallback) where T : HomeBaseBase
 		{
 			if (constructorCallback is null) throw new ArgumentNullException(nameof(constructorCallback));
-			else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
+			//else if (constructorCallback() is null) throw new ArgumentException("constructor callback cannot return null");
 			if (typeof(T).IsAbstract) throw new ArgumentException("Cannot add an abstract type to the list of possible home bases");
 			homeBases.Add(typeof(T), constructorCallback);
 		}

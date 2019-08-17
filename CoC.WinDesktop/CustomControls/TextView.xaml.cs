@@ -29,93 +29,129 @@ namespace CoCWinDesktop.CustomControls
 		//used
 		public static readonly DependencyProperty MainTextProperty = DependencyProperty.Register("MainText", typeof(string), typeof(TextView),
 			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender, OnCall));
-
 		private static void OnCall(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			TextView st = d as TextView;
-			st.MainText = (string)e.NewValue;
 
 			st.UpdateFlowDocument(true);
 			st.InvalidateVisual();
 		}
 
-		public string MainText { get; set; } = "";
+		public string MainText
+		{
+			get => (string)GetValue(MainTextProperty);
+			set => SetCurrentValue(MainTextProperty, value);
+		}
 
 		//used
-		public static DependencyProperty MainImageProperty = DependencyProperty.Register("MainImage", typeof(BitmapImage), typeof(TextView),
+		public static readonly DependencyProperty MainImageProperty = DependencyProperty.Register("MainImage", typeof(BitmapImage), typeof(TextView),
 			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender, OnMainImageChanged));
-
 		private static void OnMainImageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			TextView document = d as TextView;
-			document.MainImage = (BitmapImage)e.NewValue;
 
 			document.UpdateFlowDocument(true);
 			document.InvalidateVisual();
-
 		}
 
-		public BitmapImage MainImage { get; set; } = null;
+		public BitmapImage MainImage
+		{
+			get => (BitmapImage)GetValue(MainImageProperty);
+			set => SetCurrentValue(MainImageProperty, value);
+		}
 
 
 		//used
-		public static DependencyProperty PostControlTextProperty = DependencyProperty.Register("PostControlText", typeof(string), typeof(TextView),
+		public static readonly DependencyProperty PostControlTextProperty = DependencyProperty.Register("PostControlText", typeof(string), typeof(TextView),
 			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsMeasure, OnPostControlTextChanged));
-
 		private static void OnPostControlTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			TextView document = d as TextView;
-			string data = e.NewValue as string;
 
-			document.PostControlText = data;
 			document.UpdateFlowDocument(false);
 			document.InvalidateVisual();
 		}
 
-		public string PostControlText { get; set; } = null;
+		public string PostControlText
+		{
+			get => (string)GetValue(PostControlTextProperty);
+			set => SetCurrentValue(PostControlTextProperty, value);
+		}
 
 		//Used
-		public static DependencyProperty InputFieldVisibleProperty = DependencyProperty.Register("InputFieldVisible", typeof(bool), typeof(TextView),
+		public static readonly DependencyProperty InputFieldVisibleProperty = DependencyProperty.Register("InputFieldVisible", typeof(bool), typeof(TextView),
 			new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsArrange));
 
-		public bool InputFieldVisible { get; set; } = false;
+		public bool InputFieldVisible
+		{
+			get => (bool)GetValue(InputFieldVisibleProperty);
+			set => SetCurrentValue(InputFieldVisibleProperty, value);
+		}
 
 		//Used
-		public static DependencyProperty InputFieldMaxLengthProperty = DependencyProperty.Register("InputFieldMaxLength", typeof(int), typeof(TextView),
+		public static readonly DependencyProperty InputFieldMaxLengthProperty = DependencyProperty.Register("InputFieldMaxLength", typeof(int), typeof(TextView),
 			new FrameworkPropertyMetadata(0));
-		public int InputFieldMaxLength { get; set; } = 0;
+
+		public int InputFieldMaxLength
+		{
+			get => (int)GetValue(InputFieldMaxLengthProperty);
+			set => SetCurrentValue(InputFieldMaxLengthProperty, value);
+		}
 
 		//Used
-		public static DependencyProperty InputFieldTextProperty = DependencyProperty.Register("InputFieldText", typeof(string), typeof(TextView),
+		public static readonly DependencyProperty InputFieldTextProperty = DependencyProperty.Register("InputFieldText", typeof(string), typeof(TextView),
 			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-		public string InputFieldText { get; set; } = "";
+
+		public string InputFieldText
+		{
+			get => (string)GetValue(InputFieldTextProperty);
+			set => SetCurrentValue(InputFieldTextProperty, value);
+		}
 
 		//Used
-		public static DependencyProperty InputCalculatedWidthProperty = DependencyProperty.Register("InputCalculatedWidth", typeof(double), typeof(TextView),
+		public static readonly DependencyProperty InputCalculatedWidthProperty = DependencyProperty.Register("InputCalculatedWidth", typeof(double), typeof(TextView),
 			new FrameworkPropertyMetadata(double.NaN, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-		public double InputCalculatedWidth { get; set; } = double.NaN;
+		public double InputCalculatedWidth
+		{
+			get => (double)GetValue(InputCalculatedWidthProperty);
+			set => SetCurrentValue(InputCalculatedWidthProperty, value);
+		}
 
 		//Used
-		public static DependencyProperty LimitCharactersRegexProperty = DependencyProperty.Register("LimitCharactersRegex", typeof(Regex), typeof(TextView),
+		public static readonly DependencyProperty LimitCharactersRegexProperty = DependencyProperty.Register("LimitCharactersRegex", typeof(Regex), typeof(TextView),
 			new FrameworkPropertyMetadata(defaultValue: null));
-		public Regex LimitCharactersRegex { get; set; } = null;
+
+		public Regex LimitCharactersRegex
+		{
+			get => (Regex)GetValue(LimitCharactersRegexProperty);
+			set => SetCurrentValue(LimitCharactersRegexProperty, value);
+		}
 
 
 		//NYI
-		public static DependencyProperty DropdownVisibleProperty = DependencyProperty.Register("DropdownVisible", typeof(bool), typeof(TextView),
+		public static readonly DependencyProperty DropdownVisibleProperty = DependencyProperty.Register("DropdownVisible", typeof(bool), typeof(TextView),
 			new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsArrange));
-		public bool DropdownVisible { get; set; } = false;
+
+		public bool DropdownVisible
+		{
+			get => (bool)GetValue(DropdownVisibleProperty);
+			set => SetCurrentValue(DropdownVisibleProperty, value);
+		}
 
 		////NYI
-		//public static DependencyProperty DropdownSelectedItemProperty = DependencyProperty.Register("DropdownSelectedItem", typeof(ComboBoxItemWrapper), typeof(TextViewVersion2),
+		//public static readonly DependencyProperty DropdownSelectedItemProperty = DependencyProperty.Register("DropdownSelectedItem", typeof(ComboBoxItemWrapper), typeof(TextViewVersion2),
 		//	new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-		//public ComboBoxItemWrapper DropdownSelectedItem { get; set; } = null;
+		//public ComboBoxItemWrapper DropdownSelectedItem { get; set; }
 
 		//NYI
-		public static DependencyProperty DropdownContainerProperty = DependencyProperty.Register("DropdownContainer", typeof(ComboBoxWrapper), typeof(TextView),
+		public static readonly DependencyProperty DropdownContainerProperty = DependencyProperty.Register("DropdownContainer", typeof(ComboBoxWrapper), typeof(TextView),
 			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-		public ComboBoxWrapper DropdownContainer { get; set; }
+		public ComboBoxWrapper DropdownContainer
+		{
+			get => (ComboBoxWrapper)GetValue(DropdownContainerProperty);
+			set => SetCurrentValue(DropdownContainerProperty, value);
+		}
 
 		public TextView()
 		{
@@ -154,7 +190,7 @@ namespace CoCWinDesktop.CustomControls
 				}
 			}
 
-			if ((bool)e.NewValue == true && !otherVisible )
+			if ((bool)e.NewValue == true && !otherVisible)
 			{
 				var result = Keyboard.Focus(view);
 			}

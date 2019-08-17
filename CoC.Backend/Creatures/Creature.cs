@@ -472,7 +472,8 @@ namespace CoC.Backend.Creatures
 
 			//tail.InitializePiercings(creator?.tailPiercings);
 
-			perks = new PerkCollection(this, creator.perks?.ToArray());
+			perks = new PerkCollection(this);
+			perks.InitPerks(creator.perks?.ToArray());
 
 			SetupBindings();
 		}

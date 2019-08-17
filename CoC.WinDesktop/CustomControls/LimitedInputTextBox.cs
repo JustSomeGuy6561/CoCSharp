@@ -1,34 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CoCWinDesktop.CustomControls
 {
-	
+
 	public class LimitedInputTextBox : TextBox
 	{
-		public static DependencyProperty LimitCharactersRegexProperty = DependencyProperty.Register("LimitCharactersRegex", typeof(Regex), typeof(LimitedInputTextBox),
+		public static readonly DependencyProperty LimitCharactersRegexProperty = DependencyProperty.Register("LimitCharactersRegex", typeof(Regex), typeof(LimitedInputTextBox),
 			new FrameworkPropertyMetadata(new Regex(".*")));
 
-		public Regex LimitCharactersRegex { get; set; } = new Regex(".*"); //defaults to everything. but null also has the same effect. 
+		public Regex LimitCharactersRegex
+		{
+			get => (Regex)GetValue(LimitCharactersRegexProperty);
+			set => SetCurrentValue(LimitCharactersRegexProperty, value);
+		}
 
 		protected override void OnPreviewTextInput(TextCompositionEventArgs e)
 		{
-			if (LimitCharactersRegex != null && !LimitCharactersRegex.IsMatch(e.Text))
+			if (LimitCharactersRegex != null)
 			{
-				e.Handled = true;
+				string full = Text.Insert(CaretIndex, e.Text);
+				if (!LimitCharactersRegex.IsMatch(full))
+				{
+					e.Handled = true;
+				}
 			}
 			base.OnPreviewTextInput(e);
 		}
@@ -40,7 +38,32 @@ namespace CoCWinDesktop.CustomControls
 			//binding.CanExecute += CanPaste;
 			//CommandBindings.Add(binding);
 			DataObject.AddPastingHandler(this, CanPaste);
+			//this.KeyDown += LimitedInputTextBox_KeyDown;
+			//InputManager.Current.PostProcessInput += Current_PostProcessInput;
 		}
+
+		//private void LimitedInputTextBox_KeyDown(object sender, KeyEventArgs e)
+		//{
+		//	//if (e.OriginalSource == this)
+		//	//{
+		//	//	RaiseEvent(new TextCompositionEventArgs(e.KeyboardDevice,
+		//	//		new TextComposition(InputManager.Current, this,))
+		//	//	{
+		//	//		RoutedEvent = TextCompositionManager.TextInputEvent
+		//	//	});
+		//	//}
+		//}
+
+		//private void Current_PostProcessInput(object sender, ProcessInputEventArgs e)
+		//{
+		//	//if (e.StagingItem.Input.Handled) return;
+
+		//	if (e.StagingItem.Input.RoutedEvent == Keyboard.KeyDownEvent)
+		//	{
+		//		OnKeyDown((KeyEventArgs)e.StagingItem.Input);
+		//	}
+
+		//}
 
 		private void CanPaste(object sender, DataObjectPastingEventArgs e)
 		{

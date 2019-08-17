@@ -22,8 +22,8 @@ namespace CoC.Backend.Engine
 			Func<BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
 		{
 			//initialize the saves. 
-			SaveSystem.AddSessionSave(new BackendSessionData());
-			SaveSystem.AddGlobalSave(new BackendGlobalData());
+			SaveSystem.AddSessionSave(new BackendSessionSave());
+			SaveSystem.AddGlobalSave(new BackendGlobalSave());
 
 
 			#warning Add method to read file and load global backend game data. 

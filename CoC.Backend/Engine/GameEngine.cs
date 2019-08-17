@@ -27,7 +27,7 @@ namespace CoC.Backend.Engine
 			private set
 			{
 				//unfortunately, this is probably necessary. No weak 
-				if (_currentPlayer != value)
+				if (_currentPlayer != value && _currentPlayer != null)
 				{
 					_currentPlayer.CleanupCreatureForDeletion();
 				}
@@ -160,6 +160,10 @@ namespace CoC.Backend.Engine
 		}
 		//End Note. 
 
+		public static void InitializeTime(int currDay, byte currHour)
+		{
+			timeEngine.InitializeTime(currDay, currHour);
+		}
 
 		//changes the current area to the provided one, but do not run the scene. Useful for cases where the game is doing time related shenanigans, or
 		//you want to manually parse the scene. Note that it will occur immediately, even if the game is doing time logic, so be aware of any side effects that may cause.
@@ -209,6 +213,11 @@ namespace CoC.Backend.Engine
 				throw new ArgumentException("perk variables cannot be null.");
 			}
 			_currentPlayer = null;
+		}
+
+		public static void InitializeGame(Player player)
+		{
+			currentPlayer = player;
 		}
 
 		//local save data.

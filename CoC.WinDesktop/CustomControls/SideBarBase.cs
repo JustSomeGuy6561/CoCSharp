@@ -13,14 +13,14 @@ namespace CoCWinDesktop.CustomControls
 	{
 		public abstract event PropertyChangedEventHandler PropertyChanged;
 
-		public void UpdateSidebar(StatDataCollection statData)
+		public void UpdateSidebar(StatDataCollectionBase statData)
 		{
 			GetData(statData);
 		}
-		protected abstract void GetData(StatDataCollection statData);
+		protected abstract void GetData(StatDataCollectionBase statData);
 		internal abstract void ClearArrows();
 
-		protected SideBarBase(StatDataCollection statData)
+		protected SideBarBase(StatDataCollectionBase statData)
 		{
 
 		}

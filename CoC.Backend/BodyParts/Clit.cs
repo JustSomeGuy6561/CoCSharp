@@ -24,7 +24,7 @@ namespace CoC.Backend.BodyParts
 		private static readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
 		private const JewelryType SUPPORTED_CLIT_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 
-		private bool piercingFetish => BackendSessionData.data.piercingFetish;
+		private bool piercingFetish => BackendSessionSave.data.piercingFetish;
 
 		private PerkStatBonusGetter basePerkData;
 

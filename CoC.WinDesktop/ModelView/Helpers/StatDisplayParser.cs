@@ -19,7 +19,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 		private readonly PrisonSideBarModelView prisonSideBar;
 		
 		//note: the stat data collection passed in here may not be valid - we only need it in the constructors to determine what we can output, not what we are outputting.
-		public StatDisplayParser(StatDataCollection statData, bool silent = false)
+		public StatDisplayParser(StatDataCollectionBase statData, bool silent = false)
 		{
 			standardSideBar = new StandardSideBarModelView(statData, silent);
 			prisonSideBar = new PrisonSideBarModelView(statData, silent);

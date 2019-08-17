@@ -25,6 +25,13 @@ namespace CoCWinDesktop.ModelView.Helpers
 		}
 		private bool _isNumeric;
 
+		public bool HasMinMax
+		{
+			get => _HasMinMax;
+			private set => IHateYouBoat(ref _HasMinMax, value);
+		}
+		private bool _HasMinMax;
+
 		public string Text
 		{
 			get => _Text;
@@ -34,15 +41,8 @@ namespace CoCWinDesktop.ModelView.Helpers
 
 		public void CheckText()
 		{
-			Text = LanguageLookup.Lookup(Name);
+			Text = LanguageLookup.Lookup(Name) + ":";
 		}
-
-		public bool needsGauge
-		{
-			get => _needsGauge;
-			private set => IHateYouBoat(ref _needsGauge, value);
-		}
-		private bool _needsGauge;
 
 		public bool showValueOverMax
 		{
@@ -171,9 +171,9 @@ namespace CoCWinDesktop.ModelView.Helpers
 
 			CheckText();
 
-			IsNumeric = creatureStat is CreatureStatNumeric;
 			visibility = creatureStat.enabled ? Visibility.Visible : Visibility.Collapsed;
-			needsGauge = creatureStat is CreatureStatWithMinMax;
+			IsNumeric = creatureStat is CreatureStatNumeric;
+			HasMinMax = creatureStat is CreatureStatWithMinMax;
 			showValueOverMax = (creatureStat as CreatureStatWithMinMax)?.isRatio ?? false;
 			displayStatChangeIcon = !silent && ((creatureStat as CreatureStatNumeric)?.notifyPlayerOfChange ?? false);
 
@@ -208,9 +208,9 @@ namespace CoCWinDesktop.ModelView.Helpers
 		{
 			CheckText();
 
-			IsNumeric = statBase is CreatureStatNumeric;
 			visibility = statBase.enabled ? Visibility.Visible : Visibility.Collapsed;
-			needsGauge = statBase is CreatureStatWithMinMax;
+			IsNumeric = statBase is CreatureStatNumeric;
+			HasMinMax = statBase is CreatureStatWithMinMax;
 			showValueOverMax = (statBase as CreatureStatWithMinMax)?.isRatio ?? false;
 			displayStatChangeIcon = (statBase as CreatureStatNumeric)?.notifyPlayerOfChange ?? false;
 
@@ -249,7 +249,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 
 		private void ChangeRegularColor()
 		{
-			if (!IsNumeric)
+			if (!HasMinMax)
 			{
 				RegularColor = null;
 			}

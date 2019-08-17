@@ -19,7 +19,7 @@ namespace CoC.Backend.Tools
 
 		//in the event you really want to go HAM with this, you could use Humanizer. it also has multi-lingual support, so there's that. https://github.com/Humanizr/Humanizer
 
-		public static bool UsesMetric => BackendGlobalData.data.UsesMetricMeasurements;
+		public static bool UsesMetric => BackendGlobalSave.data.UsesMetricMeasurements;
 
 		//are these remotely necessary? nope. but they're more readible imo than magic numbers.
 		public const double TO_CENTIMETERS = 2.54;

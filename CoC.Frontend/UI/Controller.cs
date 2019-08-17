@@ -48,9 +48,16 @@ namespace CoC.UI
 		public InputField inputField { get => _inputField; }
 		private InputField _inputField;
 		public bool inputFieldChanged => InputField.QueryStatus(out _inputField);
-		//WILL THROW NULL REFERENCE EXCEPTION IF INPUT FIELD IS NULL. it'd do so if you accessed inputField and asked for it there, so this seems the most consistent.
-		//may return null, though this is GUI dependant and hopefully wont happen. empty string is preferable.
-		internal string inputText => inputField.input;
+
+
+		public string SpriteName => _spriteName;
+		private string _spriteName = null;
+
+		public string CreatorName => _creatorText;
+		private string _creatorText = null;
+
+		public bool spriteChanged => SpriteAndCreditsOutput.QuerySpriteCreditData(out _spriteName, out _creatorText);
+
 
 		public void setOutputFromUI(string output)
 		{
@@ -72,8 +79,16 @@ namespace CoC.UI
 			return GameDateTime.Now;
 		}
 
-		public readonly StatDataCollection statDataCollection = new StatDataCollection(currTime);
+		public StatDataCollection statDataCollection
+		{
+			get
+			{
+				_statDataCollection.ParseData();
+				return _statDataCollection;
+			}
+		}
 
+		private readonly StatDataCollection _statDataCollection = new StatDataCollection();
 
 		public StatisticsData GetStatistics()
 		{
@@ -107,7 +122,7 @@ namespace CoC.UI
 			TextOutput.QueryData(out _outputField, out _outputImagePath);
 			DropDownMenu.QueryStatus(out _dropDownMenu);
 			DropDownMenu.QueryPostText(out _postControlText);
-
+			SpriteAndCreditsOutput.QuerySpriteCreditData(out _spriteName, out _creatorText);
 		}
 
 		public void TestShit()

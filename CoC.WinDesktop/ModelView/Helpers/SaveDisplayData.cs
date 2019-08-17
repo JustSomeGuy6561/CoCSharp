@@ -24,7 +24,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 		private readonly GameDifficulty gameDifficulty;
 		private readonly Gender gender;
 
-		internal readonly StatDataCollection saveStatData;
+		internal readonly StatDataCollectionBase saveStatData;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

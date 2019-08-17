@@ -33,10 +33,12 @@ namespace CoC.Frontend.Creatures
 
 		//In the event you are the creative mind behind these characters, feel free to implement the new features (or free them for player customization) as you see fit.
 
-		public static Dictionary<string, Func<PlayerCreator>> specialCharacterLookup = new Dictionary<string, Func<PlayerCreator>>();
+		public static readonly Dictionary<string, Func<PlayerCreator>> specialCharacterLookup;
+		public static readonly Dictionary<string, SimpleDescriptor> nameAndFlavorText;
 
-		public static Dictionary<string, SimpleDescriptor> nameAndFlavorText = new Dictionary<string, SimpleDescriptor>();
-
+		//technically, hashsets are ordered until something is removed, and since we'll never remove anything, we can abuse this. 
+		private static readonly HashSet<string> charactersWithPartialHistory;
+		private static readonly HashSet<string> charactersWithFullHistory;
 		public static DropDownEntry[] SpecialCharacterDropDownList()
 		{
 			DropDownEntry[] retVal = new DropDownEntry[nameAndFlavorText.Count];//+2 later for helpers.
@@ -61,34 +63,38 @@ namespace CoC.Frontend.Creatures
 
 		static SpecialCharacters()
 		{
+			specialCharacterLookup = new Dictionary<string, Func<PlayerCreator>>();
+			nameAndFlavorText = new Dictionary<string, SimpleDescriptor>();
+			charactersWithPartialHistory = new HashSet<string>();
+			charactersWithFullHistory = new HashSet<string>();
 			//
-			AddCustomCharacter("Annetta", AnnettaFlavorText, customAnnetta);
-			AddCustomCharacter("Aria", AriaFlavorText, customAria);
-			AddCustomCharacter("Bertram", BertramFlavorText, customBertram);
-			AddCustomCharacter("Ceveo", CeveoFlavorText, customCeveo);
-			AddCustomCharacter("Charaun", CharaunFlavorText, customCharaun);
+			AddCustomCharacter("Annetta", AnnettaFlavorText, customAnnetta); //locked
+			AddCustomCharacter("Aria", AriaFlavorText, customAria);//unlocked
+			AddCustomCharacter("Bertram", BertramFlavorText, customBertram);//locked
+			AddCustomCharacter("Ceveo", CeveoFlavorText, customCeveo);//
+			AddCustomCharacter("Charaun", CharaunFlavorText, customCharaun);//unlocked
 			AddCustomCharacter("Charlie", CharlieFlavorText, customCharlie);
-			AddCustomCharacter("Cody", CodyFlavorText, customCody);
+			AddCustomCharacter("Cody", CodyFlavorText, customCody);//unlocked
 			AddCustomCharacter("Etis", EtisFlavorText, customEtis);
-			AddCustomCharacter("Galatea", GalateaFlavorText, customGalatea);
+			AddCustomCharacter("Galatea", GalateaFlavorText, customGalatea);//unlocked
 
-			AddCustomCharacter("Gundam", GundamFlavorText, customGundam);
-			AddCustomCharacter("Hikari", HikariFlavorText, customHikari);
+			AddCustomCharacter("Gundam", GundamFlavorText, customGundam);//unlocked
+			AddCustomCharacter("Hikari", HikariFlavorText, customHikari);//unlocked
 			AddCustomCharacter("Isaac", IsaacFlavorText, customIsaac);
-			AddCustomCharacter("Katti", KattiFlavorText, customKatti);
+			AddCustomCharacter("Katti", KattiFlavorText, customKatti);//unlocked
 			AddCustomCharacter("Leah", LeahFlavorText, customLeah);
-			AddCustomCharacter("Lucina", LucinaFlavorText, customLucina);
+			AddCustomCharacter("Lucina", LucinaFlavorText, customLucina);//unlocked
 			AddCustomCharacter("Lukaz", LukazFlavorText, customLukaz);
 			AddCustomCharacter("Mara", MaraFlavorText, customMara);
 			AddCustomCharacter("Mihari", MihariFlavorText, customMihari);
 			AddCustomCharacter("Mirvanna", MirvannaFlavorText, customMirvanna);
 			AddCustomCharacter("Nami", NamiFlavorText, customNami);
-			AddCustomCharacter("Navorn", NavornFlavorText, customNavorn);
+			AddCustomCharacter("Navorn", NavornFlavorText, customNavorn);//unlocked
 			AddCustomCharacter("Nixi", NixiFlavorText, customNixi);
 			AddCustomCharacter("Peone", PeoneFlavorText, customPeone);
 			AddCustomCharacter("Prismere", PrismereFlavorText, customPrismere);
 			AddCustomCharacter("Rann Rayla", RannRaylaFlavorText, customRannRayla);
-			AddCustomCharacter("Rope", RopeFlavorText, customRope);
+			AddCustomCharacter("Rope", RopeFlavorText, customRope);//unlocked
 			AddCustomCharacter("Sera", SeraFlavorText, customSera);
 			AddCustomCharacter("Siveen", SiveenFlavorText, customSiveen);
 			AddCustomCharacter("Sora", SoraFlavorText, customSora);
@@ -96,11 +102,19 @@ namespace CoC.Frontend.Creatures
 			AddCustomCharacter("Vahdunbrii", VahdunbriiFlavorText, customVahdunbrii);
 		}
 
-		private static void AddCustomCharacter(string name, SimpleDescriptor selectFlavorText, Func<PlayerCreator> createCharacterFunction)
+		private static void AddCustomCharacter(string name, SimpleDescriptor selectFlavorText, Func<PlayerCreator> createCharacterFunction/*, bool isFullyDefined*/)
 		{
 			if (selectFlavorText is null) throw new ArgumentNullException(nameof(selectFlavorText));
 			specialCharacterLookup.Add(name, createCharacterFunction);
 			nameAndFlavorText.Add(name, selectFlavorText);
+			//if (isFullyDefined)
+			//{
+			//	charactersWithFullHistory.Add(name);
+			//}
+			//else
+			//{
+			//	charactersWithPartialHistory.Add(name);
+			//}
 		}
 		/*
 				public PlayerCreator CharSpecial() { }

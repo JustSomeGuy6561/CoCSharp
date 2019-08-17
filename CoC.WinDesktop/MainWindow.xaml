@@ -27,7 +27,7 @@
 	</Window.Resources>
 	<!--Content-->
 	<Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" StretchDirection="Both">
-		<ContentControl DataContext="{StaticResource Runner}" FocusVisualStyle="{x:Null}" Content="{Binding Path=ModelView, Mode=OneWay}"/>
+		<ContentControl Focusable="False" DataContext="{StaticResource Runner}" FocusVisualStyle="{x:Null}" Content="{Binding Path=ModelView, Mode=OneWay}"/>
 	</Viewbox>
 	<!--End Content-->
 </Window>

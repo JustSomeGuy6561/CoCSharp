@@ -1,4 +1,5 @@
-﻿using CoC.Frontend.UI.ControllerData;
+﻿using CoC.Backend.Engine;
+using CoC.Frontend.UI.ControllerData;
 using CoC.UI;
 using CoCWinDesktop.CustomControls;
 using CoCWinDesktop.ModelView.Helpers;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -327,6 +329,7 @@ namespace CoCWinDesktop.ModelView
 			ShowSidebar = controller.displayStats;
 			if (ShowSidebar)
 			{
+				sideBar.ClearArrows();
 				//get the current sidebar;
 				sideBar = statDisplayParser.GetSideBarBase(true, controller.playerStatus);
 				//and update it.
@@ -354,7 +357,7 @@ namespace CoCWinDesktop.ModelView
 				{
 					InputMaxLen = controller.inputField.maxChars == null || controller.inputField.maxChars >= INPUT_FIELD_MAX_CHARS ? INPUT_FIELD_MAX_CHARS : (int)controller.inputField.maxChars;
 					char[] maxLength = new char[InputMaxLen];
-					for (int x = 0; x < INPUT_FIELD_MAX_CHARS; x++)
+					for (int x = 0; x < InputMaxLen; x++)
 					{
 						maxLength[x] = INPUT_FIELD_WIDEST_CHAR;
 					}
@@ -401,6 +404,27 @@ namespace CoCWinDesktop.ModelView
 			{
 				DropdownInUse = false;
 				postControlText = "";
+			}
+
+			if (controller.spriteChanged)
+			{
+				if (!string.IsNullOrWhiteSpace(controller.SpriteName))
+				{
+					string fileName = Path.Combine(@"pack://application:,,,", "resources", "sprites", controller.SpriteName);
+					this.sprite = new BitmapImage(new Uri(controller.SpriteName));
+				}
+				else
+				{
+					sprite = null;
+				}
+			}
+			if (!string.IsNullOrWhiteSpace(controller.CreatorName))
+			{
+				authorText = controller.CreatorName;
+			}
+			else
+			{
+				authorText = null;
 			}
 
 			if (controller.buttonsChanged || needToUpdateDisplay)
@@ -452,6 +476,9 @@ namespace CoCWinDesktop.ModelView
 					}
 					ParseButton(tooManyButtonsYouAsshat[0][11], 11, onlyOneButton, false);
 				}
+				IInputElement keyboardElement = Keyboard.FocusedElement;
+				Keyboard.ClearFocus();
+				Keyboard.Focus(keyboardElement);
 			}
 		}
 

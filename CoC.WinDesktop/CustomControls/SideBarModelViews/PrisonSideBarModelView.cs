@@ -75,7 +75,7 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		private readonly StatDisplayItem Willpower;
 		private readonly StatDisplayItem Obedience;
 
-		public PrisonSideBarModelView(StatDataCollection stats, bool silent = false) : base(stats)
+		public PrisonSideBarModelView(StatDataCollectionBase stats, bool silent = false) : base(stats)
 		{
 			PlayerStatData playerStats = stats.playerStats;
 
@@ -124,7 +124,7 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 
 		public override event PropertyChangedEventHandler PropertyChanged;
 
-		protected override void GetData(StatDataCollection statData)
+		protected override void GetData(StatDataCollectionBase statData)
 		{
 			PlayerStatData stats = statData.playerStats;
 

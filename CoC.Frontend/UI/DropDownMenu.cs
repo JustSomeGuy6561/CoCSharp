@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //6/19/2019, 9:32 PM
 using CoC.Backend;
+using CoC.Backend.Strings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,6 +21,9 @@ namespace CoC.Frontend.UI
 
 		public ReadOnlyCollection<DropDownEntry> entries { get; }
 		private readonly List<DropDownEntry> entryHolder;
+
+		public DropDownEntry defaultEntry { get; private set; }
+
 
 		internal static void SetPostDropDownMenuText(SimpleDescriptor text)
 		{
@@ -113,12 +117,28 @@ namespace CoC.Frontend.UI
 	public sealed class DropDownEntry
 	{
 		public readonly string title;
+		//NOTE TO GUI DEVS: onSelect can be null, for separators. if you don't support them, make sure to remove 
+		//all entries where 
 		public readonly Action onSelect;
 
 		internal DropDownEntry(string label, Action callback)
 		{
+			title = label ?? throw new ArgumentNullException(nameof(label));
+			if (string.IsNullOrWhiteSpace(label)) throw new ArgumentException("cannot have empty text");
+			onSelect = callback ?? throw new ArgumentNullException(nameof(callback), "note: if you were trying to create a separator, use CreateSeparator instead");
+		}
+
+		private DropDownEntry(string label)
+		{
 			title = label;
-			onSelect = callback;
+			onSelect = null;
+		}
+
+		//A separator is a special type of drop down entry that cannot be selected. it allows the dev to separate entries into
+		//groups, if desired. 
+		internal static DropDownEntry CreateSeparator(string separatorText)
+		{
+			return new DropDownEntry(separatorText);
 		}
 	}
 }

@@ -37,7 +37,7 @@ namespace CoC.Backend.Creatures
 				double max = 50;
 				max += toughness * 2;
 				max += perks.baseModifiers.bonusMaxHP;
-				max += GameEngine.difficulties[BackendSessionData.data.difficulty].basePlayerHP(level);
+				max += GameEngine.difficulties[BackendSessionSave.data.difficulty].basePlayerHP(level);
 				if (max > 9999)
 				{
 					return 9999;

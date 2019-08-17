@@ -84,7 +84,7 @@ namespace CoCBackendUnitTests
 			((IBodyPartTimeLazy)ass).reactToTimePassing(false, 36); //timer now 0.
 			Assert.AreEqual(AnalLooseness.LOOSE, ass.looseness);
 
-			SaveSystem.AddSessionSave(new BackendSessionData()); //dummy data to allow strings to work. 
+			SaveSystem.AddSessionSave(new BackendSessionSave()); //dummy data to allow strings to work. 
 
 			Utils.DebugSetRandomSeed(0);
 			string expected = Environment.NewLine + SafelyFormattedString.FormattedText("Your " + ass.shortDescription() + " recovers from your ordeals, tightening up a bit.", StringFormats.BOLD) + Environment.NewLine;
@@ -305,7 +305,7 @@ namespace CoCBackendUnitTests
 		[TestMethod]
 		public void Clit_FullUnitTests()
 		{
-			SaveSystem.AddSessionSave(new BackendSessionData()); //dummy data to allow piercings to initialize properly.
+			SaveSystem.AddSessionSave(new BackendSessionSave()); //dummy data to allow piercings to initialize properly.
 
 			FakePerkData fakePerkData = new FakePerkData();
 			Clit clit = Clit.Generate();

@@ -18,7 +18,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	{
 		internal event PiercingDataChangedEventHandler<Locations> OnPiercingChange;
 
-		public bool piercingFetish => BackendSessionData.data.piercingFetish;
+		public bool piercingFetish => BackendSessionSave.data.piercingFetish;
 
 		public static int maxPiercingCount => EnumHelper.Length<Locations>();
 

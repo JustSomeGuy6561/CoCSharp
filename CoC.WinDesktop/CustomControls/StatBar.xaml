@@ -2,30 +2,49 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls"
+			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
+			 xmlns:sys="clr-namespace:System;assembly=mscorlib"
 			 Name="_this">
-	<Canvas Name="StatBarCanvas" Width="200" Height="28">
-		<TextBlock Name="TitleText" Style="{StaticResource CoCSidebarText}" Height="20" Text="{Binding Text, ElementName=_this}"  Panel.ZIndex="100" Canvas.Top="4" Canvas.Left="6" FontSize="15" />
-		<TextBlock Name="ValueText" Panel.ZIndex="100" Canvas.Bottom="0" Canvas.Right="30" FontSize="22" >
-			<TextBlock.Style>
-				<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCSidebarText}">
-					<Setter Property="Text" Value="{Binding Value, ElementName=_this}"/>
+	<Canvas Name="StatBarCanvas" Width="200" Height="28" >
+		<!--<Label Height="20" Name="TitleText" Style="{StaticResource CoCSidebarLabel}" Content="{Binding Text, ElementName=_this}" Panel.ZIndex="100" Canvas.Bottom="2" Canvas.Left="8" FontSize="15" />-->
+		<Label Name="TitleText" Style="{StaticResource CoCSidebarLabel}" Content="{Binding Text, ElementName=_this}" Panel.ZIndex="100" Canvas.Bottom="4" Canvas.Left="8" FontSize="15" />
+		<Label Name="ValueText" Panel.ZIndex="100" Canvas.Right="34">
+			<Label.Resources>
+				<Conv:StringsToContentConverter x:Key="StrsToContent"/>
+				<sys:Double x:Key="NotANumber">NaN</sys:Double>
+			</Label.Resources>
+			<Label.Style>
+				<Style TargetType="{x:Type Label}" BasedOn="{StaticResource CoCSidebarLabel}">
+					<Setter Property="Content" Value="{Binding Value, ElementName=_this}"/>
+					<Setter Property="FontSize" Value="20"/>
+					<Setter Property="Canvas.Bottom" Value="1"/>
+					<Setter Property="Canvas.Top" Value="{StaticResource NotANumber}"/>
+					<Setter Property="VerticalAlignment" Value="Bottom"/>
+					<Setter Property="VerticalContentAlignment" Value="Bottom"/>
 					<Style.Triggers>
-						<DataTrigger Binding="{Binding ShowValueOverMax, ElementName=_this}" Value="true">
-							<Setter Property="Text">
+						<DataTrigger Binding="{Binding Path=ShowValueOverMax, ElementName=_this}" Value="true">
+							<Setter Property="Content">
 								<Setter.Value>
-									<MultiBinding StringFormat=" {0}/{1} ">
+									<MultiBinding Converter="{StaticResource StrsToContent}"><!--Content takes an object, so we can't use default string format tool-->
 										<Binding Path="Value" ElementName="_this"/>
 										<Binding Path="MaximumValue" ElementName="_this"/>
 									</MultiBinding>
 								</Setter.Value>
 							</Setter>
 						</DataTrigger>
+						<DataTrigger Binding="{Binding Path=IsNumeric, ElementName=_this}" Value="True">
+							<Setter Property="FontSize" Value="22"/>
+							<Setter Property="Canvas.Bottom" Value="{StaticResource NotANumber}"/>
+							<Setter Property="VerticalContentAlignment" Value="Center"/>
+							<Setter Property="VerticalAlignment" Value="Center"/>
+							<Setter Property="Canvas.Top" Value="-2"/>
+						</DataTrigger>
 					</Style.Triggers>
 				</Style>
-			</TextBlock.Style>
+			</Label.Style>
 
-		</TextBlock>
-		<Canvas Name="BarHolder" Canvas.Bottom="0" Height="10" Width="172" Panel.ZIndex="0">
+		</Label>
+		<Canvas Name="BarHolder" Canvas.Bottom="0" Height="10" Width="171" Panel.ZIndex="0">
 			<Canvas.Style>
 				<Style TargetType="{x:Type Canvas}">
 					<Setter Property="Background">
@@ -34,7 +53,7 @@
 						</Setter.Value>
 					</Setter>
 					<Style.Triggers>
-						<DataTrigger Binding="{Binding HasGauge, ElementName=_this}" Value="False">
+						<DataTrigger Binding="{Binding HasMinMax, ElementName=_this}" Value="False">
 							<Setter Property="Background" Value="Transparent"/>
 						</DataTrigger>
 					</Style.Triggers>
@@ -46,12 +65,11 @@
 		<Rectangle Name="MinBar" Panel.ZIndex="-1" Canvas.Left="1" Height="28" Fill="{Binding MinColor, ElementName=_this}" Opacity="0.6666666666666667" />
 		<!-- Width done in code-behind-->
 		<!-- This is why i'd prefer code-behind. It's much easier to write one if statement than 2 converters and a trigger with 5 variables. -->
-		<Rectangle Name="FillBar" Panel.ZIndex="-2" Canvas.Left="1" Height="28" Opacity="0.6" Fill="{Binding RegularColor, ElementName=_this}">
-			<Rectangle.Effect>
-				<DropShadowEffect BlurRadius="10" ShadowDepth="2"/>
-			</Rectangle.Effect>
-		</Rectangle>
-		<Image Name ="Arrow" Height="26" Width="26" Canvas.Right="1" Canvas.Top="1" Visibility="{Binding ArrowVisible, ElementName=_this, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Source="/CoCWinDesktop;component/resources/arrow-up.png"/>
+		<Rectangle Name="FillBar" Panel.ZIndex="-2" Canvas.Left="1" Height="28" Opacity="0.6" Fill="{Binding RegularColor, ElementName=_this}"/>
+		<Rectangle Name="FillBarShadowTop" Panel.ZIndex="-5" Canvas.Top="0" Canvas.Left="1" Height="3" Opacity="0.3" Fill="Black"/>
+		<Rectangle Name="FillBarShadowFull" Panel.ZIndex="-5" Canvas.Top="3"  Height="28" Opacity="0.3" Fill="Black"/>
+
+		<Image Name ="Arrow" Height="25" Width="25" Canvas.Right="1" Canvas.Top="1" Visibility="{Binding ArrowVisible, ElementName=_this, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Source="/CoCWinDesktop;component/resources/arrow-up.png"/>
 		<!--<Image Name ="Arrow" Height="26" Width="26" Canvas.Right="1" Canvas.Top="1" Visibility="{Binding ArrowVisible, RelativeSource={RelativeSource AncestorType=local:StatBar}, Mode=TwoWay}" Source="/CoCWinDesktop;component/resources/arrow-up.png"/>-->
 		<!--<Image Name="UpArrow" Height="26" Width="26" Canvas.Right="1" Canvas.Top="1" Visibility="Hidden" Source="/CoCWinDesktop;component/resources/arrow-up.png"/>
 		<Image Name="DownArrow" Height="26" Width="26" Canvas.Right="1" Canvas.Top="1" Visibility="Hidden" Source="/CoCWinDesktop;component/resources/arrow-down.png"/>-->

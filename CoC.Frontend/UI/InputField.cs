@@ -14,10 +14,14 @@ namespace CoC.Frontend.UI
 		private bool ContentChangedSinceLastQuery = false;
 
 		public bool active { get; private set; } = false;
-		
+
 		//optional regular expression. The GUI's job is to parse this data and prevent invalid characters. for example, non-numbers in a number related field.
 		//Note that we cannot guarentee that all GUI's will be able to do this, so anything that does need this should try parsing first, and have an output for if it fails (generally, try again!)
 		//NOTE FOR GUI DEVS: can be null!
+
+#warning: Figure out way to check text for if it's valid "So Far..."
+#warning: Likely best solution: grant two regex options: one for "valid so far" and one for "valid" - check the first on key enter, the second on lost focus. 
+
 
 		public Regex limitValidInputCharacters { get; private set; }
 
@@ -52,11 +56,11 @@ namespace CoC.Frontend.UI
 
 
 		//feel free to add more common regular expressions here, like one for letters and numbers or only letters, etc.
-		public static Regex POSITIVE_NUMBERS => new Regex(@"[+]?[0-9]*\.?[0-9]+");
-		public static Regex POSITIVE_INTEGERS => new Regex(@"[+]?[0-9]+");
-		public static Regex ALL_NUMBERS => new Regex(@"[-+]?[0-9]*\.?[0-9]+"); //does allow -.9, but that's still a valid number. 
+		public static Regex POSITIVE_NUMBERS => new Regex(@"^[+]?[0-9]*\.?[0-9]+$");
+		public static Regex POSITIVE_INTEGERS => new Regex(@"^[+]?[0-9]+$");
+		public static Regex ALL_NUMBERS => new Regex(@"^[-+]?[0-9]*\.?[0-9]+$"); //does allow -.9, but that's still a valid number. 
 
-		public static Regex COLOR => new Regex(@"#?[0-9A-Fa-f]{6}"); //standard #000000 color. html allows named colors, too, so this isn't used in out parser. 
+		public static Regex COLOR => new Regex(@"^#?[0-9A-Fa-f]{6}?"); //standard #000000 color. html allows named colors, too, so this isn't used in out parser. 
 
 		internal static string output => instance.input;
 

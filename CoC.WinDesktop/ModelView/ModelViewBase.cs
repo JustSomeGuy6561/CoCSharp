@@ -1,6 +1,7 @@
 ﻿using CoC.UI;
 using System;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CoCWinDesktop.ModelView
@@ -17,6 +18,10 @@ namespace CoCWinDesktop.ModelView
 		{
 			//Initialize Classes and related info.
 			Keyboard.ClearFocus();
+			Application.Current.MainWindow.Focus();
+			var element = Keyboard.Focus(Application.Current.MainWindow);
+
+			//Application.Current.MainWindow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
 			ParseDataForDisplay();
 		}

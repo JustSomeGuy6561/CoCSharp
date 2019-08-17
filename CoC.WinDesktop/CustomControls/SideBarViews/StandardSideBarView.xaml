@@ -15,22 +15,25 @@
 		<DataTemplate DataType="{x:Type Help:StatDisplayItem}">
 			<CC:StatBar Padding="0,0,0,1" Text="{Binding Path=Text}" Visibility="{Binding Path=visibility}"
 				ArrowVisible="{Binding Path=ArrowVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				IsNumeric="{Binding Path=IsNumeric, Mode=OneTime}"
-				HasGauge="{Binding Path=needsGauge}" ShowValueOverMax="{Binding Path=showValueOverMax}"
+				HasMinMax="{Binding Path=HasMinMax, Mode=OneWay}"
+				IsNumeric="{Binding Path=IsNumeric, Mode=OneWay}" ShowValueOverMax="{Binding Path=showValueOverMax}"
 				MinColor="{Binding Path=MinimumColor, TargetNullValue={StaticResource MinDefault}}" 
 				RegularColor="{Binding Path=RegularColor, TargetNullValue={StaticResource RegDefault}}" 
 				MinimumValue="{Binding Path=Minimum, TargetNullValue=0}" MaximumValue="{Binding Path=Maximum, TargetNullValue=100}" Value="{Binding Path=Value}" />
 		</DataTemplate>
 	</UserControl.Resources>
+	<!--<Canvas Style="{StaticResource Sidebar}" Margin="2,5,0,0">-->
+	<!--<Canvas Height="Auto" HorizontalAlignment="Stretch" Background="Fuchsia" Margin="2,5,0,0">-->
 	<Canvas Style="{StaticResource Sidebar}">
-		<StackPanel Name="StatBar" Canvas.Left="5" Canvas.Top="5" Width="195" Height="590">
+
+		<StackPanel Canvas.Right="1" Canvas.Top="5" Name="StatBar" Height="Auto" Width="Auto" VerticalAlignment="Top" HorizontalAlignment="Right">
 			<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,1,0,3" FontSize="22" Text="{Binding Path=nameText, Mode=OneWay}"/>
 			<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,2,0,3" FontSize="22" Text="{Binding Path=coreStatText, Mode=OneWay}"/>
-			<ItemsControl ItemsSource="{Binding Path=coreStats, Mode=OneTime}"/>
+			<ItemsControl ItemsSource="{Binding Path=coreStats, Mode=OneWay}" HorizontalAlignment="Right"/>
 			<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,2,0,3" FontSize="22" Text="{Binding Path=combatStatText, Mode=OneWay}"/>
-			<ItemsControl ItemsSource="{Binding Path=combatStats, Mode=OneTime}"/>
+			<ItemsControl ItemsSource="{Binding Path=combatStats, Mode=OneWay}"/>
 			<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,2,0,3" FontSize="22" Text="{Binding Path=advancementStatText, Mode=OneWay}"/>
-			<ItemsControl ItemsSource="{Binding Path=advancementStats, Mode=OneTime}"/>
+			<ItemsControl ItemsSource="{Binding Path=advancementStats, Mode=OneWay}"/>
 			<TextBlock Style="{StaticResource CoCText}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="18" FontFamily="Lucida Sans Typewriter" Text="{Binding Path=dayStr, Mode=OneWay}"/>
 			<TextBlock Style="{StaticResource CoCText}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="18" FontFamily="Lucida Sans Typewriter" Text="{Binding Path=hourStr, Mode=OneWay}"/>
 		</StackPanel>

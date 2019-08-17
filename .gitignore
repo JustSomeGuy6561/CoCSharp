@@ -276,3 +276,4 @@ __pycache__/
 *.csproj
 *.sln
 *.settings
+/CoC.WinDesktop/resources/sprites/source
