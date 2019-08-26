@@ -1,7 +1,7 @@
 ﻿using CoC.Frontend.UI;
 using CoC.Frontend.UI.ControllerData;
 using CoCWinDesktop.CustomControls;
-using CoCWinDesktop.ModelView.Helpers;
+using CoCWinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,49 +19,36 @@ namespace CoCWinDesktop.ModelView
 		public SideBarBase sideBar
 		{
 			get => _sideBar;
-			private set
-			{
-				if (_sideBar != value)
-				{
-					_sideBar = value;
-					NotifyPropertyChanged();
-				}
-			}
+			private set => CheckPropertyChanged(ref _sideBar, value);
 		}
 		private SideBarBase _sideBar;
 
 		public bool ShowSidebar
 		{
 			get => _ShowSidebar;
-			private set => IHateYouBoat(ref _ShowSidebar, value);
+			private set => CheckPrimitivePropertyChanged(ref _ShowSidebar, value);
 		}
 		private bool _ShowSidebar = true;
 
 		public ReadOnlyCollection<SaveDisplayData> gameSaves
 		{
 			get => _gameSaves;
-			private set
-			{
-				if (_gameSaves != value)
-				{
-					_gameSaves = value;
-					NotifyPropertyChanged();
-				}
-			}
+			private set => CheckPropertyChanged(ref _gameSaves, value);
 		}
 		private ReadOnlyCollection<SaveDisplayData> _gameSaves;
 
+		//for now. 
+#pragma warning disable IDE0044 // Add readonly modifier
 		private List<SaveDisplayData> gameSavesHolder;
+#pragma warning restore IDE0044 // Add readonly modifier
 
 		public SaveDisplayData selectedItem
 		{
 			get => _selectedItem;
 			set
 			{
-				if (_selectedItem != value)
+				if (CheckPropertyChanged(ref _selectedItem, value))
 				{
-					_selectedItem = value;
-					NotifyPropertyChanged();
 					displaySource = value?.saveStatData;
 				}
 			}
@@ -107,11 +94,9 @@ namespace CoCWinDesktop.ModelView
 			get => _optionsTextVisible;
 			private set
 			{
-				if (_optionsTextVisible != value)
-				{
-					_optionsTextVisible = value;
-					NotifyPropertyChanged();
-					NotifyPropertyChanged(nameof(SaveItemsVisible));
+				if (CheckPrimitivePropertyChanged(ref _optionsTextVisible, value))
+				{ 
+					RaisePropertyChanged(nameof(SaveItemsVisible));
 				}
 			}
 		}
@@ -125,8 +110,6 @@ namespace CoCWinDesktop.ModelView
 		//on Options command, set this to true.
 
 		private readonly StatDataCollectionBase emptyDisplay = new SaveDataCollection(null);
-
-		private Action onCancel;
 
 		public DataModelView(ModelViewRunner modelViewRunner) : base(modelViewRunner)
 		{
@@ -142,8 +125,6 @@ namespace CoCWinDesktop.ModelView
 			displaySource = emptyDisplay;
 		}
 
-		public override event PropertyChangedEventHandler PropertyChanged;
-
 		protected override void ParseDataForDisplay()
 		{
 			if (forceUpdate)
@@ -158,14 +139,6 @@ namespace CoCWinDesktop.ModelView
 				}
 			}
 			forceUpdate = false;
-		}
-
-		protected override bool SwitchToThisModelView(Action lastAction)
-		{
-			onCancel = lastAction;
-#warning TODO: Implement this when saves are actually in place. for now it'll just fail.
-			//ParseData(); return true;
-			return false;
 		}
 
 		private void OnOptionsCommand()
@@ -216,21 +189,7 @@ namespace CoCWinDesktop.ModelView
 		private void OnCancelCommand()
 		{
 			forceUpdate = true;
-			onCancel();
-		}
-
-		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		private void IHateYouBoat<T>(ref T data, T newValue, [CallerMemberName] string propertyName = "") where T : IEquatable<T>
-		{
-			if (data == null != (newValue == null) || (data != null && !data.Equals(newValue)))
-			{
-				data = newValue;
-				NotifyPropertyChanged(propertyName);
-			}
+			runner.SwitchToPreviousView();
 		}
 	}
 }

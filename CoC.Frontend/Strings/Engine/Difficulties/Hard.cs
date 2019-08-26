@@ -13,12 +13,12 @@ namespace CoC.Frontend.Engine.Difficulties
 
 		private static string HardHint()
 		{
-			return "Enemies have 50% less health and you can ignore bad-ends without penalty.";
+			return "Opponent has 25% more HP and does 15% more damage. Bad-ends can ruin your game.";
 		}
 
 		private static string HardDesc()
 		{
-			return "Combat is easier and bad-ends can be ignored";
+			return "+25% HP, +15% damage.";
 		}
 
 

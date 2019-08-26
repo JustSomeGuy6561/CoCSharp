@@ -1,5 +1,6 @@
 ﻿using CoC.Frontend.UI.ControllerData;
 using CoC.UI;
+using CoCWinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,10 +10,8 @@ using System.Threading.Tasks;
 
 namespace CoCWinDesktop.CustomControls
 {
-	public abstract class SideBarBase : INotifyPropertyChanged
+	public abstract class SideBarBase : NotifierBase
 	{
-		public abstract event PropertyChangedEventHandler PropertyChanged;
-
 		public void UpdateSidebar(StatDataCollectionBase statData)
 		{
 			GetData(statData);

@@ -1,4 +1,4 @@
-﻿using CoCWinDesktop.ModelView.Helpers;
+﻿using CoCWinDesktop.Helpers;
 using System;
 using System.IO;
 using System.Text;
@@ -28,14 +28,7 @@ namespace CoCWinDesktop.CustomControls
 	{
 		//used
 		public static readonly DependencyProperty MainTextProperty = DependencyProperty.Register("MainText", typeof(string), typeof(TextView),
-			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender, OnCall));
-		private static void OnCall(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			TextView st = d as TextView;
-
-			st.UpdateFlowDocument(true);
-			st.InvalidateVisual();
-		}
+			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender));
 
 		public string MainText
 		{
@@ -45,14 +38,7 @@ namespace CoCWinDesktop.CustomControls
 
 		//used
 		public static readonly DependencyProperty MainImageProperty = DependencyProperty.Register("MainImage", typeof(BitmapImage), typeof(TextView),
-			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender, OnMainImageChanged));
-		private static void OnMainImageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			TextView document = d as TextView;
-
-			document.UpdateFlowDocument(true);
-			document.InvalidateVisual();
-		}
+			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender));
 
 		public BitmapImage MainImage
 		{
@@ -63,14 +49,7 @@ namespace CoCWinDesktop.CustomControls
 
 		//used
 		public static readonly DependencyProperty PostControlTextProperty = DependencyProperty.Register("PostControlText", typeof(string), typeof(TextView),
-			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsMeasure, OnPostControlTextChanged));
-		private static void OnPostControlTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			TextView document = d as TextView;
-
-			document.UpdateFlowDocument(false);
-			document.InvalidateVisual();
-		}
+			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsMeasure));
 
 		public string PostControlText
 		{
@@ -199,16 +178,13 @@ namespace CoCWinDesktop.CustomControls
 
 
 
-		private void UpdateFlowDocument(bool isPrimaryText)
+		private void UpdateFlowDocument()
 		{
 			//FlowDocument document = PrimaryText.Document;
-			FlowDocument document = isPrimaryText ? PrimaryText.Document : SecondaryText.Document;
-			//string text = MainText;
-			string text = isPrimaryText ? MainText : PostControlText;
-			bool doImage = isPrimaryText;
-
+			FlowDocument document = PrimaryText.Document;
 
 			document.Blocks.Clear();
+			string text = MainText;
 
 			if (!string.IsNullOrWhiteSpace(text))
 			{
@@ -221,7 +197,7 @@ namespace CoCWinDesktop.CustomControls
 			}
 
 
-			if (doImage && MainImage != null)
+			if (MainImage != null)
 			{
 				Block block = document.Blocks.FirstBlock;
 				while (block != null && !(block is Paragraph))

@@ -23,10 +23,21 @@ namespace CoC.Backend.Engine
 		{
 			//initialize the saves. 
 			SaveSystem.AddSessionSave(new BackendSessionSave());
-			SaveSystem.AddGlobalSave(new BackendGlobalSave());
+			SaveSystem.AddGlobalSave(new BackendGlobalSave(defaultDifficultyIndex));
+
+			//add the fetish/game settings.
+
+			FetishSettingsManager.IncludeFetish(new Fetishes.PiercingFetish());
+
+			GameplaySettingsManager.IncludeGameplaySetting(new Settings.DifficultySettings(gameDifficulties));
+			GameplaySettingsManager.IncludeGameplaySetting(new Settings.MeasurementSettings());
+			GameplaySettingsManager.IncludeGameplaySetting(new Settings.HungerSettings());
+			GameplaySettingsManager.IncludeGameplaySetting(new Settings.HardcoreSettings());
+			GameplaySettingsManager.IncludeGameplaySetting(new Settings.RealismSettings());
+			GameplaySettingsManager.IncludeGameplaySetting(new Settings.SFW_Settings());
 
 
-			#warning Add method to read file and load global backend game data. 
+#warning Add method to read file and load global backend game data. 
 
 			//initialize game engine.
 			GameEngine.InitializeEngine(gamePlaces, gameLocations, gameDungeons, homeBases, perkModifiers, gameDifficulties, defaultDifficultyIndex);

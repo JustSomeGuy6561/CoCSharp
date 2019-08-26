@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using CoCWinDesktop.CustomControls;
+using CoCWinDesktop.CustomControls.OptionsModelViews;
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using CoC.UI;
-using CoCWinDesktop.ModelView.Helpers;
 
 namespace CoCWinDesktop.ModelView
 {
 	public class MainMenuModelView : ModelViewBase
 	{
 
-		public override event PropertyChangedEventHandler PropertyChanged;
-
-		private Action resumeCallback
+		private SafeAction resumeCallback
 		{
 			get => _resumeCallback;
 			set
@@ -32,7 +24,7 @@ namespace CoCWinDesktop.ModelView
 				}
 			}
 		}
-		private Action _resumeCallback = null;
+		private SafeAction _resumeCallback = null;
 
 		public ICommand CanContinue { get; }
 
@@ -44,12 +36,18 @@ namespace CoCWinDesktop.ModelView
 			CanContinue = new RelayCommand(resumeCallbackWrapper, () => resumeCallback != null);
 			OnNewGame = new RelayCommand(newGameCallbackWrapper, returnTrue);
 
-			OptionsCommand = new RelayCommand(runner.TestViewSwitch, returnTrue);
+			OptionsCommand = new RelayCommand(optionsCallbackWrapper, returnTrue);
+
+		}
+
+		private void optionsCallbackWrapper()
+		{
+			runner.SwitchToOptions();
 		}
 
 		private void newGameCallbackWrapper()
 		{
-			runner.SwitchToStandard(null);
+			runner.SwitchToStandard();
 		}
 
 		private static bool returnTrue()
@@ -59,32 +57,11 @@ namespace CoCWinDesktop.ModelView
 
 		private void resumeCallbackWrapper()
 		{
-			runner.SwitchToStandard(resumeCallback);
+			runner.SwitchToStandard();
 		}
 
-		//note: lastAction will never be null, 
-		protected override bool SwitchToThisModelView(Action lastAction)
-		{
-			resumeCallback = lastAction;
-			if (resumeCallback is null)
-			{
-				Debug.WriteLine("Switch to main model view has a null callback. This should never occur. The game will still run, but continue will not work.");
-			}
-			return true;
-		}
-
-
-
-		//honestly, we don't do anything. 
 		protected override void ParseDataForDisplay()
 		{
 		}
-
-
-		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
 	}
 }

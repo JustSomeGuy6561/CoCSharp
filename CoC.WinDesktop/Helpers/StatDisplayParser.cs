@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.ModelView.Helpers
+namespace CoCWinDesktop.Helpers
 {
 	public sealed class StatDisplayParser
 	{

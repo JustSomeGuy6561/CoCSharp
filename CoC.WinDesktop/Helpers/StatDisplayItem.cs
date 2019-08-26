@@ -1,4 +1,5 @@
 ﻿using CoC.Frontend.UI.ControllerData;
+using CoCWinDesktop.Helpers;
 using CoCWinDesktop.Strings;
 using System;
 using System.ComponentModel;
@@ -6,14 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.ModelView.Helpers
+namespace CoCWinDesktop.Helpers
 {
 	//the lifespan of these objects is actually the same as the base stat stored within it, so we don't need to worry about removing the event here. 
 	//cool. That was shaping up to be a huge hassle. 
-	public sealed class StatDisplayItem : INotifyPropertyChanged
+	public sealed class StatDisplayItem : NotifierBase
 	{
-		public event PropertyChangedEventHandler PropertyChanged;
-
 		public Visibility visibility { get; private set; }
 
 		private string Name { get; set; }
@@ -21,21 +20,21 @@ namespace CoCWinDesktop.ModelView.Helpers
 		public bool IsNumeric
 		{
 			get => _isNumeric;
-			private set => IHateYouBoat(ref _isNumeric, value);
+			private set => CheckPrimitivePropertyChanged(ref _isNumeric, value);
 		}
 		private bool _isNumeric;
 
 		public bool HasMinMax
 		{
 			get => _HasMinMax;
-			private set => IHateYouBoat(ref _HasMinMax, value);
+			private set => CheckPrimitivePropertyChanged(ref _HasMinMax, value);
 		}
 		private bool _HasMinMax;
 
 		public string Text
 		{
 			get => _Text;
-			private set => IHateYouBoat(ref _Text, value);
+			private set => CheckPropertyChanged(ref _Text, value);
 		}
 		private string _Text = "";
 
@@ -47,14 +46,14 @@ namespace CoCWinDesktop.ModelView.Helpers
 		public bool showValueOverMax
 		{
 			get => _showValueOverMax;
-			private set => IHateYouBoat(ref _showValueOverMax, value);
+			private set => CheckPrimitivePropertyChanged(ref _showValueOverMax, value);
 		}
 		private bool _showValueOverMax;
 
 		public bool displayStatChangeIcon
 		{
 			get => _displayStatChangeIcon;
-			private set => IHateYouBoat(ref _displayStatChangeIcon, value);
+			private set => CheckPrimitivePropertyChanged(ref _displayStatChangeIcon, value);
 		}
 		private bool _displayStatChangeIcon;
 
@@ -64,9 +63,8 @@ namespace CoCWinDesktop.ModelView.Helpers
 		{
 			set
 			{
-				if (_minColor != value)
+				if (MinimumColor?.Color != value)
 				{
-					_minColor = value;
 					if (value is null)
 					{
 						MinimumColor = null;
@@ -82,7 +80,6 @@ namespace CoCWinDesktop.ModelView.Helpers
 				}
 			}
 		}
-		private Color? _minColor = null;
 
 		public Color? regColorDefaultOrMax
 		{
@@ -115,7 +112,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 		public SolidColorBrush MinimumColor
 		{
 			get => _MinimumColor;
-			private set => IHateYouBoat(ref _MinimumColor, value);
+			private set => CheckPropertyChanged(ref _MinimumColor, value);
 		}
 		private SolidColorBrush _MinimumColor = null;
 
@@ -123,40 +120,30 @@ namespace CoCWinDesktop.ModelView.Helpers
 		public SolidColorBrush RegularColor
 		{
 			get => _RegularColor;
-			private set => IHateYouBoat(ref _RegularColor, value);
+			private set => CheckPropertyChanged(ref _RegularColor, value);
 		}
 		private SolidColorBrush _RegularColor = null;
 
 		public string Value
 		{
 			get => _value;
-			private set => IHateYouBoat(ref _value, value);
+			private set => CheckPropertyChanged(ref _value, value);
 		}
 		private string _value;
 
 		public uint? Maximum
 		{
 			get => _maximum;
-			private set => IHateYouBoat(ref _maximum, value);
+			private set => CheckPrimitivePropertyChanged(ref _maximum, value);
 		}
 		private uint? _maximum;
-		private void OnMaximumChanged()
-		{
-			OnPropertyChanged(nameof(Maximum));
-			ChangeRegularColor();
-		}
+
 		public uint? Minimum
 		{
 			get => _minimum;
-			private set => IHateYouBoat(ref _minimum, value);
+			private set => CheckPrimitivePropertyChanged(ref _minimum, value);
 		}
 		private uint? _minimum;
-		private void OnMinimumChanged()
-		{
-			OnPropertyChanged(nameof(Minimum));
-			ChangeRegularColor();
-		}
-
 
 		public StatDisplayItem(CreatureStatBase creatureStat, string displayName, bool isSilent = false)
 		{
@@ -187,22 +174,10 @@ namespace CoCWinDesktop.ModelView.Helpers
 		public Visibility ArrowVisibility
 		{
 			get => _ArrowVisibility;
-			set
-			{
-				if (_ArrowVisibility != value)
-				{
-					_ArrowVisibility = value;
-					OnPropertyChanged(nameof(ArrowVisibility));
-				}
-			}
+			set => CheckEnumPropertyChanged(ref _ArrowVisibility, value);
 		}
 		private Visibility _ArrowVisibility = Visibility.Hidden;
 
-
-		private void OnPropertyChanged([CallerMemberName] string propertyName = "")
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
 
 		public void UpdateStats(CreatureStatBase statBase)
 		{
@@ -221,31 +196,6 @@ namespace CoCWinDesktop.ModelView.Helpers
 			ChangeRegularColor();
 		}
 
-		private void IHateYouBoat(ref SolidColorBrush data, SolidColorBrush newValue, [CallerMemberName] string propertyName = "")
-		{
-			if (data != newValue)
-			{
-				data = newValue;
-				OnPropertyChanged(propertyName);
-			}
-		}
-
-		private void IHateYouBoat<T>(ref T data, T newValue, [CallerMemberName] string propertyName = "") where T : IEquatable<T>
-		{
-			if ((data == null) != (newValue == null) || (data != null && !data.Equals(newValue)))
-			{
-				data = newValue;
-				OnPropertyChanged(propertyName);
-			}
-		}
-		private void IHateYouBoat<T>(ref T? data, T? newValue, [CallerMemberName] string propertyName = "") where T : struct
-		{
-			if ((data == null) != (newValue == null) || (data != null && !data.Equals(newValue)))
-			{
-				data = newValue;
-				OnPropertyChanged(propertyName);
-			}
-		}
 
 		private void ChangeRegularColor()
 		{

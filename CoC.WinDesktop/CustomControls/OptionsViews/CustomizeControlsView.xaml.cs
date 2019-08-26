@@ -13,15 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.Views
+namespace CoCWinDesktop.CustomControls.OptionsViews
 {
 	/// <summary>
-	/// Interaction logic for OptionsMenuView.xaml
+	/// Interaction logic for UserControl1.xaml
 	/// </summary>
-	public partial class OptionsMenuView : UserControl
+	public partial class CustomizeControlsView : UserControl
 	{
-#warning combine this into main menu view, and convert main menu view to use multiple user controls based on whatever we're doing. 
-		public OptionsMenuView()
+		public CustomizeControlsView()
 		{
 			InitializeComponent();
 		}

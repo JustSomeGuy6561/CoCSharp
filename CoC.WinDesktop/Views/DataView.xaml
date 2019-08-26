@@ -7,8 +7,9 @@
 			 xmlns:MV="clr-namespace:CoCWinDesktop.ModelView"
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
-			 xmlns:Help="clr-namespace:CoCWinDesktop.ModelView.Helpers"
-			 xmlns:sys ="clr-namespace:System;assembly=mscorlib">
+			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
+			 mc:Ignorable="d"
+			 d:DataContext="{d:DesignInstance Type=MV:DataModelView}">
 	<UserControl.Resources>
 		<Conv:DrawingColorToMediaColorIgnoreAlpha x:Key="ColorConverter" />
 		<Conv:VisibilityFromIsNull x:Key="NullToVis"/>
@@ -16,11 +17,7 @@
 		<!-- Couldn't figure out how to hard-code these into the targetnullvalues so they're here.-->
 		<SolidColorBrush x:Key="MinDefault" Color="#C00000"/>
 		<SolidColorBrush x:Key="RegDefault" Color="#C07050"/>
-
-		<sys:Double x:Key="ContentWidth">769</sys:Double>
-		<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">15</sys:Double>
-		<sys:Double x:Key="ContentContainerWidth">754</sys:Double>
-
+		
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
 			<Style.Triggers>
 				<Trigger Property="IsEnabled" Value="False">
@@ -35,7 +32,8 @@
 		-->
 	<Canvas Style="{StaticResource CoCCanvas}">
 		<CC:SideBar Canvas.Top="55" Canvas.Left="5" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
-		<ScrollViewer Canvas.Left="208" Canvas.Top="52" Width="702" Height="668">
+		<ScrollViewer Canvas.Left="208" Canvas.Top="52" Width="702" Height="668" Style="{StaticResource ScrollbarWithSpace}" 
+					  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
 			<ListBox ItemsSource="{Binding Path=SaveItems, Mode=OneWay}" SelectedItem="{Binding Path=SelectedSave, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent">
 				<ListBox.ItemTemplate>
 					<DataTemplate DataType="{x:Type Help:SaveDisplayData}">

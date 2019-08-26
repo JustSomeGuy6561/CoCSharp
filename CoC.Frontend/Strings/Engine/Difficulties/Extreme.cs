@@ -13,12 +13,12 @@ namespace CoC.Frontend.Engine.Difficulties
 
 		private static string ExtremeHint()
 		{
-			return "Enemies have 50% less health and you can ignore bad-ends without penalty.";
+			return "Opponent has 100% more HP and does more 50% damage.";
 		}
 
 		private static string ExtremeDesc()
 		{
-			return "Combat is easier and bad-ends can be ignored";
+			return "+50% HP, +30% damage.";
 		}
 
 

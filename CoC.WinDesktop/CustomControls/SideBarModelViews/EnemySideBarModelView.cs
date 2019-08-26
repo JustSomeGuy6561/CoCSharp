@@ -15,8 +15,6 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		{
 		}
 
-		public override event PropertyChangedEventHandler PropertyChanged;
-
 		protected override void GetData(StatDataCollectionBase statData)
 		{
 			throw new NotImplementedException();

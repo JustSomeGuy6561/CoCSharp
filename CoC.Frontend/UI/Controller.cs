@@ -9,6 +9,8 @@
 //1/19/2019, 8:01 PM
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
+using CoC.Backend.Fetishes;
+using CoC.Backend.Settings;
 using CoC.Frontend.UI;
 using CoC.Frontend.UI.ControllerData;
 using System.Collections.ObjectModel;
@@ -113,6 +115,16 @@ namespace CoC.UI
 		public AppearanceData GetAppearanceData()
 		{
 			return new AppearanceData();
+		}
+
+		public ReadOnlyCollection<GameplaySettingBase> GetGameplaySettings()
+		{
+			return GameplaySettingsManager.gameSettings;
+		}
+
+		public ReadOnlyCollection<FetishBase> GetFetishSettings()
+		{
+			return FetishSettingsManager.fetishes;
 		}
 
 		private Controller()

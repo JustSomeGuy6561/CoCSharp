@@ -19,10 +19,6 @@ namespace CoCWinDesktop.CustomControls
 
 	//we're doing a two-way bind on the visibility property for arrow. this will allow us to force it invis
 
-#warning I think this property/dependency property bullshit is bullshit, but should be able to fix properties to not need all the OnChanged events if i just use GetValue and SetValue for dependancy properties.
-	//would also allow the shit to be one time, like it's supposed to be. Would probably also allow us to fix our code so we can just run the bullshit in constructors instead of commenting it out like i have.
-
-
 	public partial class StatBar : UserControl
 	{
 		//these let you bind instead of just doing code-behind magic. Bind these and the whole code will just work (TM). Of course, the source you bind to needs to

@@ -1031,19 +1031,25 @@ namespace CoC.Frontend.Creatures
 			InputField.DeactivateInputField();
 			if (float.TryParse(InputField.output, out float parsedInput))
 			{
-				if (parsedInput > creator.heightInInches)
+				double parsed = parsedInput;
+				if (Measurement.UsesMetric)
+				{
+					parsed *= Measurement.TO_INCHES;
+				}
+
+				if (parsed > creator.heightInInches)
 				{
 					OutputText(HairTooLongStr(parsedInput));
 					ChooseHairLength(false);
 				}
-				else if (parsedInput < 0)
+				else if (parsed < 0)
 				{
 					OutputText(NegativeNumberHairStr(parsedInput));
 					ChooseHairLength(false);
 				}
 				else
 				{
-					creator.hairLength = parsedInput;
+					creator.hairLength = (float)parsed;
 					HairOptions();
 				}
 			}

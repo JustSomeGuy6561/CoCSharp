@@ -21,6 +21,7 @@ namespace CoC.Frontend.Engine
 			defaultDifficultyIndex = difficulties.Count - 1; //must appear right after normal. 
 
 			difficulties.Add(new Hard());
+			difficulties.Add(new Nightmare());
 			difficulties.Add(new Extreme());
 			difficulties.Add(new Grimdark());
 		}

@@ -22,13 +22,13 @@ namespace CoC.Backend.SaveData
 
 		public bool SFW_Mode = false;
 
-		public byte difficulty = 0;
+		public int difficulty = 0;
 		public bool hardcoreMode = false;
 
 		public byte NumTimeNewGamePlus = 0;
 		public byte NewGamePlusLevel => Math.Min(NumTimeNewGamePlus, (byte)4);
 
-
+		public bool UsesMetricMeasurements = false;
 	}
 
 }

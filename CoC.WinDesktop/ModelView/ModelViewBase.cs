@@ -1,4 +1,5 @@
 ﻿using CoC.UI;
+using CoCWinDesktop.Helpers;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -6,11 +7,8 @@ using System.Windows.Input;
 
 namespace CoCWinDesktop.ModelView
 {
-	public abstract class ModelViewBase : INotifyPropertyChanged
+	public abstract class ModelViewBase : NotifierBase
 	{
-		public abstract event PropertyChangedEventHandler PropertyChanged;
-
-
 		//gather all the data related to this display, from the controller and/or ui as needed. 
 		protected abstract void ParseDataForDisplay();
 
@@ -33,15 +31,13 @@ namespace CoCWinDesktop.ModelView
 		/// modelview before this is called in order for it to execute properly. It's not reasonably possible to do that here, though. 
 		/// </summary>
 		/// <param name="lastAction"></param>
-		internal void OnSwitch(Action lastAction)
+		internal void SwitchToThisView()
 		{
-			if (!SwitchToThisModelView(lastAction))
-			{
-				lastAction();
-			}
+			OnSwitch();
+			ParseData();
 		}
 
-		protected abstract bool SwitchToThisModelView(Action lastAction);
+		protected virtual void OnSwitch() { }
 
 		public ModelViewBase(ModelViewRunner modelViewRunner)
 		{

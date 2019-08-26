@@ -1,4 +1,6 @@
-﻿using CoCWinDesktop.ModelView;
+﻿using CoC.Backend.Tools;
+using CoCWinDesktop.Helpers;
+using CoCWinDesktop.ModelView;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,24 +53,54 @@ namespace CoCWinDesktop.Views
 		//as well, so we don't need to deal with updating them when the users update their hotkeys. Will need a way to capture the modifiers and shit they hit.
 		private readonly List<KeyBinding> hotKeys;
 
+		private readonly Button[] bottomButtons;
+
 		public StandardView()
 		{
 			InitializeComponent();
+			runner = Application.Current.Resources["Runner"] as ModelViewRunner;
 
-			RelayCommand command = new RelayCommand(() => TestButton.Command?.Execute(this), () => TestButton.Command?.CanExecute(this) == true);
-
-			KeyBinding binding = new KeyBinding
+			bottomButtons = new Button[15]
 			{
-				Key = Key.D1,
-				Command = command
+				BottomButton0, BottomButton1, BottomButton2, BottomButton3, BottomButton4,
+				BottomButton5, BottomButton6, BottomButton7, BottomButton8, BottomButton9,
+				BottomButton10, BottomButton11, BottomButton12, BottomButton13, BottomButton14
 			};
+
+			Binding key = new Binding()
+			{
+				Source = runner.Button1Hotkey,
+				Path = new PropertyPath(nameof(runner.Button1Hotkey.primaryGesture) + "." + nameof(runner.Button1Hotkey.primaryGesture.Key)),
+				Mode = BindingMode.OneWay,
+			};
+
+			Binding modifier = new Binding()
+			{
+				Source = runner.Button1Hotkey,
+				Path = new PropertyPath(nameof(runner.Button1Hotkey.primaryGesture) + "." + nameof(runner.Button1Hotkey.primaryGesture.Modifiers)),
+				Mode = BindingMode.OneWay,
+			};
+
+			KeyBinding keyBinding = new KeyBinding()
+			{
+				Command = new RelayCommand(() => bottomButtons[0].Command?.Execute(this), () => bottomButtons[0].Command?.CanExecute(this) == true)
+			};
+			BindingOperations.SetBinding(keyBinding, KeyBinding.KeyProperty, key);
+			BindingOperations.SetBinding(keyBinding, KeyBinding.ModifiersProperty, modifier);
+
+			//RelayCommand commandMaker(ICommand cmd) => new RelayCommand(() => cmd?.Execute(this), () => cmd?.CanExecute(this) == true);
+			//Pair<KeyBinding> bindingMaker(HotKeyWrapper hotKey)
+			//{
+			//	KeyBinding first, second;
+			//	first = new KeyBinding() { Key = hotKey.primaryGesture.Key, Modifiers = ModifierKeys.}
+			//	new Pair<KeyBinding>(new hotKey.primaryGesture)
+			//}
 
 			hotKeys = new List<KeyBinding>()
 			{
-				binding,
+				keyBinding,
 			};
 
-			runner = Application.Current.Resources["Runner"] as ModelViewRunner;
 			MainContent.InputField.IsKeyboardFocusedChanged += InputField_IsKeyboardFocusedChanged;
 
 			//InputBindings.AddRange(hotKeys);

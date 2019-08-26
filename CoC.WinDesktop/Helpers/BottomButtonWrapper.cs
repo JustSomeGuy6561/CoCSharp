@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoCWinDesktop.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,16 +9,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.ModelView.Helpers
+namespace CoCWinDesktop.Helpers
 {
-	public sealed class BottomButtonWrapper : INotifyPropertyChanged
+	public sealed class BottomButtonWrapper : NotifierBase
 	{
 		public ICommand ClickCommand { get; }
 
 		public Visibility visibility
 		{
 			get => _visibility;
-			private set => IHateYouEnumBoat(ref _visibility, value);
+			private set => CheckEnumPropertyChanged(ref _visibility, value);
 		}
 		private Visibility _visibility = Visibility.Hidden;
 
@@ -43,35 +44,30 @@ namespace CoCWinDesktop.ModelView.Helpers
 		public string Title
 		{
 			get => _title;
-			private set => IHateYouBoat(ref _title, value);
+			private set => CheckPropertyChanged(ref _title, value);
 		}
 		private string _title;
 
 		public string ToolTip
 		{
 			get => _toolTip;
-			private set => IHateYouBoat(ref _toolTip, value);
+			private set => CheckPropertyChanged(ref _toolTip, value);
 		}
 		private string _toolTip;
 
 		public string ToolTipTitle
 		{
 			get => _toolTipTitle;
-			private set => IHateYouBoat(ref _toolTipTitle, value);
+			private set => CheckPropertyChanged(ref _toolTipTitle, value);
 		}
 		private string _toolTipTitle;
 
 		public bool isDefault
 		{
 			get => _isDefault;
-			private set => IHateYouPrimitiveBoat(ref _isDefault, value);
+			private set => CheckPrimitivePropertyChanged(ref _isDefault, value);
 		}
 		private bool _isDefault;
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-
 
 		public BottomButtonWrapper()
 		{
@@ -121,38 +117,6 @@ namespace CoCWinDesktop.ModelView.Helpers
 			visibility = Visibility.Hidden;
 			isDefault = false;
 			onClick = null;
-		}
-
-		private void IHateYouBoat<T>(ref T value, T newValue, [CallerMemberName] string propertyName = "") where T : class
-		{
-			if (value != newValue)
-			{
-				value = newValue;
-				OnPropertyChanged(propertyName);
-			}
-		}
-
-		private void IHateYouPrimitiveBoat<T>(ref T value, T newValue, [CallerMemberName] string propertyName = "") where T : struct, IEquatable<T>
-		{
-			if (!value.Equals(newValue))
-			{
-				value = newValue;
-				OnPropertyChanged(propertyName);
-			}
-		}
-
-		private void IHateYouEnumBoat<T>(ref T value, T newValue, [CallerMemberName] string propertyName = "") where T : Enum
-		{
-			if (!value.Equals(newValue))
-			{
-				value = newValue;
-				OnPropertyChanged(propertyName);
-			}
-		}
-
-		private void OnPropertyChanged(string propertyName)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

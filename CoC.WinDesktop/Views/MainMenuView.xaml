@@ -1,17 +1,16 @@
 ﻿<UserControl x:Class="CoCWinDesktop.Views.MainMenuView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:local="clr-namespace:CoCWinDesktop">
-			 <!--xmlns:Behave="clr-namespace:CoCWinDesktop.Behaviors"
-			 Behave:FocusBehavior.FocusFirst="True"-->
+             xmlns:local="clr-namespace:CoCWinDesktop"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:MV="clr-namespace:CoCWinDesktop.ModelView"
+			 mc:Ignorable="d"
+			 d:DataContext="{d:DesignInstance Type=MV:MainMenuModelView}"
+			 d:DesignHeight="800" d:DesignWidth="1000">
 	<UserControl.Resources>
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
-			<Setter Property="Background">
-				<Setter.Value>
-					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
-				</Setter.Value>
-			</Setter>
+			<Setter Property="Background" Value="{StaticResource Button0Image}"/>
 		</Style>
 		<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}" />
 		<Style x:Key="CreditText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}">
@@ -35,7 +34,7 @@
 				<Style TargetType="Image">
 					<Setter Property="Source" Value="/CoCWinDesktop;component/resources/CoCLogo.png"/>
 					<Style.Triggers>
-						<DataTrigger Binding="{Binding Source={StaticResource Runner}, Path=IsDarkMode, Mode=OneWay}" Value="True">	
+						<DataTrigger Binding="{Binding Source={StaticResource Runner}, Path=IsDarkMode, Mode=OneWay}" Value="True">
 							<Setter Property="Source" Value="/CoCWinDesktop;component/resources/CoCLogoLight.png" />
 						</DataTrigger>
 					</Style.Triggers>
@@ -60,11 +59,11 @@
 		</Canvas>
 		<Button Name="ContinueBtn" ToolTip="Robin" Canvas.Left="192" Canvas.Top="588" Command="{Binding Path=CanContinue}" Content="Continue"/>
 		<Button x:Name="NewGameBtn" ToolTip="Robin" Canvas.Left="347" Canvas.Top="588" Command="{Binding Path=OnNewGame}" Content="New Game" />
-		<Button x:Name="DataBtn" ToolTip="Robin" Canvas.Left="502" Canvas.Top="588" IsEnabled="True" Content="Data" Click="DataBtn_Click" />
-		<Button x:Name="OptionsBtn" ToolTip="Robin" Canvas.Left="657" Canvas.Top="588" IsEnabled="True" Content="Options" Command="{Binding Path=OptionsCommand}" />
-		<Button x:Name="AchievementsBtn" ToolTip="Robin" Canvas.Left="192" Canvas.Top="633" IsEnabled="True" Content="Achievements" Click="AchievementsBtn_Click" />
-		<Button x:Name="InstructionsBtn" ToolTip="Robin" Canvas.Left="347" Canvas.Top="633" IsEnabled="True" Content="Instructions" Click="InstructionsBtn_Click" />
-		<Button x:Name="CreditsBtn" ToolTip="Robin" Canvas.Left="502" Canvas.Top="633" IsEnabled="True" Content="Credits" Click="CreditsBtn_Click" />
+		<Button x:Name="DataBtn" ToolTip="Robin" Canvas.Left="502" Canvas.Top="588" IsEnabled="True" Content="Data"/>
+		<Button x:Name="OptionsBtn" ToolTip="Robin" Canvas.Left="657" Canvas.Top="588" IsEnabled="True" Content="Options" Command="{Binding OptionsCommand}" />
+		<Button x:Name="AchievementsBtn" ToolTip="Robin" Canvas.Left="192" Canvas.Top="633" IsEnabled="True" Content="Achievements" />
+		<Button x:Name="InstructionsBtn" ToolTip="Robin" Canvas.Left="347" Canvas.Top="633" IsEnabled="True" Content="Instructions" />
+		<Button x:Name="CreditsBtn" ToolTip="Robin" Canvas.Left="502" Canvas.Top="633" IsEnabled="True" Content="Credits"/>
 		<Button x:Name="ModThreadBtn" ToolTip="Robin" Canvas.Left="659" Canvas.Top="633" IsEnabled="True" Content="Mod Thread" Click="ModThreadBtn_Click" />
 
 		<TextBlock Name="website" Style="{StaticResource CreditText}" Height="40" FontSize="20" FontWeight="Bold" Canvas.Top="678">

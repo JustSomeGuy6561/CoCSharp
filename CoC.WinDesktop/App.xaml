@@ -8,15 +8,31 @@
 			 xmlns:sys="clr-namespace:System;assembly=mscorlib"
 			 Startup="App_Startup">
 	<Application.Resources>
-		<MV:ModelViewRunner x:Key="Runner" />
+
+		<local:ModelViewRunner x:Key="Runner" />
+		<ImageBrush x:Key="Button0Image" ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
+		<ImageBrush x:Key="Button1Image" ImageSource="/CoCWinDesktop;component/resources/button1.jpg"/>
+		<ImageBrush x:Key="Button2Image" ImageSource="/CoCWinDesktop;component/resources/button2.jpg"/>
+		<ImageBrush x:Key="Button3Image" ImageSource="/CoCWinDesktop;component/resources/button3.jpg"/>
+		<ImageBrush x:Key="Button4Image" ImageSource="/CoCWinDesktop;component/resources/button4.jpg"/>
+		<ImageBrush x:Key="Button5Image" ImageSource="/CoCWinDesktop;component/resources/button5.jpg"/>
+		<ImageBrush x:Key="Button6Image" ImageSource="/CoCWinDesktop;component/resources/button6.jpg"/>
+		<ImageBrush x:Key="Button7Image" ImageSource="/CoCWinDesktop;component/resources/button7.jpg"/>
+		<ImageBrush x:Key="Button8Image" ImageSource="/CoCWinDesktop;component/resources/button8.jpg"/>
+		<ImageBrush x:Key="Button9Image" ImageSource="/CoCWinDesktop;component/resources/button9.jpg"/>
+		<ImageBrush x:Key="Button10Image" ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
+		<ImageBrush x:Key="Button11Image" ImageSource="/CoCWinDesktop;component/resources/button1.jpg"/>
+		<ImageBrush x:Key="Button12Image" ImageSource="/CoCWinDesktop;component/resources/button2.jpg"/>
+		<ImageBrush x:Key="Button13Image" ImageSource="/CoCWinDesktop;component/resources/button3.jpg"/>
+		<ImageBrush x:Key="Button14Image" ImageSource="/CoCWinDesktop;component/resources/button4.jpg"/>
 
 		<Style x:Key="PageControl" TargetType="{x:Type UserControl}">
 			<Setter Property="Focusable" Value="True" />
-			 <Setter Property="IsTabStop" Value="True" />
-			 <Setter Property="TabIndex" Value="0" />
+			<Setter Property="IsTabStop" Value="True" />
+			<Setter Property="TabIndex" Value="0" />
 			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 		</Style>
-		
+
 		<Style TargetType="{x:Type Control}">
 			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 		</Style>
@@ -28,8 +44,7 @@
 		<Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
 			<Setter Property="Control.Template">
 				<Setter.Value>
-					<ControlTemplate>
-					</ControlTemplate>
+					<ControlTemplate/>
 				</Setter.Value>
 			</Setter>
 		</Style>
@@ -38,13 +53,30 @@
 				<Setter.Value>
 					<ControlTemplate>
 						<Rectangle StrokeThickness="3"  
-							Stroke="Yellow"  
-							SnapsToDevicePixels="true"/>
+                                Stroke="Yellow"  
+                                SnapsToDevicePixels="true"/>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
 		</Style>
-		
+
+		<Style x:Key="StandardComboBox" TargetType="ComboBox">
+			<Setter Property="FontFamily" Value="{Binding Path=TextFontFamily, Source={StaticResource Runner}, Mode=OneWay}"/>
+			<Setter Property="FontSize" Value="{Binding Path=FontSize, Source={StaticResource Runner}, Mode=OneWay}" />
+		</Style>
+
+		<Style x:Key="StandardComboBoxItem" TargetType="ComboBoxItem">
+			<Setter Property="FontFamily" Value="{Binding Path=TextFontFamily, Source={StaticResource Runner}, Mode=OneWay}"/>
+			<Setter Property="FontSize" Value="{Binding Path=FontSize, Source={StaticResource Runner}, Mode=OneWay}" />
+		</Style>
+
+		<!-- AFAIK these are actually ignored because reasons. But whatever.-->
+		<Style x:Key="StandardFlowDocument" TargetType="FlowDocument">
+			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
+			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
+			<Setter Property="FontSize" Value="{Binding FontSize, Mode=OneWay, Source={StaticResource Runner}}"/>
+		</Style>
+
 		<Style x:Key="CoCButton" TargetType="{x:Type Button}">
 			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
 			<Setter Property="Width" Value="150" />
@@ -84,12 +116,54 @@
 		<Style x:Key="CoCText" TargetType="{x:Type TextBlock}" >
 			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
 		</Style>
+
+		<Conv:AddValueConverter x:Key="Adder"/>
+		
+
+		<Style x:Key="StandardText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}" >
+			<Setter Property="FontSize" Value="{Binding FontSize, Mode=OneWay, Source={StaticResource Runner}}"/>
+			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
+		</Style>
+
+		<sys:Double x:Key="HeaderDelta">20</sys:Double>
+		<Style x:Key="HeaderText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}" >
+			<Setter Property="FontSize">
+				<Setter.Value>
+					<MultiBinding Converter="{StaticResource Adder}">
+						<Binding Path="FontSize" Mode="OneWay" Source="{StaticResource Runner}"/>
+						<Binding Source="{StaticResource HeaderDelta}"/>
+					</MultiBinding>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="TextDecorations" Value="Underline" />
+		</Style>
+
+		<sys:Double x:Key="PostHeaderDelta">4</sys:Double>
+		<Style x:Key="SmallHeaderText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}" >
+			<Setter Property="FontSize">
+				<Setter.Value>
+					<MultiBinding Converter="{StaticResource Adder}">
+						<Binding Path="FontSize" Mode="OneWay" Source="{StaticResource Runner}"/>
+						<Binding Source="{StaticResource PostHeaderDelta}"/>
+					</MultiBinding>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
+		</Style>
+
+		<Style x:Key="StandardTextBox" TargetType="{x:Type TextBoxBase}">
+			<Setter Property="FontFamily" Value="{Binding Path=TextFontFamily, Source={StaticResource Runner}, Mode=OneWay}"/>
+			<Setter Property="FontSize" Value="{Binding Path=FontSize, Source={StaticResource Runner}, Mode=OneWay}" />
+		</Style>
+		
 		<Style x:Key="CoCLabel" TargetType="{x:Type Label}" >
 			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
 			<Setter Property="Padding" Value="0"/>
 		</Style>
-		
-		<Style x:Key="SimpleTextZoneVersion2" TargetType="{x:Type CC:TextView}">
+
+		<Style x:Key="SimpleTextZone" TargetType="{x:Type CC:TextView}">
 			<Setter Property="Canvas.Left" Value="208" />
 			<Setter Property="Canvas.Top" Value="52" />
 			<Setter Property="Width" Value="769" />
@@ -114,7 +188,6 @@
 			<Setter Property="Height" Value="800" />
 			<Setter Property="Background">
 				<Setter.Value>
-					<!-- This is some next level magic right here. a forewarning, it'll appear to not work in designer, but appears when you run it.-->
 					<ImageBrush ImageSource="{Binding BackgroundImage, Mode=OneWay, Source={StaticResource Runner}, TargetNullValue={x:Null}}" />
 				</Setter.Value>
 			</Setter>
@@ -132,5 +205,32 @@
 			</UserControl.Background>-->
 		</Style>
 		
+		<Conv:ScrollVisibilityToVisibilityHelper x:Key="VisFromScrollable"/>
+		<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">15</sys:Double>
+		<sys:Double x:Key="{x:Static SystemParameters.HorizontalScrollBarHeightKey}">15</sys:Double>
+		<ControlTemplate x:Key="ScrollViewerWithSetAsideSpace" TargetType="{x:Type ScrollViewer}">
+			<Grid x:Name="Grid" Background="{TemplateBinding Background}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
+				<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+				<Rectangle Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="{StaticResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"
+					Visibility="{Binding VerticalScrollBarVisibility, Converter={StaticResource VisFromScrollable}, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+				<ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Style="{DynamicResource ScrollBarLockedSize}"/>
+				<Rectangle Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="{StaticResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"
+					Visibility="{Binding HorizontalScrollBarVisibility, Converter={StaticResource VisFromScrollable}, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+				<ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+			</Grid>
+		</ControlTemplate>
+
+		<Style TargetType="{x:Type ScrollViewer}" x:Key="ScrollbarWithSpace">
+			<Setter Property="Template" Value="{StaticResource ScrollViewerWithSetAsideSpace}"/>
+		</Style>
 	</Application.Resources>
 </Application>

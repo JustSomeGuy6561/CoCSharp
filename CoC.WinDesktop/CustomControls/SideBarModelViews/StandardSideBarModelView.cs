@@ -1,5 +1,5 @@
 ﻿using CoC.Frontend.UI.ControllerData;
-using CoCWinDesktop.ModelView.Helpers;
+using CoCWinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,28 +16,28 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		public string dayStr
 		{
 			get => _dayStr;
-			private set => IHateYouBoat(ref _dayStr, value);
+			private set => CheckPropertyChanged(ref _dayStr, value);
 		}
 		private string _dayStr = "";
 
 		public string hourStr
 		{
 			get => _hourStr;
-			private set => IHateYouBoat(ref _hourStr, value);
+			private set => CheckPropertyChanged(ref _hourStr, value);
 		}
 		private string _hourStr = "";
 
 		public string nameText
 		{
 			get => _nameText;
-			private set => IHateYouBoat(ref _nameText, value);
+			private set => CheckPropertyChanged(ref _nameText, value);
 		}
 		private string _nameText = "Name: ";
 
 		public string coreStatText
 		{
 			get => _coreStatsText;
-			private set => IHateYouBoat(ref _coreStatsText, value);
+			private set => CheckPropertyChanged(ref _coreStatsText, value);
 		}
 		private string _coreStatsText = "Core Stats:";
 
@@ -46,7 +46,7 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		public string combatStatText
 		{
 			get => _combatStatsText;
-			private set => IHateYouBoat(ref _combatStatsText, value);
+			private set => CheckPropertyChanged(ref _combatStatsText, value);
 		}
 		private string _combatStatsText = "Combat Stats:";
 
@@ -55,11 +55,10 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		public string advancementStatText
 		{
 			get => _advancementStatsText;
-			private set => IHateYouBoat(ref _advancementStatsText, value);
+			private set => CheckPropertyChanged(ref _advancementStatsText, value);
 		}
 		private string _advancementStatsText = "Advancement:";
 
-		public override event PropertyChangedEventHandler PropertyChanged;
 
 		public ReadOnlyCollection<StatDisplayItem> advancementStats { get; }
 
@@ -180,21 +179,6 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 			foreach (var s in advancementStats)
 			{
 				s.ArrowVisibility = Visibility.Hidden;
-			}
-		}
-
-		private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-
-		private void IHateYouBoat<T>(ref T data, T newValue, [CallerMemberName] string propertyName = "") where T : IEquatable<T>
-		{
-			if (data == null != (newValue == null) || (data != null && !data.Equals(newValue)))
-			{
-				data = newValue;
-				NotifyPropertyChanged(propertyName);
 			}
 		}
 	}

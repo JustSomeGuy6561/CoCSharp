@@ -9,9 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.ModelView.Helpers
+namespace CoCWinDesktop.Helpers
 {
-	public sealed class SaveDisplayData : INotifyPropertyChanged
+	public sealed class SaveDisplayData : NotifierBase
 	{
 		public string Name { get; }
 		public string Notes { get; }
@@ -25,8 +25,6 @@ namespace CoCWinDesktop.ModelView.Helpers
 		private readonly Gender gender;
 
 		internal readonly StatDataCollectionBase saveStatData;
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		public SaveDisplayData(string fileName)
 		{

@@ -1,7 +1,7 @@
-﻿<UserControl x:Class="CoCWinDesktop.ModelView.Helpers.SaveDisplay"
+﻿<UserControl x:Class="CoCWinDesktop.Helpers.SaveDisplay"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:CoCWinDesktop.ModelView.Helpers">
+             xmlns:local="clr-namespace:CoCWinDesktop.Helpers">
 	<UserControl.Resources>
 		<Style TargetType="TextBlock" x:Key="LargeText">
 			<Setter Property="FontSize" Value="20"/>

@@ -1,33 +1,25 @@
-﻿using System;
+﻿using CoCWinDesktop.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.ModelView.Helpers
+namespace CoCWinDesktop.Helpers
 {
-	public sealed class ComboBoxWrapper : INotifyPropertyChanged
+	public sealed class ComboBoxWrapper : NotifierBase
 	{
-
+		//string is still weird. it's apparently a class. 
 		public string Title
 		{
 			get => _title;
-			set
-			{
-				if (_title != value)
-				{
-					_title = value;
-					OnPropertyChanged();
-					Console.WriteLine("Fuck You!");
-				}
-			}
+			set => CheckPropertyChanged(ref _title, value);
 		}
 		private string _title;
 
 		private readonly ObservableCollection<ComboBoxItemWrapper> itemHolder = new ObservableCollection<ComboBoxItemWrapper>();
 		public ReadOnlyObservableCollection<ComboBoxItemWrapper> items { get; }
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		public ComboBoxItemWrapper SelectedItem
 		{
@@ -37,9 +29,7 @@ namespace CoCWinDesktop.ModelView.Helpers
 				if (_selectedItem != value)
 				{
 					_selectedItem = value;
-					OnPropertyChanged();
-
-					Console.WriteLine("Fuck You Too!");
+					RaisePropertyChanged();
 
 					//check the flag that signals if we shou
 					if (value != null)
@@ -51,28 +41,6 @@ namespace CoCWinDesktop.ModelView.Helpers
 		}
 		private ComboBoxItemWrapper _selectedItem;
 
-		public int SelectedIndex
-		{
-			get => _selectedIndex;
-			set
-			{
-				if (_selectedIndex != value)
-				{
-					_selectedIndex = value;
-					OnPropertyChanged();
-
-					////check the flag that signals if we shou
-					//if (value != null)
-					//{
-					//	_selectedIndex.OnSelect();
-					//}
-					Console.WriteLine(_selectedIndex);
-				}
-			}
-		}
-		private int _selectedIndex = 0;
-
-
 		public ComboBoxWrapper(List<ComboBoxItemWrapper> elements, int? selectedIndex = null)
 		{
 			if (elements is null) throw new ArgumentNullException(nameof(elements));
@@ -83,11 +51,6 @@ namespace CoCWinDesktop.ModelView.Helpers
 			items = new ReadOnlyObservableCollection<ComboBoxItemWrapper>(itemHolder);
 
 			SelectedItem = selectedIndex is null ? null : itemHolder[(int)selectedIndex];
-		}
-
-		private void OnPropertyChanged([CallerMemberName] string propertyName = "")
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		//able to use clear, but i'd have to use a for loop to add anyway. might as well just do this shit. 

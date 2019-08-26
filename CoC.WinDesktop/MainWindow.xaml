@@ -21,8 +21,11 @@
 		<DataTemplate DataType="{x:Type MV:StandardModelView}">
 			<Views:StandardView/>
 		</DataTemplate>
-		<DataTemplate x:Key="CombatTemplate" DataType="{x:Type  MV:CombatModelView}">
+		<DataTemplate DataType="{x:Type MV:CombatModelView}">
 			<Views:CombatView/>
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type MV:OptionsModelView}">
+			<Views:OptionsView/>
 		</DataTemplate>
 	</Window.Resources>
 	<!--Content-->

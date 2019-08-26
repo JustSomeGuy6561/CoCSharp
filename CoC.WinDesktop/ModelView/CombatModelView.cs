@@ -12,18 +12,9 @@ namespace CoCWinDesktop.ModelView
 	{
 		public CombatModelView(ModelViewRunner runner) : base(runner) {}
 
-		public override event PropertyChangedEventHandler PropertyChanged;
-
 		protected override void ParseDataForDisplay()
 		{
 			
 		}
-
-		protected override bool SwitchToThisModelView(Action lastAction)
-		{
-			throw new NotImplementedException();
-		}
-
-
 	}
 }

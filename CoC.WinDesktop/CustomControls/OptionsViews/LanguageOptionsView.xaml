@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="CoCWinDesktop.CustomControls.OptionsViews.LanguageOptionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.OptionsViews"
+             xmlns:OMV="clr-namespace:CoCWinDesktop.CustomControls.OptionsModelViews"
+			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000"
+			 d:DataContext="{d:DesignInstance Type=OMV:LanguageOptionsModelView}">
+	<UserControl.Resources>
+		<Style x:Key="FakeTextZone" TargetType="{x:Type CC:TextView}">
+			<Setter Property="Background" Value="{Binding TextBackground, Mode=OneWay, Source={StaticResource Runner}}"/>
+			<Setter Property="Canvas.Left" Value="208" />
+			<Setter Property="Canvas.Top" Value="2" />
+			<Setter Property="Width" Value="769" />
+			<Setter Property="Height" Value="600" />
+		</Style>
+	</UserControl.Resources>
+	<Canvas Width="1000" Height="600">
+		<CC:SideBar SideBarObject="{Binding sidebarView, Mode=OneTime}" />
+		<CC:TextView Style="{StaticResource FakeTextZone}" x:Name="MainContent" HorizontalAlignment="Left" MainImage="{x:Null}"
+			MainText="{Binding MainContent}" PostControlText="{Binding PostContent}" 
+			DropdownVisible="True" DropdownContainer="{Binding AvailableLanguages, Mode=OneWay}" />
+		<Grid Margin="60,0,20,0" >
+		</Grid>
+	</Canvas>
+            
+</UserControl>

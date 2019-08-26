@@ -18,7 +18,7 @@ namespace CoC.Frontend.Engine.Difficulties
 
 		public override double monsterHPMultiplier()
 		{
-			return 1.5;
+			return 1.25;
 		}
 	}
 }

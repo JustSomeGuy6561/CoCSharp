@@ -13,12 +13,12 @@ namespace CoC.Frontend.Engine.Difficulties
 
 		private static string NormalHint()
 		{
-			return "Enemies have 50% less health and you can ignore bad-ends without penalty.";
+			return "No opponent stats modifiers. You can resume from bad-ends with penalties";
 		}
 
 		private static string NormalDesc()
 		{
-			return "Combat is easier and bad-ends can be ignored";
+			return "No stats changes.";
 		}
 
 
