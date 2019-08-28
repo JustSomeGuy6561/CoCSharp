@@ -1,14 +1,39 @@
-﻿using System;
+﻿using CoC.Backend;
+using CoC.Backend.Engine;
+using CoC.Backend.Tools;
+using CoCWinDesktop.CustomControls.SideBarModelViews;
+using CoCWinDesktop.Helpers;
+using CoCWinDesktop.ModelView;
+using CoCWinDesktop.Strings;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CoCWinDesktop.ModelView;
+using System.Windows.Media;
 
 namespace CoCWinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed class DisplayOptionsModelView : OptionModelViewDataBase
 	{
+		public StandardSideBarModelView sidebarView { get; }
+
+		public OptionsRowSliderWrapper FontSizeSlider { get; }
+		public OptionsRowSliderWrapper BackgroundSlider { get; }
+		public OptionsRowSliderWrapper TextBackgroundSlider { get; }
+
+		public string ContentString
+		{
+			get => _contentString;
+			private set => CheckPropertyChanged(ref _contentString, value);
+		}
+		private string _contentString;
+
+		private string rtfSource;
+		private int lastLanguageIndex;
+		private List<Color> colors;
+
+
 		public string DisplayOptionsText
 		{
 			get => _DisplayOptionsText;
@@ -25,69 +50,106 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		public int[] availableFontSizes { get; }
 
-		public int selectedFontIndex
+		private int GetFontIndex()
 		{
-			get => _selectedFontIndex;
-			set
+			int index = Array.IndexOf(availableFontSizes, (int)Math.Round(runner.FontSizePoints));
+			if (index < 0)
 			{
-				if (CheckPrimitivePropertyChanged(ref _selectedFontIndex, value))
-				{
-					runner.FontSize = availableFontSizes[value];
-				}
+				index = Array.IndexOf(availableFontSizes, 15);
+				if (index < 0) index = 0;
 			}
+			return index;
 		}
-		private int _selectedFontIndex;
-		private readonly Dictionary<string, int> bgIndexMapper = new Dictionary<string, int>();
-		public string[] availableBackgrounds { get; }
 
-		public int backgroundsMaxValue => availableBackgrounds.Length - 1;
-
-		public int selectedBackgroundIndex
+		private void SetFontSizeFromIndex(int index)
 		{
-			get => _selectedBackgroundIndex;
-			set
-			{
-				if (CheckPrimitivePropertyChanged(ref _selectedBackgroundIndex, value))
-				{
-					//get the string associated with this index. then get the index that the runner uses with this string and set it accordingly.
-					runner.BackgroundIndex = bgIndexMapper[availableBackgrounds[_selectedBackgroundIndex]];
-				}
-			}
+			runner.SetFontSize(index, SizeUnit.POINTS);
+			UpdateDisplay();
 		}
-		private int _selectedBackgroundIndex;
 
-
-
-		private readonly Dictionary<string, int> textIndexMapper = new Dictionary<string, int>();
-		public string[] availableTextBackgrounds { get; }
-
-		public int textBackgroundsMaxValue => availableTextBackgrounds.Length - 1;
-
-		public int selectedTextBackground
+		private int GetBackgroundIndex()
 		{
-			get => _selectedTextBackground;
-			set
-			{
-				if (CheckPrimitivePropertyChanged(ref _selectedTextBackground, value))
-				{
-					//get the string associated with this index. then get the index that the runner uses with this string and set it accordingly.
-					runner.TextBackgroundIndex = textIndexMapper[availableTextBackgrounds[_selectedTextBackground]];
-				}
-			}
+			return runner.BackgroundIndex;
 		}
-		private int _selectedTextBackground;
 
+		private void SetBackgroundIndex(int index)
+		{
+			runner.BackgroundIndex = index;
+			CheckFontColor();
+		}
+
+		private int GetTextBackgroundIndex()
+		{
+			return runner.TextBackgroundIndex;
+		}
+
+		private void SetTextBackgroundIndex(int index)
+		{
+			runner.TextBackgroundIndex = index;
+			CheckFontColor();
+		}
+
+		private void CheckFontColor()
+		{
+			if (colors.Count > 0)
+			{
+				colors[0] = runner.FontColor.Color;
+			}
+			UpdateDisplay();
+		}
 
 		public DisplayOptionsModelView(ModelViewRunner modelViewRunner, OptionsModelView optionsModelView) : base(modelViewRunner, optionsModelView)
 		{
-			availableFontSizes = Enumerable.Range(ModelViewRunner.MinFontSize, ModelViewRunner.MaxFontSize).ToArray();
-			bgIndexMapper = ModelViewRunner.backgroundDescriptors.Select((x, y) => new KeyValuePair<string, int>(x?.Invoke(), y)).Where(x => x.Key != null).ToDictionary(x => x.Key, y => y.Value);
+			sidebarView = new StandardSideBarModelView(new SaveDataCollection(null), true);
 
-			availableBackgrounds = bgIndexMapper.Keys.ToArray();
+			OrderedHashSet<int> hashSetLookup = lookupMaker(ModelViewRunner.backgrounds);
+			Func<int, string> arrayToLookup = (x) => ModelViewRunner.backgrounds[x].title();
 
-			textIndexMapper = ModelViewRunner.textBackgroundDescriptors.Select((x, y) => new KeyValuePair<string, int>(x?.Invoke(), y)).Where(x => x.Key != null).ToDictionary(x => x.Key, y => y.Value);
+			string emptyText(int _) => "";
+			string emptyDescriptor() => "";
 
-			availableTextBackgrounds = textIndexMapper.Keys.ToArray();
+			EnabledOrDisabledWithToolTipSldr tooltip = (int x, out string y) => ModelViewRunner.backgrounds[x].disabledTooltip(out y);
+
+			BackgroundSlider = new OptionsRowSliderWrapper(InterfaceStrings.BackgroundText, hashSetLookup, arrayToLookup, emptyText, GetBackgroundIndex, SetBackgroundIndex,
+				emptyDescriptor, tooltip);
+
+			int count = (int)(MeasurementHelpers.MaxPointFontSize - MeasurementHelpers.MinPointFontSize + 1);
+
+			availableFontSizes = Enumerable.Range((int)MeasurementHelpers.MinPointFontSize, count).ToArray();
+
+			hashSetLookup = new OrderedHashSet<int>(availableFontSizes);
+			arrayToLookup = x => availableFontSizes[x].ToString();
+
+			tooltip = (int x, out string y) => { y = null; return true; };
+
+			FontSizeSlider = new OptionsRowSliderWrapper(InterfaceStrings.FontSizeText, hashSetLookup, arrayToLookup, emptyText, GetFontIndex, SetFontSizeFromIndex,
+				emptyDescriptor, tooltip);
+
+			hashSetLookup = lookupMaker(ModelViewRunner.textBackgrounds);
+			arrayToLookup = x => ModelViewRunner.textBackgrounds[x].title();
+
+			tooltip = (int x, out string y) => { y = null; return true; };
+
+			TextBackgroundSlider = new OptionsRowSliderWrapper(InterfaceStrings.TextBackgroundText, hashSetLookup, arrayToLookup, emptyText, GetTextBackgroundIndex, 
+				SetTextBackgroundIndex, emptyDescriptor, tooltip);
+
+			lastLanguageIndex = LanguageEngine.currentLanguageIndex;
+			//GetRTFText();
+			rtfSource = null;
+
+		}
+
+		private OrderedHashSet<int> lookupMaker<T>(ReadOnlyCollection<T> collection) where T: class
+		{
+			List<int> validIndices = new List<int>();
+			for (int x = 0; x < collection.Count; x++)
+			{
+				if (collection[x] != null)
+				{
+					validIndices.Add(x);
+				}
+			}
+			return new OrderedHashSet<int>(validIndices);
 		}
 
 		//Top: header, helper
@@ -98,7 +160,22 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 		//confirm on bottom icons. 
 		public override void ParseDataForDisplay()
 		{
+			if (lastLanguageIndex != LanguageEngine.currentLanguageIndex || string.IsNullOrEmpty(rtfSource))
+			{
+				lastLanguageIndex = LanguageEngine.currentLanguageIndex;
+				GetRTFText();
+			}
+		}
 
+		private void GetRTFText()
+		{
+			rtfSource = RTFParser.FromHTMLNoHeader(new StringBuilder(LanguageEngine.currentLanguage.GenericFlavorTextExample()), runner.FontColor.Color, out colors);
+			UpdateDisplay();
+		}
+
+		private void UpdateDisplay()
+		{
+			ContentString = RTFParser.FromRTFText(rtfSource, colors, runner);
 		}
 
 		public override Action OnConfirmation => ConfirmControls;
@@ -106,7 +183,7 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		private void ConfirmControls()
 		{
-			Console.WriteLine("Controls written? NYI, but code works!");
+			//do nothing. 
 		}
 	}
 }

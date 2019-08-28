@@ -135,7 +135,7 @@ namespace CoC.Backend.BodyParts
 
 		private bool PiercingLocationUnlocked(TailPiercings piercingLocation)
 		{
-			bool piercingFetish = BackendSessionSave.data.piercingFetish;
+			bool piercingFetish = BackendSessionSave.data.piercingFetishEnabled;
 			return type.supportsTailPiercing && piercingFetish;
 		}
 

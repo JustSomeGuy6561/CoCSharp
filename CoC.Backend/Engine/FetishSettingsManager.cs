@@ -1,4 +1,4 @@
-﻿using CoC.Backend.Fetishes;
+﻿using CoC.Backend.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,17 +12,17 @@ namespace CoC.Backend.Engine
 	/// </summary>
 	public static class FetishSettingsManager
 	{
-		private static readonly List<FetishBase> _fetishes;
-		private static readonly HashSet<FetishBase> _fetishLookup;
-		public static readonly ReadOnlyCollection<FetishBase> fetishes;
+		private static readonly List<FetishSetting> _fetishes;
+		private static readonly HashSet<FetishSetting> _fetishLookup;
+		public static readonly ReadOnlyCollection<FetishSetting> fetishes;
 		static FetishSettingsManager()
 		{
-			_fetishes = new List<FetishBase>();
-			_fetishLookup = new HashSet<FetishBase>();
-			fetishes = new ReadOnlyCollection<FetishBase>(_fetishes);
+			_fetishes = new List<FetishSetting>();
+			_fetishLookup = new HashSet<FetishSetting>();
+			fetishes = new ReadOnlyCollection<FetishSetting>(_fetishes);
 		}
 
-		public static void IncludeFetish(FetishBase fetish)
+		public static void IncludeFetish(FetishSetting fetish)
 		{
 			if (!_fetishLookup.Contains(fetish))
 			{

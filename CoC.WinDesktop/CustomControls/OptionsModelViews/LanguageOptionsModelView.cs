@@ -21,26 +21,26 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 		//all other text can simply load the correct values on switch, as it wont change there. We'll also need to notify the controller that the language changed, so it'll need a 
 		//method for that. 
 
-		public StandardSideBarModelView sidebarView
-		{
-			get;
-		}
+		//
+
+		public StandardSideBarModelView sidebarView { get; }
 
 		private bool UpdateContent = true;
 
 		public int SelectedIndex
 		{
-			get => _selectedIndex;
+			get => LanguageEngine.currentLanguageIndex;
 			set
 			{
-				if (CheckPrimitivePropertyChanged(ref _selectedIndex, value))
+				var oldValue = SelectedIndex;
+				LanguageEngine.currentLanguageIndex = value;
+				if (oldValue != SelectedIndex)
 				{
+					RaisePropertyChanged(nameof(SelectedIndex));
 					UpdateContent = true;
 				}
 			}
 		}
-		private int _selectedIndex = 0;
-
 
 		public string MainContent
 		{
@@ -61,18 +61,18 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		public ComboBoxWrapper AvailableLanguages { get; }
 
-		private string LanguageString => LanguageEngine.availableLanguages[SelectedIndex].Language();
-		private string ContentString => LanguageEngine.availableLanguages[SelectedIndex].GenericFlavorTextExample();
-		private string LanguageHelper => LanguageEngine.availableLanguages[SelectedIndex].LanguageInstructionText();
+		private string LanguageString => LanguageEngine.currentLanguage.Language();
+		private string ContentString => LanguageEngine.currentLanguage.GenericFlavorTextExample();
+		private string LanguageHelper => LanguageEngine.currentLanguage.LanguageInstructionText();
 
 		private void GetRTFText()
 		{
 
-			int fontEmSize = runner.FontEmSize;
+			double fontEmSize = runner.FontSizeEms;
 
 			string formattedText = RTFParser.FromHTMLNoHeader(new StringBuilder(LanguageHelper), runner.FontColor.Color, out List<Color> colors);
 
-			string text = $@"\fs{fontEmSize + 20} {LanguageString}\par\fs{fontEmSize - 4}\par {formattedText}\par";
+			string text = $@"\b\fs{ModelViewRunner.HeaderSizeEm} {LanguageString}\b0\par\fs{ModelViewRunner.SmallHeaderEm}\par {formattedText}";
 			MainContent = RTFParser.FromRTFText(text, colors, runner);
 
 			PostContent = RTFParser.FromHTML(ContentString, runner);

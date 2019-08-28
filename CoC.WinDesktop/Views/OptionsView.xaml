@@ -40,6 +40,10 @@
 		<DataTemplate DataType="{x:Type OMV:LanguageOptionsModelView}">
 			<OV:LanguageOptionsView/>
 		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type OMV:DisplayOptionsModelView}">
+			<OV:DisplayOptionsView/>
+		</DataTemplate>
 	</UserControl.Resources>
 	<Canvas Style="{StaticResource CoCCanvas}">
 		<ContentControl Canvas.Top="50" Canvas.Left="0" Height="600" Width="1000" Content="{Binding subModelView}"/>

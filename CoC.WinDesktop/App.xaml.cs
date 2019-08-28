@@ -40,7 +40,7 @@ namespace CoCWinDesktop
 			}
 
 			CoC.Backend.SaveData.SaveSystem.AddGlobalSave(new GuiGlobalSave());
-			CoC.Backend.SaveData.SaveSystem.AddSessionSave(new GuiSessionSave());
+			CoC.Backend.SaveData.SaveSystem.AddSessionSave<GuiSessionSave>();
 
 			FrontendInitalizer.Init(globalDataFile);
 

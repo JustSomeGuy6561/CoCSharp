@@ -76,7 +76,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<NavelPiercingLocation> navelPiercings;
 		public readonly Piercing<HipPiercingLocation> hipPiercings;
-		private bool piercingFetish => BackendSessionSave.data.piercingFetish;
+		private bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
 		//use these if the part does not care on the state of the body, but just needs the main color. 
 
 		private readonly Epidermis mainFur; //stores the current fur that is primarily used. if it's a multi-fur, the secondary fur is stored in supplementary epidermis. if it's no-fur, this is empty.

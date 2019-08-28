@@ -6,6 +6,7 @@
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
+using System.ComponentModel;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
@@ -35,7 +36,7 @@ namespace CoC.Backend.BodyParts
 				case HairStyle.NO_STYLE:
 					return "No Style";
 				default:
-					throw new NotImplementedException("A new hair style was added but someone didn't implement its AsString");
+					throw new InvalidEnumArgumentException("A new hair style was added but someone didn't implement its AsString");
 			}
 		}
 	}
@@ -92,22 +93,22 @@ namespace CoC.Backend.BodyParts
 		{
 			if (hair.type == HairType.NO_HAIR)
 			{
-				throw new System.NotImplementedException();
+				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 			}
 			else
 			{
 				StringBuilder retVal = new StringBuilder(Measurement.ToNearestHalfSmallUnit(hair.length, false, false));
 				if (hair.style != HairStyle.NO_STYLE)
 				{
-					retVal.Append(hair.style.AsString());
-					if (hair.isSemiTransparent)
-					{
-						retVal.Append("private static string ");
-					}
-					else
-					{
-						retVal.Append(" ");
-					}
+					//	retVal.Append(hair.style.AsString());
+					//	if (hair.isSemiTransparent)
+					//	{
+					//		retVal.Append("semi-transparent");
+					//	}
+					//	else
+					//	{
+					//		retVal.Append(" ");
+					//	}
 				}
 				retVal.Append(SemiTransparentStr(hair.isSemiTransparent));
 				retVal.Append(" ");

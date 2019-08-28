@@ -11,20 +11,7 @@
 			 Focusable="False">
 	<UserControl.Resources>
 		<Conv:VisibilityFromBoolCollapsed x:Key="BoolToVisCollapsed"/>
-		<Style TargetType="{x:Type local:ContentRichTextBox}" BasedOn="{StaticResource StandardTextBox}">
-			<Setter Property="AcceptsReturn" Value="False"/>
-			<Setter Property="AcceptsTab" Value="False"/>
-			<Setter Property="Height" Value="Auto"/>
-			<Setter Property="Focusable" Value="False"/>
-			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
-			<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-			<Setter Property="IsReadOnly" Value="True"/>
-			<Setter Property="IsReadOnlyCaretVisible" Value="False"/>
-			<Setter Property="BorderThickness" Value="0"/>
-			<Setter Property="BorderBrush" Value="Transparent"/>
-		</Style>
-		<Style TargetType="{x:Type FlowDocument}" BasedOn="{StaticResource StandardFlowDocument}">
+		<Style TargetType="{x:Type FlowDocument}">
 			<Setter Property="IsEnabled" Value="True"/>
 			<Setter Property="TextAlignment" Value="Left"/>
 			<!-- For multiLanguage, may want to bind this to RTL or LTR bool-->
@@ -48,12 +35,13 @@
 			<!--<Setter Property="MaxLines" Value="1" />-->
 			<Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
 			<Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+			<Setter Property="Width" Value="{Binding InputCalculatedWidth, ElementName=_this, Mode=OneWay}"/>
 		</Style>
 		<Style TargetType="ComboBox" BasedOn="{StaticResource StandardComboBox}">
-			<Setter Property="Width" Value="100"/>
-			<Setter Property="Height" Value="25"/>
+			<Setter Property="MinWidth" Value="100"/>
+			<Setter Property="MinHeight" Value="25"/>
 			<Setter Property="Margin" Value="5,5,5,5"/>
-			<Setter Property="Focusable" Value="true" />
+			<Setter Property="Focusable" Value="True" />
 			<Setter Property="Foreground" Value="Black"/>
 			<Setter Property="IsTabStop" Value="True"/>
 			<Setter Property="TabIndex" Value="6"/>
@@ -71,8 +59,7 @@
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 			<local:ContentRichTextBox Padding="-3,1,0,0" x:Name="PrimaryText" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" RTFContent="{Binding MainText, ElementName=_this}" 
-				BitmapSource="{Binding MainImage, ElementName=_this}" />
-
+				BitmapSource="{Binding MainImage, ElementName=_this}" TextOptions.TextFormattingMode="Display" TextOptions.TextHintingMode="Fixed" />
 			<local:LimitedInputTextBox x:Name="InputField" Grid.Row="1" Text="{Binding InputFieldText, ElementName=_this, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" 
 				Visibility="{Binding InputFieldVisible, ElementName=_this, Converter={StaticResource BoolToVisCollapsed}}" MaxLength="{Binding InputFieldMaxLength, ElementName=_this, Mode=OneWay}" 
 				LimitCharactersRegex="{Binding LimitCharactersRegex, ElementName=_this, Mode=OneWay}"/>

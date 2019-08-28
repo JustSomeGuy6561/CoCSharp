@@ -2,27 +2,29 @@
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoCWinDesktop.Helpers
 {
 	public sealed class OptionsRowSliderWrapper : OptionsRowBase
 	{
-		//Design structure: if we're doing globals, we're treating that as slider instance -1. 
+		//Design structure: nullable option sets minimum to -1, and treats -1 as null. The slider is setup accordingly
 
 
 		private readonly int[] selectedIndexToSettingValue;
 		private readonly Dictionary<int?, int> settingValueToSelectedIndex; //used if it's not null.
 
-#warning ToDO: add these to some GUI lookup text thing. 
-		private readonly SimpleDescriptor defaultText = () => "default";
-		private readonly SimpleDescriptor defaultDesc = () => "No preference. This value will be set on a per-game basis.";
+		private readonly Func<int?, string> GetOptionText;
+		private readonly Func<int?, string> GetDescriptionText;
 
-		private int _selectedIndex;
+		private readonly Action<int?> setter;
+		private readonly Func<int?> getter;
 
-		private readonly bool globalAllowsNull;
+		private readonly EnabledOrDisabledWithTollTipNullSldr disabledTooltipFn;
+		private readonly bool nullable;
 
 		public int maximum => selectedIndexToSettingValue.Length - 1;
-		public int minimum => globalAllowsNull && isGlobal ? -1 : 0;
+		public int minimum => nullable ? -1 : 0;
 
 		public string selectedItemText
 		{
@@ -46,26 +48,102 @@ namespace CoCWinDesktop.Helpers
 				if (CheckPrimitivePropertyChanged(ref _selectedIndex, value))
 				{
 					int? settingValue = parseSelectedIndex();
-					//selectAction(parseSelectedIndex(), displayMode == OptionRowDisplayMode.GLOBAL);
-					selectAction(settingValue, isGlobal);
+					setter(settingValue);
 					UpdateDisplay();
 				}
 			}
 		}
+		private int _selectedIndex;
+		private readonly SimpleDescriptor warningTextFn;
+
+		public string WarningText
+		{
+			get => _warningText;
+			private set => CheckPropertyChanged(ref _warningText, value);
+		}
+		private string _warningText;
+
+		public ObservableCollection<int> Ticks { get; }
+
+		public OptionsRowSliderWrapper(SimpleDescriptor optionName, OrderedHashSet<int?> allOptions, Func<int?, string> availableOptions,
+			Func<int?, string> optionDescriptions, Func<int?> getStatus, Action<int?> onSelect, SimpleDescriptor warningTextGetter, 
+			EnabledOrDisabledWithTollTipNullSldr disabledTooltipGetter) : base(optionName)
+		{
+			nullable = true;
+
+			if (allOptions is null) throw new ArgumentNullException(nameof(allOptions));
+			int count = allOptions.Count;
+			selectedIndexToSettingValue = new int[count];
+			settingValueToSelectedIndex = new Dictionary<int?, int>();
+
+			int iteratation = 0;
+			foreach (int x in allOptions)
+			{
+				settingValueToSelectedIndex.Add(x, iteratation);
+				selectedIndexToSettingValue[iteratation] = x;
+				iteratation++;
+			}
+
+			GetOptionText = availableOptions ?? throw new ArgumentNullException(nameof(availableOptions));
+			GetDescriptionText = optionDescriptions ?? throw new ArgumentNullException(nameof(optionDescriptions));
+
+			disabledTooltipFn = disabledTooltipGetter ?? throw new ArgumentNullException(nameof(disabledTooltipGetter));
+
+			setter = onSelect ?? throw new ArgumentNullException(nameof(onSelect));
+			getter = getStatus ?? throw new ArgumentNullException(nameof(getStatus));
+
+			warningTextFn = warningTextGetter ?? throw new ArgumentNullException(nameof(warningTextGetter));
+
+			_selectedIndex = getter() ?? -1;
+			UpdateDisplay();
+		}
+
+		public OptionsRowSliderWrapper(SimpleDescriptor optionName, OrderedHashSet<int> allOptions, Func<int, string> availableOptions,
+			Func<int, string> optionDescriptions, Func<int> getStatus, Action<int> onSelect, 
+			SimpleDescriptor warningTextGetter, EnabledOrDisabledWithToolTipSldr disabledTooltipGetter) : base(optionName)
+		{
+			nullable = false;
+
+			if (allOptions is null) throw new ArgumentNullException(nameof(allOptions));
+			int count = allOptions.Count;
+			selectedIndexToSettingValue = new int[count];
+			settingValueToSelectedIndex = new Dictionary<int?, int>();
+
+			int iteratation = 0;
+			foreach (int x in allOptions)
+			{
+				settingValueToSelectedIndex.Add(x, iteratation);
+				selectedIndexToSettingValue[iteratation] = x;
+				iteratation++;
+			}
+
+			if (availableOptions is null) throw new ArgumentNullException(nameof(availableOptions));
+			if (optionDescriptions is null) throw new ArgumentNullException(nameof(optionDescriptions));
+
+			GetOptionText = (x) => availableOptions((int)x);
+			GetDescriptionText = (x) => optionDescriptions((int)x);
+
+			if (onSelect is null) throw new ArgumentNullException(nameof(onSelect));
+			if (getStatus is null) throw new ArgumentNullException(nameof(getStatus));
+
+			setter = (x) => onSelect(x ?? throw new ArgumentException("Should Never Occur, as setting globalAllowsNullPrevents this"));
+			getter = () => getStatus();
+
+			warningTextFn = warningTextGetter ?? throw new ArgumentNullException(nameof(warningTextGetter));
+
+			_selectedIndex = getStatus();
+			UpdateDisplay();
+		}
 
 		private void UpdateDisplay()
 		{
+			int? selection = parseSelectedIndex();
 
-			if (selectedIndex < 0)
-			{
-				selectedItemText = defaultText();
-				selectedItemDescription = defaultDesc();
-			}
-			else
-			{
-				selectedItemText = GetOptionText(selectedIndex, isGlobal);
-				selectedItemDescription = GetDescriptionText(selectedIndex, isGlobal);
-			}
+			selectedItemText = GetOptionText(selection);
+			selectedItemDescription = GetDescriptionText(selection);
+			WarningText = warningTextFn();
+
+			#warning Handle the Ticks and tooltip - whatever is disabled, remove the corresponding index from the Ticks collection. Update the tooltip accordingly. 
 		}
 
 		private int? parseSelectedIndex()
@@ -78,70 +156,5 @@ namespace CoCWinDesktop.Helpers
 		}
 
 
-		private readonly Func<int, bool, string> GetOptionText;
-		private readonly Func<int, bool, string> GetDescriptionText;
-
-		private readonly Action<int?, bool> selectAction;
-		private readonly Func<bool, int?> queryStatus;
-
-
-		public OptionsRowSliderWrapper(SimpleDescriptor optionName, OrderedHashSet<int> allOptions, Func<int, bool, string> availableOptions,
-			Func<int, bool, string> optionDescriptions, Func<bool, int?> getStatus, Action<int?, bool> onSelect,
-			bool allowsNullOnGlobal = true) : base(optionName)
-		/*OptionRowDisplayMode defaultMode = OptionRowDisplayMode.GAME) : base(optionName, defaultMode)*/
-		{
-			if (allOptions is null) throw new ArgumentNullException(nameof(allOptions));
-			if (availableOptions is null) throw new ArgumentNullException(nameof(availableOptions));
-			if (optionDescriptions is null) throw new ArgumentNullException(nameof(optionDescriptions));
-
-			int count = allOptions.Count;
-
-			globalAllowsNull = allowsNullOnGlobal;
-
-			selectedIndexToSettingValue = new int[count];
-			settingValueToSelectedIndex = new Dictionary<int?, int>();
-
-			int iteratation = 0;
-			foreach (int x in allOptions)
-			{
-				settingValueToSelectedIndex.Add(x, iteratation);
-				selectedIndexToSettingValue[iteratation] = x;
-			}
-
-			GetOptionText = availableOptions ?? throw new ArgumentNullException(nameof(availableOptions));
-			GetDescriptionText = optionDescriptions ?? throw new ArgumentNullException(nameof(optionDescriptions));
-			selectAction = onSelect ?? throw new ArgumentNullException(nameof(onSelect));
-			queryStatus = getStatus ?? throw new ArgumentNullException(nameof(getStatus));
-
-			_selectedIndex = queryStatus(isGlobal) ?? -1;
-			UpdateDisplay();
-		}
-
-		//protected override void OnOptionStatusChanged(OptionRowDisplayMode oldMode)
-		//{
-		//	if (isGlobal != (oldMode == OptionRowDisplayMode.GLOBAL))
-		//	{
-		//		RaisePropertyChanged(nameof(numItems));
-
-		//		if (isGlobal)
-		//		{
-		//			selectedIndex = (queryStatus(isGlobal) + 1) ?? 0;
-		//		}
-		//		else
-		//		{
-		//			selectedIndex = queryStatus(isGlobal) ?? 0;
-		//		}
-		//	}
-		//}
-
-		protected override void OnStatusChanged()
-		{
-			if (globalAllowsNull)
-			{
-				RaisePropertyChanged(nameof(minimum));
-			}
-
-			selectedIndex = queryStatus(isGlobal) ?? (globalAllowsNull ? -1 : 0);
-		}
 	}
 }

@@ -21,6 +21,9 @@ namespace CoC.Frontend.Engine.Difficulties
 			return "Combat is easier and bad-ends can be ignored";
 		}
 
-
+		private string NotCompatibleWithHardcoreModeStr()
+		{
+			return "You cannot play Hardcore Mode on Easy.";
+		}
 	}
 }

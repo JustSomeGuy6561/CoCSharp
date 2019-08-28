@@ -8,7 +8,42 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type=OMV:InterfaceOptionsModelView}">
-    <Grid Background="Aqua">
-		<TextBlock Text="Interface Options Page"/>
+    <Grid Margin="60,0,20,0" Background="{Binding TextBackground, Source={StaticResource Runner}}">
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<TextBlock Style="{StaticResource HeaderText}" Margin="10" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+				   Text="{Binding FetishOptionsText}"/>
+		<TextBlock Style="{StaticResource SmallHeaderText}" Margin="10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+				   Text="{Binding FetishOptionsHelper}"/>
+		<ScrollViewer Style="{StaticResource ScrollbarWithSpace}" Grid.Row="2" Grid.Column="0">
+			<ItemsControl>
+				<ItemsControl.ItemsSource>
+					<CompositeCollection>
+						<Grid Height="Auto">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Style="{StaticResource SmallHeaderText}" Text="{Binding DisplayOptionsTitleText}" TextAlignment="Right" 
+								VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="0"/>
+							<TextBlock Style="{StaticResource SettingText}" Text="{Binding DisplayOptionsHelperText}" TextAlignment="Right"
+								VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="1"/>
+							<Button Style="{StaticResource CoCButton}" MinWidth="150" Margin="10" Width="Auto" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+									Content="{Binding DisplayOptionsBtnText}" Command="{Binding OnDisplayButton}" />
+						</Grid>
+						<CollectionContainer Collection="{Binding interfaceOptions}"/>
+					</CompositeCollection>
+				</ItemsControl.ItemsSource>
+			</ItemsControl>
+		</ScrollViewer>
+		<!--<Button Content="Button" HorizontalAlignment="Left" Margin="318,351,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>-->
 	</Grid>
 </UserControl>

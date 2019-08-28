@@ -7,11 +7,15 @@ using System;
 
 namespace CoC.Backend.SaveData
 {
-	public sealed class BackendSessionSave : SaveData
+	public sealed class BackendSessionSave : SessionSaveData
 	{
-		public static BackendSessionSave data => SaveSystem.getSessionSave<BackendSessionSave>();
+		public static BackendSessionSave data => SaveSystem.GetSessionSave<BackendSessionSave>();
 
-		public bool piercingFetish = false; //a perk may set this, but i think it's fine like this.
+		public bool piercingFetishEnabled => piercingFetishStore ?? false;
+
+		public bool? piercingFetishStore = null; //a perk may set this, but i think it's fine like this.
+		public bool playerAskedAboutPiercingFetish = false; //using the classic formula, which i assume was before the fetish settings page existed, the players have the 
+															//chance to set the fetish during regular gameplay. We'll allow this behavior, but only if the piercingFetishStore is null, and the global setting is also null.
 
 		//could be stored in frontend, idk. 
 		public bool HungerEnabled = false;
@@ -22,13 +26,40 @@ namespace CoC.Backend.SaveData
 
 		public bool SFW_Mode = false;
 
-		public int difficulty = 0;
+		public int difficulty
+		{
+			get => _difficulty;
+			set
+			{
+				_difficulty = value;
+				if (difficulty < lowestDifficultyForThisCampaign || !SaveSystem.isSessionActive)
+				{
+					lowestDifficultyForThisCampaign = value;
+				}
+			}
+		}
+		private int _difficulty = 1;
+		public int lowestDifficultyForThisCampaign = 1;
 		public bool hardcoreMode = false;
 
 		public byte NumTimeNewGamePlus = 0;
+
 		public byte NewGamePlusLevel => Math.Min(NumTimeNewGamePlus, (byte)4);
 
-		public bool UsesMetricMeasurements = false;
+		//default constructor for new games. Sets session values to global values. 
+		public BackendSessionSave()
+		{
+			if (SaveSystem.TryGetGlobalSave(out BackendGlobalSave backendData))
+			{
+				difficulty = backendData.difficultyGlobal;
+				hardcoreMode = backendData.hardcoreModeGlobal;
+				HungerEnabled = backendData.HungerEnabledGlobal;
+				piercingFetishStore = backendData.PiercingFetishGlobal;
+				RealismEnabled = backendData.RealismEnabledGlobal;
+				SFW_Mode = backendData.SFW_ModeGlobal;
+				lowestDifficultyForThisCampaign = difficulty;
+			}
+		}
 	}
 
 }

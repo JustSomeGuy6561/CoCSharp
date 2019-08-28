@@ -6,9 +6,9 @@ using CoC.Backend.SaveData;
 
 namespace CoC.Frontend.SaveData
 {
-	internal sealed class FrontendSessionSave : Backend.SaveData.SaveData
+	internal sealed class FrontendSessionSave : Backend.SaveData.SessionSaveData
 	{
-		public static FrontendSessionSave data => SaveSystem.getSessionSave<FrontendSessionSave>();
+		public static FrontendSessionSave data => SaveSystem.GetSessionSave<FrontendSessionSave>();
 
 		internal bool ForestUnlocked = false;
 		internal bool DeepwoodsUnlocked = false;

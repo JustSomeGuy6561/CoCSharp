@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 
 //IK Utils is generally frowned upon, but there's a bunch of useful tools, so.
 namespace CoC.Backend.Tools
@@ -219,7 +220,8 @@ namespace CoC.Backend.Tools
 		}
 	}
 
-	public class Pair<T, U>
+	[Serializable]
+	public class Pair<T, U> : ISerializable
 	{
 		public readonly T first;
 		public readonly U second;
@@ -229,14 +231,28 @@ namespace CoC.Backend.Tools
 			first = f;
 			second = s;
 		}
+
+		protected Pair(SerializationInfo info, StreamingContext context)
+		{
+			first = (T)info.GetValue(nameof(first), typeof(T));
+			second = (U)info.GetValue(nameof(second), typeof(U));
+		}
+
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue(nameof(first), first, typeof(T));
+			info.AddValue(nameof(second), second, typeof(U));
+		}
 	}
 
+	[Serializable]
 	public class Pair<T> : Pair<T, T>
 	{
 		public Pair(T f, T s) : base(f, s) {}
 	}
 
-	public class Triple<T, U, V>
+	[Serializable]
+	public class Triple<T, U, V> : ISerializable
 	{
 		public readonly T first;
 		public readonly U second;
@@ -248,8 +264,23 @@ namespace CoC.Backend.Tools
 			second = s;
 			third = t;
 		}
+
+		protected Triple(SerializationInfo info, StreamingContext context)
+		{
+			first = (T)info.GetValue(nameof(first), typeof(T));
+			second = (U)info.GetValue(nameof(second), typeof(U));
+			third = (V)info.GetValue(nameof(third), typeof(V));
+		}
+
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue(nameof(first), first, typeof(T));
+			info.AddValue(nameof(second), second, typeof(U));
+			info.AddValue(nameof(third), third, typeof(V));
+		}
 	}
 
+	[Serializable]
 	public class Triple<T> : Triple<T, T, T>
 	{
 		public Triple(T f, T s, T t) : base(f, s, t) {}

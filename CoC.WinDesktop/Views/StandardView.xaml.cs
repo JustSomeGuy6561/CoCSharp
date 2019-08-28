@@ -70,14 +70,14 @@ namespace CoCWinDesktop.Views
 			Binding key = new Binding()
 			{
 				Source = runner.Button1Hotkey,
-				Path = new PropertyPath(nameof(runner.Button1Hotkey.primaryGesture) + "." + nameof(runner.Button1Hotkey.primaryGesture.Key)),
+				Path = new PropertyPath(nameof(runner.Button1Hotkey.primaryGesture) + "." + nameof(runner.Button1Hotkey.primaryGesture.first)),
 				Mode = BindingMode.OneWay,
 			};
 
 			Binding modifier = new Binding()
 			{
 				Source = runner.Button1Hotkey,
-				Path = new PropertyPath(nameof(runner.Button1Hotkey.primaryGesture) + "." + nameof(runner.Button1Hotkey.primaryGesture.Modifiers)),
+				Path = new PropertyPath(nameof(runner.Button1Hotkey.primaryGesture) + "." + nameof(runner.Button1Hotkey.primaryGesture.second)),
 				Mode = BindingMode.OneWay,
 			};
 

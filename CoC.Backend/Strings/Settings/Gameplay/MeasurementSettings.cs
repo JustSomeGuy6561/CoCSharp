@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Backend.Settings
+namespace CoC.Backend.Settings.Gameplay
 {
 	public partial class MeasurementSettings
 	{
@@ -10,7 +10,9 @@ namespace CoC.Backend.Settings
 		{
 			return "Measurement Units";
 		}
-
+	}
+	public partial class MeasurementGlobalSetting
+	{ 
 		private static string MetricStr()
 		{
 			return "Metric";

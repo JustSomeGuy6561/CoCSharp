@@ -12,22 +12,22 @@ namespace CoC.Backend.Engine
 	/// </summary>
 	public static class GameplaySettingsManager
 	{
-		private static readonly List<GameplaySettingBase> _settings;
-		private static readonly HashSet<GameplaySettingBase> _settingLookup;
-		public static readonly ReadOnlyCollection<GameplaySettingBase> gameSettings;
+		private static readonly List<GameplaySetting> _settings;
+		private static readonly Dictionary<Type, GameplaySetting> _settingLookup;
+		public static readonly ReadOnlyCollection<GameplaySetting> gameSettings;
 		static GameplaySettingsManager()
 		{
-			_settings = new List<GameplaySettingBase>();
-			_settingLookup = new HashSet<GameplaySettingBase>();
-			gameSettings = new ReadOnlyCollection<GameplaySettingBase>(_settings);
+			_settings = new List<GameplaySetting>();
+			_settingLookup = new Dictionary<Type, GameplaySetting>();
+			gameSettings = new ReadOnlyCollection<GameplaySetting>(_settings);
 		}
 
 		//do this during the initialization phase, after the game has successfully loaded all save data sessions/globals. 
-		public static void IncludeGameplaySetting(GameplaySettingBase setting)
+		public static void IncludeGameplaySetting(GameplaySetting setting)
 		{
-			if (!_settingLookup.Contains(setting))
+			if (!_settingLookup.ContainsKey(setting.GetType()))
 			{
-				_settingLookup.Add(setting);
+				_settingLookup.Add(setting.GetType(), setting);
 				_settings.Add(setting);
 			}
 		}

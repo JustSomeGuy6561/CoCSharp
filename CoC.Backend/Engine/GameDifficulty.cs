@@ -30,5 +30,9 @@ namespace CoC.Backend.Engine
 		//you'll also need to change the home Base location here if you do not use the default (aka GrimDark mode)
 		public virtual void OnGameStart()
 		{ }
+
+		public abstract bool IsEnabled(bool isGlobal, out string whyNot);
+
+		public virtual bool HardcoreModeCompatible => true;
 	}
 }

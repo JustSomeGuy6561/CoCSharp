@@ -43,46 +43,32 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		private void setState(bool isGlobal)
 		{
-			foreach (var val in gameplayOptions)
-			{
-				val.ChangeState(isGlobal);
-			}
+			gameplayOptions = isGlobal ? globalOptions : sessionOptions;
 		}
 
 		private int _selectedIndex;
 
 
 
-		public ObservableCollection<OptionsRowBase> gameplayOptions { get; }
+		public ReadOnlyCollection<OptionsRowBase> gameplayOptions
+		{
+			get => _gameplayOptions;
+			private set => CheckPropertyChanged(ref _gameplayOptions, value);
+		}
+		private ReadOnlyCollection<OptionsRowBase> _gameplayOptions;
+
+		private readonly ReadOnlyCollection<OptionsRowBase> sessionOptions;
+		private readonly ReadOnlyCollection<OptionsRowBase> globalOptions;
 
 		public GameplayOptionsModelView(ModelViewRunner modelViewRunner, OptionsModelView optionsModelView) : base(modelViewRunner, optionsModelView)
 		{
-			ReadOnlyCollection<GameplaySettingBase> gameplaySettings = runner.controller.GetGameplaySettings();
+			ReadOnlyCollection<GameplaySetting> gameplaySettings = runner.controller.GetGameplaySettings();
 
-			IEnumerable<OptionsRowBase> options = gameplaySettings.Select<GameplaySettingBase, OptionsRowBase>(item =>
-			{
-				if (item is SimpleGameplaySettingBase simple)
-				{
-					return new OptionsRowButtonWrapper(item.name, simple.SetEnabled, (x) => x ? simple.enabledGlobal : simple.enabled, simple.enabledText, simple.disabledText,
-						simple.enabledHint, simple.disabledHint, !simple.globalCannotBeNull);
-				}
-				else if (item is AdvancedGameplaySettingBase advanced)
-				{
-					return new OptionsRowSliderWrapper(item.name, advanced.availableStatuses, advanced.settingText, advanced.settingHint, advanced.GetStatus,
-						advanced.SetStatus, !item.globalCannotBeNull);
-				}
-				else if (item is LimitedGameplaySettingBase limited)
-				{
-					return new OptionsRowButtonWrapper(item.name, limited.SetEnabled, (x) => x ? limited.enabledGlobal : limited.enabled, limited.enabledText,
-						limited.disabledText, limited.enabledHint, limited.disabledHint, !item.globalCannotBeNull);
-				}
-				else
-				{
-					return null;
-				}
-			}).Where(x => x != null);
+			List<OptionsRowBase> options = gameplaySettings.Select(item => OptionsRowBase.BuildOptionRow(item.name, item.localSetting)).Where(x => x != null).ToList();
+			sessionOptions = new ReadOnlyCollection<OptionsRowBase>(options);
 
-			gameplayOptions = new ObservableCollection<OptionsRowBase>(options);
+			options = gameplaySettings.Select(item => OptionsRowBase.BuildOptionRow(item.name, item.globalSetting)).Where(x => x != null).ToList();
+			globalOptions = new ReadOnlyCollection<OptionsRowBase>(options);
 
 			GameplayOptionsText = "Gameplay";
 			GameplayOptionsHelper = "You can change the gameplay options here. Fetishes are given their own category.";

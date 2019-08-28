@@ -174,58 +174,5 @@ namespace CoCWinDesktop.CustomControls
 				var result = Keyboard.Focus(view);
 			}
 		}
-
-
-
-
-		private void UpdateFlowDocument()
-		{
-			//FlowDocument document = PrimaryText.Document;
-			FlowDocument document = PrimaryText.Document;
-
-			document.Blocks.Clear();
-			string text = MainText;
-
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				TextRange textRange = new TextRange(document.ContentStart, document.ContentEnd);
-				Console.WriteLine(text);
-				using (MemoryStream ms = new MemoryStream(Encoding.Default.GetBytes(text)))
-				{
-					textRange.Load(ms, DataFormats.Rtf); //Html is not supported (yet?) so i've done this workaround. 
-				}
-			}
-
-
-			if (MainImage != null)
-			{
-				Block block = document.Blocks.FirstBlock;
-				while (block != null && !(block is Paragraph))
-				{
-					block = block.NextBlock;
-				}
-				if (block is null)
-				{
-					if (document.Blocks.FirstBlock == null)
-					{
-						document.Blocks.Add(new BlockUIContainer(new Image() { Source = MainImage }));
-					}
-					else
-					{
-						document.Blocks.InsertBefore(document.Blocks.FirstBlock, new BlockUIContainer(new Image() { Source = MainImage }));
-					}
-				}
-				else if (block is Paragraph paragraph)
-				{
-					Figure figure = new Figure(new BlockUIContainer(new Image() { VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, MaxHeight = 50, MaxWidth = 75, Stretch = Stretch.Uniform, StretchDirection = StretchDirection.Both, Source = MainImage }))
-					{
-						HorizontalAnchor = FigureHorizontalAnchor.PageLeft,
-						VerticalAnchor = FigureVerticalAnchor.ParagraphTop,
-						Width = new FigureLength(0.0825, FigureUnitType.Page),
-					};
-					paragraph.Inlines.InsertBefore(paragraph.Inlines.FirstInline, figure);
-				}
-			}
-		}
 	}
 }

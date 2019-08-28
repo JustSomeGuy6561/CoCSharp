@@ -27,7 +27,7 @@ namespace CoC.Backend.Creatures
 
 		public string Appearance()
 		{
-			throw new NotImplementedException();
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		public override uint maxHealth

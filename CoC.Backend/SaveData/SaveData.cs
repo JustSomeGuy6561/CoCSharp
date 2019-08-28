@@ -5,7 +5,12 @@
 
 namespace CoC.Backend.SaveData
 {
-	public abstract class SaveData
+	public abstract class GlobalSaveData
 	{
+	}
+
+	public abstract class SessionSaveData
+	{
+
 	}
 }

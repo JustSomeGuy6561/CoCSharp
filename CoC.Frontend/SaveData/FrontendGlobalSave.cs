@@ -9,9 +9,9 @@ using System.Text;
 
 namespace CoC.Frontend.SaveData
 {
-	internal sealed class FrontendGlobalSave : Backend.SaveData.SaveData
+	internal sealed class FrontendGlobalSave : Backend.SaveData.GlobalSaveData
 	{
-		public static FrontendGlobalSave data => SaveSystem.getGlobalSave<FrontendGlobalSave>();
+		public static FrontendGlobalSave data => SaveSystem.GetGlobalSave<FrontendGlobalSave>();
 
 		internal bool UnlockedNewGameHerm = false;
 

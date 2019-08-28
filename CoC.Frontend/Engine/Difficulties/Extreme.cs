@@ -21,5 +21,11 @@ namespace CoC.Frontend.Engine.Difficulties
 		{
 			return 2.0;
 		}
+
+		public override bool IsEnabled(bool isGlobal, out string whyNot)
+		{
+			whyNot = null;
+			return true;
+		}
 	}
 }

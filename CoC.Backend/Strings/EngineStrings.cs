@@ -15,5 +15,15 @@ namespace CoC.Backend.Strings
 		{
 			return "Off";
 		}
+
+		internal static string UnsetText()
+		{
+			return "Unset";
+		}
+
+		internal static string UnsetHint()
+		{
+			return "No preference. The game will use default settings if possible, or prompt you when necessary.";
+		}
 	}
 }

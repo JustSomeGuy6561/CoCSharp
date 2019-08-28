@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type=OMV:DisplayOptionsModelView}">
-    <Grid Margin="60,0,20,0">
+    <Grid Margin="0,0,20,0">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
@@ -18,13 +18,19 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-		<TextBlock Style="{StaticResource HeaderText}" Grid.Row="0"></TextBlock>
-		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="1"></TextBlock>
-		<ScrollViewer Grid.Row="2" Style="{StaticResource ScrollbarWithSpace}" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-			<CC:ContentRichTextBox  Background="Transparent"></CC:ContentRichTextBox>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition/>
+		</Grid.ColumnDefinitions>
+		<CC:SideBar SideBarObject="{Binding sidebarView, Mode=OneTime}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="6"/>
+		<Rectangle Fill="{Binding TextBackground, Source={StaticResource Runner}}" Panel.ZIndex="-10" Grid.Column="1" Grid.Row="0" Grid.RowSpan="6"/>
+		<TextBlock Style="{StaticResource HeaderText}" Grid.Row="0" Grid.Column="1" Margin="10" Text="{Binding DisplayOptionsText}"/>
+		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="1" Grid.Column="1" Margin="10" Text="{Binding DisplayOptionsHelper}"/>
+		<ScrollViewer Grid.Row="2" Grid.Column="1" Style="{StaticResource ScrollbarWithSpace}" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+			<CC:ContentRichTextBox RTFContent="{Binding ContentString}"/>
 		</ScrollViewer>
-		<CC:OptionRowSlider Grid.Row="3" ></CC:OptionRowSlider>
-		<CC:OptionRowSlider Grid.Row="4" ></CC:OptionRowSlider>
-		<CC:OptionRowSlider Grid.Row="5" ></CC:OptionRowSlider>
+		<CC:OptionRowSlider Grid.Row="3" Grid.Column="1" DataContext="{Binding BackgroundSlider}" />
+		<CC:OptionRowSlider Grid.Row="4" Grid.Column="1" DataContext="{Binding TextBackgroundSlider}" />
+		<CC:OptionRowSlider Grid.Row="5" Grid.Column="1" DataContext="{Binding FontSizeSlider}" />
 	</Grid>
 </UserControl>

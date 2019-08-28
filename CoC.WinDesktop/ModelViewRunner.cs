@@ -1,5 +1,4 @@
 ﻿using CoC.Backend;
-using CoC.Backend.Tools;
 using CoC.UI;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;
@@ -21,19 +20,18 @@ namespace CoCWinDesktop
 		//so we have to set these through code-behind, notably font color. However, for the stuff that DOES respect font color (like sidebar), we also need to be able to bind it.
 		//so i'm just storing them here. Note that it's entirely possible to do these in the class that defines them, but that always seems to work sporadically, so i'm just putting it here.
 
-		public const int MinFontSize = 11;
-		public const int MaxFontSize = 24;
+		public const int HeaderSizeEm = 54;//==36 px in app.xaml.
+		public const int SmallHeaderEm = 36;//==24px in app.xaml.
+		public const int ItemSizeEm = 27;//==18px in app.xaml.
 
 		#region  Static Data
 		private static GuiGlobalSave saveData => GuiGlobalSave.data;
 
-		//private static readonly string[] backgrounds = { Path.Combine("resources", "background1.png"), Path.Combine("resources", "background2.png"), Path.Combine("resources", "background3.png"), Path.Combine("resources", "background4.png"), null, Path.Combine("resources", "backgroundKaizo.png") };
-		private static readonly List<string> backgrounds;
-		public static readonly ReadOnlyCollection<SimpleDescriptor> backgroundDescriptors;
-		private static readonly List<string> sidebars;
+		public static readonly ReadOnlyCollection<BackgroundWrapper> backgrounds;
+		public static int numBackgrounds => backgrounds.Count;
 
-		private static readonly List<SolidColorBrush> textBgs;
-		public static readonly ReadOnlyCollection<SimpleDescriptor> textBackgroundDescriptors;
+		public static readonly ReadOnlyCollection<TextBackgroundWrapper> textBackgrounds;
+		public static int numTextBackgrounds => textBackgrounds.Count;
 
 		private static readonly FontFamily sidebarLegacy = new FontFamily("Lucida Sans Typewriter");
 		private static readonly FontFamily sidebarModern = new FontFamily("Palatino Linotype");
@@ -66,21 +64,28 @@ namespace CoCWinDesktop
 		public SafeAction resumeGameAction { get; private set; } = null;
 		#endregion
 
-		#region SaveData
-		public double FontSize
+		//Font size is super annoying and stupid - Everything in WPF defaults to using Pixels, except RTF content, which uses EMs. Further, any typeface magic requires EMs. Unfortunately,
+		//RTF only respects EMs, so that gets the highest priority. Thus Ems. It also lets us use integers. Note that any UI that does not require common logic, constants can be used
+		//but i'd recommend using strings literals with "em" as a prefix, for consistency. Note, this only applies to font size. everything else uses pixels. 
+		public void SetFontSize(double amount, SizeUnit sizeUnit)
 		{
-			get => saveData.fontSize;
-			set
+			double oldValue = saveData.FontSizeInEms;
+			saveData.FontSizeInEms = MeasurementHelpers.ConvertToEms(amount, sizeUnit);
+			if (oldValue != saveData.FontSizeInEms)
 			{
-				var oldValue = saveData.fontSize;
-				saveData.fontSize = value;
-				if (oldValue != saveData.fontSize)
-				{
-					RaisePropertyChanged(nameof(FontSize));
-				}
+				RaisePropertyChanged(nameof(FontSizePixels));
+				RaisePropertyChanged(nameof(FontSizePoints));
+				RaisePropertyChanged(nameof(FontSizeEms));
 			}
-
 		}
+
+		#region SaveData
+		//Everything but the RTF uses size in pixels. However, points, and thus EMs, are greatly preferred because they work nicely with RTF and Typeface. 
+		public double FontSizePixels => MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.PIXELS);
+
+		public int FontSizeEms => (int)MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.EMS);
+		public double FontSizePoints => MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.POINTS);
+
 		public int BackgroundIndex
 		{
 			get => saveData.backgroundIndex;
@@ -158,28 +163,28 @@ namespace CoCWinDesktop
 			get => _BackgroundImage;
 			private set => CheckPropertyChanged(ref _BackgroundImage, value);
 		}
-		private string _BackgroundImage = backgrounds[0];
+		private string _BackgroundImage = null;
 
 		public string SidebarBackgroundImage
 		{
 			get => _SidebarBackgroundImage;
 			private set => CheckPropertyChanged(ref _SidebarBackgroundImage, value);
 		}
-		private string _SidebarBackgroundImage = sidebars[0];
+		private string _SidebarBackgroundImage = null;
 
 		public FontFamily SidebarFontFamily
 		{
 			get => _SidebarFontFamily;
 			private set => CheckPropertyChanged(ref _SidebarFontFamily, value);
 		}
-		private FontFamily _SidebarFontFamily = sidebarModern;
+		private FontFamily _SidebarFontFamily = null;
 
 		public SolidColorBrush TextBackground
 		{
 			get => _TextBackground;
 			private set => CheckPropertyChanged(ref _TextBackground, value);
 		}
-		private SolidColorBrush _TextBackground = textBgs[0];
+		private SolidColorBrush _TextBackground = null;
 		public FontFamily TextFontFamily
 		{
 			get => _textFontFamily;
@@ -192,14 +197,14 @@ namespace CoCWinDesktop
 			get => _FontColor;
 			private set => CheckPropertyChanged(ref _FontColor, value);
 		}
-		private SolidColorBrush _FontColor = new SolidColorBrush(Colors.Black); //start out with black.
+		private SolidColorBrush _FontColor = null; //start out with black.
 
 		public SolidColorBrush ButtonDisableHoverTextColor
 		{
 			get => _ButtonDisableHoverTextColor;
 			private set => CheckPropertyChanged(ref _ButtonDisableHoverTextColor, value);
 		}
-		private SolidColorBrush _ButtonDisableHoverTextColor = new SolidColorBrush(Colors.Transparent);
+		private SolidColorBrush _ButtonDisableHoverTextColor = null;
 		#endregion
 
 		public BitmapImage GetSprite(string spriteName)
@@ -239,19 +244,6 @@ namespace CoCWinDesktop
 				throw new NotImplementedException("I have no idea how we'll do this.");
 			}
 		}
-
-		//public double FontSize
-		//{
-		//	get => _fontSize;
-		//	private set
-		//	{
-		//		Utils.Clamp(ref value, MinFontSize, MaxFontSize);
-		//		CheckPrimitivePropertyChanged(ref _fontSize, value);
-		//	}
-		//}
-		//private double _fontSize = 15;
-
-		public int FontEmSize => (int)Math.Round(FontSize * 2);
 
 		#region HotKeys
 
@@ -303,42 +295,55 @@ namespace CoCWinDesktop
 		#endregion
 
 
-		public bool IsDarkMode => BackgroundImage == backgrounds[4] || BackgroundImage == backgrounds[3];
+		public bool IsDarkMode => backgrounds[BackgroundIndex].isDarkMode;
 
 		static ModelViewRunner()
 		{
-			List<SimpleDescriptor> bgNames = new List<SimpleDescriptor>();
-			backgroundDescriptors = new ReadOnlyCollection<SimpleDescriptor>(bgNames);
-
-			void AddBackgroundItem(SimpleDescriptor descriptor, string path, string sidebarPath, int index)
+			bool emptyTooltip(out string whyNot)
 			{
-				bgNames.AddAt(descriptor, index);
-				backgrounds.AddAt(path, index);
-				sidebars.AddAt(sidebarPath, index);
+				whyNot = null; return false;
 			}
 
-			List<SimpleDescriptor> textBgNames = new List<SimpleDescriptor>();
-			textBackgroundDescriptors = new ReadOnlyCollection<SimpleDescriptor>(textBgNames);
-
-			void AddTextBackgroundItem(SimpleDescriptor descriptor, SolidColorBrush colorBrush, int index)
+			bool kaizoTooltip(out string whyNot)
 			{
-				textBgNames.AddAt(descriptor, index);
-				textBgs.AddAt(colorBrush, index);
+				if (condition())
+				{
+					whyNot = becauseReasons();
+					return true;
+				}
+				whyNot = null;
+				return false;
 			}
 
-			AddBackgroundItem(InterfaceStrings.MapBGText, Path.Combine("resources", "background1.png"), Path.Combine("resources", "sidebar1.png"), 0);
-			AddBackgroundItem(InterfaceStrings.ParchmentBGText, Path.Combine("resources", "background2.png"), Path.Combine("resources", "sidebar2.png"), 1);
-			AddBackgroundItem(InterfaceStrings.MarbleBGText, Path.Combine("resources", "background3.png"), Path.Combine("resources", "sidebar3.png"), 2);
-			AddBackgroundItem(InterfaceStrings.ObsidianBGText, Path.Combine("resources", "background4.png"), Path.Combine("resources", "sidebar4.png"), 3);
-			AddBackgroundItem(InterfaceStrings.NightModeBGText, null, null, 4);
-			AddBackgroundItem(InterfaceStrings.GrimdarkBGText, Path.Combine("resources", "backgroundKaizo.png"), Path.Combine("resources", "sidebarKaizo.png"), 5);
+			List<BackgroundWrapper> backgroundList = new List<BackgroundWrapper>()
+			{
+				new BackgroundWrapper(Path.Combine("resources", "background1.png"), Path.Combine("resources", "sidebar1.png"), InterfaceStrings.MapBGText, emptyTooltip, false),
+				new BackgroundWrapper(Path.Combine("resources", "background2.png"), Path.Combine("resources", "sidebar2.png"), InterfaceStrings.ParchmentBGText, emptyTooltip, false),
+				new BackgroundWrapper(Path.Combine("resources", "background3.png"), Path.Combine("resources", "sidebar3.png"), InterfaceStrings.MarbleBGText, emptyTooltip, false),
+				new BackgroundWrapper(Path.Combine("resources", "background4.png"), Path.Combine("resources", "sidebar4.png"), InterfaceStrings.ObsidianBGText, emptyTooltip, true),
+				new BackgroundWrapper(null, null, InterfaceStrings.NightModeBGText, emptyTooltip, true),
+				new BackgroundWrapper(Path.Combine("resources", "backgroundKaizo.png"), Path.Combine("resources", "sidebarKaizo.png"), InterfaceStrings.GrimdarkBGText, kaizoTooltip, false),
+			};
+			backgrounds = new ReadOnlyCollection<BackgroundWrapper>(backgroundList);
 
+			List<TextBackgroundWrapper> textBackgroundList = new List<TextBackgroundWrapper>()
+			{
+				new TextBackgroundWrapper(GenerateSolidColorWithTransparency(Colors.White, 0.4), InterfaceStrings.NormalTextBgDesc, emptyTooltip, false),
+				new TextBackgroundWrapper(new SolidColorBrush(Colors.White), InterfaceStrings.WhiteTextBgDesc, emptyTooltip, false),
+				new TextBackgroundWrapper(new SolidColorBrush(Color.FromRgb(0xEB, 0xD5, 0xA6)), InterfaceStrings.TanTextBgDesc, emptyTooltip, true),
+				new TextBackgroundWrapper(new SolidColorBrush(Colors.Transparent), InterfaceStrings.ClearTextBgDesc, emptyTooltip, false),
+			};
+			textBackgrounds = new ReadOnlyCollection<TextBackgroundWrapper>(textBackgroundList);
+		}
 
-			AddTextBackgroundItem(InterfaceStrings.NormalTextBgDesc, GenerateSolidColorWithTransparency(Colors.White, 0.4), 0);
-			AddTextBackgroundItem(InterfaceStrings.WhiteTextBgDesc, new SolidColorBrush(Colors.White), 1);
-			AddTextBackgroundItem(InterfaceStrings.TanTextBgDesc, new SolidColorBrush(Color.FromRgb(0xEB, 0xD5, 0xA6)), 2);
-			AddTextBackgroundItem(InterfaceStrings.ClearTextBgDesc, new SolidColorBrush(Colors.Transparent), 3);
+		private static bool condition()
+		{
+			throw new NotImplementedException();
+		}
 
+		private static string becauseReasons()
+		{
+			throw new NotImplementedException();
 		}
 
 		private static SolidColorBrush GenerateSolidColorWithTransparency(Color color, double opacity)
@@ -358,6 +363,12 @@ namespace CoCWinDesktop
 			data = new DataModelView(this);
 
 			_modelView = mainMenu;
+
+			_BackgroundImage = backgrounds[BackgroundIndex].path;
+			_SidebarBackgroundImage = backgrounds[BackgroundIndex].sidebarPath;
+			_SidebarFontFamily = SidebarUsesModernFont ? sidebarModern : sidebarLegacy;
+			_TextBackground = textBackgrounds[TextBackgroundIndex].color;
+			SetFontColor();
 		}
 
 		#region View Switching
@@ -429,8 +440,8 @@ namespace CoCWinDesktop
 			int index = BackgroundIndex;
 			bool wasDarkMode = IsDarkMode;
 
-			BackgroundImage = backgrounds[index];
-			SidebarBackgroundImage = sidebars[index];
+			BackgroundImage = backgrounds[index].path;
+			SidebarBackgroundImage = backgrounds[index].sidebarPath;
 			if (wasDarkMode != IsDarkMode)
 			{
 				RaisePropertyChanged(nameof(IsDarkMode));
@@ -440,7 +451,7 @@ namespace CoCWinDesktop
 
 		private void SetTextBackground()
 		{
-			TextBackground = textBgs[TextBackgroundIndex];
+			TextBackground = textBackgrounds[TextBackgroundIndex].color;
 			SetFontColor();
 		}
 
@@ -448,7 +459,7 @@ namespace CoCWinDesktop
 		{
 			if (IsDarkMode)
 			{
-				if (TextBackground == textBgs[2])
+				if (textBackgrounds[TextBackgroundIndex].affectedByDarkMode)
 				{
 					FontColor = new SolidColorBrush(Colors.White);
 				}

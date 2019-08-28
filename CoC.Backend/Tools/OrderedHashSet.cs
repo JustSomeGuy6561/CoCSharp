@@ -671,7 +671,6 @@ namespace CoC.Backend.Tools
 		public struct Enumerator : IEnumerator<T>, IEnumerator
 		{
 			private OrderedHashSet<T> orderedHashSet;
-			private T current;
 			private int index;
 			private LinkedListNode<T> node;
 			private LinkedList<T> list => orderedHashSet.order;
@@ -684,11 +683,11 @@ namespace CoC.Backend.Tools
 			{
 				this.orderedHashSet = orderedHashSet;
 				index = 0;
-				current = default;
+				Current = default;
 				node = orderedHashSet.order.First;
 			}
 
-			public T Current => current;
+			public T Current { get; private set; }
 
 			object IEnumerator.Current
 			{
@@ -714,7 +713,7 @@ namespace CoC.Backend.Tools
 				}
 
 				++index;
-				current = node.Value;
+				Current = node.Value;
 				node = node.Next;
 				return true;
 			}
@@ -722,7 +721,7 @@ namespace CoC.Backend.Tools
 			void IEnumerator.Reset()
 			{
 				index = 0;
-				current = default;
+				Current = default;
 			}
 		}
 		#endregion
@@ -777,5 +776,80 @@ namespace CoC.Backend.Tools
 		#endregion
 	}
 
+
+	public class ReadOnlyOrderedHashSet<T> : IEnumerable<T>, IEnumerable where T:OrderedHashSet<T>
+	{
+		private readonly OrderedHashSet<T> sourceData;
+		public ReadOnlyOrderedHashSet(OrderedHashSet<T> source)
+		{
+			sourceData = source ?? throw new ArgumentNullException(nameof(source));
+		}
+
+		public IEqualityComparer<T> Comparer => sourceData.Comparer;
+		public int Count => sourceData.Count;
+
+		public IEnumerator GetEnumerator()
+		{
+			return sourceData.GetEnumerator();
+		}
+
+		IEnumerator<T> IEnumerable<T>.GetEnumerator()
+		{
+			return sourceData.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return sourceData.GetEnumerator();
+		}
+
+		public bool Contains(T item)
+		{
+			return sourceData.Contains(item);
+		}
+		public void CopyTo(T[] array, int arrayIndex)
+		{
+			sourceData.CopyTo(array, arrayIndex);
+		}
+		public void CopyTo(T[] array)
+		{
+			sourceData.CopyTo(array);
+		}
+
+		public void CopyTo(T[] array, int arrayIndex, int count)
+		{
+			sourceData.CopyTo(array, arrayIndex, count);
+		}
+
+		public bool SetEquals(IEnumerable<T> other)
+		{
+			return sourceData.SetEquals(other);
+		}
+
+		public bool Overlaps(IEnumerable<T> other)
+		{
+			return sourceData.Overlaps(other);
+		}
+
+		public bool IsProperSubsetOf(IEnumerable<T> other)
+		{
+			return sourceData.IsProperSubsetOf(other);
+		}
+
+		public bool IsSupersetOf(IEnumerable<T> other)
+		{
+			return sourceData.IsSupersetOf(other);
+		}
+
+		public bool IsProperSupersetOf(IEnumerable<T> other)
+		{
+			return sourceData.IsProperSupersetOf(other);
+		}
+
+		public bool IsSubsetOf(IEnumerable<T> other)
+		{
+			return sourceData.IsSubsetOf(other);
+		}
+	}
 
 }

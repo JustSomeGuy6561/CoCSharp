@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Engine;
+﻿using System;
+using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Engine.Difficulties
 {
@@ -20,5 +21,23 @@ namespace CoC.Frontend.Engine.Difficulties
 		{
 			return 0.5;
 		}
+
+		public override bool IsEnabled(bool isGlobal, out string whyNot)
+		{
+			bool hardCoreEnabled = isGlobal ? Backend.SaveData.BackendGlobalSave.data.hardcoreModeGlobal : Backend.SaveData.BackendSessionSave.data.hardcoreMode;
+
+			if (hardCoreEnabled)
+			{
+				whyNot = NotCompatibleWithHardcoreModeStr();
+				return false;
+			}
+			else
+			{
+				whyNot = null;
+				return true;
+			}
+		}
+
+		public override bool HardcoreModeCompatible => false;
 	}
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoC.Backend.Engine.Time
 {
@@ -35,7 +33,7 @@ namespace CoC.Backend.Engine.Time
 			if (mod < 0) mod += 24;
 			byte newHour = ((byte)mod).add(hour);
 			int newDay = deltaDays + day;
-			if (newHour > 24)
+			if (newHour >= 24)
 			{
 				newDay++;
 				newHour -= 24;
@@ -45,8 +43,25 @@ namespace CoC.Backend.Engine.Time
 
 		public string GetFormattedHourString()
 		{
-#warning add a 12 hour option, and also cultural variants based on weird places like using commas instead of colons. 
-			return hour.ToString() + ":00";
+			if (SaveData.BackendGlobalSave.data.UsesMilitaryTime)
+			{
+				return hour.ToString() + ":00";
+			}
+			else
+			{
+				string suffix = hour >= 12 ? "PM" : "AM";
+				int hourHelper = hour;
+
+				if (hourHelper > 12)
+				{
+					hourHelper -= 12;
+				}
+				if (hour == 0)
+				{
+					hourHelper = 12;
+				}
+				return hourHelper.ToString() + ":00 " + suffix;
+			}
 		}
 
 		public static GameDateTime HoursFromNow(int hours)

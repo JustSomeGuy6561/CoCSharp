@@ -20,6 +20,9 @@ namespace CoC.Frontend.Engine
 	{
 		public static void NewGame()
 		{
+			//clear all the extraneous data stored in the various engines in the backend. 
+			GameEngine.StartNewGame();
+
 			SetPlayerStatus(PlayerStatus.IDLE);
 			HideMenu();
 			HideStats();

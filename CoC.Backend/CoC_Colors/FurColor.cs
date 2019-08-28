@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CoC.Backend.CoC_Colors
 {
@@ -207,7 +208,7 @@ namespace CoC.Backend.CoC_Colors
 				case FurMulticolorPattern.STRIPED:
 					return "Striped";
 			}
-			throw new NotImplementedException("A new fur pattern was added, but the AsString function was not updated.");
+			throw new InvalidEnumArgumentException("Either a non-valid FurMulticolorPattern Enum value was used, or a new fur pattern was added, but the AsString function was not updated.");
 		}
 	}
 

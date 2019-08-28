@@ -289,10 +289,10 @@ namespace CoCWinDesktop.ModelView
 					CultureInfo cultureInfo = CultureInfo.CurrentCulture;
 					FlowDirection flowDirection = cultureInfo.TextInfo.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 					Typeface typeface = new Typeface(runner.TextFontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal, new FontFamily("Times New Roman"));
-					FormattedText formattedText = new FormattedText(maxLength.ToString(), CultureInfo.CurrentCulture, flowDirection, typeface, runner.FontEmSize, runner.FontColor);
+					FormattedText formattedText = new FormattedText(maxLength.ToString(), CultureInfo.CurrentCulture, flowDirection, typeface, runner.FontSizeEms, runner.FontColor);
 
 					InputInUse = true;
-					InputWidth = formattedText.Width * 4 / 3 + 6; //the offset for empty is 6. IDK why, but my math has to be multiplied by 4/3. Perhaps some rendering quirk?
+					InputWidth = formattedText.Width + 6; //the offset for empty is 6. No Longer need to multiply by 4/3 b/c we're actually using ems now. 
 					InputText = controller.inputField.defaultInput;
 					InputCharRegex = controller.inputField.limitValidInputCharacters;
 				}

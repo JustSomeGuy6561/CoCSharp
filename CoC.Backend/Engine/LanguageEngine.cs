@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Engine.Language;
+using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,18 @@ namespace CoC.Backend.Engine
 	//and then since we have the signature for each of them, generating text for it would be relatively easy, idk. 
 	public static class LanguageEngine
 	{
+		private static BackendGlobalSave saveData => BackendGlobalSave.data;
 
 		public static ReadOnlyCollection<LanguageBase> availableLanguages;
 		private static List<LanguageBase> availableLanguageStore;
+
+		public static int currentLanguageIndex
+		{
+			get => saveData.languageIndex;
+			set => saveData.languageIndex = value;
+		}
+
+		public static LanguageBase currentLanguage => availableLanguages[currentLanguageIndex];
 
 		static LanguageEngine()
 		{

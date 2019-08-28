@@ -16,11 +16,11 @@ namespace CoC.Frontend.Engine
 		public static void Init(FileInfo globalDataFile)
 		{
 			SaveSystem.AddGlobalSave(new FrontendGlobalSave());
-			SaveSystem.AddSessionSave(new FrontendSessionSave());
+			SaveSystem.AddSessionSave<FrontendSessionSave>();
 
 			BasePerkModifiers getExtraData() => new ExtraPerkModifiers();
 
-			Backend.Engine.BackendInitializer.Init(globalDataFile, AreaManager.placeCollection, AreaManager.locationCollection, 
+			Backend.Engine.BackendInitializer.Init(globalDataFile, TextOutput.OutputText, AreaManager.placeCollection, AreaManager.locationCollection, 
 				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, getExtraData, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);
 
 

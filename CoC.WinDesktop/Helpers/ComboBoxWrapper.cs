@@ -50,7 +50,7 @@ namespace CoCWinDesktop.Helpers
 			}
 			items = new ReadOnlyObservableCollection<ComboBoxItemWrapper>(itemHolder);
 
-			SelectedItem = selectedIndex is null ? null : itemHolder[(int)selectedIndex];
+			_selectedItem = selectedIndex is null ? null : itemHolder[(int)selectedIndex];
 		}
 
 		//able to use clear, but i'd have to use a for loop to add anyway. might as well just do this shit. 

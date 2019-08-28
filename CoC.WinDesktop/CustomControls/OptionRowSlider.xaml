@@ -12,6 +12,7 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="2*"/>
@@ -21,12 +22,13 @@
 		<TextBlock Style="{StaticResource SmallHeaderText}" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" TextWrapping="Wrap"
 				TextAlignment="Right" FontWeight="Bold" Text="{Binding OptionName}"/>
 
-		<TextBlock Style="{StaticResource StandardText}" Grid.Column="0" Grid.Row="1" Grid.RowSpan="3" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Top" 
-				   Text="{Binding selectedItemDescription}"/>
+		<TextBlock Style="{StaticResource StandardText}" Grid.Column="0" Grid.Row="1" Grid.RowSpan="3" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top" 
+				   TextAlignment="Right" Text="{Binding selectedItemDescription}"/>
 		<Slider Grid.Column="1" Grid.Row="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
 				TickFrequency="1" Minimum="{Binding minimum}" Maximum="{Binding maximum}" Value="{Binding selectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				FocusVisualStyle="{x:Null}" Margin="10,10,0,0"/>
+				FocusVisualStyle="{x:Null}" Margin="10,10,0,0" Foreground="{Binding FontColor, Source={StaticResource Runner}}" />
 		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" HorizontalAlignment="Center" 
 			VerticalAlignment="Top" Text="{Binding selectedItemText}" FontWeight="Bold"/>
+		<TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="WarningText" Foreground="Red" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 	</Grid>
 </UserControl>

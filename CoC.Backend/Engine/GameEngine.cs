@@ -52,6 +52,7 @@ namespace CoC.Backend.Engine
 
 #warning TODO: Fix this engine - use should never be interrupted, but cancelIdle breaks that. in the event someone says goToLocation during a use, it should be ignored - perhaps delayed?
 #warning The best way of doing this, i guess, is to pass any time event a bool that indicates whether current actions can be interrupted. if not, some events may be handled silently. 
+#warning (idk if above fixed, but...) now that idle and use times are separate, consider consuming idle times if a use occurs during idle instead of stacking - that doesnt make sense.
 		public static byte CurrentHour => timeEngine.CurrentHour;
 		public static int CurrentDay => timeEngine.CurrentDay;
 
@@ -197,14 +198,14 @@ namespace CoC.Backend.Engine
 		}
 
 
-		public static void InitializeEngine(
+		public static void InitializeEngine(Action<string> output,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> gameHomeBases, //Area Engine
 			Func<BasePerkModifiers> perkVariables, //perk data for creatures to use. 
 			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficulty) //Game Difficulty Collections.
 		{
-			areaEngine = new AreaEngine(gamePlaces, gameLocations, gameDungeons, gameHomeBases);
-			timeEngine = new TimeEngine(areaEngine);
+			areaEngine = new AreaEngine(output, gamePlaces, gameLocations, gameDungeons, gameHomeBases);
+			timeEngine = new TimeEngine(output, areaEngine);
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
 			defaultDifficultyIndex = defaultDifficulty;
 			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
@@ -215,9 +216,28 @@ namespace CoC.Backend.Engine
 			_currentPlayer = null;
 		}
 
+		public static void StartNewGame()
+		{
+			currentPlayer = null;
+			SaveData.SaveSystem.ResetSessionDataForNewGame();
+		}
+
 		public static void InitializeGame(Player player)
 		{
 			currentPlayer = player;
+			SaveData.SaveSystem.MarkGameLoaded();
+		}
+
+		public static void OnGameCompletion()
+		{
+			int? highestBeaten = SaveData.BackendGlobalSave.data.highestDifficultyBeaten;
+			int difficulty = SaveData.BackendSessionSave.data.lowestDifficultyForThisCampaign;
+
+			if (highestBeaten == null || highestBeaten < difficulty)
+			{
+				SaveData.BackendGlobalSave.data.highestDifficultyBeaten = difficulty;
+			}
+			Console.WriteLine("Womp, Womp. Roll Credits!"); //my easter egg for anyone who attaches this to console out. 
 		}
 
 		//local save data.

@@ -1,13 +1,18 @@
 ﻿using CoC.Backend.SaveData;
+using CoCWinDesktop.Helpers;
 
 namespace CoCWinDesktop
 {
-	public sealed class GuiGlobalSave : SaveData
+	public sealed class GuiGlobalSave : GlobalSaveData
 	{
-		public static GuiGlobalSave data => SaveSystem.getGlobalSave<GuiGlobalSave>();
+		public static GuiGlobalSave data => SaveSystem.GetGlobalSave<GuiGlobalSave>();
 
-		public double fontSize = 15;
-		public int backgroundIndex = 0;
+		//20px, 15pt. 
+		public int FontSizeInEms = 30;
+		//public int FontSizeInEms = MeasurementHelpers.ConvertToEms(20, SizeUnit.PIXELS);
+
+
+		public int backgroundIndex = 1;
 		public int textBackgroundIndex = 0;
 
 		public bool? usesOldSprites = false;

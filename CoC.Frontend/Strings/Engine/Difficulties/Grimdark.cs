@@ -21,6 +21,9 @@ namespace CoC.Frontend.Engine.Difficulties
 			return "Combat is easier and bad-ends can be ignored";
 		}
 
-
+		private string YouStillNeedToUnlockGrimdark()
+		{
+			return "Grimdark is locked until you've beaten the game on EXTREME!, or through the powers of debugging. You're not missing much; it's not fully implemented.";
+		}
 	}
 }

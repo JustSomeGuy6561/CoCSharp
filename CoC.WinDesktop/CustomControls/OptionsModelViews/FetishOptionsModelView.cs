@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Fetishes;
+﻿using CoC.Backend.Settings.Fetishes;
+using CoC.Backend.Settings;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;
 using System;
@@ -42,40 +43,31 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		private void setState(bool isGlobal)
 		{
-			foreach (var val in fetishOptions)
-			{
-				val.ChangeState(isGlobal);
-			}
+			fetishOptions = isGlobal ? globalOptions : sessionOptions;
 		}
 
 		private int _selectedIndex;
 
-		public ObservableCollection<OptionsRowBase> fetishOptions { get; }
+		public ReadOnlyCollection<OptionsRowBase> fetishOptions
+		{
+			get => _fetishOptions;
+			private set => CheckPropertyChanged(ref _fetishOptions, value);
+		}
+		private ReadOnlyCollection<OptionsRowBase> _fetishOptions;
+
+		private readonly ReadOnlyCollection<OptionsRowBase> sessionOptions;
+		private readonly ReadOnlyCollection<OptionsRowBase> globalOptions;
 
 
 		public FetishOptionsModelView(ModelViewRunner modelViewRunner, OptionsModelView optionsModelView) : base(modelViewRunner, optionsModelView)
 		{
-			ReadOnlyCollection<FetishBase> fetishSettings = runner.controller.GetFetishSettings();
+			ReadOnlyCollection<FetishSetting> fetishSettings = runner.controller.GetFetishSettings();
 
-			IEnumerable<OptionsRowBase> options = fetishSettings.Select<FetishBase, OptionsRowBase>(item =>
-			{
-				if (item is SimpleFetish simple)
-				{
-					return new OptionsRowButtonWrapper(item.name, simple.SetEnabled, (x) => x ? simple.enabledGlobal : simple.enabled, simple.enabledText, simple.disabledText,
-						x=>simple.enabledHint(), x=>simple.disabledHint(), !simple.globalCannotBeNull);
-				}
-				else if (item is AdvancedFetish advanced)
-				{
-					return new OptionsRowSliderWrapper(item.name, advanced.availableStatuses, advanced.settingText, advanced.settingHint, advanced.GetStatus,
-						advanced.SetStatus, !item.globalCannotBeNull);
-				}
-				else
-				{
-					return null;
-				}
-			}).Where(x => x != null);
+			List<OptionsRowBase> options = fetishSettings.Select(item => OptionsRowBase.BuildOptionRow(item.name, item.localSetting)).Where(x => x != null).ToList();
+			sessionOptions = new ReadOnlyCollection<OptionsRowBase>(options);
 
-			fetishOptions = new ObservableCollection<OptionsRowBase>(options);
+			options = fetishSettings.Select(item => OptionsRowBase.BuildOptionRow(item.name, item.globalSetting)).Where(x => x != null).ToList();
+			globalOptions = new ReadOnlyCollection<OptionsRowBase>(options);
 
 			FetishOptionsText = "Fetish Options";
 			FetishOptionsHelper = "You can change whether or not strange, exotic, and/or extreme fetishes appear in your game via by setting them here.";

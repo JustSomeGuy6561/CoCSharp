@@ -54,9 +54,10 @@ namespace CoC.Backend.Engine
 		//defined during a load of file or new game. obtained by the current difficulty. 
 		internal HomeBaseBase currentHomeBase { get; private set; }
 
-		internal AreaEngine(ReadOnlyDictionary<Type, Func<PlaceBase>> places, ReadOnlyDictionary<Type, Func<LocationBase>> locations,
+		internal AreaEngine(Action<string> output, ReadOnlyDictionary<Type, Func<PlaceBase>> places, ReadOnlyDictionary<Type, Func<LocationBase>> locations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> dungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases)
 		{
+			outputText = output ?? throw new ArgumentNullException(nameof(output));
 			placeLookup = places ?? throw new ArgumentNullException(nameof(places));
 			locationLookup = locations ?? throw new ArgumentNullException(nameof(locations));
 			dungeonLookup = dungeons ?? throw new ArgumentNullException(nameof(dungeons));

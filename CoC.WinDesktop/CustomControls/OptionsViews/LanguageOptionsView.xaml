@@ -20,11 +20,11 @@
 	</UserControl.Resources>
 	<Canvas Width="1000" Height="600">
 		<CC:SideBar SideBarObject="{Binding sidebarView, Mode=OneTime}" />
-		<CC:TextView Style="{StaticResource FakeTextZone}" x:Name="MainContent" HorizontalAlignment="Left" MainImage="{x:Null}"
+
+		<CC:TextView Style="{StaticResource FakeTextZone}" HorizontalAlignment="Left" MainImage="{x:Null}"
 			MainText="{Binding MainContent}" PostControlText="{Binding PostContent}" 
 			DropdownVisible="True" DropdownContainer="{Binding AvailableLanguages, Mode=OneWay}" />
 		<Grid Margin="60,0,20,0" >
 		</Grid>
 	</Canvas>
-            
 </UserControl>

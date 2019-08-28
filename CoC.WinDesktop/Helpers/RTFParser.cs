@@ -142,7 +142,7 @@ namespace CoCWinDesktop.Helpers
 		public static string FromRTFText(string RTFText, List<Color> colors, ModelViewRunner runner)
 		{
 			string font = runner.TextFontFamily.FamilyNames.FirstOrDefault().Value ?? "Times New Roman";
-			int fontEmSize = runner.FontEmSize;
+			int fontEmSize = runner.FontSizeEms;
 			string formatted = RTFText;
 
 			StringBuilder sb = new StringBuilder(@"{\rtf1\ansi\deff0" + Environment.NewLine +

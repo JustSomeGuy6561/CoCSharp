@@ -7,19 +7,24 @@ using CoC.Backend.Engine;
 
 namespace CoC.Backend.SaveData
 {
-	public sealed class BackendGlobalSave : SaveData
+	public sealed class BackendGlobalSave : GlobalSaveData
 	{
-		internal static BackendGlobalSave data => SaveSystem.getGlobalSave<BackendGlobalSave>();
+		public static BackendGlobalSave data => SaveSystem.GetGlobalSave<BackendGlobalSave>();
 
 		public bool UsesMetricMeasurements = false;
+		public bool UsesMilitaryTime = false;
 
 		public bool? PiercingFetishGlobal = null;
-		internal bool? HungerEnabledGlobal = null;
+		public bool HungerEnabledGlobal = false;
 
-		public bool? RealismEnabledGlobal = null;
+		public bool RealismEnabledGlobal = false;
 		public int difficultyGlobal;
-		public bool? hardcoreModeGlobal = null;
-		public bool? SFW_ModeGlobal = null;
+		public bool hardcoreModeGlobal = false;
+		public bool SFW_ModeGlobal = false;
+		public int languageIndex = 0;
+
+
+		public int? highestDifficultyBeaten = null;
 
 		internal BackendGlobalSave(int defaultDifficulty)
 		{

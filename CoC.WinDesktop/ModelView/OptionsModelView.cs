@@ -10,10 +10,14 @@ namespace CoCWinDesktop.ModelView
 	{
 		public RelayCommand OnGameplayHandle { get; }
 		public RelayCommand OnInterfaceHandle { get; }
+
+		public RelayCommand OnDisplayHandle { get; }
+
 		public RelayCommand OnFetishHandle { get; }
 		public RelayCommand OnControlsHandle { get; }
 		public RelayCommand OnSaveOptionsHandle { get; }
 		public RelayCommand OnLanguageHandle { get; }
+
 
 		//special case that does weird shit.
 		public RelayCommand OnConfirmHandle { get; }
@@ -41,6 +45,7 @@ namespace CoCWinDesktop.ModelView
 		private readonly LanguageOptionsModelView languageOptions;
 		private readonly GameplayOptionsModelView gameplayOptions;
 		private readonly InterfaceOptionsModelView interfaceOptions;
+		private readonly DisplayOptionsModelView displayOptions;
 		private readonly FetishOptionsModelView fetishOptions;
 		private readonly SaveOptionsModelView saveOptions;
 		private readonly CustomizeControlsModelView customizeControls;
@@ -69,6 +74,8 @@ namespace CoCWinDesktop.ModelView
 			saveOptions = new SaveOptionsModelView(runner, this);
 			customizeControls = new CustomizeControlsModelView(runner, this);
 
+			displayOptions = new DisplayOptionsModelView(runner, this);
+
 			subModelView = gameplayOptions;
 
 			OnLanguageHandle = GenerateCommand(languageOptions);
@@ -78,6 +85,8 @@ namespace CoCWinDesktop.ModelView
 			OnSaveOptionsHandle = GenerateCommand(saveOptions);
 			OnControlsHandle = GenerateCommand(customizeControls);
 
+			OnDisplayHandle = new RelayCommand(() => SwitchDisplay(displayOptions), () => true);
+
 			contentToCommandLookup = new Dictionary<OptionModelViewDataBase, RelayCommand>()
 			{
 				[languageOptions] = OnLanguageHandle,
@@ -86,6 +95,7 @@ namespace CoCWinDesktop.ModelView
 				[fetishOptions] = OnFetishHandle,
 				[saveOptions] = OnSaveOptionsHandle,
 				[customizeControls] = OnControlsHandle,
+				[displayOptions] = OnDisplayHandle,
 			};
 
 			OnConfirmHandle = new RelayCommand(HandleConfirmChanges, ConfirmEnabled);

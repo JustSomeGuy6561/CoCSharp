@@ -1,5 +1,5 @@
-﻿using CoC.Backend.Engine;
-using CoC.Backend.SaveData;
+﻿using System;
+using CoC.Backend.Engine;
 using CoC.Frontend.Areas.HomeBases;
 
 namespace CoC.Frontend.Engine.Difficulties
@@ -26,6 +26,20 @@ namespace CoC.Frontend.Engine.Difficulties
 		public override void OnGameStart()
 		{
 			GameEngine.SetHomeBase<IngnamBase>();
+		}
+
+		public override bool IsEnabled(bool isGlobal, out string whyNot)
+		{
+			if (Backend.SaveData.BackendGlobalSave.data.highestDifficultyBeaten >= DifficultyManager.difficultyCollection.IndexOf(this) - 1)
+			{
+				whyNot = null;
+				return true;
+			}
+			else
+			{
+				whyNot = YouStillNeedToUnlockGrimdark();
+				return false;
+			}
 		}
 	}
 }

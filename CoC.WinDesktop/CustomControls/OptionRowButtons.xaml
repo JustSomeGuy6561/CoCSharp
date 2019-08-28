@@ -21,6 +21,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition/>
@@ -33,14 +34,16 @@
 				   TextAlignment="Right" Text="{Binding OptionName}" FontWeight="Bold"/>
 		<!-- Bind content to text for it. Bind visibility of second item to enum declaring state - if !local, enable unset. else collapse it. -->
 		<!-- Bind commands, which set the variable to true, null, false, respectively. when set, commands should update the description. -->
-		<Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Content="{Binding EnabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+		<Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Content="{Binding EnabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
 				Background="{StaticResource Button0Image}" Command="{Binding EnableCommand}" />
-		<Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"  Content="Unset" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{StaticResource Button1Image}" 
+		<Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  Content="Unset" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{StaticResource Button1Image}" 
 				Command="{Binding ClearCommand}" Visibility="{Binding ClearVisible, Converter={StaticResource IsCollapsed}}" />
 		<Button Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" Content="{Binding DisabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
 				Background="{StaticResource Button2Image}" Command="{Binding DisableCommand}"/>
 		<!-- bind text to description. Note that there's no two-way binding here, so we'll need to use the button commands to fake it. -->
 		<TextBlock Style="{StaticResource StandardText}" Grid.Column="0" Grid.Row="1" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
 			TextAlignment="Right" Text="{Binding currentDescription}"/>
+		<TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Text="WarningText" Foreground="Red" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
 	</Grid>
 </UserControl>
