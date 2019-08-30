@@ -1,10 +1,7 @@
-﻿using CoCWinDesktop.Helpers;
+﻿using CoC.Backend;
+using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CoCWinDesktop.CustomControls
 {
@@ -29,5 +26,13 @@ namespace CoCWinDesktop.CustomControls
 		public bool requiresConfirmation => OnConfirmation != null;
 
 		public virtual Action OnConfirmation { get; } = null;
+
+		protected abstract SimpleDescriptor TitleText { get; }
+		protected abstract SimpleDescriptor TitleHelperText { get; }
+
+		public abstract SimpleDescriptor ButtonText { get; }
+
+		//public abstract string HeaderText { get; protected set; }
+		//public abstract string HeaderDescription { get; protected set; }
 	}
 }

@@ -1,14 +1,13 @@
 ﻿using CoCWinDesktop.CustomControls;
 using CoCWinDesktop.CustomControls.OptionsModelViews;
-using System;
 using System.Collections.Generic;
-using System.Windows.Input;
 
 namespace CoCWinDesktop.ModelView
 {
-	public sealed class OptionsModelView : ModelViewBase
+	public sealed partial class OptionsModelView : ModelViewBase
 	{
 		public RelayCommand OnGameplayHandle { get; }
+
 		public RelayCommand OnInterfaceHandle { get; }
 
 		public RelayCommand OnDisplayHandle { get; }
@@ -43,12 +42,29 @@ namespace CoCWinDesktop.ModelView
 		private OptionModelViewDataBase previousSubModel;
 
 		private readonly LanguageOptionsModelView languageOptions;
+		public string LanguageText => languageOptions.ButtonText();
+
 		private readonly GameplayOptionsModelView gameplayOptions;
+		public string GameplayText => gameplayOptions.ButtonText();
+
 		private readonly InterfaceOptionsModelView interfaceOptions;
+		public string InterfaceText => interfaceOptions.ButtonText();
+
 		private readonly DisplayOptionsModelView displayOptions;
+		public string DisplayText => displayOptions.ButtonText();
+
 		private readonly FetishOptionsModelView fetishOptions;
+		public string FetishText => fetishOptions.ButtonText();
+
 		private readonly SaveOptionsModelView saveOptions;
+		public string SaveText => saveOptions.ButtonText();
+
 		private readonly CustomizeControlsModelView customizeControls;
+		public string CustomizeText => customizeControls.ButtonText();
+
+		public string ConfirmText => ConfirmTextStr();
+
+		public string ReturnText => ReturnTextStr();
 
 		public bool primaryButtonsVisible
 		{
@@ -67,26 +83,35 @@ namespace CoCWinDesktop.ModelView
 
 		public OptionsModelView(ModelViewRunner modelViewRunner) : base(modelViewRunner)
 		{
-			languageOptions = new LanguageOptionsModelView(runner, this);
-			gameplayOptions = new GameplayOptionsModelView(runner, this);
-			interfaceOptions = new InterfaceOptionsModelView(runner, this);
-			fetishOptions = new FetishOptionsModelView(runner, this);
-			saveOptions = new SaveOptionsModelView(runner, this);
-			customizeControls = new CustomizeControlsModelView(runner, this);
+			//order of operations matters. we'll do the confirm and return first because they don't require anything to be initialized to work.
+			OnConfirmHandle = new RelayCommand(HandleConfirmChanges, ConfirmEnabled);
 
+			OnReturnHandle = new RelayCommand(HandleReturn, () => true); //note: it will be collapsed when not available, thus unclickable. 
+
+			//commands require their respective modelview be initialized, so we do them after the modelview initializer. 
+			//display is a part of interface, so we need to create it before interface. 
 			displayOptions = new DisplayOptionsModelView(runner, this);
-
-			subModelView = gameplayOptions;
-
-			OnLanguageHandle = GenerateCommand(languageOptions);
-			OnGameplayHandle = GenerateCommand(gameplayOptions);
-			OnInterfaceHandle = GenerateCommand(interfaceOptions);
-			OnFetishHandle = GenerateCommand(fetishOptions);
-			OnSaveOptionsHandle = GenerateCommand(saveOptions);
-			OnControlsHandle = GenerateCommand(customizeControls);
-
 			OnDisplayHandle = new RelayCommand(() => SwitchDisplay(displayOptions), () => true);
 
+			languageOptions = new LanguageOptionsModelView(runner, this);
+			OnLanguageHandle = GenerateCommand(languageOptions);
+
+			gameplayOptions = new GameplayOptionsModelView(runner, this);
+			OnGameplayHandle = GenerateCommand(gameplayOptions);
+
+			interfaceOptions = new InterfaceOptionsModelView(runner, this);
+			OnInterfaceHandle = GenerateCommand(interfaceOptions);
+
+			fetishOptions = new FetishOptionsModelView(runner, this);
+			OnFetishHandle = GenerateCommand(fetishOptions);
+
+			saveOptions = new SaveOptionsModelView(runner, this);
+			OnSaveOptionsHandle = GenerateCommand(saveOptions);
+
+			customizeControls = new CustomizeControlsModelView(runner, this);
+			OnControlsHandle = GenerateCommand(customizeControls);
+
+			//this requires both the option and the command to be initialized, so it's last. 
 			contentToCommandLookup = new Dictionary<OptionModelViewDataBase, RelayCommand>()
 			{
 				[languageOptions] = OnLanguageHandle,
@@ -98,10 +123,24 @@ namespace CoCWinDesktop.ModelView
 				[displayOptions] = OnDisplayHandle,
 			};
 
-			OnConfirmHandle = new RelayCommand(HandleConfirmChanges, ConfirmEnabled);
-
-			OnReturnHandle = new RelayCommand(HandleReturn, () => true); //note: it will be collapsed when not available, thus unclickable. 
+			_subModelView = gameplayOptions;
 		}
+
+		public void OnLanguageChange()
+		{
+			RaisePropertyChanged(nameof(LanguageText));
+			RaisePropertyChanged(nameof(GameplayText));
+			RaisePropertyChanged(nameof(InterfaceText));
+			RaisePropertyChanged(nameof(DisplayText));
+			RaisePropertyChanged(nameof(FetishText));
+			RaisePropertyChanged(nameof(SaveText));
+			RaisePropertyChanged(nameof(CustomizeText));
+			RaisePropertyChanged(nameof(ConfirmText));
+			RaisePropertyChanged(nameof(ReturnText));
+
+			subModelView.ParseDataForDisplay();
+		}
+
 		private RelayCommand GenerateCommand(OptionModelViewDataBase target)
 		{
 			return new RelayCommand(() => SwitchDisplay(target), () => CheckButtonEnabled(target));

@@ -1,8 +1,6 @@
-﻿using CoC.Backend;
-using CoC.UI;
+﻿using CoC.UI;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;
-using CoCWinDesktop.Strings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -297,6 +295,21 @@ namespace CoCWinDesktop
 
 		public bool IsDarkMode => backgrounds[BackgroundIndex].isDarkMode;
 
+		#region Display And Interface Options 
+
+		public readonly BackgroundOption backgroundOption;
+		public readonly TextBackgroundOption textBackgroundOption;
+		public readonly FontSizeOption fontSizeOption;
+
+		public readonly SidebarFontOption sidebarFontOption;
+		public readonly SpriteStatusOption spriteStatusOption;
+		public readonly ImagePackOption imagePackOption;
+		public readonly SidebarAnimationOption sidebarAnimationOption;
+		public readonly EnemySidebarOption enemySidebarOption;
+
+		#endregion
+
+
 		static ModelViewRunner()
 		{
 			bool emptyTooltip(out string whyNot)
@@ -317,21 +330,21 @@ namespace CoCWinDesktop
 
 			List<BackgroundWrapper> backgroundList = new List<BackgroundWrapper>()
 			{
-				new BackgroundWrapper(Path.Combine("resources", "background1.png"), Path.Combine("resources", "sidebar1.png"), InterfaceStrings.MapBGText, emptyTooltip, false),
-				new BackgroundWrapper(Path.Combine("resources", "background2.png"), Path.Combine("resources", "sidebar2.png"), InterfaceStrings.ParchmentBGText, emptyTooltip, false),
-				new BackgroundWrapper(Path.Combine("resources", "background3.png"), Path.Combine("resources", "sidebar3.png"), InterfaceStrings.MarbleBGText, emptyTooltip, false),
-				new BackgroundWrapper(Path.Combine("resources", "background4.png"), Path.Combine("resources", "sidebar4.png"), InterfaceStrings.ObsidianBGText, emptyTooltip, true),
-				new BackgroundWrapper(null, null, InterfaceStrings.NightModeBGText, emptyTooltip, true),
-				new BackgroundWrapper(Path.Combine("resources", "backgroundKaizo.png"), Path.Combine("resources", "sidebarKaizo.png"), InterfaceStrings.GrimdarkBGText, kaizoTooltip, false),
+				new BackgroundWrapper(Path.Combine("resources", "background1.png"), Path.Combine("resources", "sidebar1.png"), BackgroundOption.MapBGText, emptyTooltip, false),
+				new BackgroundWrapper(Path.Combine("resources", "background2.png"), Path.Combine("resources", "sidebar2.png"), BackgroundOption.ParchmentBGText, emptyTooltip, false),
+				new BackgroundWrapper(Path.Combine("resources", "background3.png"), Path.Combine("resources", "sidebar3.png"), BackgroundOption.MarbleBGText, emptyTooltip, false),
+				new BackgroundWrapper(Path.Combine("resources", "background4.png"), Path.Combine("resources", "sidebar4.png"), BackgroundOption.ObsidianBGText, emptyTooltip, true),
+				new BackgroundWrapper(null, null, BackgroundOption.NightModeBGText, emptyTooltip, true),
+				new BackgroundWrapper(Path.Combine("resources", "backgroundKaizo.png"), Path.Combine("resources", "sidebarKaizo.png"), BackgroundOption.GrimdarkBGText, kaizoTooltip, false),
 			};
 			backgrounds = new ReadOnlyCollection<BackgroundWrapper>(backgroundList);
 
 			List<TextBackgroundWrapper> textBackgroundList = new List<TextBackgroundWrapper>()
 			{
-				new TextBackgroundWrapper(GenerateSolidColorWithTransparency(Colors.White, 0.4), InterfaceStrings.NormalTextBgDesc, emptyTooltip, false),
-				new TextBackgroundWrapper(new SolidColorBrush(Colors.White), InterfaceStrings.WhiteTextBgDesc, emptyTooltip, false),
-				new TextBackgroundWrapper(new SolidColorBrush(Color.FromRgb(0xEB, 0xD5, 0xA6)), InterfaceStrings.TanTextBgDesc, emptyTooltip, true),
-				new TextBackgroundWrapper(new SolidColorBrush(Colors.Transparent), InterfaceStrings.ClearTextBgDesc, emptyTooltip, false),
+				new TextBackgroundWrapper(GenerateSolidColorWithTransparency(Colors.White, 0.4), TextBackgroundOption.NormalTextBgDesc, emptyTooltip, false),
+				new TextBackgroundWrapper(new SolidColorBrush(Colors.White), TextBackgroundOption.WhiteTextBgDesc, emptyTooltip, false),
+				new TextBackgroundWrapper(new SolidColorBrush(Color.FromRgb(0xEB, 0xD5, 0xA6)), TextBackgroundOption.TanTextBgDesc, emptyTooltip, true),
+				new TextBackgroundWrapper(new SolidColorBrush(Colors.Transparent), TextBackgroundOption.ClearTextBgDesc, emptyTooltip, false),
 			};
 			textBackgrounds = new ReadOnlyCollection<TextBackgroundWrapper>(textBackgroundList);
 		}
@@ -356,6 +369,23 @@ namespace CoCWinDesktop
 
 		public ModelViewRunner()
 		{
+			fontSizeOption = new FontSizeOption(this);
+			textBackgroundOption = new TextBackgroundOption(this);
+			backgroundOption = new BackgroundOption(this);
+
+			sidebarFontOption = new SidebarFontOption(this);
+			spriteStatusOption = new SpriteStatusOption(this);
+			imagePackOption = new ImagePackOption(this);
+			sidebarAnimationOption = new SidebarAnimationOption(this);
+			enemySidebarOption = new EnemySidebarOption(this);
+
+			_BackgroundImage = backgrounds[BackgroundIndex].path;
+			_SidebarBackgroundImage = backgrounds[BackgroundIndex].sidebarPath;
+			_SidebarFontFamily = SidebarUsesModernFont ? sidebarModern : sidebarLegacy;
+			_TextBackground = textBackgrounds[TextBackgroundIndex].color;
+
+			SetFontColor();
+
 			mainMenu = new MainMenuModelView(this);
 			options = new OptionsModelView(this);
 			standard = new StandardModelView(this);
@@ -363,12 +393,6 @@ namespace CoCWinDesktop
 			data = new DataModelView(this);
 
 			_modelView = mainMenu;
-
-			_BackgroundImage = backgrounds[BackgroundIndex].path;
-			_SidebarBackgroundImage = backgrounds[BackgroundIndex].sidebarPath;
-			_SidebarFontFamily = SidebarUsesModernFont ? sidebarModern : sidebarLegacy;
-			_TextBackground = textBackgrounds[TextBackgroundIndex].color;
-			SetFontColor();
 		}
 
 		#region View Switching

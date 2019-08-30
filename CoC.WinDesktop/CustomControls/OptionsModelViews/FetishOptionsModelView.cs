@@ -8,17 +8,22 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoC.Backend;
+using CoC.Backend.Engine;
 
 namespace CoCWinDesktop.CustomControls.OptionsModelViews
 {
-	public sealed class FetishOptionsModelView : OptionModelViewDataBase
+	public sealed partial class FetishOptionsModelView : OptionModelViewDataBase
 	{
+		private int lastLanguageIndex;
+
 		public string FetishOptionsText
 		{
 			get => _fetishOptionsText;
 			private set => CheckPropertyChanged(ref _fetishOptionsText, value);
 		}
 		private string _fetishOptionsText;
+		protected override SimpleDescriptor TitleText => FetishOptionsTitleText;
 
 		public string FetishOptionsHelper
 		{
@@ -26,6 +31,9 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 			private set => CheckPropertyChanged(ref _fetishOptionsHelper, value);
 		}
 		private string _fetishOptionsHelper;
+		protected override SimpleDescriptor TitleHelperText => FetishOptionsHelperText;
+
+		public override SimpleDescriptor ButtonText => FetishButtonText;
 
 		public ObservableCollection<string> possibilities { get; }
 
@@ -69,8 +77,10 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 			options = fetishSettings.Select(item => OptionsRowBase.BuildOptionRow(item.name, item.globalSetting)).Where(x => x != null).ToList();
 			globalOptions = new ReadOnlyCollection<OptionsRowBase>(options);
 
-			FetishOptionsText = "Fetish Options";
-			FetishOptionsHelper = "You can change whether or not strange, exotic, and/or extreme fetishes appear in your game via by setting them here.";
+			lastLanguageIndex = LanguageEngine.currentLanguageIndex;
+
+			_fetishOptionsText = TitleText() ;
+			_fetishOptionsHelper = TitleHelperText();
 
 			possibilities = new ObservableCollection<string>()
 			{
@@ -83,6 +93,13 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		public override void ParseDataForDisplay()
 		{
+			if (lastLanguageIndex != LanguageEngine.currentLanguageIndex)
+			{
+				lastLanguageIndex = LanguageEngine.currentLanguageIndex;
+
+				FetishOptionsText = TitleText();
+				FetishOptionsHelper = TitleHelperText();
+			}
 		}
 	}
 }

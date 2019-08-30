@@ -24,17 +24,24 @@ namespace CoCWinDesktop.Helpers
 
 	public sealed partial class BackgroundOption : DisplayOptions
 	{
-		public BackgroundOption() : base(InterfaceStrings.BackgroundText, new BackgroundSetting())
+		public BackgroundOption(ModelViewRunner runner) : base(BackgroundText, new BackgroundSetting(runner))
 		{
 		}
 
 		private class BackgroundSetting : AdvancedSetting
 		{
+			private readonly ModelViewRunner runner;
+
+			public BackgroundSetting(ModelViewRunner runner)
+			{
+				this.runner = runner;
+			}
+
 			GuiGlobalSave glob => GuiGlobalSave.data;
 			public override int setting
 			{
-				get => glob.backgroundIndex;
-				set => glob.backgroundIndex = value;
+				get => runner.BackgroundIndex;
+				set => runner.BackgroundIndex = value;
 			}
 
 			public override OrderedHashSet<int> availableOptions => new OrderedHashSet<int>(Enumerable.Range(0, ModelViewRunner.numBackgrounds));
@@ -63,15 +70,97 @@ namespace CoCWinDesktop.Helpers
 
 	public sealed partial class TextBackgroundOption : DisplayOptions
 	{
-		public TextBackgroundOption(SimpleDescriptor settingName, SettingBase globalSettingData) : base(settingName, globalSettingData)
+		public TextBackgroundOption(ModelViewRunner runner) : base(TextBackgroundText, new TextBackgroundSetting(runner))
 		{
+		}
+
+		private class TextBackgroundSetting : AdvancedSetting
+		{
+			private readonly ModelViewRunner runner;
+
+			public TextBackgroundSetting(ModelViewRunner runner)
+			{
+				this.runner = runner;
+			}
+
+			public override int setting
+			{
+				get => runner.TextBackgroundIndex;
+				set => runner.TextBackgroundIndex = value;
+			}
+
+			public override OrderedHashSet<int> availableOptions { get; } = new OrderedHashSet<int>(Enumerable.Range(0, ModelViewRunner.numTextBackgrounds));
+
+			public override string SelectedSettingHint(int selectedSetting)
+			{
+				return null;
+			}
+			
+			public override string SelectedSettingText(int selectedSetting)
+			{
+				return ModelViewRunner.textBackgrounds[selectedSetting].title();
+			}
+
+			public override bool SettingEnabled(int possibleSetting, out string whyNot)
+			{
+				whyNot = null;
+				return true;
+			}
+
+			public override string WarnPlayersAboutChanging()
+			{
+				return null;
+			}
 		}
 	}
 
 	public sealed partial class FontSizeOption : DisplayOptions
 	{
-		public FontSizeOption(SimpleDescriptor settingName, SettingBase globalSettingData) : base(settingName, globalSettingData)
+		public FontSizeOption(ModelViewRunner runner) : base(FontSizeText, new FontSizeSetting(runner))
 		{
+			
+		}
+
+		private class FontSizeSetting : AdvancedSetting
+		{
+			private GuiGlobalSave glob => GuiGlobalSave.data;
+			private readonly ModelViewRunner runner;
+			public FontSizeSetting(ModelViewRunner runner)
+			{
+				int count = (int)(MeasurementHelpers.MaxPointFontSize - MeasurementHelpers.MinPointFontSize + 1);
+				this.runner = runner;
+				availableOptions = new OrderedHashSet<int>(Enumerable.Range((int)MeasurementHelpers.MinPointFontSize, count));
+			}
+
+			//we're wiring it through the runner so it procs the correct font size changes for the GUI. 
+			public override int setting
+			{
+				get => (int)runner.FontSizePoints;
+				set => runner.SetFontSize(value, SizeUnit.POINTS);
+			}
+
+			public override OrderedHashSet<int> availableOptions { get; }
+
+			public override string SelectedSettingHint(int selectedSetting)
+			{
+				return FontHint(selectedSetting);
+			}
+
+			public override string SelectedSettingText(int selectedSetting)
+			{
+				return FontText(selectedSetting);
+			}
+
+			public override bool SettingEnabled(int possibleSetting, out string whyNot)
+			{
+				whyNot = null;
+				return true;
+			}
+
+			public override string WarnPlayersAboutChanging()
+			{
+				return null;
+			}
 		}
 	}
 }

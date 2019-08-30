@@ -36,14 +36,14 @@
 		<!-- Bind commands, which set the variable to true, null, false, respectively. when set, commands should update the description. -->
 		<Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Content="{Binding EnabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
 				Background="{StaticResource Button0Image}" Command="{Binding EnableCommand}" />
-		<Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  Content="Unset" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{StaticResource Button1Image}" 
+		<Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  Content="{Binding ClearBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{StaticResource Button1Image}" 
 				Command="{Binding ClearCommand}" Visibility="{Binding ClearVisible, Converter={StaticResource IsCollapsed}}" />
 		<Button Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" Content="{Binding DisabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
 				Background="{StaticResource Button2Image}" Command="{Binding DisableCommand}"/>
 		<!-- bind text to description. Note that there's no two-way binding here, so we'll need to use the button commands to fake it. -->
-		<TextBlock Style="{StaticResource StandardText}" Grid.Column="0" Grid.Row="1" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+		<TextBlock Style="{StaticResource SettingText}" Grid.Column="0" Grid.Row="1" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
 			TextAlignment="Right" Text="{Binding currentDescription}"/>
-		<TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Text="WarningText" Foreground="Red" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<TextBlock Margin="5" Style="{StaticResource WarningText}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Text="{Binding WarningText}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 	</Grid>
 </UserControl>

@@ -1,4 +1,6 @@
-﻿using CoC.Backend.Settings;
+﻿using CoC.Backend;
+using CoC.Backend.Engine;
+using CoC.Backend.Settings;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;
 using System;
@@ -10,8 +12,9 @@ using System.Threading.Tasks;
 
 namespace CoCWinDesktop.CustomControls.OptionsModelViews
 {
-	public sealed class GameplayOptionsModelView : OptionModelViewDataBase
+	public sealed partial class GameplayOptionsModelView : OptionModelViewDataBase
 	{
+		private int lastLanguageIndex;
 
 		public string GameplayOptionsText
 		{
@@ -19,6 +22,7 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 			private set => CheckPropertyChanged(ref _gameplayOptionsText, value);
 		}
 		private string _gameplayOptionsText;
+		protected override SimpleDescriptor TitleText => GameplayTitleText;
 
 		public string GameplayOptionsHelper
 		{
@@ -26,6 +30,9 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 			private set => CheckPropertyChanged(ref _gameplayOptionsHelper, value);
 		}
 		private string _gameplayOptionsHelper;
+		protected override SimpleDescriptor TitleHelperText => GameplayHelperText;
+
+		public override SimpleDescriptor ButtonText => GameplayButtonText;
 
 		public ObservableCollection<string> possibilities { get; }
 
@@ -70,8 +77,10 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 			options = gameplaySettings.Select(item => OptionsRowBase.BuildOptionRow(item.name, item.globalSetting)).Where(x => x != null).ToList();
 			globalOptions = new ReadOnlyCollection<OptionsRowBase>(options);
 
-			GameplayOptionsText = "Gameplay";
-			GameplayOptionsHelper = "You can change the gameplay options here. Fetishes are given their own category.";
+			lastLanguageIndex = LanguageEngine.currentLanguageIndex;
+
+			_gameplayOptionsText = TitleText();
+			_gameplayOptionsHelper = TitleHelperText();
 
 			possibilities = new ObservableCollection<string>()
 			{
@@ -84,7 +93,13 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		public override void ParseDataForDisplay()
 		{
+			if (lastLanguageIndex != LanguageEngine.currentLanguageIndex)
+			{
+				lastLanguageIndex = LanguageEngine.currentLanguageIndex;
 
+				GameplayOptionsText = TitleText();
+				GameplayOptionsHelper = TitleHelperText();
+			}
 		}
 	}
 }

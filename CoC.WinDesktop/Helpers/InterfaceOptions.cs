@@ -52,7 +52,7 @@ namespace CoCWinDesktop.Helpers
 	//		InterfaceStrings.NewText, InterfaceStrings.OldText, InterfaceStrings.NewFontSelected, InterfaceStrings.OldFontSelected);
 	//}
 
-	public abstract class InterfaceOptions : OptionBase
+	public class InterfaceOptions : OptionBase
 	{
 		public InterfaceOptions(SimpleDescriptor settingName, SettingBase globalSettingData) : base(settingName, globalSettingData)
 		{
@@ -65,130 +65,210 @@ namespace CoCWinDesktop.Helpers
 	}
 
 	//#error Fix Me!
-
-	public class SidebarFontOption : SimpleSetting
+	public sealed partial class SidebarFontOption : InterfaceOptions
 	{
-		public SidebarFontOption() : base()
+		public SidebarFontOption(ModelViewRunner runner) : base(SidebarFont, new SidebarFontSetting(runner))
 		{
 		}
 
-		public override bool setting { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-		public override string DisabledHint()
+		private class SidebarFontSetting : SimpleSetting
 		{
-			throw new NotImplementedException();
-		}
+			private readonly ModelViewRunner runner;
+			public SidebarFontSetting(ModelViewRunner runner) : base()
+			{
+				this.runner = runner;
+			}
 
-		public override string EnabledHint()
-		{
-			throw new NotImplementedException();
-		}
+			public override bool setting
+			{
+				get => runner.SidebarUsesModernFont;
+				set => runner.SidebarUsesModernFont = value;
+			}
 
-		public override bool SettingEnabled(bool possibleSetting, out string whyNot)
-		{
-			throw new NotImplementedException();
-		}
+			public override string DisabledHint() => OldFontSelected();
 
-		public override string WarnPlayersAboutChanging()
-		{
-			throw new NotImplementedException();
+			public override string EnabledHint() => NewFontSelected();
+
+			public override bool SettingEnabled(bool possibleSetting, out string whyNot)
+			{
+				whyNot = null;
+				return true;
+			}
+
+			public override string WarnPlayersAboutChanging()
+			{
+				return null;
+			}
+
+			public override SimpleDescriptor enabledText => InterfaceStrings.NewText;
+			public override SimpleDescriptor disabledText => InterfaceStrings.OldText;
 		}
 	}
 
-	public class SpriteStatusSetting : SimpleNullableSetting
+	public partial class SpriteStatusOption : InterfaceOptions
 	{
-		public override bool? setting { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-		public override string DisabledHint()
+		public SpriteStatusOption(ModelViewRunner runner) : base(SpriteStatus, new SpriteStatusSetting(runner))
 		{
-			throw new NotImplementedException();
 		}
 
-		public override string EnabledHint()
+		private class SpriteStatusSetting : SimpleNullableSetting
 		{
-			throw new NotImplementedException();
-		}
+			private readonly ModelViewRunner runner;
 
-		public override bool SettingEnabled(bool? possibleSetting, out string whyNot)
-		{
-			throw new NotImplementedException();
-		}
+			public SpriteStatusSetting(ModelViewRunner runner)
+			{
+				this.runner = runner;
+			}
 
-		public override string WarnPlayersAboutChanging()
-		{
-			throw new NotImplementedException();
+			public override bool? setting
+			{
+				get => runner.UsesOldSprites;
+				set => runner.UsesOldSprites = value;
+			}
+
+			public override string DisabledHint() => NewSpritesSelected();
+
+			public override string EnabledHint() => OldSpritesSelected();
+
+			public override string UnsetHint() => OffSpritesSelected();
+
+			public override bool SettingEnabled(bool? possibleSetting, out string whyNot)
+			{
+				whyNot = null;
+				return true;
+			}
+
+			public override string WarnPlayersAboutChanging()
+			{
+				return null;
+			}
+
+			public override SimpleDescriptor enabledText => InterfaceStrings.OldText;
+			public override SimpleDescriptor disabledText => InterfaceStrings.NewText;
+			public override SimpleDescriptor unsetText => InterfaceStrings.OffText;
 		}
 	}
-	public sealed partial class ImagePackStatus : SimpleSetting
+
+	public sealed partial class ImagePackOption : InterfaceOptions
 	{
-		public override bool setting { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-		public override string DisabledHint()
+		public ImagePackOption(ModelViewRunner runner) : base(ImagePackText, new ImagePackSetting(runner))
 		{
-			throw new NotImplementedException();
 		}
 
-		public override string EnabledHint()
+		private class ImagePackSetting : SimpleSetting
 		{
-			throw new NotImplementedException();
-		}
+			private readonly ModelViewRunner runner;
 
-		public override bool SettingEnabled(bool possibleSetting, out string whyNot)
-		{
-			throw new NotImplementedException();
-		}
+			public ImagePackSetting(ModelViewRunner runner)
+			{
+				this.runner = runner;
+			}
 
-		public override string WarnPlayersAboutChanging()
-		{
-			throw new NotImplementedException();
+			public override bool setting
+			{
+				get => runner.ImagePackEnabled;
+				set => runner.ImagePackEnabled = value;
+			}
+
+			public override string DisabledHint() => ImagePackDisabled();
+
+			public override string EnabledHint() => ImagePackEnabled();
+
+			public override bool SettingEnabled(bool possibleSetting, out string whyNot)
+			{
+				//Consider disabling enable option and explaining no image pack installed when no image pack installed.
+				whyNot = null;
+				return true;
+			}
+
+			public override string WarnPlayersAboutChanging()
+			{
+				return null;
+			}
+
+			public override SimpleDescriptor enabledText => InterfaceStrings.OnText;
+			public override SimpleDescriptor disabledText => InterfaceStrings.OffText;
 		}
 	}
-	public sealed partial class SideBarAnimations : SimpleSetting
+
+	public sealed partial class SidebarAnimationOption : InterfaceOptions
 	{
-		public override bool setting { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-		public override string DisabledHint()
+		public SidebarAnimationOption(ModelViewRunner runner) : base(SidebarAnimationText, new SidebarAnimationSetting(runner))
 		{
-			throw new NotImplementedException();
 		}
 
-		public override string EnabledHint()
+		private class SidebarAnimationSetting : SimpleSetting
 		{
-			throw new NotImplementedException();
-		}
+			private readonly ModelViewRunner runner;
 
-		public override bool SettingEnabled(bool possibleSetting, out string whyNot)
-		{
-			throw new NotImplementedException();
-		}
+			public SidebarAnimationSetting(ModelViewRunner runner)
+			{
+				this.runner = runner;
+			}
 
-		public override string WarnPlayersAboutChanging()
-		{
-			throw new NotImplementedException();
+			public override bool setting
+			{
+				get => runner.IsAnimated;
+				set => runner.IsAnimated = value;
+			}
+
+			public override string DisabledHint() => AnimationsOff();
+
+			public override string EnabledHint() => AnimationsOn();
+
+			public override bool SettingEnabled(bool possibleSetting, out string whyNot)
+			{
+				whyNot = null;
+				return true;
+			}
+
+			public override string WarnPlayersAboutChanging()
+			{
+				return null;
+			}
+
+			public override SimpleDescriptor enabledText => InterfaceStrings.OnText;
+			public override SimpleDescriptor disabledText => InterfaceStrings.OffText;
 		}
 	}
-	public sealed partial class EnemySideBars : SimpleSetting
+	public sealed partial class EnemySidebarOption : InterfaceOptions
 	{
-		public override bool setting { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-		public override string DisabledHint()
+		public EnemySidebarOption(ModelViewRunner runner) : base(EnemyStatBar, new EnemySidebarSetting(runner))
 		{
-			throw new NotImplementedException();
 		}
 
-		public override string EnabledHint()
+		private class EnemySidebarSetting : SimpleSetting
 		{
-			throw new NotImplementedException();
-		}
+			private readonly ModelViewRunner runner;
 
-		public override bool SettingEnabled(bool possibleSetting, out string whyNot)
-		{
-			throw new NotImplementedException();
-		}
+			public EnemySidebarSetting(ModelViewRunner runner)
+			{
+				this.runner = runner;
+			}
 
-		public override string WarnPlayersAboutChanging()
-		{
-			throw new NotImplementedException();
+			public override bool setting
+			{
+				get => runner.ShowEnemyStatBars;
+				set => runner.ShowEnemyStatBars = value;
+			}
+
+			public override string DisabledHint() => EnemyStatBarsOff();
+
+			public override string EnabledHint() => EnemyStatBarsOn();
+
+			public override bool SettingEnabled(bool possibleSetting, out string whyNot)
+			{
+				whyNot = null;
+				return true;
+			}
+
+			public override string WarnPlayersAboutChanging()
+			{
+				return null;
+			}
+
+			public override SimpleDescriptor enabledText => InterfaceStrings.OnText;
+			public override SimpleDescriptor disabledText => InterfaceStrings.OffText;
 		}
 	}
 }

@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.OptionsViews"
 			 xmlns:OMV="clr-namespace:CoCWinDesktop.CustomControls.OptionsModelViews"
+			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
+			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type=OMV:InterfaceOptionsModelView}">
@@ -16,14 +18,24 @@
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 		<TextBlock Style="{StaticResource HeaderText}" Margin="10" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
-				   Text="{Binding FetishOptionsText}"/>
+				   Text="{Binding InterfaceOptionsText}"/>
 		<TextBlock Style="{StaticResource SmallHeaderText}" Margin="10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
-				   Text="{Binding FetishOptionsHelper}"/>
+				   Text="{Binding InterfaceOptionsHelper}"/>
 		<ScrollViewer Style="{StaticResource ScrollbarWithSpace}" Grid.Row="2" Grid.Column="0">
 			<ItemsControl>
+				<ItemsControl.Resources>
+					<CollectionViewSource x:Key="InterfaceItems" Source="{Binding interfaceOptions}"/>
+
+					<DataTemplate DataType="{x:Type Help:OptionsRowButtonWrapper }">
+						<CC:OptionRowButtons Margin="10"/>
+					</DataTemplate>
+					<DataTemplate DataType="{x:Type Help:OptionsRowSliderWrapper}">
+						<CC:OptionRowSlider Margin="10"/>
+					</DataTemplate>
+				</ItemsControl.Resources>
 				<ItemsControl.ItemsSource>
 					<CompositeCollection>
-						<Grid Height="Auto">
+						<Grid Height="Auto" Margin="10">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
@@ -35,11 +47,11 @@
 							<TextBlock Style="{StaticResource SmallHeaderText}" Text="{Binding DisplayOptionsTitleText}" TextAlignment="Right" 
 								VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="0"/>
 							<TextBlock Style="{StaticResource SettingText}" Text="{Binding DisplayOptionsHelperText}" TextAlignment="Right"
-								VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="1"/>
+								VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="1" TextWrapping="Wrap"/>
 							<Button Style="{StaticResource CoCButton}" MinWidth="150" Margin="10" Width="Auto" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-									Content="{Binding DisplayOptionsBtnText}" Command="{Binding OnDisplayButton}" />
+									Background="{StaticResource Button0Image}"  Content="{Binding DisplayOptionsBtnText}" Command="{Binding OnDisplayButton}" />
 						</Grid>
-						<CollectionContainer Collection="{Binding interfaceOptions}"/>
+						<CollectionContainer Collection="{Binding Source={StaticResource InterfaceItems}}"/>
 					</CompositeCollection>
 				</ItemsControl.ItemsSource>
 			</ItemsControl>

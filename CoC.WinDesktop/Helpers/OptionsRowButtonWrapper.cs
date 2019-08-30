@@ -196,7 +196,14 @@ namespace CoCWinDesktop.Helpers
 			currentDescription = GetDescriptionText(enabled);
 
 			EnabledBtnTooltip = !enabledFnGetter(true, out string temp) ? temp : null;
-			ClearBtnTooltip = !enabledFnGetter(null, out temp) ? temp : null;
+			if (this.nullable && !enabledFnGetter(null, out temp))
+			{
+				ClearBtnTooltip = temp;
+			}
+			else
+			{
+				ClearBtnTooltip = null;
+			}
 			DisabledBtnTooltip = !enabledFnGetter(false, out temp) ? temp : null;
 
 			WarningText = warningTextFn();

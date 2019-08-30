@@ -8,17 +8,17 @@ namespace CoC.Backend.Strings
 	{
 		public static string EnableText()
 		{
-			return "On";
+			return "ON";
 		}
 
 		public static string DisableText()
 		{
-			return "Off";
+			return "OFF";
 		}
 
 		internal static string UnsetText()
 		{
-			return "Unset";
+			return "DEFAULT";
 		}
 
 		internal static string UnsetHint()

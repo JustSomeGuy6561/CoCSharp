@@ -94,7 +94,7 @@ namespace CoCWinDesktop.Helpers
 
 			warningTextFn = warningTextGetter ?? throw new ArgumentNullException(nameof(warningTextGetter));
 
-			_selectedIndex = getter() ?? -1;
+			_selectedIndex = querySelectedIndex();
 			UpdateDisplay();
 		}
 
@@ -131,7 +131,7 @@ namespace CoCWinDesktop.Helpers
 
 			warningTextFn = warningTextGetter ?? throw new ArgumentNullException(nameof(warningTextGetter));
 
-			_selectedIndex = getStatus();
+			_selectedIndex = querySelectedIndex();
 			UpdateDisplay();
 		}
 
@@ -153,6 +153,23 @@ namespace CoCWinDesktop.Helpers
 				return null;
 			}
 			return selectedIndexToSettingValue[selectedIndex];
+		}
+
+		private int querySelectedIndex()
+		{
+			int? selectedValue = getter();
+			if (settingValueToSelectedIndex.TryGetValue(selectedValue, out int result))
+			{
+				return result;
+			}
+			else if (nullable)
+			{
+				return -1;
+			}
+			else
+			{
+				return 0;
+			}
 		}
 
 
