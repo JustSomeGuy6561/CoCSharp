@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //4/6/2019, 12:20 AM
+using CoC.Backend.Achievements;
 using CoC.Backend.Areas;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine.Events;
@@ -45,6 +46,8 @@ namespace CoC.Backend.Engine
 		private static AreaEngine areaEngine;
 		//only for testing.
 		//internal static AreaEngine areaEngine;
+
+		private static AchievementCollection globalAchievements;
 
 		internal static Func<BasePerkModifiers> constructPerkModifier;
 
@@ -206,6 +209,8 @@ namespace CoC.Backend.Engine
 		{
 			areaEngine = new AreaEngine(output, gamePlaces, gameLocations, gameDungeons, gameHomeBases);
 			timeEngine = new TimeEngine(output, areaEngine);
+
+
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
 			defaultDifficultyIndex = defaultDifficulty;
 			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
@@ -215,6 +220,13 @@ namespace CoC.Backend.Engine
 			}
 			_currentPlayer = null;
 		}
+
+		internal static void FinalizeInitialization()
+		{
+			globalAchievements = new AchievementCollection();
+		}
+
+
 
 		public static void StartNewGame()
 		{
@@ -243,6 +255,7 @@ namespace CoC.Backend.Engine
 		//local save data.
 		public static void LoadFileBackend(FileInfo file)
 		{
+			//if ()
 			//open file, do magic parsing shit. 
 			//timeEngine.LoadInSavedTime(file.whatever.hours, file.whatever.days);
 			//currPlater = Player.LoadFromFile(file);
@@ -255,7 +268,27 @@ namespace CoC.Backend.Engine
 
 		}
 
+		public static bool UnlockAchievement<T>() where T: AchievementBase
+		{
+			if (!AchievementManager.HasRegisteredAchievement<T>())
+			{
+				throw new ArgumentException($"A member of Type {typeof(T)} was never added to the achievement manager.");
+			}
+			else
+			{
+				var adder = AchievementManager.GetAchievement<T>();
+				if (adder != null)
+				{
+					return globalAchievements.AddAchievement(adder);
+				}
+				return false;
+			}
+		}
 
+		public static ReadOnlyCollection<AchievementBase> GetUnlockedAchievements()
+		{
+			return globalAchievements.unlockedAchievements;
+		}
 
 
 		public static bool RegisterLazyListener(ITimeLazyListener listener)

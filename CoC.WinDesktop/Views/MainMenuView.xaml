@@ -7,7 +7,8 @@
 			 xmlns:MV="clr-namespace:CoCWinDesktop.ModelView"
 			 mc:Ignorable="d"
 			 d:DataContext="{d:DesignInstance Type=MV:MainMenuModelView}"
-			 d:DesignHeight="800" d:DesignWidth="1000">
+			 d:DesignHeight="800" d:DesignWidth="1000"
+			 Style="{StaticResource PageControl}">
 	<UserControl.Resources>
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
 			<Setter Property="Background" Value="{StaticResource Button0Image}"/>
@@ -29,149 +30,82 @@
 			<Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
 		</Style>
 	</UserControl.Resources>
-	<Grid Style="{StaticResource CoCGrid}">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
-		<Grid Width="Auto" HorizontalAlignment="Center">
+	<Canvas Style="{StaticResource CoCCanvas}">
+		<Grid Visibility="Visible" Canvas.Left="0" Canvas.Top="0" Height="800" Width="1000">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			<Image Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0">
-				<Image.Style>
-					<Style TargetType="Image">
-						<Setter Property="Source" Value="/CoCWinDesktop;component/resources/CoCLogo.png"/>
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding Source={StaticResource Runner}, Path=IsDarkMode, Mode=OneWay}" Value="True">
-								<Setter Property="Source" Value="/CoCWinDesktop;component/resources/CoCLogoLight.png" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</Image.Style>
-			</Image>
-			<TextBlock Grid.Row="1" Margin="0,-10,0,0" Text="CSharp Rewrite" FontSize="20"  HorizontalAlignment="Right" FontFamily="/CoCWinDesktop;component/resources/#Shrewsbury-Titling"/>
+			<Grid Width="Auto" HorizontalAlignment="Center">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<Image Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0">
+					<Image.Style>
+						<Style TargetType="Image">
+							<Setter Property="Source" Value="/CoCWinDesktop;component/resources/CoCLogo.png"/>
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding Source={StaticResource Runner}, Path=IsDarkMode, Mode=OneWay}" Value="True">
+									<Setter Property="Source" Value="/CoCWinDesktop;component/resources/CoCLogoLight.png" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</Image.Style>
+				</Image>
+				<TextBlock Grid.Row="1" Margin="0,-10,0,0" Text="CSharp Rewrite" FontSize="20"  HorizontalAlignment="Right" FontFamily="/CoCWinDesktop;component/resources/#Shrewsbury-Titling"/>
 
-		</Grid>
-		<TextBlock Style="{StaticResource CreditText}" Margin="4" Grid.Row="1" HorizontalAlignment="Center" TextAlignment="Center">
+			</Grid>
+			<TextBlock Style="{StaticResource CreditText}" Margin="4" Grid.Row="1" HorizontalAlignment="Center" TextAlignment="Center">
 			Created by Fenoxo, modded by Kitteh6660.<LineBreak/>
 			Ported to C# by JustSomeGuy.<LineBreak/>
 			<Bold>Edited By:</Bold> Ashi, SoS, Prisoner 416, Zeikfreid, et. al.<LineBreak/>
 			<Bold>Open-source contributions by:</Bold> aimozg, Amygdala, Cmacleod42, Enterprise2001, Fake-Name, Gedan, Yoffy, et al
-		</TextBlock>
-		<Canvas Name="WarningBox" Grid.Row="2" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="620" Height="90" >
-			<Canvas.Background>
-				<ImageBrush ImageSource="/CoCWinDesktop;component/resources/disclaimer-bg.png"/>
-			</Canvas.Background>
-			<Image Canvas.Left="10" Canvas.Top="15" Height="60" Width="60" Source="/CoCWinDesktop;component/resources/warning.png" />
-			<TextBlock x:Name="warningText" Canvas.Left="80" TextWrapping="Wrap" FontSize="16" Width="540" Foreground="Black" FontFamily="Palatino Linotype">
+			</TextBlock>
+			<Canvas Name="WarningBox" Grid.Row="2" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="620" Height="90" >
+				<Canvas.Background>
+					<ImageBrush ImageSource="/CoCWinDesktop;component/resources/disclaimer-bg.png"/>
+				</Canvas.Background>
+				<Image Canvas.Left="10" Canvas.Top="15" Height="60" Width="60" Source="/CoCWinDesktop;component/resources/warning.png" />
+				<TextBlock x:Name="warningText" Canvas.Left="80" TextWrapping="Wrap" FontSize="16" Width="540" Foreground="Black" FontFamily="Palatino Linotype">
 					This is an adult game meant to be played by adults.<LineBreak />
 					Please don't play this game if you're under the age of 18 and certainly don't play if strange and exotic fetishes disgust you.<LineBreak/>
 					<Bold>You have been warned!</Bold>
-			</TextBlock>
-		</Canvas>
-		<Grid Width="Auto" Height="Auto" HorizontalAlignment="Center" Grid.Row="3">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition/>
-				<ColumnDefinition/>
-				<ColumnDefinition/>
-				<ColumnDefinition/>
-			</Grid.ColumnDefinitions>
-			<Grid.RowDefinitions>
-				<RowDefinition/>
-				<RowDefinition/>
-			</Grid.RowDefinitions>
-			<Button Grid.Row="0" Grid.Column="0" Name="ContinueBtn" ToolTip="Robin" Command="{Binding Path=CanContinue}" Content="Continue"/>
-			<Button Grid.Row="0" Grid.Column="1" Name="NewGameBtn" ToolTip="Robin" Command="{Binding Path=OnNewGame}" Content="New Game" />
-			<Button Grid.Row="0" Grid.Column="2" Name="DataBtn" ToolTip="Robin" IsEnabled="True" Content="Data"/>
-			<Button Grid.Row="0" Grid.Column="3" Name="OptionsBtn" ToolTip="Robin" IsEnabled="True" Content="Options" Command="{Binding OptionsCommand}" />
-			<Button Grid.Row="1" Grid.Column="0" Name="AchievementsBtn" ToolTip="Robin" IsEnabled="True" Content="Achievements" />
-			<Button Grid.Row="1" Grid.Column="1" Name="InstructionsBtn" ToolTip="Robin" IsEnabled="True" Content="Instructions" />
-			<Button Grid.Row="1" Grid.Column="2" Name="CreditsBtn" ToolTip="Robin" IsEnabled="True" Content="Credits"/>
-			<Button Grid.Row="1" Grid.Column="3" Name="ModThreadBtn" ToolTip="Robin" IsEnabled="True" Content="Mod Thread" Click="ModThreadBtn_Click" />
-		</Grid>
-		<TextBlock Grid.Row="4" Style="{StaticResource CreditText}" FontSize="20" FontWeight="Bold">
+				</TextBlock>
+			</Canvas>
+			<Grid Width="Auto" Height="Auto" HorizontalAlignment="Center" Grid.Row="3">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Button Grid.Row="0" Grid.Column="0" Name="ContinueBtn" ToolTip="Robin" Command="{Binding CanContinue}" Content="Continue"/>
+				<Button Grid.Row="0" Grid.Column="1" Name="NewGameBtn" ToolTip="Robin" Command="{Binding OnNewGame}" Content="New Game" />
+				<Button Grid.Row="0" Grid.Column="2" Name="DataBtn" ToolTip="Robin" Command="{Binding OnData}" Content="Data"/>
+				<Button Grid.Row="0" Grid.Column="3" Name="OptionsBtn" ToolTip="Robin" Command="{Binding OptionsCommand}" Content="Options" />
+				<Button Grid.Row="1" Grid.Column="0" Name="AchievementsBtn" ToolTip="Robin" Command="{Binding OnAchievements}" Content="Achievements" />
+				<Button Grid.Row="1" Grid.Column="1" Name="InstructionsBtn" ToolTip="Robin" Command="{Binding OnInstructions}" Content="Instructions" />
+				<Button Grid.Row="1" Grid.Column="2" Name="CreditsBtn" ToolTip="Robin" Command="{Binding OnCredits}" Content="Credits"/>
+				<Button Grid.Row="1" Grid.Column="3" Name="ModThreadBtn" ToolTip="Robin" IsEnabled="True" Content="Mod Thread" Click="ModThreadBtn_Click" />
+			</Grid>
+			<TextBlock Grid.Row="4" Style="{StaticResource CreditText}" FontSize="20" FontWeight="Bold">
 			<Hyperlink Foreground ="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TextBlock}}" FontSize="20" NavigateUri="http://www.fenoxo.com" RequestNavigate="Hyperlink_RequestNavigate">www.fenoxo.com</Hyperlink>
-		</TextBlock>
-		<TextBlock Grid.Row="5" TextAlignment="Right" FontFamily="Palatino Linotype" FontSize="16" HorizontalAlignment="Right" Margin="0,0,4,4">
-				C# Version 0.1 PreAlpha <LineBreak />
-				Original Game By Fenoxo. <LineBreak />
-				Modded By Kitteh6660. <LineBreak />
-				C# Version by JustSomeGuy
-		</TextBlock>
-	</Grid>
-</UserControl>
-	<!--<UserControl.Resources>
-		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
-			<Setter Property="Background" Value="{StaticResource Button0Image}"/>
-		</Style>
-		<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}" />
-		<Style x:Key="CreditText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}">
-			<Setter Property="FontSize" Value="16" />
-			<Setter Property="Width" Value="1000" />
-			<Setter Property="TextAlignment" Value="Center" />
-			<Setter Property="HorizontalAlignment" Value="Center" />
-			<Setter Property="VerticalAlignment" Value="Top" />
-			<Setter Property="FontFamily" Value="Palatino Linotype" />
-		</Style>
-		<Style TargetType="{x:Type Hyperlink}">
-			<Style.Triggers>
-				<Trigger Property="IsMouseOver" Value="True" />
-			</Style.Triggers>
-			<Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
-		</Style>
-	</UserControl.Resources>
-	<Canvas Style="{StaticResource CoCCanvas}">
-		<Image Height="400" HorizontalAlignment="Center" Canvas.Left="208.5" Canvas.Top="0">
-			<Image.Style>
-				<Style TargetType="Image">
-					<Setter Property="Source" Value="/CoCWinDesktop;component/resources/CoCLogo.png"/>
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding Source={StaticResource Runner}, Path=IsDarkMode, Mode=OneWay}" Value="True">
-							<Setter Property="Source" Value="/CoCWinDesktop;component/resources/CoCLogoLight.png" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</Image.Style>
-		</Image>
-		<TextBlock Name="revampText" Text="CSharp Rewrite" FontSize="20"  HorizontalAlignment="Center" FontFamily="/CoCWinDesktop;component/resources/#Shrewsbury-Titling" Canvas.Left="638" Canvas.Top="372"/>
-		<TextBlock Name="creatorString" Style="{StaticResource CreditText}" Canvas.Top="400">Created by Fenoxo, modded by Kitteh6660.</TextBlock>
-		<TextBlock Name="rewriteString" Style="{StaticResource CreditText}" Canvas.Top="422">Ported to C# by JustSomeGuy.</TextBlock>
-		<TextBlock Name="editString"    Style="{StaticResource CreditText}" Canvas.Top="444"><Bold>Edited By:</Bold> Ashi, SoS, Prisoner 416, Zeikfreid, et. al.</TextBlock>
-		<TextBlock Name="contribString" Style="{StaticResource CreditText}" Canvas.Top="466"><Bold>Open-source contributions by:</Bold> aimozg, Amygdala, Cmacleod42, Enterprise2001, Fake-Name, Gedan, Yoffy, et al</TextBlock>
-		<Canvas Name="WarningBox" HorizontalAlignment="Center" VerticalAlignment="Center" Width="620" Canvas.Left="190"  Height="90" Canvas.Top="493">
-			<Canvas.Background>
-				<ImageBrush ImageSource="/CoCWinDesktop;component/resources/disclaimer-bg.png"/>
-			</Canvas.Background>
-			<Image Canvas.Left="10" Canvas.Top="15" Height="60" Width="60" Source="/CoCWinDesktop;component/resources/warning.png" />
-			<TextBlock x:Name="warningText" Canvas.Left="80" TextWrapping="Wrap" FontSize="16" Width="540" Foreground="Black" FontFamily="Palatino Linotype">
-					This is an adult game meant to be played by adults.<LineBreak />
-					Please don't play this game if you're under the age of 18 and certainly don't play if strange and exotic fetishes disgust you.<LineBreak/>
-					<Bold>You have been warned!</Bold>
 			</TextBlock>
-		</Canvas>
-		<Button Name="ContinueBtn" ToolTip="Robin" Canvas.Left="192" Canvas.Top="588" Command="{Binding Path=CanContinue}" Content="Continue"/>
-		<Button x:Name="NewGameBtn" ToolTip="Robin" Canvas.Left="347" Canvas.Top="588" Command="{Binding Path=OnNewGame}" Content="New Game" />
-		<Button x:Name="DataBtn" ToolTip="Robin" Canvas.Left="502" Canvas.Top="588" IsEnabled="True" Content="Data"/>
-		<Button x:Name="OptionsBtn" ToolTip="Robin" Canvas.Left="657" Canvas.Top="588" IsEnabled="True" Content="Options" Command="{Binding OptionsCommand}" />
-		<Button x:Name="AchievementsBtn" ToolTip="Robin" Canvas.Left="192" Canvas.Top="633" IsEnabled="True" Content="Achievements" />
-		<Button x:Name="InstructionsBtn" ToolTip="Robin" Canvas.Left="347" Canvas.Top="633" IsEnabled="True" Content="Instructions" />
-		<Button x:Name="CreditsBtn" ToolTip="Robin" Canvas.Left="502" Canvas.Top="633" IsEnabled="True" Content="Credits"/>
-		<Button x:Name="ModThreadBtn" ToolTip="Robin" Canvas.Left="659" Canvas.Top="633" IsEnabled="True" Content="Mod Thread" Click="ModThreadBtn_Click" />
-
-		<TextBlock Name="website" Style="{StaticResource CreditText}" Height="40" FontSize="20" FontWeight="Bold" Canvas.Top="678">
-				<Hyperlink Foreground ="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TextBlock}}" FontSize="20" NavigateUri="http://www.fenoxo.com" RequestNavigate="Hyperlink_RequestNavigate">www.fenoxo.com</Hyperlink>
-		</TextBlock>
-		<TextBlock Name="Version" TextAlignment="Right" Width="600" Canvas.Right="10" Canvas.Bottom="5" FontFamily="Palatino Linotype" FontSize="16">
+			<TextBlock Grid.Row="5" TextAlignment="Right" FontFamily="Palatino Linotype" FontSize="16" HorizontalAlignment="Right" Margin="0,0,4,4">
 				C# Version 0.1 PreAlpha <LineBreak />
 				Original Game By Fenoxo. <LineBreak />
 				Modded By Kitteh6660. <LineBreak />
 				C# Version by JustSomeGuy
-		</TextBlock>
+			</TextBlock>
+		</Grid>
 	</Canvas>
-</UserControl>-->
+</UserControl>

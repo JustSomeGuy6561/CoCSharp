@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //4/7/2019, 7:43 PM
 
+using CoC.Backend.Achievements;
 using CoC.Backend.Engine;
 
 namespace CoC.Backend.SaveData
@@ -23,6 +24,8 @@ namespace CoC.Backend.SaveData
 		public bool SFW_ModeGlobal = false;
 		public int languageIndex = 0;
 
+		//serialized and deserialized here, but is only active when these occur. otherwise, it should be null. 
+		//public AchievementCollection achievementCollection;
 
 		public int? highestDifficultyBeaten = null;
 

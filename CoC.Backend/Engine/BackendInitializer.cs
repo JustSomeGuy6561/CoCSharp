@@ -4,6 +4,7 @@
 //3/21/2019, 5:56 AM
 using CoC.Backend.Areas;
 using CoC.Backend.Creatures;
+using CoC.Backend.GameCredits;
 using CoC.Backend.Perks;
 using CoC.Backend.SaveData;
 using CoC.Backend.Settings.Fetishes;
@@ -18,15 +19,11 @@ namespace CoC.Backend.Engine
 	{
 		//rundown: to allow you to do whatever you want in the frontend, some data needs to be passed back here. 
 
-		public static void Init(FileInfo globalDataFile, Action<string> output,
+		public static void PreSaveInit(Action<string> output,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, 
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases, //AreaEngine
 			Func<BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
 		{
-			//initialize the saves. 
-			SaveSystem.AddGlobalSave(new BackendGlobalSave(defaultDifficultyIndex));
-			SaveSystem.AddSessionSave<BackendSessionSave>();
-
 			//add the fetish/game settings.
 
 			FetishSettingsManager.IncludeFetish(new PiercingFetish());
@@ -39,10 +36,57 @@ namespace CoC.Backend.Engine
 			GameplaySettingsManager.IncludeGameplaySetting(new MeasurementSettings());
 			GameplaySettingsManager.IncludeGameplaySetting(new TimeDisplaySettings());
 
+			CreditManager.AddCreditCategory(new BackendCredits());
+
 #warning Add method to read file and load global backend game data. 
 
 			//initialize game engine.
 			GameEngine.InitializeEngine(output, gamePlaces, gameLocations, gameDungeons, homeBases, perkModifiers, gameDifficulties, defaultDifficultyIndex);
+		}
+
+		public static void LatePreSaveInit()
+		{
+			//CreditManager.AddCreditCategory(new LocalizationCredits());
+			CreditManager.AddCreditCategory(new MiscellaneousCredits());
+
+			
+		}
+
+		public static void InitializeSaveData(FileInfo globalDataFile)
+		{
+			if (globalDataFile is null)
+			{
+				//initialize the saves. 
+				SaveSystem.AddGlobalSave(new BackendGlobalSave(GameEngine.defaultDifficultyIndex));
+				SaveSystem.AddSessionSave<BackendSessionSave>();
+			}
+			else
+			{
+				//deserialize the global save data for the backend save. 
+				//initialize the 
+				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			}
+
+			GameEngine.LoadFileBackend(globalDataFile);
+		}
+
+		public static void PostSaveInit()
+		{
+			foreach (var data in GameplaySettingsManager.gameSettings)
+			{
+				data.PostLocalSessionInit();
+			}
+
+			foreach (var data in FetishSettingsManager.fetishes)
+			{
+				data.PostLocalSessionInit();
+			}
+		}
+
+		public static void FinalizeInitialization()
+		{
+			GameEngine.FinalizeInitialization();
+
 		}
 	}
 }

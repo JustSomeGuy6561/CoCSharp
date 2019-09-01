@@ -18,8 +18,8 @@ namespace TestingClassLibrary
 		private static bool dataReady = true;
 
 
-		public static string saveDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		public static string SETTINGS_LOCATION => Path.Combine(saveDirectory, "GlobalSettings.CoCSav");
+		private static string saveDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		private static string SETTINGS_LOCATION => Path.Combine(saveDirectory, "GlobalSettings.CoCSav");
 
 
 		public static bool AddSessionSaveInstance(SaveData2Test sessionSave)

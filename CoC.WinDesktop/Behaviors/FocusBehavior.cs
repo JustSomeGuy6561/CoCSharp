@@ -26,12 +26,7 @@ namespace CoCWinDesktop.Behaviors
 		static void OnFocusFirstPropertyChanged(
 			DependencyObject obj, DependencyPropertyChangedEventArgs args)
 		{
-			if (!(obj is Control control) || !(args.NewValue is bool argBool))
-			{
-				return;
-			}
-
-			else if (argBool)
+			if (obj is Control control && args.NewValue is bool argBool && argBool)
 			{
 				control.Loaded += (sender, e) =>
 					control.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));

@@ -3,24 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Frontend.Achievements
+namespace CoC.Backend.Achievements
 {
 	public abstract class AchievementBase
 	{
-		internal AchievementBase()
+		public readonly SimpleDescriptor name;
+		protected AchievementBase(SimpleDescriptor achievementName)
 		{
-
+			name = achievementName ?? throw new ArgumentNullException(nameof(achievementName));
 		}
 
-		public abstract string Name();
 		public abstract string AchievementLockedText();
 		public abstract string AchievementUnlockedText();
-
-		public bool isUnlocked()
-		{
-			return UnlockConditions();
-		}
-
-		protected abstract bool UnlockConditions();
 	}
 }

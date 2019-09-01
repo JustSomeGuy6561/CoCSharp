@@ -27,6 +27,9 @@
 		<DataTemplate DataType="{x:Type MV:OptionsModelView}">
 			<Views:OptionsView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type MV:ExtraMenuItemsModelView}">
+			<Views:ExtraMenuItemsView/>
+		</DataTemplate>
 	</Window.Resources>
 	<!--Content-->
 	<Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" StretchDirection="Both">

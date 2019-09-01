@@ -41,6 +41,21 @@
 			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 		</Style>
 
+		<Style TargetType="UserControl">
+			<Setter Property="Focusable" Value="False"/>
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+		</Style>
+
+		<Style TargetType="ItemsControl">
+			<Setter Property="Focusable" Value="False"/>
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+		</Style>
+
+		<Style TargetType="ContentControl">
+			<Setter Property="Focusable" Value="False"/>
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+		</Style>
+
 		<Style TargetType="{x:Type FrameworkElement}">
 			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 		</Style>
@@ -119,7 +134,7 @@
 			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
 			<Setter Property="Visibility" Value="Visible"/>
 			<Setter Property="TextWrapping" Value="Wrap"/>
-
+			<Setter Property="Focusable" Value="False"/>
 			<Style.Triggers>
 				<Trigger Property="Text" Value="{x:Null}">
 					<Setter Property="Visibility" Value="Collapsed"/>
@@ -137,7 +152,8 @@
 			<Setter Property="FontWeight" Value="Bold"/>
 			<Setter Property="TextDecorations" Value="Underline" />
 			<Setter Property="TextWrapping" Value="Wrap"/>
-
+			<Setter Property="Focusable" Value="False"/>
+			
 			<Setter Property="Visibility" Value="Visible"/>
 			<Style.Triggers>
 				<Trigger Property="Text" Value="{x:Null}">
@@ -153,7 +169,8 @@
 			<Setter Property="FontSize" Value="20"/>
 			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
 			<Setter Property="TextWrapping" Value="Wrap"/>
-
+			<Setter Property="Focusable" Value="False"/>
+			
 			<Setter Property="Visibility" Value="Visible"/>
 			<Style.Triggers>
 				<Trigger Property="Text" Value="{x:Null}">
@@ -164,6 +181,7 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
+
 		<Style x:Key="SettingText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}" >
 			<Setter Property="FontSize" Value="{StaticResource SettingPx}"/>
 			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
@@ -201,7 +219,23 @@
 			<Setter Property="FontFamily" Value="{Binding Path=TextFontFamily, Source={StaticResource Runner}, Mode=OneWay}"/>
 			<Setter Property="FontSize" Value="{Binding Path=FontSizePixels, Source={StaticResource Runner}, Mode=OneWay}" />
 		</Style>
-		
+
+		<Style x:Key="SettingTextBox" TargetType="{x:Type TextBox}">
+			<Setter Property="FontSize" Value="{StaticResource SettingPx}"/>
+			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
+			<Setter Property="TextWrapping" Value="Wrap"/>
+
+			<Setter Property="Visibility" Value="Visible"/>
+			<Style.Triggers>
+				<Trigger Property="Text" Value="{x:Null}">
+					<Setter Property="Visibility" Value="Collapsed"/>
+				</Trigger>
+				<Trigger Property="Text" Value="">
+					<Setter Property="Visibility" Value="Collapsed"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+
 		<Style x:Key="CoCLabel" TargetType="{x:Type Label}" >
 			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
 			<Setter Property="Padding" Value="0"/>

@@ -6,10 +6,28 @@
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.OptionsViews"
              xmlns:OMV="clr-namespace:CoCWinDesktop.CustomControls.OptionsModelViews"
              xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
+			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
+			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
 			 mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1000"
+             d:DesignHeight="600" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type=OMV:CustomizeControlsModelView}">
-	<Grid Background="Bisque">
-		<TextBlock Text="Customize Controls Page"/>
+	<UserControl.Resources>
+		<DataTemplate DataType="{x:Type Help:HotKeyWrapper}">
+			<CC:HotkeyControl/>
+		</DataTemplate>
+	</UserControl.Resources>
+	<Grid Margin="60,0,20,0">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<TextBlock Style="{StaticResource HeaderText}" Margin="10" Grid.Row="0" Grid.Column="0" 
+				   Text="{Binding CustomControlsText}" Focusable="False"/>
+		<TextBlock Style="{StaticResource SmallHeaderText}" Margin="10" Grid.Row="1" Grid.Column="0"
+				   Text="{Binding CustomControlsHelper}"/>
+		<ScrollViewer Style="{StaticResource ScrollbarWithSpace}" Grid.Row="2">
+			<ItemsControl ItemsSource="{Binding hotKeys}"></ItemsControl>
+		</ScrollViewer>
 	</Grid>
 </UserControl>

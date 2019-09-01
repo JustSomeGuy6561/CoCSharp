@@ -16,6 +16,7 @@ using CoC.Frontend.UI.ControllerData;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using CoC.Backend.GameCredits;
 
 namespace CoC.UI
 {
@@ -39,6 +40,17 @@ namespace CoC.UI
 		public StringBuilder outputField => _outputField;
 		private StringBuilder _outputField;
 		public bool outputChanged => TextOutput.QueryData(out _outputField, out _outputImagePath);
+
+		/// <summary>
+		/// Called from the GUI when the game needs to reload the current scene. Should only occur if the pc is currently at a home base. Forces the text for the current location
+		/// to be regenerated, but with no other interactions running. This way, the text can respond to language changes and such, or handle the case where it's switching from
+		/// appearance to skills and back to standard text or whatever. 
+		/// </summary>
+		public void ForceReloadFromGUI()
+		{
+			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 
 		public ReadOnlyCollection<ButtonData> buttons { get => _buttons; }
 		private ReadOnlyCollection<ButtonData> _buttons;
@@ -117,6 +129,13 @@ namespace CoC.UI
 			return new AppearanceData();
 		}
 
+		public bool AchievementsUnlockedChanged => AchievementData.QueryData(out _achievementData);
+
+		public AchievementData achievementData => _achievementData;
+		private AchievementData _achievementData;
+		
+		public ReadOnlyCollection<CreditCategoryBase> GetCredits() => CreditManager.categories;
+
 		public ReadOnlyCollection<GameplaySetting> GetGameplaySettings()
 		{
 			return GameplaySettingsManager.gameSettings;
@@ -135,26 +154,6 @@ namespace CoC.UI
 			DropDownMenu.QueryStatus(out _dropDownMenu);
 			DropDownMenu.QueryPostText(out _postControlText);
 			SpriteAndCreditsOutput.QuerySpriteCreditData(out _spriteName, out _creatorText);
-		}
-
-		public void TestShit()
-		{
-			statDataCollection.playerStats.Strength.current = 46;
-			statDataCollection.playerStats.Strength.maximum = 85;
-			statDataCollection.playerStats.Lust.maximum = 100;
-			statDataCollection.playerStats.Lust.current = 23;
-			statDataCollection.playerStats.Lust.minimum = 10;
-			statDataCollection.playerStats.HP.maximum = 216;
-			statDataCollection.playerStats.HP.current = 12;
-			TextOutput.OutputText("Testing <b>Bold</b>, <i> Italic</i>, and <u>Underline</u>\r\nTesting new line.\nTesting scumbag newline.\\ " +
-				"Testing \\ Slashes\\par\r\n Testing bad tag </u> Testing,,,, Quotes: \" '\r\n" +
-				"Testing list: <ul><li>batman</li><li>robin</li><li>nightwing</li><li>oracle</li></ul>Cool! ");
-		}
-
-		public void TestShit2()
-		{
-			statDataCollection.playerStats.HP.current = 35;
-			statDataCollection.playerStats.Strength.current = 40;
 		}
 
 		public void DoNewGame()

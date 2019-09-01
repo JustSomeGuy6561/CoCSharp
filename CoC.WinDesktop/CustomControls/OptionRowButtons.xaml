@@ -8,7 +8,8 @@
 			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
              mc:Ignorable="d" 
 			 d:DesignWidth="1000"
-			 d:DataContext="{d:DesignInstance Type=Help:OptionsRowButtonWrapper}">
+			 d:DataContext="{d:DesignInstance Type=Help:OptionsRowButtonWrapper}"
+			 KeyboardNavigation.TabNavigation="Local">
 	<UserControl.Resources>
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
 			<Setter Property="Margin" Value="5,0,5,0"/>
@@ -35,11 +36,11 @@
 		<!-- Bind content to text for it. Bind visibility of second item to enum declaring state - if !local, enable unset. else collapse it. -->
 		<!-- Bind commands, which set the variable to true, null, false, respectively. when set, commands should update the description. -->
 		<Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Content="{Binding EnabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-				Background="{StaticResource Button0Image}" Command="{Binding EnableCommand}" />
+				Background="{StaticResource Button0Image}" Command="{Binding EnableCommand}" TabIndex="1" IsTabStop="True"/>
 		<Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  Content="{Binding ClearBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{StaticResource Button1Image}" 
-				Command="{Binding ClearCommand}" Visibility="{Binding ClearVisible, Converter={StaticResource IsCollapsed}}" />
+				Command="{Binding ClearCommand}" Visibility="{Binding ClearVisible, Converter={StaticResource IsCollapsed}}" TabIndex="0" IsTabStop="True"/>
 		<Button Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" Content="{Binding DisabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-				Background="{StaticResource Button2Image}" Command="{Binding DisableCommand}"/>
+				Background="{StaticResource Button2Image}" Command="{Binding DisableCommand}" TabIndex="2" IsTabStop="True" />
 		<!-- bind text to description. Note that there's no two-way binding here, so we'll need to use the button commands to fake it. -->
 		<TextBlock Style="{StaticResource SettingText}" Grid.Column="0" Grid.Row="1" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
 			TextAlignment="Right" Text="{Binding currentDescription}"/>

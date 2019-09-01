@@ -1,6 +1,10 @@
 ﻿using CoC.UI;
+using CoCWinDesktop.DisplaySettings;
+using CoCWinDesktop.Engine;
 using CoCWinDesktop.Helpers;
+using CoCWinDesktop.InterfaceSettings;
 using CoCWinDesktop.ModelView;
+using CoCWinDesktop.Strings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -42,6 +46,7 @@ namespace CoCWinDesktop
 		private readonly StandardModelView standard;
 		private readonly CombatModelView combat;
 		private readonly DataModelView data;
+		private readonly ExtraMenuItemsModelView extraItems;
 
 		public ModelViewBase ModelView
 		{
@@ -59,100 +64,39 @@ namespace CoCWinDesktop
 
 		private ModelViewBase previousModelView;
 
-		public SafeAction resumeGameAction { get; private set; } = null;
-		#endregion
-
-		//Font size is super annoying and stupid - Everything in WPF defaults to using Pixels, except RTF content, which uses EMs. Further, any typeface magic requires EMs. Unfortunately,
-		//RTF only respects EMs, so that gets the highest priority. Thus Ems. It also lets us use integers. Note that any UI that does not require common logic, constants can be used
-		//but i'd recommend using strings literals with "em" as a prefix, for consistency. Note, this only applies to font size. everything else uses pixels. 
-		public void SetFontSize(double amount, SizeUnit sizeUnit)
+		public SafeAction resumeGameAction
 		{
-			double oldValue = saveData.FontSizeInEms;
-			saveData.FontSizeInEms = MeasurementHelpers.ConvertToEms(amount, sizeUnit);
-			if (oldValue != saveData.FontSizeInEms)
-			{
-				RaisePropertyChanged(nameof(FontSizePixels));
-				RaisePropertyChanged(nameof(FontSizePoints));
-				RaisePropertyChanged(nameof(FontSizeEms));
-			}
+			get => _resumeGameAction;
+			private set => CheckPropertyChanged(ref _resumeGameAction, value);
 		}
+		private SafeAction _resumeGameAction = null;
+		#endregion
 
 		#region SaveData
 		//Everything but the RTF uses size in pixels. However, points, and thus EMs, are greatly preferred because they work nicely with RTF and Typeface. 
+		//BOUND!
 		public double FontSizePixels => MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.PIXELS);
 
 		public int FontSizeEms => (int)MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.EMS);
 		public double FontSizePoints => MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.POINTS);
 
-		public int BackgroundIndex
-		{
-			get => saveData.backgroundIndex;
-			set
-			{
-				saveData.backgroundIndex = value;
-				SetBackground();
-			}
+		//not bound
+		public int BackgroundIndex => saveData.backgroundIndex;
 
-		}
-		public int TextBackgroundIndex
-		{
-			get => saveData.textBackgroundIndex;
-			set
-			{
-				saveData.textBackgroundIndex = value;
-				SetTextBackground();
-			}
+		//not bound
+		public int TextBackgroundIndex => saveData.textBackgroundIndex;
 
-		}
-		public bool? UsesOldSprites
-		{
-			get => saveData.usesOldSprites;
-			set => saveData.usesOldSprites = value;
-		}
+		//not bound
+		public bool? UsesOldSprites => saveData.usesOldSprites;
 
-		public bool ImagePackEnabled
-		{
-			get => saveData.imagePackEnabled;
-			set => saveData.imagePackEnabled = value;
-		}
-		public bool IsAnimated
-		{
-			get => saveData.isAnimated;
-			set
-			{
-				bool oldValue = saveData.isAnimated;
-				saveData.isAnimated = value;
-				if (oldValue != saveData.isAnimated)
-				{
-					RaisePropertyChanged(nameof(IsAnimated));
-				}
-			}
+		//not bound
+		public bool ImagePackEnabled => saveData.imagePackEnabled;
 
-		}
-		public bool ShowEnemyStatBars
-		{
-			get => saveData.showEnemyStatBars;
-			set
-			{
-				bool oldValue = saveData.showEnemyStatBars;
-				saveData.showEnemyStatBars = value;
-				if (oldValue != saveData.showEnemyStatBars)
-				{
-					RaisePropertyChanged(nameof(ShowEnemyStatBars));
-				}
-			}
-		}
+		public bool IsAnimated => saveData.isAnimated;
+		public bool ShowEnemyStatBars => saveData.showEnemyStatBars;
 
-		public bool SidebarUsesModernFont
-		{
-			get => saveData.sidebarUsesModernFont;
-			set
-			{
-				saveData.sidebarUsesModernFont = value;
-				SidebarFontFamily = SidebarUsesModernFont ? sidebarModern : sidebarLegacy;
-			}
-
-		}
+		//not bound
+		public bool SidebarUsesModernFont => saveData.sidebarUsesModernFont;
 		#endregion
 
 		#region GUI Related
@@ -245,69 +189,59 @@ namespace CoCWinDesktop
 
 		#region HotKeys
 
-		public readonly HotKeyWrapper MainMenuHotkey = new HotKeyWrapper(Key.M, ModifierKeys.None);
+		public readonly HotKeyWrapper MainMenuHotkey = new HotKeyWrapper(HotKeyStrings.MainMenuHotkeyStr, Key.M, ModifierKeys.None);
 
-		public readonly HotKeyWrapper DataHotkey = new HotKeyWrapper(Key.H, ModifierKeys.None);
+		public readonly HotKeyWrapper DataHotkey = new HotKeyWrapper(HotKeyStrings.DataHotkeyStr, Key.H, ModifierKeys.None);
 
-		public readonly HotKeyWrapper StatHotkey = new HotKeyWrapper(Key.Y, ModifierKeys.None);
+		public readonly HotKeyWrapper StatHotkey = new HotKeyWrapper(HotKeyStrings.StatHotkeyStr, Key.Y, ModifierKeys.None);
 
-		public readonly HotKeyWrapper LevelHotkey = new HotKeyWrapper(Key.L, ModifierKeys.None);
+		public readonly HotKeyWrapper LevelHotkey = new HotKeyWrapper(HotKeyStrings.LevelHotkeyStr, Key.L, ModifierKeys.None);
 
-		public readonly HotKeyWrapper AppearanceHotkey = new HotKeyWrapper(Key.U, ModifierKeys.None);
+		public readonly HotKeyWrapper PerksHotkey = new HotKeyWrapper(HotKeyStrings.PerksHotkeyStr, Key.P, ModifierKeys.None);
+		public readonly HotKeyWrapper AppearanceHotkey = new HotKeyWrapper(HotKeyStrings.AppearanceHotkeyStr, Key.U, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button1Hotkey = new HotKeyWrapper(Key.D1, ModifierKeys.None);
+		public readonly HotKeyWrapper Button1Hotkey = new HotKeyWrapper(HotKeyStrings.Button1HotkeyStr, Key.D1, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button2Hotkey = new HotKeyWrapper(Key.D2, ModifierKeys.None);
+		public readonly HotKeyWrapper Button2Hotkey = new HotKeyWrapper(HotKeyStrings.Button2HotkeyStr, Key.D2, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button3Hotkey = new HotKeyWrapper(Key.D3, ModifierKeys.None);
+		public readonly HotKeyWrapper Button3Hotkey = new HotKeyWrapper(HotKeyStrings.Button3HotkeyStr, Key.D3, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button4Hotkey = new HotKeyWrapper(Key.D4, ModifierKeys.None);
+		public readonly HotKeyWrapper Button4Hotkey = new HotKeyWrapper(HotKeyStrings.Button4HotkeyStr, Key.D4, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button5Hotkey = new HotKeyWrapper(Key.D5, ModifierKeys.None);
+		public readonly HotKeyWrapper Button5Hotkey = new HotKeyWrapper(HotKeyStrings.Button5HotkeyStr, Key.D5, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button6Hotkey = new HotKeyWrapper(Key.D6, ModifierKeys.None, Key.Q, ModifierKeys.None);
+		public readonly HotKeyWrapper Button6Hotkey = new HotKeyWrapper(HotKeyStrings.Button6HotkeyStr, Key.D6, ModifierKeys.None, Key.Q, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button7Hotkey = new HotKeyWrapper(Key.D7, ModifierKeys.None, Key.W, ModifierKeys.None);
+		public readonly HotKeyWrapper Button7Hotkey = new HotKeyWrapper(HotKeyStrings.Button7HotkeyStr, Key.D7, ModifierKeys.None, Key.W, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button8Hotkey = new HotKeyWrapper(Key.D8, ModifierKeys.None, Key.E, ModifierKeys.None);
+		public readonly HotKeyWrapper Button8Hotkey = new HotKeyWrapper(HotKeyStrings.Button8HotkeyStr, Key.D8, ModifierKeys.None, Key.E, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button9Hotkey = new HotKeyWrapper(Key.D9, ModifierKeys.None, Key.R, ModifierKeys.None);
+		public readonly HotKeyWrapper Button9Hotkey = new HotKeyWrapper(HotKeyStrings.Button9HotkeyStr, Key.D9, ModifierKeys.None, Key.R, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button10Hotkey = new HotKeyWrapper(Key.D0, ModifierKeys.None, Key.T, ModifierKeys.None);
+		public readonly HotKeyWrapper Button10Hotkey = new HotKeyWrapper(HotKeyStrings.Button10HotkeyStr, Key.D0, ModifierKeys.None, Key.T, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button11Hotkey = new HotKeyWrapper(Key.A, ModifierKeys.None);
+		public readonly HotKeyWrapper Button11Hotkey = new HotKeyWrapper(HotKeyStrings.Button11HotkeyStr, Key.A, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button12Hotkey = new HotKeyWrapper(Key.S, ModifierKeys.None);
+		public readonly HotKeyWrapper Button12Hotkey = new HotKeyWrapper(HotKeyStrings.Button12HotkeyStr, Key.S, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button13Hotkey = new HotKeyWrapper(Key.D, ModifierKeys.None);
+		public readonly HotKeyWrapper Button13Hotkey = new HotKeyWrapper(HotKeyStrings.Button13HotkeyStr, Key.D, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button14Hotkey = new HotKeyWrapper(Key.F, ModifierKeys.None);
+		public readonly HotKeyWrapper Button14Hotkey = new HotKeyWrapper(HotKeyStrings.Button14HotkeyStr, Key.F, ModifierKeys.None);
 
-		public readonly HotKeyWrapper Button15Hotkey = new HotKeyWrapper(Key.G, ModifierKeys.None);
+		public readonly HotKeyWrapper Button15Hotkey = new HotKeyWrapper(HotKeyStrings.Button15HotkeyStr, Key.G, ModifierKeys.None);
 
-		public readonly HotKeyWrapper QuickSaveHotkey = new HotKeyWrapper(Key.F5, ModifierKeys.None);
+		public readonly HotKeyWrapper QuickSaveHotkey = new HotKeyWrapper(HotKeyStrings.QuickSaveHotkeyStr, Key.F5, ModifierKeys.None);
 
-		public readonly HotKeyWrapper QuickLoadHotkey = new HotKeyWrapper(Key.F9, ModifierKeys.None);
-
-		public readonly HotKeyWrapper CycleBackgroundForwardHotkey = new HotKeyWrapper(Key.F2, ModifierKeys.None);
-		#endregion
-
-
-		public bool IsDarkMode => backgrounds[BackgroundIndex].isDarkMode;
-
-		#region Display And Interface Options 
-
-		public readonly BackgroundOption backgroundOption;
-		public readonly TextBackgroundOption textBackgroundOption;
-		public readonly FontSizeOption fontSizeOption;
-
-		public readonly SidebarFontOption sidebarFontOption;
-		public readonly SpriteStatusOption spriteStatusOption;
-		public readonly ImagePackOption imagePackOption;
-		public readonly SidebarAnimationOption sidebarAnimationOption;
-		public readonly EnemySidebarOption enemySidebarOption;
+		public readonly HotKeyWrapper QuickLoadHotkey = new HotKeyWrapper(HotKeyStrings.QuickLoadHotkeyStr, Key.F9, ModifierKeys.None);
 
 		#endregion
+
+		public bool IsDarkMode
+		{
+			get => _isDarkMode;
+			private set => CheckPrimitivePropertyChanged(ref _isDarkMode, value);
+		}
+		private bool _isDarkMode;
 
 
 		static ModelViewRunner()
@@ -369,15 +303,31 @@ namespace CoCWinDesktop
 
 		public ModelViewRunner()
 		{
-			fontSizeOption = new FontSizeOption(this);
-			textBackgroundOption = new TextBackgroundOption(this);
-			backgroundOption = new BackgroundOption(this);
+			DisplayOptions tempDisplay = DisplayOptionManager.GetOptionOfType<TextBackgroundOption>();
+			tempDisplay.AddGlobalSetListener(SetTextBackground);
 
-			sidebarFontOption = new SidebarFontOption(this);
-			spriteStatusOption = new SpriteStatusOption(this);
-			imagePackOption = new ImagePackOption(this);
-			sidebarAnimationOption = new SidebarAnimationOption(this);
-			enemySidebarOption = new EnemySidebarOption(this);
+			tempDisplay = DisplayOptionManager.GetOptionOfType<BackgroundOption>();
+			tempDisplay.AddGlobalSetListener(SetBackground);
+
+			tempDisplay = DisplayOptionManager.GetOptionOfType<FontSizeOption>();
+			tempDisplay.AddGlobalSetListener(SetFontSize);
+
+			InterfaceOptions tempInterface = InterfaceOptionManager.GetOptionOfType<EnemySidebarOption>();
+			tempInterface.AddGlobalSetListener(OnEnemySidebarChanged);
+
+			tempInterface = InterfaceOptionManager.GetOptionOfType<SidebarAnimationOption>();
+			tempInterface.AddGlobalSetListener(OnAnimationChanged);
+
+			tempInterface = InterfaceOptionManager.GetOptionOfType<SidebarFontOption>();
+			tempInterface.AddGlobalSetListener(OnSidebarFontChanged);
+
+
+			mainMenu = new MainMenuModelView(this);
+			options = new OptionsModelView(this);
+			standard = new StandardModelView(this);
+			combat = new CombatModelView(this);
+			data = new DataModelView(this);
+			extraItems = new ExtraMenuItemsModelView(this);
 
 			_BackgroundImage = backgrounds[BackgroundIndex].path;
 			_SidebarBackgroundImage = backgrounds[BackgroundIndex].sidebarPath;
@@ -386,14 +336,11 @@ namespace CoCWinDesktop
 
 			SetFontColor();
 
-			mainMenu = new MainMenuModelView(this);
-			options = new OptionsModelView(this);
-			standard = new StandardModelView(this);
-			combat = new CombatModelView(this);
-			data = new DataModelView(this);
 
 			_modelView = mainMenu;
 		}
+
+		
 
 		#region View Switching
 
@@ -402,8 +349,12 @@ namespace CoCWinDesktop
 			SwitchViews(mainMenu);
 		}
 
-		internal void SwitchToStandard()
+		internal void SwitchToStandard(bool isNewGame)
 		{
+			if (isNewGame)
+			{
+				ClearSafeAction();
+			}
 			SwitchViews(standard);
 		}
 
@@ -417,6 +368,24 @@ namespace CoCWinDesktop
 			SwitchViews(data);
 		}
 
+		internal void SwitchToCredits()
+		{
+			extraItems.SetState_Credits();
+			SwitchViews(extraItems);
+		}
+
+		internal void SwitchToAchievements()
+		{
+			extraItems.SetState_Achievements();
+			SwitchViews(extraItems);
+		}
+
+		internal void SwitchToInstructions()
+		{
+			extraItems.SetState_Instructions();
+			SwitchViews(extraItems);
+		}
+
 		public void SwitchToPreviousView()
 		{
 			SwitchViews(previousModelView);
@@ -428,28 +397,30 @@ namespace CoCWinDesktop
 			{
 				return;
 			}
-			if (ModelView is StandardModelView standardModel)
-			{
-				this.resumeGameAction = GenerateSafeAction(standardModel.GetLastAction());
-			}
-
-			SafeAction returnHere = GenerateSafeAction();
+			//We're still the old model view - we haven't changed yet. handle it's leaving this model view function.
+			ModelView.SwitchFromThisView();
+			//switch model views
 			ModelView = target;
+			//and call the new entering model view function.
 			ModelView.SwitchToThisView();
 		}
 		#endregion
 		#region View Switching Helpers
+
+		internal void SetSafeAction(Action lastAction)
+		{
+			resumeGameAction = GenerateSafeAction(lastAction);
+		}
+		internal void ClearSafeAction()
+		{
+			resumeGameAction = null;
+		}
+
 		public SafeAction GenerateSafeAction(Action callback)
 		{
 			if (callback is null) throw new ArgumentNullException(nameof(callback));
 			ModelViewBase currModel = ModelView;
 			return () => actionCreator(currModel, callback);
-		}
-
-		public SafeAction GenerateSafeAction()
-		{
-			ModelViewBase currModel = ModelView;
-			return () => actionCreator(currModel, currModel.ParseData);
 		}
 
 		private void actionCreator(ModelViewBase model, Action callback)
@@ -462,15 +433,17 @@ namespace CoCWinDesktop
 		private void SetBackground()
 		{
 			int index = BackgroundIndex;
-			bool wasDarkMode = IsDarkMode;
-
+			IsDarkMode = backgrounds[index].isDarkMode;
 			BackgroundImage = backgrounds[index].path;
 			SidebarBackgroundImage = backgrounds[index].sidebarPath;
-			if (wasDarkMode != IsDarkMode)
-			{
-				RaisePropertyChanged(nameof(IsDarkMode));
-			}
 			SetFontColor();
+		}
+
+		private void SetFontSize()
+		{
+			RaisePropertyChanged(nameof(FontSizePixels));
+			RaisePropertyChanged(nameof(FontSizeEms));
+			RaisePropertyChanged(nameof(FontSizePoints));
 		}
 
 		private void SetTextBackground()
@@ -498,6 +471,21 @@ namespace CoCWinDesktop
 				FontColor = new SolidColorBrush(Colors.Black);
 				ButtonDisableHoverTextColor = new SolidColorBrush(Colors.Transparent);
 			}
+		}
+
+		private void OnEnemySidebarChanged()
+		{
+			RaisePropertyChanged(nameof(ShowEnemyStatBars));
+		}
+
+		private void OnAnimationChanged()
+		{
+			RaisePropertyChanged(nameof(IsAnimated));
+		}
+
+		private void OnSidebarFontChanged()
+		{
+			SidebarFontFamily = SidebarUsesModernFont ? sidebarModern : sidebarLegacy;
 		}
 	}
 }

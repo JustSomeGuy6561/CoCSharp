@@ -1,9 +1,12 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
+using CoCWinDesktop.Engine;
 using CoCWinDesktop.Helpers;
+using CoCWinDesktop.InterfaceSettings;
 using CoCWinDesktop.ModelView;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace CoCWinDesktop.CustomControls.OptionsModelViews
@@ -75,14 +78,7 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 			OnDisplayButton = parent.OnDisplayHandle;
 
-			List<OptionsRowBase> data = new List<OptionsRowBase>()
-			{
-				OptionsRowBase.BuildOptionRow(runner.sidebarFontOption.name, runner.sidebarFontOption.globalSetting),
-				OptionsRowBase.BuildOptionRow(runner.spriteStatusOption.name, runner.spriteStatusOption.globalSetting),
-				OptionsRowBase.BuildOptionRow(runner.imagePackOption.name, runner.imagePackOption.globalSetting),
-				OptionsRowBase.BuildOptionRow(runner.sidebarAnimationOption.name, runner.sidebarAnimationOption.globalSetting),
-				OptionsRowBase.BuildOptionRow(runner.enemySidebarOption.name, runner.enemySidebarOption.globalSetting),
-			};
+			List<OptionsRowBase> data = InterfaceOptionManager.interfaceOptions.Select(x => OptionsRowBase.BuildOptionRow(x.name, x.globalSetting)).ToList();
 
 			interfaceOptions = new ReadOnlyCollection<OptionsRowBase>(data);
 

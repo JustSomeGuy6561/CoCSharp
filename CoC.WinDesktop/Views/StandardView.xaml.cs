@@ -1,23 +1,11 @@
-﻿using CoC.Backend.Tools;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+﻿using CoCWinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Automation;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CoCWinDesktop.Views
 {
@@ -53,57 +41,112 @@ namespace CoCWinDesktop.Views
 		//as well, so we don't need to deal with updating them when the users update their hotkeys. Will need a way to capture the modifiers and shit they hit.
 		private readonly List<KeyBinding> hotKeys;
 
-		private readonly Button[] bottomButtons;
+		//private readonly Button[] bottomButtons;
+		private readonly Dictionary<Button, HotKeyWrapper> buttonHotKeyWrapper;
 
 		public StandardView()
 		{
 			InitializeComponent();
 			runner = Application.Current.Resources["Runner"] as ModelViewRunner;
 
-			bottomButtons = new Button[15]
+			Dictionary<Button, HotKeyWrapper> bottomButtons = new Dictionary<Button, HotKeyWrapper>()
 			{
-				BottomButton0, BottomButton1, BottomButton2, BottomButton3, BottomButton4,
-				BottomButton5, BottomButton6, BottomButton7, BottomButton8, BottomButton9,
-				BottomButton10, BottomButton11, BottomButton12, BottomButton13, BottomButton14
+				[BottomButton0] = runner.Button1Hotkey,
+				[BottomButton1] = runner.Button2Hotkey,
+				[BottomButton2] = runner.Button3Hotkey,
+				[BottomButton3] = runner.Button4Hotkey,
+				[BottomButton4] = runner.Button5Hotkey,
+				[BottomButton5] = runner.Button6Hotkey,
+				[BottomButton6] = runner.Button7Hotkey,
+				[BottomButton7] = runner.Button8Hotkey,
+				[BottomButton8] = runner.Button9Hotkey,
+				[BottomButton9] = runner.Button10Hotkey,
+				[BottomButton10] = runner.Button11Hotkey,
+				[BottomButton11] = runner.Button12Hotkey,
+				[BottomButton12] = runner.Button13Hotkey,
+				[BottomButton13] = runner.Button14Hotkey,
+				[BottomButton14] = runner.Button15Hotkey,
+
 			};
 
-			Binding key = new Binding()
-			{
-				Source = runner.Button1Hotkey,
-				Path = new PropertyPath(nameof(runner.Button1Hotkey.primaryGesture) + "." + nameof(runner.Button1Hotkey.primaryGesture.first)),
-				Mode = BindingMode.OneWay,
-			};
-
-			Binding modifier = new Binding()
-			{
-				Source = runner.Button1Hotkey,
-				Path = new PropertyPath(nameof(runner.Button1Hotkey.primaryGesture) + "." + nameof(runner.Button1Hotkey.primaryGesture.second)),
-				Mode = BindingMode.OneWay,
-			};
-
-			KeyBinding keyBinding = new KeyBinding()
-			{
-				Command = new RelayCommand(() => bottomButtons[0].Command?.Execute(this), () => bottomButtons[0].Command?.CanExecute(this) == true)
-			};
-			BindingOperations.SetBinding(keyBinding, KeyBinding.KeyProperty, key);
-			BindingOperations.SetBinding(keyBinding, KeyBinding.ModifiersProperty, modifier);
-
-			//RelayCommand commandMaker(ICommand cmd) => new RelayCommand(() => cmd?.Execute(this), () => cmd?.CanExecute(this) == true);
-			//Pair<KeyBinding> bindingMaker(HotKeyWrapper hotKey)
-			//{
-			//	KeyBinding first, second;
-			//	first = new KeyBinding() { Key = hotKey.primaryGesture.Key, Modifiers = ModifierKeys.}
-			//	new Pair<KeyBinding>(new hotKey.primaryGesture)
-			//}
 
 			hotKeys = new List<KeyBinding>()
 			{
-				keyBinding,
+				
 			};
 
-			MainContent.InputField.IsKeyboardFocusedChanged += InputField_IsKeyboardFocusedChanged;
+			foreach (var pair in bottomButtons)
+			{
+				Binding keyBind = new Binding()
+				{
+					Source = pair.Value,
+					Path = new PropertyPath(nameof(pair.Value.primaryGesture) + "." + nameof(pair.Value.primaryGesture.key)),
+					Mode = BindingMode.OneWay,
+					FallbackValue = Key.None,
+				};
 
-			//InputBindings.AddRange(hotKeys);
+				Binding modifierBind = new Binding()
+				{
+					Source = pair.Value,
+					Path = new PropertyPath(nameof(pair.Value.primaryGesture) + "." + nameof(pair.Value.primaryGesture.modifier)),
+					Mode = BindingMode.OneWay,
+					FallbackValue = ModifierKeys.None,
+				};
+
+				KeyBinding keyBinding = new KeyBinding()
+				{
+					Command = new RelayCommand(() => pair.Key.Command?.Execute(this), () => pair.Key.Command?.CanExecute(this) == true)
+				};
+				BindingOperations.SetBinding(keyBinding, KeyBinding.KeyProperty, keyBind);
+				BindingOperations.SetBinding(keyBinding, KeyBinding.ModifiersProperty, modifierBind);
+
+				hotKeys.Add(keyBinding);
+
+				keyBind = new Binding()
+				{
+					Source = pair.Value,
+					Path = new PropertyPath(nameof(pair.Value.secondaryGesture) + "." + nameof(pair.Value.secondaryGesture.key)),
+					Mode = BindingMode.OneWay,
+					FallbackValue = Key.None,
+				};
+
+				modifierBind = new Binding()
+				{
+					Source = pair.Value,
+					Path = new PropertyPath(nameof(pair.Value.secondaryGesture) + "." + nameof(pair.Value.secondaryGesture.modifier)),
+					Mode = BindingMode.OneWay,
+					FallbackValue= ModifierKeys.None,
+				};
+
+				keyBinding = new KeyBinding()
+				{
+					Command = new RelayCommand(() => pair.Key.Command?.Execute(this), () => pair.Key.Command?.CanExecute(this) == true)
+				};
+				//keyBinding = new KeyBinding()
+				//{
+				//	Command = new RelayCommand(TestCommand, () => true)
+				//};
+				BindingOperations.SetBinding(keyBinding, KeyBinding.KeyProperty, keyBind);
+				BindingOperations.SetBinding(keyBinding, KeyBinding.ModifiersProperty, modifierBind);
+
+				hotKeys.Add(keyBinding);
+			}
+
+
+
+				//RelayCommand commandMaker(ICommand cmd) => new RelayCommand(() => cmd?.Execute(this), () => cmd?.CanExecute(this) == true);
+				//Pair<KeyBinding> bindingMaker(HotKeyWrapper hotKey)
+				//{
+				//	KeyBinding first, second;
+				//	first = new KeyBinding() { Key = hotKey.primaryGesture.Key, Modifiers = ModifierKeys.}
+				//	new Pair<KeyBinding>(new hotKey.primaryGesture)
+				//}
+
+
+
+				MainContent.InputField.IsKeyboardFocusedChanged += InputField_IsKeyboardFocusedChanged;
+
+			InputBindings.AddRange(hotKeys);
 		}
 
 		private void InputField_IsKeyboardFocusedChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -114,7 +157,7 @@ namespace CoCWinDesktop.Views
 				{
 					InputBindings.Clear();
 				}
-				else 
+				else
 				{
 					if (InputBindings.Count > 0)
 					{

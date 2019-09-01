@@ -21,7 +21,8 @@
 				   Text="{Binding InterfaceOptionsText}"/>
 		<TextBlock Style="{StaticResource SmallHeaderText}" Margin="10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
 				   Text="{Binding InterfaceOptionsHelper}"/>
-		<ScrollViewer Style="{StaticResource ScrollbarWithSpace}" Grid.Row="2" Grid.Column="0">
+		<ScrollViewer Style="{StaticResource ScrollbarWithSpace}" HorizontalScrollBarVisibility="Disabled"
+					  VerticalScrollBarVisibility="Auto" Grid.Row="2" Grid.Column="0">
 			<ItemsControl>
 				<ItemsControl.Resources>
 					<CollectionViewSource x:Key="InterfaceItems" Source="{Binding interfaceOptions}"/>
@@ -49,7 +50,8 @@
 							<TextBlock Style="{StaticResource SettingText}" Text="{Binding DisplayOptionsHelperText}" TextAlignment="Right"
 								VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="1" TextWrapping="Wrap"/>
 							<Button Style="{StaticResource CoCButton}" MinWidth="150" Margin="10" Width="Auto" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-									Background="{StaticResource Button0Image}"  Content="{Binding DisplayOptionsBtnText}" Command="{Binding OnDisplayButton}" />
+									Background="{StaticResource Button0Image}"  Content="{Binding DisplayOptionsBtnText}" Command="{Binding OnDisplayButton}" 
+									TabIndex="0" IsTabStop="True"/>
 						</Grid>
 						<CollectionContainer Collection="{Binding Source={StaticResource InterfaceItems}}"/>
 					</CompositeCollection>

@@ -12,6 +12,8 @@ namespace CoC.Backend.Settings
 
 		//if simply warning the player is not enough, you can request the gui confirm a change. Note that this may be ignored, or the player may choose to disable this behavior. 
 		public virtual bool confirmChange => false;
+
+		public virtual void OnSet() { }
 	}
 	public abstract class SimpleSetting : SettingBase
 	{
@@ -22,7 +24,11 @@ namespace CoC.Backend.Settings
 
 		public abstract bool setting { get; set; }
 		public bool Get() => setting;
-		public void Set(bool arg) => setting = arg;
+		public void Set(bool arg)
+		{
+			setting = arg;
+			OnSet();
+		}
 
 
 		public virtual SimpleDescriptor enabledText { get; } = EngineStrings.EnableText;
@@ -49,7 +55,11 @@ namespace CoC.Backend.Settings
 
 		public abstract bool? setting { get; set; }
 		public bool? Get() => setting;
-		public void Set(bool? arg) => setting = arg;
+		public void Set(bool? arg)
+		{
+			setting = arg;
+			OnSet();
+		}
 
 		public virtual SimpleDescriptor enabledText { get; } = EngineStrings.EnableText;
 		public abstract string EnabledHint();
@@ -77,7 +87,11 @@ namespace CoC.Backend.Settings
 
 		public abstract int setting { get; set; }
 		public int Get() => setting;
-		public void Set(int arg) => setting = arg;
+		public void Set(int arg)
+		{
+			setting = arg;
+			OnSet();
+		}
 
 		//in an ideal world, the settings would be a range, 0 to whatever, and you'd want them to display in that order. However, it's possible for newer versions of code to make 
 		//certain values deprecated, or you may simply wish to display them out of order. This ordered hashset is the solution to both problems. simply add the possibilities in order
@@ -105,7 +119,11 @@ namespace CoC.Backend.Settings
 
 		public abstract int? setting { get; set; }
 		public int? Get() => setting;
-		public void Set(int? arg) => setting = arg;
+		public void Set(int? arg)
+		{
+			setting = arg;
+			OnSet();
+		}
 		//in an ideal world, the settings would be a range, 0 to whatever, and you'd want them to display in that order. However, it's possible for newer versions of code to make 
 		//certain values deprecated, or you may simply wish to display them out of order. This ordered hashset is the solution to both problems. simply add the possibilities in order
 		//you wish for them to display, and obviously do not add any items that are not accepted. 

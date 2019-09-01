@@ -4,6 +4,7 @@
 //4/5/2019, 11:14 PM
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CoC.Backend.SaveData
 {
@@ -106,7 +107,8 @@ namespace CoC.Backend.SaveData
 			}
 			else
 			{
-				foreach (var key in sessionSaves.Keys)
+				List<Type> keys = sessionSaves.Keys.ToList();
+				foreach (var key in keys)
 				{
 					sessionSaves[key] = (SessionSaveData)Activator.CreateInstance(key); //we can do this because the add functions require new(). 
 				}

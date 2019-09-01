@@ -221,7 +221,12 @@ namespace CoCWinDesktop.ModelView
 
 		}
 
-		protected override void OnSwitch()
+		protected override void OnSwitchFrom()
+		{
+			runner.SetSafeAction(lastAction);
+		}
+
+		protected override void OnSwitchTo()
 		{
 			if (runner.resumeGameAction is null)
 			{
@@ -229,6 +234,8 @@ namespace CoCWinDesktop.ModelView
 			}
 			else
 			{
+				lastAction = OnSwitchTo;
+				controller.ForceReloadFromGUI();
 				runner.resumeGameAction();
 			}
 		}
@@ -243,6 +250,9 @@ namespace CoCWinDesktop.ModelView
 		protected override void ParseDataForDisplay()
 		{
 			//Application.Current.
+
+			//the only way we hit need to update display is if we're at a location that allows us to do so. by definition, this location MUST have a OnReload method,
+			//so we're going to force it to call. 
 
 			bool needToUpdateDisplay = lastAction != ParseData;
 
@@ -331,12 +341,11 @@ namespace CoCWinDesktop.ModelView
 				postControlText = "";
 			}
 
-			if (controller.spriteChanged)
+			if (controller.spriteChanged || needToUpdateDisplay)
 			{
 				if (!string.IsNullOrWhiteSpace(controller.SpriteName))
 				{
-					string fileName = Path.Combine(@"pack://application:,,,", "resources", "sprites", controller.SpriteName);
-					this.sprite = new BitmapImage(new Uri(controller.SpriteName));
+					this.sprite = runner.GetSprite(controller.SpriteName);
 				}
 				else
 				{
@@ -407,11 +416,6 @@ namespace CoCWinDesktop.ModelView
 			}
 		}
 
-		internal Action GetLastAction()
-		{
-			return lastAction;
-		}
-
 		private void ChangeTooManyButtonsPage(int newIndex)
 		{
 			for (int x = 0; x < 10; x++)
@@ -457,17 +461,6 @@ namespace CoCWinDesktop.ModelView
 			return RTFParser.FromHTML(outputBuilder, runner);
 		}
 
-		//helper function to help deal with load data page, be it from the OnSwitch or Internally. 
-		private bool ExecuteLoadDataDisplay()
-		{
-			//our previous action is stored by the caller 
-			lastAction = () => ExecuteLoadDataDisplay();
-			//if load: attempt to load the data. if successful, call runner.ParseData
-			//if save: attempt to save. display results. call resume action.
-			//if cancel: call resume action.
-			return false;
-		}
-
 		private void HandleMainMenu()
 		{
 			runner.SwitchToMainMenu();
@@ -475,11 +468,7 @@ namespace CoCWinDesktop.ModelView
 
 		private void HandleData()
 		{
-			Action previousAction = lastAction;
-			if (!ExecuteLoadDataDisplay())
-			{
-				previousAction();
-			}
+			runner.SwitchToData();
 		}
 
 		private void HandleStatsScreen()
@@ -491,23 +480,24 @@ namespace CoCWinDesktop.ModelView
 		private void HandleLeveling()
 		{
 			lastAction = HandleLeveling;
-
-
 		}
 
 		private void HandlePerksScreen()
 		{
 			lastAction = HandlePerksScreen;
-
-			controller.TestShit();
-			ParseData();
+			//get the perk data. parse it, continue.
 		}
 		private void HandleAppearanceScreen()
 		{
 			lastAction = HandleAppearanceScreen;
-
-			ClearArrows();
+			//get the appearance data, parse it, continue.
 		}
+
+		private void ReturnToStandardContent()
+		{
+			ParseData();
+		}
+
 
 
 		//Buttons require commands to work. This will automatically wrap your button callback into a command that

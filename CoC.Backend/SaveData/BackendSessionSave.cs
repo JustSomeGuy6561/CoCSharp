@@ -45,21 +45,6 @@ namespace CoC.Backend.SaveData
 		public byte NumTimeNewGamePlus = 0;
 
 		public byte NewGamePlusLevel => Math.Min(NumTimeNewGamePlus, (byte)4);
-
-		//default constructor for new games. Sets session values to global values. 
-		public BackendSessionSave()
-		{
-			if (SaveSystem.TryGetGlobalSave(out BackendGlobalSave backendData))
-			{
-				difficulty = backendData.difficultyGlobal;
-				hardcoreMode = backendData.hardcoreModeGlobal;
-				HungerEnabled = backendData.HungerEnabledGlobal;
-				piercingFetishStore = backendData.PiercingFetishGlobal;
-				RealismEnabled = backendData.RealismEnabledGlobal;
-				SFW_Mode = backendData.SFW_ModeGlobal;
-				lowestDifficultyForThisCampaign = difficulty;
-			}
-		}
 	}
 
 }

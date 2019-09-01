@@ -6,12 +6,9 @@
              xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 mc:Ignorable="d"
-			 d:DesignHeight="800" d:DesignWidth="1000">
+			 d:DesignHeight="800" d:DesignWidth="1000"
+			 Style="{StaticResource PageControl}">
 	<UserControl.Resources>
 	</UserControl.Resources>
-	<Canvas Style="{StaticResource CoCCanvas}">
-		<TextBlock Canvas.Left="208" TextWrapping="Wrap" Canvas.Top="52" Text="You grew up in the small village of Ingnam, a remote village with rich traditions, buried deep"
-				   FontSize="20" FontFamily="Times New Roman"/>
-		<TextBlock Canvas.Left="208" TextWrapping="Wrap" Text="Language" FontWeight="Bold" FontSize="40" Canvas.Top="174" FontFamily="Times New Roman"/>
-	</Canvas>
+	<Canvas Style="{StaticResource CoCCanvas}"/>
 </UserControl>

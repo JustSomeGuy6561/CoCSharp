@@ -6,7 +6,8 @@
 			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
              mc:Ignorable="d" 
              d:DesignWidth="1000"
-			 d:DataContext="{d:DesignInstance Type=Help:OptionsRowSliderWrapper}">
+			 d:DataContext="{d:DesignInstance Type=Help:OptionsRowSliderWrapper}"
+			 KeyboardNavigation.TabNavigation="Local">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
@@ -26,7 +27,7 @@
 				   TextAlignment="Right" Text="{Binding selectedItemDescription}"/>
 		<Slider Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
 				TickFrequency="1" Minimum="{Binding minimum}" Maximum="{Binding maximum}" Value="{Binding selectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				FocusVisualStyle="{x:Null}" Margin="10,10,0,0" Foreground="{Binding FontColor, Source={StaticResource Runner}}" />
+				FocusVisualStyle="{x:Null}" Margin="10,10,0,0" Foreground="{Binding FontColor, Source={StaticResource Runner}}" IsTabStop="True" TabIndex="0"/>
 		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" 
 			VerticalAlignment="Top" Text="{Binding selectedItemText}" FontWeight="Bold"/>
 		<TextBlock Style="{StaticResource WarningText}" Margin="5" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WarningText}" Foreground="Red" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>

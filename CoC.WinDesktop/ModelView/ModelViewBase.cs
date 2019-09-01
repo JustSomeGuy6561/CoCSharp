@@ -19,12 +19,17 @@ namespace CoCWinDesktop.ModelView
 			Application.Current.MainWindow.Focus();
 			var element = Keyboard.Focus(Application.Current.MainWindow);
 
-			//Application.Current.MainWindow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+			Application.Current.MainWindow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
 			ParseDataForDisplay();
 		}
 
 		protected readonly ModelViewRunner runner;
+
+		internal void SwitchFromThisView()
+		{
+			OnSwitchFrom();
+		}
 
 		/// <summary>
 		/// Switches to this model view. If it fails to do so, it executes last action instead. Note that you may have to set values in the
@@ -33,15 +38,17 @@ namespace CoCWinDesktop.ModelView
 		/// <param name="lastAction"></param>
 		internal void SwitchToThisView()
 		{
-			OnSwitch();
+			OnSwitchTo();
 			ParseData();
 		}
 
-		protected virtual void OnSwitch() { }
+		protected virtual void OnSwitchTo() { }
+		protected virtual void OnSwitchFrom() { }
 
 		public ModelViewBase(ModelViewRunner modelViewRunner)
 		{
 			runner = modelViewRunner ?? throw new ArgumentNullException(nameof(modelViewRunner));
 		}
+
 	}
 }

@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Tools;
+﻿using CoC.Backend;
+using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,50 +23,57 @@ namespace CoCWinDesktop.Helpers
 	//	TOGGLE_BACKGROUND,
 	//}
 
-	//Note: Had to convert everything to a pair instead of a KeyGesture because key gesture does validation on serialization and deserialization.
+	//Note: Had to convert everything to a HotKey instead of a KeyGesture because key gesture does validation on serialization and deserialization.
 	//That will cause notsupportedexceptions and break the game. 
-	[Serializable]
-	public class HotKeyWrapper : NotifierBase, ISerializable
+	public class HotKeyWrapper : NotifierBase
 	{
-		private const string PRIMARY_KEY = "HotKey_PrimaryKey";
-		private const string PRIMARY_MODIFIERS = "HotKey_PrimaryModifiers";
-		private const string SECONDARY_KEY = "HotKey_SecondaryKey";
-		private const string SECONDARY_MODIFIERS = "HotKey_SecondaryModifiers";
+		private readonly SimpleDescriptor hotkeyDefinition;
 
-		public Pair<Key,ModifierKeys> primaryGesture
+		public string HotKeyText => hotkeyDefinition();
+
+		public HotKey primaryGesture
 		{
 			get => _primaryGesture;
-			private set => CheckPropertyChanged(ref _primaryGesture, value);
+			set => CheckPropertyChanged(ref _primaryGesture, value);
 		}
-		private Pair<Key,ModifierKeys> _primaryGesture;
+		private HotKey _primaryGesture;
 
-		public Pair<Key,ModifierKeys> secondaryGesture
+		public HotKey secondaryGesture
 		{
 			get => _secondaryGesture;
-			private set => CheckPropertyChanged(ref _secondaryGesture, value);
+			set => CheckPropertyChanged(ref _secondaryGesture, value);
 		}
-		private Pair<Key, ModifierKeys> _secondaryGesture;
+		private HotKey _secondaryGesture;
 
-		public HotKeyWrapper(Key key, ModifierKeys modifier)
+		public HotKeyWrapper(SimpleDescriptor associatedAction)
 		{
-			primaryGesture = new Pair<Key, ModifierKeys>(key, modifier);
+			hotkeyDefinition = associatedAction ?? throw new ArgumentNullException(nameof(associatedAction));
 		}
 
-		public HotKeyWrapper(Key mainKey, ModifierKeys mainModifier, Key altKey, ModifierKeys altModifier)
+		public HotKeyWrapper(SimpleDescriptor associatedAction, Key key, ModifierKeys modifier)
 		{
-			primaryGesture = new Pair<Key, ModifierKeys>(mainKey, mainModifier);
-			secondaryGesture = new Pair<Key, ModifierKeys>(altKey, altModifier);
+			primaryGesture = new HotKey(key, modifier);
+
+			hotkeyDefinition = associatedAction ?? throw new ArgumentNullException(nameof(associatedAction));
+		}
+
+		public HotKeyWrapper(SimpleDescriptor associatedAction, Key mainKey, ModifierKeys mainModifier, Key altKey, ModifierKeys altModifier)
+		{
+			primaryGesture = new HotKey(mainKey, mainModifier);
+			secondaryGesture = new HotKey(altKey, altModifier);
+
+			hotkeyDefinition = associatedAction ?? throw new ArgumentNullException(nameof(associatedAction));
 		}
 
 		public void UpdateHotKey(Key key, bool isPrimary)
 		{
 			if (isPrimary)
 			{
-				primaryGesture = new Pair<Key, ModifierKeys>(key, ModifierKeys.None);
+				primaryGesture = new HotKey(key, ModifierKeys.None);
 			}
 			else
 			{
-				secondaryGesture = new Pair<Key, ModifierKeys>(key, ModifierKeys.None);
+				secondaryGesture = new HotKey(key, ModifierKeys.None);
 			}
 		}
 
@@ -73,11 +81,11 @@ namespace CoCWinDesktop.Helpers
 		{
 			if (isPrimary)
 			{
-				primaryGesture = new Pair<Key,ModifierKeys>(Key.None, modifier);
+				primaryGesture = new HotKey(Key.None, modifier);
 			}
 			else
 			{
-				secondaryGesture = new Pair<Key,ModifierKeys>(Key.None, modifier);
+				secondaryGesture = new HotKey(Key.None, modifier);
 			}
 		}
 
@@ -85,37 +93,18 @@ namespace CoCWinDesktop.Helpers
 		{
 			if (isPrimary)
 			{
-				primaryGesture = new Pair<Key,ModifierKeys>(key, modifier);
+				primaryGesture = new HotKey(key, modifier);
 			}
 			else
 			{
-				secondaryGesture = new Pair<Key,ModifierKeys>(key, modifier);
+				secondaryGesture = new HotKey(key, modifier);
 			}
 		}
 
 		public void UpdateHotKeys(Key mainKey, ModifierKeys mainModifier, Key altKey, ModifierKeys altModifier)
 		{
-			primaryGesture = new Pair<Key,ModifierKeys>(mainKey, mainModifier);
-			secondaryGesture = new Pair<Key,ModifierKeys>(altKey, altModifier);
-		}
-
-		protected HotKeyWrapper(SerializationInfo info, StreamingContext context)
-		{
-			Key primaryKey = (Key)info.GetValue(PRIMARY_KEY, typeof(Key));
-			ModifierKeys primaryModifiers = (ModifierKeys)info.GetValue(PRIMARY_MODIFIERS, typeof(ModifierKeys));
-			Key secondaryKey = (Key)info.GetValue(SECONDARY_KEY, typeof(Key));
-			ModifierKeys secondaryModifiers = (ModifierKeys)info.GetValue(SECONDARY_MODIFIERS, typeof(ModifierKeys));
-
-			_primaryGesture = new Pair<Key, ModifierKeys>(primaryKey, primaryModifiers);
-			_secondaryGesture = new Pair<Key, ModifierKeys>(secondaryKey, secondaryModifiers);
-		}
-
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue(PRIMARY_KEY, primaryGesture.first, typeof(Key));
-			info.AddValue(PRIMARY_MODIFIERS, primaryGesture.second, typeof(ModifierKeys));
-			info.AddValue(SECONDARY_KEY, secondaryGesture.first, typeof(Key));
-			info.AddValue(SECONDARY_MODIFIERS, secondaryGesture.second, typeof(ModifierKeys));
+			primaryGesture = new HotKey(mainKey, mainModifier);
+			secondaryGesture = new HotKey(altKey, altModifier);
 		}
 	}
 }

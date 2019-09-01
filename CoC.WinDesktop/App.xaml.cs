@@ -5,20 +5,24 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using CoC.Frontend.Engine;
 using CoC.UI;
+using CoCWinDesktop.Engine;
 using CoCWinDesktop.ModelView;
 
 namespace CoCWinDesktop
 {
+	//select text for textbox taken from https://www.intertech.com/Blog/how-to-select-all-text-in-a-wpf-textbox-on-focus/
+	//and modified so it doesn't select text in readonly or non-focusable items (that'd be weird) Afaik, it's not necessary for 
+	//non-focusable items (they never should get the focus). But what do i know?
+
 	/// <summary>
 	/// Interaction logic for App.xaml
 	/// </summary>
 	public partial class App : Application
 	{
-		public const string GLOBAL_SETTINGS_PATH = @"settings.sav";
-
-		public 
 
 		void App_Startup(object sender, StartupEventArgs e)
 		{
@@ -26,29 +30,50 @@ namespace CoCWinDesktop
 			// Process command line args
 
 			//Initialize Classes and related info.
-			FileInfo globalDataFile;
+			GUI_Initializer.PreSaveInit();
+			GUI_Initializer.LatePreSaveInit();
+			GUI_Initializer.InitializeSaveData();
+			GUI_Initializer.PostSaveInit();
+			GUI_Initializer.FinalizeInitialization();
+			//handle special gui related events and things.
+			EventManager.RegisterClassHandler(typeof(TextBox), UIElement.PreviewMouseLeftButtonDownEvent,
+				new MouseButtonEventHandler(SelectivelyHandleMouseButton), true);
+			EventManager.RegisterClassHandler(typeof(TextBox), UIElement.GotKeyboardFocusEvent,
+			  new RoutedEventHandler(SelectAllText), true);
 
-			//We're in windows, don't overcomplicate shit. 
-			if (File.Exists(GLOBAL_SETTINGS_PATH))
-			{
-				globalDataFile = new FileInfo(GLOBAL_SETTINGS_PATH);
-			}
-			else
-			{
-				globalDataFile = null;
-				//File.Create(GLOBAL_SETTINGS_PATH);
-			}
 
-			CoC.Backend.SaveData.SaveSystem.AddGlobalSave(new GuiGlobalSave());
-			CoC.Backend.SaveData.SaveSystem.AddSessionSave<GuiSessionSave>();
-
-			FrontendInitalizer.Init(globalDataFile);
-
-			MainWindow window = new MainWindow() { /*DataContext = new ModelViewRunner()*/ };
+			MainWindow window = new MainWindow();
 			window.Show();
-			//Controller.instance.TestShit();
-			//ModelViewRunner runner = Current.Resources["Runner"] as ModelViewRunner;
-			//runner.ParseData();
+		}
+
+		private static void SelectivelyHandleMouseButton(object sender, MouseButtonEventArgs e)
+		{
+			if (sender is TextBox textbox && !textbox.IsKeyboardFocusWithin && !textbox.IsReadOnly && textbox.Focusable)
+			{
+				if (e.OriginalSource.GetType().Name == "TextBoxView")
+				{
+					e.Handled = true;
+					textbox.Focus();
+				}
+			}
+		}
+
+		private static void SelectAllText(object sender, RoutedEventArgs e)
+		{
+			if (e.OriginalSource is TextBox textBox && !textBox.IsReadOnly && textBox.Focusable)
+			{
+				textBox.SelectAll();
+			}
 		}
 	}
+
+	/*    protected override void OnStartup(StartupEventArgs e)
+    {
+        
+
+        base.OnStartup(e);
+    }
+
+
+}*/
 }

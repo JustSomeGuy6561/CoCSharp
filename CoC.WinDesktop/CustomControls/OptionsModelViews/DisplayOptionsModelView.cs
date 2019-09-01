@@ -3,6 +3,8 @@ using CoC.Backend.Engine;
 using CoC.Backend.Settings;
 using CoC.Backend.Tools;
 using CoCWinDesktop.CustomControls.SideBarModelViews;
+using CoCWinDesktop.DisplaySettings;
+using CoCWinDesktop.Engine;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;
 using CoCWinDesktop.Strings;
@@ -57,19 +59,26 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 		{
 			sidebarView = new StandardSideBarModelView(new SaveDataCollection(null), true);
 
-			AdvancedSetting data = (AdvancedSetting)runner.backgroundOption.globalSetting;
-			BackgroundSlider = new OptionsRowSliderWrapper(runner.backgroundOption.name, data.availableOptions, data.SelectedSettingText, data.SelectedSettingHint, data.Get,
-				SetBackground, data.WarnPlayersAboutChanging, data.SettingEnabled);
+			DisplayOptions option = DisplayOptionManager.GetOptionOfType<BackgroundOption>();
+			option.AddGlobalSetListener(SetBackground);
 
-			data = (AdvancedSetting)runner.fontSizeOption.globalSetting;
-			FontSizeSlider = new OptionsRowSliderWrapper(runner.fontSizeOption.name, data.availableOptions, data.SelectedSettingText, data.SelectedSettingHint, data.Get,
-				SetFontSize, data.WarnPlayersAboutChanging, data.SettingEnabled);
+			AdvancedSetting data = (AdvancedSetting)option.globalSetting;
+			BackgroundSlider = new OptionsRowSliderWrapper(option.name, data.availableOptions, data.SelectedSettingText, data.SelectedSettingHint, data.Get,
+				data.Set, data.WarnPlayersAboutChanging, data.SettingEnabled);
 
-			data = (AdvancedSetting)runner.textBackgroundOption.globalSetting;
-			TextBackgroundSlider = new OptionsRowSliderWrapper(runner.textBackgroundOption.name, data.availableOptions, data.SelectedSettingText, data.SelectedSettingHint, data.Get,
-				SetTextBackground, data.WarnPlayersAboutChanging, data.SettingEnabled);
+			option = DisplayOptionManager.GetOptionOfType<FontSizeOption>();
+			option.AddGlobalSetListener(SetFontSize);
 
+			data = (AdvancedSetting)option.globalSetting;
+			FontSizeSlider = new OptionsRowSliderWrapper(option.name, data.availableOptions, data.SelectedSettingText, data.SelectedSettingHint, data.Get,
+				data.Set, data.WarnPlayersAboutChanging, data.SettingEnabled);
 
+			option = DisplayOptionManager.GetOptionOfType<TextBackgroundOption>();
+			option.AddGlobalSetListener(SetTextBackground);
+
+			data = (AdvancedSetting)option.globalSetting;
+			TextBackgroundSlider = new OptionsRowSliderWrapper(option.name, data.availableOptions, data.SelectedSettingText, data.SelectedSettingHint, data.Get,
+				data.Set, data.WarnPlayersAboutChanging, data.SettingEnabled);
 
 			lastLanguageIndex = LanguageEngine.currentLanguageIndex;
 			_DisplayOptionsText = TitleText();
@@ -80,26 +89,24 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		}
 
-		private void SetBackground(int index)
+		private void SetBackground()
 		{
-			((AdvancedSetting)runner.backgroundOption.globalSetting).Set(index);
 			CheckFontColor();
 		}
 
-		private void SetFontSize(int index)
+		private void SetFontSize()
 		{
-			((AdvancedSetting)runner.fontSizeOption.globalSetting).Set(index);
 			UpdateDisplay();
 		}
 
-		private void SetTextBackground(int index)
+		private void SetTextBackground()
 		{
-			((AdvancedSetting)runner.textBackgroundOption.globalSetting).Set(index);
 			CheckFontColor();
 		}
 
 		private void CheckFontColor()
 		{
+			//runner.CheckPrimaryFontColor();
 			if (colors.Count > 0 && colors[0] != runner.FontColor.Color)
 			{
 				colors[0] = runner.FontColor.Color;
