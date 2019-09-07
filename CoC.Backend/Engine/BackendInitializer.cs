@@ -81,11 +81,13 @@ namespace CoC.Backend.Engine
 			{
 				data.PostLocalSessionInit();
 			}
+
+			GameEngine.PostSaveInit();
 		}
 
 		public static void FinalizeInitialization()
 		{
-			GameEngine.FinalizeInitialization();
+			
 
 		}
 	}

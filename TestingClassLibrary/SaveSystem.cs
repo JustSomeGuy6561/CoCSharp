@@ -17,8 +17,10 @@ namespace TestingClassLibrary
 		private static readonly HashSet<Type> knownTypes = new HashSet<Type>();
 		private static bool dataReady = true;
 
-
+		//may in future allow this to be set via command line. probably would still be readonly, but whatever. 
+#pragma warning disable IDE0044 // Add readonly modifier
 		private static string saveDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+#pragma warning restore IDE0044 // Add readonly modifier
 		private static string SETTINGS_LOCATION => Path.Combine(saveDirectory, "GlobalSettings.CoCSav");
 
 

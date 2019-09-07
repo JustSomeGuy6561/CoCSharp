@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Engine;
+﻿using CoC.Backend.Achievements;
+using CoC.Backend.Engine;
 using CoC.Backend.Perks;
 using CoC.Backend.SaveData;
 using CoC.Frontend.Areas;
@@ -30,6 +31,8 @@ namespace CoC.Frontend.Engine
 
 			CreditManager.AddCreditCategory(new FrontendCredits());
 			CreditManager.AddCreditCategory(new FrontendModCredits());
+
+			AchievementManager.RegisterAchievement(new Achievements.StartTheGameINeedAnAchievementForDebugging());
 
 #warning Parse global File Data accordingly. note it may be null if file does not exist.
 		}

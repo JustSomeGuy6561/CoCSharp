@@ -24,6 +24,6 @@
 	</UserControl.Resources>
 	<Canvas Style="{StaticResource CoCCanvas}">
 		<ContentControl Canvas.Top="50" Canvas.Left="0" Height="660" Width="1000" Content="{Binding subModel}" IsTabStop="False" TabIndex="0" KeyboardNavigation.TabNavigation="Local"/>
-		<Button Style="{StaticResource CoCButton}" Background="{StaticResource Button0Image}" Content="Ok" Canvas.Left="60" Canvas.Bottom="48" Command="{Binding returnCommand}" />
+		<Button Canvas.Left="60" Canvas.Bottom="48" Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding OkButton}" Background="{StaticResource Button0Image}"/>
 	</Canvas>
 </UserControl>

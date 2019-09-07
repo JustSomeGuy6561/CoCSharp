@@ -24,6 +24,9 @@
 		<DataTemplate DataType="{x:Type MV:CombatModelView}">
 			<Views:CombatView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type MV:DataModelView}">
+			<Views:DataView/>
+		</DataTemplate>
 		<DataTemplate DataType="{x:Type MV:OptionsModelView}">
 			<Views:OptionsView/>
 		</DataTemplate>

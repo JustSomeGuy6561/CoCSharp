@@ -62,7 +62,7 @@
 				BitmapSource="{Binding MainImage, ElementName=_this}" TextOptions.TextFormattingMode="Display" TextOptions.TextHintingMode="Fixed" />
 			<local:LimitedInputTextBox x:Name="InputField" Grid.Row="1" Text="{Binding InputFieldText, ElementName=_this, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" 
 				Visibility="{Binding InputFieldVisible, ElementName=_this, Converter={StaticResource BoolToVisCollapsed}}" MaxLength="{Binding InputFieldMaxLength, ElementName=_this, Mode=OneWay}" 
-				LimitCharactersRegex="{Binding LimitCharactersRegex, ElementName=_this, Mode=OneWay}"/>
+				LimitCharactersRegex="{Binding LimitCharactersRegex, ElementName=_this, Mode=OneWay}" Template="{DynamicResource LimitedTextBoxTemplate}" ValidStringRegex="{Binding StringValidRegex, ElementName=_this}"/>
 			<ComboBox Name="DropDown" Grid.Column="1" Grid.Row="1" Visibility="{Binding DropdownVisible, ElementName=_this, Converter={StaticResource BoolToVisCollapsed}}"
 				HorizontalAlignment="Left" ItemsSource="{Binding DropdownContainer.items, ElementName=_this, Mode=OneWay}"
 				DisplayMemberPath="Title" SelectedItem="{Binding DropdownContainer.SelectedItem, ElementName=_this, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

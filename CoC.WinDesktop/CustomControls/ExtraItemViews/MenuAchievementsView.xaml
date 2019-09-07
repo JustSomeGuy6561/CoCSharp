@@ -5,10 +5,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.ExtraItemViews"
 			 xmlns:EIMV="clr-namespace:CoCWinDesktop.CustomControls.ExtraItemModelViews"
+			 xmlns:CW="clr-namespace:CoCWinDesktop.ContentWrappers"
+			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
+             d:DesignHeight="660" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type={x:Type EIMV:MenuAchievementsModelView}}">
-    <Grid>
-            
-    </Grid>
+	<UserControl.Resources>
+		<DataTemplate DataType="{x:Type CW:AchievementWrapper}">
+			<CC:AchievementItem/>
+		</DataTemplate>
+	</UserControl.Resources>
+	<Grid Margin="60,0,20,0" Background="{Binding TextBackground, Source={StaticResource Runner}}" >
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<TextBlock Style="{StaticResource HeaderText}" Grid.Row="0" Margin="5" Text="{Binding ContentTitle}"/>
+		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="1" Margin="5" Text="{Binding ContentHelper}" FontWeight="Bold"/>
+		<ScrollViewer Style="{StaticResource ScrollbarWithSpace}" Grid.Row="2" Margin="0,5,0,5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+			<ItemsControl ItemsSource="{Binding achievementDisplays}"/>
+		</ScrollViewer>
+		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="3" Margin="5" Text="{Binding PostContent}"/>
+	</Grid>
 </UserControl>

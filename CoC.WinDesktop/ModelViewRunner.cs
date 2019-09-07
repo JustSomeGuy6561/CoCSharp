@@ -1,4 +1,5 @@
 ﻿using CoC.UI;
+using CoCWinDesktop.ContentWrappers;
 using CoCWinDesktop.DisplaySettings;
 using CoCWinDesktop.Engine;
 using CoCWinDesktop.Helpers;
@@ -29,10 +30,10 @@ namespace CoCWinDesktop
 		#region  Static Data
 		private static GuiGlobalSave saveData => GuiGlobalSave.data;
 
-		public static readonly ReadOnlyCollection<BackgroundWrapper> backgrounds;
+		public static readonly ReadOnlyCollection<BackgroundItem> backgrounds;
 		public static int numBackgrounds => backgrounds.Count;
 
-		public static readonly ReadOnlyCollection<TextBackgroundWrapper> textBackgrounds;
+		public static readonly ReadOnlyCollection<TextBackgroundItem> textBackgrounds;
 		public static int numTextBackgrounds => textBackgrounds.Count;
 
 		private static readonly FontFamily sidebarLegacy = new FontFamily("Lucida Sans Typewriter");
@@ -74,28 +75,33 @@ namespace CoCWinDesktop
 
 		#region SaveData
 		//Everything but the RTF uses size in pixels. However, points, and thus EMs, are greatly preferred because they work nicely with RTF and Typeface. 
-		//BOUND!
-		public double FontSizePixels => MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.PIXELS);
+		
+		//BOUND, Handled
+		public double FontSizePixels => MeasurementHelpers.FontSizeInPx;
+		//Not (yet) bound, but handled anyway.
+		public int FontSizeEms => MeasurementHelpers.FontSizeInEms;
+		//Not (yet bound, but handled anyway. 
+		public double FontSizePoints => MeasurementHelpers.FontSizeInPt;
 
-		public int FontSizeEms => (int)MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.EMS);
-		public double FontSizePoints => MeasurementHelpers.ConvertFromEms(saveData.FontSizeInEms, SizeUnit.POINTS);
-
-		//not bound
+		//not bound - used to determine another property. that property is handled. 
 		public int BackgroundIndex => saveData.backgroundIndex;
 
-		//not bound
+		//not bound - used to determine text background, which is handled. 
 		public int TextBackgroundIndex => saveData.textBackgroundIndex;
 
-		//not bound
+		//not bound - when the Standard model view needs to query a sprite, it calls a function here in the runner that uses this value. 
 		public bool? UsesOldSprites => saveData.usesOldSprites;
 
-		//not bound
+		//not bound - when the standard model view needs to query an image, it calls a function here in the runner that uses this value.
 		public bool ImagePackEnabled => saveData.imagePackEnabled;
 
+		//bound, handled
 		public bool IsAnimated => saveData.isAnimated;
+		
+		//bound, handled
 		public bool ShowEnemyStatBars => saveData.showEnemyStatBars;
 
-		//not bound
+		//not bound -used to determine another value, which is bound and handled.
 		public bool SidebarUsesModernFont => saveData.sidebarUsesModernFont;
 		#endregion
 
@@ -149,7 +155,7 @@ namespace CoCWinDesktop
 		private SolidColorBrush _ButtonDisableHoverTextColor = null;
 		#endregion
 
-		public BitmapImage GetSprite(string spriteName)
+		public string GetSpriteUriString(string spriteName)
 		{
 			if (UsesOldSprites == null)
 			{
@@ -158,24 +164,11 @@ namespace CoCWinDesktop
 			else
 			{
 				string sourcePath = UsesOldSprites == true ? @"pack://application:,,,/resources/sprites8bit/" : @"pack://application:,,,/resources/sprites/";
-
-				BitmapImage retVal = null;
-				if (Uri.TryCreate(sourcePath + spriteName, UriKind.RelativeOrAbsolute, out Uri file))
-				{
-					try
-					{
-						retVal = new BitmapImage(file);
-					}
-					catch (Exception)
-					{
-						retVal = null;
-					}
-				}
-				return retVal;
+				return sourcePath + spriteName;
 			}
 		}
 
-		public BitmapImage GetImage(string imageName)
+		public string GetImageUriString(string imageName)
 		{
 			if (!ImagePackEnabled)
 			{
@@ -262,25 +255,25 @@ namespace CoCWinDesktop
 				return false;
 			}
 
-			List<BackgroundWrapper> backgroundList = new List<BackgroundWrapper>()
+			List<BackgroundItem> backgroundList = new List<BackgroundItem>()
 			{
-				new BackgroundWrapper(Path.Combine("resources", "background1.png"), Path.Combine("resources", "sidebar1.png"), BackgroundOption.MapBGText, emptyTooltip, false),
-				new BackgroundWrapper(Path.Combine("resources", "background2.png"), Path.Combine("resources", "sidebar2.png"), BackgroundOption.ParchmentBGText, emptyTooltip, false),
-				new BackgroundWrapper(Path.Combine("resources", "background3.png"), Path.Combine("resources", "sidebar3.png"), BackgroundOption.MarbleBGText, emptyTooltip, false),
-				new BackgroundWrapper(Path.Combine("resources", "background4.png"), Path.Combine("resources", "sidebar4.png"), BackgroundOption.ObsidianBGText, emptyTooltip, true),
-				new BackgroundWrapper(null, null, BackgroundOption.NightModeBGText, emptyTooltip, true),
-				new BackgroundWrapper(Path.Combine("resources", "backgroundKaizo.png"), Path.Combine("resources", "sidebarKaizo.png"), BackgroundOption.GrimdarkBGText, kaizoTooltip, false),
+				new BackgroundItem(Path.Combine("resources", "background1.png"), Path.Combine("resources", "sidebar1.png"), BackgroundOption.MapBGText, emptyTooltip, false),
+				new BackgroundItem(Path.Combine("resources", "background2.png"), Path.Combine("resources", "sidebar2.png"), BackgroundOption.ParchmentBGText, emptyTooltip, false),
+				new BackgroundItem(Path.Combine("resources", "background3.png"), Path.Combine("resources", "sidebar3.png"), BackgroundOption.MarbleBGText, emptyTooltip, false),
+				new BackgroundItem(Path.Combine("resources", "background4.png"), Path.Combine("resources", "sidebar4.png"), BackgroundOption.ObsidianBGText, emptyTooltip, true),
+				new BackgroundItem(null, null, BackgroundOption.NightModeBGText, emptyTooltip, true),
+				new BackgroundItem(Path.Combine("resources", "backgroundKaizo.png"), Path.Combine("resources", "sidebarKaizo.png"), BackgroundOption.GrimdarkBGText, kaizoTooltip, false),
 			};
-			backgrounds = new ReadOnlyCollection<BackgroundWrapper>(backgroundList);
+			backgrounds = new ReadOnlyCollection<BackgroundItem>(backgroundList);
 
-			List<TextBackgroundWrapper> textBackgroundList = new List<TextBackgroundWrapper>()
+			List<TextBackgroundItem> textBackgroundList = new List<TextBackgroundItem>()
 			{
-				new TextBackgroundWrapper(GenerateSolidColorWithTransparency(Colors.White, 0.4), TextBackgroundOption.NormalTextBgDesc, emptyTooltip, false),
-				new TextBackgroundWrapper(new SolidColorBrush(Colors.White), TextBackgroundOption.WhiteTextBgDesc, emptyTooltip, false),
-				new TextBackgroundWrapper(new SolidColorBrush(Color.FromRgb(0xEB, 0xD5, 0xA6)), TextBackgroundOption.TanTextBgDesc, emptyTooltip, true),
-				new TextBackgroundWrapper(new SolidColorBrush(Colors.Transparent), TextBackgroundOption.ClearTextBgDesc, emptyTooltip, false),
+				new TextBackgroundItem(GenerateSolidColorWithTransparency(Colors.White, 0.4), TextBackgroundOption.NormalTextBgDesc, emptyTooltip, false),
+				new TextBackgroundItem(new SolidColorBrush(Colors.White), TextBackgroundOption.WhiteTextBgDesc, emptyTooltip, false),
+				new TextBackgroundItem(new SolidColorBrush(Color.FromRgb(0xEB, 0xD5, 0xA6)), TextBackgroundOption.TanTextBgDesc, emptyTooltip, true),
+				new TextBackgroundItem(new SolidColorBrush(Colors.Transparent), TextBackgroundOption.ClearTextBgDesc, emptyTooltip, false),
 			};
-			textBackgrounds = new ReadOnlyCollection<TextBackgroundWrapper>(textBackgroundList);
+			textBackgrounds = new ReadOnlyCollection<TextBackgroundItem>(textBackgroundList);
 		}
 
 		private static bool condition()
@@ -321,14 +314,6 @@ namespace CoCWinDesktop
 			tempInterface = InterfaceOptionManager.GetOptionOfType<SidebarFontOption>();
 			tempInterface.AddGlobalSetListener(OnSidebarFontChanged);
 
-
-			mainMenu = new MainMenuModelView(this);
-			options = new OptionsModelView(this);
-			standard = new StandardModelView(this);
-			combat = new CombatModelView(this);
-			data = new DataModelView(this);
-			extraItems = new ExtraMenuItemsModelView(this);
-
 			_BackgroundImage = backgrounds[BackgroundIndex].path;
 			_SidebarBackgroundImage = backgrounds[BackgroundIndex].sidebarPath;
 			_SidebarFontFamily = SidebarUsesModernFont ? sidebarModern : sidebarLegacy;
@@ -336,6 +321,12 @@ namespace CoCWinDesktop
 
 			SetFontColor();
 
+			mainMenu = new MainMenuModelView(this);
+			options = new OptionsModelView(this);
+			standard = new StandardModelView(this);
+			combat = new CombatModelView(this);
+			data = new DataModelView(this);
+			extraItems = new ExtraMenuItemsModelView(this);
 
 			_modelView = mainMenu;
 		}

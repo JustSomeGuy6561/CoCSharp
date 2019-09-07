@@ -1,4 +1,5 @@
 ﻿using CoC.Frontend.UI.ControllerData;
+using CoCWinDesktop.ContentWrappers;
 using CoCWinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		}
 		private string _coreStatsText = "Core Stats:";
 
-		public ReadOnlyCollection<StatDisplayItem> coreStats { get; }
+		public ReadOnlyCollection<StatDisplayItemWrapper> coreStats { get; }
 
 		public string combatStatText
 		{
@@ -49,7 +50,7 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		}
 		private string _combatStatsText = "Combat Stats:";
 
-		public ReadOnlyCollection<StatDisplayItem> combatStats { get; }
+		public ReadOnlyCollection<StatDisplayItemWrapper> combatStats { get; }
 
 		public string prisonStatText
 		{
@@ -58,36 +59,36 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		}
 		private string _prisonStatsText = "Prison Stats:";
 
-		private readonly StatDisplayItem Strength;
-		private readonly StatDisplayItem Toughness;
-		private readonly StatDisplayItem Speed;
-		private readonly StatDisplayItem Intelligence;
-		private readonly StatDisplayItem Libido;
-		private readonly StatDisplayItem Sensitivity;
-		private readonly StatDisplayItem Corruption;
+		private readonly StatDisplayItemWrapper Strength;
+		private readonly StatDisplayItemWrapper Toughness;
+		private readonly StatDisplayItemWrapper Speed;
+		private readonly StatDisplayItemWrapper Intelligence;
+		private readonly StatDisplayItemWrapper Libido;
+		private readonly StatDisplayItemWrapper Sensitivity;
+		private readonly StatDisplayItemWrapper Corruption;
 
-		private readonly StatDisplayItem HP;
-		private readonly StatDisplayItem Lust;
+		private readonly StatDisplayItemWrapper HP;
+		private readonly StatDisplayItemWrapper Lust;
 
-		private readonly StatDisplayItem Fatigue;
-		private readonly StatDisplayItem Satiety;
-		private readonly StatDisplayItem SelfEsteem;
-		private readonly StatDisplayItem Willpower;
-		private readonly StatDisplayItem Obedience;
+		private readonly StatDisplayItemWrapper Fatigue;
+		private readonly StatDisplayItemWrapper Satiety;
+		private readonly StatDisplayItemWrapper SelfEsteem;
+		private readonly StatDisplayItemWrapper Willpower;
+		private readonly StatDisplayItemWrapper Obedience;
 
 		public PrisonSideBarModelView(StatDataCollectionBase stats, bool silent = false) : base(stats)
 		{
 			PlayerStatData playerStats = stats.playerStats;
 
-			Strength = new StatDisplayItem(playerStats.Strength, nameof(playerStats.Strength), silent);
-			Toughness = new StatDisplayItem(playerStats.Toughness, nameof(playerStats.Toughness), silent);
-			Speed = new StatDisplayItem(playerStats.Speed, nameof(playerStats.Speed), silent);
-			Intelligence = new StatDisplayItem(playerStats.Intelligence, nameof(playerStats.Intelligence), silent);
-			Libido = new StatDisplayItem(playerStats.Libido, nameof(playerStats.Libido), silent);
-			Sensitivity = new StatDisplayItem(playerStats.Sensitivity, nameof(playerStats.Sensitivity), silent);
-			Corruption = new StatDisplayItem(playerStats.Corruption, nameof(playerStats.Corruption), silent);
+			Strength = new StatDisplayItemWrapper(playerStats.Strength, nameof(playerStats.Strength), silent);
+			Toughness = new StatDisplayItemWrapper(playerStats.Toughness, nameof(playerStats.Toughness), silent);
+			Speed = new StatDisplayItemWrapper(playerStats.Speed, nameof(playerStats.Speed), silent);
+			Intelligence = new StatDisplayItemWrapper(playerStats.Intelligence, nameof(playerStats.Intelligence), silent);
+			Libido = new StatDisplayItemWrapper(playerStats.Libido, nameof(playerStats.Libido), silent);
+			Sensitivity = new StatDisplayItemWrapper(playerStats.Sensitivity, nameof(playerStats.Sensitivity), silent);
+			Corruption = new StatDisplayItemWrapper(playerStats.Corruption, nameof(playerStats.Corruption), silent);
 
-			List<StatDisplayItem> coreStatList = new List<StatDisplayItem>()
+			List<StatDisplayItemWrapper> coreStatList = new List<StatDisplayItemWrapper>()
 			{
 				Strength,
 				Toughness,
@@ -98,15 +99,15 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 				Corruption,
 			};
 
-			HP = new StatDisplayItem(playerStats.HP, nameof(playerStats.HP), silent) { regColorDefaultOrMax = Color.FromArgb(0xFF, 0xA0, 0xFF, 0x50), regColorMin = Color.FromArgb(0xFF, 0xFF, 0x66, 0x50) };
-			Lust = new StatDisplayItem(playerStats.Lust, nameof(playerStats.Lust), silent) { regColorDefaultOrMax = Color.FromArgb(0xFF, 0xFF, 0x85, 0x69) };
-			Fatigue = new StatDisplayItem(playerStats.Fatigue, nameof(playerStats.Fatigue), silent);
-			Satiety = new StatDisplayItem(playerStats.Satiety, nameof(playerStats.Satiety), silent);
-			SelfEsteem = new StatDisplayItem(playerStats.SelfEsteem, nameof(playerStats.SelfEsteem), silent);
-			Willpower = new StatDisplayItem(playerStats.Willpower, nameof(playerStats.Willpower), silent);
-			Obedience = new StatDisplayItem(playerStats.Obedience, nameof(playerStats.Obedience), silent);
+			HP = new StatDisplayItemWrapper(playerStats.HP, nameof(playerStats.HP), silent) { regColorDefaultOrMax = Color.FromArgb(0xFF, 0xA0, 0xFF, 0x50), regColorMin = Color.FromArgb(0xFF, 0xFF, 0x66, 0x50) };
+			Lust = new StatDisplayItemWrapper(playerStats.Lust, nameof(playerStats.Lust), silent) { regColorDefaultOrMax = Color.FromArgb(0xFF, 0xFF, 0x85, 0x69) };
+			Fatigue = new StatDisplayItemWrapper(playerStats.Fatigue, nameof(playerStats.Fatigue), silent);
+			Satiety = new StatDisplayItemWrapper(playerStats.Satiety, nameof(playerStats.Satiety), silent);
+			SelfEsteem = new StatDisplayItemWrapper(playerStats.SelfEsteem, nameof(playerStats.SelfEsteem), silent);
+			Willpower = new StatDisplayItemWrapper(playerStats.Willpower, nameof(playerStats.Willpower), silent);
+			Obedience = new StatDisplayItemWrapper(playerStats.Obedience, nameof(playerStats.Obedience), silent);
 
-			var combatStatList = new List<StatDisplayItem>()
+			var combatStatList = new List<StatDisplayItemWrapper>()
 			{
 				HP,
 				Lust,
@@ -117,8 +118,8 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 				Obedience,
 			};
 
-			coreStats = new ReadOnlyCollection<StatDisplayItem>(coreStatList);
-			combatStats = new ReadOnlyCollection<StatDisplayItem>(combatStatList);
+			coreStats = new ReadOnlyCollection<StatDisplayItemWrapper>(coreStatList);
+			combatStats = new ReadOnlyCollection<StatDisplayItemWrapper>(combatStatList);
 
 		}
 

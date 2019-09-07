@@ -10,6 +10,7 @@ namespace CoCWinDesktop.Helpers
 
     public static class MeasurementHelpers
     {
+		private static int fontSizeEms => GuiGlobalSave.data.FontSizeInEms;
 		public const int MinEMFontSize = 20;
 		public const int MaxEMFontSize = 48;
 
@@ -55,6 +56,11 @@ namespace CoCWinDesktop.Helpers
 					return (int)Math.Round(size);
 			}
 		}
+
+		public static double FontSizeInPt => ConvertFromEms(fontSizeEms, SizeUnit.POINTS);
+		public static double FontSizeInPx => ConvertFromEms(fontSizeEms, SizeUnit.PIXELS);
+		public static int FontSizeInEms => fontSizeEms;
+
 
 	}
 }

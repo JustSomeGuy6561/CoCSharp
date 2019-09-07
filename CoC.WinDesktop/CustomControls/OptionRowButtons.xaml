@@ -4,14 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls"
-			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
+			 xmlns:OR="clr-namespace:CoCWinDesktop.ContentWrappers.OptionsRow"
 			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
              mc:Ignorable="d" 
 			 d:DesignWidth="1000"
-			 d:DataContext="{d:DesignInstance Type=Help:OptionsRowButtonWrapper}"
+			 d:DataContext="{d:DesignInstance Type=OR:OptionsRowButtonWrapper}"
 			 KeyboardNavigation.TabNavigation="Local">
 	<UserControl.Resources>
-		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
+		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonWithHelperDataContext}">
 			<Setter Property="Margin" Value="5,0,5,0"/>
 		</Style>
 		<Conv:VisibilityFromBoolCollapsed x:Key="IsCollapsed"/>
@@ -35,12 +35,12 @@
 				   TextAlignment="Right" Text="{Binding OptionName}" FontWeight="Bold"/>
 		<!-- Bind content to text for it. Bind visibility of second item to enum declaring state - if !local, enable unset. else collapse it. -->
 		<!-- Bind commands, which set the variable to true, null, false, respectively. when set, commands should update the description. -->
-		<Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Content="{Binding EnabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-				Background="{StaticResource Button0Image}" Command="{Binding EnableCommand}" TabIndex="1" IsTabStop="True"/>
-		<Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  Content="{Binding ClearBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{StaticResource Button1Image}" 
-				Command="{Binding ClearCommand}" Visibility="{Binding ClearVisible, Converter={StaticResource IsCollapsed}}" TabIndex="0" IsTabStop="True"/>
-		<Button Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" Content="{Binding DisabledBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" 
-				Background="{StaticResource Button2Image}" Command="{Binding DisableCommand}" TabIndex="2" IsTabStop="True" />
+		<Button DataContext="{Binding enabledButton}" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"  HorizontalAlignment="Center" 
+				VerticalAlignment="Center" Background="{StaticResource Button0Image}" TabIndex="1" IsTabStop="True"/>
+		<Button DataContext="{Binding clearedButton}" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" 
+				VerticalAlignment="Center" Background="{StaticResource Button1Image}" TabIndex="0" IsTabStop="True"/>
+		<Button DataContext="{Binding disabledButton}" Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" 
+				VerticalAlignment="Center" Background="{StaticResource Button2Image}" TabIndex="2" IsTabStop="True" />
 		<!-- bind text to description. Note that there's no two-way binding here, so we'll need to use the button commands to fake it. -->
 		<TextBlock Style="{StaticResource SettingText}" Grid.Column="0" Grid.Row="1" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
 			TextAlignment="Right" Text="{Binding currentDescription}"/>

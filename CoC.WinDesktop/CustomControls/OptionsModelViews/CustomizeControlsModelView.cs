@@ -1,5 +1,6 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
+using CoCWinDesktop.ContentWrappers;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;
 using System;

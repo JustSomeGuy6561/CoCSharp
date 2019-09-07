@@ -6,13 +6,14 @@
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
 			 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+			 xmlns:CW="clr-namespace:CoCWinDesktop.ContentWrappers"
 			 Startup="App_Startup">
 	<Application.Resources>
 		<sys:Double x:Key="HeaderSizePx">36</sys:Double>
 		<sys:Double x:Key="SmallHeaderPx">24</sys:Double>
 		<sys:Double x:Key="SettingPx">18</sys:Double>
 		<sys:Double x:Key="WarningPx">16</sys:Double>
-		
+
 		<local:ModelViewRunner x:Key="Runner"/>
 		<ImageBrush x:Key="Button0Image" ImageSource="/CoCWinDesktop;component/resources/button0.jpg"/>
 		<ImageBrush x:Key="Button1Image" ImageSource="/CoCWinDesktop;component/resources/button1.jpg"/>
@@ -29,6 +30,8 @@
 		<ImageBrush x:Key="Button12Image" ImageSource="/CoCWinDesktop;component/resources/button2.jpg"/>
 		<ImageBrush x:Key="Button13Image" ImageSource="/CoCWinDesktop;component/resources/button3.jpg"/>
 		<ImageBrush x:Key="Button14Image" ImageSource="/CoCWinDesktop;component/resources/button4.jpg"/>
+
+		<ImageBrush x:Key="ToolTipBg" ImageSource="/CoCWinDesktop;component/resources/tooltip.png"/>
 
 		<Style x:Key="PageControl" TargetType="{x:Type UserControl}">
 			<Setter Property="Focusable" Value="True" />
@@ -124,7 +127,25 @@
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
+			<Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+			<Setter Property="ToolTipService.Placement" Value="Bottom"/>
+			<Style.Resources>
+				<Style TargetType="ToolTip">
+					<Setter Property="Background" Value="Transparent"/>
+					<Setter Property="BorderBrush" Value="Transparent"/>
+					<Setter Property="BorderThickness" Value="0"/>
+				</Style>
+			</Style.Resources>
 		</Style>
+
+		<Style x:Key="CoCToolTipTitle" TargetType="{x:Type TextBlock}">
+			<Setter Property="FontFamily" Value="/CoCWinDesktop;component/resources/#Shrewsbury-Titling" />
+		</Style>
+
+		<Style x:Key="CoCToolTipDesc" TargetType="{x:Type TextBlock}">
+			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
+		</Style>
+
 		<Style x:Key="CoCText" TargetType="{x:Type TextBlock}" >
 			<Setter Property="Foreground" Value="{Binding FontColor, Mode=OneWay, Source={StaticResource Runner}}" />
 		</Style>
@@ -153,7 +174,7 @@
 			<Setter Property="TextDecorations" Value="Underline" />
 			<Setter Property="TextWrapping" Value="Wrap"/>
 			<Setter Property="Focusable" Value="False"/>
-			
+
 			<Setter Property="Visibility" Value="Visible"/>
 			<Style.Triggers>
 				<Trigger Property="Text" Value="{x:Null}">
@@ -170,7 +191,7 @@
 			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
 			<Setter Property="TextWrapping" Value="Wrap"/>
 			<Setter Property="Focusable" Value="False"/>
-			
+
 			<Setter Property="Visibility" Value="Visible"/>
 			<Style.Triggers>
 				<Trigger Property="Text" Value="{x:Null}">
@@ -186,7 +207,7 @@
 			<Setter Property="FontSize" Value="{StaticResource SettingPx}"/>
 			<Setter Property="FontFamily" Value="{Binding TextFontFamily, Mode=OneWay, Source={StaticResource Runner}}"/>
 			<Setter Property="TextWrapping" Value="Wrap"/>
-			
+
 			<Setter Property="Visibility" Value="Visible"/>
 			<Style.Triggers>
 				<Trigger Property="Text" Value="{x:Null}">
@@ -292,19 +313,6 @@
 			</UserControl.Background>-->
 		</Style>
 
-		<Style TargetType="{x:Type CC:ContentRichTextBox}" BasedOn="{StaticResource StandardTextBox}">
-			<Setter Property="BorderBrush" Value="Transparent"/>
-			<Setter Property="BorderThickness" Value="0"/>
-			<Setter Property="AcceptsReturn" Value="False"/>
-			<Setter Property="AcceptsTab" Value="False"/>
-			<Setter Property="Height" Value="Auto"/>
-			<Setter Property="Focusable" Value="False"/>
-			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
-			<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-			<Setter Property="IsReadOnly" Value="True"/>
-			<Setter Property="IsReadOnlyCaretVisible" Value="False"/>
-		</Style>
 
 		<Conv:ScrollVisibilityToVisibilityHelper x:Key="VisFromScrollable"/>
 		<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">15</sys:Double>
@@ -333,5 +341,89 @@
 		<Style TargetType="{x:Type ScrollViewer}" x:Key="ScrollbarWithSpace">
 			<Setter Property="Template" Value="{StaticResource ScrollViewerWithSetAsideSpace}"/>
 		</Style>
+
+		<Style TargetType="{x:Type CC:ContentRichTextBox}" BasedOn="{StaticResource StandardTextBox}">
+			<Setter Property="BorderBrush" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="AcceptsReturn" Value="False"/>
+			<Setter Property="AcceptsTab" Value="False"/>
+			<Setter Property="Height" Value="Auto"/>
+			<Setter Property="Focusable" Value="False"/>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+			<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+			<Setter Property="IsReadOnly" Value="True"/>
+			<Setter Property="IsReadOnlyCaretVisible" Value="False"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type CC:ContentRichTextBox}">
+						<Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+							<ScrollViewer x:Name="PART_ContentHost" Style="{StaticResource ScrollbarWithSpace}" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Opacity" TargetName="border" Value="0.56"/>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="BorderBrush" TargetName="border" Value="#FF7EB4EA"/>
+							</Trigger>
+							<Trigger Property="IsKeyboardFocused" Value="True">
+								<Setter Property="BorderBrush" TargetName="border" Value="#FF569DE5"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<ControlTemplate x:Key="LimitedTextBoxTemplate" TargetType="{x:Type CC:LimitedInputTextBox}">
+			<Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+				<ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+			</Border>
+			<ControlTemplate.Triggers>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Opacity" TargetName="border" Value="0.56"/>
+				</Trigger>
+
+				<Trigger Property="IsTextValid" Value="False">
+					<Setter Property="BorderBrush" TargetName="border" Value="{Binding InvalidTextBorderBrush, RelativeSource={RelativeSource TemplatedParent}}"/>
+				</Trigger>
+
+				<MultiTrigger>
+					<MultiTrigger.Conditions>
+						<Condition Property="IsMouseOver" Value="True"/>
+						<Condition Property="IsTextValid" Value="True"/>
+					</MultiTrigger.Conditions>
+					<Setter Property="BorderBrush" TargetName="border" Value="#FF7EB4EA"/>
+				</MultiTrigger>
+				<MultiTrigger>
+					<MultiTrigger.Conditions>
+						<Condition Property="IsKeyboardFocused" Value="True"/>
+						<Condition Property="IsTextValid" Value="True"/>
+					</MultiTrigger.Conditions>
+					<Setter Property="BorderBrush" TargetName="border" Value="#FF569DE5"/>
+				</MultiTrigger>
+			</ControlTemplate.Triggers>
+		</ControlTemplate>
+
+		<Style TargetType="{x:Type CC:LimitedInputTextBox}" BasedOn="{StaticResource StandardTextBox}">
+			<Setter Property="Template" Value="{StaticResource LimitedTextBoxTemplate}"/>
+		</Style>
+
+
+
+		<DataTemplate DataType="{x:Type CW:ToolTipWrapper}">
+			<CC:ToolTipItem/>
+		</DataTemplate>
+
+		<Style x:Key="ButtonWithHelperDataContext" TargetType="Button" BasedOn="{StaticResource CoCButton}">
+			<Setter Property="Visibility" Value="{Binding Path=visibility}"/>
+			<Setter Property="Content" Value="{Binding Path=Title}"/>
+			<Setter Property="Command" Value="{Binding Path=ClickCommand, Mode=OneTime}"/>
+			<Setter Property="ToolTip" Value="{Binding Path=ToolTip, TargetNullValue={x:Null}, FallbackValue={x:Null}}"/>
+			<!--<Setter Property="IsDefault" Value="{Binding Path=IsDefault, FallbackValue = false}"/>-->
+		</Style>
+
+
 	</Application.Resources>
 </Application>

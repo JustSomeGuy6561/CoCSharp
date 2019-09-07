@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace CoCWinDesktop.Helpers
+namespace CoCWinDesktop.ContentWrappers.OptionsRow
 {
-	public sealed class OptionsRowSliderWrapper : OptionsRowBase
+	public sealed class OptionsRowSliderWrapper : OptionsRowWrapperBase
 	{
 		//Design structure: nullable option sets minimum to -1, and treats -1 as null. The slider is setup accordingly
 

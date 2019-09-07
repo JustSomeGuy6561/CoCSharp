@@ -1,4 +1,5 @@
-﻿using CoCWinDesktop.Helpers;
+﻿using CoCWinDesktop.ContentWrappers;
+using CoCWinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -167,32 +168,5 @@ namespace CoCWinDesktop.Views
 				}
 			}
 		}
-
-		//private void StandardView_KeyDown(object sender, KeyEventArgs e)
-		//{
-		//	//Only do the following if we're not in a TextBox/RichTextBox (or, possibly, Combobox).
-
-		//	//Store a lookup table that maps KeyGesture(Key+Modifier) to Hotkey Enum in ModelViewRunner. update it from options.
-		//	//loop through all KeyGestures found in keys. if one matches current modifiers and key, return the Enum stored in value. else, return NONE. 
-		//	//Switch the result, calling the corresponding button's command, or the quicksave/quickload command, which is not really a button but whatever.
-		//	//This is the highest level we can get to in this control, so fuck all, we're fine handling it here. if none found, simply let it fall out to whatever.
-
-		//	if (!(e.OriginalSource is TextBoxBase))
-		//	{
-		//		if (e.Key == Key.D1 && Keyboard.Modifiers == ModifierKeys.None)
-		//		{
-		//			if (TestButton.Command.CanExecute(sender)) TestButton.Command.Execute(sender);
-		//			e.Handled = true;
-		//		}
-		//		else if ()
-		//	}
-		//}
-
-		//protected override void OnKeyDown(KeyEventArgs e)
-		//{
-		//	if (e.InputSource!= null)
-		//	base.OnKeyDown(e);
-		//}
-
 	}
 }

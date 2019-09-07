@@ -7,11 +7,11 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.Helpers
+namespace CoCWinDesktop.ContentWrappers
 {
 	//the lifespan of these objects is actually the same as the base stat stored within it, so we don't need to worry about removing the event here. 
 	//cool. That was shaping up to be a huge hassle. 
-	public sealed class StatDisplayItem : NotifierBase
+	public sealed class StatDisplayItemWrapper : NotifierBase
 	{
 		public Visibility visibility { get; private set; }
 
@@ -145,7 +145,7 @@ namespace CoCWinDesktop.Helpers
 		}
 		private uint? _minimum;
 
-		public StatDisplayItem(CreatureStatBase creatureStat, string displayName, bool isSilent = false)
+		public StatDisplayItemWrapper(CreatureStatBase creatureStat, string displayName, bool isSilent = false)
 		{
 			Name = displayName ?? throw new ArgumentNullException(nameof(displayName));
 

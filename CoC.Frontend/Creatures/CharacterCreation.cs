@@ -1009,10 +1009,8 @@ namespace CoC.Frontend.Creatures
 				ClearOutput();
 			}
 			OutputText(ChooseHairLengthStr());
-			InputField.ActivateInputField(InputField.POSITIVE_NUMBERS, creator.hairLength?.ToString() ?? "", HairLengthStr()); //null operators ftw! basically, if hairLength is null, empty str. if not, call its ToString.
-																															   //activate input field. 
-																															   //set default input value to current hair length.
-																															   //go to town.
+			//null operators ftw! basically, if hairLength is null, empty str. if not, call its ToString.
+			InputField.ActivateInputField(InputField.INPUT_POSITIVE_NUMBERS, InputField.VALID_POSITIVE_NUMBERS, creator.hairLength?.ToString() ?? "", HairLengthStr());
 			AddButton(0, GlobalStrings.CONFIRM(), SetHairLength);
 			AddButton(9, GlobalStrings.BACK(), HairOptions);
 			if (hitCustomizationMenu)
@@ -1296,7 +1294,10 @@ namespace CoC.Frontend.Creatures
 
 			int maxLength = Measurement.UsesMetric ? 3 : 2;
 
-			InputField.ActivateInputField(InputField.POSITIVE_NUMBERS, creator.heightInInches.ToString(), HeightStr(), maxLength);
+
+
+			InputField.ActivateInputField(InputField.INPUT_POSITIVE_INTEGERS_NOSIGN, InputField.VALID_POSITIVE_INTEGERS_NOSIGN, 
+				creator.heightInInches.ToString(), HeightStr(), maxLength);
 
 			AddButton(0, GlobalStrings.OK(), ConfirmHeight);
 			AddButton(4, GlobalStrings.BACK(), GenericStyleCustomizeMenu);

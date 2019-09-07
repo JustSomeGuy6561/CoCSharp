@@ -17,6 +17,7 @@ namespace CoCWinDesktop.Helpers
 			//// @"\" is identical to "\\" So it won't replace "\r" or "\n"
 			HTMLText.Replace(@"\", @"\\");
 			HTMLText.Replace(@"{", @"\{"); //see above
+			HTMLText.Replace(@"}", @"\}"); //see above
 
 			HTMLText.Replace(@"<b>", @"\b ");
 			HTMLText.Replace(@"</b>", @"\b0 ");
@@ -160,5 +161,16 @@ namespace CoCWinDesktop.Helpers
 		{
 			return @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + @";";
 		}
+
+		public static string ToRTFSafeString(string unsafeString)
+		{
+			////quick note: @ means treat string as literal, so it's looking for '\', not an escape character.
+			//// @"\" is identical to "\\" So it won't replace "\r" or "\n"
+			unsafeString.Replace(@"\", @"\\");
+			unsafeString.Replace(@"{", @"\{"); //see above
+			unsafeString.Replace(@"}", @"\}"); //see above
+			return unsafeString;
+		}
+
 	}
 }

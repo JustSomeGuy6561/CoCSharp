@@ -9,18 +9,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.Helpers
+namespace CoCWinDesktop.ContentWrappers.ButtonWrappers
 {
-	public sealed class BottomButtonWrapper : NotifierBase
+	public sealed class ManualButtonWrapper : ButtonWrapperBase
 	{
-		public ICommand ClickCommand { get; }
-
-		public Visibility visibility
-		{
-			get => _visibility;
-			private set => CheckEnumPropertyChanged(ref _visibility, value);
-		}
-		private Visibility _visibility = Visibility.Hidden;
+		public override ICommand ClickCommand { get; }
 
 		private Action onClick
 		{
@@ -41,35 +34,37 @@ namespace CoCWinDesktop.Helpers
 		}
 		private Action _onClick;
 
-		public string Title
+		public override string Title
 		{
 			get => _title;
-			private set => CheckPropertyChanged(ref _title, value);
+		}
+		private string titleSetter
+		{
+			set => CheckPropertyChanged(ref _title, value, nameof(Title));
 		}
 		private string _title;
 
-		public string ToolTip
+		public override ToolTipWrapper ToolTip
 		{
 			get => _toolTip;
-			private set => CheckPropertyChanged(ref _toolTip, value);
 		}
-		private string _toolTip;
-
-		public string ToolTipTitle
-		{
-			get => _toolTipTitle;
-			private set => CheckPropertyChanged(ref _toolTipTitle, value);
+		private ToolTipWrapper toolTipSetter
+		{ 
+			set => CheckPropertyChanged(ref _toolTip, value, nameof(ToolTip));
 		}
-		private string _toolTipTitle;
+		private ToolTipWrapper _toolTip = null;
 
-		public bool isDefault
+		public override bool IsDefault
 		{
 			get => _isDefault;
-			private set => CheckPrimitivePropertyChanged(ref _isDefault, value);
+		}
+		private bool isDefaultSetter
+		{ 
+			set => CheckPrimitivePropertyChanged(ref _isDefault, value, nameof(IsDefault));
 		}
 		private bool _isDefault;
 
-		public BottomButtonWrapper()
+		public ManualButtonWrapper()
 		{
 			ClickCommand = new RelayCommand(OnClickCommand, CanClick);
 		}
@@ -87,35 +82,52 @@ namespace CoCWinDesktop.Helpers
 		public void UpdateButtonEnabled(Action callback, bool defaultButton, string title, string tip = null, string tipTitle = null)
 		{
 			visibility = Visibility.Visible;
-			Title = title ?? throw new ArgumentNullException(nameof(title));
+			_title = title ?? throw new ArgumentNullException(nameof(title));
 			if (string.IsNullOrWhiteSpace(Title))
 			{
 				throw new ArgumentException("Title for a button cannot be empty");
 			}
-			ToolTip = tip;
-			ToolTipTitle = ToolTip is null ? null : (!string.IsNullOrWhiteSpace(tipTitle) ? tipTitle : Title);
-			isDefault = defaultButton;
+
+			tipTitle = string.IsNullOrWhiteSpace(tip) ? null : (!string.IsNullOrWhiteSpace(tipTitle) ? tipTitle : Title);
+
+			SetToolTip(tipTitle, tip);
+
+			_isDefault = defaultButton;
 			onClick = callback;
 		}
 
 		public void UpdateButtonDisabled(string title, string tip = null, string tipTitle = null)
 		{
 			visibility = Visibility.Visible;
-			Title = title ?? throw new ArgumentNullException(nameof(title));
+			titleSetter = title ?? throw new ArgumentNullException(nameof(title));
 			if (string.IsNullOrWhiteSpace(Title))
 			{
 				throw new ArgumentException("Title for a button cannot be empty");
 			}
-			ToolTip = tip;
-			ToolTipTitle = ToolTip is null ? null : (!string.IsNullOrWhiteSpace(tipTitle) ? tipTitle : Title);
-			isDefault = false;
+			tipTitle = string.IsNullOrWhiteSpace(tip) ? null : (!string.IsNullOrWhiteSpace(tipTitle) ? tipTitle : Title);
+
+			SetToolTip(tipTitle, tip);
+
+			isDefaultSetter = false;
 			onClick = null;
+		}
+
+		private void SetToolTip(string header, string tip)
+		{
+			if (string.IsNullOrWhiteSpace(header))
+			{
+				toolTipSetter = null;
+			}
+			else
+			{
+				toolTipSetter = new ToolTipWrapper(header, tip);
+			}
 		}
 
 		public void UpdateButtonHidden()
 		{
 			visibility = Visibility.Hidden;
-			isDefault = false;
+			isDefaultSetter = false;
 			onClick = null;
 		}
 	}

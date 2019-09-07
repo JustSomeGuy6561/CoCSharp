@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.Helpers
+namespace CoCWinDesktop.CustomControls
 {
 	/// <summary>
 	/// Interaction logic for SaveDisplay.xaml

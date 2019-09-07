@@ -1,4 +1,5 @@
-﻿using CoCWinDesktop.ModelView;
+﻿using CoCWinDesktop.Helpers;
+using CoCWinDesktop.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,12 +32,7 @@ namespace CoCWinDesktop.Views
 
 		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
-			System.Diagnostics.Process.Start(e.Uri.ToString());
-		}
-
-		private void ModThreadBtn_Click(object sender, RoutedEventArgs e)
-		{
-			System.Diagnostics.Process.Start("https://forum.fenoxo.com/threads/coc-revamp-mod.3/");
+			UrlHelper.OpenURL(e.Uri.ToString());
 		}
 	}
 }

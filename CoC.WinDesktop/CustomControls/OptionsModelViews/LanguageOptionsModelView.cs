@@ -1,6 +1,7 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Language;
+using CoCWinDesktop.ContentWrappers;
 using CoCWinDesktop.CustomControls.SideBarModelViews;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;

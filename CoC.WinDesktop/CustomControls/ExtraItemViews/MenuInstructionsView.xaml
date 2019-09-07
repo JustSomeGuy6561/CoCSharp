@@ -5,10 +5,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.ExtraItemViews"
 			 xmlns:EIMV="clr-namespace:CoCWinDesktop.CustomControls.ExtraItemModelViews"
+			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
+			 d:DesignHeight="660" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type={x:Type EIMV:MenuInstructionsModelView}}">
-    <Grid>
-            
-    </Grid>
+	<Grid Margin="60,0,20,0" Background="{Binding TextBackground, Source={StaticResource Runner}}" >
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<TextBlock Style="{StaticResource HeaderText}" Grid.Row="0" Margin="5" Text="{Binding ContentTitle}"/>
+		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="1" Margin="5" Text="{Binding ContentHelper}" FontWeight="Bold"/>
+		<CC:ContentRichTextBox Grid.Row="2" RTFContent="{Binding Content}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="3" Margin="5" Text="{Binding PostContent}" FontWeight="Bold"/>
+	</Grid>
 </UserControl>

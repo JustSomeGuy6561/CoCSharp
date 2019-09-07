@@ -2,6 +2,8 @@
 using CoC.Backend.Engine;
 using CoC.Backend.Settings;
 using CoC.Backend.Tools;
+using CoCWinDesktop.ContentWrappers;
+using CoCWinDesktop.ContentWrappers.OptionsRow;
 using CoCWinDesktop.CustomControls.SideBarModelViews;
 using CoCWinDesktop.DisplaySettings;
 using CoCWinDesktop.Engine;

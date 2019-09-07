@@ -1,16 +1,14 @@
 ﻿using CoC.Backend.Engine;
-using CoC.Frontend.UI.ControllerData;
 using CoC.UI;
+using CoCWinDesktop.ContentWrappers;
+using CoCWinDesktop.ContentWrappers.ButtonWrappers;
 using CoCWinDesktop.CustomControls;
 using CoCWinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -22,6 +20,8 @@ namespace CoCWinDesktop.ModelView
 {
 	public sealed class StandardModelView : ModelViewBase
 	{
+#warning The buttons at the top need to be rebound as automatic buttonwrappers so strings aren't static. 
+#warning Each sidebar item needs to be reworked to take simpledescriptors and a function call for when the language changed. 
 		//Input field uses the same font size as the rest of the game, plus or minus a set amount. To handle variable font size, we need to know how big to make our 
 		//textbox that the user can input things into, so we need to know roughly how many characters to allow. The longest name i could think of ("Christopher") is only
 		//13 Characters. The longest special character as of now is 10 characters ("Vahdunbrii"/"Rann Rayla"). It also need to be able to fit in the sidebar, so...
@@ -65,6 +65,20 @@ namespace CoCWinDesktop.ModelView
 		}
 		private BitmapImage _sprite = null;
 
+		private string spriteUri
+		{
+			get => _spriteUri;
+			set
+			{
+				if (_spriteUri != value)
+				{
+					_spriteUri = value;
+					sprite = ImageHelper.GetImage(_spriteUri);
+				}
+			}
+		}
+		private string _spriteUri;
+
 		#endregion
 
 		#region Output Field
@@ -99,10 +113,22 @@ namespace CoCWinDesktop.ModelView
 		}
 		private bool _showTopRow = true;
 
-		public ICommand GoToMainMenu => new RelayCommand(HandleMainMenu, () => true);
+		public ManualButtonWrapper MainMenuButton { get; } = new ManualButtonWrapper();
 
+		public string DataText
+		{
+			get => _DataText;
+			private set => CheckPropertyChanged(ref _DataText, value);
+		}
+		private string _DataText;
 		public ICommand GoToDataScreen => new RelayCommand(HandleData, () => true);
 
+		public string StatText
+		{
+			get => _StatText;
+			private set => CheckPropertyChanged(ref _StatText, value);
+		}
+		private string _StatText;
 		public ICommand DoStats => new RelayCommand(HandleStatsScreen, () => true);
 
 		public string LevelUpText
@@ -111,11 +137,22 @@ namespace CoCWinDesktop.ModelView
 			private set => CheckPropertyChanged(ref _LevelUpText, value);
 		}
 		private string _LevelUpText = "Level Up";
-
 		public ICommand DoLeveling => new RelayCommand(HandleLeveling, () => CanDoLeveling);
 
+		public string PerkText
+		{
+			get => _PerkText;
+			private set => CheckPropertyChanged(ref _PerkText, value);
+		}
+		private string _PerkText;
 		public ICommand DoPerks => new RelayCommand(HandlePerksScreen, () => true);
 
+		public string AppearanceText
+		{
+			get => _AppearanceText;
+			private set => CheckPropertyChanged(ref _AppearanceText, value);
+		}
+		private string _AppearanceText;
 		public ICommand DoAppearance => new RelayCommand(HandleAppearanceScreen, () => true);
 
 
@@ -136,9 +173,9 @@ namespace CoCWinDesktop.ModelView
 
 		#region Bottom Buttons
 
-		private readonly BottomButtonWrapper[] bottomButtonHolder = new BottomButtonWrapper[15];
+		private readonly ManualButtonWrapper[] bottomButtonHolder = new ManualButtonWrapper[15];
 
-		public ReadOnlyCollection<BottomButtonWrapper> BottomButtons { get; }
+		public ReadOnlyCollection<ManualButtonWrapper> BottomButtons { get; }
 		#endregion
 
 		#region ExtraControl Properties
@@ -181,6 +218,14 @@ namespace CoCWinDesktop.ModelView
 			private set => CheckPropertyChanged(ref _inputCharRegex, value);
 		}
 		private Regex _inputCharRegex;
+
+		public Regex StringValidRegex
+		{
+			get => _StringValidRegex;
+			private set => CheckPropertyChanged(ref _StringValidRegex, value);
+		}
+		private Regex _StringValidRegex;
+
 		public bool DropdownInUse
 		{
 			get => _dropdownInUse;
@@ -194,6 +239,7 @@ namespace CoCWinDesktop.ModelView
 		#region Private 
 
 		//private bool isLoadingStatus;
+		private int LastLanguageIndex;
 
 		private Controller controller => Controller.instance;
 
@@ -207,17 +253,19 @@ namespace CoCWinDesktop.ModelView
 			Controller controller = modelViewRunner.controller;
 			statDisplayParser = new StatDisplayParser(controller.statDataCollection);
 
+			LastLanguageIndex = LanguageEngine.currentLanguageIndex;
+
 			sideBar = statDisplayParser.GetSideBarBase(true, CoC.Frontend.UI.PlayerStatus.IDLE); //set it to the default to start with.
 
 			for (int x = 0; x < 15; x++)
 			{
-				bottomButtonHolder[x] = new BottomButtonWrapper();
+				bottomButtonHolder[x] = new ManualButtonWrapper();
 			}
 
 
 			DropdownWrapper = new ComboBoxWrapper(new List<ComboBoxItemWrapper>());
 
-			BottomButtons = new ReadOnlyCollection<BottomButtonWrapper>(bottomButtonHolder);
+			BottomButtons = new ReadOnlyCollection<ManualButtonWrapper>(bottomButtonHolder);
 
 		}
 
@@ -305,6 +353,7 @@ namespace CoCWinDesktop.ModelView
 					InputWidth = formattedText.Width + 6; //the offset for empty is 6. No Longer need to multiply by 4/3 b/c we're actually using ems now. 
 					InputText = controller.inputField.defaultInput;
 					InputCharRegex = controller.inputField.limitValidInputCharacters;
+					StringValidRegex = controller.inputField.checkTextForValidity;
 				}
 			}
 			else
@@ -345,11 +394,11 @@ namespace CoCWinDesktop.ModelView
 			{
 				if (!string.IsNullOrWhiteSpace(controller.SpriteName))
 				{
-					this.sprite = runner.GetSprite(controller.SpriteName);
+					spriteUri = runner.GetSpriteUriString(controller.SpriteName);
 				}
 				else
 				{
-					sprite = null;
+					spriteUri = null;
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(controller.CreatorName))

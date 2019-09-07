@@ -23,13 +23,15 @@ namespace CoC.Frontend.Engine
 			//clear all the extraneous data stored in the various engines in the backend. 
 			GameEngine.StartNewGame();
 
+			GameEngine.UnlockAchievement<Achievements.StartTheGameINeedAnAchievementForDebugging>();
+
 			SetPlayerStatus(PlayerStatus.IDLE);
 			HideMenu();
 			HideStats();
 
 			ClearOutput();
 			OutputText(NewGameHelperText.IntroText());
-			InputField.ActivateInputField(null, "", "");
+			InputField.ActivateInputField();
 			DropDownMenu.ActivateDropDownMenu(SpecialCharacters.SpecialCharacterDropDownList());
 			AddButton(0, GlobalStrings.OK(), ChooseName);
 		}

@@ -16,27 +16,27 @@ namespace CoCWinDesktop.CustomControls
 		public string ContentTitle
 		{
 			get => _contentTitle;
-			private set => CheckPropertyChanged(ref _contentTitle, value);
+			protected set => CheckPropertyChanged(ref _contentTitle, value);
 		}
 		private string _contentTitle = "";
 		public string ContentHelper
 		{
 			get => _contentHelper;
-			private set => CheckPropertyChanged(ref _contentHelper, value);
+			protected set => CheckPropertyChanged(ref _contentHelper, value);
 		}
 		private string _contentHelper = "";
 
 		public string Content
 		{
 			get => _content;
-			private set => CheckPropertyChanged(ref _content, value);
+			protected set => CheckPropertyChanged(ref _content, value);
 		}
 		private string _content = "";
 
 		public string PostContent
 		{
 			get => postContent;
-			private set => CheckPropertyChanged(ref postContent, value);
+			protected set => CheckPropertyChanged(ref postContent, value);
 		}
 		private string postContent = "";
 

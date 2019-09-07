@@ -18,11 +18,7 @@
 			<Setter Property="HorizontalAlignment" Value="Right"/>
 			<Setter Property="VerticalAlignment" Value="Top"/>
 		</Style>
-
-		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}" x:Key="StandardButtons">
-			<Setter Property="Visibility" Value="{Binding primaryButtonsVisible, Converter={StaticResource BoolToVisCollapsed}, Mode=OneWay}"/>
-		</Style>
-
+		
 		<DataTemplate DataType="{x:Type OMV:CustomizeControlsModelView}">
 			<OV:CustomizeControlsView/>
 		</DataTemplate>
@@ -63,37 +59,24 @@
 				<RowDefinition/>
 				<RowDefinition/>
 			</Grid.RowDefinitions>
-			<Button Grid.Column="0" Grid.Row="0" Content="{Binding ConfirmText}" Command="{Binding OnConfirmHandle}" 
-					Background="{StaticResource Button0Image}" IsTabStop="True" TabIndex="1">
-				<Button.Style>
-					<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
-						<Setter Property="Visibility" Value="Collapsed"/>
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding primaryButtonsVisible}" Value="False">
-								<Setter Property="Visibility" Value="Visible"/>
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</Button.Style>
-			</Button>
-			<Button Grid.Column="0" Style="{StaticResource StandardButtons}" Grid.Row="0" Content="{Binding LanguageText}" 
-					Background="{StaticResource Button0Image}" Command="{Binding OnLanguageHandle}" TabIndex="1" IsTabStop="True"/>
-			<Button Grid.Column="1" Style="{StaticResource StandardButtons}" Grid.Row="0" Content="{Binding GameplayText}" 
-					Background="{StaticResource Button1Image}" Command="{Binding OnGameplayHandle}" TabIndex="2" IsTabStop="True"/>
-
-			<Button Grid.Column="2" Style="{StaticResource StandardButtons}" Grid.Row="0" Content="{Binding InterfaceText}" 
-					Background="{StaticResource Button2Image}" Command="{Binding OnInterfaceHandle}" TabIndex="3" IsTabStop="True"/>
-
-			<Button Grid.Column="3" Style="{StaticResource StandardButtons}" Grid.Row="0" Content="{Binding FetishText}" 
-					Background="{StaticResource Button3Image}" Command="{Binding OnFetishHandle}" TabIndex="4" IsTabStop="True"/>
-			<Button Grid.Column="4" Style="{StaticResource StandardButtons}" Grid.Row="0" Content="{Binding SaveText}" 
-					Background="{StaticResource Button4Image}" Command="{Binding OnSaveOptionsHandle}" TabIndex="5" IsTabStop="True"/>
-			<Button Grid.Column="5" Style="{StaticResource StandardButtons}" Grid.Row="0" Content="{Binding CustomizeText}" 
-					Background="{StaticResource Button5Image}" Command="{Binding OnControlsHandle}" TabIndex="6" IsTabStop="True"/>
-			<Button Grid.Column="0" Style="{StaticResource StandardButtons}" Grid.Row="2" Content="Debugging" 
-					Background="{StaticResource Button10Image}" TabIndex="7" IsTabStop="True"/>
-			<Button Grid.Column="5" Style="{StaticResource StandardButtons}" Grid.Row="2" Content="{Binding ReturnText}" 
-					Background="{StaticResource Button14Image}" Command="{Binding OnReturnHandle}" TabIndex="8" IsTabStop="True"/>
+			<Button DataContext="{Binding ConfirmButton}" Style="{StaticResource ButtonWithHelperDataContext}"
+				Grid.Column="0" Grid.Row="0" Background="{StaticResource Button0Image}" IsTabStop="True" TabIndex="1"/>
+			<Button  DataContext="{Binding LanguageButton}" Style="{StaticResource ButtonWithHelperDataContext}" 
+				Grid.Column="0" Grid.Row="0" Background="{StaticResource Button0Image}" TabIndex="1" IsTabStop="True"/>
+			<Button DataContext="{Binding GameplayButton}" Style="{StaticResource ButtonWithHelperDataContext}"
+				Grid.Column="1" Grid.Row="0" Background="{StaticResource Button1Image}" TabIndex="2" IsTabStop="True"/>
+			<Button DataContext="{Binding InterfaceButton}" Style="{StaticResource ButtonWithHelperDataContext}" 
+				Grid.Column="2" Grid.Row="0" Background="{StaticResource Button2Image}" TabIndex="3" IsTabStop="True"/>
+			<Button DataContext="{Binding FetishButton}" Style="{StaticResource ButtonWithHelperDataContext}"
+				Grid.Column="3" Grid.Row="0" Background="{StaticResource Button3Image}" TabIndex="4" IsTabStop="True"/>
+			<Button DataContext="{Binding SaveButton}" Style="{StaticResource ButtonWithHelperDataContext}"
+				Grid.Column="4" Grid.Row="0" Background="{StaticResource Button4Image}" TabIndex="5" IsTabStop="True"/>
+			<Button DataContext="{Binding CustomControlsButton}" Style="{StaticResource ButtonWithHelperDataContext}"
+				Grid.Column="5" Grid.Row="0" Background="{StaticResource Button5Image}" TabIndex="6" IsTabStop="True"/>
+			<!--<Button DataContext="{Binding DebugButton}" Style="{StaticResource ButtonWithHelperDataContext}"
+				Grid.Column="0" Grid.Row="2" Background="{StaticResource Button10Image}" TabIndex="7" IsTabStop="True"/>-->
+			<Button DataContext="{Binding ReturnButton}" Style="{StaticResource ButtonWithHelperDataContext}"
+				Grid.Column="5" Grid.Row="2" Background="{StaticResource Button14Image}" TabIndex="8" IsTabStop="True"/>
 		</Grid>
 	</Canvas>
 </UserControl>		

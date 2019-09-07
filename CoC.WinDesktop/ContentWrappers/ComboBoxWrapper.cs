@@ -6,18 +6,13 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.Helpers
+namespace CoCWinDesktop.ContentWrappers
 {
+	//This class DOES exist on the language change options page, and therefore exists in the scope of a language changed. We should, therefore, worry about languages
+	//HOWEVER, this class is the rare exception because all its content is already localized. for all other cases where this exists, the language cannot be changed
+	//in the current scope, so it's irrelevant. 
 	public sealed class ComboBoxWrapper : NotifierBase
 	{
-		//string is still weird. it's apparently a class. 
-		public string Title
-		{
-			get => _title;
-			set => CheckPropertyChanged(ref _title, value);
-		}
-		private string _title;
-
 		private readonly ObservableCollection<ComboBoxItemWrapper> itemHolder = new ObservableCollection<ComboBoxItemWrapper>();
 		public ReadOnlyObservableCollection<ComboBoxItemWrapper> items { get; }
 
@@ -87,11 +82,13 @@ namespace CoCWinDesktop.Helpers
 		}
 	}
 
+	//Normally, I'd be worried about these not being language aware, because their views exist on the language select page and thus need to be language aware.
+	//However, these items will be the language itself - "English" is always "English", as is "Deutsch" or "Français", etc. So strings are fine here. 
 	public sealed class ComboBoxItemWrapper
 	{
 		public Action OnSelect { get; }
 
-		public string Title { get; set; }
+		public string Title { get; }
 
 		public ComboBoxItemWrapper(Action selectAction, string text)
 		{

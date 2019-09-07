@@ -1,5 +1,6 @@
 ﻿using CoC.Frontend.UI;
 using CoC.Frontend.UI.ControllerData;
+using CoCWinDesktop.ContentWrappers;
 using CoCWinDesktop.CustomControls;
 using CoCWinDesktop.Helpers;
 using System;
@@ -30,19 +31,19 @@ namespace CoCWinDesktop.ModelView
 		}
 		private bool _ShowSidebar = true;
 
-		public ReadOnlyCollection<SaveDisplayData> gameSaves
+		public ReadOnlyCollection<SaveDisplayDataWrapper> gameSaves
 		{
 			get => _gameSaves;
 			private set => CheckPropertyChanged(ref _gameSaves, value);
 		}
-		private ReadOnlyCollection<SaveDisplayData> _gameSaves;
+		private ReadOnlyCollection<SaveDisplayDataWrapper> _gameSaves;
 
 		//for now. 
 #pragma warning disable IDE0044 // Add readonly modifier
-		private List<SaveDisplayData> gameSavesHolder;
+		private List<SaveDisplayDataWrapper> gameSavesHolder;
 #pragma warning restore IDE0044 // Add readonly modifier
 
-		public SaveDisplayData selectedItem
+		public SaveDisplayDataWrapper selectedItem
 		{
 			get => _selectedItem;
 			set
@@ -53,7 +54,7 @@ namespace CoCWinDesktop.ModelView
 				}
 			}
 		}
-		private SaveDisplayData _selectedItem;
+		private SaveDisplayDataWrapper _selectedItem;
 
 		private StatDataCollectionBase displaySource
 		{
@@ -119,8 +120,8 @@ namespace CoCWinDesktop.ModelView
 			sideBar = statDisplayParser.GetSideBarBase(true, PlayerStatus.IDLE);
 
 			//load the data into gameSavesHolder
-			gameSavesHolder = new List<SaveDisplayData>();
-			gameSaves = new ReadOnlyCollection<SaveDisplayData>(gameSavesHolder);
+			gameSavesHolder = new List<SaveDisplayDataWrapper>();
+			gameSaves = new ReadOnlyCollection<SaveDisplayDataWrapper>(gameSavesHolder);
 
 			displaySource = emptyDisplay;
 		}

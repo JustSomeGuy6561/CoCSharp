@@ -6,13 +6,13 @@
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.OptionsViews"
              xmlns:OMV="clr-namespace:CoCWinDesktop.CustomControls.OptionsModelViews"
              xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
-			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
+			 xmlns:CW="clr-namespace:CoCWinDesktop.ContentWrappers"
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
 			 mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type=OMV:CustomizeControlsModelView}">
 	<UserControl.Resources>
-		<DataTemplate DataType="{x:Type Help:HotKeyWrapper}">
+		<DataTemplate DataType="{x:Type CW:HotKeyWrapper}">
 			<CC:HotkeyControl/>
 		</DataTemplate>
 	</UserControl.Resources>

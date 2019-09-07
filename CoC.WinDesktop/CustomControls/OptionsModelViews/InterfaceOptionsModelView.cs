@@ -1,5 +1,7 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
+using CoCWinDesktop.ContentWrappers.ButtonWrappers;
+using CoCWinDesktop.ContentWrappers.OptionsRow;
 using CoCWinDesktop.Engine;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.InterfaceSettings;
@@ -60,9 +62,9 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 		private SimpleDescriptor displayOptionTextSource => InterfaceStrings.AdjustDisplayOptionsText;
 
 
-		public ICommand OnDisplayButton { get; }
+		public LanguageAwareButtonWrapper DisplayButton { get; }
 
-		public ReadOnlyCollection<OptionsRowBase> interfaceOptions { get; }
+		public ReadOnlyCollection<OptionsRowWrapperBase> interfaceOptions { get; }
 
 
 		public InterfaceOptionsModelView(ModelViewRunner modelViewRunner, OptionsModelView optionsModelView) : base(modelViewRunner, optionsModelView)
@@ -75,12 +77,11 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 			_InterfaceOptionsText = TitleText();
 			_InterfaceOptionsHelper = TitleHelperText();
 
+			DisplayButton = parent.DisplayButton;
 
-			OnDisplayButton = parent.OnDisplayHandle;
+			List<OptionsRowWrapperBase> data = InterfaceOptionManager.interfaceOptions.Select(x => OptionsRowWrapperBase.BuildOptionRow(x.name, x.globalSetting)).ToList();
 
-			List<OptionsRowBase> data = InterfaceOptionManager.interfaceOptions.Select(x => OptionsRowBase.BuildOptionRow(x.name, x.globalSetting)).ToList();
-
-			interfaceOptions = new ReadOnlyCollection<OptionsRowBase>(data);
+			interfaceOptions = new ReadOnlyCollection<OptionsRowWrapperBase>(data);
 
 		}
 

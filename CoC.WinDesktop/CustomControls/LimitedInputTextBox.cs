@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace CoCWinDesktop.CustomControls
 {
@@ -18,6 +19,63 @@ namespace CoCWinDesktop.CustomControls
 			set => SetCurrentValue(LimitCharactersRegexProperty, value);
 		}
 
+		public static readonly DependencyProperty ValidStringRegexProperty = DependencyProperty.Register("ValidStringRegex", typeof(Regex), typeof(LimitedInputTextBox),
+			new FrameworkPropertyMetadata(new Regex(".*"), FrameworkPropertyMetadataOptions.AffectsRender, OnValidStringRegexChanged));
+
+		private static void OnValidStringRegexChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			(o as LimitedInputTextBox).CheckText();
+		}
+
+		public Regex ValidStringRegex
+		{
+			get => (Regex)GetValue(ValidStringRegexProperty);
+			set => SetCurrentValue(ValidStringRegexProperty, value);
+		}
+
+		private static readonly DependencyPropertyKey IsTextValidPropertyKey = DependencyProperty.RegisterReadOnly("IsTextValid", typeof(bool), typeof(LimitedInputTextBox),
+			new FrameworkPropertyMetadata(true));
+
+		public static readonly DependencyProperty IsTextValidProperty = IsTextValidPropertyKey.DependencyProperty;
+		public bool IsTextValid => (bool)GetValue(IsTextValidProperty);
+
+		public static readonly DependencyProperty InvalidTextBorderBrushProperty = DependencyProperty.Register("InvalidTextBorderBrush", typeof(Brush),
+			typeof(LimitedInputTextBox), new FrameworkPropertyMetadata(new SolidColorBrush(Colors.Red), FrameworkPropertyMetadataOptions.AffectsRender));
+
+		public Brush InvalidTextBorderBrush
+		{
+			get => (Brush)GetValue(InvalidTextBorderBrushProperty);
+			set => SetCurrentValue(InvalidTextBorderBrushProperty, value);
+		}
+
+		public LimitedInputTextBox()
+		{
+			ContextMenu = null;
+			//CommandBinding binding = new CommandBinding(ApplicationCommands.Paste);
+			//binding.CanExecute += CanPaste;
+			//CommandBindings.Add(binding);
+			DataObject.AddPastingHandler(this, CanPaste);
+			this.TextChanged += LimitedInputTextBox_TextChanged;
+
+			if (ValidStringRegex != null)
+			{
+				SetValue(IsTextValidPropertyKey, ValidStringRegex.IsMatch(Text));
+			}
+		}
+
+		private void LimitedInputTextBox_TextChanged(object _, TextChangedEventArgs __)
+		{
+			CheckText();
+		}
+
+		private void CheckText()
+		{
+			if (ValidStringRegex != null)
+			{
+				SetValue(IsTextValidPropertyKey, ValidStringRegex.IsMatch(Text));
+			}
+		}
+
 		protected override void OnPreviewTextInput(TextCompositionEventArgs e)
 		{
 			if (LimitCharactersRegex != null)
@@ -30,40 +88,6 @@ namespace CoCWinDesktop.CustomControls
 			}
 			base.OnPreviewTextInput(e);
 		}
-
-		public LimitedInputTextBox()
-		{
-			ContextMenu = null;
-			//CommandBinding binding = new CommandBinding(ApplicationCommands.Paste);
-			//binding.CanExecute += CanPaste;
-			//CommandBindings.Add(binding);
-			DataObject.AddPastingHandler(this, CanPaste);
-			//this.KeyDown += LimitedInputTextBox_KeyDown;
-			//InputManager.Current.PostProcessInput += Current_PostProcessInput;
-		}
-
-		//private void LimitedInputTextBox_KeyDown(object sender, KeyEventArgs e)
-		//{
-		//	//if (e.OriginalSource == this)
-		//	//{
-		//	//	RaiseEvent(new TextCompositionEventArgs(e.KeyboardDevice,
-		//	//		new TextComposition(InputManager.Current, this,))
-		//	//	{
-		//	//		RoutedEvent = TextCompositionManager.TextInputEvent
-		//	//	});
-		//	//}
-		//}
-
-		//private void Current_PostProcessInput(object sender, ProcessInputEventArgs e)
-		//{
-		//	//if (e.StagingItem.Input.Handled) return;
-
-		//	if (e.StagingItem.Input.RoutedEvent == Keyboard.KeyDownEvent)
-		//	{
-		//		OnKeyDown((KeyEventArgs)e.StagingItem.Input);
-		//	}
-
-		//}
 
 		private void CanPaste(object sender, DataObjectPastingEventArgs e)
 		{
@@ -83,7 +107,7 @@ namespace CoCWinDesktop.CustomControls
 		//{
 		//	e.Parameter
 		//	if ()
-		//	e.CanExecute = false;
+		//		e.CanExecute = false;
 		//	e.Handled = true;
 		//}
 	}

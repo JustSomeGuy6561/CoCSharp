@@ -1,12 +1,13 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Settings;
+using CoCWinDesktop.Helpers;
 using System;
 using System.Diagnostics;
 
-namespace CoCWinDesktop.Helpers
+namespace CoCWinDesktop.ContentWrappers.OptionsRow
 {
 
-	public abstract class OptionsRowBase : NotifierBase
+	public abstract class OptionsRowWrapperBase : NotifierBase
 	{
 		//public string activeItemDescription
 		//{
@@ -19,13 +20,13 @@ namespace CoCWinDesktop.Helpers
 		private readonly SimpleDescriptor nameDesc;
 
 
-		protected OptionsRowBase(SimpleDescriptor optionName)
+		protected OptionsRowWrapperBase(SimpleDescriptor optionName)
 		{
 			nameDesc = optionName ?? throw new ArgumentNullException(nameof(optionName));
 			//_displayMode = defaultMode;
 		}
 
-		public static OptionsRowBase BuildOptionRow(SimpleDescriptor name, SettingBase setting)
+		public static OptionsRowWrapperBase BuildOptionRow(SimpleDescriptor name, SettingBase setting)
 		{
 			if (setting is null) return null;
 

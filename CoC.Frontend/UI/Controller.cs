@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using CoC.Backend.GameCredits;
+using CoC.Frontend.Engine;
 
 namespace CoC.UI
 {
@@ -129,6 +130,8 @@ namespace CoC.UI
 			return new AppearanceData();
 		}
 
+		public ReadOnlyCollection<InstructionItem> GetInstructions() => InstructionsEtc.instructions;
+
 		public bool AchievementsUnlockedChanged => AchievementData.QueryData(out _achievementData);
 
 		public AchievementData achievementData => _achievementData;
@@ -154,6 +157,7 @@ namespace CoC.UI
 			DropDownMenu.QueryStatus(out _dropDownMenu);
 			DropDownMenu.QueryPostText(out _postControlText);
 			SpriteAndCreditsOutput.QuerySpriteCreditData(out _spriteName, out _creatorText);
+			AchievementData.QueryData(out _achievementData);
 		}
 
 		public void DoNewGame()

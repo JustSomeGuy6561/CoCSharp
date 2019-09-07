@@ -7,6 +7,7 @@
 			 xmlns:MV="clr-namespace:CoCWinDesktop.ModelView"
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
+			 xmlns:CW="clr-namespace:CoCWinDesktop.ContentWrappers"
 			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
 			 mc:Ignorable="d"
 			 d:DataContext="{d:DesignInstance Type=MV:DataModelView}"
@@ -37,8 +38,8 @@
 					  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
 			<ListBox ItemsSource="{Binding Path=SaveItems, Mode=OneWay}" SelectedItem="{Binding Path=SelectedSave, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent">
 				<ListBox.ItemTemplate>
-					<DataTemplate DataType="{x:Type Help:SaveDisplayData}">
-						<Help:SaveDisplay/>
+					<DataTemplate DataType="{x:Type CW:SaveDisplayDataWrapper}">
+						<CC:SaveDisplay/>
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>

@@ -10,7 +10,7 @@
 			 d:DesignHeight="800" d:DesignWidth="1000"
 			 Style="{StaticResource PageControl}">
 	<UserControl.Resources>
-		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}">
+		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonWithHelperDataContext}">
 			<Setter Property="Background" Value="{StaticResource Button0Image}"/>
 			<Setter Property="Margin" Value="4,4,4,0"/>
 		</Style>
@@ -88,14 +88,15 @@
 					<RowDefinition/>
 					<RowDefinition/>
 				</Grid.RowDefinitions>
-				<Button Grid.Row="0" Grid.Column="0" Name="ContinueBtn" ToolTip="Robin" Command="{Binding CanContinue}" Content="Continue"/>
-				<Button Grid.Row="0" Grid.Column="1" Name="NewGameBtn" ToolTip="Robin" Command="{Binding OnNewGame}" Content="New Game" />
-				<Button Grid.Row="0" Grid.Column="2" Name="DataBtn" ToolTip="Robin" Command="{Binding OnData}" Content="Data"/>
-				<Button Grid.Row="0" Grid.Column="3" Name="OptionsBtn" ToolTip="Robin" Command="{Binding OptionsCommand}" Content="Options" />
-				<Button Grid.Row="1" Grid.Column="0" Name="AchievementsBtn" ToolTip="Robin" Command="{Binding OnAchievements}" Content="Achievements" />
-				<Button Grid.Row="1" Grid.Column="1" Name="InstructionsBtn" ToolTip="Robin" Command="{Binding OnInstructions}" Content="Instructions" />
-				<Button Grid.Row="1" Grid.Column="2" Name="CreditsBtn" ToolTip="Robin" Command="{Binding OnCredits}" Content="Credits"/>
-				<Button Grid.Row="1" Grid.Column="3" Name="ModThreadBtn" ToolTip="Robin" IsEnabled="True" Content="Mod Thread" Click="ModThreadBtn_Click" />
+				<!-- I found it easier to basically just create a style and automatically bind these objects - i already had the wrapper class for the standard view, so why not use it?-->
+				<Button DataContext="{Binding Path=ContinueButton}" Grid.Row="0" Grid.Column="0" />
+				<Button DataContext="{Binding Path=NewGameButton}" Grid.Row="0" Grid.Column="1" />
+				<Button DataContext="{Binding Path=DataButton}" Grid.Row="0" Grid.Column="2" />
+				<Button DataContext="{Binding Path=OptionsButton}" Grid.Row="0" Grid.Column="3" />
+				<Button DataContext="{Binding Path=AchievementsButton}" Grid.Row="1" Grid.Column="0" />
+				<Button DataContext="{Binding Path=InstructionsButton}" Grid.Row="1" Grid.Column="1" />
+				<Button DataContext="{Binding Path=CreditsButton}" Grid.Row="1" Grid.Column="2" />
+				<Button DataContext="{Binding Path=ModThreadButton}" Grid.Row="1" Grid.Column="3" />
 			</Grid>
 			<TextBlock Grid.Row="4" Style="{StaticResource CreditText}" FontSize="20" FontWeight="Bold">
 			<Hyperlink Foreground ="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TextBlock}}" FontSize="20" NavigateUri="http://www.fenoxo.com" RequestNavigate="Hyperlink_RequestNavigate">www.fenoxo.com</Hyperlink>

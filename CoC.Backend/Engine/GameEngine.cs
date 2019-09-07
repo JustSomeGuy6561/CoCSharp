@@ -221,7 +221,7 @@ namespace CoC.Backend.Engine
 			_currentPlayer = null;
 		}
 
-		internal static void FinalizeInitialization()
+		internal static void PostSaveInit()
 		{
 			globalAchievements = new AchievementCollection();
 		}
@@ -285,11 +285,11 @@ namespace CoC.Backend.Engine
 			}
 		}
 
-		public static ReadOnlyCollection<AchievementBase> GetUnlockedAchievements()
+		public static bool QueryUnlockedAchievements(out ReadOnlyCollection<AchievementBase> unlockedAchievements)
 		{
-			return globalAchievements.unlockedAchievements;
+			unlockedAchievements = globalAchievements.unlockedAchievements;
+			return globalAchievements.QueryNewAchievementsUnlocked();
 		}
-
 
 		public static bool RegisterLazyListener(ITimeLazyListener listener)
 		{

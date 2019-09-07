@@ -1,41 +1,42 @@
-﻿using CoC.Backend;
-using CoC.Backend.Engine;
-using CoCWinDesktop.CustomControls;
-using CoCWinDesktop.CustomControls.OptionsModelViews;
+﻿using CoC.Backend.Engine;
+using CoCWinDesktop.ContentWrappers.ButtonWrappers;
+using CoCWinDesktop.Helpers;
 using System;
-using System.Diagnostics;
 using System.Windows.Input;
 
 namespace CoCWinDesktop.ModelView
 {
-	public class MainMenuModelView : ModelViewBase
+	public sealed partial class MainMenuModelView : ModelViewBase
 	{
+		private const string MOD_THREAD_URL = "https://forum.fenoxo.com/threads/coc-revamp-mod.3/";
+
 		private int LastLanguageIndex;
 
 		private SafeAction resumeCallback => runner.resumeGameAction;
 
-		public ICommand CanContinue { get; }
+		public AutomaticButtonWrapper ContinueButton { get; }
+		public AutomaticButtonWrapper NewGameButton { get; }
+		public AutomaticButtonWrapper DataButton { get; }
+		public AutomaticButtonWrapper OptionsButton { get; }
+		public AutomaticButtonWrapper AchievementsButton { get; }
+		public AutomaticButtonWrapper InstructionsButton { get; }
+		public AutomaticButtonWrapper CreditsButton { get; }
+		public AutomaticButtonWrapper ModThreadButton { get; }
 
-		public ICommand OnNewGame { get; }
-		public ICommand OptionsCommand { get; }
-
-		public ICommand OnData { get; }
-
-		public ICommand OnInstructions { get; }
-		public ICommand OnCredits { get; }
-		public ICommand OnAchievements { get; }
 
 		public MainMenuModelView(ModelViewRunner runner) : base(runner)
 		{
 			runner.PropertyChanged += Runner_PropertyChanged;
-			CanContinue = new RelayCommand(resumeCallbackWrapper, () => resumeCallback != null);
-			OnNewGame = new RelayCommand(newGameCallbackWrapper, returnTrue);
 
-			OnData = new RelayCommand(dataCallbackWrapper, returnTrue);
-			OnInstructions = new RelayCommand(handleInstructions, returnTrue);
-			OnCredits = new RelayCommand(handleCredits, returnTrue);
-			OnAchievements = new RelayCommand(handleAchievements, returnTrue);
-			OptionsCommand = new RelayCommand(optionsCallbackWrapper, returnTrue);
+			ContinueButton = new AutomaticButtonWrapper(ContinueBtnText, resumeCallbackWrapper, ContinueButtonTip, null, resumeCallback != null, false);
+
+			NewGameButton = new AutomaticButtonWrapper(newGameBtnText, newGameCallbackWrapper, NewGameBtnTip, null);
+			DataButton = new AutomaticButtonWrapper(DataButtonText, dataCallbackWrapper, DataButtonTip, null);
+			OptionsButton = new AutomaticButtonWrapper(OptionsButtonText, optionsCallbackWrapper, OptionsButtonTip, null);
+			AchievementsButton = new AutomaticButtonWrapper(AchievementsButtonText, handleAchievements, AchievementsButtonTip, null);
+			InstructionsButton = new AutomaticButtonWrapper(InstructionsButtonText, handleInstructions, InstructionsButtonTip, null);
+			CreditsButton = new AutomaticButtonWrapper(CreditsButtonText, handleCredits, CreditsButtonTip, null);
+			ModThreadButton = new AutomaticButtonWrapper(ModThreadButtonText, handleModUrl, ModThreadButtonTip, null);
 
 			LastLanguageIndex = LanguageEngine.currentLanguageIndex;
 		}
@@ -44,7 +45,7 @@ namespace CoCWinDesktop.ModelView
 		{
 			if (e.PropertyName == nameof(runner.resumeGameAction))
 			{
-				((RelayCommand)CanContinue).RaiseExecuteChanged();
+				ContinueButton.SetEnabled(resumeCallback != null);
 			}
 		}
 
@@ -78,6 +79,11 @@ namespace CoCWinDesktop.ModelView
 			runner.SwitchToCredits();
 		}
 
+		private void handleModUrl()
+		{
+			UrlHelper.OpenURL(MOD_THREAD_URL);
+		}
+
 		private static bool returnTrue()
 		{
 			return true;
@@ -88,24 +94,13 @@ namespace CoCWinDesktop.ModelView
 			runner.SwitchToStandard(false);
 		}
 
-		private void OnViewSwitch()
-		{
-
-			UpdateContent();
-		}
-
 		protected override void ParseDataForDisplay()
 		{
 			if (LanguageEngine.currentLanguageIndex != LastLanguageIndex)
 			{
 				LastLanguageIndex = LanguageEngine.currentLanguageIndex;
-				UpdateContent();
+				//handle content that needs it. 
 			}
-		}
-
-		private void UpdateContent()
-		{
-
 		}
 	}
 }

@@ -1,28 +1,25 @@
-﻿using CoCWinDesktop.CustomControls;
+﻿using CoCWinDesktop.ContentWrappers.ButtonWrappers;
+using CoCWinDesktop.CustomControls;
 using CoCWinDesktop.CustomControls.OptionsModelViews;
+using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace CoCWinDesktop.ModelView
 {
 	public sealed partial class OptionsModelView : ModelViewBase
 	{
-		public RelayCommand OnGameplayHandle { get; }
+		public LanguageAwareButtonWrapper DisplayButton { get; }
 
-		public RelayCommand OnInterfaceHandle { get; }
-
-		public RelayCommand OnDisplayHandle { get; }
-
-		public RelayCommand OnFetishHandle { get; }
-		public RelayCommand OnControlsHandle { get; }
-		public RelayCommand OnSaveOptionsHandle { get; }
-		public RelayCommand OnLanguageHandle { get; }
-
-
-		//special case that does weird shit.
-		public RelayCommand OnConfirmHandle { get; }
-		//public RelayCommand OnCancelHandle { get; } //we _should_ have a cancel button, but supporting that seems like a lot of work lol. 
-
-		public RelayCommand OnReturnHandle { get; }
+		public LanguageAwareButtonWrapper ConfirmButton { get; }
+		public LanguageAwareButtonWrapper LanguageButton { get; }
+		public LanguageAwareButtonWrapper GameplayButton { get; }
+		public LanguageAwareButtonWrapper InterfaceButton { get; }
+		public LanguageAwareButtonWrapper FetishButton { get; }
+		public LanguageAwareButtonWrapper SaveButton { get; }
+		public LanguageAwareButtonWrapper CustomControlsButton { get; }
+		//public LanguageAwareButtonWrapper DebugButton { get; }
+		public LanguageAwareButtonWrapper ReturnButton { get; }
 
 		public OptionModelViewDataBase subModelView
 		{
@@ -41,109 +38,83 @@ namespace CoCWinDesktop.ModelView
 
 		private OptionModelViewDataBase previousSubModel;
 
+
 		private readonly LanguageOptionsModelView languageOptions;
-		public string LanguageText => languageOptions.ButtonText();
-
 		private readonly GameplayOptionsModelView gameplayOptions;
-		public string GameplayText => gameplayOptions.ButtonText();
-
 		private readonly InterfaceOptionsModelView interfaceOptions;
-		public string InterfaceText => interfaceOptions.ButtonText();
-
 		private readonly DisplayOptionsModelView displayOptions;
-		public string DisplayText => displayOptions.ButtonText();
-
 		private readonly FetishOptionsModelView fetishOptions;
-		public string FetishText => fetishOptions.ButtonText();
-
 		private readonly SaveOptionsModelView saveOptions;
-		public string SaveText => saveOptions.ButtonText();
-
 		private readonly CustomizeControlsModelView customizeControls;
-		public string CustomizeText => customizeControls.ButtonText();
 
-		public string ConfirmText => ConfirmTextStr();
+		private readonly Dictionary<OptionModelViewDataBase, LanguageAwareButtonWrapper> contentToButtonLookup;
 
-		public string ReturnText => ReturnTextStr();
-
-		public bool primaryButtonsVisible
-		{
-			get => _primaryButtonsVisible;
-			private set
-			{
-				if (CheckPrimitivePropertyChanged(ref _primaryButtonsVisible, value))
-				{
-					OnConfirmHandle.RaiseExecuteChanged();
-				}
-			}
-		}
-		private bool _primaryButtonsVisible = true;
-
-		private readonly Dictionary<OptionModelViewDataBase, RelayCommand> contentToCommandLookup;
+		private readonly List<LanguageAwareButtonWrapper> allButtons;
+		private readonly List<LanguageAwareButtonWrapper> primaryButtons;
 
 		public OptionsModelView(ModelViewRunner modelViewRunner) : base(modelViewRunner)
 		{
-			//order of operations matters. we'll do the confirm and return first because they don't require anything to be initialized to work.
-			OnConfirmHandle = new RelayCommand(HandleConfirmChanges, ConfirmEnabled);
 
-			OnReturnHandle = new RelayCommand(HandleReturn, () => true); //note: it will be collapsed when not available, thus unclickable. 
 
-			//commands require their respective modelview be initialized, so we do them after the modelview initializer. 
-			//display is a part of interface, so we need to create it before interface. 
 			displayOptions = new DisplayOptionsModelView(runner, this);
-			OnDisplayHandle = new RelayCommand(() => SwitchDisplay(displayOptions), () => true);
+			DisplayButton = new LanguageAwareButtonWrapper(displayOptions.ButtonText, () => SwitchDisplay(displayOptions), null, null);
 
 			languageOptions = new LanguageOptionsModelView(runner, this);
-			OnLanguageHandle = GenerateCommand(languageOptions);
+			LanguageButton = new LanguageAwareButtonWrapper(languageOptions.ButtonText, () => SwitchDisplay(languageOptions), null, null);
 
 			gameplayOptions = new GameplayOptionsModelView(runner, this);
-			OnGameplayHandle = GenerateCommand(gameplayOptions);
+			GameplayButton = new LanguageAwareButtonWrapper(gameplayOptions.ButtonText, () => SwitchDisplay(gameplayOptions), null, null);
 
 			interfaceOptions = new InterfaceOptionsModelView(runner, this);
-			OnInterfaceHandle = GenerateCommand(interfaceOptions);
+			InterfaceButton = new LanguageAwareButtonWrapper(interfaceOptions.ButtonText, () => SwitchDisplay(interfaceOptions), null, null);
 
 			fetishOptions = new FetishOptionsModelView(runner, this);
-			OnFetishHandle = GenerateCommand(fetishOptions);
+			FetishButton = new LanguageAwareButtonWrapper(fetishOptions.ButtonText, () => SwitchDisplay(fetishOptions), null, null);
 
 			saveOptions = new SaveOptionsModelView(runner, this);
-			OnSaveOptionsHandle = GenerateCommand(saveOptions);
+			SaveButton = new LanguageAwareButtonWrapper(saveOptions.ButtonText, () => SwitchDisplay(saveOptions), null, null);
 
 			customizeControls = new CustomizeControlsModelView(runner, this);
-			OnControlsHandle = GenerateCommand(customizeControls);
+			CustomControlsButton = new LanguageAwareButtonWrapper(customizeControls.ButtonText, () => SwitchDisplay(customizeControls), null, null);
+
+			ConfirmButton = new LanguageAwareButtonWrapper(ConfirmTextStr, HandleConfirmChanges, null, null);
+			ReturnButton = new LanguageAwareButtonWrapper(ReturnTextStr, HandleReturn, null, null);
+
+			allButtons = new List<LanguageAwareButtonWrapper>()
+			{
+				LanguageButton, GameplayButton, InterfaceButton, FetishButton, SaveButton, ConfirmButton, /*DebugButton,*/ ReturnButton, DisplayButton, CustomControlsButton
+			};
+
+			primaryButtons = new List<LanguageAwareButtonWrapper>()
+			{
+				LanguageButton, GameplayButton, InterfaceButton, FetishButton, SaveButton, ReturnButton, /*DebugButton,*/ DisplayButton, CustomControlsButton
+			};
+
 
 			//this requires both the option and the command to be initialized, so it's last. 
-			contentToCommandLookup = new Dictionary<OptionModelViewDataBase, RelayCommand>()
+			contentToButtonLookup = new Dictionary<OptionModelViewDataBase, LanguageAwareButtonWrapper>()
 			{
-				[languageOptions] = OnLanguageHandle,
-				[gameplayOptions] = OnGameplayHandle,
-				[interfaceOptions] = OnInterfaceHandle,
-				[fetishOptions] = OnFetishHandle,
-				[saveOptions] = OnSaveOptionsHandle,
-				[customizeControls] = OnControlsHandle,
-				[displayOptions] = OnDisplayHandle,
+				[languageOptions] = LanguageButton,
+				[gameplayOptions] = GameplayButton,
+				[interfaceOptions] = InterfaceButton,
+				[fetishOptions] = FetishButton,
+				[saveOptions] = SaveButton,
+				[customizeControls] = CustomControlsButton,
+				[displayOptions] = DisplayButton,
+				//[debugOptions] = DebugButton,
 			};
 
 			_subModelView = gameplayOptions;
+			contentToButtonLookup[subModelView].SetEnabled(false);
+
+			UpdateButtonVisibility(_subModelView.requiresConfirmation);
 		}
 
 		public void OnLanguageChange()
 		{
-			RaisePropertyChanged(nameof(LanguageText));
-			RaisePropertyChanged(nameof(GameplayText));
-			RaisePropertyChanged(nameof(InterfaceText));
-			RaisePropertyChanged(nameof(DisplayText));
-			RaisePropertyChanged(nameof(FetishText));
-			RaisePropertyChanged(nameof(SaveText));
-			RaisePropertyChanged(nameof(CustomizeText));
-			RaisePropertyChanged(nameof(ConfirmText));
-			RaisePropertyChanged(nameof(ReturnText));
+			allButtons.ForEach(x => x.OnLanguageChanged());
 
 			subModelView.ParseDataForDisplay();
-		}
-
-		private RelayCommand GenerateCommand(OptionModelViewDataBase target)
-		{
-			return new RelayCommand(() => SwitchDisplay(target), () => CheckButtonEnabled(target));
 		}
 
 
@@ -152,21 +123,12 @@ namespace CoCWinDesktop.ModelView
 			if (newDisplay != subModelView)
 			{
 				var oldView = subModelView;
-				//update the buttons.
-				if (newDisplay.requiresConfirmation)
-				{
-					primaryButtonsVisible = false;
-					//update the confirm button target.
-				}
-				else
-				{
-					primaryButtonsVisible = true;
-				}
+				UpdateButtonVisibility(newDisplay.requiresConfirmation);
 
 				subModelView = newDisplay;
 				//update the buttons' enabled properties. 
-				contentToCommandLookup[oldView].RaiseExecuteChanged();
-				contentToCommandLookup[subModelView].RaiseExecuteChanged();
+				contentToButtonLookup[oldView].SetEnabled(true);
+				contentToButtonLookup[subModelView].SetEnabled(false);
 				ParseData();
 			}
 		}
@@ -182,11 +144,6 @@ namespace CoCWinDesktop.ModelView
 			SwitchDisplay(previousSubModel);
 		}
 
-		private bool ConfirmEnabled()
-		{
-			return !primaryButtonsVisible;
-		}
-
 		private void HandleReturn()
 		{
 			runner.SwitchToMainMenu();
@@ -195,15 +152,19 @@ namespace CoCWinDesktop.ModelView
 		protected override void ParseDataForDisplay()
 		{
 			subModelView.ParseDataForDisplay();
-			if (subModelView.requiresConfirmation)
+			UpdateButtonVisibility(subModelView.requiresConfirmation);
+		}
+
+		private void UpdateButtonVisibility(bool requiresConfirmation)
+		{
+			Visibility visibility = requiresConfirmation ? Visibility.Collapsed : Visibility.Visible;
+			foreach (var button in primaryButtons)
 			{
-				primaryButtonsVisible = false;
-				//update the confirm button target.
+				button.SetVisibility(visibility);
 			}
-			else
-			{
-				primaryButtonsVisible = true;
-			}
+
+			visibility = requiresConfirmation ? Visibility.Visible : Visibility.Collapsed;
+			ConfirmButton.SetVisibility(visibility);
 		}
 	}
 }

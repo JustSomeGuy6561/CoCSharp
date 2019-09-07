@@ -12,10 +12,13 @@ namespace CoC.Backend.Achievements
 		public readonly ReadOnlyCollection<AchievementBase> unlockedAchievements;
 		private readonly List<AchievementBase> achievementStore;
 
+		private bool achievementsChanged = false;
+
 		internal AchievementCollection()
 		{
 			achievementStore = new List<AchievementBase>();
 			unlockedAchievements = new ReadOnlyCollection<AchievementBase>(achievementStore);
+			achievementsChanged = false;
 		}
 
 		internal bool AddAchievement(AchievementBase achievement)
@@ -23,9 +26,17 @@ namespace CoC.Backend.Achievements
 			if (!achievementStore.Contains(achievement))
 			{
 				achievementStore.Add(achievement);
+				achievementsChanged = true;
 				return true;
 			}
 			return false;
+		}
+
+		internal bool QueryNewAchievementsUnlocked()
+		{
+			bool retVal = achievementsChanged;
+			achievementsChanged = false;
+			return retVal;
 		}
 	}
 }

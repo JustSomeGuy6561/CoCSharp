@@ -1,4 +1,5 @@
-﻿using CoCWinDesktop.Helpers;
+﻿using CoCWinDesktop.ContentWrappers;
+using CoCWinDesktop.Helpers;
 using System;
 using System.IO;
 using System.Text;
@@ -105,6 +106,15 @@ namespace CoCWinDesktop.CustomControls
 		{
 			get => (Regex)GetValue(LimitCharactersRegexProperty);
 			set => SetCurrentValue(LimitCharactersRegexProperty, value);
+		}
+
+		public static readonly DependencyProperty StringValidRegexProperty = DependencyProperty.Register("StringValidRegex", typeof(Regex), typeof(TextView),
+			new FrameworkPropertyMetadata(defaultValue: null));
+
+		public Regex StringValidRegex
+		{
+			get => (Regex)GetValue(StringValidRegexProperty);
+			set => SetCurrentValue(StringValidRegexProperty, value);
 		}
 
 

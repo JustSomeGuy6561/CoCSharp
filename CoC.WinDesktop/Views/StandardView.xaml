@@ -11,25 +11,13 @@
 			 d:DataContext="{d:DesignInstance Type=MV:StandardModelView}"
 			 Style="{StaticResource PageControl}"
 			 Name="_this">
-	<!--xmlns:Behave="clr-namespace:CoCWinDesktop.Behaviors"
-			 Behave:FocusBehavior.FocusFirst="True"-->
 	<UserControl.Resources>
 		<Conv:DrawingColorToMediaColorIgnoreAlpha x:Key="ColorConverter" />
 		<Conv:VisibilityFromIsNull x:Key="NullToVis"/>
 		<Conv:VisibilityFromBool x:Key="BoolToVis"/>
-		
+
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}"/>
 	</UserControl.Resources>
-	<!--<UserControl.CommandBindings>
-		<CommandBinding Command="{x:Static local:StandardView.TestCommand}"
-                    Executed="ExecuteWrappedCommand"
-                    CanExecute="CanExecuteCustomCommand" />
-	</UserControl.CommandBindings>
-	<UserControl.InputBindings>
-		<KeyBinding Key="D1" Command="{x:Static local:StandardView.TestCommand}"/>
-		<KeyBinding Key="D2" Command="{Binding BottomButtons[1].ClickCommand, Mode=OneWay}"/>
-		<KeyBinding Key="D3" Command="{Binding Path=BottomButtons[2].ClickCommand, Mode=OneTime}"/>
-	</UserControl.InputBindings>-->
 	<Canvas Style="{StaticResource CoCCanvas}">
 		<Grid Name="TopRowButtons" Width="982" Canvas.Left="0" Height="50" Visibility="{Binding Path=showTopRow, Converter={StaticResource BoolToVis}, Mode=OneWay}">
 			<Grid.ColumnDefinitions>
@@ -68,7 +56,7 @@
 				LimitCharactersRegex="{Binding Path=InputCharRegex, Mode=OneWay}"
 				InputFieldText="{Binding Path=InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 				DropdownVisible="{Binding Path=DropdownInUse, Mode=OneWay}"
-				DropdownContainer="{Binding Path=DropdownWrapper, Mode=OneWay}" />
+				DropdownContainer="{Binding Path=DropdownWrapper, Mode=OneWay}" StringValidRegex="{Binding StringValidRegex, Mode=OneWay}" />
 		<Grid Canvas.Left="208" Canvas.Bottom="0" Width="769" Height="132">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
@@ -82,110 +70,36 @@
 				<RowDefinition/>
 				<RowDefinition/>
 			</Grid.RowDefinitions>
-			<Button Name="BottomButton0" Grid.Column="0" Grid.Row="0" IsTabStop="True" TabIndex="10" Background="{StaticResource Button0Image}"
-					Visibility ="{Binding Path=BottomButtons[0].visibility}"
-					Content="{Binding Path=BottomButtons[0].Title, FallbackValue='Button 0'}"
-					Command="{Binding Path=BottomButtons[0].ClickCommand, Mode=OneTime}"
-					IsDefault="True">
-				<!--IsDefault="{Binding Path=BottomButtons[0].isDefault, FallbackValue = false}">-->
-			</Button>
-			<Button Name="BottomButton1" Grid.Column="1" Grid.Row="0" IsTabStop="True" TabIndex="11"  Background="{StaticResource Button1Image}"
-					Visibility ="{Binding Path=BottomButtons[1].visibility}"
-					Content="{Binding Path=BottomButtons[1].Title, FallbackValue='Button 1'}"
-					Command="{Binding Path=BottomButtons[1].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[1].isDefault, FallbackValue = false}">-->
-			</Button>
-			<Button Name="BottomButton2" Grid.Column="2" Grid.Row="0" IsTabStop="True" TabIndex="12" Background="{StaticResource Button2Image}"
-					Visibility ="{Binding Path=BottomButtons[2].visibility}"
-					Content="{Binding Path=BottomButtons[2].Title, FallbackValue='Button 2'}"
-					Command="{Binding Path=BottomButtons[2].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[2].isDefault, FallbackValue = false}">-->
-				
-			</Button>
-			<Button Name="BottomButton3" Grid.Column="3" Grid.Row="0" IsTabStop="True" TabIndex="13" Background="{StaticResource Button3Image}"
-					Visibility ="{Binding Path=BottomButtons[3].visibility}"
-					Content="{Binding Path=BottomButtons[3].Title, FallbackValue='Button 3'}"
-					Command="{Binding Path=BottomButtons[3].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[3].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton4" Grid.Column="4" Grid.Row="0" IsTabStop="True" TabIndex="14" Background="{StaticResource Button4Image}"
-					Visibility ="{Binding Path=BottomButtons[4].visibility}"
-					Content="{Binding Path=BottomButtons[4].Title, FallbackValue='Button 4'}"
-					Command="{Binding Path=BottomButtons[4].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[4].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton5" Grid.Column="0" Grid.Row="1" IsTabStop="True" TabIndex="15" Background="{StaticResource Button5Image}"
-					Visibility ="{Binding Path=BottomButtons[5].visibility}"
-					Content="{Binding Path=BottomButtons[5].Title, FallbackValue='Button 5'}"
-					Command="{Binding Path=BottomButtons[5].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[5].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton6" Grid.Column="1" Grid.Row="1" IsTabStop="True" TabIndex="16" Background="{StaticResource Button6Image}"
-					Visibility ="{Binding Path=BottomButtons[6].visibility}"
-					Content="{Binding Path=BottomButtons[6].Title, FallbackValue='Button 6'}"
-					Command="{Binding Path=BottomButtons[6].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[6].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton7" Grid.Column="2" Grid.Row="1" IsTabStop="True" TabIndex="17" Background="{StaticResource Button7Image}"
-					Visibility ="{Binding Path=BottomButtons[7].visibility}"
-					Content="{Binding Path=BottomButtons[7].Title, FallbackValue='Button 7'}"
-					Command="{Binding Path=BottomButtons[7].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[7].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton8" Grid.Column="3" Grid.Row="1" IsTabStop="True" TabIndex="18" Background="{StaticResource Button8Image}"
-					Visibility ="{Binding Path=BottomButtons[8].visibility}"
-					Content="{Binding Path=BottomButtons[8].Title, FallbackValue='Button 8'}"
-					Command="{Binding Path=BottomButtons[8].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[8].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton9" Grid.Column="4" Grid.Row="1" IsTabStop="True" TabIndex="19" Background="{StaticResource Button9Image}"
-					Visibility ="{Binding Path=BottomButtons[9].visibility}"
-					Content="{Binding Path=BottomButtons[9].Title, FallbackValue='Button 9'}"
-					Command="{Binding Path=BottomButtons[9].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[9].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton10" Grid.Column="0" Grid.Row="2" IsTabStop="True" TabIndex="20" Background="{StaticResource Button10Image}"
-					Visibility ="{Binding Path=BottomButtons[10].visibility}"
-					Content="{Binding Path=BottomButtons[10].Title, FallbackValue='Button 10'}"
-					Command="{Binding Path=BottomButtons[10].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[10].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton11" Grid.Column="1" Grid.Row="2" IsTabStop="True" TabIndex="21" Background="{StaticResource Button11Image}"
-					Visibility ="{Binding Path=BottomButtons[11].visibility}"
-					Content="{Binding Path=BottomButtons[11].Title, FallbackValue='Button 11'}"
-					Command="{Binding Path=BottomButtons[11].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[11].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton12" Grid.Column="2" Grid.Row="2" IsTabStop="True" TabIndex="22" Background="{StaticResource Button12Image}"
-					Visibility ="{Binding Path=BottomButtons[12].visibility}"
-					Content="{Binding Path=BottomButtons[12].Title, FallbackValue='Button 12'}"
-					Command="{Binding Path=BottomButtons[12].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[12].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton13" Grid.Column="3" Grid.Row="2" IsTabStop="True" TabIndex="23" Background="{StaticResource Button13Image}"
-					Visibility ="{Binding Path=BottomButtons[13].visibility}"
-					Content="{Binding Path=BottomButtons[13].Title, FallbackValue='Button 13'}"
-					Command="{Binding Path=BottomButtons[13].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[13].isDefault, FallbackValue = false}"-->
-				
-			</Button>
-			<Button Name="BottomButton14" Grid.Column="4" Grid.Row="2" IsTabStop="True" TabIndex="24" Background="{StaticResource Button14Image}"
-					Visibility ="{Binding Path=BottomButtons[14].visibility}"
-					Content="{Binding Path=BottomButtons[14].Title, FallbackValue='Button 14'}"
-					Command="{Binding Path=BottomButtons[14].ClickCommand, Mode=OneTime}">
-				<!--IsDefault="{Binding Path=BottomButtons[14].isDefault, FallbackValue = false}"-->
-				
-			</Button>
+			<Button Name="BottomButton0" DataContext="{Binding Path=BottomButtons[0]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="0" Grid.Row="0"  Background="{StaticResource Button0Image}" IsTabStop="True" TabIndex="10" />
+			<Button Name="BottomButton1" DataContext="{Binding Path=BottomButtons[1]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="1" Grid.Row="0" IsTabStop="True" TabIndex="11"  Background="{StaticResource Button1Image}"/>
+			<Button Name="BottomButton2" DataContext="{Binding Path=BottomButtons[2]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="2" Grid.Row="0" IsTabStop="True" TabIndex="12" Background="{StaticResource Button2Image}"/>
+			<Button Name="BottomButton3" DataContext="{Binding Path=BottomButtons[3]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="3" Grid.Row="0" IsTabStop="True" TabIndex="13" Background="{StaticResource Button3Image}"/>
+			<Button Name="BottomButton4" DataContext="{Binding Path=BottomButtons[4]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="4" Grid.Row="0" IsTabStop="True" TabIndex="14" Background="{StaticResource Button4Image}"/>
+			<Button Name="BottomButton5" DataContext="{Binding Path=BottomButtons[5]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="0" Grid.Row="1" IsTabStop="True" TabIndex="15" Background="{StaticResource Button5Image}"/>
+			<Button Name="BottomButton6" DataContext="{Binding Path=BottomButtons[6]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="1" Grid.Row="1" IsTabStop="True" TabIndex="16" Background="{StaticResource Button6Image}"/>
+			<Button Name="BottomButton7" DataContext="{Binding Path=BottomButtons[7]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="2" Grid.Row="1" IsTabStop="True" TabIndex="17" Background="{StaticResource Button7Image}"/>
+			<Button Name="BottomButton8" DataContext="{Binding Path=BottomButtons[8]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="3" Grid.Row="1" IsTabStop="True" TabIndex="18" Background="{StaticResource Button8Image}"/>
+			<Button Name="BottomButton9" DataContext="{Binding Path=BottomButtons[9]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="4" Grid.Row="1" IsTabStop="True" TabIndex="19" Background="{StaticResource Button9Image}"/>
+			<Button Name="BottomButton10" DataContext="{Binding Path=BottomButtons[10]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="0" Grid.Row="2" IsTabStop="True" TabIndex="20" Background="{StaticResource Button10Image}"/>
+			<Button Name="BottomButton11" DataContext="{Binding Path=BottomButtons[11]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="1" Grid.Row="2" IsTabStop="True" TabIndex="21" Background="{StaticResource Button11Image}"/>
+			<Button Name="BottomButton12" DataContext="{Binding Path=BottomButtons[12]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="2" Grid.Row="2" IsTabStop="True" TabIndex="22" Background="{StaticResource Button12Image}"/>
+			<Button Name="BottomButton13" DataContext="{Binding Path=BottomButtons[13]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="3" Grid.Row="2" IsTabStop="True" TabIndex="23" Background="{StaticResource Button13Image}"/>
+			<Button Name="BottomButton14" DataContext="{Binding Path=BottomButtons[14]}" Style="{StaticResource ButtonWithHelperDataContext}" 
+					Grid.Column="4" Grid.Row="2" IsTabStop="True" TabIndex="24" Background="{StaticResource Button14Image}"/>
 		</Grid>
 	</Canvas>
 </UserControl>

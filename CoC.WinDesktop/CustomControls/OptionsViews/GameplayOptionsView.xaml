@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.OptionsViews"
 			 xmlns:OMV="clr-namespace:CoCWinDesktop.CustomControls.OptionsModelViews"
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
-			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
+			 xmlns:OR="clr-namespace:CoCWinDesktop.ContentWrappers.OptionsRow"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type=OMV:GameplayOptionsModelView}">
@@ -34,10 +34,10 @@
 		<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="3" Grid.Column="0" Style="{StaticResource ScrollbarWithSpace}">
 			<ItemsControl Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Stretch"  ItemsSource="{Binding gameplayOptions}">
 				<ItemsControl.Resources>
-					<DataTemplate DataType="{x:Type Help:OptionsRowButtonWrapper }">
+					<DataTemplate DataType="{x:Type OR:OptionsRowButtonWrapper }">
 						<CC:OptionRowButtons Margin="10"/>
 					</DataTemplate>
-					<DataTemplate DataType="{x:Type Help:OptionsRowSliderWrapper}">
+					<DataTemplate DataType="{x:Type OR:OptionsRowSliderWrapper}">
 						<CC:OptionRowSlider Margin="10"/>
 					</DataTemplate>
 				</ItemsControl.Resources>

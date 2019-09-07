@@ -1,4 +1,5 @@
-﻿using CoCWinDesktop.CustomControls;
+﻿using CoCWinDesktop.ContentWrappers.ButtonWrappers;
+using CoCWinDesktop.CustomControls;
 using CoCWinDesktop.CustomControls.ExtraItemModelViews;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace CoCWinDesktop.ModelView
 {
 	public sealed class ExtraMenuItemsModelView : ModelViewBase
 	{
+		public AutomaticButtonWrapper OkButton { get; }
+
 		//public Extra
 		public ExtraItemModelViewBase subModel
 		{
@@ -26,15 +29,13 @@ namespace CoCWinDesktop.ModelView
 		private readonly MenuCreditsModelView credits;
 		private readonly MenuInstructionsModelView instructions;
 
-		public ICommand returnCommand { get; }
-
 		public ExtraMenuItemsModelView(ModelViewRunner modelViewRunner) : base(modelViewRunner)
 		{
 			credits = new MenuCreditsModelView(modelViewRunner, this);
 			instructions = new MenuInstructionsModelView(modelViewRunner, this);
 			achievements = new MenuAchievementsModelView(modelViewRunner, this);
 
-			returnCommand = new RelayCommand(handleReturn, () => true);
+			OkButton = new AutomaticButtonWrapper(CoC.Backend.Strings.GlobalStrings.OK, handleReturn, unlockedLockedTipCallback:null, null, defaultButton:true);
 
 			_subModel = achievements;
 		}

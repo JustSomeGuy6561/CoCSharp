@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.OptionsViews"
 			 xmlns:OMV="clr-namespace:CoCWinDesktop.CustomControls.OptionsModelViews"
-			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
+			 xmlns:OR="clr-namespace:CoCWinDesktop.ContentWrappers.OptionsRow"
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000"
@@ -27,10 +27,10 @@
 				<ItemsControl.Resources>
 					<CollectionViewSource x:Key="InterfaceItems" Source="{Binding interfaceOptions}"/>
 
-					<DataTemplate DataType="{x:Type Help:OptionsRowButtonWrapper }">
+					<DataTemplate DataType="{x:Type OR:OptionsRowButtonWrapper }">
 						<CC:OptionRowButtons Margin="10"/>
 					</DataTemplate>
-					<DataTemplate DataType="{x:Type Help:OptionsRowSliderWrapper}">
+					<DataTemplate DataType="{x:Type OR:OptionsRowSliderWrapper}">
 						<CC:OptionRowSlider Margin="10"/>
 					</DataTemplate>
 				</ItemsControl.Resources>
@@ -49,9 +49,8 @@
 								VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="0"/>
 							<TextBlock Style="{StaticResource SettingText}" Text="{Binding DisplayOptionsHelperText}" TextAlignment="Right"
 								VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="1" TextWrapping="Wrap"/>
-							<Button Style="{StaticResource CoCButton}" MinWidth="150" Margin="10" Width="Auto" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-									Background="{StaticResource Button0Image}"  Content="{Binding DisplayOptionsBtnText}" Command="{Binding OnDisplayButton}" 
-									TabIndex="0" IsTabStop="True"/>
+							<Button Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding DisplayButton}" MinWidth="150" Margin="10" 
+								Width="Auto" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Background="{StaticResource Button0Image}" TabIndex="0" IsTabStop="True"/>
 						</Grid>
 						<CollectionContainer Collection="{Binding Source={StaticResource InterfaceItems}}"/>
 					</CompositeCollection>

@@ -1,6 +1,7 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
 using CoC.Backend.Settings;
+using CoCWinDesktop.ContentWrappers.OptionsRow;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.ModelView;
 using System;
@@ -57,25 +58,25 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 
 
-		public ReadOnlyCollection<OptionsRowBase> gameplayOptions
+		public ReadOnlyCollection<OptionsRowWrapperBase> gameplayOptions
 		{
 			get => _gameplayOptions;
 			private set => CheckPropertyChanged(ref _gameplayOptions, value);
 		}
-		private ReadOnlyCollection<OptionsRowBase> _gameplayOptions;
+		private ReadOnlyCollection<OptionsRowWrapperBase> _gameplayOptions;
 
-		private readonly ReadOnlyCollection<OptionsRowBase> sessionOptions;
-		private readonly ReadOnlyCollection<OptionsRowBase> globalOptions;
+		private readonly ReadOnlyCollection<OptionsRowWrapperBase> sessionOptions;
+		private readonly ReadOnlyCollection<OptionsRowWrapperBase> globalOptions;
 
 		public GameplayOptionsModelView(ModelViewRunner modelViewRunner, OptionsModelView optionsModelView) : base(modelViewRunner, optionsModelView)
 		{
 			ReadOnlyCollection<GameplaySetting> gameplaySettings = runner.controller.GetGameplaySettings();
 
-			List<OptionsRowBase> options = gameplaySettings.Select(item => OptionsRowBase.BuildOptionRow(item.name, item.localSetting)).Where(x => x != null).ToList();
-			sessionOptions = new ReadOnlyCollection<OptionsRowBase>(options);
+			List<OptionsRowWrapperBase> options = gameplaySettings.Select(item => OptionsRowWrapperBase.BuildOptionRow(item.name, item.localSetting)).Where(x => x != null).ToList();
+			sessionOptions = new ReadOnlyCollection<OptionsRowWrapperBase>(options);
 
-			options = gameplaySettings.Select(item => OptionsRowBase.BuildOptionRow(item.name, item.globalSetting)).Where(x => x != null).ToList();
-			globalOptions = new ReadOnlyCollection<OptionsRowBase>(options);
+			options = gameplaySettings.Select(item => OptionsRowWrapperBase.BuildOptionRow(item.name, item.globalSetting)).Where(x => x != null).ToList();
+			globalOptions = new ReadOnlyCollection<OptionsRowWrapperBase>(options);
 
 			lastLanguageIndex = LanguageEngine.currentLanguageIndex;
 
