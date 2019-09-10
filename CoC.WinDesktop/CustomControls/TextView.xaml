@@ -47,7 +47,8 @@
 			<Setter Property="TabIndex" Value="6"/>
 		</Style>
 	</UserControl.Resources>
-	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="{Binding Height, ElementName=_this}" Width="{Binding Width, ElementName=_this}" Style="{StaticResource ScrollbarWithSpace}">
+	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="{Binding Height, ElementName=_this}" 
+		Width="{Binding Width, ElementName=_this}" Style="{StaticResource ScrollbarWithSpace}">
 		<Grid Focusable="False" HorizontalAlignment="Stretch">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>

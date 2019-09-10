@@ -8,7 +8,8 @@
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000"
-			 d:DataContext="{d:DesignInstance Type=OMV:LanguageOptionsModelView}">
+			 d:DataContext="{d:DesignInstance Type=OMV:LanguageOptionsModelView}"
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<UserControl.Resources>
 		<Style x:Key="FakeTextZone" TargetType="{x:Type CC:TextView}">
 			<Setter Property="Background" Value="{Binding TextBackground, Mode=OneWay, Source={StaticResource Runner}}"/>

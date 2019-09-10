@@ -4,7 +4,8 @@
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:SBV="clr-namespace:CoCWinDesktop.CustomControls.SideBarViews"
 			 xmlns:SBMV="clr-namespace:CoCWinDesktop.CustomControls.SideBarModelViews"
-			 Name="_this">
+			 Name="_this"
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<UserControl.Resources>
 		<DataTemplate DataType="{x:Type SBMV:StandardSideBarModelView}">
 			<SBV:StandardSideBarView/>
@@ -16,6 +17,16 @@
 			<SBV:EnemySideBarView/>
 		</DataTemplate>-->
 	</UserControl.Resources>
-	
-	<ContentControl FocusVisualStyle="{x:Null}" Content="{Binding SideBarObject, ElementName=_this, Mode=OneWay}" Background="Blue"/>
+
+	<ContentControl FocusVisualStyle="{x:Null}" Content="{Binding SideBarObject, ElementName=_this, Mode=OneWay, TargetNullValue={x:Null}}">
+		<ContentControl.Resources>
+			<Style TargetType="{x:Type ContentControl}">
+				<Style.Triggers>
+					<Trigger Property="Content" Value="{x:Null}">
+						<Setter Property="Visibility" Value="Collapsed"/>
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+		</ContentControl.Resources>
+	</ContentControl>
 </UserControl>

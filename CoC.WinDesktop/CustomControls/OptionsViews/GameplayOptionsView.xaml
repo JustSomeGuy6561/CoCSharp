@@ -9,7 +9,8 @@
 			 xmlns:OR="clr-namespace:CoCWinDesktop.ContentWrappers.OptionsRow"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000"
-			 d:DataContext="{d:DesignInstance Type=OMV:GameplayOptionsModelView}">
+			 d:DataContext="{d:DesignInstance Type=OMV:GameplayOptionsModelView}"
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<UserControl.Resources>
 		<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource CoCText}"/>
 	</UserControl.Resources>

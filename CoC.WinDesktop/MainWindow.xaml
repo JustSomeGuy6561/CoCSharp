@@ -21,9 +21,6 @@
 		<DataTemplate DataType="{x:Type MV:StandardModelView}">
 			<Views:StandardView/>
 		</DataTemplate>
-		<DataTemplate DataType="{x:Type MV:CombatModelView}">
-			<Views:CombatView/>
-		</DataTemplate>
 		<DataTemplate DataType="{x:Type MV:DataModelView}">
 			<Views:DataView/>
 		</DataTemplate>

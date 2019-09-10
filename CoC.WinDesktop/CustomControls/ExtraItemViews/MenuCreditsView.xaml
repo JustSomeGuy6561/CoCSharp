@@ -8,7 +8,8 @@
 			 xmlns:EIMV="clr-namespace:CoCWinDesktop.CustomControls.ExtraItemModelViews"
              mc:Ignorable="d" 
              d:DesignHeight="660" d:DesignWidth="1000"
-			 d:DataContext="{d:DesignInstance Type={x:Type EIMV:MenuCreditsModelView}}">
+			 d:DataContext="{d:DesignInstance Type={x:Type EIMV:MenuCreditsModelView}}"
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<Grid Margin="60,0,20,0" Background="{Binding TextBackground, Source={StaticResource Runner}}" >
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>

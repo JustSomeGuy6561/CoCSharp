@@ -4,7 +4,8 @@
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls.SideBarViews"
 			 xmlns:CW="clr-namespace:CoCWinDesktop.ContentWrappers"
 			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
-			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters">
+			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<UserControl.Resources>
 		<!-- Couldn't figure out how to hard-code these into the targetnullvalues so they're here.-->
 		<SolidColorBrush x:Key="MinDefault" Color="#C00000"/>

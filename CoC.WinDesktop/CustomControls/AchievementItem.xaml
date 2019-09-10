@@ -7,7 +7,8 @@
 			 xmlns:Help="clr-namespace:CoCWinDesktop.Helpers"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="920"
-			 d:DataContext="{d:DesignInstance Type=Help:AchievementWrapper}">
+			 d:DataContext="{d:DesignInstance Type=Help:AchievementWrapper}"
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<Grid Height="Auto" Margin="0,5">
 		<Grid.Style>
 			<Style TargetType="Grid">

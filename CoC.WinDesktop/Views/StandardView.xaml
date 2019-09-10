@@ -15,10 +15,16 @@
 		<Conv:DrawingColorToMediaColorIgnoreAlpha x:Key="ColorConverter" />
 		<Conv:VisibilityFromIsNull x:Key="NullToVis"/>
 		<Conv:VisibilityFromBool x:Key="BoolToVis"/>
+		<Conv:VisibilityFromBoolCollapsed x:Key="BoolToVisCollapsed"/>
 
 		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource CoCButton}"/>
+
+		<Style x:Key="BottomButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonWithHelperDataContext}">
+			<Setter Property="Margin" Value="2"/>
+		</Style>
+		
 	</UserControl.Resources>
-	<Canvas Style="{StaticResource CoCCanvas}">
+	<!--<Canvas Style="{StaticResource CoCCanvas}">
 		<Grid Name="TopRowButtons" Width="982" Canvas.Left="0" Height="50" Visibility="{Binding Path=showTopRow, Converter={StaticResource BoolToVis}, Mode=OneWay}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
@@ -36,10 +42,10 @@
 			<Button Name="PerksBtn" Grid.Column="4" Content="Perks" Background="{StaticResource Button4Image}" Command="{Binding Path=DoPerks, Mode=OneTime}"/>
 			<Button Name="AppearanceBtn" Grid.Column="5" Content="Appearance" Background="{StaticResource Button5Image}" Command="{Binding Path=DoAppearance, Mode=OneTime}"/>
 
-		</Grid>
-		<!-- This will show up as SideBarObject in code - i had to remove it to make prison work in a sane fashion - i could have made it all use the same code but that was ugly-->
-		<!-- So instead, it's a custom control with a content control as its base. Naturally that means the designer has no idea what it'll look like until run time. -->
-		<CC:SideBar Canvas.Top="50" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
+		</Grid>-->
+		 <!--This will show up as SideBarObject in code - i had to remove it to make prison work in a sane fashion - i could have made it all use the same code but that was ugly
+		 So instead, it's a custom control with a content control as its base. Naturally that means the designer has no idea what it'll look like until run time.--> 
+		<!--<CC:SideBar Canvas.Top="50" Height="600" Width="205" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
 		<Canvas Name="CreditText" Canvas.Left="4" Canvas.Top="654" Height="58" Width="200" Visibility="{Binding Path=authorText, Mode=OneWay, Converter={StaticResource NullToVis}}">
 			<TextBlock Name="SceneBy" Style="{StaticResource CoCText}" Canvas.Top="0" Canvas.Left="0" FontSize="20" FontWeight="Bold" FontFamily="Georgia" Text="Scene By:"/>
 			<TextBlock Style="{StaticResource CoCText}" Canvas.Top="24" Canvas.Left="0" FontSize="16" FontFamily="Arial" Text="{Binding Path=authorText, Mode=OneWay}"/>
@@ -101,5 +107,133 @@
 			<Button Name="BottomButton14" DataContext="{Binding Path=BottomButtons[14]}" Style="{StaticResource ButtonWithHelperDataContext}" 
 					Grid.Column="4" Grid.Row="2" IsTabStop="True" TabIndex="24" Background="{StaticResource Button14Image}"/>
 		</Grid>
-	</Canvas>
+	</Canvas>-->
+	<Grid Style="{StaticResource CoCGrid}">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="Auto"/>
+		</Grid.ColumnDefinitions>
+		<Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+			<Grid Name="TopRowButtons" Width="982" HorizontalAlignment="Center" Height="50" Visibility="{Binding Path=showTopRow, Converter={StaticResource BoolToVis}, Mode=OneWay}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				<Button Grid.Column="0" Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding MainMenuButton}" Background="{StaticResource Button0Image}"/>
+				<Button Grid.Column="1" Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding DataButton}" Background="{StaticResource Button1Image}" />
+				<Button Grid.Column="2" Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding StatsButton}" Background="{StaticResource Button2Image}" />
+				<Button Grid.Column="3" Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding LevelingButton}" Background="{StaticResource Button3Image}" />
+				<Button Grid.Column="4" Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding PerksButton}" Background="{StaticResource Button4Image}" />
+				<Button Grid.Column="5" Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding AppearanceButton}" Background="{StaticResource Button5Image}" />
+			</Grid>
+		</Grid>
+		<CC:SideBar Grid.Row="1" Grid.Column="0" SideBarObject="{Binding Path=sideBar, Mode=OneWay}" Visibility="{Binding Path=ShowSidebar, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
+		<CC:TextView Grid.Column="1" Grid.Row="1" x:Name="MainContent"
+				Background="{Binding TextBackground, Mode=OneWay, Source={StaticResource Runner}}"
+				MainText="{Binding Path=output, Mode=OneWay}" 
+				MainImage="{Binding Path=bitmap, Mode=OneWay}"
+				PostControlText="{Binding Path=postControlText, Mode=OneWay}"
+				InputFieldVisible="{Binding Path=InputInUse, Mode=OneWay}"
+				InputCalculatedWidth="{Binding Path=InputWidth, Mode=OneWay}"
+				InputFieldMaxLength="{Binding Path=InputMaxLen, Mode=OneWay}"
+				LimitCharactersRegex="{Binding Path=InputCharRegex, Mode=OneWay}"
+				InputFieldText="{Binding Path=InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				DropdownVisible="{Binding Path=DropdownInUse, Mode=OneWay}"
+				DropdownContainer="{Binding Path=DropdownWrapper, Mode=OneWay}" StringValidRegex="{Binding StringValidRegex, Mode=OneWay}">
+			<CC:TextView.Style>
+				<Style TargetType="{x:Type CC:TextView}">
+					<Setter Property="Margin" Value="2"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding ShowEnemySidebar}" Value="False">
+							<Setter Property="Margin" Value="2,2,20,2"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</CC:TextView.Style>
+		</CC:TextView>
+		<CC:SideBar Grid.Row="1" Grid.Column="2" SideBarObject="{Binding Path=enemySideBar, Mode=OneWay}" Visibility="{Binding Path=ShowEnemySidebar, Converter={StaticResource BoolToVisCollapsed}}"/>
+		<!--<Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="132">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>-->
+		<Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+			
+			</Grid.ColumnDefinitions>
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<TextBlock Grid.Row="0" Grid.Column="0" FontSize="20" FontWeight="Bold" FontFamily="Georgia" Text="{Binding SceneByText}"
+				 Visibility="{Binding Path=authorText, Mode=OneWay, Converter={StaticResource NullToVis}}"/>
+				<TextBlock Height="10" Style="{StaticResource CoCText}" Grid.Row="1" Grid.Column="0" FontSize="16" FontFamily="Arial" 
+					Text="{Binding Path=authorText, Mode=OneWay}" Visibility="{Binding Path=authorText, Mode=OneWay, Converter={StaticResource NullToVis}}"/>
+				<Image Margin="4,4,4,4" Grid.Column="0" Grid.Row="2" Height="80" Width="80" HorizontalAlignment="Left" StretchDirection="Both" Stretch="Uniform" Source="{Binding Path=sprite, Mode=OneWay, TargetNullValue={x:Null}}"/>
+			</Grid>
+			<Grid Margin="2,2,18,2" Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Height="128" VerticalAlignment="Top">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Button Name="BottomButton0" DataContext="{Binding Path=BottomButtons[0]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="0" Grid.Row="0"  Background="{StaticResource Button0Image}" IsTabStop="True" TabIndex="10" />
+				<Button Name="BottomButton1" DataContext="{Binding Path=BottomButtons[1]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="1" Grid.Row="0" IsTabStop="True" TabIndex="11"  Background="{StaticResource Button1Image}"/>
+				<Button Name="BottomButton2" DataContext="{Binding Path=BottomButtons[2]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="2" Grid.Row="0" IsTabStop="True" TabIndex="12" Background="{StaticResource Button2Image}"/>
+				<Button Name="BottomButton3" DataContext="{Binding Path=BottomButtons[3]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="3" Grid.Row="0" IsTabStop="True" TabIndex="13" Background="{StaticResource Button3Image}"/>
+				<Button Name="BottomButton4" DataContext="{Binding Path=BottomButtons[4]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="4" Grid.Row="0" IsTabStop="True" TabIndex="14" Background="{StaticResource Button4Image}"/>
+				<Button Name="BottomButton5" DataContext="{Binding Path=BottomButtons[5]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="0" Grid.Row="1" IsTabStop="True" TabIndex="15" Background="{StaticResource Button5Image}"/>
+				<Button Name="BottomButton6" DataContext="{Binding Path=BottomButtons[6]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="1" Grid.Row="1" IsTabStop="True" TabIndex="16" Background="{StaticResource Button6Image}"/>
+				<Button Name="BottomButton7" DataContext="{Binding Path=BottomButtons[7]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="2" Grid.Row="1" IsTabStop="True" TabIndex="17" Background="{StaticResource Button7Image}"/>
+				<Button Name="BottomButton8" DataContext="{Binding Path=BottomButtons[8]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="3" Grid.Row="1" IsTabStop="True" TabIndex="18" Background="{StaticResource Button8Image}"/>
+				<Button Name="BottomButton9" DataContext="{Binding Path=BottomButtons[9]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="4" Grid.Row="1" IsTabStop="True" TabIndex="19" Background="{StaticResource Button9Image}"/>
+				<Button Name="BottomButton10" DataContext="{Binding Path=BottomButtons[10]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="0" Grid.Row="2" IsTabStop="True" TabIndex="20" Background="{StaticResource Button10Image}"/>
+				<Button Name="BottomButton11" DataContext="{Binding Path=BottomButtons[11]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="1" Grid.Row="2" IsTabStop="True" TabIndex="21" Background="{StaticResource Button11Image}"/>
+				<Button Name="BottomButton12" DataContext="{Binding Path=BottomButtons[12]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="2" Grid.Row="2" IsTabStop="True" TabIndex="22" Background="{StaticResource Button12Image}"/>
+				<Button Name="BottomButton13" DataContext="{Binding Path=BottomButtons[13]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="3" Grid.Row="2" IsTabStop="True" TabIndex="23" Background="{StaticResource Button13Image}"/>
+				<Button Name="BottomButton14" DataContext="{Binding Path=BottomButtons[14]}" Style="{StaticResource BottomButtonStyle}" 
+					Grid.Column="4" Grid.Row="2" IsTabStop="True" TabIndex="24" Background="{StaticResource Button14Image}"/>
+			</Grid>
+		</Grid>
+	</Grid>
 </UserControl>

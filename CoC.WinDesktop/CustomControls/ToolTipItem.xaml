@@ -8,10 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="240" d:DesignWidth="350"
 			 d:DataContext="{d:DesignInstance Type=Help:ToolTipWrapper}"
-			 Background="Transparent"
-			 BorderBrush="Transparent"
-			 BorderThickness="0"
-			 x:Name="FickleShit">
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<Canvas Height="240" Width="350" Background="{StaticResource ToolTipBg}">
 		<Grid Canvas.Left="15" Canvas.Top="15" Width="320" Height="210">
 			<Grid.RowDefinitions>

@@ -42,9 +42,6 @@ namespace CoCWinDesktop.Views
 		//as well, so we don't need to deal with updating them when the users update their hotkeys. Will need a way to capture the modifiers and shit they hit.
 		private readonly List<KeyBinding> hotKeys;
 
-		//private readonly Button[] bottomButtons;
-		private readonly Dictionary<Button, HotKeyWrapper> buttonHotKeyWrapper;
-
 		public StandardView()
 		{
 			InitializeComponent();
@@ -71,10 +68,7 @@ namespace CoCWinDesktop.Views
 			};
 
 
-			hotKeys = new List<KeyBinding>()
-			{
-				
-			};
+			hotKeys = new List<KeyBinding>();
 
 			foreach (var pair in bottomButtons)
 			{

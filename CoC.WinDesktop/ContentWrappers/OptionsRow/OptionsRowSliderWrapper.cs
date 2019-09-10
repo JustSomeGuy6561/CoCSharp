@@ -3,6 +3,8 @@ using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
+using System.Windows.Media;
 
 namespace CoCWinDesktop.ContentWrappers.OptionsRow
 {
@@ -11,7 +13,7 @@ namespace CoCWinDesktop.ContentWrappers.OptionsRow
 		//Design structure: nullable option sets minimum to -1, and treats -1 as null. The slider is setup accordingly
 
 
-		private readonly int[] selectedIndexToSettingValue;
+		private readonly int?[] selectedIndexToSettingValue;
 		private readonly Dictionary<int?, int> settingValueToSelectedIndex; //used if it's not null.
 
 		private readonly Func<int?, string> GetOptionText;
@@ -22,6 +24,13 @@ namespace CoCWinDesktop.ContentWrappers.OptionsRow
 
 		private readonly EnabledOrDisabledWithTollTipNullSldr disabledTooltipFn;
 		private readonly bool nullable;
+
+		public ToolTipWrapper toolTip
+		{
+			get => _toolTip;
+			private set => CheckPropertyChanged(ref _toolTip, value);
+		}
+		private ToolTipWrapper _toolTip = null;
 
 		public int maximum => selectedIndexToSettingValue.Length - 1;
 		public int minimum => nullable ? -1 : 0;
@@ -63,7 +72,12 @@ namespace CoCWinDesktop.ContentWrappers.OptionsRow
 		}
 		private string _warningText;
 
-		public ObservableCollection<int> Ticks { get; }
+		public DoubleCollection Ticks
+		{
+			get => _ticks;
+			private set => CheckPropertyChanged(ref _ticks, value);
+		}
+		private DoubleCollection _ticks;
 
 		public OptionsRowSliderWrapper(SimpleDescriptor optionName, OrderedHashSet<int?> allOptions, Func<int?, string> availableOptions,
 			Func<int?, string> optionDescriptions, Func<int?> getStatus, Action<int?> onSelect, SimpleDescriptor warningTextGetter, 
@@ -73,11 +87,11 @@ namespace CoCWinDesktop.ContentWrappers.OptionsRow
 
 			if (allOptions is null) throw new ArgumentNullException(nameof(allOptions));
 			int count = allOptions.Count;
-			selectedIndexToSettingValue = new int[count];
+			selectedIndexToSettingValue = new int?[count];
 			settingValueToSelectedIndex = new Dictionary<int?, int>();
 
 			int iteratation = 0;
-			foreach (int x in allOptions)
+			foreach (int? x in allOptions)
 			{
 				settingValueToSelectedIndex.Add(x, iteratation);
 				selectedIndexToSettingValue[iteratation] = x;
@@ -106,7 +120,7 @@ namespace CoCWinDesktop.ContentWrappers.OptionsRow
 
 			if (allOptions is null) throw new ArgumentNullException(nameof(allOptions));
 			int count = allOptions.Count;
-			selectedIndexToSettingValue = new int[count];
+			selectedIndexToSettingValue = new int?[count];
 			settingValueToSelectedIndex = new Dictionary<int?, int>();
 
 			int iteratation = 0;
@@ -131,8 +145,16 @@ namespace CoCWinDesktop.ContentWrappers.OptionsRow
 
 			warningTextFn = warningTextGetter ?? throw new ArgumentNullException(nameof(warningTextGetter));
 
+			if (disabledTooltipGetter is null) throw new ArgumentNullException(nameof(disabledTooltipGetter));
+			disabledTooltipFn = convert(disabledTooltipGetter);
+
 			_selectedIndex = querySelectedIndex();
 			UpdateDisplay();
+		}
+
+		private static EnabledOrDisabledWithTollTipNullSldr convert(EnabledOrDisabledWithToolTipSldr fn)
+		{
+			return (int? x, out string y) => fn(x ?? 0, out y);
 		}
 
 		private void UpdateDisplay()
@@ -141,9 +163,37 @@ namespace CoCWinDesktop.ContentWrappers.OptionsRow
 
 			selectedItemText = GetOptionText(selection);
 			selectedItemDescription = GetDescriptionText(selection);
+
+			DoubleCollection temp = new DoubleCollection();
+			StringBuilder sb = new StringBuilder();
+			for (int x = 0; x < selectedIndexToSettingValue.Length; x++)
+			{
+				var value = selectedIndexToSettingValue[x];
+
+				if (!disabledTooltipFn(value, out string partialTip))
+				{
+					sb.AppendLine(partialTip);
+				}
+				else
+				{
+					temp.Add(x);
+				} 
+			}
+			if (sb.Length == 0)
+			{
+				toolTip = null;
+			}
+			else
+			{
+				toolTip = new ToolTipWrapper(OptionName, sb.ToString());
+			}
+			Ticks = temp;
 			WarningText = warningTextFn();
 
 			#warning Handle the Ticks and tooltip - whatever is disabled, remove the corresponding index from the Ticks collection. Update the tooltip accordingly. 
+
+
+
 		}
 
 		private int? parseSelectedIndex()

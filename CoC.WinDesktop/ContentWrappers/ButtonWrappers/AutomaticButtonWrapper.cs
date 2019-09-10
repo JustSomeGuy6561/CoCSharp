@@ -1,9 +1,5 @@
 ﻿using CoC.Backend;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -40,25 +36,15 @@ namespace CoCWinDesktop.ContentWrappers.ButtonWrappers
 
 		public override bool IsDefault { get; }
 
+		public AutomaticButtonWrapper(SimpleDescriptor TitleStrCallback, Action onClick, bool enabled = true, bool defaultButton = false)
+			: this(TitleStrCallback, onClick, unlockedLockedTipCallback: null, null, enabled, defaultButton) { }
+
 		public AutomaticButtonWrapper(SimpleDescriptor TitleStrCallback, Action onClick, SimpleDescriptor tipCallback, SimpleDescriptor tipTitleCallback, bool enabled = true, bool defaultButton = false)
+			: this(TitleStrCallback, onClick, unlockedLockedTipCallback: convert(tipCallback), tipTitleCallback, enabled, defaultButton) { }
+
+		private static DescriptorWithArg<bool> convert(SimpleDescriptor sameTipEitherWay)
 		{
-			visibility = Visibility.Visible;
-
-			IsDefault = defaultButton;
-
-			_allowCommand = enabled;
-
-			if (onClick is null) throw new ArgumentNullException(nameof(onClick));
-			_command = new RelayCommand(onClick, () => allowCommand);
-
-			TitleStrFn = TitleStrCallback ?? throw new ArgumentNullException(nameof(TitleStrCallback));
-			if (string.IsNullOrWhiteSpace(TitleStrFn())) throw new ArgumentException("TitleStrCallback cannot be null or empty");
-
-
-			ToolTipFn = string.IsNullOrWhiteSpace(tipCallback?.Invoke()) ? (DescriptorWithArg<bool>)null : x => tipCallback();
-			ToolTipTitleFn = tipTitleCallback;
-
-			_ToolTip = GenerateToolTipWrapper();
+			return string.IsNullOrWhiteSpace(sameTipEitherWay?.Invoke()) ? (DescriptorWithArg<bool>)null : x => sameTipEitherWay();
 		}
 
 		public AutomaticButtonWrapper(SimpleDescriptor TitleStrCallback, Action onClick, DescriptorWithArg<bool> unlockedLockedTipCallback, SimpleDescriptor tipTitleCallback, bool enabled = true, bool defaultButton = false)

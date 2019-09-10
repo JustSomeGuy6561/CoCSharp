@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CoCWinDesktop
@@ -12,6 +14,9 @@ namespace CoCWinDesktop
 		{
 #if DEBUG
 			System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Warning;
+			ToolTipService.ShowDurationProperty.OverrideMetadata(
+				typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
+			System.Windows.Controls.ToolTip.FocusableProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(true));
 #endif
 			InitializeComponent();
 

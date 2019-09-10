@@ -45,7 +45,6 @@ namespace CoCWinDesktop
 		private readonly MainMenuModelView mainMenu;
 		private readonly OptionsModelView options;
 		private readonly StandardModelView standard;
-		private readonly CombatModelView combat;
 		private readonly DataModelView data;
 		private readonly ExtraMenuItemsModelView extraItems;
 
@@ -248,11 +247,15 @@ namespace CoCWinDesktop
 			{
 				if (condition())
 				{
+					whyNot = null;
+					return false;
+
+				}
+				else
+				{
 					whyNot = becauseReasons();
 					return true;
 				}
-				whyNot = null;
-				return false;
 			}
 
 			List<BackgroundItem> backgroundList = new List<BackgroundItem>()
@@ -278,12 +281,12 @@ namespace CoCWinDesktop
 
 		private static bool condition()
 		{
-			throw new NotImplementedException();
+			return false;
 		}
 
 		private static string becauseReasons()
 		{
-			throw new NotImplementedException();
+			return "Beat the game once on Grimdark to unlock the Grimdark Background. It is used by default when playing in Grimdark Mode.";
 		}
 
 		private static SolidColorBrush GenerateSolidColorWithTransparency(Color color, double opacity)
@@ -324,7 +327,6 @@ namespace CoCWinDesktop
 			mainMenu = new MainMenuModelView(this);
 			options = new OptionsModelView(this);
 			standard = new StandardModelView(this);
-			combat = new CombatModelView(this);
 			data = new DataModelView(this);
 			extraItems = new ExtraMenuItemsModelView(this);
 

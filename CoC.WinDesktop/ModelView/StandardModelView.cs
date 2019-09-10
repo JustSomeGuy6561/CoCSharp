@@ -18,9 +18,8 @@ using System.Windows.Media.Imaging;
 
 namespace CoCWinDesktop.ModelView
 {
-	public sealed class StandardModelView : ModelViewBase
+	public sealed partial class StandardModelView : ModelViewBase
 	{
-#warning The buttons at the top need to be rebound as automatic buttonwrappers so strings aren't static. 
 #warning Each sidebar item needs to be reworked to take simpledescriptors and a function call for when the language changed. 
 		//Input field uses the same font size as the rest of the game, plus or minus a set amount. To handle variable font size, we need to know how big to make our 
 		//textbox that the user can input things into, so we need to know roughly how many characters to allow. The longest name i could think of ("Christopher") is only
@@ -48,9 +47,25 @@ namespace CoCWinDesktop.ModelView
 		}
 		private bool _ShowSidebar = true;
 
+		public SideBarBase enemySideBar
+		{
+			get => _enemySideBar;
+			private set => CheckPropertyChanged(ref _enemySideBar, value);
+		}
+		private SideBarBase _enemySideBar;
+
+		public bool ShowEnemySidebar
+		{
+			get => _ShowEnemySidebar;
+			private set => CheckPrimitivePropertyChanged(ref _ShowEnemySidebar, value);
+		}
+		private bool _ShowEnemySidebar = false;
 		#endregion
 
 		#region Credits And Sprite
+
+		public string SceneByText => SceneByStr();
+
 		public string authorText
 		{
 			get => _authorText;
@@ -113,62 +128,71 @@ namespace CoCWinDesktop.ModelView
 		}
 		private bool _showTopRow = true;
 
-		public ManualButtonWrapper MainMenuButton { get; } = new ManualButtonWrapper();
+		public AutomaticButtonWrapper MainMenuButton { get; }
 
-		public string DataText
-		{
-			get => _DataText;
-			private set => CheckPropertyChanged(ref _DataText, value);
-		}
-		private string _DataText;
-		public ICommand GoToDataScreen => new RelayCommand(HandleData, () => true);
+		public AutomaticButtonWrapper DataButton { get; }
 
-		public string StatText
-		{
-			get => _StatText;
-			private set => CheckPropertyChanged(ref _StatText, value);
-		}
-		private string _StatText;
-		public ICommand DoStats => new RelayCommand(HandleStatsScreen, () => true);
+		public AutomaticButtonWrapper StatsButton { get; }
 
-		public string LevelUpText
-		{
-			get => _LevelUpText;
-			private set => CheckPropertyChanged(ref _LevelUpText, value);
-		}
-		private string _LevelUpText = "Level Up";
-		public ICommand DoLeveling => new RelayCommand(HandleLeveling, () => CanDoLeveling);
+		public ManualButtonWrapper LevelingButton { get; } = new ManualButtonWrapper();
 
-		public string PerkText
-		{
-			get => _PerkText;
-			private set => CheckPropertyChanged(ref _PerkText, value);
-		}
-		private string _PerkText;
-		public ICommand DoPerks => new RelayCommand(HandlePerksScreen, () => true);
+		public AutomaticButtonWrapper PerksButton { get; }
 
-		public string AppearanceText
-		{
-			get => _AppearanceText;
-			private set => CheckPropertyChanged(ref _AppearanceText, value);
-		}
-		private string _AppearanceText;
-		public ICommand DoAppearance => new RelayCommand(HandleAppearanceScreen, () => true);
+		public AutomaticButtonWrapper AppearanceButton { get; }
 
+		//public string DataText
+		//{
+		//	get => _DataText;
+		//	private set => CheckPropertyChanged(ref _DataText, value);
+		//}
+		//private string _DataText;
+		//public ICommand GoToDataScreen => new RelayCommand(HandleData, () => true);
 
-		private bool CanDoLeveling
-		{
-			get => _CanDoLeveling;
-			set
-			{
-				if (_CanDoLeveling != value)
-				{
-					_CanDoLeveling = value;
-					((RelayCommand)DoLeveling).RaiseExecuteChanged();
-				}
-			}
-		}
-		private bool _CanDoLeveling = false;
+		//public string StatText
+		//{
+		//	get => _StatText;
+		//	private set => CheckPropertyChanged(ref _StatText, value);
+		//}
+		//private string _StatText;
+		//public ICommand DoStats => new RelayCommand(HandleStatsScreen, () => true);
+
+		//public string LevelUpText
+		//{
+		//	get => _LevelUpText;
+		//	private set => CheckPropertyChanged(ref _LevelUpText, value);
+		//}
+		//private string _LevelUpText = "Level Up";
+		//public ICommand DoLeveling => new RelayCommand(HandleLeveling, () => CanDoLeveling);
+
+		//public string PerkText
+		//{
+		//	get => _PerkText;
+		//	private set => CheckPropertyChanged(ref _PerkText, value);
+		//}
+		//private string _PerkText;
+		//public ICommand DoPerks => new RelayCommand(HandlePerksScreen, () => true);
+
+		//public string AppearanceText
+		//{
+		//	get => _AppearanceText;
+		//	private set => CheckPropertyChanged(ref _AppearanceText, value);
+		//}
+		//private string _AppearanceText;
+		//public ICommand DoAppearance => new RelayCommand(HandleAppearanceScreen, () => true);
+
+		//private bool CanDoLeveling
+		//{
+		//	get => _CanDoLeveling;
+		//	set
+		//	{
+		//		if (_CanDoLeveling != value)
+		//		{
+		//			_CanDoLeveling = value;
+		//			((RelayCommand)DoLeveling).RaiseExecuteChanged();
+		//		}
+		//	}
+		//}
+		//private bool _CanDoLeveling = false;
 		#endregion
 
 		#region Bottom Buttons
@@ -239,7 +263,9 @@ namespace CoCWinDesktop.ModelView
 		#region Private 
 
 		//private bool isLoadingStatus;
+#pragma warning disable IDE0044 // Add readonly modifier
 		private int LastLanguageIndex;
+#pragma warning restore IDE0044 // Add readonly modifier
 
 		private Controller controller => Controller.instance;
 
@@ -251,6 +277,14 @@ namespace CoCWinDesktop.ModelView
 		public StandardModelView(ModelViewRunner modelViewRunner) : base(modelViewRunner)
 		{
 			Controller controller = modelViewRunner.controller;
+
+			MainMenuButton = new AutomaticButtonWrapper(MainMenuStr, HandleMainMenu, MainMenuTip, null);
+			DataButton = new AutomaticButtonWrapper(DataStr, HandleData);
+			StatsButton = new AutomaticButtonWrapper(StatsStr, HandleStatsScreen);
+			LevelingButton.UpdateButtonHidden();
+			PerksButton = new AutomaticButtonWrapper(PerksStr, HandlePerksScreen);
+			AppearanceButton = new AutomaticButtonWrapper(AppearanceStr, HandleAppearanceScreen);
+
 			statDisplayParser = new StatDisplayParser(controller.statDataCollection);
 
 			LastLanguageIndex = LanguageEngine.currentLanguageIndex;
@@ -268,6 +302,8 @@ namespace CoCWinDesktop.ModelView
 			BottomButtons = new ReadOnlyCollection<ManualButtonWrapper>(bottomButtonHolder);
 
 		}
+
+
 
 		protected override void OnSwitchFrom()
 		{
@@ -309,6 +345,10 @@ namespace CoCWinDesktop.ModelView
 
 			//handle main menu and stat visibility
 			showTopRow = controller.displayTopMenu;
+
+			#warning Handle Level Up Button - idk how yet.
+			//LevelingButton.UpdateEnabled(...
+
 			ShowSidebar = controller.displayStats;
 			if (ShowSidebar)
 			{

@@ -8,8 +8,7 @@
 			 Name="_this"
              mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="200"
-			 BorderBrush="Transparent"
-			 BorderThickness="0">
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<UserControl.Resources>
 		<Conv:ToStringConverter x:Key="ToString"/>
 	</UserControl.Resources>

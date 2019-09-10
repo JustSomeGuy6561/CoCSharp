@@ -12,7 +12,7 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class CustomizeControlsModelView : OptionModelViewDataBase
 	{
-#warning ToDo: add nice text explaining how to set the keys and that escape/backspace/delete are reserved and remove a keybind. Ideally, enter should be too. AFAIK, Enter and escape are locked for default and cancel.
+#warning ToDo: add nice text explaining how to set the keys and that escape/backspace/delete are reserved and remove a keybind. Ideally, enter and tab should be too. AFAIK, Enter and escape are locked for default and cancel.
 
 		private int lastLanguageIndex;
 		public string CustomControlsText
@@ -37,7 +37,7 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 
 		public CustomizeControlsModelView(ModelViewRunner modelViewRunner, OptionsModelView optionsModelView) : base(modelViewRunner, optionsModelView)
 		{
-#warning Probably not the best spot for this, but remember to run validation of hotkeys on load so we know two keys dont have the same key combo.
+#warning Remember to run validation of hotkeys when loading from a save, so we know two keys dont have the same key combo. Assuming initially valid, it will remain that way.
 			//This validates that whenever a new combo is created, but we cannot validate that elsewhere
 			List<HotKeyWrapper> items = new List<HotKeyWrapper>()
 			{

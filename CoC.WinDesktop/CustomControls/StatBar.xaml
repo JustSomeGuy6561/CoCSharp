@@ -4,7 +4,8 @@
              xmlns:local="clr-namespace:CoCWinDesktop.CustomControls"
 			 xmlns:Conv="clr-namespace:CoCWinDesktop.Converters"
 			 xmlns:sys="clr-namespace:System;assembly=mscorlib"
-			 Name="_this">
+			 Name="_this"
+			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<Canvas Name="StatBarCanvas" Width="200" Height="28" >
 		<!--<Label Height="20" Name="TitleText" Style="{StaticResource CoCSidebarLabel}" Content="{Binding Text, ElementName=_this}" Panel.ZIndex="100" Canvas.Bottom="2" Canvas.Left="8" FontSize="15" />-->
 		<Label Name="TitleText" Style="{StaticResource CoCSidebarLabel}" Content="{Binding Text, ElementName=_this}" Panel.ZIndex="100" Canvas.Bottom="4" Canvas.Left="8" FontSize="15" />

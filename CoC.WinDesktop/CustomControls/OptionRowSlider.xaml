@@ -4,15 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:OR="clr-namespace:CoCWinDesktop.ContentWrappers.OptionsRow"
+			 xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls"
              mc:Ignorable="d" 
              d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type=OR:OptionsRowSliderWrapper}"
+			 Style="{StaticResource UserControlNoBorderNoBg}"
 			 KeyboardNavigation.TabNavigation="Local">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
@@ -23,13 +24,26 @@
 		<TextBlock Style="{StaticResource SmallHeaderText}" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" TextWrapping="Wrap"
 				TextAlignment="Right" FontWeight="Bold" Text="{Binding OptionName}"/>
 
-		<TextBlock Style="{StaticResource SettingText}" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Top" 
+		<TextBlock Style="{StaticResource SettingText}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" 
 				   TextAlignment="Right" Text="{Binding selectedItemDescription}"/>
-		<Slider Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
-				TickFrequency="1" Minimum="{Binding minimum}" Maximum="{Binding maximum}" Value="{Binding selectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				FocusVisualStyle="{x:Null}" Margin="10,10,0,0" Foreground="{Binding FontColor, Source={StaticResource Runner}}" IsTabStop="True" TabIndex="0"/>
-		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" 
-			VerticalAlignment="Top" Text="{Binding selectedItemText}" FontWeight="Bold"/>
+		<Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" ToolTip="{Binding toolTip}" ToolTipService.Placement="Top" Name="SliderTipGrid">
+			<Grid.Background>
+				<SolidColorBrush Color="White" Opacity="0.01"/>
+			</Grid.Background>
+			<Grid.RowDefinitions>
+				<RowDefinition/>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+			<CC:CustomSlider Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" VerticalContentAlignment="Center" 
+				IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1" Minimum="{Binding minimum}" Maximum="{Binding maximum}" 
+				Value="{Binding selectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FocusVisualStyle="{x:Null}" Margin="10,10,0,0" 
+				Foreground="{Binding FontColor, Source={StaticResource Runner}}" IsTabStop="True" TabIndex="0" Ticks="{Binding Ticks}"
+				ToolTip="{Binding toolTip}" ToolTipService.PlacementTarget="{Binding ElementName=SliderTipGrid}" ToolTipService.Placement="Top"/>
+			<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="1" HorizontalAlignment="Center" 
+				VerticalAlignment="Top" Text="{Binding selectedItemText}" FontWeight="Bold" ToolTip="{Binding toolTip}" ToolTipService.Placement="Top"
+				ToolTipService.PlacementTarget="{Binding ElementName=SliderTipGrid}" />
+		</Grid>
+		
 		<TextBlock Style="{StaticResource WarningText}" Margin="5" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WarningText}" Foreground="Red" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 	</Grid>
 </UserControl>
