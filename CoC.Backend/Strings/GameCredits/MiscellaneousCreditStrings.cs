@@ -12,6 +12,14 @@ namespace CoC.Backend.GameCredits
 		}
 	}
 
+	public partial class ExternalTools
+	{
+		private static string ExternalToolsStr()
+		{
+			return "Third-Party Tools";
+		}
+	}
+
 	public partial class SpecialThanks
 	{
 		private static string SpecialThanksStr()

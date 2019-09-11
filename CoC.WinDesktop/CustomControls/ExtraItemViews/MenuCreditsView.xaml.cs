@@ -24,5 +24,14 @@ namespace CoCWinDesktop.CustomControls.ExtraItemViews
 		{
 			InitializeComponent();
 		}
+
+		private void Hyperlink_Click(object sender, RoutedEventArgs e)
+		{
+			RTB.Url_Click(sender, e);
+		}
+
+		//public 
 	}
+
+
 }

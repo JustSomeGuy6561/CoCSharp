@@ -1,4 +1,5 @@
 ﻿
+using CoC.Backend.GameCredits;
 using CreditCategoryBase = CoC.Backend.GameCredits.CreditCategoryBase;
 using SubCategory = CoC.Backend.GameCredits.SubCategory;
 
@@ -19,7 +20,7 @@ namespace CoC.Frontend.GameCredits
 
 	public sealed partial class GeneralCode : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"Fenoxo",
 			"Stradler76",
@@ -33,7 +34,7 @@ namespace CoC.Frontend.GameCredits
 
 	//public sealed partial class MajorEventsContent : SubCategory
 	//{
-	//	private static string[] credits = new string[]
+	//	private static Creditor[] credits = new Creditor[]
 	//	{
 
 	//	};
@@ -45,7 +46,7 @@ namespace CoC.Frontend.GameCredits
 
 	public sealed partial class ExtraContent : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"Dxasmodeus (Tentacles, Worms, Giacomo)",
 			"Kirbster (Christmas Bunny Trap)",
@@ -146,7 +147,7 @@ namespace CoC.Frontend.GameCredits
 
 	//public sealed partial class BugSquashing : SubCategory
 	//{
-	//	private static string[] credits = new string[]
+	//	private static Creditor[] credits = new Creditor[]
 	//	{
 
 	//	};

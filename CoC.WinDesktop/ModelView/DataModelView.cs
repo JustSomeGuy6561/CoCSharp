@@ -1,6 +1,8 @@
-﻿using CoC.Frontend.UI;
+﻿using CoC.Backend.Strings;
+using CoC.Frontend.UI;
 using CoC.Frontend.UI.ControllerData;
 using CoCWinDesktop.ContentWrappers;
+using CoCWinDesktop.ContentWrappers.ButtonWrappers;
 using CoCWinDesktop.CustomControls;
 using CoCWinDesktop.Helpers;
 using System;
@@ -23,6 +25,8 @@ namespace CoCWinDesktop.ModelView
 			private set => CheckPropertyChanged(ref _sideBar, value);
 		}
 		private SideBarBase _sideBar;
+
+		public AutomaticButtonWrapper CancelButton { get; }
 
 		public bool ShowSidebar
 		{
@@ -122,6 +126,8 @@ namespace CoCWinDesktop.ModelView
 			//load the data into gameSavesHolder
 			gameSavesHolder = new List<SaveDisplayDataWrapper>();
 			gameSaves = new ReadOnlyCollection<SaveDisplayDataWrapper>(gameSavesHolder);
+
+			CancelButton = new AutomaticButtonWrapper(GlobalStrings.CANCEL, OnCancelCommand);
 
 			displaySource = emptyDisplay;
 		}

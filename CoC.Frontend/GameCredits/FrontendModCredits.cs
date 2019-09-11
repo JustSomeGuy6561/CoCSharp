@@ -1,5 +1,6 @@
 ﻿
 //i don't want to accidently get backend game credit instances in my intellisense, hence this weird using directive. this is just personal preference, feel free to change it.
+using CoC.Backend.GameCredits;
 using CreditCategoryBase = CoC.Backend.GameCredits.CreditCategoryBase;
 using SubCategory = CoC.Backend.GameCredits.SubCategory;
 namespace CoC.Frontend.GameCredits
@@ -22,7 +23,7 @@ namespace CoC.Frontend.GameCredits
 
 	public sealed partial class MajorEventsModContent : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"Parth37955 (Pure Jojo anal pitch scene, Behemoth’s vaginal catch scene)",
 			"Liadri (Manticore and Dragonne suggestions)",
@@ -38,7 +39,7 @@ namespace CoC.Frontend.GameCredits
 
 	public sealed partial class OvipositorReworkContent : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"DCR (Idea, Drider Transformation, and Drider Impreg of: Goblins, Beegirls, Nagas, Harpies, and Basilisks)",
 			"Fenoxo (Bee Ovipositor Transformation, Bee Oviposition of Nagas and Jojo, Drider Oviposition of Tamani)",
@@ -62,7 +63,7 @@ namespace CoC.Frontend.GameCredits
 
 	public sealed partial class ExtraModContent : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"worldofdrakan (Pablo the Pseudo-Imp, Pigtail Truffles & Pig/Boar TFs)",
 			"FeiFongWong (Prisoner Mod)",
@@ -81,7 +82,7 @@ namespace CoC.Frontend.GameCredits
 
 	public sealed partial class ModBugSquashing : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"Wastarce",
 			"Sorenant",
@@ -113,7 +114,7 @@ namespace CoC.Frontend.GameCredits
 
 	public sealed partial class TypoCheckers : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"SoS",
 			"Prisoner416",

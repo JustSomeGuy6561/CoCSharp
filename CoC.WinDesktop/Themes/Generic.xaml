@@ -303,5 +303,4 @@
 		<Setter Property="Template" Value="{StaticResource SliderHorizontal}"/>
 		<!--<Setter Property=""-->
 	</Style>
-
 </ResourceDictionary>

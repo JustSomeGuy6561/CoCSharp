@@ -60,7 +60,7 @@
 			<Button Style="{StaticResource CoCButton}" Grid.Column="1" Background="{StaticResource Button1Image}" Content="Save"/><!-- When another selected this says overwrite--><!-- Disabled on initial load.--><!-- Toggles QuickSave Confirm on Options menu-->
 			<Button Style="{StaticResource CoCButton}" Grid.Column="2" Background="{StaticResource Button2Image}" Content="Delete"/><!--Not available when new save is selected --><!-- Toggles QuickLoad Confirm on Options menu-->
 			<Button Style="{StaticResource CoCButton}" Grid.Column="3" Background="{StaticResource Button3Image}" Content="Options"/><!-- Allows you to alter QuickSave/QuickLoad Options, Enable/Disable Auto-save, and change browsing location for saves--><!-- Change Directory on Options menu-->
-			<Button Style="{StaticResource CoCButton}" Grid.Column="4" Background="{StaticResource Button4Image}" Content="Cancel" IsCancel="True"/><!-- Is "Return" on Options menu-->
+			<Button Style="{StaticResource ButtonWithHelperDataContext}" DataContext="{Binding CancelButton}" Grid.Column="4" Background="{StaticResource Button4Image}" IsCancel="True" /><!-- Is "Return" on Options menu-->
 		</Grid>
 	</Canvas>
 </UserControl>

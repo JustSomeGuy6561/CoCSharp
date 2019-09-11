@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using CoCWinDesktop.Helpers;
+using System;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -48,6 +50,38 @@ namespace CoCWinDesktop.CustomControls
 		public static readonly DependencyProperty ImageDimensionsProperty = DependencyProperty.Register("ImageDimensions", typeof(Size), typeof(ContentRichTextBox),
 			new FrameworkPropertyMetadata(Size.Empty, FrameworkPropertyMetadataOptions.AffectsMeasure, OnImageSizeChanged));
 
+		public ContentRichTextBox() : base()
+		{
+			//this.MouseDown += ContentRichTextBox_MouseDown;
+			//this.PreviewMouseDown += ContentRichTextBox_PreviewMouseDown;
+		}
+
+		//private void ContentRichTextBox_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		//{
+			
+
+			
+
+		//	TextRange textRange = new TextRange(Document.ContentStart, Document.ContentEnd);
+		//	string result = null;
+		//	using (MemoryStream ms = new MemoryStream())
+		//	{
+		//		textRange.Save(ms, DataFormats.Xaml); //Html is not supported (yet?) so i've done this workaround. 
+		//		result = Encoding.Default.GetString(ms.ToArray());
+		//	}
+		//	Console.WriteLine(result);
+		//}
+
+		private void Link_Click(object sender, RoutedEventArgs e)
+		{
+			UrlHelper.OpenURL((sender as Hyperlink).NavigateUri.ToString());
+		}
+
+		//private void ContentRichTextBox_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		//{
+			
+		//}
+
 		private static void OnImageSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs baseValue)
 		{
 			ContentRichTextBox contentBox = d as ContentRichTextBox;
@@ -70,6 +104,12 @@ namespace CoCWinDesktop.CustomControls
 
 			Document.Blocks.Clear();
 
+			//Document.Style = new Style()
+			//{
+			//	TargetType = typeof(FlowDocument),
+			//	BasedOn = Application.Current.Resources[]
+			//};
+
 			string text = RTFContent;
 
 			if (!string.IsNullOrWhiteSpace(text))
@@ -78,6 +118,21 @@ namespace CoCWinDesktop.CustomControls
 				using (MemoryStream ms = new MemoryStream(Encoding.Default.GetBytes(text)))
 				{
 					textRange.Load(ms, DataFormats.Rtf); //Html is not supported (yet?) so i've done this workaround. 
+				}
+			}
+
+			foreach (var block in Document.Blocks)
+			{
+				if (block is Paragraph paragraph && paragraph.Inlines.Count > 0)
+				{
+					foreach (var item in paragraph.Inlines)
+					{
+						if (item is Hyperlink link)
+						{
+							link.Click -= Link_Click;
+							link.Click += Link_Click;
+						}
+					}
 				}
 			}
 
@@ -119,6 +174,14 @@ namespace CoCWinDesktop.CustomControls
 					};
 					paragraph.Inlines.InsertBefore(paragraph.Inlines.FirstInline, figure);
 				}
+			}
+		}
+
+		public void Url_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is Hyperlink hyperlink)
+			{
+				UrlHelper.OpenURL(hyperlink.NavigateUri.ToString());
 			}
 		}
 	}

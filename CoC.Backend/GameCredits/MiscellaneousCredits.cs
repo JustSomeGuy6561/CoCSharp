@@ -8,6 +8,7 @@ namespace CoC.Backend.GameCredits
 	{
 		private static SubCategory[] backendCategories = new SubCategory[]
 		{
+			new ExternalTools(),
 			new SpecialThanks(),
 		};
 
@@ -16,9 +17,20 @@ namespace CoC.Backend.GameCredits
 		}
 	}
 
+	public sealed partial class ExternalTools : SubCategory
+	{
+		//Weak Events would not be necessary here if Microsoft would implement them into CLR, not just Windows. 
+		private static Creditor[] credits = new Creditor[]
+		{
+			new Creditor("Thomas Levesque - Weak Events.", "https://github.com/thomaslevesque/WeakEvent")
+		};
+
+		public ExternalTools() : base(ExternalToolsStr, credits) { }
+	}
+
 	public sealed partial class SpecialThanks : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			
 		};

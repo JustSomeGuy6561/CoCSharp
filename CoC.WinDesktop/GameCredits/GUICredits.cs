@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoC.Backend.GameCredits;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -22,7 +23,7 @@ namespace CoCWinDesktop.GameCredits
 
 	public sealed partial class OriginalGUI : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"Fenoxo (Base Game)",
 			"Dasutin (Background Images)",
@@ -35,7 +36,7 @@ namespace CoCWinDesktop.GameCredits
 
 	public sealed partial class CSharpGUI : SubCategory
 	{
-		private static string[] credits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"JustSomeGuy",
 			"Please for the love of God get someone else to clean this GUI up!",

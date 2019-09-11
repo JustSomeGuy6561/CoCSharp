@@ -10,6 +10,11 @@
              d:DesignHeight="660" d:DesignWidth="1000"
 			 d:DataContext="{d:DesignInstance Type={x:Type EIMV:MenuCreditsModelView}}"
 			 Style="{StaticResource UserControlNoBorderNoBg}">
+	<UserControl.Resources>
+		<Style TargetType="Hyperlink">
+			<EventSetter Event="Click" Handler="Hyperlink_Click"/>
+		</Style>
+	</UserControl.Resources>
 	<Grid Margin="60,0,20,0" Background="{Binding TextBackground, Source={StaticResource Runner}}" >
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
@@ -19,7 +24,10 @@
 		</Grid.RowDefinitions>
 		<TextBlock Style="{StaticResource HeaderText}" Grid.Row="0" Margin="5" Text="{Binding ContentTitle}"/>
 		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="1" Margin="5" Text="{Binding ContentHelper}" FontWeight="Bold"/>
-		<CC:ContentRichTextBox Grid.Row="2" RTFContent="{Binding Content}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+		<!--<NavigationWindow Background="Transparent">-->
+		<CC:ContentRichTextBox x:Name="RTB" Grid.Row="2" RTFContent="{Binding Content}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+			ScrollViewer.VerticalScrollBarVisibility="Auto" IsDocumentEnabled="True"/>
+		<!--</NavigationWindow>-->
 		<TextBlock Style="{StaticResource SmallHeaderText}" Grid.Row="3" Margin="5" Text="{Binding PostContent}"/>
 	</Grid>
 </UserControl>

@@ -21,18 +21,18 @@ namespace CoC.Backend.GameCredits
 
 	public sealed partial class BaseGame : SubCategory
 	{
-		private static string[] baseGameCredits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"Fenoxo",
 		};
-		public BaseGame() : base(BaseGameStr, baseGameCredits)
+		public BaseGame() : base(BaseGameStr, credits)
 		{
 		}
 	}
 
 	public sealed partial class Framework : SubCategory
 	{
-		private static string[] frameworkCredits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"Fenoxo (source)",
 			"Kitteh6660 (mod source)",
@@ -40,19 +40,19 @@ namespace CoC.Backend.GameCredits
 			"JustSomeGuy (C# rewrite, refactoring)",
 
 		};
-		public Framework() : base(FrameworkStr, frameworkCredits)
+		public Framework() : base(FrameworkStr, credits)
 		{
 		}
 	}
 
 	public sealed partial class CSharpEngine : SubCategory
 	{
-		private static string[] engineCredits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 			"JustSomeGuy",
 
 		};
-		public CSharpEngine() : base(CSharpEngineStr, engineCredits)
+		public CSharpEngine() : base(CSharpEngineStr, credits)
 		{
 		}
 	}
@@ -61,12 +61,12 @@ namespace CoC.Backend.GameCredits
 
 	public sealed partial class FrameworkRefactoring : SubCategory
 	{
-		private static string[] refactoringCredits = new string[]
+		private static Creditor[] credits = new Creditor[]
 		{
 
 		};
 
-		public FrameworkRefactoring() : base(RefactoringStr, refactoringCredits)
+		public FrameworkRefactoring() : base(RefactoringStr, credits)
 		{
 		}
 	}

@@ -172,5 +172,13 @@ namespace CoCWinDesktop.Helpers
 			return unsafeString;
 		}
 
+		//after delving ass-deep in c# source using dotPeek (apparently reference source doesn't want to play nice, idk)
+		//it turns out the hyperlink needs to be quotated in order to work. fun times. 
+		public static string ToRTFUrl(Uri unsafeUrl)
+		{
+			string temp = ToRTFSafeString(unsafeUrl.ToString());
+			return @"{\cf1\f0\lang9{\field{\*\fldinst{HYPERLINK """ + temp + @""" }}{\fldrslt{" + temp + @"\ul0\cf0}}}}";
+		}
+
 	}
 }
