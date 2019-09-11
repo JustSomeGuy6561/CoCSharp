@@ -64,26 +64,26 @@ namespace CoC.Frontend.UI.ControllerData
 			}
 		}
 
-		public readonly CreatureStatWithMinMax Strength = new CreatureStatWithMinMax(CreatureStatCategory.CORE);
-		public readonly CreatureStatWithMinMax Toughness = new CreatureStatWithMinMax(CreatureStatCategory.CORE);
-		public readonly CreatureStatWithMinMax Speed = new CreatureStatWithMinMax(CreatureStatCategory.CORE);
-		public readonly CreatureStatWithMinMax Intelligence = new CreatureStatWithMinMax(CreatureStatCategory.CORE);
-		public readonly CreatureStatWithMinMax Libido = new CreatureStatWithMinMax(CreatureStatCategory.CORE);
-		public readonly CreatureStatWithMinMax Sensitivity = new CreatureStatWithMinMax(CreatureStatCategory.CORE);
-		public readonly CreatureStatWithMinMax Corruption = new CreatureStatWithMinMax(CreatureStatCategory.CORE);
+		public readonly CreatureStatWithMinMax Strength = new CreatureStatWithMinMax(StatStrings.StrengthStr, CreatureStatCategory.CORE);
+		public readonly CreatureStatWithMinMax Toughness = new CreatureStatWithMinMax(StatStrings.ToughnessStr, CreatureStatCategory.CORE);
+		public readonly CreatureStatWithMinMax Speed = new CreatureStatWithMinMax(StatStrings.SpeedStr, CreatureStatCategory.CORE);
+		public readonly CreatureStatWithMinMax Intelligence = new CreatureStatWithMinMax(StatStrings.IntelligenceStr, CreatureStatCategory.CORE);
+		public readonly CreatureStatWithMinMax Libido = new CreatureStatWithMinMax(StatStrings.LibidoStr, CreatureStatCategory.CORE);
+		public readonly CreatureStatWithMinMax Sensitivity = new CreatureStatWithMinMax(StatStrings.SensitivityStr, CreatureStatCategory.CORE);
+		public readonly CreatureStatWithMinMax Corruption = new CreatureStatWithMinMax(StatStrings.CorruptionStr, CreatureStatCategory.CORE);
 
-		public CreatureStatWithMinMax HP = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true };
-		public CreatureStatWithMinMax Lust = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true };
+		public CreatureStatWithMinMax HP = new CreatureStatWithMinMax(StatStrings.HPStr, CreatureStatCategory.COMBAT) { isRatio = true };
+		public CreatureStatWithMinMax Lust = new CreatureStatWithMinMax(StatStrings.LustStr, CreatureStatCategory.COMBAT) { isRatio = true };
 
-		public readonly CreatureStatWithMinMax Fatigue = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true };
-		public readonly CreatureStatWithMinMax Satiety = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true };
-		public readonly CreatureStatWithMinMax SelfEsteem = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true, enabled = false };
-		public readonly CreatureStatWithMinMax Willpower = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true, enabled = false };
-		public readonly CreatureStatWithMinMax Obedience = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true, enabled = false };
+		public readonly CreatureStatWithMinMax Fatigue = new CreatureStatWithMinMax(StatStrings.FatigueStr, CreatureStatCategory.COMBAT) { isRatio = true };
+		public readonly CreatureStatWithMinMax Satiety = new CreatureStatWithMinMax(StatStrings.HungerStr, CreatureStatCategory.COMBAT) { isRatio = true };
+		public readonly CreatureStatWithMinMax SelfEsteem = new CreatureStatWithMinMax(StatStrings.SelfEsteemStr, CreatureStatCategory.COMBAT) { isRatio = true, enabled = false };
+		public readonly CreatureStatWithMinMax Willpower = new CreatureStatWithMinMax(StatStrings.WillpowerStr, CreatureStatCategory.COMBAT) { isRatio = true, enabled = false };
+		public readonly CreatureStatWithMinMax Obedience = new CreatureStatWithMinMax(StatStrings.ObedienceStr, CreatureStatCategory.COMBAT) { isRatio = true, enabled = false };
 
-		public readonly CreatureStatNumeric Level = new CreatureStatNumeric(CreatureStatCategory.ADVANCEMENT);
-		public readonly CreatureStatWithMinMax XP = new CreatureStatWithMinMax(CreatureStatCategory.ADVANCEMENT) { isRatio = true };
-		public readonly CreatureStatNumeric Gems = new CreatureStatNumeric(CreatureStatCategory.ADVANCEMENT) { notifyPlayerOfChange = false };//idk why. 
+		public readonly CreatureStatNumeric Level = new CreatureStatNumeric(StatStrings.LevelStr, CreatureStatCategory.ADVANCEMENT);
+		public readonly CreatureStatWithMinMax XP = new CreatureStatWithMinMax(StatStrings.ExperienceStr, CreatureStatCategory.ADVANCEMENT) { isRatio = true };
+		public readonly CreatureStatNumeric Gems = new CreatureStatNumeric(StatStrings.GemsStr, CreatureStatCategory.ADVANCEMENT) { notifyPlayerOfChange = false };//idk why. 
 
 		internal PlayerStatData()
 		{

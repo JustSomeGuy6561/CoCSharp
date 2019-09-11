@@ -1,4 +1,5 @@
-﻿using CoC.Frontend.UI.ControllerData;
+﻿using CoC.Backend;
+using CoC.Frontend.UI.ControllerData;
 using CoCWinDesktop.Helpers;
 using CoCWinDesktop.Strings;
 using System;
@@ -15,7 +16,7 @@ namespace CoCWinDesktop.ContentWrappers
 	{
 		public Visibility visibility { get; private set; }
 
-		private string Name { get; set; }
+		private readonly SimpleDescriptor NameCallback;
 
 		public bool IsNumeric
 		{
@@ -33,15 +34,10 @@ namespace CoCWinDesktop.ContentWrappers
 
 		public string Text
 		{
-			get => _Text;
-			private set => CheckPropertyChanged(ref _Text, value);
-		}
-		private string _Text = "";
-
-		public void CheckText()
-		{
-			Text = LanguageLookup.Lookup(Name) + ":";
-		}
+			get => _text;
+			private set => CheckPropertyChanged(ref _text, value);
+		}// NameCallback();
+		private string _text;
 
 		public bool showValueOverMax
 		{
@@ -145,9 +141,15 @@ namespace CoCWinDesktop.ContentWrappers
 		}
 		private uint? _minimum;
 
-		public StatDisplayItemWrapper(CreatureStatBase creatureStat, string displayName, bool isSilent = false)
+		public StatDisplayItemWrapper(CreatureStatBase creatureStat, SimpleDescriptor displayNameFunction, bool isSilent = false)
 		{
-			Name = displayName ?? throw new ArgumentNullException(nameof(displayName));
+			NameCallback = displayNameFunction ?? throw new ArgumentNullException(nameof(displayNameFunction));
+			if (string.IsNullOrWhiteSpace(NameCallback()))
+			{
+				throw new ArgumentException("displayName must be a valid string");
+			}
+			_text = NameCallback();
+
 
 			silent = isSilent;
 
@@ -155,8 +157,6 @@ namespace CoCWinDesktop.ContentWrappers
 			minColor = null;
 			regColorDefaultOrMax = null;
 			regColorMin = null;
-
-			CheckText();
 
 			visibility = creatureStat.enabled ? Visibility.Visible : Visibility.Collapsed;
 			IsNumeric = creatureStat is CreatureStatNumeric;
@@ -178,10 +178,9 @@ namespace CoCWinDesktop.ContentWrappers
 		}
 		private Visibility _ArrowVisibility = Visibility.Hidden;
 
-
 		public void UpdateStats(CreatureStatBase statBase)
 		{
-			CheckText();
+			Text = NameCallback();
 
 			visibility = statBase.enabled ? Visibility.Visible : Visibility.Collapsed;
 			IsNumeric = statBase is CreatureStatNumeric;

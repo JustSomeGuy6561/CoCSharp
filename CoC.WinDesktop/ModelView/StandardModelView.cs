@@ -20,7 +20,6 @@ namespace CoCWinDesktop.ModelView
 {
 	public sealed partial class StandardModelView : ModelViewBase
 	{
-#warning Each sidebar item needs to be reworked to take simpledescriptors and a function call for when the language changed. 
 		//Input field uses the same font size as the rest of the game, plus or minus a set amount. To handle variable font size, we need to know how big to make our 
 		//textbox that the user can input things into, so we need to know roughly how many characters to allow. The longest name i could think of ("Christopher") is only
 		//13 Characters. The longest special character as of now is 10 characters ("Vahdunbrii"/"Rann Rayla"). It also need to be able to fit in the sidebar, so...

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoC.Backend;
+using System;
 
 namespace CoC.Frontend.UI.ControllerData
 {
@@ -18,7 +19,7 @@ namespace CoC.Frontend.UI.ControllerData
 
 		public override string value => current.ToString();
 
-		internal CreatureStatNumeric(CreatureStatCategory statCategory) : base(statCategory) { }
+		internal CreatureStatNumeric(SimpleDescriptor statName, CreatureStatCategory statCategory) : base(statName, statCategory) { }
 		
 	}
 }

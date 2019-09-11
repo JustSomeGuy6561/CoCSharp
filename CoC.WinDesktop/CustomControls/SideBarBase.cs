@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CoCWinDesktop.CustomControls
 {
-	public abstract class SideBarBase : NotifierBase
+	public abstract partial class SideBarBase : NotifierBase
 	{
 		public void UpdateSidebar(StatDataCollectionBase statData)
 		{

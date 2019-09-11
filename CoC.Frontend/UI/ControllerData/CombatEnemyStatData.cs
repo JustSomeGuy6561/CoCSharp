@@ -10,22 +10,22 @@ namespace CoC.Frontend.UI.ControllerData
 	{
 		public bool active { get; private set; }
 
-		public const string HIT_POINTS = "HP";
-		public const string LUST = "lust";
-		public const string FATIGUE = "fatigue";
-		public const string LEVEL = "level";
-		public const string RACE = "race";
-		public const string GENDER = "gender";
+		//public const string HIT_POINTS = "HP";
+		//public const string LUST = "lust";
+		//public const string FATIGUE = "fatigue";
+		//public const string LEVEL = "level";
+		//public const string RACE = "race";
+		//public const string GENDER = "gender";
 
 		public string nameString { get; private set;}
 
-		public readonly SimpleCreatureStat Level = new SimpleCreatureStat("-1", CreatureStatCategory.GENERAL);
-		public readonly SimpleCreatureStat Race = new SimpleCreatureStat("Not Applicable", CreatureStatCategory.GENERAL);
-		public readonly SimpleCreatureStat Gender = new SimpleCreatureStat("Not Applicable", CreatureStatCategory.GENERAL);
+		public readonly SimpleCreatureStat Level = new SimpleCreatureStat(StatStrings.StrengthStr, "-1", CreatureStatCategory.GENERAL);
+		public readonly SimpleCreatureStat Race = new SimpleCreatureStat(StatStrings.RaceStr, "Not Applicable", CreatureStatCategory.GENERAL);
+		public readonly SimpleCreatureStat Gender = new SimpleCreatureStat(StatStrings.GenderStr, "Not Applicable", CreatureStatCategory.GENERAL);
 
-		public readonly CreatureStatWithMinMax HP = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true };
-		public readonly CreatureStatWithMinMax Lust = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true };
-		public readonly CreatureStatWithMinMax Fatigue = new CreatureStatWithMinMax(CreatureStatCategory.COMBAT) { isRatio = true };
+		public readonly CreatureStatWithMinMax HP = new CreatureStatWithMinMax(StatStrings.HPStr, CreatureStatCategory.COMBAT) { isRatio = true };
+		public readonly CreatureStatWithMinMax Lust = new CreatureStatWithMinMax(StatStrings.LustStr, CreatureStatCategory.COMBAT) { isRatio = true };
+		public readonly CreatureStatWithMinMax Fatigue = new CreatureStatWithMinMax(StatStrings.FatigueStr, CreatureStatCategory.COMBAT) { isRatio = true };
 
 		public CombatEnemyStatData()
 		{

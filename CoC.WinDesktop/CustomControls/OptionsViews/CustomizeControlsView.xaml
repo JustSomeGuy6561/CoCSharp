@@ -17,18 +17,23 @@
 			<CC:HotkeyControl/>
 		</DataTemplate>
 	</UserControl.Resources>
-	<Grid Margin="60,0,20,0">
+	<Grid Margin="60,0,20,0" Background="{Binding TextBackground, Source={StaticResource Runner}}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
-		<TextBlock Style="{StaticResource HeaderText}" Margin="10" Grid.Row="0" Grid.Column="0" 
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="Auto" MinWidth="400"/>
+		</Grid.ColumnDefinitions>
+		<TextBlock Style="{StaticResource HeaderText}" Margin="10" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
 				   Text="{Binding CustomControlsText}" Focusable="False"/>
-		<TextBlock Style="{StaticResource SmallHeaderText}" Margin="10" Grid.Row="1" Grid.Column="0"
+		<TextBlock Style="{StaticResource SmallHeaderText}" Margin="10,5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
 				   Text="{Binding CustomControlsHelper}"/>
-		<ScrollViewer Style="{StaticResource ScrollbarWithSpace}" Grid.Row="2">
+		<ScrollViewer Style="{StaticResource ScrollbarWithSpace}" Grid.Row="2" Grid.Column="1" Padding="5,5,5,0">
 			<ItemsControl ItemsSource="{Binding hotKeys}"></ItemsControl>
 		</ScrollViewer>
+		<TextBlock Grid.Column="0" Grid.Row="2" Padding="5,10" Style="{StaticResource SettingText}" Text="{Binding CustomControlsHowToText}" />
 	</Grid>
 </UserControl>

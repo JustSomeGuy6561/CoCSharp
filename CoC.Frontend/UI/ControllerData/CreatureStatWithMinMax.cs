@@ -1,4 +1,6 @@
-﻿namespace CoC.Frontend.UI.ControllerData
+﻿using CoC.Backend;
+
+namespace CoC.Frontend.UI.ControllerData
 {
 	public sealed class CreatureStatWithMinMax : CreatureStatNumeric
 	{
@@ -8,7 +10,7 @@
 
 		public bool isRatio { get; internal set; } = false;
 
-		internal CreatureStatWithMinMax(CreatureStatCategory statCategory) : base(statCategory)
+		internal CreatureStatWithMinMax(SimpleDescriptor statName, CreatureStatCategory statCategory) : base(statName, statCategory)
 		{
 
 		}

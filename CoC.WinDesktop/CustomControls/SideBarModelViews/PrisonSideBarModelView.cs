@@ -1,4 +1,6 @@
-﻿using CoC.Frontend.UI.ControllerData;
+﻿using CoC.Backend.Engine;
+using CoC.Backend.Engine.Time;
+using CoC.Frontend.UI.ControllerData;
 using CoCWinDesktop.ContentWrappers;
 using CoCWinDesktop.Helpers;
 using System;
@@ -13,51 +15,46 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 {
 	public sealed class PrisonSideBarModelView : SideBarBase
 	{
-		public string dayStr
-		{
-			get => _dayStr;
-			private set => CheckPropertyChanged(ref _dayStr, value);
-		}
-		private string _dayStr = "";
+		private int LastLanguageIndex;
 
-		public string hourStr
+		public string dayStr => DateStr(gameTime);
+		public string hourStr => HourStr(gameTime);
+		private GameDateTime gameTime
 		{
-			get => _hourStr;
-			private set => CheckPropertyChanged(ref _hourStr, value);
+			get => _gameTime;
+			set
+			{
+				if (_gameTime != value)
+				{
+					_gameTime = value;
+					RaisePropertyChanged(nameof(dayStr));
+					RaisePropertyChanged(nameof(hourStr));
+				}
+			}
 		}
-		private string _hourStr = "";
+		private GameDateTime _gameTime;
 
-		public string nameText
+		public string nameText => base.NameStr(playerName);
+		private string playerName
 		{
-			get => _nameText;
-			private set => CheckPropertyChanged(ref _nameText, value);
+			get => _playerName;
+			set
+			{
+				if (_playerName != value)
+				{
+					_playerName = value;
+					RaisePropertyChanged(nameof(nameText));
+				}
+			}
 		}
-		private string _nameText = "Name: ";
+		private string _playerName;
 
-		public string coreStatText
-		{
-			get => _coreStatsText;
-			private set => CheckPropertyChanged(ref _coreStatsText, value);
-		}
-		private string _coreStatsText = "Core Stats:";
-
+		public string coreStatText => CategoryString(CreatureStatCategory.CORE);
 		public ReadOnlyCollection<StatDisplayItemWrapper> coreStats { get; }
 
-		public string combatStatText
-		{
-			get => _combatStatsText;
-			private set => CheckPropertyChanged(ref _combatStatsText, value);
-		}
-		private string _combatStatsText = "Combat Stats:";
-
+		public string combatStatText => CategoryString(CreatureStatCategory.COMBAT);
 		public ReadOnlyCollection<StatDisplayItemWrapper> combatStats { get; }
-
-		public string prisonStatText
-		{
-			get => _prisonStatsText;
-			private set => CheckPropertyChanged(ref _prisonStatsText, value);
-		}
-		private string _prisonStatsText = "Prison Stats:";
+		public string prisonStatText => CategoryString(CreatureStatCategory.PRISON);
 
 		private readonly StatDisplayItemWrapper Strength;
 		private readonly StatDisplayItemWrapper Toughness;
@@ -80,13 +77,13 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 		{
 			PlayerStatData playerStats = stats.playerStats;
 
-			Strength = new StatDisplayItemWrapper(playerStats.Strength, nameof(playerStats.Strength), silent);
-			Toughness = new StatDisplayItemWrapper(playerStats.Toughness, nameof(playerStats.Toughness), silent);
-			Speed = new StatDisplayItemWrapper(playerStats.Speed, nameof(playerStats.Speed), silent);
-			Intelligence = new StatDisplayItemWrapper(playerStats.Intelligence, nameof(playerStats.Intelligence), silent);
-			Libido = new StatDisplayItemWrapper(playerStats.Libido, nameof(playerStats.Libido), silent);
-			Sensitivity = new StatDisplayItemWrapper(playerStats.Sensitivity, nameof(playerStats.Sensitivity), silent);
-			Corruption = new StatDisplayItemWrapper(playerStats.Corruption, nameof(playerStats.Corruption), silent);
+			Strength = new StatDisplayItemWrapper(playerStats.Strength, playerStats.Strength.statName, silent);
+			Toughness = new StatDisplayItemWrapper(playerStats.Toughness, playerStats.Toughness.statName, silent);
+			Speed = new StatDisplayItemWrapper(playerStats.Speed, playerStats.Speed.statName, silent);
+			Intelligence = new StatDisplayItemWrapper(playerStats.Intelligence, playerStats.Intelligence.statName, silent);
+			Libido = new StatDisplayItemWrapper(playerStats.Libido, playerStats.Libido.statName, silent);
+			Sensitivity = new StatDisplayItemWrapper(playerStats.Sensitivity, playerStats.Sensitivity.statName, silent);
+			Corruption = new StatDisplayItemWrapper(playerStats.Corruption, playerStats.Corruption.statName, silent);
 
 			List<StatDisplayItemWrapper> coreStatList = new List<StatDisplayItemWrapper>()
 			{
@@ -99,13 +96,13 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 				Corruption,
 			};
 
-			HP = new StatDisplayItemWrapper(playerStats.HP, nameof(playerStats.HP), silent) { regColorDefaultOrMax = Color.FromArgb(0xFF, 0xA0, 0xFF, 0x50), regColorMin = Color.FromArgb(0xFF, 0xFF, 0x66, 0x50) };
-			Lust = new StatDisplayItemWrapper(playerStats.Lust, nameof(playerStats.Lust), silent) { regColorDefaultOrMax = Color.FromArgb(0xFF, 0xFF, 0x85, 0x69) };
-			Fatigue = new StatDisplayItemWrapper(playerStats.Fatigue, nameof(playerStats.Fatigue), silent);
-			Satiety = new StatDisplayItemWrapper(playerStats.Satiety, nameof(playerStats.Satiety), silent);
-			SelfEsteem = new StatDisplayItemWrapper(playerStats.SelfEsteem, nameof(playerStats.SelfEsteem), silent);
-			Willpower = new StatDisplayItemWrapper(playerStats.Willpower, nameof(playerStats.Willpower), silent);
-			Obedience = new StatDisplayItemWrapper(playerStats.Obedience, nameof(playerStats.Obedience), silent);
+			HP = new StatDisplayItemWrapper(playerStats.HP, playerStats.HP.statName, silent) { regColorDefaultOrMax = Color.FromArgb(0xFF, 0xA0, 0xFF, 0x50), regColorMin = Color.FromArgb(0xFF, 0xFF, 0x66, 0x50) };
+			Lust = new StatDisplayItemWrapper(playerStats.Lust, playerStats.Lust.statName, silent) { regColorDefaultOrMax = Color.FromArgb(0xFF, 0xFF, 0x85, 0x69) };
+			Fatigue = new StatDisplayItemWrapper(playerStats.Fatigue, playerStats.Fatigue.statName, silent);
+			Satiety = new StatDisplayItemWrapper(playerStats.Satiety, playerStats.Satiety.statName, silent);
+			SelfEsteem = new StatDisplayItemWrapper(playerStats.SelfEsteem, playerStats.SelfEsteem.statName, silent);
+			Willpower = new StatDisplayItemWrapper(playerStats.Willpower, playerStats.Willpower.statName, silent);
+			Obedience = new StatDisplayItemWrapper(playerStats.Obedience, playerStats.Obedience.statName, silent);
 
 			var combatStatList = new List<StatDisplayItemWrapper>()
 			{
@@ -121,19 +118,32 @@ namespace CoCWinDesktop.CustomControls.SideBarModelViews
 			coreStats = new ReadOnlyCollection<StatDisplayItemWrapper>(coreStatList);
 			combatStats = new ReadOnlyCollection<StatDisplayItemWrapper>(combatStatList);
 
+			LastLanguageIndex = LanguageEngine.currentLanguageIndex;
 		}
 
 		protected override void GetData(StatDataCollectionBase statData)
 		{
 			PlayerStatData stats = statData.playerStats;
-
-			//Handle stats bar data
-			nameText = "Name: " + stats.nameString;
-			coreStatText = "Core Stats:";
-			combatStatText = "Combat Stats:";
-
-			dayStr = "Date: " + statData.currentTime.day.ToString();
-			hourStr = "Hour: " + statData.currentTime.GetFormattedHourString();
+			//Handle stats bar data - automatic, but only if language hasn't changed. if it has, handle it. 
+			if (LastLanguageIndex != LanguageEngine.currentLanguageIndex)
+			{
+				LastLanguageIndex = LanguageEngine.currentLanguageIndex;
+				RaisePropertyChanged(nameof(dayStr));
+				RaisePropertyChanged(nameof(hourStr));
+				RaisePropertyChanged(nameof(nameText));
+				RaisePropertyChanged(nameof(coreStatText));
+				RaisePropertyChanged(nameof(combatStatText));
+				RaisePropertyChanged(nameof(prisonStatText));
+			}
+			//similarly, handle changes in gameTime or playerName. these properties fire off the corresponding property changed events automatically. 
+			if (gameTime != statData.currentTime)
+			{
+				gameTime = statData.currentTime;
+			}
+			if (playerName != statData.playerStats.nameString)
+			{
+				playerName = statData.playerStats.nameString;
+			}
 
 			//manually update stats.
 			Strength.UpdateStats(stats.Strength);

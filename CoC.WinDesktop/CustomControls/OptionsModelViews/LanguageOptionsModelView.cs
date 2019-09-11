@@ -92,8 +92,10 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 		private void HandleSelected(int languageIndex)
 		{
 			LanguageEngine.currentLanguageIndex = languageIndex;
-
+			//update sidebar, rtf text.
+			sidebarView.UpdateSidebar(new SaveDataCollection(null));
 			GetRTFText();
+			//let parent update the buttons. 
 			parent.OnLanguageChange();
 		}
 

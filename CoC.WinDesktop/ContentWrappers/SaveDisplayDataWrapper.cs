@@ -17,18 +17,19 @@ namespace CoCWinDesktop.ContentWrappers
 		public string Name { get; }
 		public string Notes { get; }
 
+#pragma warning disable 0649
 		private readonly DateTime LastPlayedDateTime;
 		private readonly GameDifficulty gameDifficulty;
 		private readonly Gender gender;
-
+#pragma warning restore 0649
 		public string LastPlayed => LastPlayedDateTime.ToString();
 		public string GenderString => gender.AsText();
 		public string GameDifficultyString => gameDifficulty.difficultyStr();
 
 
-
+#pragma warning disable 0649
 		internal readonly StatDataCollectionBase saveStatData;
-
+#pragma warning restore 0649
 		public SaveDisplayDataWrapper(string fileName)
 		{
 

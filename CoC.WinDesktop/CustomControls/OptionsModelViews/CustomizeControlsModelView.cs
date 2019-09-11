@@ -12,7 +12,6 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class CustomizeControlsModelView : OptionModelViewDataBase
 	{
-#warning ToDo: add nice text explaining how to set the keys and that escape/backspace/delete are reserved and remove a keybind. Ideally, enter and tab should be too. AFAIK, Enter and escape are locked for default and cancel.
 
 		private int lastLanguageIndex;
 		public string CustomControlsText
@@ -30,8 +29,10 @@ namespace CoCWinDesktop.CustomControls.OptionsModelViews
 		}
 		private string _CustomControlsHelper;
 		protected override SimpleDescriptor TitleHelperText => CustomControlsHelperText;
-
+	
 		public override SimpleDescriptor ButtonText => CustomControlsButtonText;
+
+		public string CustomControlsHowToText => HowToStr();
 
 		public ReadOnlyCollection<HotKeyWrapper> hotKeys { get; }
 

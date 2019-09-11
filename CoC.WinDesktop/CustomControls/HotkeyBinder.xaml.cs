@@ -41,10 +41,6 @@ namespace CoCWinDesktop.CustomControls
 
 		private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
-			// Don't let the event pass further
-			// because we don't want standard textbox shortcuts working
-			e.Handled = true;
-
 			// Get modifiers and key data
 			var modifiers = Keyboard.Modifiers;
 			var key = e.Key;
@@ -53,6 +49,19 @@ namespace CoCWinDesktop.CustomControls
 			if (key == Key.System)
 			{
 				key = e.SystemKey;
+			}
+
+			// Normally, don't let the event pass further
+			// because we don't want standard textbox shortcuts working,
+			//but we have a special case for 'Tab' because it's used for navigation (Tab/Shift-Tab) and Alt+Tab or Ctrl-Tab
+			if (key == Key.Tab)
+			{
+				return;
+			}
+			else
+			{
+				
+				e.Handled = true;
 			}
 
 			// Pressing delete, backspace or escape without modifiers clears the current value
@@ -64,10 +73,11 @@ namespace CoCWinDesktop.CustomControls
 
 			// If no actual key was pressed - return
 			if (new List<Key>() { Key.LeftCtrl, Key.RightCtrl, Key.LeftAlt, Key.RightAlt, Key.LeftShift, Key.RightShift, Key.LWin, Key.RWin,
-				Key.Clear, Key.OemClear, Key.Apps}.Contains(key))
+				Key.Clear, Key.OemClear, Key.Apps, Key.Tab}.Contains(key))
 			{
 				return;
 			}
+
 
 			// Set values
 			HotKeySource = new HotKey(key, modifiers);

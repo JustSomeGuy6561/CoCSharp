@@ -26,7 +26,6 @@
 	<!--<Canvas Style="{StaticResource Sidebar}" Margin="2,5,0,0">-->
 	<!--<Canvas Height="Auto" HorizontalAlignment="Stretch" Background="Fuchsia" Margin="2,5,0,0">-->
 	<Canvas Style="{StaticResource Sidebar}">
-
 		<StackPanel Canvas.Right="1" Canvas.Top="5" Name="StatBar" Height="Auto" Width="Auto" VerticalAlignment="Top" HorizontalAlignment="Right">
 			<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,1,0,3" FontSize="22" Text="{Binding Path=nameText, Mode=OneWay}"/>
 			<TextBlock Style="{StaticResource CoCSidebarText}" Margin="0,2,0,3" FontSize="22" Text="{Binding Path=coreStatText, Mode=OneWay}"/>

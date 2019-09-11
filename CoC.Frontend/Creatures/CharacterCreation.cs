@@ -55,7 +55,6 @@ namespace CoC.Frontend.Creatures
 		//bool genderLocked, occupationLocked, buildLocked, complexionLocked, hairLocked,
 
 		private readonly PlayerCreator creator;
-#warning Make sure to set the locked values for history, endowment when implemented.
 		private readonly bool genderLocked, buildLocked, complexionLocked, furLocked, hairLocked, historyLocked, endowmentLocked;
 		private readonly bool heightLocked, eyesLocked, beardLocked, cockLocked, clitLocked, breastsLocked;
 		private Gender chosenGender;
