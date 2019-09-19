@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 
 	public class LimitedInputTextBox : TextBox

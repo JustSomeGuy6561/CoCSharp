@@ -1,11 +1,11 @@
 ﻿using CoC.UI;
-using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.DisplaySettings;
-using CoCWinDesktop.Engine;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.InterfaceSettings;
-using CoCWinDesktop.ModelView;
-using CoCWinDesktop.Strings;
+using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.DisplaySettings;
+using CoC.WinDesktop.Engine;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.InterfaceSettings;
+using CoC.WinDesktop.ModelView;
+using CoC.WinDesktop.Strings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace CoCWinDesktop
+namespace CoC.WinDesktop
 {
 	public sealed class ModelViewRunner : NotifierBase
 	{

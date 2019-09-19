@@ -22,7 +22,7 @@ namespace CoC.Backend.Engine
 		public static void PreSaveInit(Action<string> output,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, 
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases, //AreaEngine
-			Func<BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
+			Func<Creature, BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
 		{
 			//add the fetish/game settings.
 

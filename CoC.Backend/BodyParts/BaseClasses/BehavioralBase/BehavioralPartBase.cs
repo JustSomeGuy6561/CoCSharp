@@ -2,7 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //1/18/2019, 9:56 PM
+using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
+using System;
 using System.Runtime.Serialization;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -28,12 +32,27 @@ namespace CoC.Backend.BodyParts
 	//so you can attach epidermis to any body part that needs it and not need to deal with anything past keeping it updated. 
 	//learned this the hard way after having to deal with it in arms. woo!
 	
-	public abstract class BehavioralPartBase<BehaviorClass> where BehaviorClass : BehaviorBase
+	public abstract class BehavioralPartBase<BehaviorClass, DataClass> where BehaviorClass : BehaviorBase
+		where DataClass : BehavioralPartDataBase<BehaviorClass>
 	{
+
 		public abstract BehaviorClass type { get; protected set; }
+
+		public abstract DataClass AsReadOnlyData();
+
+
 		public virtual int index => type.index;
 
 		public virtual SimpleDescriptor shortDescription => type.shortDescription;
+
+		protected internal virtual void PostPerkInit()
+		{ }
+
+		protected internal virtual void LateInit()
+		{ }
+
+		private protected BehavioralPartBase()
+		{ }	
 
 	}
 }

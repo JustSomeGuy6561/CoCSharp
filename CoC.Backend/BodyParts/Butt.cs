@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/26/2018, 11:10 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 
@@ -11,7 +12,7 @@ namespace CoC.Backend.BodyParts
 	//it's literally just a wrapper for an int.
 	//but now it has validation! woo!
 	//oh, and a descriptor.
-	public sealed partial class Butt : SimpleSaveablePart<Butt>, IShrinkable //Gro+ doesnt work on butt.
+	public sealed partial class Butt : SimpleSaveablePart<Butt, ButtData>, IShrinkable //Gro+ doesnt work on butt.
 	{
 		public const byte BUTTLESS = 0;
 		public const byte TIGHT = 2;
@@ -36,7 +37,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _buttSize;
 
-		private Butt(byte size)
+		internal Butt(Creature source, byte size) : base(source)
 		{
 			if (size < TIGHT)
 			{
@@ -49,17 +50,14 @@ namespace CoC.Backend.BodyParts
 				_buttSize = size;
 			}
 		}
-		internal static Butt GenerateButtless()
+		internal static Butt GenerateButtless(Creature source)
 		{
-			return new Butt(0);
+			return new Butt(source, 0);
 		}
-		internal static Butt GenerateDefault()
+
+		public override ButtData AsReadOnlyData()
 		{
-			return new Butt(AVERAGE);
-		}
-		internal static Butt Generate(byte size = AVERAGE)
-		{
-			return new Butt(size);
+			return new ButtData(size);
 		}
 
 		public SimpleDescriptor AsText => AsStr;
@@ -116,6 +114,15 @@ namespace CoC.Backend.BodyParts
 				size -= (byte)(Utils.Rand(val) + 1);
 			}
 			return oldSize - size;
+		}
+	}
+
+	public sealed class ButtData
+	{
+		public readonly byte size;
+		internal ButtData(byte buttSize)
+		{
+			size = buttSize;
 		}
 	}
 }

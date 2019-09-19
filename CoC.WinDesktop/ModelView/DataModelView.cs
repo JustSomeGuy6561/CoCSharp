@@ -1,17 +1,17 @@
 ﻿using CoC.Backend.Strings;
 using CoC.Frontend.UI;
 using CoC.Frontend.UI.ControllerData;
-using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.ContentWrappers.ButtonWrappers;
-using CoCWinDesktop.CustomControls;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.ContentWrappers.ButtonWrappers;
+using CoC.WinDesktop.CustomControls;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace CoCWinDesktop.ModelView
+namespace CoC.WinDesktop.ModelView
 {
 
 	//this is a helper - i could do it all in standard, but that gets a bit conviluted. 

@@ -13,7 +13,7 @@ namespace CoC.Frontend.Perks.Endowment
 		{ }
 		protected override void OnActivation()
 		{
-			baseModifiers.MinNewClitSize += DELTA;
+			baseModifiers.DefaultNewClitSize += DELTA;
 			baseModifiers.NewClitSizeDelta += 0.25f;
 			baseModifiers.ClitGrowthMultiplier += 0.25f;
 			baseModifiers.ClitShrinkMultiplier -= 0.25f;
@@ -22,7 +22,7 @@ namespace CoC.Frontend.Perks.Endowment
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.MinNewClitSize -= DELTA;
+			baseModifiers.DefaultNewClitSize -= DELTA;
 			baseModifiers.NewClitSizeDelta -= 0.25f;
 			baseModifiers.ClitGrowthMultiplier -= 0.25f;
 			baseModifiers.ClitShrinkMultiplier += 0.25f;

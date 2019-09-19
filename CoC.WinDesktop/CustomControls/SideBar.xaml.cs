@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 	/// <summary>
 	/// Interaction logic for SideBar.xaml

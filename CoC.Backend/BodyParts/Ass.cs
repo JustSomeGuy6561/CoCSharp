@@ -2,10 +2,13 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:21 PM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 using System.Text;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -19,7 +22,7 @@ namespace CoC.Backend.BodyParts
 	//Pretty sure normal for ass size is pretty tight. so
 
 	public enum AnalLooseness : byte { NORMAL, LOOSE, ROOMY, STRETCHED, GAPING } //if you want to add a clown car level here, may i suggest RENT_ASUNDER?
-	public sealed partial class Ass : SimpleSaveablePart<Ass>, IBodyPartTimeLazy, IBaseStatPerkAware
+	public sealed partial class Ass : SimpleSaveablePart<Ass, AssData>, IBodyPartTimeLazy
 	{
 		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
 		public const ushort MAX_ANAL_CAPACITY = ushort.MaxValue;
@@ -31,38 +34,169 @@ namespace CoC.Backend.BodyParts
 
 		private byte buttTightenTimer = 0;
 
-		public AnalLooseness minLooseness => baseStats?.Invoke().minAnalLooseness ?? AnalLooseness.NORMAL;
-		public AnalLooseness maxLooseness => baseStats?.Invoke().maxAnalLooseness ?? AnalLooseness.GAPING;
-
-		public AnalWetness minWetness => baseStats?.Invoke().minAnalWetness ?? AnalWetness.NORMAL;
-		public AnalWetness maxWetness => baseStats?.Invoke().maxAnalWetness ?? AnalWetness.SLIME_DROOLING;
-
-		public AnalWetness wetness
+		public AnalLooseness minLooseness
 		{
-			get => _analWetness;
-			private set => _analWetness = Utils.ClampEnum2(value, minWetness, maxWetness);
+			get => _minLooseness;
+			internal set
+			{
+				if (_minLooseness != value)
+				{
+					minLooseness = value;
+					if (looseness < minLooseness)
+					{
+						looseness = minLooseness; //let the looseness change handle the notification handle
+					}
+					if (maxLooseness < minLooseness)
+					{
+						maxLooseness = minLooseness;
+					}
+				}
+			}
 		}
+		private AnalLooseness _minLooseness = AnalLooseness.NORMAL;
 
-		private AnalWetness _analWetness = AnalWetness.NORMAL;
+		public AnalLooseness maxLooseness
+		{
+			get => _maxLooseness;
+			internal set
+			{
+				if (value < minLooseness)
+				{
+					value = minLooseness;
+				}
+				if (_maxLooseness != value)
+				{
+					_maxLooseness = value;
+					if (looseness > maxLooseness)
+					{
+						looseness = maxLooseness; //again, let looseness handle firing event. 
+					}
+				}
+			}
+		}
+		private AnalLooseness _maxLooseness = AnalLooseness.GAPING;
 
 		public AnalLooseness looseness
 		{
 			get => _analLooseness;
 			private set
 			{
-				//if we shrink or grow the looseness, reset the timer. 
+				Utils.ClampEnum(ref value, minLooseness, maxLooseness);
 				if (value != _analLooseness)
 				{
+					//if we shrink or grow the looseness, reset the timer. 
 					buttTightenTimer = 0;
+					//then do the standard event stuff.
+					var oldData = AsReadOnlyData();
+					_analLooseness = value;
+					NotifyDataChanged(oldData);
 				}
-				_analLooseness = Utils.ClampEnum2(value, minLooseness, maxLooseness);
 			}
 		}
 		private AnalLooseness _analLooseness = AnalLooseness.NORMAL;
 
-		public ushort bonusAnalCapacity { get; private set; } = 0;
+		public AnalWetness minWetness
+		{
+			get => _minWetness;
+			internal set
+			{
+				if (_minWetness != value)
+				{
+					minWetness = value;
+					if (wetness < minWetness)
+					{
+						wetness = minWetness; //let the wetness change handle the notification handle
+					}
+					if (maxWetness < minWetness)
+					{
+						maxWetness = minWetness;
+					}
+				}
+			}
+		}
+		private AnalWetness _minWetness = AnalWetness.NORMAL;
+		public AnalWetness maxWetness
+		{
+			get => _maxWetness;
+			internal set
+			{
+				if (value < minWetness)
+				{
+					value = minWetness;
+				}
+				if (_maxWetness != value)
+				{
+					_maxWetness = value;
+					if (wetness > maxWetness)
+					{
+						wetness = maxWetness; //again, let wetness handle firing event. 
+					}
+				}
+			}
+		}
+		private AnalWetness _maxWetness = AnalWetness.SLIME_DROOLING;
 
-		private ushort perkBonusAnalCapacity => baseStats?.Invoke().PerkBasedBonusAnalCapacity ?? 0;
+		public AnalWetness wetness
+		{
+			get => _analWetness;
+			private set
+			{
+				Utils.ClampEnum(ref value, minWetness, maxWetness);
+				if (_analWetness != value)
+				{
+					var oldData = AsReadOnlyData();
+					_analWetness = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+
+		private AnalWetness _analWetness = AnalWetness.NORMAL;
+
+		public ushort bonusAnalCapacity
+		{
+			get => _bonusAnalCapacity;
+			private set
+			{
+				if (_bonusAnalCapacity != value)
+				{
+					var oldData = AsReadOnlyData();
+					_bonusAnalCapacity = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+		private ushort _bonusAnalCapacity = 0;
+
+
+		public ushort perkBonusAnalCapacity
+		{
+			get => _perkBonusAnalCapacity;
+			internal set
+			{
+				if (_perkBonusAnalCapacity != value)
+				{
+					var oldData = AsReadOnlyData();
+					_perkBonusAnalCapacity = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+		private ushort _perkBonusAnalCapacity;
+
+		private readonly WeakEventSource<SimpleDataChangeEvent<Ass, AssData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangeEvent<Ass, AssData>>();
+		public event EventHandler<SimpleDataChangeEvent<Ass, AssData>> dataChange
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(AssData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangeEvent<Ass, AssData>(oldData, AsReadOnlyData()));
+		}
+
 		public ushort analCapacity()
 		{
 
@@ -89,42 +223,37 @@ namespace CoC.Backend.BodyParts
 		public SimpleDescriptor fullDescription => fullDesc;
 
 		#region Constructor
-		private Ass()
+		internal Ass(Creature source) : base(source)
 		{
 			looseness = AnalLooseness.NORMAL;
 			wetness = AnalWetness.NORMAL;
 			virgin = true;
 			numTimesAnal = 0;
 		}
-		#endregion
-		#region Generate
-		internal static Ass GenerateDefault()
-		{
-			return new Ass();
-		}
 
 		//default behavior is to let the ass determine if it's still virgin.
 		//allows PC to masturbate/"practice" w/o losing anal virginity.
 		//if set to false, it will be ignored if looseness is still normal.
 		//nothing here can be null so we're fine.
-		internal static Ass Generate(AnalWetness analWetness, AnalLooseness analLooseness, bool virginAnus, bool? everPracticedAnal = null)
+		internal Ass(Creature source, AnalWetness analWetness, AnalLooseness analLooseness, bool virginAnus, bool? everPracticedAnal = null) : base(source)
 		{
-			Ass ass = new Ass()
-			{
-				wetness = analWetness,
-				looseness = analLooseness
-			};
+			wetness = analWetness;
+			looseness = analLooseness;
 			//if not set or explicitly null
 			if (everPracticedAnal == null)
 			{
 				everPracticedAnal = analLooseness != AnalLooseness.NORMAL;
 			}
 
-			ass.everPracticedAnal = (bool)everPracticedAnal;
-			ass.virgin = virginAnus;
-			return ass;
+			this.everPracticedAnal = (bool)everPracticedAnal;
+			virgin = virginAnus;
 		}
+
 		#endregion
+		public override AssData AsReadOnlyData()
+		{
+			return new AssData(this);
+		}
 		#region Update Variables - Ass-Specific
 		internal byte StretchAnus(byte amount = 1)
 		{
@@ -328,15 +457,7 @@ namespace CoC.Backend.BodyParts
 			return outputBuilder.ToString();
 		}
 		#endregion
-		#region BasePerkStats
-		private PerkStatBonusGetter baseStats;
-
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			baseStats = getter;
-		}
-		#endregion
-
+		
 		#region Not Implemented - Ideas
 		//how "experienced" the character is with anal sex. not used atm. as of now, it just increases by 1 with each experience. 
 		//idk, maybe change this.
@@ -464,5 +585,22 @@ namespace CoC.Backend.BodyParts
 		//	maxWetness = newValue;
 		//}
 		#endregion
+	}
+
+	public sealed class AssData
+	{
+		public readonly AnalWetness wetness;
+		public readonly AnalLooseness looseness;
+
+		public readonly ushort analCapacity;
+
+		internal AssData(Ass source)
+		{
+			if (source is null) throw new ArgumentNullException(nameof(source));
+
+			wetness = source.wetness;
+			looseness = source.looseness;
+			analCapacity = source.analCapacity();
+		}
 	}
 }

@@ -6,6 +6,7 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -18,13 +19,15 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	public enum TailPiercings { SUCCUBUS_SPADE }
-	public sealed class Tail : BehavioralSaveablePart<Tail, TailType>, IBodyAware, ICanAttackWith
+	public sealed class Tail : BehavioralSaveablePart<Tail, TailType, TailData>, ICanAttackWith
 	{
 		public const JewelryType SUPPORTED_TAIL_PIERCINGS = JewelryType.RING;
 		public const int MAX_ATTACK_CHARGES = 100;
 
-		public EpidermalData epidermis => type.ParseEpidermis(bodyData());
-		public EpidermalData secondaryEpidermis => type.ParseSecondaryEpidermis(bodyData());
+		private BodyData bodyData => source.body.AsReadOnlyData();
+
+		public EpidermalData epidermis => type.ParseEpidermis(bodyData);
+		public EpidermalData secondaryEpidermis => type.ParseSecondaryEpidermis(bodyData);
 
 		public byte tailCount
 		{
@@ -52,43 +55,30 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private TailType _type;
-		public static TailType defaultType => TailType.NONE;
-		public override bool isDefault => type == defaultType;
+		public override TailType defaultType => TailType.defaultValue;
 
-		private Tail(TailType tailType)
+		public override TailData AsReadOnlyData()
+		{
+			return new TailData(this);
+		}
+
+		internal Tail(Creature source) : this(source, TailType.defaultValue)
+		{
+		}
+
+		internal Tail(Creature source, TailType tailType) : base(source)
 		{
 			_type = tailType ?? throw new ArgumentNullException(nameof(tailType));
 			_tailCount = _type.initialTailCount;
 			tailPiercings = new Piercing<TailPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
-		internal static Tail GenerateDefault()
+		internal Tail(Creature source, TailType tailType, byte count) : this(source, tailType)
 		{
-			return new Tail(TailType.NONE);
+			GrowMultipleAdditionalTails(count.subtract(type.initialTailCount));
 		}
 
-		internal static Tail GenerateDefaultOfType(TailType tailType)
-		{
-			return new Tail(tailType);
-		}
-
-		internal static Tail GenerateWithCount(TailType tailType, byte count)
-		{
-			return new Tail(tailType)
-			{
-				tailCount = count
-			};
-		}
-
-		internal override bool UpdateType(TailType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return true;
-		}
+		//standard update, restore are fine. may want an additional update with tail count, idk.
 
 		internal bool GrowAdditionalTail()
 		{
@@ -110,17 +100,6 @@ namespace CoC.Backend.BodyParts
 			tailCount = tailCount.add(amount);
 			return tailCount.subtract(oldCount);
 		}
-
-		internal override bool Restore()
-		{
-			if (type == TailType.NONE)
-			{
-				return false;
-			}
-			type = TailType.NONE; //type resets everything.
-			return true;
-		}
-
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -144,11 +123,6 @@ namespace CoC.Backend.BodyParts
 			return JewelryType.RING;
 		}
 
-		void IBodyAware.GetBodyData(BodyDataGetter getter)
-		{
-			bodyData = getter;
-		}
-		private BodyDataGetter bodyData;
 		//public bool canAttackWith()
 		//{
 		//	return type.canAttackWith;
@@ -161,7 +135,7 @@ namespace CoC.Backend.BodyParts
 
 	}
 
-	public abstract partial class TailType : SaveableBehavior<TailType, Tail>
+	public abstract partial class TailType : SaveableBehavior<TailType, Tail, TailData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<TailType> tails = new List<TailType>();
@@ -179,8 +153,8 @@ namespace CoC.Backend.BodyParts
 
 
 		private readonly int _index;
-		//holy shit, fuck tails!
-		//public bool canAttackWith => attack != AttackBase.NO_ATTACK;
+
+		public static TailType defaultValue => TailType.NONE;
 
 		internal virtual AttackBase attack => AttackBase.NO_ATTACK;
 		internal virtual bool canAttackWith => attack != AttackBase.NO_ATTACK;
@@ -402,5 +376,19 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	public sealed class TailData : BehavioralSaveablePartData<TailData, Tail, TailType>
+	{
+		public readonly byte tailCount;
 
+		public readonly EpidermalData primaryEpidermis;
+		public readonly EpidermalData secondaryEpidermis;
+
+		internal TailData(Tail source) : base(GetBehavior(source))
+		{
+			tailCount = source.tailCount;
+
+			primaryEpidermis = source.epidermis;
+			secondaryEpidermis = source.secondaryEpidermis;
+		}
+	}
 }

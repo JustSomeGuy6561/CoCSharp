@@ -142,7 +142,7 @@ namespace CoC.Frontend.Creatures
 			historyLocked = creator.perks?.Find(x => x is HistoryPerkBase) != null;
 
 			//clean up any invalid data set in the player creator.
-			creator.wombMaker = () => new PlayerWomb();
+			creator.wombMaker = (x) => new PlayerWomb(x);
 			creator.artificiallyInfertile = false;
 
 			//move these do player constructor. afaik theres not reason not to have these as default. 

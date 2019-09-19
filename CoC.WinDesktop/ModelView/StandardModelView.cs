@@ -1,9 +1,9 @@
 ﻿using CoC.Backend.Engine;
 using CoC.UI;
-using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.ContentWrappers.ButtonWrappers;
-using CoCWinDesktop.CustomControls;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.ContentWrappers.ButtonWrappers;
+using CoC.WinDesktop.CustomControls;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,7 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace CoCWinDesktop.ModelView
+namespace CoC.WinDesktop.ModelView
 {
 	public sealed partial class StandardModelView : ModelViewBase
 	{

@@ -1,11 +1,11 @@
 ﻿using CoC.Backend;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.CustomControls.OptionsModelViews
+namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class InterfaceOptionsModelView : OptionModelViewDataBase
 	{

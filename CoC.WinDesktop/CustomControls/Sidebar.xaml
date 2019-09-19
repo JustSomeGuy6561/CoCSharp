@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="CoCWinDesktop.CustomControls.SideBar"
+﻿<UserControl x:Class="CoC.WinDesktop.CustomControls.SideBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:CoCWinDesktop.CustomControls"
-			 xmlns:SBV="clr-namespace:CoCWinDesktop.CustomControls.SideBarViews"
-			 xmlns:SBMV="clr-namespace:CoCWinDesktop.CustomControls.SideBarModelViews"
+             xmlns:local="clr-namespace:CoC.WinDesktop.CustomControls"
+			 xmlns:SBV="clr-namespace:CoC.WinDesktop.CustomControls.SideBarViews"
+			 xmlns:SBMV="clr-namespace:CoC.WinDesktop.CustomControls.SideBarModelViews"
 			 Name="_this"
 			 Style="{StaticResource UserControlNoBorderNoBg}">
 	<UserControl.Resources>

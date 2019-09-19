@@ -4,6 +4,7 @@
 //1/6/2019, 1:26 AM
 
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
@@ -15,57 +16,36 @@ namespace CoC.Backend.BodyParts
 {
 	public enum TonguePiercingLocation { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
 
-	public sealed class Tongue : BehavioralSaveablePart<Tongue, TongueType> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
+	public sealed class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
 	{
 		public const JewelryType TongueJewelry = JewelryType.BARBELL_STUD;
 
 		public readonly Piercing<TonguePiercingLocation> tonguePiercings;
 
 		public override TongueType type { get; protected set; }
-		public static TongueType defaultType => TongueType.HUMAN;
-		public override bool isDefault => type == defaultType;
+		public override TongueType defaultType => TongueType.defaultValue;
 
 
 		public bool isLongTongue => type.longTongue;
 		public int length => type.length;
 
-		private Tongue(TongueType tongueType)
+		internal Tongue(Creature source) : this(source, TongueType.defaultValue)
+		{ }
+
+		internal Tongue(Creature source, TongueType tongueType) : base(source)
 		{
 			type = tongueType ?? throw new ArgumentNullException(nameof(tongueType));
 
 			tonguePiercings = new Piercing<TonguePiercingLocation>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
-
-		internal static Tongue GenerateDefault()
+		public override TongueData AsReadOnlyData()
 		{
-			return new Tongue(TongueType.HUMAN);
+			return new TongueData(this);
 		}
 
-		internal static Tongue GenerateDefaultOfType(TongueType tongueType)
-		{
-			return new Tongue(tongueType);
-		}
+		//standard update, restore are fine.
 
-		internal override bool UpdateType(TongueType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return true;
-		}
-
-		internal override bool Restore()
-		{
-			if (type == TongueType.HUMAN)
-			{
-				return false;
-			}
-			type = TongueType.HUMAN;
-			return true;
-		}
 		internal override bool Validate(bool correctInvalidData)
 		{
 			var tongueType = type;
@@ -101,13 +81,17 @@ namespace CoC.Backend.BodyParts
 			return JewelryType.BARBELL_STUD;
 		}
 	}
-	public partial class TongueType : SaveableBehavior<TongueType, Tongue>
+
+	public partial class TongueType : SaveableBehavior<TongueType, Tongue, TongueData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<TongueType> tongues = new List<TongueType>();
 		public static readonly ReadOnlyCollection<TongueType> availableTypes = new ReadOnlyCollection<TongueType>(tongues);
 		private readonly int _index;
 		public readonly short length;
+
+		public static TongueType defaultValue => HUMAN;
+
 
 		private protected TongueType(short tongueLength, SimpleDescriptor shortDesc, DescriptorWithArg<Tongue> fullDesc, TypeAndPlayerDelegate<Tongue> playerDesc, ChangeType<Tongue> transform, RestoreType<Tongue> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
@@ -165,6 +149,16 @@ namespace CoC.Backend.BodyParts
 		public static PiercingJewelry GenerateTongueJewelry(this Tongue tongue, TonguePiercingLocation location, JewelryMaterial jewelryMaterial)
 		{
 			return new GenericPiercing(JewelryType.BARBELL_STUD, jewelryMaterial);
+		}
+	}
+
+	public sealed class TongueData : BehavioralSaveablePartData<TongueData, Tongue, TongueType>
+	{
+		short length => currentType.length;
+		bool isLongTongue => currentType.longTongue;
+		internal TongueData(Tongue tongue) : base(GetBehavior(tongue))
+		{
+
 		}
 	}
 }

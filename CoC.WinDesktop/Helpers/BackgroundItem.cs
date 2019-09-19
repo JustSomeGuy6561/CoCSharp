@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.Helpers
+namespace CoC.WinDesktop.Helpers
 {
 	public sealed class BackgroundItem
 	{

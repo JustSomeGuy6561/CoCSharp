@@ -4,10 +4,12 @@
 //4/10/2019, 4:44 AM
 using CoC.Backend.Tools;
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
+
 namespace CoC.Backend.BodyParts
 {
 
-	public sealed partial class Build : SimpleSaveablePart<Build>, IBodyAware, ILowerBodyAware
+	public sealed partial class Build : SimpleSaveablePart<Build, BuildData>
 	{
 		#region Height
 
@@ -78,34 +80,18 @@ namespace CoC.Backend.BodyParts
 		public SimpleDescriptor hipsFullDescription=> HipsFullDesc;
 
 
-		private Build(byte heightInches, byte characterThickness, byte characterTone, byte characterHipSize, byte characterButtSize)
+		internal Build(Creature source, byte heightInches, byte? characterThickness, byte? characterTone, byte? characterHipSize, byte? characterButtSize) : base(source)
 		{
 			heightInInches = heightInches;
 
-			thickness = characterThickness;
-			muscleTone = characterTone;
-			butt = Butt.Generate(characterButtSize);
-			hips = Hips.Generate(characterHipSize);
+			thickness = characterThickness ?? THICKNESS_NORMAL;
+			muscleTone = characterTone ?? TONE_SOFT;
+			butt = new Butt(source, characterButtSize?? Butt.AVERAGE);
+			hips = new Hips(source, characterHipSize ?? Hips.AVERAGE);
 		}
 
-		internal static Build GenerateDefault()
+		internal Build(Creature source) : this(source, DEFAULT_HEIGHT, THICKNESS_NORMAL, TONE_SOFT, Hips.AVERAGE, Butt.AVERAGE)
 		{
-			return new Build(DEFAULT_HEIGHT, THICKNESS_NORMAL, TONE_SOFT, Hips.AVERAGE, Butt.AVERAGE);
-		}
-
-		internal static Build Generate(byte heightInInches, byte? thickness = null, byte? muscleTone = null, byte? hipSize = null, byte? buttSize = null)
-		{
-			byte thick, tone, hip, butt;
-			thick = thickness ?? THICKNESS_NORMAL;
-			tone = muscleTone ?? TONE_SOFT;
-			hip = hipSize ?? Hips.AVERAGE;
-			butt = buttSize ?? Butt.AVERAGE;
-			return new Build(heightInInches, thick, tone, hip, butt);
-		}
-
-		internal static Build GenerateButtless(byte heightInInches, byte thickness = THICKNESS_NORMAL, byte muscleTone = TONE_SOFT, byte hipSize = Hips.AVERAGE)
-		{
-			return new Build(heightInInches, thickness, muscleTone, hipSize, Butt.BUTTLESS);
 		}
 
 		public byte GrowButt(byte amount = 1)
@@ -212,23 +198,7 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		private BodyDataGetter bodyData;
-		void IBodyAware.GetBodyData(BodyDataGetter getter)
-		{
-			bodyData = getter;
-		}
-
-		private LowerBodyDataGetter lowerBodyData;
-		void ILowerBodyAware.GetLowerBodyData(LowerBodyDataGetter getter)
-		{
-			lowerBodyData = getter;
-		}
-
-		internal void SetupBuildAware(IBuildAware buildAware)
-		{
-			buildAware.GetBuildData(ToBuildData);
-		}
-		private BuildData ToBuildData()
+		public override BuildData AsReadOnlyData()
 		{
 			return new BuildData(heightInInches, muscleTone, thickness, butt.size, hips.size);
 		}

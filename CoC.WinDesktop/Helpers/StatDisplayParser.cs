@@ -1,15 +1,15 @@
 ﻿using CoC.Frontend.UI;
 using CoC.Frontend.UI.ControllerData;
 using CoC.UI;
-using CoCWinDesktop.CustomControls;
-using CoCWinDesktop.CustomControls.SideBarModelViews;
+using CoC.WinDesktop.CustomControls;
+using CoC.WinDesktop.CustomControls.SideBarModelViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.Helpers
+namespace CoC.WinDesktop.Helpers
 {
 	public sealed class StatDisplayParser
 	{

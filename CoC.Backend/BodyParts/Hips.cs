@@ -3,12 +3,13 @@
 //Author: JustSomeGuy
 //12/28/2018, 1:35 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Hips : SimpleSaveablePart<Hips>, IShrinkable //Gro+ doesn't work on hips.
+	public sealed partial class Hips : SimpleSaveablePart<Hips, HipData>, IShrinkable //Gro+ doesn't work on hips.
 	{
 		public const byte BOYISH = 0;
 		public const byte SLENDER = 2;
@@ -28,15 +29,18 @@ namespace CoC.Backend.BodyParts
 		public SimpleDescriptor AsText => AsStr;
 		public SimpleDescriptor ShortDescription => ShortDesc;
 
-		private Hips(byte hipSize)
+		internal Hips(Creature source) : this(source, AVERAGE)
+		{
+		}
+		internal Hips(Creature source, byte hipSize) : base(source)
 		{
 			size = hipSize;
 		}
 		public byte index => size;
 
-		public static Hips Generate(byte size = AVERAGE)
+		public override HipData AsReadOnlyData()
 		{
-			return new Hips(size);
+			return new HipData(size);
 		}
 
 		public byte GrowHips(byte amount = 1)
@@ -87,6 +91,16 @@ namespace CoC.Backend.BodyParts
 				size -= Math.Min((byte)(Utils.Rand(3) + 1), size);
 			}
 			return oldSize - size;
+		}
+	}
+
+	public sealed class HipData
+	{
+		public readonly byte hipSize;
+
+		internal HipData(byte size)
+		{
+			hipSize = size;
 		}
 	}
 }

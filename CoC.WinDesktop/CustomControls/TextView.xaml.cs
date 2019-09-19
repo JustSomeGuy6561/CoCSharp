@@ -1,5 +1,5 @@
-﻿using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.Helpers;
+﻿using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.IO;
 using System.Text;
@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 	//-----------NEEDS
 	//maybe an inputOffset, for displaying. probably could be hardcoded.

@@ -1,17 +1,17 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
-using CoCWinDesktop.ContentWrappers.ButtonWrappers;
-using CoCWinDesktop.ContentWrappers.OptionsRow;
-using CoCWinDesktop.Engine;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.InterfaceSettings;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.ContentWrappers.ButtonWrappers;
+using CoC.WinDesktop.ContentWrappers.OptionsRow;
+using CoC.WinDesktop.Engine;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.InterfaceSettings;
+using CoC.WinDesktop.ModelView;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.CustomControls.OptionsModelViews
+namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class InterfaceOptionsModelView : OptionModelViewDataBase
 	{

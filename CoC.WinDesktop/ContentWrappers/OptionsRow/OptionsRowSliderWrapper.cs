@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.ContentWrappers.OptionsRow
+namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 {
 	public sealed class OptionsRowSliderWrapper : OptionsRowWrapperBase
 	{

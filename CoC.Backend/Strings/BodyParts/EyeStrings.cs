@@ -63,7 +63,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanTransformStr(Eyes originalEyes, Player player)
 		{
-			return originalEyes.restoreString(player);
+			return originalEyes.RestoreText();
 		}
 		//these eyes / these eyes have seen a lot of loves...
 		//(holy shit i'm old.)

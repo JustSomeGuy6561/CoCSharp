@@ -1,10 +1,10 @@
 ﻿using CoC.Backend;
-using CoCWinDesktop.ContentWrappers.ButtonWrappers;
+using CoC.WinDesktop.ContentWrappers.ButtonWrappers;
 using System;
 using System.Diagnostics;
 using System.Windows;
 
-namespace CoCWinDesktop.ContentWrappers.OptionsRow
+namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 {
 	public sealed class OptionsRowButtonWrapper : OptionsRowWrapperBase
 	{

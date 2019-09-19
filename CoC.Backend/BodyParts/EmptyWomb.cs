@@ -1,7 +1,9 @@
-﻿namespace CoC.Backend.BodyParts
+﻿using CoC.Backend.Creatures;
+
+namespace CoC.Backend.BodyParts
 {
 	public sealed class EmptyWomb : Womb
 	{
-		public EmptyWomb() : base(null, null, null) { }
+		public EmptyWomb(Creature source ) : base(source, null, null, null) { }
 	}
 }

@@ -1,12 +1,12 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Settings;
-using CoCWinDesktop.Strings;
+using CoC.WinDesktop.Strings;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.DisplaySettings
+namespace CoC.WinDesktop.DisplaySettings
 {
 	public class DisplayOptions : OptionBase
 	{

@@ -3,18 +3,34 @@
 //Author: JustSomeGuy
 //4/7/2019, 7:57 PM
 using CoC.Backend.BodyParts;
-using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine.Time;
 using System;
 
 namespace CoC.Backend.Pregnancies
 {
 	//need way of checking for eggs - if egg pregnancy, they can be fertalized. 
-	public sealed class PregnancyStore : SimpleSaveablePart<PregnancyStore>, ITimeActiveListener, ITimeLazyListener, IBaseStatPerkAware
+	public sealed class PregnancyStore : SimpleSaveablePart<PregnancyStore, ReadOnlyPregnancyStore>, ITimeActiveListener, ITimeLazyListener
 	{
-		private float pregnancySpeed => basePerkStats?.Invoke().pregnancyMultiplier ?? 1f;
-
-		private PerkStatBonusGetter basePerkStats;
+		public float pregnancyMultiplier
+		{
+			get
+			{
+				if (pregnancyMultiplierCounter == 0)
+				{
+					return 1;
+				}
+				else if (pregnancyMultiplierCounter > 0)
+				{
+					return 1 + pregnancyMultiplierCounter / 2.0f;
+				}
+				else
+				{
+					return 1 / (1 - pregnancyMultiplierCounter / 2.0f);
+				}
+			}
+		}
+		internal int pregnancyMultiplierCounter = 0;
 
 		//remember, we can have eggs even if we have normal womb due to ovi elixirs. 
 		private bool? eggSize = null;
@@ -23,9 +39,14 @@ namespace CoC.Backend.Pregnancies
 
 		public SpawnType spawnType { get; private set; }
 
+		public override ReadOnlyPregnancyStore AsReadOnlyData()
+		{
+			return new ReadOnlyPregnancyStore(spawnType, birthCountdown);
+		}
+
 		private readonly bool isVagina;
 
-		public PregnancyStore(bool isThisVagina)
+		public PregnancyStore(Creature source, bool isThisVagina) : base(source)
 		{
 			isVagina = isThisVagina;
 		}
@@ -83,7 +104,7 @@ namespace CoC.Backend.Pregnancies
 
 			if (isPregnant)
 			{
-				hoursTilBirth -= pregnancySpeed;
+				hoursTilBirth -= pregnancyMultiplier;
 				//override them if we are pregnant and giving birth.
 				if (hoursTilBirth <= 0)
 				{
@@ -110,7 +131,7 @@ namespace CoC.Backend.Pregnancies
 		{
 			if (isPregnant)
 			{
-				float oldHours = hoursTilBirth + pregnancySpeed * hoursPassed;
+				float oldHours = hoursTilBirth + pregnancyMultiplier * hoursPassed;
 				return spawnType.NotifyTimePassed(isVagina, hoursTilBirth, oldHours);
 			}
 			else
@@ -125,19 +146,19 @@ namespace CoC.Backend.Pregnancies
 		private ITimeLazyListener lazy => this;
 
 		#endregion
-		#region BaseStats
-		IBaseStatPerkAware perkAware => this;
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			basePerkStats = getter;
-		}
+	}
 
-		internal void GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			perkAware.GetBasePerkStats(getter);
-		}
+	public sealed class ReadOnlyPregnancyStore
+	{
+		public readonly SpawnType spawnType;
+		public readonly ushort hoursTilBirth;
 
-		#endregion
+
+		public ReadOnlyPregnancyStore(SpawnType spawnType, ushort hoursToBirth)
+		{
+			this.spawnType = spawnType;
+			hoursTilBirth = hoursToBirth;
+		}
 	}
 }
 

@@ -2,7 +2,7 @@
 using CoC.Backend.Settings;
 using System;
 
-namespace CoCWinDesktop.InterfaceSettings
+namespace CoC.WinDesktop.InterfaceSettings
 {
 	//#error Fix Me!
 	public sealed partial class SidebarFontOption : InterfaceOptions

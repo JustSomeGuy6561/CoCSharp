@@ -1,5 +1,5 @@
-﻿using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+﻿using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.Views
+namespace CoC.WinDesktop.Views
 {
 	/// <summary>
 	/// Interaction logic for MainMenuView.xaml

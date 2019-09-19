@@ -1,7 +1,7 @@
 ﻿using CoC.Backend.SaveData;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.Helpers;
 
-namespace CoCWinDesktop
+namespace CoC.WinDesktop
 {
 	public sealed class GuiGlobalSave : GlobalSaveData
 	{

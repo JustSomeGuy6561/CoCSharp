@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.ModelView;
 
-namespace CoCWinDesktop.CustomControls.ExtraItemModelViews
+namespace CoC.WinDesktop.CustomControls.ExtraItemModelViews
 {
 	public partial class MenuCreditsModelView
 	{

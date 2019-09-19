@@ -1,8 +1,8 @@
 ﻿using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Frontend.UI.ControllerData;
-using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.CustomControls.SideBarModelViews
+namespace CoC.WinDesktop.CustomControls.SideBarModelViews
 {
 	public sealed class PrisonSideBarModelView : SideBarBase
 	{

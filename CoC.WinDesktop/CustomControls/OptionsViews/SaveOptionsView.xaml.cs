@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.CustomControls.OptionsViews
+namespace CoC.WinDesktop.CustomControls.OptionsViews
 {
 	/// <summary>
 	/// Interaction logic for SaveOptionsView.xaml

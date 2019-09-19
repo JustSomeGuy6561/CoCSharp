@@ -7,6 +7,7 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Races;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -17,7 +18,7 @@ using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType>, IBodyAware, ICanAttackWith
+	public sealed class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType, LowerBodyData>, ICanAttackWith
 	{
 		public readonly Feet feet;
 		//No magic constants. Woo!
@@ -31,6 +32,8 @@ namespace CoC.Backend.BodyParts
 		public const byte SEXTOPED_LEG_COUNT = 6; //for squids/octopi, if i implement them. technically, an octopus is 2 legs and 6 arms, but i like the 6 legs 2 arms because legs have a count, arms dont.
 		public const byte OCTOPED_LEG_COUNT = 8;
 
+		private BodyData bodyData => source.body.AsReadOnlyData();
+
 		public override LowerBodyType type
 		{
 			get => _type;
@@ -42,12 +45,10 @@ namespace CoC.Backend.BodyParts
 		}
 		private LowerBodyType _type;
 
-		public static LowerBodyType defaultType => LowerBodyType.HUMAN;
+		public override LowerBodyType defaultType => LowerBodyType.defaultValue;
 
-		public override bool isDefault => type == defaultType;
-
-		public EpidermalData primaryEpidermis => type.ParseEpidermis(bodyData());
-		public EpidermalData secondaryEpidermis => type.ParseEpidermis(bodyData());
+		public EpidermalData primaryEpidermis => type.ParseEpidermis(bodyData);
+		public EpidermalData secondaryEpidermis => type.ParseEpidermis(bodyData);
 		public int legCount => type.legCount;
 
 		public bool isMonoped => legCount == MONOPED_LEG_COUNT;
@@ -56,44 +57,26 @@ namespace CoC.Backend.BodyParts
 		public bool isSextoped => legCount == SEXTOPED_LEG_COUNT;
 		public bool isOctoped => legCount == OCTOPED_LEG_COUNT;
 
-		private LowerBody(LowerBodyType type)
+		internal LowerBody(Creature source, LowerBodyType type) : base(source)
 		{
 			_type = type ?? throw new ArgumentNullException(nameof(type));
-			feet = Feet.GenerateDefault(type.footType);
+			feet = new Feet(source, type.footType);
 		}
 
-		internal static LowerBody GenerateDefault()
+		internal LowerBody(Creature source) : this(source, LowerBodyType.defaultValue)
+		{ }
+
+		protected internal override void PostPerkInit()
 		{
-			return new LowerBody(LowerBodyType.HUMAN);
+			feet.PostPerkInit();
 		}
 
-		internal static LowerBody GenerateDefaultOfType(LowerBodyType type)
+		protected internal override void LateInit()
 		{
-			return new LowerBody(type);
+			feet.LateInit();
 		}
 
-		internal override bool UpdateType(LowerBodyType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			else
-			{
-				type = newType;
-				return true;
-			}
-		}
-
-		internal override bool Restore()
-		{
-			if (type == defaultType)
-			{
-				return false;
-			}
-			type = defaultType;
-			return true;
-		}
+		//standard update, restore are fine.
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -103,29 +86,16 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		private BodyDataGetter bodyData;
-
-		void IBodyAware.GetBodyData(BodyDataGetter getter)
-		{
-			bodyData = getter;
-		}
-
 		AttackBase ICanAttackWith.attack => type.attack;
 		bool ICanAttackWith.canAttackWith() => type.canAttackWith;
 
-
-		internal void SetupLowerBodyAware(ILowerBodyAware lowerBodyAware)
-		{
-			lowerBodyAware.GetLowerBodyData(ToLowerBodyData);
-		}
-
-		private LowerBodyData ToLowerBodyData()
+		public override LowerBodyData AsReadOnlyData()
 		{
 			return new LowerBodyData(type, primaryEpidermis, secondaryEpidermis);
 		}
 	}
 
-	public abstract partial class LowerBodyType : SaveableBehavior<LowerBodyType, LowerBody>
+	public abstract partial class LowerBodyType : SaveableBehavior<LowerBodyType, LowerBody, LowerBodyData>
 	{
 
 		private const int NOLEGS = 0;
@@ -140,6 +110,9 @@ namespace CoC.Backend.BodyParts
 		private static int indexMaker = 0;
 		private static readonly List<LowerBodyType> lowerBodyTypes = new List<LowerBodyType>();
 		public static ReadOnlyCollection<LowerBodyType> availableTypes => new ReadOnlyCollection<LowerBodyType>(lowerBodyTypes.Where(x => x != null).ToList());
+
+		public static LowerBodyType defaultValue => HUMAN;
+
 
 		public readonly FootType footType;
 		public readonly EpidermisType epidermisType;
@@ -334,14 +307,14 @@ namespace CoC.Backend.BodyParts
 
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				Tones color = bodyData.bodyType == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone) ? bodyData.supplementary.tone : bodyData.mainSkin.tone;
+				Tones color = bodyData.currentType == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone) ? bodyData.supplementary.tone : bodyData.mainSkin.tone;
 				return new EpidermalData(primaryEpidermis, color, defaultTexture);
 			}
 
 			internal override EpidermalData ParseSecondaryEpidermis(in BodyData bodyData)
 			{
 				Tones color = bodyData.supplementary.tone;
-				if (bodyData.bodyType == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone))
+				if (bodyData.currentType == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone))
 				{
 					color = Species.NAGA.UnderToneFrom(color);
 				}
@@ -389,19 +362,16 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class LowerBodyData
+	public sealed class LowerBodyData : BehavioralSaveablePartData<LowerBodyData, LowerBody, LowerBodyType>
 	{
-		public readonly LowerBodyType lowerBodyType;
-
 		public readonly EpidermalData primaryEpidermis;
 		public readonly EpidermalData secondaryEpidermis;
 
-		public byte legCount => lowerBodyType.legCount;
-		public FootType footType => lowerBodyType.footType;
+		public byte legCount => currentType.legCount;
+		public FootType footType => currentType.footType;
 
-		internal LowerBodyData(LowerBodyType type, EpidermalData epidermis, EpidermalData secondary)
+		internal LowerBodyData(LowerBodyType type, EpidermalData epidermis, EpidermalData secondary) : base(type)
 		{
-			lowerBodyType = type;
 			primaryEpidermis = epidermis;
 			secondaryEpidermis = secondary;
 		}

@@ -1,6 +1,6 @@
-﻿using CoCWinDesktop.ContentWrappers.ButtonWrappers;
-using CoCWinDesktop.CustomControls;
-using CoCWinDesktop.CustomControls.ExtraItemModelViews;
+﻿using CoC.WinDesktop.ContentWrappers.ButtonWrappers;
+using CoC.WinDesktop.CustomControls;
+using CoC.WinDesktop.CustomControls.ExtraItemModelViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.ModelView
+namespace CoC.WinDesktop.ModelView
 {
 	public sealed class ExtraMenuItemsModelView : ModelViewBase
 	{

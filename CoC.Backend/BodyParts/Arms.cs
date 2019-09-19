@@ -5,6 +5,7 @@
 
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -26,14 +27,14 @@ namespace CoC.Backend.BodyParts
 	 * An aside: unfortunately, i can't think up a means to memoize the epidermis/secondary epidermis. so it'll have to get them each time. This shouldn't be costly enough to worry about that, though
 	 */
 
-	public sealed class Arms : BehavioralSaveablePart<Arms, ArmType>, IBodyAware
+	public sealed class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
 	{
 		public readonly Hands hands;
 
-		private BodyDataGetter bodyData;
+		private BodyData bodyData => source.body.AsReadOnlyData();
 
-		public EpidermalData epidermis => type.GetPrimaryEpidermis(bodyData());
-		public EpidermalData secondaryEpidermis => type.GetSecondaryEpidermis(bodyData());
+		public EpidermalData epidermis => type.GetPrimaryEpidermis(bodyData);
+		public EpidermalData secondaryEpidermis => type.GetSecondaryEpidermis(bodyData);
 
 
 		public override ArmType type
@@ -42,52 +43,40 @@ namespace CoC.Backend.BodyParts
 			protected set
 			{
 				_type = value;
-				hands.UpdateHands(value.handType);
+				hands.UpdateType(value.handType);
 			}
 		}
 		private ArmType _type;
-		public static ArmType defaultType => ArmType.HUMAN;
-		public override bool isDefault => type == defaultType;
+
+		public override ArmType defaultType => ArmType.defaultValue;
+
+		public override ArmData AsReadOnlyData()
+		{
+			return new ArmData(this);
+		}
+
+		protected internal override void PostPerkInit()
+		{
+			hands.PostPerkInit();
+		}
+
+		protected internal override void LateInit()
+		{
+			hands.LateInit();
+		}
 
 		public bool usesTone => type is ToneArms;
 		public bool usesFur => type is FurArms;
 
-		private Arms(ArmType type)
+		internal Arms(Creature source) : this(source, ArmType.defaultValue) { }
+
+		internal Arms(Creature source, ArmType armType) : base(source)
 		{
-			_type = type ?? throw new ArgumentNullException();
-			hands = Hands.Generate(type.handType, (x) => x ? epidermis : secondaryEpidermis);
+			_type = armType ?? throw new ArgumentNullException(nameof(armType));
+			hands = new Hands(source, type.handType, (x) => x ? epidermis : secondaryEpidermis);
 		}
 
-		internal static Arms GenerateDefault()
-		{
-			return new Arms(ArmType.HUMAN);
-		}
-
-		internal static Arms GenerateDefaultOfType(ArmType type)
-		{
-			return new Arms(type);
-		}
-
-		internal override bool UpdateType(ArmType armType)
-		{
-			if (armType == null || type == armType)
-			{
-				return false;
-			}
-			type = armType; //auto-updates hands.
-			return true;
-		}
-
-		internal override bool Restore()
-		{
-			if (isDefault)
-			{
-				return false;
-			}
-			type = ArmType.HUMAN;
-
-			return true;
-		}
+		//default implementation of update and restore are fine
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -96,19 +85,16 @@ namespace CoC.Backend.BodyParts
 			type = armType; //automatically sets hand.
 			return retVal;
 		}
-		#region IBodyAware
-		void IBodyAware.GetBodyData(BodyDataGetter getter)
-		{
-			bodyData = getter;
-		}
-		#endregion
 	}
 
-	public abstract partial class ArmType : SaveableBehavior<ArmType, Arms>
+	public abstract partial class ArmType : SaveableBehavior<ArmType, Arms, ArmData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<ArmType> arms = new List<ArmType>();
 		public static readonly ReadOnlyCollection<ArmType> availableTypes = new ReadOnlyCollection<ArmType>(arms);
+
+		public static ArmType defaultValue => HUMAN;
+
 
 		public readonly HandType handType;
 		public readonly EpidermisType epidermisType;
@@ -262,7 +248,7 @@ namespace CoC.Backend.BodyParts
 			internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
 			{
 				FurColor color = defaultColor;
-				if (bodyData.bodyType == BodyType.COCKATRICE && !bodyData.main.fur.isEmpty)
+				if (bodyData.currentType == BodyType.COCKATRICE && !bodyData.main.fur.isEmpty)
 				{
 					color = bodyData.main.fur;
 				}
@@ -346,6 +332,20 @@ namespace CoC.Backend.BodyParts
 		{
 			Tones color = mutable ? bodyData.mainSkin.tone : defaultTone;
 			return new EpidermalData(primaryEpidermis, color, defaultTexture);
+		}
+	}
+
+	public sealed class ArmData : BehavioralSaveablePartData<ArmData, Arms, ArmType>
+	{
+		public readonly EpidermalData primaryEpidermis;
+		public readonly EpidermalData secondaryEpidermis;
+		public readonly HandData handData;
+
+		public ArmData(Arms source) : base(GetBehavior(source))
+		{
+			handData = source.hands.AsReadOnlyData();
+			primaryEpidermis = source.epidermis;
+			secondaryEpidermis = source.secondaryEpidermis;
 		}
 	}
 

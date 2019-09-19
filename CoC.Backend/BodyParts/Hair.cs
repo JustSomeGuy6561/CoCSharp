@@ -6,6 +6,7 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -38,7 +39,7 @@ namespace CoC.Backend.BodyParts
 	//right now, my solution is to keep the old color, even if the PC is bald/NO_HAIR, but in the event this changes or someone accidently clears the color, every time the hairType changes
 	//the new type checks to see if the color is null or empty and replaces it with their default (which is not null or empty) if it is. 
 
-	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType>, IBuildAware, ISimultaneousMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
+	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType, HairData>, ISimultaneousMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
 		internal static readonly HairFurColors DEFAULT_COLOR = HairFurColors.BLACK;
 
@@ -55,6 +56,8 @@ namespace CoC.Backend.BodyParts
 		//max float divided by 2.54. In the future a more convenient value (like say, 360, or 30 feet long) may be used, but for now, i'm not limiting it. Go nuts, people!
 		public const float MAX_LENGTH = (float)(float.MaxValue * Measurement.TO_INCHES);
 		public const float MIN_LENGTH = 0;
+
+		private BuildData buildData => source.build.AsReadOnlyData();
 
 		#region Unique Members
 		//make sure to check this when deserializing - if you dont use the property is may cause errors.
@@ -139,13 +142,27 @@ namespace CoC.Backend.BodyParts
 
 		#region Constructors
 
-		private Hair(HairType hairType)
+		internal Hair(Creature source) : this(source, HairType.defaultValue)
+		{ }
+
+		internal Hair(Creature source, HairType hairType, HairFurColors color = null, HairFurColors highlight = null, float? hairLength = null, 
+			HairStyle? hairStyle = null, bool hairTransparent = false) : base(source)
 		{
 			_type = hairType ?? throw new ArgumentNullException(nameof(hairType));
+
+
 			_length = type.defaultHairLength;
-			hairColor = type.defaultColor;
+			if (!type.isFixedLength && hairLength is float validLength) SetHairLength(validLength);
+
+			style = hairStyle ?? HairStyle.NO_STYLE;
+
 			isSemiTransparent = false;
-			style = HairStyle.NO_STYLE;
+
+			hairColor = type.defaultColor;
+			SetHairColor(color);
+			SetHighlightColor(highlight);
+
+			this.isSemiTransparent = hairTransparent;
 		}
 		#endregion
 		#region BodyPartProperties
@@ -167,56 +184,15 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private HairType _type;
-		public static HairType defaultType => HairType.NORMAL;
-		public override bool isDefault => type == defaultType;
+		public override HairType defaultType => HairType.defaultValue;
 		#endregion
 		#region  Generate
 
-		internal static Hair GenerateDefault()
-		{
-			return new Hair(HairType.NORMAL);
-		}
 
-		internal static Hair GenerateDefaultOfType(HairType hairType)
-		{
-			return new Hair(hairType);
-		}
-		internal static Hair GenerateWithLength(HairType hairType, float hairLength)
-		{
-			Hair retVal = new Hair(hairType);
-			retVal.SetHairLength(hairLength);
-			return retVal;
-		}
-
-		internal static Hair GenerateWithColor(HairType hairType, HairFurColors color, float? hairLength = null)
-		{
-			Hair retVal = new Hair(hairType);
-			if (hairLength != null) retVal.SetHairLength((float)hairLength);
-			retVal.SetHairColor(color);
-			return retVal;
-		}
-
-		internal static Hair GenerateWithColorAndHighlight(HairType hairType, HairFurColors color, HairFurColors highlight, float? hairLength = null)
-		{
-			Hair retVal = new Hair(hairType);
-			if (hairLength != null) retVal.SetHairLength((float)hairLength);
-			retVal.SetHairColor(color);
-			retVal.SetHighlightColor(highlight);
-			return retVal;
-		}
 		#endregion
 		#region Update
 
-		internal override bool UpdateType(HairType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return true;
-
-		}
+		//default update is fine.
 
 		//i'm gonna be lazy, fuck it. these are internal, anyway. the helpers are on the player class, so i can just parse it there. 
 
@@ -229,6 +205,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldType = type;
 			//auto call the type tf change function. 
 			type = newType;
 
@@ -254,6 +231,8 @@ namespace CoC.Backend.BodyParts
 			{
 				SetHairStyle((HairStyle)newStyle);
 			}
+
+			NotifyTypeChanged(oldType);
 			return true;
 		}
 
@@ -355,15 +334,9 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Restore
-		internal override bool Restore()
-		{
-			if (type == HairType.NORMAL)
-			{
-				return false;
-			}
-			type = HairType.NORMAL;
-			return true;
-		}
+		
+		//default restore is fine.
+
 		internal void Reset()
 		{
 			type = HairType.NORMAL;
@@ -386,14 +359,9 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region HairAwareHelper
-		private HairData ToHairData()
+		public override HairData AsReadOnlyData()
 		{
 			return new HairData(type, hairColor, highlightColor, style, length, isSemiTransparent, !isGrowing);
-		}
-
-		internal void SetupHairAware(IHairAware hairAware)
-		{
-			hairAware.GetHairData(ToHairData);
 		}
 
 		#endregion
@@ -535,7 +503,7 @@ namespace CoC.Backend.BodyParts
 				{
 					sb.Append(specialHappenstance);
 				}
-				byte tallness = buildData().heightInInches;
+				byte tallness = buildData.heightInInches;
 				if (newLength > 0 && length < 0.01)
 				{
 					sb.Append(NoLongerBaldStr());
@@ -556,22 +524,15 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
-		#region BuildData
-		private BuildDataGetter buildData;
-		void IBuildAware.GetBuildData(BuildDataGetter getter)
-		{
-			buildData = getter;
-		}
-		#endregion
 	}
 
-	public abstract partial class HairType : SaveableBehavior<HairType, Hair>
+	public abstract partial class HairType : SaveableBehavior<HairType, Hair, HairData>
 	{
 		private static readonly List<HairType> hairTypes = new List<HairType>();
 		public static readonly ReadOnlyCollection<HairType> availableTypes = new ReadOnlyCollection<HairType>(hairTypes);
 		private static int indexMaker = 0;
 
-
+		public static HairType defaultValue => NORMAL;
 
 		public readonly HairFurColors defaultColor;
 		public readonly float defaultHairLength;
@@ -975,24 +936,22 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	internal sealed class HairData
+	public sealed class HairData : BehavioralSaveablePartData<HairData, Hair, HairType>
 	{
-		internal readonly HairFurColors hairColor;
-		internal readonly HairFurColors highlightColor;
-		internal readonly HairType hairType;
-		internal readonly HairStyle hairStyle;
-		internal readonly float hairLength;
-		internal readonly bool isSemiTransparent;
-		internal readonly bool isNotGrowing;
-		internal bool isNoHair => hairType == HairType.NO_HAIR;
-		internal bool hairDeactivated => hairType == HairType.NO_HAIR || (hairLength == 0 && isNotGrowing);
-		internal bool isBald => isNoHair || hairLength == 0;
+		public readonly HairFurColors hairColor;
+		public readonly HairFurColors highlightColor;
+		public readonly HairStyle hairStyle;
+		public readonly float hairLength;
+		public readonly bool isSemiTransparent;
+		public readonly bool isNotGrowing;
+		public bool isNoHair => currentType == HairType.NO_HAIR;
+		public bool hairDeactivated => currentType == HairType.NO_HAIR || (hairLength == 0 && isNotGrowing);
+		public bool isBald => isNoHair || hairLength == 0;
+		
+		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
 
-		internal HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
-
-		internal HairData(HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool notGrowing)
+		internal HairData(HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool notGrowing) : base(type)
 		{
-			hairType = type;
 			hairColor = color;
 			highlightColor = highlight;
 			hairStyle = style;
@@ -1001,9 +960,8 @@ namespace CoC.Backend.BodyParts
 			isNotGrowing = notGrowing;
 		}
 
-		internal HairData()
+		internal HairData() : base(HairType.defaultValue)
 		{
-			hairType = HairType.NO_HAIR;
 			hairColor = HairFurColors.NO_HAIR_FUR;
 			highlightColor = HairFurColors.NO_HAIR_FUR;
 			hairStyle = HairStyle.NO_STYLE;

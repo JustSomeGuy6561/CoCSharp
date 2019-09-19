@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using CoC.Backend.Achievements;
 using CoC.Backend.Engine;
 using CoC.Frontend.UI.ControllerData;
-using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 
-namespace CoCWinDesktop.CustomControls.ExtraItemModelViews
+namespace CoC.WinDesktop.CustomControls.ExtraItemModelViews
 {
 	public sealed partial class MenuAchievementsModelView : ExtraItemModelViewBase
 	{

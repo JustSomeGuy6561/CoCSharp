@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.Views
+namespace CoC.WinDesktop.Views
 {
 	/// <summary>
 	/// Interaction logic for OptionsView.xaml

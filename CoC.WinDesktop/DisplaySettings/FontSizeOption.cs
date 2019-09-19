@@ -1,11 +1,11 @@
 ﻿using CoC.Backend.Settings;
 using CoC.Backend.Tools;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CoCWinDesktop.DisplaySettings
+namespace CoC.WinDesktop.DisplaySettings
 {
 	public sealed partial class FontSizeOption : DisplayOptions
 	{

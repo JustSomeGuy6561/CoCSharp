@@ -1,8 +1,8 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:CoCWinDesktop"
-	xmlns:CC="clr-namespace:CoCWinDesktop.CustomControls">
+    xmlns:local="clr-namespace:CoC.WinDesktop"
+	xmlns:CC="clr-namespace:CoC.WinDesktop.CustomControls">
 	<!--
 	<SolidColorBrush x:Key="SliderThumb.Static.Foreground" Color="#FFE5E5E5"/>
 	<SolidColorBrush x:Key="SliderThumb.MouseOver.Background" Color="#FFDCECFC"/>

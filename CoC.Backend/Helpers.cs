@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //4/9/2019, 1:26 AM
 
+using System;
+using System.Collections.ObjectModel;
 using System.Numerics;
 
 namespace CoC
@@ -35,6 +37,16 @@ namespace CoC
 			}
 			return (byte)(first - second);
 		}
+
+		public static byte delta(this sbyte first, sbyte second)
+		{
+			if (second >= first)
+			{
+				return (byte)(second - first);
+			}
+			return (byte)(first - second);
+		}
+
 		//there's probably some unchecked magic i can do here. not gonna even try.
 		public static short diff(this byte first, byte second)
 		{
@@ -258,6 +270,17 @@ namespace CoC
 			else
 			{
 				return text.Substring(0, length);
+			}
+		}
+	}
+
+	public static class CollectionHelpers
+	{
+		public static void ForEach<T>(this ReadOnlyCollection<T> collection, Action<T> callback)
+		{
+			foreach (T item in collection)
+			{
+				callback(item);
 			}
 		}
 	}

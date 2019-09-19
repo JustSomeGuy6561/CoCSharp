@@ -1,4 +1,4 @@
-﻿using CoCWinDesktop.Helpers;
+﻿using CoC.WinDesktop.Helpers;
 using System;
 using System.IO;
 using System.Text;
@@ -8,7 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 
 	public class ContentRichTextBox : RichTextBox

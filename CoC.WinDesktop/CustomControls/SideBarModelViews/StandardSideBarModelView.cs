@@ -1,13 +1,13 @@
 ﻿using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Frontend.UI.ControllerData;
-using CoCWinDesktop.ContentWrappers;
+using CoC.WinDesktop.ContentWrappers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.CustomControls.SideBarModelViews
+namespace CoC.WinDesktop.CustomControls.SideBarModelViews
 {
 	public sealed class StandardSideBarModelView : SideBarBase
 	{

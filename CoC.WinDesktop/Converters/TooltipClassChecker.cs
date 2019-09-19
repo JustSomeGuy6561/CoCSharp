@@ -1,4 +1,4 @@
-﻿using CoCWinDesktop.ContentWrappers;
+﻿using CoC.WinDesktop.ContentWrappers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace CoCWinDesktop.Converters
+namespace CoC.WinDesktop.Converters
 {
 	class TooltipClassChecker : IValueConverter
 	{

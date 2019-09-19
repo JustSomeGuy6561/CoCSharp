@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //6/28/2019, 10:30 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
@@ -51,7 +52,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public PlayerWomb() : base(new PregnancyStore(true), new PregnancyStore(false), new PregnancyStore(true))
+		public PlayerWomb(Creature source) : base(source, new PregnancyStore(source, true), new PregnancyStore(source, false), new PregnancyStore(source, true))
 		{
 
 		}

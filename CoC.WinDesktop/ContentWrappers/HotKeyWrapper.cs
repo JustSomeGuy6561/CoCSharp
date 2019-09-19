@@ -1,6 +1,6 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Tools;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.ContentWrappers
+namespace CoC.WinDesktop.ContentWrappers
 {
 	//public enum Hotkey
 	//{

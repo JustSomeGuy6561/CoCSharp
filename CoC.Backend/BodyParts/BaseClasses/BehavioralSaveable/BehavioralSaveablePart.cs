@@ -3,6 +3,11 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
+using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
+using System;
+using WeakEvent;
+
 namespace CoC.Backend.BodyParts
 {
 	/*
@@ -20,17 +25,19 @@ namespace CoC.Backend.BodyParts
 	//internal class ArmType : BodyPartBehavior<ArmType, Arms>
 
 
-	public abstract class BehavioralSaveablePart<ThisClass, BehaviorClass> : BehavioralPartBase<BehaviorClass> where ThisClass : BehavioralSaveablePart<ThisClass, BehaviorClass> where BehaviorClass : SaveableBehavior<BehaviorClass, ThisClass>
+	public abstract class BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass> : PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass>
+		where ThisClass : BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass> where BehaviorClass : SaveableBehavior<BehaviorClass, ThisClass, DataClass>
+		where DataClass : BehavioralSaveablePartData<DataClass, ThisClass, BehaviorClass>
 	{
-
-		protected BehavioralSaveablePart()
+		private protected BehavioralSaveablePart(Creature parent) : base(parent)
 		{
-			//DataContractSystem.AddSurrogateData(this);
 		}
 
+
 		//standard implementations.
-		//public static BehaviorType defaultType;
-		public abstract bool isDefault { get; }
+		//public static BehaviorType default[Name] => <value>;
+		public bool isDefault => type == defaultType;
+		public abstract BehaviorClass defaultType { get; }
 
 		//statics cannot be created here, but they'll appear as follows
 
@@ -38,27 +45,52 @@ namespace CoC.Backend.BodyParts
 		//internal static ThisClass GenerateDefaultOfType(BehaviorClass type);
 
 		//internal static ThisClass Generate[Special Name](BehaviorClass type, [additional parameters]);
-		//internal static bool Update[Special Name](BehaviorClass type, [additional parameters]);
-		//(optional) internal static bool Change[Special Name]([additional parameters]);
 
-		//statics will work as follows: they will immediately return false if the type is identical
-		//otherwise, they will do all the update stuff and return true.
-		//if there are addition parameters that can be set via update, you MUST implement the change functions
-		//so that these can be set if the type is identical and update will immediately return false.
+		//each class may have additional updates for more specific or varied cases, notably cases that use extra variables unique to that class. 
+		//if this is the case, functions that can change these variables without updating the type may need to be implemented.
 
-		internal abstract bool UpdateType(BehaviorClass newType);
+		//internal bool Update[Special Name](BehaviorClass type, [additional parameters]);
+		//(optional) internal bool Change[Special Name]([additional parameters]);
 
-		internal abstract bool Restore();
+		internal virtual bool Restore()
+		{
+			return UpdateType(defaultType);
+		}
 
 		internal abstract bool Validate(bool correctInvalidData);
+
+		public virtual bool CanChangeTo(BehaviorClass newType)
+		{
+			return newType != type;
+		}
 
 		//Text output.
 		public virtual SimpleDescriptor fullDescription => () => type.fullDescription((ThisClass)this);
 
-		public virtual PlayerStr playerDescription => (player) => type.playerDescription((ThisClass)this, player);
-		public virtual ChangeStr<BehaviorClass> transformInto => (newBehavior, player) => newBehavior.transformFrom((ThisClass)this, player);
-		public virtual RestoreStr restoreString => (player) => type.restoreString((ThisClass)this, player);
-
+		public virtual string PlayerDescription()
+		{
+			if (source is Player player)
+			{
+				return type.playerDescription((ThisClass)this, player);
+			}
+			else return "";
+		}
+		public virtual string TransformIntoText(BehaviorClass newBehavior)
+		{
+			if (source is Player player)
+			{
+				return newBehavior.transformFrom((ThisClass)this, player);
+			}
+			else return "";
+		}
+		public virtual string RestoreText()
+		{
+			if (source is Player player)
+			{
+				return type.restoreString((ThisClass)this, player);
+			}
+			else return "";
+		}
 		//Serialization
 		//Type ISaveableBase.currentSaveType => currentSaveVersion;
 		//Type[] ISaveableBase.saveVersionTypes => saveVersions;

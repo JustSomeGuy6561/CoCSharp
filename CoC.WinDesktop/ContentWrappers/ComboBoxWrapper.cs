@@ -1,4 +1,4 @@
-﻿using CoCWinDesktop.Helpers;
+﻿using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.ContentWrappers
+namespace CoC.WinDesktop.ContentWrappers
 {
 	//This class DOES exist on the language change options page, and therefore exists in the scope of a language changed. We should, therefore, worry about languages
 	//HOWEVER, this class is the rare exception because all its content is already localized. for all other cases where this exists, the language cannot be changed

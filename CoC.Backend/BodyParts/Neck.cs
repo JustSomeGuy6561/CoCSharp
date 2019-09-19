@@ -4,6 +4,7 @@
 //12/29/2018, 10:12 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -18,7 +19,7 @@ namespace CoC.Backend.BodyParts
 	//they were never implemented. it seemed like a half-baked idea, so it's no longer here. if it ever becomes full-baked,
 	//by all means, add it back.
 
-	public sealed class Neck : BehavioralSaveablePart<Neck, NeckType>, IDyeable
+	public sealed class Neck : BehavioralSaveablePart<Neck, NeckType, NeckData>, IDyeable
 	{
 		public byte length { get; private set; } = NeckType.MIN_NECK_LENGTH;
 		public override NeckType type
@@ -37,53 +38,32 @@ namespace CoC.Backend.BodyParts
 				_type = value;
 			}
 		}
-		private NeckType _type = NeckType.HUMANOID;
+		private NeckType _type = NeckType.defaultValue;
 		public HairFurColors neckColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
 
-		public static NeckType defaultType => NeckType.HUMANOID;
-		public override bool isDefault => type == defaultType;
+		public override NeckType defaultType => NeckType.defaultValue;
 
-		private Neck(NeckType neckType)
+		public override NeckData AsReadOnlyData()
+		{
+			return new NeckData(this);
+		}
+
+		internal Neck(Creature source) : this(source, NeckType.defaultValue)
+		{ }
+		internal Neck(Creature source, NeckType neckType) : base(source)
 		{
 			type = neckType ?? throw new ArgumentNullException(nameof(neckType));
-			length = NeckType.MIN_NECK_LENGTH;
-			neckColor = HairFurColors.NO_HAIR_FUR;
 		}
 
-		internal static Neck GenerateDefault()
+		internal Neck(Creature source, NeckType neckType, HairFurColors initialNeckColor = null, byte neckLength = NeckType.MIN_NECK_LENGTH) : this(source, neckType)
 		{
-			return new Neck(NeckType.HUMANOID);
+			GrowNeck(neckLength.subtract(NeckType.MIN_NECK_LENGTH)); //add in the remaining amount.
+			var neckCol = neckColor;
+			type.ParseDye(ref neckCol, initialNeckColor);
+			neckColor = neckCol;
 		}
 
-		internal static Neck GenerateDefaultOfType(NeckType neckType)
-		{
-			return new Neck(neckType);
-		}
-
-		internal static Neck GenerateNonDefault(NeckType neckType, byte neckLength = NeckType.MIN_NECK_LENGTH)
-		{
-			if (neckType == NeckType.HUMANOID)
-			{
-				return new Neck(neckType);
-			}
-			return new Neck(neckType)
-			{
-				neckColor = neckType.defaultColor,
-				length = Utils.Clamp2(neckLength, NeckType.MIN_NECK_LENGTH, neckType.maxNeckLength),
-			};
-		}
-
-
-		internal override bool UpdateType(NeckType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return true;
-		}
-
+		//default update, restore are fine. may want an additonal update with a length, idk.
 
 		internal byte GrowNeck(byte amount)
 		{
@@ -99,15 +79,6 @@ namespace CoC.Backend.BodyParts
 
 		public bool canGrowNeck => type.canGrowNeck(length);
 
-		internal override bool Restore()
-		{
-			if (type == NeckType.HUMANOID)
-			{
-				return false;
-			}
-			type = NeckType.HUMANOID;
-			return true;
-		}
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -153,7 +124,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class NeckType : SaveableBehavior<NeckType, Neck>
+	public partial class NeckType : SaveableBehavior<NeckType, Neck, NeckData>
 	{
 		public const byte MIN_NECK_LENGTH = 2;
 
@@ -170,6 +141,10 @@ namespace CoC.Backend.BodyParts
 		public readonly HairFurColors defaultColor;
 
 		public readonly bool canDye;
+
+		public static NeckType defaultValue => HUMANOID;
+
+
 		public bool usesHair => canDye;
 
 		internal virtual SimpleDescriptor buttonText => GenericButtonDesc;
@@ -293,8 +268,19 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanFullDesc, HumanPlayerStr, GlobalStrings.TransformToDefault<Neck, NeckType>, GlobalStrings.RevertAsDefault);
+		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanFullDesc, HumanPlayerStr, (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
 		public static readonly NeckType DRACONIC = new NeckType(MAX_DRAGON_LENGTH, DragonDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
 		public static readonly NeckType COCKATRICE = new NeckType(MAX_COCKATRICE_LENGTH, HairFurColors.GREEN, CockatriceDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+	}
+
+	public sealed class NeckData : BehavioralSaveablePartData<NeckData, Neck, NeckType>
+	{
+		public readonly byte neckLength;
+		public readonly HairFurColors neckHairColor; //if applicable
+		internal NeckData(Neck neck) : base(GetBehavior(neck))
+		{
+			neckLength = neck.length;
+			neckHairColor = neck.neckColor;
+		}
 	}
 }

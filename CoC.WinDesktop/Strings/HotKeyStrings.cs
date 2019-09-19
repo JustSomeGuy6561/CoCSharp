@@ -1,4 +1,4 @@
-﻿namespace CoCWinDesktop.Strings
+﻿namespace CoC.WinDesktop.Strings
 {
 	public static class HotKeyStrings
 	{

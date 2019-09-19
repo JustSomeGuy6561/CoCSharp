@@ -1,7 +1,7 @@
 ﻿using CoC.Backend.Settings.Fetishes;
 using CoC.Backend.Settings;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,9 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CoC.Backend;
 using CoC.Backend.Engine;
-using CoCWinDesktop.ContentWrappers.OptionsRow;
+using CoC.WinDesktop.ContentWrappers.OptionsRow;
 
-namespace CoCWinDesktop.CustomControls.OptionsModelViews
+namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class FetishOptionsModelView : OptionModelViewDataBase
 	{

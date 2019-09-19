@@ -11,6 +11,9 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Build
 	{
+		private LowerBodyData lowerBodyData => source.lowerBody.AsReadOnlyData();
+		private BodyData bodyData => source.body.AsReadOnlyData();
+
 		private string ButtFullDesc()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -188,8 +191,8 @@ namespace CoC.Backend.BodyParts
 
 		private string HipsFullDesc()
 		{
-			LowerBodyType lowerBody = lowerBodyData().lowerBodyType;
-			BodyType bodyType = bodyData().bodyType;
+			LowerBodyType lowerBody = lowerBodyData.currentType;
+			BodyType bodyType = bodyData.currentType;
 
 			StringBuilder sb = new StringBuilder();
 			if (hips.size < Hips.SLENDER)

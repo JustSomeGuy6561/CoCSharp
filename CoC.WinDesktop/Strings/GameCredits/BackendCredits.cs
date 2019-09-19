@@ -5,7 +5,7 @@ using System.Text;
 using CreditCategoryBase = CoC.Backend.GameCredits.CreditCategoryBase;
 using SubCategory = CoC.Backend.GameCredits.SubCategory;
 
-namespace CoCWinDesktop.GameCredits
+namespace CoC.WinDesktop.GameCredits
 {
 	public sealed partial class GUICredits : CreditCategoryBase
 	{

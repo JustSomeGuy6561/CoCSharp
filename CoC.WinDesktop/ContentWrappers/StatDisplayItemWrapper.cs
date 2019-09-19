@@ -1,14 +1,14 @@
 ﻿using CoC.Backend;
 using CoC.Frontend.UI.ControllerData;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.Strings;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.Strings;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.ContentWrappers
+namespace CoC.WinDesktop.ContentWrappers
 {
 	//the lifespan of these objects is actually the same as the base stat stored within it, so we don't need to worry about removing the event here. 
 	//cool. That was shaping up to be a huge hassle. 

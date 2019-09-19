@@ -2,7 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:57 PM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Perks;
 using CoC.Backend.Strings;
@@ -11,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -20,13 +23,15 @@ namespace CoC.Backend.BodyParts
 		RIGHT_1, RIGHT_2, RIGHT_3, RIGHT_4, RIGHT_5, RIGHT_6
 	}
 
+	//Note: this class is created after perks have been initialized, so its post perk init is never called.
+
 	//unlike ass wetness changes, this seems fine by me. the normal case is some wetness, though dryer than that is not terribly strange.
 	public enum VaginalWetness : byte { DRY, NORMAL, WET, SLICK, DROOLING, SLAVERING }
 
 	//i have, however, renamed these. gaping-wide-> gaping. gaping-> roomy. could even rename clown car to gaping-wide if clown car is a little too bizarre, but i'm kinda fond of its bizarre-ness.
 	public enum VaginalLooseness : byte { TIGHT, NORMAL, LOOSE, ROOMY, GAPING, CLOWN_CAR_WIDE }
 
-	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType>, IBodyPartTimeLazy, IBaseStatPerkAware
+	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType, VaginaData>, IBodyPartTimeLazy
 	{
 		private const JewelryType SUPPORTED_LABIA_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 
@@ -35,25 +40,94 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Clit clit;
 
-		private PerkStatBonusGetter baseStats;
+		internal VaginalLooseness minLooseness
+		{
+			get => _minLooseness;
+			set
+			{
+				_minLooseness = value;
+				looseness = looseness; //auto-correct property;
+				if (maxLooseness < _minLooseness)
+				{
+					maxLooseness = _minLooseness;
+				}
+			}
+		}
+		private VaginalLooseness _minLooseness = VaginalLooseness.TIGHT;
+		internal VaginalLooseness maxLooseness
+		{
+			get => _maxLooseness;
+			set
+			{
+				if (value < minLooseness)
+				{
+					value = minLooseness;
+				}
+				_maxLooseness = value;
+				looseness = looseness; //auto-correct property;
+			}
+		}
+		private VaginalLooseness _maxLooseness = VaginalLooseness.CLOWN_CAR_WIDE;
 
-		public VaginalLooseness minLooseness => baseStats?.Invoke().minVaginalLooseness ?? VaginalLooseness.TIGHT;
-		public VaginalLooseness maxLooseness => baseStats?.Invoke().maxVaginalLooseness ?? VaginalLooseness.CLOWN_CAR_WIDE;
 
-		public VaginalWetness minWetness => baseStats?.Invoke().minVaginalWetness ?? VaginalWetness.DRY;
-		public VaginalWetness maxWetness => baseStats?.Invoke().maxVaginalWetness ?? VaginalWetness.SLAVERING;
+		internal VaginalWetness minWetness
+		{
+			get => _minWetness;
+			set
+			{
+				_minWetness = value;
+				wetness = wetness; //auto-correct property;
+				if (maxWetness < _minWetness)
+				{
+					maxWetness = _minWetness;
+				}
+			}
+		}
+		private VaginalWetness _minWetness = VaginalWetness.DRY;
+		internal VaginalWetness maxWetness
+		{
+			get => _maxWetness;
+			set
+			{
+				if (value < minWetness)
+				{
+					value = minWetness;
+				}
+				_maxWetness = value;
+				wetness = wetness; //auto-correct property;
+			}
+		}
+		private VaginalWetness _maxWetness = VaginalWetness.SLAVERING;
 
 		public VaginalWetness wetness
 		{
 			get => _wetness;
-			private set => _wetness = Utils.ClampEnum2(value, minWetness, maxWetness);
+			private set
+			{
+				Utils.ClampEnum(ref value, minWetness, maxWetness);
+				if (_wetness != value)
+				{
+					var oldData = AsReadOnlyData();
+					_wetness = value;
+					NotifyDataChanged(oldData);
+				}
+			}
 		}
 		private VaginalWetness _wetness;
 
 		public VaginalLooseness looseness
 		{
 			get => _looseness;
-			private set => _looseness = Utils.ClampEnum2(value, minLooseness, maxLooseness);
+			private set
+			{
+				Utils.ClampEnum(ref value, minLooseness, maxLooseness);
+				if (_looseness != value)
+				{
+					var oldData = AsReadOnlyData();
+					_looseness = value;
+					NotifyDataChanged(oldData);
+				}
+			}
 		}
 		private VaginalLooseness _looseness;
 
@@ -61,9 +135,36 @@ namespace CoC.Backend.BodyParts
 
 		public bool virgin { get; private set; }
 
-		public ushort bonusVaginalCapacity { get; private set; } = 0;
+		public ushort bonusVaginalCapacity
+		{
+			get => _bonusVaginalCapacity;
+			private set
+			{
+				if (_bonusVaginalCapacity != value)
+				{
+					var oldData = AsReadOnlyData();
+					_bonusVaginalCapacity = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+		private ushort _bonusVaginalCapacity = 0;
 
-		private ushort perkBonusVaginalCapacity => baseStats?.Invoke().PerkBasedBonusVaginalCapacity ?? 0;
+		internal ushort perkBonusVaginalCapacity
+		{
+			get => _perkBonusVaginalCapacity;
+			set
+			{
+				if (_perkBonusVaginalCapacity != value)
+				{
+					var oldData = AsReadOnlyData();
+					_perkBonusVaginalCapacity = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+		private ushort _perkBonusVaginalCapacity = 0;
+
 		public ushort VaginalCapacity()
 		{
 
@@ -86,97 +187,82 @@ namespace CoC.Backend.BodyParts
 		private const ushort LOOSENESS_GAPING_TIMER = 70;
 		private const ushort LOOSENESS_CLOWN_CAR_TIMER = 50;
 		private ushort vaginaTightenTimer = 0;
-
 		public readonly Piercing<LabiaPiercings> labiaPiercings;
 		public override VaginaType type { get; protected set; }
-		public static VaginaType defaultType => VaginaType.HUMAN;
-		public override bool isDefault => type == defaultType;
+		public override VaginaType defaultType => VaginaType.defaultValue;
 
 		#region Constructors
-		private Vagina(VaginaType vaginaType)
+		internal Vagina(Creature source, VaginaPerkHelper initialPerkData) : this(source, initialPerkData, VaginaType.defaultValue, clitLength: initialPerkData.DefaultNewClitSize)
 		{
-			clit = Clit.Generate();
+		}
+
+		internal Vagina(Creature source, VaginaPerkHelper initialPerkData, VaginaType vaginaType) : base(source)
+		{
+			clit = new Clit(source, initialPerkData);
 			virgin = true;
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
-			_wetness = VaginalWetness.NORMAL;
-			_looseness = VaginalLooseness.TIGHT;
+			_wetness = initialPerkData.defaultWetnessNew;
+			_looseness = initialPerkData.defaultLoosenessNew;
 
 			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
-		private Vagina(VaginaType vaginaType, float clitLength, bool omnibus = false)
+		internal Vagina(Creature source, VaginaPerkHelper initialPerkData, VaginaType vaginaType, float clitLength,
+			VaginalLooseness? vaginalLooseness = null, VaginalWetness? vaginalWetness = null, bool? isVirgin = null, bool omnibus = false) : base(source)
 		{
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
-			if (omnibus)
+
+			clit = new Clit(source, initialPerkData, clitLength, omnibus);
+			if (isVirgin is null)
 			{
-				clit = Clit.GenerateOmnibusClit(clitLength);
+				isVirgin = vaginalLooseness == VaginalLooseness.TIGHT || vaginalLooseness is null;
 			}
-			else
-			{
-				clit = Clit.GenerateWithLength(clitLength);
-			}
-			virgin = true;
-			_wetness = VaginalWetness.NORMAL;
-			_looseness = VaginalLooseness.TIGHT;
+			virgin = (bool)isVirgin;
+
+			minLooseness = initialPerkData.minLooseness;
+			maxLooseness = initialPerkData.maxLooseness;
+			minWetness = initialPerkData.minWetness;
+			maxWetness = initialPerkData.maxWetness;
+
+			perkBonusVaginalCapacity = initialPerkData.perkBonusCapacity;
+
+			//these are clamped by above set values.
+			_wetness = vaginalWetness ?? initialPerkData.defaultWetnessNew;
+			_looseness = vaginalLooseness ?? initialPerkData.defaultLoosenessNew;
+
 			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
+
 		#endregion
 
 		#region Generate
-		internal static Vagina GenerateFromGender(Gender gender)
+		internal static Vagina GenerateFromGender(Creature source, VaginaPerkHelper initialPerkData, Gender gender)
 		{
-			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(VaginaType.HUMAN);
+			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(source, initialPerkData);
 			else return null;
 		}
-
-		internal static Vagina GenerateDefault()
-		{
-			return new Vagina(VaginaType.HUMAN);
-		}
-
-		internal static Vagina GenerateDefaultOfType(VaginaType vaginaType)
-		{
-			return new Vagina(vaginaType);
-		}
-
-		internal static Vagina Generate(VaginaType vaginaType, float clitLength, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, VaginalWetness vaginalWetness = VaginalWetness.NORMAL, bool? virgin = null)
-		{
-			if (virgin == null)
-			{
-				virgin = vaginalLooseness == VaginalLooseness.TIGHT;
-			}
-
-			return new Vagina(vaginaType, clitLength)
-			{
-				virgin = (bool)virgin,
-				_looseness = vaginalLooseness,
-				_wetness = vaginalWetness,
-			};
-		}
-
-		internal static Vagina GenerateOmnibus(VaginaType vaginaType, float clitLength = 2.0f, VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT,
-			VaginalWetness vaginalWetness = VaginalWetness.NORMAL, bool virgin = false)
-		{
-			return new Vagina(vaginaType, clitLength, true)
-			{
-				virgin = virgin,
-				_looseness = vaginalLooseness,
-				_wetness = vaginalWetness,
-			};
-		}
-
 		#endregion
+		public override VaginaData AsReadOnlyData()
+		{
+			return new VaginaData(this);
+		}
+
+		private WeakEventSource<BehavioralDataChangeEvent<Vagina, VaginaType, VaginaData>> DataChangedSource =
+			new WeakEventSource<BehavioralDataChangeEvent<Vagina, VaginaType, VaginaData>>();
+		public event EventHandler<BehavioralDataChangeEvent<Vagina, VaginaType, VaginaData>> dataChanged
+		{
+			add => DataChangedSource.Subscribe(value);
+			remove => DataChangedSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(VaginaData oldData)
+		{
+			DataChangedSource.Raise(source, new BehavioralDataChangeEvent<Vagina, VaginaType, VaginaData>(oldData, AsReadOnlyData()));
+		}
+
 		#region Update
 
-		internal override bool UpdateType(VaginaType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return true;
-		}
+		//default update is fine.
 		#endregion
 		#region Unique Functions
 		internal bool VaginalSex(ushort penetratorArea)
@@ -317,7 +403,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldType = type;
 			type = VaginaType.HUMAN;
+
+			NotifyTypeChanged(oldType);
 			return true;
 		}
 
@@ -443,24 +532,6 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-		#region Base Stat Perk
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			baseStats = getter;
-			clit.GetBasePerkStats(getter);
-		}
-
-		internal void DoLateInit(BasePerkModifiers statModifiers, bool initWasNew)
-		{
-			if (initWasNew)
-			{
-				wetness = statModifiers.NewVaginaDefaultWetness;
-				looseness = statModifiers.NewVaginaDefaultLooseness;
-			}
-			clit.DoLateInit(statModifiers, initWasNew);
-		}
-
-		#endregion
 		#region NYI or Potential Ideas
 		//min and max looseness/wetness are locked to perks. because reasons. 
 		//internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
@@ -576,12 +647,16 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed partial class VaginaType : SaveableBehavior<VaginaType, Vagina>
+	public sealed partial class VaginaType : SaveableBehavior<VaginaType, Vagina, VaginaData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<VaginaType> types = new List<VaginaType>();
 		public static readonly ReadOnlyCollection<VaginaType> availableTypes = new ReadOnlyCollection<VaginaType>(types);
 		public readonly int typeCapacityBonus;
+
+		public static VaginaType defaultValue => HUMAN;
+
+
 		private VaginaType(int capacityBonus,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Vagina> fullDesc, TypeAndPlayerDelegate<Vagina> playerDesc,
 			ChangeType<Vagina> transform, RestoreType<Vagina> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
@@ -607,10 +682,29 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanFullDesc, VagHumanPlayerStr, GlobalStrings.TransformToDefault<Vagina, VaginaType>, GlobalStrings.RevertAsDefault);
+		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanFullDesc, VagHumanPlayerStr, (x,y) => x.type.restoreString(x,y), GlobalStrings.RevertAsDefault);
 		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineFullDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
 		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapFullDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
 
 	}
 
+	public sealed class VaginaData : BehavioralSaveablePartData<VaginaData, Vagina, VaginaType>
+	{
+		public readonly ClitData clit;
+		public readonly VaginalLooseness looseness;
+		public readonly VaginalWetness wetness;
+		public readonly bool isVirgin;
+
+		public readonly ushort capacity;
+
+		public VaginaData(Vagina source) : base(GetBehavior(source))
+		{
+			clit = source.clit.AsReadOnlyData();
+			looseness = source.looseness;
+			wetness = source.wetness;
+			isVirgin = source.virgin;
+
+			capacity = source.VaginalCapacity();
+		}
+	}
 }

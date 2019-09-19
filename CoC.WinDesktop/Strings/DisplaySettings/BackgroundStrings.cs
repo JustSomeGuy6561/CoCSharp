@@ -1,4 +1,4 @@
-﻿namespace CoCWinDesktop.DisplaySettings
+﻿namespace CoC.WinDesktop.DisplaySettings
 {
 	public partial class BackgroundOption
 	{

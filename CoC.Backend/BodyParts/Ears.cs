@@ -5,6 +5,7 @@
 
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -38,61 +39,35 @@ namespace CoC.Backend.BodyParts
 	}
 
 
-	public sealed class Ears : BehavioralSaveablePart<Ears, EarType>, IBodyAware
+	public sealed class Ears : BehavioralSaveablePart<Ears, EarType, EarData>
 	{
-		private FurColor earFur => type.ParseFurColor(_earFur, bodyData());
+		private BodyData bodyData => source.body.AsReadOnlyData();
+
+		private FurColor earFur => type.ParseFurColor(_earFur, bodyData);
 		private readonly FurColor _earFur = new FurColor();
 
 		public ReadOnlyFurColor earFurColor => new ReadOnlyFurColor(earFur);
 
 		public readonly Piercing<EarPiercings> earPiercings;
 
-		private Ears(EarType earType)
+		internal Ears(Creature source) : this(source, EarType.defaultValue) { }
+
+		internal Ears(Creature source, EarType earType) : base(source)
 		{
 			type = earType ?? throw new ArgumentNullException(nameof(earType));
 			earPiercings = new Piercing<EarPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
+		public override EarData AsReadOnlyData()
+		{
+			return new EarData(this);
+		}
+
 		public override EarType type { get; protected set; }
 
-		public static EarType defaultType => EarType.HUMAN;
-		public override bool isDefault => type == defaultType;
+		public override EarType defaultType => EarType.defaultValue;
 
-		internal static Ears GenerateDefault()
-		{
-			return new Ears(defaultType);
-		}
-
-		internal static Ears GenerateDefaultOfType(EarType earType)
-		{
-			return new Ears(earType);
-		}
-
-		internal override bool UpdateType(EarType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return true;
-		}
-
-		private BodyDataGetter bodyData;
-		void IBodyAware.GetBodyData(BodyDataGetter getter)
-		{
-			bodyData = getter;
-		}
-
-		internal override bool Restore()
-		{
-			if (type == EarType.HUMAN)
-			{
-				return false;
-			}
-			type = EarType.HUMAN;
-			return true;
-		}
+		//update, restore both fine as defaults.
 
 		internal void Reset()
 		{
@@ -148,12 +123,15 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class EarType : SaveableBehavior<EarType, Ears>
+	public partial class EarType : SaveableBehavior<EarType, Ears, EarData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EarType> ears = new List<EarType>();
 		public static readonly ReadOnlyCollection<EarType> availableTypes = new ReadOnlyCollection<EarType>(ears);
 		private readonly int _index;
+
+		public static EarType defaultValue => HUMAN;
+
 
 		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, TypeAndPlayerDelegate<Ears> playerDesc,
 			ChangeType<Ears> transform, RestoreType<Ears> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
@@ -247,6 +225,16 @@ namespace CoC.Backend.BodyParts
 			}
 			current.UpdateFurColor(color);
 			return current;
+		}
+	}
+
+	public sealed class EarData : BehavioralSaveablePartData<EarData, Ears, EarType>
+	{
+		public readonly ReadOnlyFurColor earFurColor;
+
+		internal EarData(Ears source) : base(GetBehavior(source))
+		{
+			earFurColor = source.earFurColor;
 		}
 	}
 

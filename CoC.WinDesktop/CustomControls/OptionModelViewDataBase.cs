@@ -1,9 +1,9 @@
 ﻿using CoC.Backend;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 using System;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 	/// <summary>
 	/// Provides a base class for the model view desribing the content section of the options page. 

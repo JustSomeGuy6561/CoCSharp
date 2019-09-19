@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.Converters
+namespace CoC.WinDesktop.Converters
 {
 	public sealed class DrawingColorToMediaColorIgnoreAlpha : IValueConverter
 	{

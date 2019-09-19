@@ -24,7 +24,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanTransformStr(Arms oldArms, Player player)
 		{
-			return oldArms.restoreString(player);
+			return oldArms.RestoreText();
 		}
 		private static string HumanRestoreStr(Arms currentArms, Player player)
 		{

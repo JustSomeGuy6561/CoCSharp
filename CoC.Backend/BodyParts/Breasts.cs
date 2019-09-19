@@ -3,23 +3,31 @@
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Items.Wearables.Piercings;
-using CoC.Backend.Perks;
-using CoC.Backend.SaveData;
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
+	//Note: Breasts aren't generated until after perks have been created. Thus, their post perk init is never called, but initial constructor can use perk data without fail.
 
-	public sealed class Breasts : SimpleSaveablePart<Breasts>, IGrowable, IShrinkable, IBaseStatPerkAware
+	public sealed class Breasts : SimpleSaveablePart<Breasts, BreastData>, IGrowable, IShrinkable
 	{
-		PerkStatBonusGetter modifierData;
+		private Gender currGender => source.genitals.gender;
 
-		private float bigTiddyMultiplier => modifierData().TitsGrowthMultiplier;
-		private float tinyTiddyMultiplier => modifierData().TitsShrinkMultiplier;
+		public const CupSize DEFAULT_MALE_SIZE = CupSize.FLAT;
+		public const CupSize DEFAULT_FEMALE_SIZE = CupSize.C;
+
+		internal CupSize maleMinCup;
+		internal CupSize femaleMinCup;
+		internal CupSize maleDefaultCup;
+		internal CupSize femaleDefaultCup;
+
+		private CupSize resetSize => currGender.HasFlag(Gender.FEMALE) ? EnumHelper.Min(femaleMinCup, femaleDefaultCup) : EnumHelper.Min(maleMinCup, maleDefaultCup);
+		private CupSize minimumCupSize => currGender.HasFlag(Gender.FEMALE) ? femaleMinCup : maleMinCup;
+
+		internal float bigTiddyMultiplier = 1;
+		internal float tinyTiddyMultiplier = 1;
 		private bool makeBigTits => bigTiddyMultiplier > 1.1f;
 		private bool makeSmallTits => tinyTiddyMultiplier > 1.1f;
 
@@ -35,6 +43,10 @@ namespace CoC.Backend.BodyParts
 		public const byte NUM_BREASTS = 2;
 		public byte numBreasts => NUM_BREASTS;
 
+		public override BreastData AsReadOnlyData()
+		{
+			return new BreastData(this);
+		}
 
 		public CupSize cupSize
 		{
@@ -45,37 +57,60 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private CupSize _cupSize;
-
 		public readonly Nipples nipples;
 		public bool isMale => cupSize == CupSize.FLAT && nipples.length <= .5f;
 
-		private Breasts(bool female)
+		internal Breasts(Creature source, BreastPerkHelper initialPerkData, Gender initialGender) : base(source)
 		{
-			if (female)
+
+			if (initialGender.HasFlag(Gender.FEMALE))
 			{
-				nipples = Nipples.GenerateWithLength(0.5f);
-				cupSize = CupSize.C;
+				cupSize = initialPerkData.FemaleNewLength();
 			}
 			else
 			{
-				nipples = Nipples.Generate();
-				cupSize = CupSize.FLAT;
+				cupSize = initialPerkData.MaleNewLength();
+			}
+			nipples = new Nipples(source, initialPerkData, initialGender);
+
+			maleMinCup = initialPerkData.MaleMinCup;
+			femaleMinCup = initialPerkData.FemaleMinCup;
+			maleDefaultCup = initialPerkData.MaleNewDefaultCup;
+			femaleDefaultCup = initialPerkData.FemaleNewDefaultCup;
+
+			bigTiddyMultiplier = initialPerkData.TitsGrowthMultiplier;
+			tinyTiddyMultiplier = initialPerkData.TitsShrinkMultiplier;
+
+			source.genitals.onGenderChanged += OnGenderChanged;
+		}
+		internal Breasts(Creature source, BreastPerkHelper initialPerkData, CupSize cup, float nippleLength) : base(source)
+		{
+			nipples = new Nipples(source, initialPerkData, nippleLength);
+			cupSize = cup;
+
+			maleMinCup = initialPerkData.MaleMinCup;
+			femaleMinCup = initialPerkData.FemaleMinCup;
+			maleDefaultCup = initialPerkData.MaleNewDefaultCup;
+			femaleDefaultCup = initialPerkData.FemaleNewDefaultCup;
+
+			bigTiddyMultiplier = initialPerkData.TitsGrowthMultiplier;
+			tinyTiddyMultiplier = initialPerkData.TitsShrinkMultiplier;
+
+			source.genitals.onGenderChanged += OnGenderChanged;
+		}
+
+		private void OnGenderChanged(object sender, EventHelpers.GenderChangedEventArgs e)
+		{
+			CupSize min = e.newGender.HasFlag(Gender.FEMALE) ? femaleMinCup : maleMinCup;
+			if (cupSize < min)
+			{
+				cupSize = min;
 			}
 		}
-		private Breasts(CupSize cup, float nippleLength)
-		{
-			nipples = Nipples.GenerateWithLength(nippleLength);
-			cupSize = cup;
-		}
 
-		internal static Breasts GenerateFromGender(Gender gender)
+		protected internal override void LateInit()
 		{
-			return new Breasts(gender.HasFlag(Gender.FEMALE));
-		}
-
-		internal static Breasts Generate(CupSize cup, float nippleLength, ReadOnlyDictionary<NipplePiercings, PiercingJewelry> piercings = null)
-		{
-			return new Breasts(cup, nippleLength);
+			nipples.LateInit();
 		}
 
 		internal byte GrowBreasts(byte byAmount, bool ignorePerks = false)
@@ -120,7 +155,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			cupSize = CupSize.FLAT;
+			cupSize = maleMinCup;
 			nipples.ShrinkNipple(nipples.length - Nipples.MIN_NIPPLE_LENGTH);
 			if (removeStatus)
 			{
@@ -135,10 +170,15 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			if (cupSize == CupSize.FLAT)
+			if (cupSize < femaleMinCup)
+			{
+				cupSize = femaleMinCup;
+			}
+			else if (cupSize == CupSize.FLAT)
 			{
 				cupSize = CupSize.B;
 			}
+
 			if (nipples.length < 0.5)
 			{
 				nipples.GrowNipple(0.5f - nipples.length);
@@ -164,7 +204,7 @@ namespace CoC.Backend.BodyParts
 
 		bool IShrinkable.CanReducto()
 		{
-			return cupSize > CupSize.FLAT;
+			return cupSize > minimumCupSize;
 		}
 
 		float IGrowable.UseGroPlus()
@@ -187,7 +227,7 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			CupSize oldSize = cupSize;
-			if (cupSize == CupSize.A || !makeSmallTits || Utils.RandBool())
+			if (cupSize.ByteEnumSubtract(1) == minimumCupSize || !makeSmallTits || Utils.RandBool())
 			{
 				cupSize--;
 			}
@@ -198,28 +238,20 @@ namespace CoC.Backend.BodyParts
 			return oldSize - cupSize;
 		}
 		#endregion
+	}
 
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+	public sealed class BreastData
+	{
+		public readonly NippleData nipples;
+		public readonly CupSize cupSize;
+		public readonly float lactationAmount;
+
+		internal BreastData(Breasts breasts)
 		{
-			modifierData = getter;
-			nipples.GetBasePerkStats(getter);
-		}
-
-		internal void DoLateInit(Gender gender, BasePerkModifiers statModifiers, bool initWasNew)
-		{
-			if (gender.HasFlag(Gender.FEMALE))
-			{
-				if (initWasNew)
-				{
-					cupSize = statModifiers.FemaleNewBreastDefaultCupSize;
-				}
-				else
-				{
-
-					cupSize = cupSize.ByteEnumDelta(statModifiers.FemaleNewBreastCupSizeDelta);
-				}
-			}
-			nipples.DoLateInit(gender, statModifiers, initWasNew);
+			if (breasts is null) throw new ArgumentNullException(nameof(breasts));
+			cupSize = breasts.cupSize;
+			nipples = breasts.nipples.AsReadOnlyData();
+			lactationAmount = breasts.lactationMultiplier;
 		}
 	}
 }

@@ -1,4 +1,8 @@
-﻿using CoC.Backend;
+﻿//AchievementBase.cs
+//Description:
+//Author: JustSomeGuy
+//9/19/2019, 1:11 AM
+using CoC.Backend;
 using System;
 using System.Collections.Generic;
 using System.Text;

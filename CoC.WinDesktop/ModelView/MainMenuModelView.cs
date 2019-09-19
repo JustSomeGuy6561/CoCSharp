@@ -1,10 +1,10 @@
 ﻿using CoC.Backend.Engine;
-using CoCWinDesktop.ContentWrappers.ButtonWrappers;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.ContentWrappers.ButtonWrappers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.ModelView
+namespace CoC.WinDesktop.ModelView
 {
 	public sealed partial class MainMenuModelView : ModelViewBase
 	{

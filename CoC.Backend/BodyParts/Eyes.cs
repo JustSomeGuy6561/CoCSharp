@@ -5,6 +5,7 @@
 using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -26,71 +27,58 @@ namespace CoC.Backend.BodyParts
 	//is still used in some manner. For example, basilisk eyes are still blue, but they now use the player-chosen eye color for their lightning-like streaks. 
 	//(unless the eyes are already blue, which then use white streaks). It's a bit more work, but i think it's nicer. 
 
-	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType>, ICanAttackWith //Basilisk Eyes.
+	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType, EyeData>, ICanAttackWith //Basilisk Eyes.
 	{
 
-		public EyeColor leftIrisColor { get; private set; }
+		public EyeColor leftIrisColor
+		{
+			get => _leftIrisColor;
+			private set => _leftIrisColor = _leftIrisColor.CheckValid(value);
+		}
+		private EyeColor _leftIrisColor;
 		//People really like heterochromia in PCs.
-		public EyeColor rightIrisColor { get; private set; }
+		public EyeColor rightIrisColor
+		{
+			get => _rightIrisColor;
+			private set => _rightIrisColor = _rightIrisColor.CheckValid(value);
+		}
+		private EyeColor _rightIrisColor;
 
 		public bool isHeterochromia => leftIrisColor != rightIrisColor;
-		public int eyeCount => type.eyeCount;
+		public byte eyeCount => type.eyeCount;
 		public bool isReptilian => type.isReptilianEyes;
 		public override EyeType type { get; protected set; }
 
+		public override EyeData AsReadOnlyData()
+		{
+			return new EyeData(this);
+		}
 
-		private Eyes(EyeType eyeType)
+		internal Eyes(Creature source, EyeType eyeType) : base(source)
 		{
 			type = eyeType ?? throw new ArgumentNullException(nameof(eyeType));
 			leftIrisColor = type.defaultColor;
 			rightIrisColor = type.defaultColor;
 		}
 
-		private Eyes(EyeType eyeType, EyeColor color) : this (eyeType, color, color)
+		internal Eyes(Creature source, EyeType eyeType, EyeColor color) : this(source, eyeType, color, color)
 		{ }
-		private Eyes(EyeType eyeType, EyeColor leftEye, EyeColor rightEye)
+		internal Eyes(Creature source, EyeType eyeType, EyeColor leftEye, EyeColor rightEye) : base(source)
 		{
 			type = eyeType ?? throw new ArgumentNullException(nameof(eyeType));
 			leftIrisColor = leftEye;
 			rightIrisColor = rightEye;
 		}
 
-		public static EyeType defaultType => EyeType.HUMAN;
-		public override bool isDefault => type == defaultType;
+		public override EyeType defaultType => EyeType.defaultValue;
 
+		internal Eyes(Creature source) : this(source, EyeType.defaultValue) { }
 
-		internal static Eyes GenerateDefault()
-		{
-			return new Eyes(EyeType.HUMAN);
-		}
-
-
-		internal static Eyes GenerateDefaultOfType(EyeType eyeType)
-		{
-			return new Eyes(eyeType);
-		}
-
-		internal static Eyes GenerateWithColor(EyeType eyes, EyeColor primaryColor)
-		{
-			return new Eyes(eyes, primaryColor);
-		}
-		internal static Eyes GenerateWithHeterochromia(EyeType eyes, EyeColor leftEye, EyeColor rightEye)
-		{
-			return new Eyes(eyes, leftEye, rightEye);
-		}
-
-		//note that there's no update type that takes new eye colors - remember, new eye types are supposed to respect the old eye color.
+		//by design, there is no way to update eye color while changing types. Eye types are supposed to respect the current eye color.
 		//if you REALLY want to change this, just call update, then call change. You'll probably want some unique flavor text, though, as
 		//the calls to change color str and update str are not really designed with being called back to back in mind and may sound weird, idk.
-		internal override bool UpdateType(EyeType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return true;
-		}
+
+		//update, restore are both fine as defaults.
 
 		internal bool ChangeEyeColor(EyeColor color)
 		{
@@ -122,17 +110,6 @@ namespace CoC.Backend.BodyParts
 		public string EyeColorChangeFlavorText(EyeColor leftEye, EyeColor rightEye)
 		{
 			return type.EyeChangeSpecial(leftIrisColor, leftEye, rightIrisColor, rightEye);
-		}
-
-
-		internal override bool Restore()
-		{
-			if (type == EyeType.HUMAN)
-			{
-				return false;
-			}
-			type = EyeType.HUMAN;
-			return true;
 		}
 
 		internal void Reset()
@@ -173,14 +150,14 @@ namespace CoC.Backend.BodyParts
 		AttackBase ICanAttackWith.attack => type.attack;
 		bool ICanAttackWith.canAttackWith() => type.attack != AttackBase.NO_ATTACK;
 	}
-	public enum SCLERA_COLOR
+	public enum ScleraColor
 	{
 		WHITE, //Human/Anthropomorphic
 		BLACK, //Sand Trap
 		CLEAR//, //Everything else
 			 //RED   //Vampires? (silly mode, i guess)
 	}
-	public partial class EyeType : SaveableBehavior<EyeType, Eyes>
+	public partial class EyeType : SaveableBehavior<EyeType, Eyes, EyeData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EyeType> eyes = new List<EyeType>();
@@ -189,11 +166,14 @@ namespace CoC.Backend.BodyParts
 		//Normally the white of the human eye
 		//Generally, animals' sclera are nearly invisible
 		//Thanks, Sand Traps.
-		public readonly SCLERA_COLOR scleraColor;
+		public readonly ScleraColor scleraColor;
 
-		public readonly int eyeCount;
+		public readonly byte eyeCount;
 		public readonly EyeColor defaultColor;
 		private readonly int _index;
+
+		public static EyeType defaultValue => HUMAN;
+
 
 		public bool isReptilianEyes => this == LIZARD || this == BASILISK || this == DRAGON;
 
@@ -203,7 +183,7 @@ namespace CoC.Backend.BodyParts
 
 		private protected EyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc, ChangeType<Eyes> transform,
-			RestoreType<Eyes> restore, int numEyes = 2, SCLERA_COLOR color = SCLERA_COLOR.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			RestoreType<Eyes> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			EyeChangeSpecial = eyeChange;
 			eyeCount = numEyes;
@@ -249,9 +229,9 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		public static EyeType HUMAN = new EyeType(Species.HUMAN.defaultEyeColor, HumanEyeChange, HumanShortStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: SCLERA_COLOR.WHITE);
+		public static EyeType HUMAN = new EyeType(Species.HUMAN.defaultEyeColor, HumanEyeChange, HumanShortStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: ScleraColor.WHITE);
 		public static EyeType SPIDER = new EyeType(Species.SPIDER.defaultEyeColor, SpiderEyeChange, SpiderShortStr, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
-		public static EyeType SAND_TRAP = new EyeType(Species.SAND_TRAP.defaultEyeColor, SandTrapEyeChange, SandTrapShortStr, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: SCLERA_COLOR.BLACK);
+		public static EyeType SAND_TRAP = new EyeType(Species.SAND_TRAP.defaultEyeColor, SandTrapEyeChange, SandTrapShortStr, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: ScleraColor.BLACK);
 		public static EyeType LIZARD = new EyeType(Species.LIZARD.defaultEyeColor, LizardEyeChange, LizardShortStr, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
 		public static EyeType DRAGON = new EyeType(Species.DRAGON.defaultEyeColor, DragonEyeChange, DragonShortStr, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
 		public static EyeType BASILISK = new StoneStareEyeType(Species.BASILISK.defaultEyeColor, BasiliskEyeChange, BasiliskShortStr, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
@@ -264,10 +244,25 @@ namespace CoC.Backend.BodyParts
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new BasiliskStare();
 			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc,
-				ChangeType<Eyes> transform, RestoreType<Eyes> restore, int numEyes = 2, SCLERA_COLOR color = SCLERA_COLOR.CLEAR)
+				ChangeType<Eyes> transform, RestoreType<Eyes> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
 				: base(defaultEyeColor, eyeChange, shortDesc, fullDesc, playerDesc, transform, restore, numEyes, color) { }
 		}
 	}
 
+	public sealed class EyeData : BehavioralSaveablePartData<EyeData, Eyes, EyeType>
+	{
+		public readonly EyeColor leftIrisColor;
+		public readonly EyeColor rightIrisColor;
+
+		public readonly byte eyeCount;
+		public readonly ScleraColor scleraColor;
+		internal EyeData(Eyes source) : base(GetBehavior(source))
+		{
+			leftIrisColor = source.leftIrisColor;
+			rightIrisColor = source.rightIrisColor;
+			eyeCount = source.eyeCount;
+			scleraColor = source.type.scleraColor;
+		}
+	}
 
 }

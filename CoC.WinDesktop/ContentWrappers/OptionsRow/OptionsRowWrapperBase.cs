@@ -1,10 +1,10 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Settings;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Diagnostics;
 
-namespace CoCWinDesktop.ContentWrappers.OptionsRow
+namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 {
 
 	public abstract class OptionsRowWrapperBase : NotifierBase

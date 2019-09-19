@@ -14,7 +14,7 @@ namespace CoC.Frontend
 		{
 			if (player.antennae.type != newType)
 			{
-				OutputText(player.antennae.transformInto(newType, player));
+				OutputText(player.antennae.TransformIntoText(newType));
 				return player.UpdateAntennae(newType);
 			}
 			return false;
@@ -24,7 +24,7 @@ namespace CoC.Frontend
 		{
 			if (!player.antennae.isDefault)
 			{
-				OutputText(player.antennae.restoreString(player));
+				OutputText(player.antennae.RestoreText());
 				return player.RestoreAntennae();
 			}
 			return false;
@@ -34,7 +34,7 @@ namespace CoC.Frontend
 		{
 			if (player.arms.type != newType)
 			{
-				OutputText(player.arms.transformInto(newType, player));
+				OutputText(player.arms.TransformIntoText(newType));
 			}
 			return player.UpdateArms(newType);
 		}
@@ -43,7 +43,7 @@ namespace CoC.Frontend
 		{
 			if (!player.arms.isDefault)
 			{
-				OutputText(player.arms.restoreString(player));
+				OutputText(player.arms.RestoreText());
 				return player.RestoreArms();
 			}
 			return false;
@@ -53,7 +53,7 @@ namespace CoC.Frontend
 		{
 			if (player.eyes.type != newType)
 			{
-				OutputText(player.eyes.transformInto(newType, player));
+				OutputText(player.eyes.TransformIntoText(newType));
 				return player.UpdateEyes(newType);
 			}
 			return false;
@@ -63,7 +63,7 @@ namespace CoC.Frontend
 		{
 			if (!player.eyes.isDefault)
 			{
-				OutputText(player.eyes.restoreString(player));
+				OutputText(player.eyes.RestoreText());
 				return player.RestoreEyes();
 			}
 			return false;
@@ -73,7 +73,7 @@ namespace CoC.Frontend
 		{
 			if (player.tongue.type != newType)
 			{
-				OutputText(player.tongue.transformInto(newType, player));
+				OutputText(player.tongue.TransformIntoText(newType));
 				return player.UpdateTongue(newType);
 			}
 			return false;
@@ -83,7 +83,7 @@ namespace CoC.Frontend
 		{
 			if (!player.tongue.isDefault)
 			{
-				OutputText(player.tongue.restoreString(player));
+				OutputText(player.tongue.RestoreText());
 				return player.RestoreTongue();
 			}
 			return false;

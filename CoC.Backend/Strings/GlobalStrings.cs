@@ -22,10 +22,7 @@ namespace CoC.Backend.Strings
 
 		public static string None() { return ""; }
 
-		public static string TransformToDefault<T, Y>(T type, Player p) where T : BehavioralSaveablePart<T, Y> where Y : SaveableBehavior<Y, T>
-		{
-			return type.restoreString(p);
-		}
+		
 
 		public static string RevertAsDefault<T>(T type, Player p)
 		{
@@ -46,7 +43,8 @@ namespace CoC.Backend.Strings
 #endif
 		}
 
-		public static string CantAttackWith<T, U>(T type, Player player) where T : BehavioralSaveablePart<T, U> where U : SaveableBehavior<U, T>
+		public static string CantAttackWith<T, U,V>(T type, Player player) where T : BehavioralSaveablePart<T, U,V> where U : SaveableBehavior<U, T, V> 
+			where V: BehavioralSaveablePartData<V, T, U>
 		{
 #if DEBUG
 			return "Warning: you called an attack hint, but cannot attack with this body part! Type: " + type.GetType().Name;

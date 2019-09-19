@@ -1,13 +1,13 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.CustomControls.OptionsModelViews
+namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class SaveOptionsModelView : OptionModelViewDataBase
 	{

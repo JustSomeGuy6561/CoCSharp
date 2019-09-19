@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace CoCWinDesktop.Helpers
+namespace CoC.WinDesktop.Helpers
 {
 	public static class ImageHelper
 	{

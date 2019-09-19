@@ -2,14 +2,14 @@
 using CoC.Backend.Engine;
 using CoC.Backend.Settings;
 using CoC.Backend.Tools;
-using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.ContentWrappers.OptionsRow;
-using CoCWinDesktop.CustomControls.SideBarModelViews;
-using CoCWinDesktop.DisplaySettings;
-using CoCWinDesktop.Engine;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
-using CoCWinDesktop.Strings;
+using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.ContentWrappers.OptionsRow;
+using CoC.WinDesktop.CustomControls.SideBarModelViews;
+using CoC.WinDesktop.DisplaySettings;
+using CoC.WinDesktop.Engine;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
+using CoC.WinDesktop.Strings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.CustomControls.OptionsModelViews
+namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class DisplayOptionsModelView : OptionModelViewDataBase
 	{

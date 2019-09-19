@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.Helpers
+namespace CoC.WinDesktop.Helpers
 {
 	public sealed class TextBackgroundItem
 	{

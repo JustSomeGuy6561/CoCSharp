@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.CustomControls.ExtraItemViews
+namespace CoC.WinDesktop.CustomControls.ExtraItemViews
 {
 	/// <summary>
 	/// Interaction logic for MenuCreditsView.xaml

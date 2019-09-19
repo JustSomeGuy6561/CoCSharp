@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace CoCWinDesktop.Converters
+namespace CoC.WinDesktop.Converters
 {
 	class ScrollVisibilityToVisibilityHelper : IValueConverter
 	{

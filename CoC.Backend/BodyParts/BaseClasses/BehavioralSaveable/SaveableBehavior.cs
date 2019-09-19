@@ -23,9 +23,10 @@ namespace CoC.Backend.BodyParts
 	 * 3) it then sets your neck length, and returns.
 	 */
 
-	public abstract class SaveableBehavior<ThisClass, ContainerClass> : BehaviorBase
-		where ThisClass : SaveableBehavior<ThisClass, ContainerClass> 
-		where ContainerClass : BehavioralSaveablePart<ContainerClass, ThisClass>
+	public abstract class SaveableBehavior<ThisClass, ContainerClass, DataClass> : BehaviorBase
+		where ThisClass : SaveableBehavior<ThisClass, ContainerClass, DataClass> 
+		where ContainerClass : BehavioralSaveablePart<ContainerClass, ThisClass, DataClass>
+		where DataClass: BehavioralSaveablePartData<DataClass, ContainerClass, ThisClass>
 	{
 
 

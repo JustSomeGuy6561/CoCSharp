@@ -4,12 +4,13 @@
 //12/26/2018, 7:58 PM
 
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using System;
 
 namespace CoC.Backend.BodyParts
 {
 	
-	public sealed class Hands : BehavioralPartBase<HandType>
+	public sealed class Hands : PartWithBehaviorAndEventBase<Hands, HandType, HandData>
 	{
 
 		public override HandType type { get; protected set; }
@@ -17,23 +18,18 @@ namespace CoC.Backend.BodyParts
 		public Tones clawTone => type.getClawTone(getArmData(true).tone, getArmData(false).tone);
 
 		private readonly Func<bool, EpidermalData> getArmData;
-		private Hands(HandType handType, Func<bool, EpidermalData> currentEpidermalData)
+		internal Hands(Creature source, HandType handType, Func<bool, EpidermalData> currentEpidermalData) : base(source)
 		{
 			type = handType;
 			getArmData = currentEpidermalData;
 		}
 
+		public override HandData AsReadOnlyData()
+		{
+			return new HandData(this);
+		}
+
 		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
-
-		internal static Hands Generate(HandType handType, Func<bool, EpidermalData> currentEpidermalData)
-		{
-			return new Hands(handType, currentEpidermalData);
-		}
-
-		public void UpdateHands(HandType newType)
-		{
-			type = newType;
-		}
 	}
 
 	public partial class HandType : BehaviorBase
@@ -119,6 +115,22 @@ namespace CoC.Backend.BodyParts
 				//do some magic to the tone to make it imp claw compatible
 				return primaryTone;
 			}
+		}
+	}
+
+	public sealed class HandData : BehavioralPartDataBase<HandType>
+	{
+		public readonly Tones clawTone;
+
+		public HandData(Hands source) : base(GetBehavior(source))
+		{
+			this.clawTone = source.clawTone;
+		}
+
+		private static HandType GetBehavior(Hands source)
+		{
+			if (source is null) throw new ArgumentNullException(nameof(source));
+			return source.type;
 		}
 	}
 }

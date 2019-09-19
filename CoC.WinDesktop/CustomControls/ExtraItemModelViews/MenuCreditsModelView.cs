@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using CoC.Backend.Engine;
 using CoC.UI;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 
-namespace CoCWinDesktop.CustomControls.ExtraItemModelViews
+namespace CoC.WinDesktop.CustomControls.ExtraItemModelViews
 {
 	public sealed partial class MenuCreditsModelView : ExtraItemModelViewBase
 	{
@@ -107,7 +107,7 @@ namespace CoCWinDesktop.CustomControls.ExtraItemModelViews
 
 		private string ParseToFormatSafeRTFUrl(Uri url)
 		{
-			string temp = RTFParser.ToRTFUrl(url);
+			string temp = RTFParser.ToRTFUrl(url, 1);
 			temp = temp.Replace(@"{", @"{{");
 			temp = temp.Replace(@"}", @"}}");
 			return temp;

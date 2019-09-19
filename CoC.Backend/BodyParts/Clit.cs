@@ -10,23 +10,28 @@ using CoC.Backend.SaveData;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Perks;
 using System;
+using CoC.Backend.Creatures;
 
 namespace CoC.Backend.BodyParts
 {
 
 	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
-	public sealed class Clit : SimpleSaveablePart<Clit>, IGrowable, IShrinkable, IBaseStatPerkAware
+	//note: perks are guarenteed to be valid by the time this is created, so it's post perk init won't be called. 
+
+	public sealed class Clit : SimpleSaveablePart<Clit, ClitData>, IGrowable, IShrinkable
 	{
-		private float clitGrowthMultiplier => basePerkData?.Invoke().ClitGrowthMultiplier ?? 1;
-		private float clitShrinkMultiplier => basePerkData?.Invoke().ClitShrinkMultiplier ?? 1;
+		internal float clitGrowthMultiplier = 1;
+		internal float clitShrinkMultiplier = 1;
+		internal float minClitSize = MIN_CLIT_SIZE;
+		internal float minNewClitSize;
+
+		private float resetSize => Math.Max(minNewClitSize, minClitSize);
 		
 		private static readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
 		private const JewelryType SUPPORTED_CLIT_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 
 		private bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
-
-		private PerkStatBonusGetter basePerkData;
 
 		public const float MIN_CLIT_SIZE = 0.25f;
 		public const float MIN_CLITCOCK_SIZE = 2f;
@@ -37,7 +42,7 @@ namespace CoC.Backend.BodyParts
 		{
 			get
 			{
-				float currMin = basePerkData?.Invoke().MinClitSize ?? MIN_CLIT_SIZE;
+				float currMin = minClitSize;
 				if (omnibusClit && currMin < MIN_CLITCOCK_SIZE)
 				{
 					return MIN_CLITCOCK_SIZE;
@@ -71,53 +76,63 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<ClitPiercings> clitPiercings;
 
-		private Clit(float clitSize = MIN_CLIT_SIZE)
+		internal Clit(Creature source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false) : base(source)
 		{
-			length = clitSize;
-			omnibusClit = false;
+			length = initialPerkData.NewClitSize();
+			if (isOmnibusClit && MIN_CLITCOCK_SIZE > length)
+			{
+				length = MIN_CLITCOCK_SIZE;
+			}
+
+			omnibusClit = isOmnibusClit;
 			clitPiercings = new Piercing<ClitPiercings>(PiercingLocationUnlocked, JewelryTypeSupported);
+
+			minClitSize = initialPerkData.MinClitSize;
+			minNewClitSize = initialPerkData.DefaultNewClitSize;
+			clitGrowthMultiplier = initialPerkData.ClitGrowthMultiplier;
+			clitShrinkMultiplier = initialPerkData.ClitShrinkMultiplier;
 		}
 
-		public static Clit Generate()
+		internal Clit(Creature source, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false) : base(source)
 		{
-			return new Clit();
-		}
-
-		public static Clit GenerateWithLength(float clitLength)
-		{
-			return new Clit(clitLength);
-		}
-
-		public static Clit GenerateOmnibusClit(float clitLength = 2.0f)
-		{
-			if (clitLength < 2)
+			length = initialPerkData.NewClitSize(clitSize);
+			if (isOmnibusClit && MIN_CLITCOCK_SIZE > length)
 			{
-				clitLength = 2;
-			}
-			return new Clit(clitLength)
-			{
-				omnibusClit = true
-			};
-		}
-
-		public Cock AsCock()
-		{
-			if (!omnibusClit)
-			{
-				return null;
+				length = MIN_CLITCOCK_SIZE;
 			}
 
-			if (clitCock == null)
-			{
-				clitCock = Cock.GenerateClitCock(this);
-			}
-			else
-			{
-				clitCock.SetLength(length + 5);
-			}
-			return clitCock;
+			omnibusClit = isOmnibusClit;
+			clitPiercings = new Piercing<ClitPiercings>(PiercingLocationUnlocked, JewelryTypeSupported);
+
+			minClitSize = initialPerkData.MinClitSize;
+			minNewClitSize = initialPerkData.DefaultNewClitSize;
+			clitGrowthMultiplier = initialPerkData.ClitGrowthMultiplier;
+			clitShrinkMultiplier = initialPerkData.ClitShrinkMultiplier;
 		}
-		private Cock clitCock = null;
+
+		public override ClitData AsReadOnlyData()
+		{
+			return new ClitData(this);
+		}
+
+		//public Cock AsCock()
+		//{
+		//	if (!omnibusClit)
+		//	{
+		//		return null;
+		//	}
+
+		//	if (clitCock == null)
+		//	{
+		//		clitCock = Cock.GenerateClitCock(this);
+		//	}
+		//	else
+		//	{
+		//		clitCock.SetLength(length + 5);
+		//	}
+		//	return clitCock;
+		//}
+		//private Cock clitCock = null;
 		public void Restore()
 		{
 			omnibusClit = false;
@@ -276,33 +291,17 @@ namespace CoC.Backend.BodyParts
 
 
 		#endregion
+	}
 
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+	public sealed class ClitData
+	{
+		public readonly float length;
+		public readonly bool isClitCock;
+
+		internal ClitData(Clit source)
 		{
-			basePerkData = getter;
-		}
-
-		internal void DoLateInit(BasePerkModifiers statModifiers, bool isInit)
-		{
-			if (isInit)
-			{
-				float minLength = statModifiers.MinNewClitSize;
-				if (length < minLength)
-				{
-					length = minLength;
-				}
-			}
-			else
-			{
-				length += statModifiers.NewClitSizeDelta;
-			}
-		}
-
-		private IBaseStatPerkAware perkAware => this;
-
-		internal void GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			perkAware.GetBasePerkStats(getter);
+			length = source.length;
+			isClitCock = source.omnibusClit;
 		}
 	}
 }

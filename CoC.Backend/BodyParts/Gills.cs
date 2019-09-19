@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 7:29 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -11,52 +12,28 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 
-	public sealed class Gills : BehavioralSaveablePart<Gills, GillType>
+	public sealed class Gills : BehavioralSaveablePart<Gills, GillType, GillData>
 	{
-		private Gills()
+		internal Gills(Creature source, GillType gillType) : base(source)
 		{
-			type = GillType.NONE;
+			type = gillType ?? throw new ArgumentNullException(nameof(gillType));
 		}
+
+		internal Gills(Creature source) : this (source, GillType.defaultValue)
+		{ }
+
 		public override GillType type { get; protected set; }
 
-		public static GillType defaultType => GillType.NONE;
-		public override bool isDefault => type == defaultType;
+		public override GillType defaultType => GillType.defaultValue;
 
-
-		internal static Gills GenerateDefault()
+		public override GillData AsReadOnlyData()
 		{
-			return new Gills();
+			return new GillData(this);
 		}
 
 
-		internal static Gills GenerateDefaultOfType(GillType gillType)
-		{
-			return new Gills()
-			{
-				type = gillType ?? throw new ArgumentNullException(nameof(gillType)),
-			};
-		}
+		//Update, Restore both fine as defaults.
 
-		internal override bool UpdateType(GillType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return type == newType;
-
-		}
-
-		internal override bool Restore()
-		{
-			if (type == GillType.NONE)
-			{
-				return false;
-			}
-			type = GillType.NONE;
-			return type == GillType.NONE;
-		}
 		internal override bool Validate(bool correctInvalidData)
 		{
 			GillType gillType = type;
@@ -66,9 +43,11 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class GillType : SaveableBehavior<GillType, Gills>
+	public partial class GillType : SaveableBehavior<GillType, Gills, GillData>
 	{
 		private static int indexMaker = 0;
+		public static GillType defaultValue => NONE;
+
 		private static readonly List<GillType> gills = new List<GillType>();
 		public static readonly ReadOnlyCollection<GillType> availableTypes = new ReadOnlyCollection<GillType>(gills);
 		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<Gills> fullDesc, TypeAndPlayerDelegate<Gills> playerDesc,
@@ -112,8 +91,13 @@ namespace CoC.Backend.BodyParts
 		protected readonly int _index;
 		public override int index => _index;
 
-		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), GlobalStrings.TransformToDefault<Gills, GillType>, GlobalStrings.RevertAsDefault);
+		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x,y) => x.type.restoreString(x,y), GlobalStrings.RevertAsDefault);
 		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneFullDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
 		public static readonly GillType FISH = new GillType(FishDescStr, FishFullDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
+	}
+
+	public sealed class GillData : BehavioralSaveablePartData<GillData, Gills, GillType>
+	{
+		internal GillData(Gills source) : base(GetBehavior(source)) { }
 	}
 }

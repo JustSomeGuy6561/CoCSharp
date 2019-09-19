@@ -1,4 +1,4 @@
-﻿using CoCWinDesktop.Helpers;
+﻿using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 	//Largely lifted from 
 	//https://tyrrrz.me/Blog/Hotkey-editor-control-in-WPF

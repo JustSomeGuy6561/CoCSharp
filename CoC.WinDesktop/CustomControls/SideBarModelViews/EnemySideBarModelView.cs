@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using CoC.Frontend.UI.ControllerData;
 using CoC.UI;
 
-namespace CoCWinDesktop.CustomControls.SideBarModelViews
+namespace CoC.WinDesktop.CustomControls.SideBarModelViews
 {
 	public sealed class EnemySideBarModelView : SideBarBase
 	{

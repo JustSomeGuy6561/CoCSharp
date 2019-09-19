@@ -3,226 +3,693 @@
 //Author: JustSomeGuy
 //6/30/2019, 7:45 PM
 using CoC.Backend.BodyParts;
+using CoC.Backend.Creatures;
+using System;
 
 namespace CoC.Backend.Perks
 {
-	//These stats are used in the backend to passively (read: silently) modify base stats or body parts. These alter the behavior of certain things without notifying the user. 
-	//variables that would cause certain actions to fail (for example, a function increasing or decreasing wetness/looseness would fail as it would go beyond what a perk set for the min/max looseness/wetness)
-	//are not included in here. 
 
-	//In the redesign, there was a point where i was deciding if i should fix the current structure - that is, there's no way to "cancel" a change. Some perks exist that force the player
-	//to always have a certain attribute or stat, like Bimbo/Bro/Futa perks, Basilisk Womb, Fera Perks, Mareth Perks, etc. It's possible to intercept these changes via an event system, 
-	//where the new result is calculated, but not implemented. the events can then alter this result or cancel it entirely.
-	//For example, Consider the interaction between a Large Pink Egg and a PC with the Bro Body perk. Consuming the egg would remove all cocks, but the Bro perk means you "always" have a cock.
-	//Currently, the cock gets removed, but after some time passes, you regrow it, complete with Bro Body flavor text. It'd be possible to prevent the pink egg from removing your last cock, if we
-	//send an event that the last cock was removed to all the perks that care, and Bro Body tells it to cancel that change. 
-	//I've decided against this, because while it may be the smart thing to do, it's difficult to implement if you don't know what you're doing.
 
-	//I have, however, decided to compromise - i've made most of the backend stuff internal, and wrapped it in the creature class. these wrappers will call the source function, and if it succeeds, raise 
-	//an event saying that particular body part or whatever has updated. other classes, notably perks (though NPCs such as Exgartuan may also find it useful to do so), may then subscribe to these events
-	//and react accordingly. If these perks or whatever require something to change, they may generate a "Reaction." A Reaction is like a Time Event Listener, but it only runs once. The next chance it gets,
-	//the Reaction will activate, change the player's stats or whatever it needs to, then optionally notify the player why it reacted. Reactions can optionally wait a few hours, or occur as soon as possible. 
-	//You can, of course, simply ignore this, and just do what you normally do, and add checks to the time events, but this is cleaner.
-
-	//A few non-perk examples:
-
-	//For example, a Weapon may subscribe to the Strength attribute when equipped. If the player drops below a certain strength level, the Weapon generates a Reaction that uneqipts the weapon and returns it
-	//to your inventory, and unsubscribes to the strength attribute. It also notifies the player that they're too weak to lift it with some unique flavor text.
-
-	//Alternatively, Exgartuan may subscribe to the player's equipment when he possesses the player. When the player equips armor, he grants the "bulge armor" perk (granting +5 to tease skill)
-	//when the player removes armor, he removes that perk. When Exgartuan stops possessing the player, he unsubscribes. 
-
-	//As for a perk example:
-	//Bro/Bimbo/Futa Body and Brains may subscribe to the player's genitals upon activation. if the player loses their junk (cock, vagina/breasts, and both, respectively), it generates a Reaction
-	//that will restore these to their defaults, and explain that it was due to ingesting Bro Brew/Bimbo Liquor
-
-	//WARNING: Beware of runaway changes/self referencing/infinite loops. It's generally bad practice to change something that just notified you it changed - that'll cause it to notify you it changed AGAIN
-	//(because it did change again). If you're not careful when doing this, it'll cause an infinite loop. So, in the above example of Bro/Bimbo/Futa perks, immediately adding back the missing junk would cause
-	//it to notify you it changed again. In this case, we need to do it, so we need to make sure the _second_ time it notifies us we just ignore it. 
-
-	//Even worse is a contradiction - imagine you had A perk that forced you to be female, and thus removed all cocks, while at the same time having Bro Body, which forces you to have a cock. These two would
-	//constantly interact, hanging the game. The first would remove a cock, causing the GenitalsChanged to fire, which would proc the Bro Body perk, which would add the cock back, again causing the GenitalsChanged
-	//to fire, which would proc the FemaleOnly perk to proc, which would remove the cock, and so on. 
-
-	//TL;DR: a subscription system exists, letting you know when a certain part or item changes. if your perk or whatever needs to check that all the time, consider subscribing and letting it tell you it changed.
-	//But be careful you aren't causing infinite loops, either by contradicting something else, or by creating a situation where your changes cause you to get notified again (which causes you to change them again, etc)
-	//If this scares you or is beyond your current programming level, feel free to do it the old way. 
-
-	//NOTE: every one of these is likely to be altered, as no validation occurs on the data - multiple perks that stack one stat could incorrectly set a value if they didnt realize 
-	//another perk had already or has since updated the value. I'm just jotting these down like this so i can get something working for now - i'll worry about validation later. 
-	//we also need to update values that depend on these. for example, if the minimum speed is updated (or any min value), the corresponding creature's speed (or equivalent) must
-	//be checked and updated if necessary to reflect this new minimum. 
-	
 	public abstract class BasePerkModifiers
 	{
-		//The game uses the following variables to 
+		protected readonly Creature source;
+		protected CombatCreature combatSource => source as CombatCreature;
+		protected Player playerSource => source as Player;
 
-		//unless otherwise noted, these are added to the base stats. If you fuck up and the min > max, behavior is undefined. 
-		//note that regardless of bonus values here, some stats may be capped at an absolute bonus level. Note that all of these could change over development (particularly maxes, notably lust)
+		public BasePerkModifiers(Creature parent)
+		{
+			source = parent ?? throw new ArgumentNullException(nameof(parent));
+		}
 
-		//new way of dealing with initial endowments - they are permanent. so if you pick smart, you get +5 int and your min intelligence is now 5.
-
+		#region Stat Perk Helpers
+		//These obviously do not apply to creatures that cannot participate in combat, like most NPCs.
 		public ushort bonusMaxHP;
 
-		public byte minStrength;
-		public sbyte bonusMaxStrength;
-		public float StrengthGainMultiplier = 1.0f;
-		public float StrengthLossMultiplier = 1.0f;
-
-		public byte minSpeed;
-		public sbyte bonusMaxSpeed;
-		public float SpeedGainMultiplier = 1.0f;
-		public float SpeedLossMultiplier = 1.0f;
-
-		public byte minIntelligence;
-		public sbyte bonusMaxIntelligence;
-		public float IntelligenceGainMultiplier = 1.0f;
-		public float IntelligenceLossMultiplier = 1.0f;
-
-		public byte minToughness;
-		public sbyte bonusMaxToughness;
-		public float ToughnessGainMultiplier = 1.0f;
-		public float ToughnessLossMultiplier = 1.0f;
-
-		public byte minSensitivity;
-		public sbyte bonusMaxSensitivity;
-		public float SensitivityGainMultiplier = 1.0f;
-		public float SensitivityLossMultiplier = 1.0f;
-
-		public byte minLust;
-		public sbyte bonusMaxLust;
-		public float LustGainMultiplier = 1.0f;
-		public float LustLossMultiplier = 1.0f;
-
-		public byte minLibido;
-		public sbyte bonusMaxLibido;
-		public float LibidoGainMultiplier = 1.0f;
-		public float LibidoLossMultiplier = 1.0f;
-
-		public byte minCorruption;
-		public float CorruptionGainMultiplier = 1.0f;
-		public float CorruptionLossMultiplier = 1.0f;
-		public sbyte bonusMaxCorruption;
-
-		public sbyte bonusMaxFatigue;
-
-		public sbyte bonusMaxHunger;
-
-		public float combatDamageModifier = 1.0f;
-
-		public float magicalSpellCost = 1.0f;
-		public float physicalSpellCost = 1.0f;
-
-		public float fatigueRegenMultiplier = 1.0f;
-
-		public float armorEffectivenessMultiplier = 1.0f;
-
-		//bonus pregnancy speed stacked additively. We're going to do the same, but we're going to be up-front about it. 
-		//a perk can increase or decrease pregnancy speed, and we now support half gains. Max speed is 63.5, min speed -64.
-		//behind the scenes, this is stored as a sbyte, not a float, so we can avoid floating point, and we just double the amount added. 
-		//so 1/2 = 1, 1 = 2. the actual value in float is calculated via the property. 
-		//Note that if it's possible to have a negative bonus. negative bonuses lengthen the pregnancy time, instead of shortening it, but do so additively. 
-		//negative are equivalent in relative speed as their positive counterpart. so a bonus of one takes half time, a bonus of -1 takes double time, and so on. 
-
-		public void incPregSpeedByOne()
+		public sbyte minStrength
 		{
-			bonusPregnancySpeedCounter = bonusPregnancySpeedCounter.add(2);
+			get => combatSource?.bonusMinStrength ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMinStrength = value;
+			}
 		}
-		public void incPregSpeedByHalf()
+		public sbyte bonusMaxStrength
 		{
-			bonusPregnancySpeedCounter = bonusPregnancySpeedCounter.add(1);
+			get => combatSource?.bonusMaxStrength ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxStrength = value;
+			}
+		}
+		public float StrengthGainMultiplier
+		{
+			get => combatSource?.StrengthGainMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.StrengthGainMultiplier = value;
+			}
+		}
+		public float StrengthLossMultiplier
+		{
+			get => combatSource?.StrengthLossMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.StrengthLossMultiplier = value;
+			}
 		}
 
-		public void decPregSpeedByOne()
+		public sbyte minToughness
 		{
-			bonusPregnancySpeedCounter = bonusPregnancySpeedCounter.subtract(2);
+			get => combatSource?.bonusMinToughness ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMinToughness = value;
+			}
 		}
-		public void decPregSpeedByHalf()
+		public sbyte bonusMaxToughness
 		{
-			bonusPregnancySpeedCounter = bonusPregnancySpeedCounter.subtract(1);
+			get => combatSource?.bonusMaxToughness ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxToughness = value;
+			}
 		}
-		private sbyte bonusPregnancySpeedCounter = 0;
-		public float bonusPregnancySpeed => bonusPregnancySpeedCounter / 2.0f;
-		//below is the actual formula. 
-		internal float pregnancyMultiplier => bonusPregnancySpeed >= 0 ? bonusPregnancySpeed + 1 : -1.0f / (bonusPregnancySpeed - 1);
-		//0: no change;  0.5: 1.5x faster;  1: 2x faster... etc
-		//0: no change; -0.5: 1.5x slower; -1: 2x slower... etc
+		public float ToughnessGainMultiplier
+		{
+			get => combatSource?.ToughnessGainMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.ToughnessGainMultiplier = value;
+			}
+		}
+		public float ToughnessLossMultiplier
+		{
+			get => combatSource?.ToughnessLossMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.ToughnessLossMultiplier = value;
+			}
+		}
 
+		public sbyte minSpeed
+		{
+			get => combatSource?.bonusMinSpeed ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMinSpeed = value;
+			}
+		}
+		public sbyte bonusMaxSpeed
+		{
+			get => combatSource?.bonusMaxSpeed ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxSpeed = value;
+			}
+		}
+		public float SpeedGainMultiplier
+		{
+			get => combatSource?.SpeedGainMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.SpeedGainMultiplier = value;
+			}
+		}
+		public float SpeedLossMultiplier
+		{
+			get => combatSource?.SpeedLossMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.SpeedLossMultiplier = value;
+			}
+		}
+
+		public sbyte minIntelligence
+		{
+			get => combatSource?.bonusMinIntelligence ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMinIntelligence = value;
+			}
+		}
+		public sbyte bonusMaxIntelligence
+		{
+			get => combatSource?.bonusMaxIntelligence ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxIntelligence = value;
+			}
+		}
+		public float IntelligenceGainMultiplier
+		{
+			get => combatSource?.IntelligenceGainMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.IntelligenceGainMultiplier = value;
+			}
+		}
+		public float IntelligenceLossMultiplier
+		{
+			get => combatSource?.IntelligenceLossMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.IntelligenceLossMultiplier = value;
+			}
+		}
+
+		public sbyte minSensitivity
+		{
+			get => combatSource?.bonusMinSensitivity ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMinSensitivity = value;
+			}
+		}
+		public sbyte bonusMaxSensitivity
+		{
+			get => combatSource?.bonusMaxSensitivity ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxSensitivity = value;
+			}
+		}
+		public float SensitivityGainMultiplier
+		{
+			get => combatSource?.SensitivityGainMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.SensitivityGainMultiplier = value;
+			}
+		}
+		public float SensitivityLossMultiplier
+		{
+			get => combatSource?.SensitivityLossMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.SensitivityLossMultiplier = value;
+			}
+		}
+
+		public sbyte minLust
+		{
+			get => combatSource?.bonusMinLust ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMinLust = value;
+			}
+		}
+		public sbyte bonusMaxLust
+		{
+			get => combatSource?.bonusMaxLust ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxLust = value;
+			}
+		}
+		public float LustGainMultiplier
+		{
+			get => combatSource?.LustGainMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.LustGainMultiplier = value;
+			}
+		}
+		public float LustLossMultiplier
+		{
+			get => combatSource?.LustLossMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.LustLossMultiplier = value;
+			}
+		}
+
+		public sbyte minLibido
+		{
+			get => combatSource?.bonusMinLibido ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMinLibido = value;
+			}
+		}
+		public sbyte bonusMaxLibido
+		{
+			get => combatSource?.bonusMaxLibido ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxLibido = value;
+			}
+		}
+		public float LibidoGainMultiplier
+		{
+			get => combatSource?.LibidoGainMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.LibidoGainMultiplier = value;
+			}
+		}
+		public float LibidoLossMultiplier
+		{
+			get => combatSource?.LibidoLossMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.LibidoLossMultiplier = value;
+			}
+		}
+
+		public sbyte minCorruption
+		{
+			get => combatSource?.bonusMinCorruption ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMinCorruption = value;
+			}
+		}
+		public float CorruptionGainMultiplier
+		{
+			get => combatSource?.CorruptionGainMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.CorruptionGainMultiplier = value;
+			}
+		}
+		public float CorruptionLossMultiplier
+		{
+			get => combatSource?.CorruptionLossMultiplier ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.CorruptionLossMultiplier = value;
+			}
+		}
+		public sbyte bonusMaxCorruption
+		{
+			get => combatSource?.bonusMaxCorruption ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxCorruption = value;
+			}
+		}
+
+		public sbyte bonusMaxFatigue
+		{
+			get => combatSource?.bonusMaxFatigue ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.bonusMaxFatigue = value;
+			}
+		}
+
+		public sbyte bonusMaxHunger
+		{
+			get => playerSource?.bonusMaxHunger ?? 0;
+			set
+			{
+				if (playerSource != null) playerSource.bonusMaxHunger = value;
+			}
+		}
+
+		public float HungerGainRate
+		{
+			get => playerSource?.hungerGainRate ?? 0f;
+			set
+			{
+				if (playerSource != null) playerSource.hungerGainRate = value;
+			}
+		}
+
+		public float fatigueRegenMultiplier
+		{
+			get => combatSource?.FatigueRegenRate ?? 0;
+			set
+			{
+				if (combatSource != null) combatSource.FatigueRegenRate = value;
+			}
+		}
+		#endregion
+
+		#region Combat Perks
+		//Not Implemented
+		//public float combatDamageModifier
+		//{
+		//	get => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//	set => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//}
+		//public float magicalSpellCost
+		//{
+		//	get => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//	set => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//}
+		//public float physicalSpellCost
+		//{
+		//	get => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//	set => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//}
+		//public float armorEffectivenessMultiplier
+		//{
+		//	get => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//	set => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//}
+		public float combatDamageModifier { get; set; } = 1;
+		public float magicalSpellCost { get; set; } = 1;
+		public float physicalSpellCost { get; set; } = 1;
+		public float armorEffectivenessMultiplier { get; set; } = 1;
+		#endregion
+
+		#region Pregnancy/Fertility
+
+		public bool femininityLockedByGender
+		{
+			get => source.genitals.femininity.femininityLimitedByGender;
+			set => source.genitals.femininity.femininityLimitedByGender = value;
+		}
+
+
+		public byte bonusFertility
+		{
+			get => source.genitals.fertility.perkBonusFertility;
+			set => source.genitals.fertility.perkBonusFertility = value;
+		}
+
+		#endregion
 		//For the following endowments - the behavior is different based on how the endowment is generated - 
 		//if no size is provided, the size will be the default new value. 
 		//if a size is provided, the delta value will be added to it. if this value is still lower than the default new value, the default new value will be used instead.
 
+		#region Cock
+		//added to any non-default cock size. 
+		public float NewCockSizeDelta
+		{
+			get => source.genitals.NewCockSizeDelta;
+			set => source.genitals.NewCockSizeDelta = value;
+		}
+
+		//affects the rate at which the cock grows. this base growth amount is multiplied by this value.
+		public float CockGrowthMultiplier
+		{
+			get => source.genitals.CockGrowthMultiplier;
+			set => source.genitals.CockGrowthMultiplier = value;
+		}
+		//affects the rate at which the cock shrinks. this base shrink amount is multiplied by this value.
+		public float CockShrinkMultiplier
+		{
+			get => source.genitals.CockShrinkMultiplier;
+			set => source.genitals.CockShrinkMultiplier = value;
+		}
+
+		//if no size is provided, this value is used for a new cock. 
+		public float NewCockDefaultSize
+		{
+			get => source.genitals.NewCockDefaultSize;
+			set => source.genitals.NewCockDefaultSize = value;
+		}
+
+		//minimum size for a cock. behavior for what happens when attempting to shrink below this depends on the source.
+		public float MinCockSize
+		{
+			get => source.genitals.MinCockLength;
+			set => source.genitals.MinCockLength = value;
+		}
+		#endregion
+		#region Vagina
+		#region Clit
+		//offset for new clits with non-default value.
+		public float NewClitSizeDelta
+		{
+			get => source.genitals.NewClitSizeDelta;
+			set => source.genitals.NewClitSizeDelta = value;
+		}
+
+		//affects rate of growth of clit.
+		public float ClitGrowthMultiplier
+		{
+			get => source.genitals.ClitGrowthMultiplier;
+			set => source.genitals.ClitGrowthMultiplier = value;
+		}
+
+		//affects clit shrink rate.
+		public float ClitShrinkMultiplier
+		{
+			get => source.genitals.ClitShrinkMultiplier;
+			set => source.genitals.ClitShrinkMultiplier = value;
+		}
+
+		//affects new clit size. 
+		public float DefaultNewClitSize
+		{
+			get => source.genitals.MinNewClitSize;
+			set => source.genitals.MinNewClitSize = value;
+		}
+
+		public float MinClitSize
+		{
+			get => source.genitals.MinClitSize;
+			set => source.genitals.MinClitSize = value;
+		}
+		#endregion
+		public VaginalWetness NewVaginaDefaultWetness
+		{
+			get => source.genitals.defaultNewVaginaWetness;
+			set => source.genitals.defaultNewVaginaWetness = value;
+		}
+		public VaginalLooseness NewVaginaDefaultLooseness
+		{
+			get => source.genitals.defaultNewVaginaLooseness;
+			set => source.genitals.defaultNewVaginaLooseness = value;
+		}
+
+		public VaginalLooseness minVaginalLooseness
+		{
+			get => source.genitals.minVaginalLooseness;
+			set => source.genitals.minVaginalLooseness = value;
+		}
+
+		public VaginalLooseness maxVaginalLooseness
+		{
+			get => source.genitals.maxVaginalLooseness;
+			set => source.genitals.maxVaginalLooseness = value;
+		}
+
+		public VaginalWetness minVaginalWetness
+		{
+			get => source.genitals.minVaginalWetness;
+			set => source.genitals.minVaginalWetness = value;
+		}
+
+		public VaginalWetness maxVaginalWetness
+		{
+			get => source.genitals.maxVaginalWetness;
+			set => source.genitals.maxVaginalWetness = value;
+		}
+
+		public ushort PerkBasedBonusVaginalCapacity
+		{
+			get => source.genitals.perkBonusVaginalCapacity;
+			set => source.genitals.perkBonusVaginalCapacity = value;
+		}
+		#endregion
+		#region Breasts
+		//These are split by gender. Note that herms use female, and genderless use male. 
+
+		public sbyte FemaleNewBreastCupSizeDelta
+		{
+			get => source.genitals.FemaleNewCupDelta;
+			set => source.genitals.FemaleNewCupDelta = value;
+		}
+
+		//how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
+		public CupSize FemaleNewBreastDefaultCupSize
+		{
+			get => source.genitals.FemaleNewDefaultCup;
+			set => source.genitals.FemaleNewDefaultCup = value;
+		}
+
+		public sbyte MaleNewBreastCupSizeDelta
+		{
+			get => source.genitals.MaleNewCupDelta;
+			set => source.genitals.MaleNewCupDelta = value;
+		}
+
+		public CupSize MaleNewBreastDefaultCupSize
+		{
+			get => source.genitals.MaleNewDefaultCup;
+			set => source.genitals.MaleNewDefaultCup = value;
+		}
+
+
+		public CupSize FemaleMinCupSize
+		{
+			get => source.genitals.FemaleMinCup;
+			set => source.genitals.FemaleMinCup = value;
+		}
+		public CupSize MaleMinCupSize
+		{
+			get => source.genitals.MaleMinCup;
+			set => source.genitals.MaleMinCup = value;
+		}
+
+
+		public float TitsGrowthMultiplier
+		{
+			get => source.genitals.TitsGrowthMultiplier;
+			set => source.genitals.TitsGrowthMultiplier = value;
+		}
+
+		public float TitsShrinkMultiplier
+		{
+			get => source.genitals.TitsShrinkMultiplier;
+			set => source.genitals.TitsShrinkMultiplier = value;
+		}
+		#region Nipples
+
+		public float NewNippleSizeDelta
+		{
+			get => source.genitals.NewNippleSizeDelta;
+			set => source.genitals.NewNippleSizeDelta = value;
+		}
+
+		public float NippleGrowthMultiplier
+		{
+			get => source.genitals.NippleGrowthMultiplier;
+			set => source.genitals.NippleGrowthMultiplier = value;
+		}
+
+		public float NippleShrinkMultiplier
+		{
+			get => source.genitals.NippleShrinkMultiplier;
+			set => source.genitals.NippleShrinkMultiplier = value;
+		}
+
+		public float NewNippleDefaultLength
+		{
+			get => source.genitals.NewNippleDefaultLength;
+			set => source.genitals.NewNippleDefaultLength = value;
+		}
+		#endregion
+		#endregion
+		#region Balls
+		public sbyte NewBallsSizeDelta
+		{
+			get => source.genitals.balls.newSizeOffset;
+			set => source.genitals.balls.newSizeOffset = value;
+		}
+
+		public float BallsGrowthMultiplier
+		{
+			get => source.genitals.balls.growthMultiplier;
+			set => source.genitals.balls.growthMultiplier = value;
+		}
+
+		public float BallsShrinkMultiplier
+		{
+			get => source.genitals.balls.shrinkMultiplier;
+			set => source.genitals.balls.shrinkMultiplier = value;
+		}
+
+		public byte NewBallsDefaultSize
+		{
+			get => source.genitals.balls.defaultNewSize;
+			set => source.genitals.balls.defaultNewSize = value;
+		}
+		#endregion
+		#region Ass
+		public AnalLooseness minAnalLooseness
+		{
+			get => source.ass.minLooseness;
+			set => source.ass.minLooseness = value;
+		}
+
+		public AnalLooseness maxAnalLooseness
+		{
+			get => source.ass.maxLooseness;
+			set => source.ass.maxLooseness = value;
+		}
+
+		public AnalWetness minAnalWetness
+		{
+			get => source.ass.minWetness;
+			set => source.ass.minWetness = value;
+		}
+
+		public AnalWetness maxAnalWetness
+		{
+			get => source.ass.maxWetness;
+			set => source.ass.maxWetness = value;
+		}
+		public ushort PerkBasedBonusAnalCapacity
+		{
+			get => source.ass.perkBonusAnalCapacity;
+			set => source.ass.perkBonusAnalCapacity = value;
+		}
+		#endregion
+		#region Cum
+		//pilgrim's bounty.
+		public bool AlwaysProducesMaxCum
+		{
+			get => source.genitals.alwaysProducesMaxCum;
+			set => source.genitals.alwaysProducesMaxCum = value;
+		}
+
+		//multiplies the base cum and all non-perk bonus cum by the stack amount. 
+		public float BonusCumStacked
+		{
+			get => source.genitals.bonusCumMultiplier;
+			set => source.genitals.bonusCumMultiplier = value;
+		}
+
+		//After the stacking is done, this value is added in. 
+		public uint BonusCumAdded
+		{
+			get => source.genitals.bonusCumAdded;
+			set => source.genitals.bonusCumAdded = value;
+		}
+		#endregion
+
+		//i can't think of anything else for this.
+		//a bunch of old perks can just be attributes of classes, or fire a one-off "Reaction" instead of existing (looking at you Post-Akbal submit/whatever "perks")
+		//it may be possible to get a perk that prioritizes certain fur colors or skin tones, and that realistically could/should be handled here. 
+		//but that's not implemented, and i don't have any idea how they'd want it to work.	
+	}
+}
+/*
+
+	//The game uses the following variables to
+		//unless otherwise noted, these are added to the base stats. If you fuck up and the min > max, behavior is undefined. 
+		//note that regardless of bonus values here, some stats may be capped at an absolute bonus level. Note that all of these could change over development (particularly maxes, notably lust)
+		//new way of dealing with initial endowments - they are permanent. so if you pick smart, you get +5 int and your min intelligence is now 5.
+		//For the following endowments - the behavior is different based on how the endowment is generated - 
+		//if no size is provided, the size will be the default new value. 
+		//if a size is provided, the delta value will be added to it. if this value is still lower than the default new value, the default new value will be used instead.
+	
 		public float NewCockSizeDelta; //how much do we add or remove for new cocks? //big cock perk for now. would allow a small cock perk as well
 		public float CockGrowthMultiplier = 1f; //how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
 		public float CockShrinkMultiplier = 1f; //how much more/less should we shrink a cock over base amount? //big cock, cockSock;
 		public float NewCockDefaultSize; //minimum size for any new cocks; //bro/futa perks for now
-
 		public float NewClitSizeDelta; //how much do we add or remove to base amount for new Clits? //NYI, but BigClit Perks
 		public float ClitGrowthMultiplier = 1f; //how much more/less should we grow a Clit over the base amount?
 		public float ClitShrinkMultiplier = 1f; //how much more/less should we shrink a Clit over base amount?
 		public float MinNewClitSize; //minimum size for any new Clits; //bro/futa perks for now
 		public float MinClitSize; //minimum size for any Clit; //bro/futa perks for now
-
-		//These are split by gender. Note that herms use female, and genderless use male. 
-
+		//These are split by gender. Note that herms use female, and genderless use male.
 		public sbyte FemaleNewBreastCupSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
 		public CupSize FemaleNewBreastDefaultCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
 		public sbyte MaleNewBreastCupSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
 		public CupSize MaleNewBreastDefaultCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
-
-		public CupSize FemaleMinCupSize = CupSize.FLAT;
-		public CupSize MaleMinCupSize = CupSize.FLAT;
-
 		//these are used regardless of gender. 
 		public float TitsGrowthMultiplier = 1f; //how much more/less should we grow the breasts over the base amount?
 		public float TitsShrinkMultiplier = 1f; //how much more/less should we shrink the breasts over base amount?
-
 		public float NewNippleSizeDelta; //how much do we add or remove to base amount for new Nipples? //NYI, but BigNipple Perks
 		public float NippleGrowthMultiplier = 1.0f; //how much more/less should we grow a Nipple over the base amount?
 		public float NippleShrinkMultiplier = 1.0f; //how much more/less should we shrink a Nipple over base amount?
 		public float NewNippleDefaultLength; //minimum size for any new Nipples; //bro/futa perks for now
-
 		public byte NewBallsSizeDelta; //how much do we add or remove to base amount for new Balls? //note, will only go to max size for uniball if uniball. 
 		public float BallsGrowthMultiplier = 1.0f; //how much more/less should we grow the Balls over the base amount? 1-3, expecting roughly 1.5
 		public float BallsShrinkMultiplier = 1.0f; //how much more/less should we shrink the Balls over base amount? 1-3, expecting roughly 1.5
 		public byte NewBallsDefaultSize; //note: will only go to uniball max if uniball.
-
 		public bool AlwaysProducesMaxCum; //pilgrim perk
 		public float BonusCumStacked = 1; //muliplicative 
-		public uint BonusCumAdded = 0; //additive. 
-
-		public VaginalWetness NewVaginaDefaultWetness;
-		public VaginalLooseness NewVaginaDefaultLooseness;
-
-		public bool femininityLockedByGender = true;
-
-		public byte bonusFertility;
-
+		public uint BonusCumAdded = 0; //additive.
 		public ushort PerkBasedBonusVaginalCapacity; //vag of holding, elastic innards
 		public ushort PerkBasedBonusAnalCapacity; //elastic innards
-
-		public AnalLooseness minAnalLooseness = AnalLooseness.NORMAL;
-		public AnalLooseness maxAnalLooseness = AnalLooseness.GAPING;
-
-		public AnalWetness minAnalWetness = AnalWetness.NORMAL;
-		public AnalWetness maxAnalWetness = AnalWetness.SLIME_DROOLING;
-
-		public VaginalLooseness minVaginalLooseness = VaginalLooseness.TIGHT;
-		public VaginalLooseness maxVaginalLooseness = VaginalLooseness.CLOWN_CAR_WIDE;
-
-		public VaginalWetness minVaginalWetness = VaginalWetness.DRY;
-		public VaginalWetness maxVaginalWetness = VaginalWetness.SLAVERING;
-
-
 		//values that would cause issues (min cock size, vag wetness, etc) are purposely excluded. see top argument. 
 		//it'd be possible to have a perk that forces this to course correct almost immediately, if that's your desire - create a reaction that fires ASAP.
-
-		//i can't think of anything else for this.
-		//a bunch of old perks can just be attributes of classes, or fire a one-off "Reaction" instead of existing (looking at you Post-Akbal submit/whatever "perks")
-
-		//it may be possible to get a perk that prioritizes certain fur colors or skin tones, and that realistically could/should be handled here. 
-		//but that's not implemented, and i don't have any idea how they'd want it to work. 
-
-
-	}
-}
+		
+	*/

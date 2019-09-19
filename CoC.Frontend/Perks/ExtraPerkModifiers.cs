@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Perks;
+﻿using CoC.Backend.Creatures;
+using CoC.Backend.Perks;
 using CoC.Frontend.Perks.History;
 
 namespace CoC.Frontend.Perks
@@ -21,6 +22,10 @@ namespace CoC.Frontend.Perks
 		public float teaseStrengthMultiplier = 1.0f;
 
 		public bool IsASlut = false;
+
+		public ExtraPerkModifiers(Creature parent) : base(parent)
+		{
+		}
 	}
 
 	public static class ExtraPerkHelper

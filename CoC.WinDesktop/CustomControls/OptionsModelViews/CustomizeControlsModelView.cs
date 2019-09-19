@@ -1,14 +1,14 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
-using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace CoCWinDesktop.CustomControls.OptionsModelViews
+namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class CustomizeControlsModelView : OptionModelViewDataBase
 	{

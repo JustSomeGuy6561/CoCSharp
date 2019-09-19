@@ -3,14 +3,13 @@
 //Author: JustSomeGuy
 //2/20/2019, 4:14 PM
 using CoC.Backend.Tools;
+using System;
 
 namespace CoC.Backend.Creatures
 {
 
 	public abstract class CombatCreature : Creature
 	{
-#warning Consider further clamping max/min values to prevent unacceptable min or max values (for example, HP is capped at 9999 in game)
-
 		public const byte DEFAULT_STRENGTH = 15;
 		public const byte DEFAULT_TOUGHNESS = 15;
 		public const byte DEFAULT_SPEED = 15;
@@ -32,14 +31,35 @@ namespace CoC.Backend.Creatures
 		internal const byte BASE_MAX_CORRUPTION = 100;
 		internal const byte BASE_MAX_LUST = 100;
 		internal const byte BASE_MAX_FATIGUE = 100;
-		//internal const byte BASE_MAX_HUNGER = 100;
 
+		public const byte LOWEST_POSSIBLE_MAX = 50;
 
+		private const byte ZERO = 0;
 
-		public byte level { get; private protected set; } = 1;
+		//Note: Min stat is given priority for all of these - if a computed max value is less than the current minimum, the minimum is the maximum. 
+		//all max stats are floored (capped below) to 50, meaning they cannot drop below 50. 
+		//ideally i'd prefer to cap mins to the same value, but that doesn't seem to be the case in given code. 
 
-		public uint experience { get; private protected set; } = 0;
+		public byte level
+		{
+			get;
+			private protected set;
+		} = 1;
 
+		public virtual byte maxLevel => 50; //idk, could be anything really. iirc the player max is 30. 
+
+		public uint totalExperience
+		{
+			get => _experience;
+			private protected set => _experience = Math.Min(value, maxExperience);
+		}
+		private uint _experience = 0;
+
+#warning fix me!
+		public uint maxExperience => ushort.MaxValue; 
+
+		public uint currentExperience => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease(); //computed based on level and total experience.
+		public uint experienceRequiredForNextLevel => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease(); //computed based on level.
 
 		public uint currentHealth
 		{
@@ -53,6 +73,7 @@ namespace CoC.Backend.Creatures
 			private protected set => _strength = Utils.Clamp2(value, minStrength, maxStrength);
 		}
 		private byte _strength = 0;
+
 		public byte toughness
 		{
 			get => _toughness;
@@ -71,30 +92,35 @@ namespace CoC.Backend.Creatures
 			private protected set => _intelligence = Utils.Clamp2(value, minIntelligence, maxIntelligence);
 		}
 		private byte _intelligence = 0;
+
 		public byte libido
 		{
 			get => _libido;
 			private protected set => _libido = Utils.Clamp2(value, minLibido, maxLibido);
 		}
 		private byte _libido = 0;
+
 		public byte sensitivity
 		{
 			get => _sensitivity;
 			private protected set => _sensitivity = Utils.Clamp2(value, minSensitivity, maxSensitivity);
 		}
 		private byte _sensitivity = 0;
+
 		public byte corruption
 		{
 			get => _corruption;
 			private protected set => _corruption = Utils.Clamp2(value, minCorruption, maxCorruption);
 		}
 		private byte _corruption = 0;
+
 		public byte lust
 		{
 			get => _lust;
 			private protected set => _lust = Utils.Clamp2(value, minLust, maxLust);
 		}
 		private byte _lust = 0;
+
 		public byte fatigue
 		{
 			get => _fatigue;
@@ -108,28 +134,135 @@ namespace CoC.Backend.Creatures
 		//}
 		//private byte _hunger = 0;
 
-		public virtual byte minStrength => modifiers.minStrength;
-		public virtual byte minToughness => modifiers.minToughness;
-		public virtual byte minSpeed => modifiers.minSpeed;
-		public virtual byte minIntelligence => modifiers.minIntelligence;
-		public virtual byte minLibido => modifiers.minLibido;
-		public virtual byte minSensitivity => modifiers.minSensitivity;
-		public virtual byte minCorruption => modifiers.minCorruption;
-		public virtual byte minLust => modifiers.minLust;
+		protected internal virtual sbyte bonusMinStrength { get; set; }
+		protected virtual byte baseMinStrength => 0;
+		public byte minStrength => baseMinStrength.delta(bonusMinStrength);
 
-		public byte minFatigue => 0;
+		
+
+		protected internal virtual sbyte bonusMinToughness { get; set; }
+		protected virtual byte baseMinToughness => 0;
+		public byte minToughness => baseMinToughness.delta(bonusMinToughness);
+
+
+
+		protected internal virtual sbyte bonusMinSpeed { get; set; }
+		protected virtual byte baseMinSpeed => 0;
+		public byte minSpeed => baseMinSpeed.delta(bonusMinSpeed);
+
+
+		protected internal virtual sbyte bonusMinIntelligence { get; set; }
+		protected virtual byte baseMinIntelligence => 0;
+		public byte minIntelligence => baseMinIntelligence.delta(bonusMinIntelligence);
+
+
+		protected internal virtual sbyte bonusMinLibido { get; set; }
+		protected virtual byte baseMinLibido => 0;
+		public byte minLibido => baseMinLibido.delta(bonusMinLibido);
+
+
+		protected internal virtual sbyte bonusMinSensitivity { get; set; }
+		protected virtual byte baseMinSensitivity => 0;
+		public byte minSensitivity => baseMinSensitivity.delta(bonusMinSensitivity);
+
+
+		protected internal virtual sbyte bonusMinCorruption { get; set; }
+		protected virtual byte baseMinCorruption => 0;
+		public byte minCorruption => baseMinCorruption.delta(bonusMinCorruption);
+
+
+		protected internal virtual sbyte bonusMinLust { get; set; }
+		protected virtual byte baseMinLust => 0;
+		public byte minLust => baseMinLust.delta(bonusMinLust);
+
+
+		protected internal virtual sbyte bonusMinFatigue { get; set; }
+		protected virtual byte baseMinFatigue => 0;
+		public byte minFatigue => baseMinFatigue.delta(bonusMinFatigue);
+
+
+
+
 		//public byte minHunger => 0;
 
 		public abstract uint maxHealth { get; }
-		public virtual byte maxStrength => BASE_MAX_STRENGTH.delta(modifiers.bonusMaxStrength);
-		public virtual byte maxToughness => BASE_MAX_TOUGHNESS.delta(modifiers.bonusMaxToughness);
-		public virtual byte maxSpeed => BASE_MAX_SPEED.delta(modifiers.bonusMaxSpeed);
-		public virtual byte maxIntelligence => BASE_MAX_INTELLIGENCE.delta(modifiers.bonusMaxIntelligence);
-		public virtual byte maxLibido => BASE_MAX_LIBIDO.delta(modifiers.bonusMaxLibido);
-		public virtual byte maxSensitivity => BASE_MAX_SENSITIVITY.delta(modifiers.bonusMaxSensitivity);
-		public virtual byte maxCorruption => BASE_MAX_CORRUPTION.delta(modifiers.bonusMaxCorruption);
-		public virtual byte maxLust => BASE_MAX_LUST.delta(modifiers.bonusMaxLust);
-		public virtual byte maxFatigue => BASE_MAX_FATIGUE.delta(modifiers.bonusMaxFatigue);
+
+		protected internal int perkBonusHealth { get; set; }
+
+		protected internal virtual byte baseMaxStrength => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxStrength { get; set; } = 0;
+		public byte maxStrength => HandleMaxStat(baseMaxStrength.delta(bonusMaxStrength), minStrength);
+
+		protected internal virtual byte baseMaxToughness => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxToughness { get; set; } = 0;
+		public byte maxToughness => HandleMaxStat(baseMaxToughness.delta(bonusMaxToughness), minToughness);
+
+		protected internal virtual byte baseMaxSpeed => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxSpeed { get; set; } = 0;
+		public byte maxSpeed => HandleMaxStat(baseMaxSpeed.delta(bonusMaxSpeed), minSpeed);
+
+		protected internal virtual byte baseMaxIntelligence => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxIntelligence { get; set; } = 0;
+		public byte maxIntelligence => HandleMaxStat(baseMaxIntelligence.delta(bonusMaxIntelligence), minIntelligence);
+
+		protected internal virtual byte baseMaxLibido => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxLibido { get; set; } = 0;
+		public byte maxLibido => HandleMaxStat(baseMaxLibido.delta(bonusMaxLibido), minLibido);
+
+		protected internal virtual byte baseMaxSensitivity => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxSensitivity { get; set; } = 0;
+		public byte maxSensitivity => HandleMaxStat(baseMaxSensitivity.delta(bonusMaxSensitivity), minSensitivity);
+
+		protected internal virtual byte baseMaxCorruption => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxCorruption { get; set; } = 0;
+		public byte maxCorruption => HandleMaxStat(baseMaxCorruption.delta(bonusMaxCorruption), minCorruption);
+
+		protected internal virtual byte baseMaxLust => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxLust { get; set; } = 0;
+		public byte maxLust => HandleMaxStat(baseMaxLust.delta(bonusMaxLust), minLust);
+
+		protected internal virtual byte baseMaxFatigue => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxFatigue { get; set; } = 0;
+		public byte maxFatigue => HandleMaxStat(baseMaxFatigue.delta(bonusMaxFatigue), minFatigue);
+
+		protected internal float StrengthGainMultiplier = 1.0f;
+		protected internal float StrengthLossMultiplier = 1.0f;
+
+		protected internal float ToughnessGainMultiplier = 1.0f;
+		protected internal float ToughnessLossMultiplier = 1.0f;
+
+		protected internal float SpeedGainMultiplier = 1.0f;
+		protected internal float SpeedLossMultiplier = 1.0f;
+
+		protected internal float IntelligenceGainMultiplier = 1.0f;
+		protected internal float IntelligenceLossMultiplier = 1.0f;
+
+		protected internal float LibidoGainMultiplier = 1.0f;
+		protected internal float LibidoLossMultiplier = 1.0f;
+
+		protected internal float SensitivityGainMultiplier = 1.0f;
+		protected internal float SensitivityLossMultiplier = 1.0f;
+
+		protected internal float CorruptionGainMultiplier = 1.0f;
+		protected internal float CorruptionLossMultiplier = 1.0f;
+
+		protected internal float LustGainMultiplier = 1.0f;
+		protected internal float LustLossMultiplier = 1.0f;
+
+		protected internal float FatigueRegenRate = 1.0f;
+
+		protected byte HandleMaxStat(byte computedValue, byte minValue)
+		{
+			if (computedValue >= minValue && computedValue >= LOWEST_POSSIBLE_MAX)
+			{
+				return computedValue;
+			}
+			else if (minValue > LOWEST_POSSIBLE_MAX)
+			{
+				return minValue;
+			}
+			else return LOWEST_POSSIBLE_MAX;
+		}
 
 		//public virtual byte maxHunger => BASE_MAX_HUNGER.delta(modifiers.bonusMaxHunger);
 
@@ -165,11 +298,23 @@ namespace CoC.Backend.Creatures
 
 		}
 
+		//public void dynStats(sbyte str = 0, sbyte tou = 0, sbyte spd = 0, sbyte inte = 0, sbyte lib = 0, sbyte sens = 0, sbyte corr = 0, sbyte lus = 0)
+		//{
+		//	strength = strength.delta(str);
+		//	toughness = toughness.delta(tou);
+		//	speed = speed.delta(spd);
+		//	intelligence = intelligence.delta(inte);
+		//	libido = libido.delta(lib);
+		//	sensitivity = sensitivity.delta(sens);
+		//	corruption = corruption.delta(corr);
+		//	lust = lust.delta(lus);
+		//}
+
 		public CombatCreature(CombatCreatureCreator creator) : base(creator)
 		{
 			//modifiers is valid already because perks is not null.
 			//creator is not null or the base would have thrown.
-			experience = creator.initialXP;
+			totalExperience = creator.initialXP;
 			level = creator.initialLevel;
 
 			strength = creator.strength ?? DEFAULT_STRENGTH;

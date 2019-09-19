@@ -3,8 +3,10 @@
 //Author: JustSomeGuy
 //1/18/2019, 9:56 PM
 
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
 using CoC.Backend.SaveData;
@@ -14,18 +16,25 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
 	//Trying to come up with decent logic for this thing is a pain in the ass. This is maybe the 5th revision. I think it works well enough now. 
 
 	//First off, we store two "Main" elements: Fur and Skin. Fur stores an epidermis that uses fur colors (fur or feathers in current implementation). 
-	//Skin stores an epidermis dealing with Tone Colors (skin, scales, carapace, goo, rubber, etc). For the most part, body parts that make use of one main will not use the other.
-	//These will be given priority when dyeing or toneing. 
+	//Skin stores an epidermis dealing with Tone Colors (skin, scales, carapace, goo, rubber, etc). For the most part, body parts that make use of one main 
+	//will not use the other. These will be given priority when dyeing or toneing. 
 
-	//We also have two Epidermis instances: primary and secondary. These can be any epidermis type (though the primary cannot be empty). The body type determines what these values store
-	//For example: A fur-based body type will set the primary to the mainFur, and secondary to a new fur instance if it has an underbody. Similarly, a tone-based body type will set primary
-	//to mainSkin, and set the secondary to a new tone-based instance if it has an underbody. stranger things occur with mixed types; cockatrice and kitsune both use mainFur and mainSkin;
+	//We also have two Epidermis instances: primary and secondary. These can be any epidermis type, though the primary cannot be empty. 
+	//The values for primary and secondary are determined from the body type itself -
+	//	the primary type is either the main fur or the main skin, depending on which one the body type uses. 
+	//	The secondary is based on what the body type declares it to be. 
+
+	//For example: A fur-based body type will make the primary point to mainFur, and secondary to a new fur instance if it has an underbody. 
+	//Similarly, a tone-based body type will point to mainSkin for primary, and set the secondary to a new tone-based instance if it has an underbody. 
+
+	//stranger things occur with mixed types; cockatrice and kitsune both use mainFur and mainSkin;
 	//for cockatrice, feathers are dominant, so primary is mainFur, secondary is mainSkin. for Kitsune, the opposite is true.
 
 	//this allows the best of both worlds - we can tell body parts to respond to the fur or skin first, based on which is primary, but when attempting to change the skin tone or fur color,
@@ -50,7 +59,7 @@ namespace CoC.Backend.BodyParts
 
 	public enum HipPiercingLocation { LEFT_TOP, LEFT_CENTER, LEFT_BOTTOM, RIGHT_TOP, RIGHT_CENTER, RIGHT_BOTTOM }
 
-	public sealed partial class Body : BehavioralSaveablePart<Body, BodyType>, IHairAware, IMultiDyeableCustomText, IPatternable, ISimultaneousMultiToneable, IMultiLotionableCustomText
+	public sealed partial class Body : BehavioralSaveablePart<Body, BodyType, BodyData>, IMultiDyeableCustomText, IPatternable, ISimultaneousMultiToneable, IMultiLotionableCustomText
 	{
 
 		private const JewelryType AVAILABLE_NAVEL_PIERCINGS = JewelryType.HORSESHOE | JewelryType.DANGLER | JewelryType.RING | JewelryType.BARBELL_STUD | JewelryType.SPECIAL;
@@ -58,18 +67,26 @@ namespace CoC.Backend.BodyParts
 		//Hair, Fur, Tone
 		//private HairFurColors hairColor => hairData().hairColor;
 
+		private HairData hairData => source.hair.AsReadOnlyData();
+
 		private HairFurColors activeHairColor
 		{
 			get
 			{
-				HairData data = hairData();
+				HairData data = hairData;
 				return data.hairDeactivated ? HairFurColors.NO_HAIR_FUR : data.hairColor;
 			}
 		}
 
-		public EpidermalData mainEpidermis => primary.GetEpidermalData();
-		public EpidermalData supplementaryEpidermis => secondary.GetEpidermalData();
+		public EpidermalData mainEpidermis => primary.AsReadOnlyData();
+		public EpidermalData supplementaryEpidermis => secondary.AsReadOnlyData();
 
+		private readonly WeakEventSource<BodyOuterLayerChangedEventArg> epidermalDataChangeSource = new WeakEventSource<BodyOuterLayerChangedEventArg>();
+		public event EventHandler<BodyOuterLayerChangedEventArg> epidermalDataChanged
+		{
+			add => epidermalDataChangeSource.Subscribe(value);
+			remove => epidermalDataChangeSource.Unsubscribe(value);
+		}
 
 		//private readonly Epidermis primaryEpidermis;
 		//private readonly Epidermis secondaryEpidermis;
@@ -84,143 +101,69 @@ namespace CoC.Backend.BodyParts
 		private readonly Epidermis mainSkin; //stores the current skin that is primarily used. if it's multi-tone, the secondary tone is stored in the supplementary epidermis.
 		private bool skinActive => ReferenceEquals(mainSkin, primary) || ReferenceEquals(mainSkin, secondary);
 
-		private Epidermis primary;
+		private Epidermis primary => type.primaryIsFur ? mainFur : mainSkin;
+		//secondary is completely determined by the body type itself. Note that there's nothing stopping primary and secondary pointing to the same object, though this should never happen.
 		private Epidermis secondary;
 
 
 		public override BodyType type { get; protected set; }
 
-		public static BodyType defaultType => BodyType.HUMANOID;
-		public override bool isDefault => type == defaultType;
+		public override BodyType defaultType => BodyType.defaultValue;
 
-		private Body(BodyType bodyType)
+		internal Body(Creature source) : this(source, BodyType.defaultValue) { }
+
+		internal Body(Creature source, BodyType bodyType) : base(source)
 		{
 			type = bodyType ?? throw new ArgumentNullException();
 
-			bodyType.Init(out mainSkin, out mainFur, out primary, out secondary);
+			bodyType.Init(out mainSkin, out mainFur, out secondary);
 
 			navelPiercings = new Piercing<NavelPiercingLocation>(NavelLocationUnlocked, NavelSupportedJewelry);
 			hipPiercings = new Piercing<HipPiercingLocation>(HipLocationUnlocked, HipSupportedJewelry);
 		}
 
-		#region Generate
-		internal static Body GenerateDefault()
+		internal Body(Creature source, BodyType bodyType, FurColor primaryFurColor = null, FurTexture? primaryFurTexture = null, Tones primarySkinTone = null,
+			SkinTexture? primarySkinTexture = null, FurColor secondaryFurColor = null, FurTexture? secondaryFurTexture = null, Tones secondarySkinTone = null,
+			SkinTexture? secondarySkinTexture = null, bool secondaryUsesPrimaryIfNull = true) : this(source, bodyType)
 		{
-			return new Body(BodyType.HUMANOID);
-		}
-		internal static Body GenerateDefaultOfType(BodyType bodyType)
-		{
-			return new Body(bodyType);
-		}
-
-		internal static Body GenerateCockatrice(FurColor featherColor, Tones scaleColor, FurTexture featherTexture = FurTexture.NONDESCRIPT, SkinTexture scaleTexture = SkinTexture.NONDESCRIPT)
-		{
-			//initializes all the main fur/skin/primary/secondary.
-			Body retVal = new Body(BodyType.COCKATRICE);
-
-			//update the main fur and skin.
-			if (!FurColor.IsNullOrEmpty(featherColor))
+			if (secondaryUsesPrimaryIfNull)
 			{
-				retVal.mainFur.ChangeFur(featherColor);
-			}
-			retVal.mainFur.ChangeTexture(featherTexture);
-			if (!Tones.IsNullOrEmpty(scaleColor))
-			{
-				retVal.mainSkin.ChangeTone(scaleColor);
-			}
-			retVal.mainSkin.ChangeTexture(scaleTexture);
+				if (FurColor.IsNullOrEmpty(secondaryFurColor) && !FurColor.IsNullOrEmpty(primaryFurColor))
+				{
+					secondaryFurColor = primaryFurColor;
+				}
 
-			return retVal;
-		}
+				if (secondaryFurTexture is null && primaryFurTexture != null)
+				{
+					secondaryFurTexture = primaryFurTexture;
+				}
 
-		internal static Body GenerateKitsune(Tones skinTone, FurColor furColor, SkinTexture skinTexture = SkinTexture.NONDESCRIPT, FurTexture furTexture = FurTexture.NONDESCRIPT)
-		{
-			Body retVal = new Body(BodyType.KITSUNE);
-			//the constructor automatically initializes these to default values. this overrides them if valid
-			if (!FurColor.IsNullOrEmpty(furColor))
-			{
-				retVal.mainFur.ChangeFur(furColor);
-			}
-			retVal.mainFur.ChangeTexture(furTexture);
+				if (Tones.IsNullOrEmpty(secondarySkinTone) && !Tones.IsNullOrEmpty(primarySkinTone))
+				{
+					secondarySkinTone = primarySkinTone;
+				}
 
-			if (!Tones.IsNullOrEmpty(skinTone))
-			{
-				retVal.mainSkin.ChangeTone(skinTone);
+				if (secondarySkinTexture is null && primarySkinTexture != null)
+				{
+					secondarySkinTexture = primarySkinTexture;
+				}
 			}
-			retVal.mainSkin.ChangeTexture(skinTexture);
-			return retVal;
+
+			ChangeFur(true, primaryFurColor, primaryFurTexture, true);
+			ChangeFur(false, secondaryFurColor, secondaryFurTexture, true);
+			ChangeSkin(true, primarySkinTone, primarySkinTexture, true);
+			ChangeSkin(false, secondarySkinTone, secondarySkinTexture, true);
 		}
 
-		//Disclaimer: The generates are confusing - i know. realistically, i could just do one generate with all the possible variables passed in and simply only take what i need and ignore the rest
-		//but instead i've done this monstrosity. Unless you're creating a new body type or messing with this stuff, just trust that we'll call the right one and it'll work.
-		//We've created a bunch of Unit Tests to make sure of this. 
-
-		internal static Body GenerateTonedNoUnderbody(SimpleToneBodyType toneBody, Tones tone, SkinTexture texture = SkinTexture.NONDESCRIPT)
-		{
-			Body retVal = new Body(toneBody);
-			if (!Tones.IsNullOrEmpty(tone))
-			{
-				retVal.mainSkin.ChangeTone(tone);
-			}
-			retVal.mainSkin.ChangeTexture(texture);
-			return retVal;
-		}
-		internal static Body GenerateTonedWithUnderbody(CompoundToneBodyType toneBody, Tones primaryTone, Tones secondaryTone,
-			SkinTexture primaryTexture = SkinTexture.NONDESCRIPT, SkinTexture secondaryTexture = SkinTexture.NONDESCRIPT)
-		{
-			Body retVal = new Body(toneBody);
-			if (!Tones.IsNullOrEmpty(primaryTone))
-			{
-				retVal.mainSkin.ChangeTone(primaryTone);
-			}
-			retVal.mainSkin.ChangeTexture(primaryTexture);
-
-			if (!Tones.IsNullOrEmpty(secondaryTone))
-			{
-				retVal.secondary.ChangeTone(secondaryTone);
-			}
-			retVal.secondary.ChangeTexture(secondaryTexture);
-
-			return retVal;
-		}
-
-		internal static Body GenerateFurredNoUnderbody(SimpleFurBodyType furryBody, FurColor primaryFur, FurTexture texture = FurTexture.NONDESCRIPT)
-		{
-			Body retVal = new Body(furryBody);
-			if (!FurColor.IsNullOrEmpty(primaryFur))
-			{
-				retVal.mainFur.ChangeFur(primaryFur);
-			}
-			retVal.mainFur.ChangeTexture(texture);
-			return retVal;
-		}
-		internal static Body GenerateFurredWithUnderbody(CompoundFurBodyType furryBody, FurColor primaryFur, FurColor secondaryFur,
-			FurTexture primaryTexture = FurTexture.NONDESCRIPT, FurTexture secondaryTexture = FurTexture.NONDESCRIPT)
-		{
-			Body retVal = new Body(furryBody);
-			if (!FurColor.IsNullOrEmpty(primaryFur))
-			{
-				retVal.mainFur.ChangeFur(primaryFur);
-			}
-			retVal.mainFur.ChangeTexture(primaryTexture);
-			if (!FurColor.IsNullOrEmpty(secondaryFur))
-			{
-				retVal.secondary.ChangeFur(secondaryFur);
-			}
-			retVal.secondary.ChangeTexture(secondaryTexture);
-			return retVal;
-		}
-		#endregion
 		#region Updates
+
+		//need to override the default update type because we do validation on type change. it's done via UpdateHelper. Note that some versions will require extra updates
+		//before returning. this is handled by an anonymous lambda. It's not strictly speaking necessary; these all could be written manually, but i didn't feel like
+		//rewriting the same thing 30x.
 
 		internal override bool UpdateType(BodyType newType)
 		{
-			if (!UpdateHelper(newType))
-			{
-				return false;
-			}
-			type = newType;
-			return true;
+			return UpdateHelper(newType, null);
 		}
 
 		internal bool UpdateBody(CockatriceBodyType cockatriceBodyType, FurTexture? featherTexture = null, SkinTexture? scaleTexture = null)
@@ -229,31 +172,25 @@ namespace CoC.Backend.BodyParts
 		}
 		internal bool UpdateBody(CockatriceBodyType cockatriceBodyType, FurColor featherColor, Tones scaleTone, FurTexture? featherTexture = null, SkinTexture? scaleTexture = null)
 		{
-			//i'll write that code every time. so irksome. just do it for me, ok?
-			if (!UpdateHelper(cockatriceBodyType))
+			return UpdateHelper(cockatriceBodyType, () =>
 			{
-				return false;
-			}
-
-			if (!Tones.IsNullOrEmpty(scaleTone))
-			{
-				mainSkin.ChangeTone(scaleTone);
-			}
-			if (scaleTexture != null)
-			{
-				mainSkin.ChangeTexture((SkinTexture)scaleTexture);
-			}
-			if (!FurColor.IsNullOrEmpty(featherColor))
-			{
-				mainFur.ChangeFur(featherColor);
-			}
-			if (featherTexture != null)
-			{
-				mainFur.ChangeTexture((FurTexture)featherTexture);
-			}
-
-			type = cockatriceBodyType;
-			return true;
+				if (!Tones.IsNullOrEmpty(scaleTone))
+				{
+					mainSkin.ChangeTone(scaleTone);
+				}
+				if (scaleTexture != null)
+				{
+					mainSkin.ChangeTexture((SkinTexture)scaleTexture);
+				}
+				if (!FurColor.IsNullOrEmpty(featherColor))
+				{
+					mainFur.ChangeFur(featherColor);
+				}
+				if (featherTexture != null)
+				{
+					mainFur.ChangeTexture((FurTexture)featherTexture);
+				}
+			});
 		}
 
 		internal bool UpdateBody(KitsuneBodyType kitsuneBodyType, SkinTexture? skinTexture = null, FurTexture? furTexture = null)
@@ -262,31 +199,25 @@ namespace CoC.Backend.BodyParts
 		}
 		internal bool UpdateBody(KitsuneBodyType kitsuneBodyType, Tones skinTone, FurColor furColor, SkinTexture? skinTexture = null, FurTexture? furTexture = null)
 		{
-			//i'll write that code every time. so irksome. just do it for me, ok?
-			if (!UpdateHelper(kitsuneBodyType))
+			return UpdateHelper(kitsuneBodyType, () =>
 			{
-				return false;
-			}
-
-			if (!Tones.IsNullOrEmpty(skinTone))
-			{
-				mainSkin.ChangeTone(skinTone);
-			}
-			if (skinTexture != null)
-			{
-				mainSkin.ChangeTexture((SkinTexture)skinTexture);
-			}
-			if (!FurColor.IsNullOrEmpty(furColor))
-			{
-				mainFur.ChangeFur(furColor);
-			}
-			if (furTexture != null)
-			{
-				mainFur.ChangeTexture((FurTexture)furTexture);
-			}
-
-			type = kitsuneBodyType;
-			return true;
+				if (!Tones.IsNullOrEmpty(skinTone))
+				{
+					mainSkin.ChangeTone(skinTone);
+				}
+				if (skinTexture != null)
+				{
+					mainSkin.ChangeTexture((SkinTexture)skinTexture);
+				}
+				if (!FurColor.IsNullOrEmpty(furColor))
+				{
+					mainFur.ChangeFur(furColor);
+				}
+				if (furTexture != null)
+				{
+					mainFur.ChangeTexture((FurTexture)furTexture);
+				}
+			});
 		}
 
 		internal bool UpdateBody(SimpleFurBodyType furryType, FurTexture? furTexture = null)
@@ -295,23 +226,17 @@ namespace CoC.Backend.BodyParts
 		}
 		internal bool UpdateBody(SimpleFurBodyType furryType, FurColor furColor, FurTexture? furTexture = null)
 		{
-			//i'll write that code every time. so irksome. just do it for me, ok?
-			if (!UpdateHelper(furryType))
+			return UpdateHelper(furryType, () =>
 			{
-				return false;
-			}
-
-			if (!FurColor.IsNullOrEmpty(furColor))
-			{
-				mainFur.ChangeFur(furColor);
-			}
-			if (furTexture != null)
-			{
-				mainFur.ChangeTexture((FurTexture)furTexture);
-			}
-
-			type = furryType;
-			return true;
+				if (!FurColor.IsNullOrEmpty(furColor))
+				{
+					mainFur.ChangeFur(furColor);
+				}
+				if (furTexture != null)
+				{
+					mainFur.ChangeTexture((FurTexture)furTexture);
+				}
+			});
 		}
 
 		internal bool UpdateBody(CompoundFurBodyType furryType, FurTexture? furTexture = null)
@@ -325,31 +250,26 @@ namespace CoC.Backend.BodyParts
 
 		internal bool UpdateBody(CompoundFurBodyType furryType, FurColor primaryColor, FurColor secondaryColor, FurTexture? primaryTexture = null, FurTexture? secondaryTexture = null)
 		{
-			if (!UpdateHelper(furryType))
+			return UpdateHelper(furryType, () =>
 			{
-				return false;
-			}
+				if (!FurColor.IsNullOrEmpty(primaryColor))
+				{
+					mainFur.ChangeFur(primaryColor);
+				}
+				if (primaryTexture != null)
+				{
+					mainFur.ChangeTexture((FurTexture)primaryTexture);
+				}
 
-			if (!FurColor.IsNullOrEmpty(primaryColor))
-			{
-				mainFur.ChangeFur(primaryColor);
-			}
-			if (primaryTexture != null)
-			{
-				mainFur.ChangeTexture((FurTexture)primaryTexture);
-			}
-
-			if (!FurColor.IsNullOrEmpty(secondaryColor))
-			{
-				secondary.ChangeFur(secondaryColor);
-			}
-			if (secondaryTexture != null)
-			{
-				secondary.ChangeTexture((FurTexture)secondaryTexture);
-			}
-
-			type = furryType;
-			return true;
+				if (!FurColor.IsNullOrEmpty(secondaryColor))
+				{
+					secondary.ChangeFur(secondaryColor);
+				}
+				if (secondaryTexture != null)
+				{
+					secondary.ChangeTexture((FurTexture)secondaryTexture);
+				}
+			});
 		}
 
 		internal bool UpdateBody(CompoundToneBodyType toneType, SkinTexture? toneTexture = null)
@@ -362,28 +282,26 @@ namespace CoC.Backend.BodyParts
 		}
 		internal bool UpdateBody(CompoundToneBodyType toneType, Tones primaryColor, Tones secondaryColor, SkinTexture? primaryTexture = null, SkinTexture? secondaryTexture = null)
 		{
-			UpdateHelper(toneType);
+			return UpdateHelper(toneType, () =>
+			{
+				if (!Tones.IsNullOrEmpty(primaryColor))
+				{
+					mainSkin.ChangeTone(primaryColor);
+				}
+				if (primaryTexture != null)
+				{
+					mainSkin.ChangeTexture((SkinTexture)primaryTexture);
+				}
 
-			if (!Tones.IsNullOrEmpty(primaryColor))
-			{
-				mainSkin.ChangeTone(primaryColor);
-			}
-			if (primaryTexture != null)
-			{
-				mainSkin.ChangeTexture((SkinTexture)primaryTexture);
-			}
-
-			if (!Tones.IsNullOrEmpty(secondaryColor))
-			{
-				secondary.ChangeTone(secondaryColor);
-			}
-			if (secondaryTexture != null)
-			{
-				secondary.ChangeTexture((SkinTexture)secondaryTexture);
-			}
-
-			type = toneType;
-			return true;
+				if (!Tones.IsNullOrEmpty(secondaryColor))
+				{
+					secondary.ChangeTone(secondaryColor);
+				}
+				if (secondaryTexture != null)
+				{
+					secondary.ChangeTexture((SkinTexture)secondaryTexture);
+				}
+			});
 		}
 
 		internal bool UpdateBody(SimpleToneBodyType toneType, SkinTexture? toneTexture = null)
@@ -392,85 +310,246 @@ namespace CoC.Backend.BodyParts
 		}
 		internal bool UpdateBody(SimpleToneBodyType toneType, Tones color, SkinTexture? toneTexture = null)
 		{
-			UpdateHelper(toneType);
-			if (!Tones.IsNullOrEmpty(color))
+			return UpdateHelper(toneType, () =>
 			{
-				mainSkin.ChangeTone(color);
-			}
-			if (toneTexture != null)
-			{
-				mainSkin.ChangeTexture((SkinTexture)toneTexture);
-			}
-
-
-			type = toneType;
-			return true;
+				if (!Tones.IsNullOrEmpty(color))
+				{
+					mainSkin.ChangeTone(color);
+				}
+				if (toneTexture != null)
+				{
+					mainSkin.ChangeTexture((SkinTexture)toneTexture);
+				}
+			});
 		}
 
-		private bool UpdateHelper(BodyType bodyType)
+		private bool UpdateHelper(BodyType bodyType, Action extraUpdates)
 		{
-			if (bodyType == null || type == bodyType)
+			if (bodyType == type || bodyType is null)
 			{
 				return false;
 			}
+			else
+			{
+				EpidermalData oldSkin = mainSkin.AsReadOnlyData();
+				EpidermalData oldPrimary = primary.AsReadOnlyData();
+				EpidermalData oldSecondary = secondary.AsReadOnlyData();
 
-			//cockatrice uses the default scales if scaleTone is null. because the same color is weird.
-			bodyType.ParseEpidermisDataOnTransform(mainFur, mainSkin, secondary, hairData(), out primary, out secondary);
-			return true;
+				var oldType = type;
+				type = bodyType;
+				type.ParseEpidermisDataOnTransform(mainFur, mainSkin, secondary, hairData, out secondary);
+				extraUpdates?.Invoke();
+
+				NotifyOuterLayerChanged(oldSkin, oldPrimary, oldSecondary);
+				NotifyTypeChanged(oldType);
+				return true;
+			}
 		}
+
+		private void NotifyOuterLayerChanged(EpidermalData oldSkin, EpidermalData oldPrimary, EpidermalData oldSecondary)
+		{
+			epidermalDataChangeSource.Raise(this, new BodyOuterLayerChangedEventArg(oldSkin, oldPrimary, oldSecondary, AsReadOnlyData()));
+		}
+
 
 		#endregion
 		#region Changes
-		internal bool ChangePrimarySkinTexture(SkinTexture skinTexture)
+		//change all skin 
+		public bool ChangeMainSkin(Tones newTone, bool ignoreIfFurPrimary = false)
 		{
-			return mainSkin.ChangeTexture(skinTexture);
-		}
-
-		internal bool ChangeSecondarySkinTexture(SkinTexture skinTexture)
-		{
-			return secondary.ChangeTexture(skinTexture);
-		}
-
-		internal bool ChangePrimaryFurTexture(FurTexture furTexture)
-		{
-			return mainFur.ChangeTexture(furTexture);
-		}
-
-		internal bool ChangeSecondaryFurTexture(FurTexture furTexture)
-		{
-			return secondary.ChangeTexture(furTexture);
-		}
-
-		internal bool ChangePrimaryFurColor(FurColor furColor)
-		{
-			return mainFur.ChangeFur(furColor);
-		}
-
-		internal bool ChangePrimaryTone(Tones tone)
-		{
-			return mainSkin.ChangeTone(tone);
-		}
-
-		internal bool ChangeSecondaryFurColor(FurColor furColor)
-		{
-			return secondary.ChangeFur(furColor);
-		}
-
-		internal bool ChangeSecondaryTone(Tones tone)
-		{
-			return secondary.ChangeTone(tone);
-		}
-
-		#endregion
-		#region Restore
-		internal override bool Restore()
-		{
-			if (type == BodyType.HUMANOID)
+			if (ignoreIfFurPrimary && primary.usesFur)
 			{
 				return false;
 			}
-			return UpdateBody(BodyType.HUMANOID);
+			return ChangeSkin(true, newTone, null);
 		}
+
+		public bool ChangeMainSkin(SkinTexture newTexture, bool ignoreIfFurPrimary = false)
+		{
+			if (ignoreIfFurPrimary && primary.usesFur)
+			{
+				return false;
+			}
+			return ChangeSkin(true, null, newTexture);
+		}
+
+		public bool ChangeMainSkin(Tones newTone, SkinTexture newTexture, bool ignoreIfFurPrimary = false)
+		{
+			if (ignoreIfFurPrimary && primary.usesFur)
+			{
+				return false;
+			}
+			return ChangeSkin(true, newTone, newTexture);
+		}
+
+		public bool ChangeSecondarySkin(Tones newTone)
+		{
+			return ChangeSkin(false, newTone, null);
+		}
+
+		public bool ChangeSecondarySkin(SkinTexture newTexture)
+		{
+			return ChangeSkin(false, null, newTexture);
+		}
+
+		public bool ChangeSecondarySkin(Tones newTone, SkinTexture newTexture)
+		{
+			return ChangeSkin(false, newTone, newTexture);
+		}
+
+		public bool ChangeAllSkin(Tones newTone)
+		{
+			return ChangeMainSkin(newTone) | ChangeSecondarySkin(newTone);
+		}
+
+		public bool ChangeAllSkin(SkinTexture newTexture)
+		{
+			return ChangeMainSkin(newTexture) | ChangeSecondarySkin(newTexture);
+		}
+
+		public bool ChangeAllSkin(Tones newTone, SkinTexture newTexture)
+		{
+			return ChangeMainSkin(newTone, newTexture) | ChangeSecondarySkin(newTone, newTexture);
+		}
+
+		private bool ChangeSkin(bool primary, Tones tone, SkinTexture? texture, bool silent = false)
+		{
+
+			if (tone is null && texture is null || (!primary && !secondary.usesTone))
+			{
+				return false;
+			}
+
+			Action doIt;
+			if (tone is null)
+			{
+				if (primary) doIt = () => mainSkin.ChangeTexture((SkinTexture)texture);
+				else doIt = () => secondary.ChangeTexture((SkinTexture)texture);
+
+			}
+			else if (texture is null)
+			{
+				if (primary) doIt = () => mainSkin.ChangeTone(tone);
+				else doIt = () => secondary.ChangeTone(tone);
+			}
+			else
+			{
+				SkinTexture skinTexture = (SkinTexture)texture;
+				if (primary) doIt = () => mainSkin.ChangeToneAndTexture(tone, skinTexture);
+				else doIt = () => secondary.ChangeToneAndTexture(tone, skinTexture);
+			}
+			return ChangeHelper(true, doIt, silent);
+		}
+
+		public bool ChangeMainFur(FurColor newFurColor, bool ignoreIfTonePrimary = false)
+		{
+			if (ignoreIfTonePrimary && primary.usesTone)
+			{
+				return false;
+			}
+			return ChangeFur(true, newFurColor, null);
+		}
+
+		public bool ChangeMainFur(FurTexture newTexture, bool ignoreIfTonePrimary = false)
+		{
+			if (ignoreIfTonePrimary && primary.usesTone)
+			{
+				return false;
+			}
+			return ChangeFur(true, null, newTexture);
+		}
+
+		public bool ChangeMainFur(FurColor newFurColor, FurTexture newTexture, bool ignoreIfTonePrimary = false)
+		{
+			if (ignoreIfTonePrimary && primary.usesTone)
+			{
+				return false;
+			}
+			return ChangeFur(true, newFurColor, newTexture);
+		}
+
+		public bool ChangeSecondaryFur(FurColor newFurColor)
+		{
+			return ChangeFur(false, newFurColor, null);
+		}
+
+		public bool ChangeSecondaryFur(FurTexture newTexture)
+		{
+			return ChangeFur(false, null, newTexture);
+		}
+
+		public bool ChangeSecondaryFur(FurColor newFurColor, FurTexture newTexture)
+		{
+			return ChangeFur(false, newFurColor, newTexture);
+		}
+
+		public bool ChangeAllFur(FurColor newFurColor)
+		{
+			return ChangeFur(true, newFurColor, null) | ChangeFur(false, newFurColor, null);
+		}
+
+		public bool ChangeAllFur(FurTexture newTexture)
+		{
+			return ChangeFur(true, null, newTexture) | ChangeFur(false, null, newTexture);
+		}
+
+		public bool ChangeAllFur(FurColor newFurColor, FurTexture newTexture)
+		{
+			return ChangeFur(true, newFurColor, newTexture) | ChangeFur(false, newFurColor, newTexture);
+		}
+		//change all fur.
+
+		private bool ChangeFur(bool primary, FurColor furColor, FurTexture? texture, bool silent = false)
+		{
+			if (furColor is null && texture is null || (!primary && !secondary.usesFur))
+			{
+				return false;
+			}
+
+			Action doIt;
+			if (furColor is null)
+			{
+				if (primary) doIt = () => mainSkin.ChangeTexture((FurTexture)texture);
+				else doIt = () => secondary.ChangeTexture((FurTexture)texture);
+
+			}
+			else if (texture is null)
+			{
+				if (primary) doIt = () => mainSkin.ChangeFur(furColor);
+				else doIt = () => secondary.ChangeFur(furColor);
+			}
+			else
+			{
+				FurTexture furTexture = (FurTexture)texture;
+				if (primary) doIt = () => mainSkin.ChangeFurAndTexture(furColor, furTexture);
+				else doIt = () => secondary.ChangeFurAndTexture(furColor, furTexture);
+			}
+			return ChangeHelper(true, doIt, silent);
+		}
+
+		private bool ChangeHelper(bool canChange, Action doChange, bool silent = false)
+		{
+			if (canChange)
+			{
+				EpidermalData oldPrimary, oldSecondary, oldSkin;
+				oldPrimary = mainEpidermis;
+				oldSecondary = supplementaryEpidermis;
+				oldSkin = mainSkin.AsReadOnlyData();
+
+				doChange();
+				if (!silent)
+				{
+					NotifyOuterLayerChanged(oldSkin, oldPrimary, oldSkin);
+				}
+				return true;
+			}
+			return false;
+		}
+
+
+		#endregion
+		#region Restore
+		//default restore is fine.
 
 		internal void Reset()
 		{
@@ -488,7 +567,7 @@ namespace CoC.Backend.BodyParts
 		internal override bool Validate(bool correctInvalidData)
 		{
 			BodyType bodyType = type;
-			bool valid = BodyType.Validate(ref bodyType, mainSkin, mainFur, ref primary, ref secondary, hairData(), correctInvalidData);
+			bool valid = BodyType.Validate(ref bodyType, mainSkin, mainFur, ref secondary, hairData, correctInvalidData);
 			type = bodyType;
 			if (valid || correctInvalidData)
 			{
@@ -519,17 +598,11 @@ namespace CoC.Backend.BodyParts
 			return piercingFetish;
 		}
 		#endregion
-		#region BodyAware
-		private BodyData ToBodyData()
+		public override BodyData AsReadOnlyData()
 		{
-			return new BodyData(primary, secondary, mainFur, mainSkin, hairData(), type);
+			return new BodyData(primary, secondary, mainFur, mainSkin, hairData, type);
 		}
 
-		internal void SetupBodyAware(IBodyAware bodyAware)
-		{
-			bodyAware.GetBodyData(ToBodyData);
-		}
-		#endregion
 
 		#region IMultiDyeable
 		//DYES
@@ -959,17 +1032,9 @@ namespace CoC.Backend.BodyParts
 		private byte numLotionables => multiLotionable.numLotionableMembers;
 
 		#endregion
-
-		#region IHairAware
-		void IHairAware.GetHairData(HairDataGetter hairDataGetter)
-		{
-			hairData = hairDataGetter;
-		}
-		private HairDataGetter hairData;
-		#endregion
 	}
 
-	public abstract partial class BodyType : SaveableBehavior<BodyType, Body>
+	public abstract partial class BodyType : SaveableBehavior<BodyType, Body, BodyData>
 	{
 
 		static BodyType()
@@ -981,11 +1046,15 @@ namespace CoC.Backend.BodyParts
 		private static readonly List<BodyType> bodyTypes = new List<BodyType>();
 		public static readonly ReadOnlyCollection<BodyType> availableTypes = new ReadOnlyCollection<BodyType>(bodyTypes);
 
+		public static BodyType defaultValue => HUMANOID;
+
 		public override int index => _index;
 		private readonly int _index;
 
 		private protected readonly BodyMember primary;
 		private protected readonly BodyMember secondary;
+
+		public bool primaryIsFur => primary.usesFur;
 
 		public SimpleDescriptor secondaryShortDesc => secondary.shortDescription;
 
@@ -1011,7 +1080,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//initializes the main skin, main fur, primary, and secondary values for this type.
-		internal virtual void Init(out Epidermis mainSkin, out Epidermis mainFur, out Epidermis primaryEpidermis, out Epidermis secondaryEpidermis)
+		internal virtual void Init(out Epidermis mainSkin, out Epidermis mainFur, out Epidermis secondaryEpidermis)
 		{
 			if (primary.usesFur)
 			{
@@ -1028,20 +1097,20 @@ namespace CoC.Backend.BodyParts
 				mainSkin = new Epidermis(toneType, toneMember.defaultTone);
 			}
 
-			ParseEpidermisDataOnTransform(mainFur, mainSkin, new Epidermis(), new HairData(), out primaryEpidermis, out secondaryEpidermis);
+			ParseEpidermisDataOnTransform(mainFur, mainSkin, new Epidermis(), new HairData(), out secondaryEpidermis);
 		}
 
 		//validate is called after deserialization. Validate makes the following assumptions that the following are true after deserialization:
 		//mainFur, mainSkin are valid - at worst
 		//epidermis types for main fur, main skin are valid. this is guarenteed by the body's validate.
-		internal static bool Validate(ref BodyType bodyType, Epidermis mainSkin, Epidermis mainFur, ref Epidermis primaryEpidermis, ref Epidermis secondaryEpidermis, in HairData hairData, bool correctInvalidData)
+		internal static bool Validate(ref BodyType bodyType, Epidermis mainSkin, Epidermis mainFur, ref Epidermis secondaryEpidermis, in HairData hairData, bool correctInvalidData)
 		{
 			if (!bodyTypes.Contains(bodyType))
 			{
 				if (correctInvalidData)
 				{
 					bodyType = HUMANOID;
-					bodyType.ParseEpidermisDataOnTransform(mainFur, mainSkin, secondaryEpidermis, hairData, out primaryEpidermis, out secondaryEpidermis);
+					bodyType.ParseEpidermisDataOnTransform(mainFur, mainSkin, secondaryEpidermis, hairData, out secondaryEpidermis);
 				}
 				return false;
 			}
@@ -1096,7 +1165,7 @@ namespace CoC.Backend.BodyParts
 		//with this body type's primary and secondary epidermis types (if applicable), and spit out references to this body type's primary and secondary data. 
 
 		//To ensure data works correctly, primary MUST reference either mainFur or mainSkin. 
-		internal abstract void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis primaryEpidermis, out Epidermis secondaryEpidermis);
+		internal abstract void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis);
 
 		internal static BodyType Deserialize(int index)
 		{
@@ -1293,7 +1362,7 @@ namespace CoC.Backend.BodyParts
 		internal SimpleFurBodyType(FurBodyMember builder, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
 			ChangeType<Body> transform, RestoreType<Body> restore) : base(builder, fullDesc, playerDesc, transform, restore) { }
 
-		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis primaryEpidermis, out Epidermis secondaryEpidermis)
+		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
 			mainSkin.UpdateEpidermis(EpidermisType.SKIN); //This type doesn't use tone directly, but skin exists under the fur. so make sure the rest of the body uses skin (not scales or something).
 
@@ -1303,7 +1372,7 @@ namespace CoC.Backend.BodyParts
 
 			//set the mainFur accordingly. Remember, it can be empty. 
 			mainFur.UpdateOrChange(furType, color);
-			primaryEpidermis = mainFur; //set the primary to reference mainFur.
+			//primaryEpidermis = mainFur; //set the primary to reference mainFur.
 
 			//we can't reuse the secondary epidermis, as it may point to mainFur or mainSkin :(
 			//i suppose i could optimize this with some ReferenceEquals, but that just makes it more visually complicated for very little memory gain.
@@ -1327,7 +1396,7 @@ namespace CoC.Backend.BodyParts
 			TypeAndPlayerDelegate<Body> playerDesc, ChangeType<Body> transform, RestoreType<Body> restore)
 			: base(primaryBuilder, secondaryBuilder, fullDesc, playerDesc, transform, restore) { }
 
-		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis primaryEpidermis, out Epidermis secondaryEpidermis)
+		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
 			mainSkin.UpdateEpidermis(EpidermisType.SKIN); //This type doesn't use tone directly, but skin exists under the fur. so make sure the rest of the body uses skin (not scales or something).
 
@@ -1341,7 +1410,6 @@ namespace CoC.Backend.BodyParts
 			color = BodyHelpers.GetValidFurColor(overrideColor, mainFur.fur, hairData.activeHairColor, defaultMainFur);
 
 			mainFur.UpdateOrChange(primaryFurType, color);
-			primaryEpidermis = mainFur;
 		}
 	}
 	public class SimpleToneBodyType : SimpleBodyType
@@ -1354,7 +1422,7 @@ namespace CoC.Backend.BodyParts
 		internal SimpleToneBodyType(ToneBodyMember builder, DescriptorWithArg<Body> fullDesc, TypeAndPlayerDelegate<Body> playerDesc,
 			ChangeType<Body> transform, RestoreType<Body> restore) : base(builder, fullDesc, playerDesc, transform, restore) { }
 
-		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis primaryEpidermis, out Epidermis secondaryEpidermis)
+		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
 			mainFur.Reset(); //we aren't using mainFur, so reset it to empty.
 
@@ -1362,7 +1430,6 @@ namespace CoC.Backend.BodyParts
 			Tones color = BodyHelpers.GetValidTone(overrideValue, mainSkin.tone, defaultTone);
 
 			mainSkin.UpdateOrChange(toneType, color);
-			primaryEpidermis = mainSkin;
 
 			secondaryEpidermis = new Epidermis();
 		}
@@ -1386,7 +1453,7 @@ namespace CoC.Backend.BodyParts
 			TypeAndPlayerDelegate<Body> playerDesc, ChangeType<Body> transform, RestoreType<Body> restore)
 			: base(primaryBuilder, secondaryBuilder, fullDesc, playerDesc, transform, restore) { }
 
-		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis primaryEpidermis, out Epidermis secondaryEpidermis)
+		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
 			mainFur.Reset(); //we aren't using mainFur, so reset it to empty.
 
@@ -1413,8 +1480,6 @@ namespace CoC.Backend.BodyParts
 			{
 				mainSkin.ChangeTone(defaultMainTone);
 			}
-			primaryEpidermis = mainSkin;
-
 		}
 	}
 
@@ -1428,11 +1493,10 @@ namespace CoC.Backend.BodyParts
 			KitsuneFullDesc, KitsunePlayerStr, KitsuneTransformStr, KitsuneRestoreStr)
 		{ }
 
-		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis primaryEpidermis, out Epidermis secondaryEpidermis)
+		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
 			//neither override on TF, so we're good.
 			mainSkin.UpdateEpidermis(epidermisType);
-			primaryEpidermis = mainSkin;
 
 			FurColor color = BodyHelpers.GetValidFurColor(null, mainFur.fur, hairData.activeHairColor, defaultFur);
 			mainFur.UpdateEpidermis((FurBasedEpidermisType)secondaryEpidermisType, color);
@@ -1451,12 +1515,11 @@ namespace CoC.Backend.BodyParts
 				CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 		{ }
 
-		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis primaryEpidermis, out Epidermis secondaryEpidermis)
+		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
 			//neither override on TF, so we're good.
 			FurColor color = BodyHelpers.GetValidFurColor(null, mainFur.fur, hairData.activeHairColor, defaultFeathers);
 			mainFur.UpdateEpidermis((FurBasedEpidermisType)epidermisType, color);
-			primaryEpidermis = mainFur;
 
 			mainSkin.UpdateEpidermis(secondaryEpidermisType);
 			secondaryEpidermis = mainSkin;
@@ -1464,33 +1527,30 @@ namespace CoC.Backend.BodyParts
 	}
 
 	//consider making this public when dealing with the body data bullshit.
-	internal sealed class BodyData
+	public sealed class BodyData : BehavioralSaveablePartData<BodyData, Body, BodyType>
 	{
 
-		internal readonly EpidermalData activeFur;
-		internal readonly EpidermalData mainSkin;
+		public readonly EpidermalData activeFur;
+		public readonly EpidermalData mainSkin;
 
-		internal readonly EpidermalData main; //the current epidermis data, in an immutable form. never empty or null.
-		internal readonly EpidermalData supplementary; //the current supplementary epidermis data, if any, in immutable form. note that this can be empty, but will never be null.
+		public readonly EpidermalData main; //the current epidermis data, in an immutable form. never empty or null.
+		public readonly EpidermalData supplementary; //the current supplementary epidermis data, if any, in immutable form. note that this can be empty, but will never be null.
 
-		internal readonly BodyType bodyType; //current body type. never empty or null.
 
-		internal readonly HairFurColors hairColor; //current hair color. if the character cannot and therefore does not have hair, this will be empty. otherwise, this will be valid, even if the character is currently bald.
-		internal HairFurColors activeHairColor => hasHair ? hairColor : HairFurColors.NO_HAIR_FUR; //this is the same as hairColor, but will be empty if the character is bald. 
-		internal readonly bool hasHair; //boolean determining if the character has any hair. this will be false if the character is bald or cannot grow hair.
+		public readonly HairFurColors hairColor; //current hair color. if the character cannot and therefore does not have hair, this will be empty. otherwise, this will be valid, even if the character is currently bald.
+		public HairFurColors activeHairColor => hasHair ? hairColor : HairFurColors.NO_HAIR_FUR; //this is the same as hairColor, but will be empty if the character is bald. 
+		public readonly bool hasHair; //boolean determining if the character has any hair. this will be false if the character is bald or cannot grow hair.
 
-		internal BodyData(Epidermis primary, Epidermis secondary, Epidermis fur, Epidermis skin, in HairData hairData, BodyType bodyType)
+		internal BodyData(Epidermis primary, Epidermis secondary, Epidermis fur, Epidermis skin, in HairData hairData, BodyType bodyType) : base(bodyType)
 		{
-			main = primary.GetEpidermalData();
-			supplementary = secondary.GetEpidermalData();
+			main = primary.AsReadOnlyData();
+			supplementary = secondary.AsReadOnlyData();
 
 			hairColor = hairData.hairColor;
 			hasHair = !hairData.hairDeactivated;
 
-			activeFur = fur.GetEpidermalData();
-			mainSkin = skin.GetEpidermalData();
-
-			this.bodyType = bodyType;
+			activeFur = fur.AsReadOnlyData();
+			mainSkin = skin.AsReadOnlyData();
 		}
 	}
 }

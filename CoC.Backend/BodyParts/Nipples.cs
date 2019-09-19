@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Perks;
 using CoC.Backend.Tools;
@@ -30,9 +31,11 @@ namespace CoC.Backend.BodyParts
 	 * note that the above is just context - you dont really need to know this to understand what this class does. TL;DR: this class assumes the data sent to it is valid. 
 	 */
 
+	//Also note: this class is created after perks have been initialized. it's post perk init is never called. 
+
 	public enum NippleStatus { NORMAL, FULLY_INVERTED, SLIGHTLY_INVERTED, FUCKABLE, DICK_NIPPLE }
 	public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
-	public sealed partial class Nipples : SimpleSaveablePart<Nipples>, IGrowable, IShrinkable, IBaseStatPerkAware
+	public sealed partial class Nipples : SimpleSaveablePart<Nipples, NippleData>, IGrowable, IShrinkable
 	{
 		public const float MIN_NIPPLE_LENGTH = 0.25f;
 		public const float MAX_NIPPLE_LENGTH = 50f;
@@ -47,6 +50,12 @@ namespace CoC.Backend.BodyParts
 
 
 		//i guess we'll call tassels danglers - idk. 
+
+		internal float growthMultiplier = 1;
+		internal float shrinkMultiplier = 1;
+		internal bool unlockedDickNipples = false;
+		internal float minNippleLength = MIN_NIPPLE_LENGTH;
+		internal float defaultNippleLength;
 
 		public NippleStatus nippleStatus
 		{
@@ -76,38 +85,51 @@ namespace CoC.Backend.BodyParts
 		public bool isPierced => nipplePiercing.isPierced;
 		public bool wearingJewelry => nipplePiercing.wearingJewelry;
 
-		private Nipples()
+		internal Nipples(Creature source, BreastPerkHelper initialPerkData, Gender gender) : base(source)
 		{
 			nippleStatus = NippleStatus.NORMAL;
-			length = MIN_NIPPLE_LENGTH;
+			length = initialPerkData.NewNippleDefaultLength;
 			blackNipples = false;
 			quadNipples = false;
 
 			nipplePiercing = new Piercing<NipplePiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 
 			SetupPiercingMagic();
+
+			growthMultiplier = initialPerkData.NippleGrowthMultiplier;
+			shrinkMultiplier = initialPerkData.NippleShrinkMultiplier;
+			unlockedDickNipples = initialPerkData.unlockedDickNipples;
+			defaultNippleLength = initialPerkData.NewNippleDefaultLength;
 		}
 
-		internal static Nipples Generate()
+		internal Nipples(Creature source, BreastPerkHelper initialPerkData, float nippleLength) : base(source)
 		{
-			return new Nipples();
+			nippleStatus = NippleStatus.NORMAL;
+			length = nippleLength;
+			blackNipples = false;
+			quadNipples = false;
+
+			nipplePiercing = new Piercing<NipplePiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+
+			SetupPiercingMagic();
+
+			growthMultiplier = initialPerkData.NippleGrowthMultiplier;
+			shrinkMultiplier = initialPerkData.NippleShrinkMultiplier;
+			unlockedDickNipples = initialPerkData.unlockedDickNipples;
+			defaultNippleLength = initialPerkData.NewNippleDefaultLength;
 		}
 
-		internal static Nipples GenerateWithLength(float nippleLength)
+		public override NippleData AsReadOnlyData()
 		{
-			return new Nipples()
-			{
-				length = nippleLength
-			};
+			return new NippleData(this);
 		}
-
 
 		internal float GrowNipple(float growAmount, bool ignorePerk = false)
 		{
 			float oldLength = length;
 			if (!ignorePerk)
 			{
-				growAmount *= perkData().NippleGrowthMultiplier;
+				growAmount *= growthMultiplier;
 			}
 			length += growAmount;
 			return length - oldLength;
@@ -118,7 +140,7 @@ namespace CoC.Backend.BodyParts
 			float oldLength = length;
 			if (!ignorePerk)
 			{
-				shrinkAmount *= perkData().NippleShrinkMultiplier;
+				shrinkAmount *= shrinkMultiplier;
 			}
 			length -= shrinkAmount;
 			return oldLength - length;
@@ -259,32 +281,6 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-		#region Perk Aware
-		private PerkStatBonusGetter perkData;
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			perkData = getter;
-		}
-		private IBaseStatPerkAware aware => this;
-		internal void GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			aware.GetBasePerkStats(getter);
-		}
-
-		internal void DoLateInit(Gender currGender, BasePerkModifiers statModifiers, bool isInit)
-		{
-			if (isInit)
-			{
-				length = statModifiers.NewNippleDefaultLength;
-			}
-			else
-			{
-				length += statModifiers.NewNippleSizeDelta;
-			}
-		}
-
-		#endregion
-
 		private ushort? invertedNippleCounter = null;
 
 		internal bool DoPiercingTimeNonsense(bool isPlayer, byte hoursPassed, bool hasOtherBreastRows, out string output)
@@ -356,5 +352,21 @@ namespace CoC.Backend.BodyParts
 		//			nippleStatus = NippleStatus.FUCKABLE;
 		//		}
 		//	}
+	}
+
+	public sealed class NippleData
+	{
+		public readonly bool quadNipples;
+		public readonly bool blackNipples;
+		public readonly NippleStatus status;
+		public readonly float length;
+
+		internal NippleData(Nipples source)
+		{
+			blackNipples = source.blackNipples;
+			quadNipples = source.quadNipples;
+			status = source.nippleStatus;
+			length = source.length;
+		}
 	}
 }

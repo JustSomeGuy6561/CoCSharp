@@ -6,6 +6,7 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -28,8 +29,9 @@ namespace CoC.Backend.BodyParts
 	 * you need to know the body tone
 	 */
 
-	public sealed class Face : BehavioralSaveablePart<Face, FaceType>, IBodyAware, ILotionable, ICanAttackWith
+	public sealed class Face : BehavioralSaveablePart<Face, FaceType, FaceData>, ILotionable, ICanAttackWith
 	{
+
 		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 		//private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.HORSESHOE; //can't use as nose is a pain.
 		private const JewelryType SUPPORTED_EYEBROW_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
@@ -38,12 +40,15 @@ namespace CoC.Backend.BodyParts
 		public readonly Piercing<NosePiercingLocation> nosePiercings;
 		public readonly Piercing<EyebrowPiercingLocation> eyebrowPiercings;
 
+		private BodyData bodyData => source.body.AsReadOnlyData();
+
 		public override FaceType type
 		{
 			get => _type;
 			protected set
 			{
 				_type = value;
+				isFullMorph = _type.MorphStrengthPostTransform(isFullMorph);
 			}
 		}
 		private FaceType _type;
@@ -51,8 +56,8 @@ namespace CoC.Backend.BodyParts
 		public bool isFullMorph { get; private set; }
 
 
-		public EpidermalData primary => type.ParseEpidermis(bodyData(), isFullMorph, skinTexture);
-		public EpidermalData secondary => type.ParseSecondaryEpidermis(bodyData(), isFullMorph, skinTexture);
+		public EpidermalData primary => type.ParseEpidermis(bodyData, isFullMorph, skinTexture);
+		public EpidermalData secondary => type.ParseSecondaryEpidermis(bodyData, isFullMorph, skinTexture);
 		public SkinTexture skinTexture
 		{
 			get => _skinTexture;
@@ -66,9 +71,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private SkinTexture _skinTexture = SkinTexture.NONDESCRIPT;
 
-		Tones epidermisTone => bodyData().mainSkin.tone;
+		Tones epidermisTone => bodyData.mainSkin.tone;
 
-		private Face(FaceType faceType)
+		internal Face(Creature source) : this(source, FaceType.defaultValue)
+		{ }
+
+		internal Face(Creature source, FaceType faceType) : base(source)
 		{
 			type = faceType ?? throw new ArgumentNullException(nameof(faceType));
 			isFullMorph = false;
@@ -77,54 +85,20 @@ namespace CoC.Backend.BodyParts
 			eyebrowPiercings = new Piercing<EyebrowPiercingLocation>(EyebrowPiercingUnlocked, EyebrowSupportedJewelry);
 		}
 
-		public static FaceType defaultType => FaceType.HUMAN;
-		public override bool isDefault => type == defaultType;
-
-
-		internal static Face GenerateDefault()
+		internal Face(Creature source, FaceType faceType, bool? fullMorph = null, SkinTexture complexion = SkinTexture.NONDESCRIPT) : this(source, faceType)
 		{
-			return new Face(defaultType);
-		}
-
-		internal static Face GenerateDefaultOfType(FaceType faceType)
-		{
-			return new Face(faceType);
-		}
-
-		internal static Face GenerateWithMorph(FaceType faceType, bool fullMorph)
-		{
-			return new Face(faceType)
+			skinTexture = complexion;
+			if (faceType.hasSecondLevel && fullMorph is bool morph)
 			{
-				isFullMorph = faceType.hasSecondLevel ? fullMorph : false,
-			};
-		}
-
-		internal static Face GenerateWithComplexion(FaceType faceType, SkinTexture complexion)
-		{
-			return new Face(faceType)
-			{
-				skinTexture = complexion
-			};
-		}
-
-		internal static Face GenerateWithMorphAndComplexion(FaceType faceType, bool fullMorph, SkinTexture complexion)
-		{
-			return new Face(faceType)
-			{
-				skinTexture = complexion,
-				isFullMorph = faceType.hasSecondLevel ? fullMorph : false,
-			};
-		}
-
-		internal override bool UpdateType(FaceType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
+				isFullMorph = morph;
 			}
-			type = newType;
-			isFullMorph = type.MorphStrengthPostTransform(isFullMorph);
-			return true;
+		}
+
+		public override FaceType defaultType => FaceType.defaultValue;
+
+		public override FaceData AsReadOnlyData()
+		{
+			return new FaceData(this);
 		}
 
 		internal bool UpdateFaceWithMorph(FaceType faceType, bool fullMorph)
@@ -133,8 +107,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldType = type;
 			type = faceType;
 			isFullMorph = type.hasSecondLevel ? fullMorph : false;
+			NotifyTypeChanged(oldType);
 			return true;
 		}
 
@@ -144,8 +120,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldType = type;
 			type = faceType;
 			skinTexture = complexion;
+			NotifyTypeChanged(oldType);
 			return true;
 		}
 
@@ -155,9 +133,11 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldType = type;
 			type = faceType;
 			skinTexture = complexion;
 			isFullMorph = type.hasSecondLevel ? fullMorph : false;
+			NotifyTypeChanged(oldType);
 			return true;
 		}
 
@@ -320,22 +300,15 @@ namespace CoC.Backend.BodyParts
 			return type.locationDesc();
 		}
 
-		void IBodyAware.GetBodyData(BodyDataGetter getter)
-		{
-			bodyData = getter;
-		}
-
 		bool ICanAttackWith.canAttackWith()
 		{
 			return type.canAttackWith;
 		}
 		AttackBase ICanAttackWith.attack => type.attack;
-
-		private BodyDataGetter bodyData;
 	}
 
 
-	public abstract partial class FaceType : SaveableBehavior<FaceType, Face>
+	public abstract partial class FaceType : SaveableBehavior<FaceType, Face, FaceData>
 	{
 		private static readonly List<FaceType> faces = new List<FaceType>();
 		public static readonly ReadOnlyCollection<FaceType> availableTypes = new ReadOnlyCollection<FaceType>(faces);
@@ -398,6 +371,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public override int index => _index;
+
+		public static FaceType defaultValue => HUMAN;
+
 		private readonly int _index;
 
 		internal static bool Validate(ref FaceType faceType, ref bool isFullMorph, bool correctInvalidData)
@@ -685,6 +661,23 @@ namespace CoC.Backend.BodyParts
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
 			return null;
+		}
+	}
+
+	public sealed class FaceData : BehavioralSaveablePartData<FaceData, Face, FaceType>
+	{
+		public readonly bool isFullMorph;
+
+		public readonly EpidermalData primaryEpidermis;
+		public readonly EpidermalData secondaryEpidermis;
+		public readonly SkinTexture skinTexture;
+
+		public FaceData(Face source) : base(GetBehavior(source))
+		{
+			isFullMorph = source.isFullMorph;
+			primaryEpidermis = source.primary;
+			secondaryEpidermis = source.secondary;
+			skinTexture = source.skinTexture;
 		}
 	}
 }

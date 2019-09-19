@@ -34,5 +34,60 @@ namespace CoC.Backend.Tools
 			amt.delta(delta);
 			return (T)Enum.Parse(typeof(T), amt.ToString());
 		}
+
+		public static T CheckValid<T>(this T source, T newValue) where T : Enum
+		{
+			if (Enum.IsDefined(typeof(T), newValue))
+			{
+				return newValue;
+			}
+			return source;
+		}
+
+		public static T Min<T>(params T[] values) where T: Enum
+		{
+			if (values is null || values.Length == 0)
+			{
+				throw new ArgumentNullException(nameof(values));
+			}
+			var minVal = values[0];
+
+			foreach (var val in values)
+			{
+				if (val.CompareTo(minVal) < 0)
+				{
+					minVal = val;
+				}
+			}
+			return minVal;
+		}
+
+		public static T Min<T>(T value1, T value2) where T : Enum
+		{
+			return value1.CompareTo(value2) < 0 ? value1 : value2;
+		}
+
+		public static T Max<T>(params T[] values) where T : Enum
+		{
+			if (values is null || values.Length == 0)
+			{
+				throw new ArgumentNullException(nameof(values));
+			}
+			var maxVal = values[0];
+
+			foreach (var val in values)
+			{
+				if (val.CompareTo(maxVal) > 0)
+				{
+					maxVal = val;
+				}
+			}
+			return maxVal;
+		}
+
+		public static T Max<T>(T value1, T value2) where T : Enum
+		{
+			return value1.CompareTo(value2) > 0 ? value1 : value2;
+		}
 	}
 }

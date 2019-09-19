@@ -1,4 +1,4 @@
-﻿using CoCWinDesktop.MSInternalCopy;
+﻿using CoC.WinDesktop.MSInternalCopy;
 using System;
 using System.ComponentModel;
 using System.Globalization;
@@ -11,7 +11,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 	/// <summary>
 	/// CustomSlider control lets the user select from a range of values by moving a slider.

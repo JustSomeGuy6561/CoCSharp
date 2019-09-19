@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
 using CoC.Backend.SaveData;
+using CoC.Backend.Tools;
 using System;
 
 namespace CoC.Backend.Creatures
@@ -12,9 +13,28 @@ namespace CoC.Backend.Creatures
 
 	public sealed class Player : CombatCreature
 	{
+		public const byte DEFAULT_HUNGER = 0;
+		internal const byte MAX_HUNGER = 100;
+
+		public byte hunger
+		{
+			get => _hunger;
+			private set => _hunger = Utils.Clamp2(value, minHunger, maxHunger);
+		}
+		private byte _hunger = 0;
+
+		internal float hungerGainRate = 1.0f;
+
+		private sbyte bonusMinHunger { get; set; }
+		public byte minHunger => DEFAULT_HUNGER.delta(bonusMinHunger);
+
+		internal sbyte bonusMaxHunger { get; set; }
+		public byte maxHunger => HandleMaxStat(MAX_HUNGER.delta(bonusMaxHunger), minHunger);
+
 
 		public Player(PlayerCreator creator) : base(creator)
 		{
+			hunger = DEFAULT_HUNGER;
 			//now set up all the listeners.
 			//if any listeners are player specifc, and i mean really player specific, add them here.
 

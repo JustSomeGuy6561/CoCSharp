@@ -1,10 +1,12 @@
 ﻿using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
+using System;
 
 namespace CoC.Backend.BodyParts
 {
-	public abstract class Womb : SimpleSaveablePart<Womb>, ITimeDailyListener, ITimeActiveListener, ITimeLazyListener, IBaseStatPerkAware
+	public abstract class Womb : SimpleSaveablePart<Womb, WombData>, ITimeDailyListener, ITimeActiveListener, ITimeLazyListener
 	{
 		//Note: we don't attach these to vagina and ass b/c it's possible to lose a vagina (and perhaps an asshole too if it's possible to TF to anemone or something)
 		//and we wouldn't want this to cause the pregnancy to be lost. 
@@ -13,8 +15,6 @@ namespace CoC.Backend.BodyParts
 		//if null, cannot get pregnant via normal vagina.
 		public readonly PregnancyStore normalPregnancy;
 		public virtual bool canGetPregnant(bool hasVagina) => hasVagina && normalPregnancy != null;
-
-
 
 		//if null, cannot get anally pregnant. 
 		public readonly PregnancyStore analPregnancy;
@@ -27,15 +27,34 @@ namespace CoC.Backend.BodyParts
 		//allows a third pregnancy store for creatures with two vaginas. defaults to null, so we can't get pregnant through a second vagina. 
 		public readonly PregnancyStore secondaryNormalPregnancy;
 
-		protected Womb(PregnancyStore primaryVagina, PregnancyStore anus, PregnancyStore secondaryVagina)
+		//same as normal pregnancy, though this one uses second vagina. since secondaryNormalPregnancy defaults to null, this defaults to false.
+		public virtual bool canGetSecondaryNormalPregnant(bool hasSecondVagina) => hasSecondVagina && secondaryNormalPregnancy != null;
+
+		protected Womb(Creature source, PregnancyStore primaryVagina, PregnancyStore anus, PregnancyStore secondaryVagina) : base(source)
 		{
 			normalPregnancy = primaryVagina;
 			analPregnancy = anus;
 			secondaryNormalPregnancy = secondaryVagina;
 		}
 
-		//same as normal pregnancy, though this one uses second vagina. since secondaryNormalPregnancy defaults to null, this defaults to false.
-		public virtual bool canGetSecondaryNormalPregnant(bool hasSecondVagina) => hasSecondVagina && secondaryNormalPregnancy != null;
+		public override WombData AsReadOnlyData()
+		{
+			return new WombData(this);
+		}
+
+		protected internal override void PostPerkInit()
+		{
+			normalPregnancy?.PostPerkInit();
+			analPregnancy?.PostPerkInit();
+			secondaryNormalPregnancy?.PostPerkInit();
+		}
+
+		protected internal override void LateInit()
+		{
+			normalPregnancy?.LateInit();
+			analPregnancy?.LateInit();
+			secondaryNormalPregnancy?.LateInit();
+		}
 
 		//public Womb(PregnancyStore normalPregnancy, PregnancyStore analPregnancy, PregnancyStore secondaryVaginalPregnancy)
 		//{
@@ -154,20 +173,31 @@ namespace CoC.Backend.BodyParts
 			}
 			return wrapper;
 		}
+	}
 
-		private IBaseStatPerkAware perkAware => this;
+	public class WombData
+	{
+		//if null, cannot get pregnant via normal vagina.
+		public readonly PregnancyStore vaginalPregnancyStore;
+		public readonly Func<bool, bool> canGetPregnantIfHasVagina;
 
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+		public readonly PregnancyStore analPregnancyStore;
+		public readonly Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus;
+
+		public readonly PregnancyStore secondVaginaPregnancyStore;
+		public readonly Func<bool, bool> canGetPregnantIfHasSecondVagina;
+
+		internal WombData(Womb source)
 		{
-			GetBasePerkStats(getter);
-		}
+			if (source is null) throw new ArgumentNullException(nameof(source));
 
-		protected internal virtual void GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			normalPregnancy?.GetBasePerkStats(getter);
-			secondaryNormalPregnancy?.GetBasePerkStats(getter);
-			analPregnancy?.GetBasePerkStats(getter);
-		}
+			vaginalPregnancyStore = source.normalPregnancy;
+			analPregnancyStore = source.analPregnancy;
+			secondVaginaPregnancyStore = source.secondaryNormalPregnancy;
 
+			canGetPregnantIfHasVagina = source.canGetPregnant;
+			canGetAnallyPregnantIfHasAnus = source.canGetAnallyPregnant;
+			canGetPregnantIfHasSecondVagina = source.canGetSecondaryNormalPregnant;
+		}
 	}
 }

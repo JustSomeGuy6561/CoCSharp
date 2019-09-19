@@ -3,7 +3,7 @@ using CoC.Backend.Settings;
 using System;
 using System.Collections.Generic;
 
-namespace CoCWinDesktop.InterfaceSettings
+namespace CoC.WinDesktop.InterfaceSettings
 {
 	public class InterfaceOptions : OptionBase
 	{

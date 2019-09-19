@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.Helpers
+namespace CoC.WinDesktop.Helpers
 {
 	class SaveDataCollection : StatDataCollectionBase
 	{

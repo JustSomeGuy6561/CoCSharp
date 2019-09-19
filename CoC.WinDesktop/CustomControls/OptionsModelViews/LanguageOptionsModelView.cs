@@ -1,17 +1,17 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Language;
-using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.CustomControls.SideBarModelViews;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.CustomControls.SideBarModelViews;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.CustomControls.OptionsModelViews
+namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 {
 	public sealed partial class LanguageOptionsModelView : OptionModelViewDataBase
 	{

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {
@@ -16,7 +17,14 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 	public class Piercing<Locations> where Locations : Enum
 	{
-		internal event PiercingDataChangedEventHandler<Locations> OnPiercingChange;
+		//tbh, not the cleanest tool, but idgaf. it works. As far as anyone implementing this shit will know or care, it's basically identical to the standard event. 
+		private readonly WeakEventSource<PiercingDataChangedEventArgs<Locations>> piercingChangeSource = new WeakEventSource<PiercingDataChangedEventArgs<Locations>>();
+		public event EventHandler<PiercingDataChangedEventArgs<Locations>> OnPiercingChange
+		{
+			add { piercingChangeSource.Subscribe(value); }
+			remove { piercingChangeSource.Unsubscribe(value); }
+		}
+
 
 		public bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
 
@@ -228,7 +236,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 		private void ProcChange(Dictionary<Locations, bool> piercedAt, Dictionary<Locations, PiercingJewelry> jewelryEquipped)
 		{
-			OnPiercingChange?.Invoke(this, new PiercingDataChangedEventArgs<Locations>(piercedAt, jewelryEquipped));
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercedAt, jewelryEquipped));
 		}
 
 		//if theres some magic in the future that lets you un-pierce a location and reject any jewelry inside, this will handle it. but it's mostly for the other way - piercing something with new jewelry.
@@ -238,22 +246,22 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			{
 				if (deltaJewelry != null)
 				{
-					OnPiercingChange?.Invoke(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, null, deltaJewelry, piercingCount, jewelryCount));
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, null, deltaJewelry, piercingCount, jewelryCount));
 				}
 				else
 				{
-					OnPiercingChange?.Invoke(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
 				}
 			}
 			else
 			{
 				if (deltaJewelry != null)
 				{
-					OnPiercingChange?.Invoke(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, deltaJewelry, null, piercingCount, jewelryCount));
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, deltaJewelry, null, piercingCount, jewelryCount));
 				}
 				else
 				{
-					OnPiercingChange?.Invoke(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
 				}
 			}
 		}
@@ -261,12 +269,12 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		//oldJewelry assumed to be null.
 		private void ProcChange(Locations piercingLocation, PiercingJewelry newJewelry)
 		{
-			OnPiercingChange?.Invoke(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, null, newJewelry, piercingCount, jewelryCount));
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, null, newJewelry, piercingCount, jewelryCount));
 		}
 
 		private void ProcChange(Locations piercingLocation, PiercingJewelry oldJewelry, PiercingJewelry newJewelry)
 		{
-			OnPiercingChange?.Invoke(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, oldJewelry, newJewelry, piercingCount, jewelryCount));
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, oldJewelry, newJewelry, piercingCount, jewelryCount));
 		}
 
 		internal Piercing(Dictionary<Locations, PiercingJewelry> creatorPairs)

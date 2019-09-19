@@ -1,10 +1,10 @@
-﻿using CoCWinDesktop.CustomControls;
-using CoCWinDesktop.CustomControls.OptionsModelViews;
+﻿using CoC.WinDesktop.CustomControls;
+using CoC.WinDesktop.CustomControls.OptionsModelViews;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.ModelView
+namespace CoC.WinDesktop.ModelView
 {
 	public partial class OptionsModelView
 	{

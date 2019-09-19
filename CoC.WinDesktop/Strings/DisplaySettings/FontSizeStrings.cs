@@ -1,6 +1,6 @@
-﻿using CoCWinDesktop.Helpers;
+﻿using CoC.WinDesktop.Helpers;
 
-namespace CoCWinDesktop.DisplaySettings
+namespace CoC.WinDesktop.DisplaySettings
 {
 	public partial class FontSizeOption
 	{

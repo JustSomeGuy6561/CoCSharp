@@ -3,22 +3,20 @@
 //Author: JustSomeGuy
 //12/29/2018, 10:57 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Perks;
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 
 namespace CoC.Backend.BodyParts
 {
-	//As of this writing, you can't get more than one set of balls unless you start with more.
-	//this is not my decision - it's simply how the game is rn. i've provided options to remove or add balls,
-	//maxing at 8. 
+	//It's possible to actually get 4 balls in source, despite my initial assumption otherwise. I've let you max up to 8 b/c i missed this. could revert to just 4, w/e.
+
 	//though this probably needs more thought - is it two per sack, and multiple sacks? or is it all one sack?
 
 	//I'VE GOT BIG BALLS! OH, I'VE GOT BIG BALLS! THERE SUCH BIG BALLS! DIRTY BIG BALLS! HE'S GOT BIG BALLS! AND SHE'S GOT BIG BALLS! BUT WE'VE GOT THE BIGGEST BALLS OF THEM ALL!
 	//i'll see if i can hide this as an easter egg is some text somewhere. 
-	public sealed partial class Balls : SimpleSaveablePart<Balls>, IGrowable, IShrinkable, IBaseStatPerkAware //perks are handled by genitals - kinda. 
+	public sealed partial class Balls : SimpleSaveablePart<Balls, BallsData>, IGrowable, IShrinkable
 	{
-		PerkStatBonusGetter perkData;
 		//BasePerkModifiers modifiers => perkData();
 
 		public const byte MAX_BALLS_SIZE = 30;
@@ -33,11 +31,16 @@ namespace CoC.Backend.BodyParts
 		public const byte DEFAULT_BALLS_COUNT = 2;
 		public int index => size;
 
-		private byte newDefaultSize => perkData?.Invoke().NewBallsDefaultSize ?? DEFAULT_BALLS_SIZE;
-		private byte newNonDefaultSize(byte size) => size.add(perkData?.Invoke().NewBallsSizeDelta ?? 0);
+		//huh. balls is never null, so we don't have to worry about it being correct. 
 
-		private float shrinkMultiplier => perkData?.Invoke().BallsShrinkMultiplier ?? 1.0f;
-		private float growthMultiplier => perkData?.Invoke().BallsGrowthMultiplier ?? 1.0f;
+		internal byte defaultNewSize = 1;
+		internal sbyte newSizeOffset = 0;
+
+		private byte getNewSize() => Utils.Clamp2(defaultNewSize, MIN_BALLS_SIZE, MAX_BALLS_SIZE);
+		private byte getNewSize(byte baseSize) => Utils.Clamp2(baseSize.delta(newSizeOffset), MIN_BALLS_SIZE, MAX_BALLS_SIZE);
+
+		internal float shrinkMultiplier = 1.0f;
+		internal float growthMultiplier = 1.0f;
 
 		//recommend saving the hasBalls bool even though it is a determined property - in the event of malformed data, it allows an additional way to catch
 		//if the save should have balls. 
@@ -47,7 +50,7 @@ namespace CoC.Backend.BodyParts
 		//Count and size get conviluted with self-validation, so i've removed what validation i can from these properties and placed it in helper functions.
 		//basically, if the old count was 0 or the new count is 0, use the helpers.
 		//if you dont use the helpers, make sure you set the count first - the size uses the count to parse the values passed into the setter.
-		public byte count { get; private set; }
+		public byte count { get; private set; } = 0;
 
 		public byte size
 		{
@@ -61,12 +64,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _size;
 
-		private Balls(bool hasBalls)
+		internal Balls(Creature source, bool hasBalls) : base(source)
 		{
 			setBalls(hasBalls);
 		}
 
-		private Balls(byte ballCount, byte ballSize)
+		internal Balls(Creature source, byte ballCount = DEFAULT_BALLS_COUNT, byte ballSize = DEFAULT_BALLS_SIZE) : base(source)
 		{
 			if (ballCount == 0)
 			{
@@ -78,27 +81,21 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static Balls GenerateDefault(bool hasBalls)
-		{
-			return new Balls(hasBalls);
-		}
-
 		//use this to initialize the balls object when the creature has balls.
-		internal static Balls GenerateFromGender(Gender gender)
+		internal Balls(Creature source, Gender gender) : this(source, gender.HasFlag(Gender.MALE))
 		{
-			return new Balls(gender.HasFlag(Gender.MALE));
 		}
 
-		internal static Balls GenerateBalls(byte ballCount = DEFAULT_BALLS_COUNT, byte ballSize = DEFAULT_BALLS_SIZE)
+		internal static Balls GenerateUniBall(Creature source)
 		{
-			return new Balls(ballCount, ballSize);
-		}
-
-		internal static Balls GenerateUniBall()
-		{
-			Balls balls = new Balls(false);
+			Balls balls = new Balls(source, false);
 			balls.setUniBall(true);
 			return balls;
+		}
+
+		public override BallsData AsReadOnlyData()
+		{
+			return new BallsData(count, size);
 		}
 
 		//public string shortDescription()
@@ -121,7 +118,7 @@ namespace CoC.Backend.BodyParts
 			else
 			{
 				byte numBalls = 2;
-				setBalls(true, numBalls, newDefaultSize);
+				setBalls(true, numBalls, defaultNewSize);
 			}
 			return true;
 		}
@@ -135,7 +132,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				setBalls(true, numBalls, newNonDefaultSize(newSize));
+				setBalls(true, numBalls, getNewSize(newSize));
 				return true;
 			}
 		}
@@ -189,7 +186,7 @@ namespace CoC.Backend.BodyParts
 			}
 			if (hasBalls)
 			{
-				addAmount += count; 
+				addAmount += count;
 			}
 			byte oldCount = count;
 			setBalls(true, addAmount, size);
@@ -286,7 +283,7 @@ namespace CoC.Backend.BodyParts
 			bool valid = true;
 			//auto-Validate;
 			size = size;
-			
+
 			//validate uniball. default corrective behavior is to remove uniball.
 			if (uniBall && size > UNIBALL_SIZE_THRESHOLD)
 			{
@@ -353,39 +350,20 @@ namespace CoC.Backend.BodyParts
 			return size - startVal;
 		}
 		#endregion
-		#region PerkAware
-		//remember, we don't have the perks on creation, so we can't do it there.
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
-		{
-			perkData = getter;
-		}
 
-		internal void DoLateInit(BasePerkModifiers statModifiers, bool initWasNew)
-		{
-			if (hasBalls && !uniBall)
-			{
-				if (initWasNew)
-				{
-					setBalls(true, count, statModifiers.NewBallsDefaultSize);
-				}
-				else
-				{
-					setBalls(true, count, size.add(statModifiers.NewBallsSizeDelta));
-				}
-			}
-		}
-		#endregion
 		#region Helpers
 		private void setBalls(bool balls, byte numBalls = 0, byte ballSize = 0)
 		{
 			if (balls)
 			{
+				if (!hasBalls)
+				{
+					ballSize = ballSize == 0 ? getNewSize() : getNewSize(ballSize);
+				}
 				if (numBalls == 0) numBalls = DEFAULT_BALLS_COUNT;
 				else Utils.Clamp(ref numBalls, DEFAULT_MIN_COUNT, MAX_BALLS_COUNT);
 
 				if (numBalls % 2 == 1) numBalls--;
-
-				if (ballSize == 0) ballSize = DEFAULT_BALLS_SIZE;
 
 				Utils.Clamp(ref ballSize, MIN_BALLS_SIZE, MAX_BALLS_SIZE);
 			}
@@ -413,5 +391,17 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		#endregion
+	}
+
+	public sealed class BallsData
+	{
+		public readonly byte numBalls;
+		public readonly byte ballSize;
+
+		internal BallsData(byte numBalls, byte ballSize)
+		{
+			this.numBalls = numBalls;
+			this.ballSize = ballSize;
+		}
 	}
 }

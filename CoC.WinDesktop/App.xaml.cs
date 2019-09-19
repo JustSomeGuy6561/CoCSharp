@@ -9,10 +9,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CoC.Frontend.Engine;
 using CoC.UI;
-using CoCWinDesktop.Engine;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.Engine;
+using CoC.WinDesktop.ModelView;
 
-namespace CoCWinDesktop
+namespace CoC.WinDesktop
 {
 	//select text for textbox taken from https://www.intertech.com/Blog/how-to-select-all-text-in-a-wpf-textbox-on-focus/
 	//and modified so it doesn't select text in readonly or non-focusable items (that'd be weird) Afaik, it's not necessary for 

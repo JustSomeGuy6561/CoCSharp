@@ -1,8 +1,8 @@
 ﻿using CoC.Backend.Achievements;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.Helpers;
 using System;
 
-namespace CoCWinDesktop.ContentWrappers
+namespace CoC.WinDesktop.ContentWrappers
 {
 	public sealed class AchievementWrapper : NotifierBase
 	{

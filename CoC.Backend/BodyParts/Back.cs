@@ -6,6 +6,7 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -19,10 +20,10 @@ namespace CoC.Backend.BodyParts
 	//add an ovipositor type. for now i don't think i need to. the scorpion is still a tail, but i may move it here for ease of coding, though technically it's a tail. idk man.
 
 
-	public sealed class Back : BehavioralSaveablePart<Back, BackType>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
+	public sealed class Back : BehavioralSaveablePart<Back, BackType, BackData>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
 		//public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
-		public EpidermalData backEpidermis => epidermis.GetEpidermalData();
+		public EpidermalData backEpidermis => epidermis.AsReadOnlyData();
 
 		private Epidermis epidermis = new Epidermis();
 
@@ -61,70 +62,53 @@ namespace CoC.Backend.BodyParts
 		}
 		private BackType _type = BackType.NORMAL;
 
-		public static BackType defaultType => BackType.NORMAL;
-		public override bool isDefault => type == defaultType;
+		public override BackType defaultType => BackType.defaultValue;
 
-		private Back(BackType backType)
+		internal Back(Creature source, BackType backType) : base(source)
 		{
 			_type = backType ?? throw new ArgumentNullException();
 			_type.ParseEpidermis(epidermis);
 		}
 
-		internal static Back GenerateDefault()
-		{
-			return new Back(BackType.NORMAL);
-		}
+		internal Back(Creature source) : this(source, BackType.defaultValue) { }
 
-		internal static Back GenerateDefaultOfType(BackType backType)
+		internal Back(Creature source, DragonBackMane dragonMane, HairFurColors maneColor) : this(source, dragonMane)
 		{
-			return new Back(backType);
-		}
-		internal static Back GenerateDraconicMane(DragonBackMane dragonMane, HairFurColors maneColor)
-		{
-			//throws for null
-			//Automatically parses the epidermis to the correct type.
-			Back newBack = new Back(dragonMane); 
 			if (!HairFurColors.IsNullOrEmpty(maneColor))
 			{
-				newBack.epidermis.ChangeFur(maneColor);
+				epidermis.ChangeFur(maneColor);
 			}
-			return newBack;
 		}
 
-		internal override bool UpdateType(BackType newType)
+		public override BackData AsReadOnlyData()
 		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType; //automatically sets hair to default.
-			return true;
+			return new BackData(this);
 		}
 
+		//default standard update is valid. 
+
+		//additional, non-standard update.
 		internal bool UpdateType(DragonBackMane dragonMane, HairFurColors maneColor)
 		{
 			if (dragonMane == null || type == dragonMane)
 			{
 				return false;
 			}
+
+			var oldType = type;
 			type = dragonMane; //sets epidermis to use hair.
-			
+
 			//overrides it if possible.
 			if (!HairFurColors.IsNullOrEmpty(maneColor)) //can be null.
 			{
 				epidermis.ChangeFur(maneColor);
 			}
+
+			NotifyTypeChanged(oldType);
 			return true;
 		}
-		internal override bool Restore()
-		{
-			if (type != BackType.NORMAL)
-			{
-				type = BackType.NORMAL;
-				return true;
-			}
-			return false;
-		}
+
+		//default restore is fine.
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -195,13 +179,16 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public partial class BackType : SaveableBehavior<BackType, Back>
+	public partial class BackType : SaveableBehavior<BackType, Back, BackData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<BackType> backs = new List<BackType>();
 		public static readonly ReadOnlyCollection<BackType> availableTypes = new ReadOnlyCollection<BackType>(backs);
 		private readonly int _index;
 		public override int index => _index;
+
+		public static BackType defaultValue => NORMAL;
+
 
 		public virtual bool canDye => false;/* defaultHair => HairFurColors.NO_HAIR_FUR;*/
 
@@ -335,11 +322,11 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (baseAppearance.usesFur)
 			{
-				epidermis.UpdateOrChange((FurBasedEpidermisType)baseAppearance.epidermisType, baseAppearance.fur, baseAppearance.furTexture);
+				epidermis.UpdateOrChange((FurBasedEpidermisType)baseAppearance.currentType, baseAppearance.fur, baseAppearance.furTexture);
 			}
 			else
 			{
-				epidermis.UpdateOrChange((ToneBasedEpidermisType)baseAppearance.epidermisType, baseAppearance.tone, baseAppearance.skinTexture);
+				epidermis.UpdateOrChange((ToneBasedEpidermisType)baseAppearance.currentType, baseAppearance.tone, baseAppearance.skinTexture);
 			}
 		}
 		public override bool hasSpecialEpidermis => !baseAppearance.isEmpty;
@@ -347,6 +334,16 @@ namespace CoC.Backend.BodyParts
 		internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
 		{
 			return getAttack(get, set);
+		}
+	}
+
+	public sealed class BackData : BehavioralSaveablePartData<BackData, Back, BackType>
+	{
+		public readonly EpidermalData epidermis;
+
+		internal BackData(Back back) : base(GetBehavior(back))
+		{
+			epidermis = back.backEpidermis;
 		}
 	}
 }

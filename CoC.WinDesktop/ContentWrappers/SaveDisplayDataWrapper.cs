@@ -1,7 +1,7 @@
 ﻿using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
 using CoC.Frontend.UI.ControllerData;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.ContentWrappers
+namespace CoC.WinDesktop.ContentWrappers
 {
 	public sealed class SaveDisplayDataWrapper : NotifierBase
 	{

@@ -57,7 +57,7 @@ namespace CoC.Frontend.UI.ControllerData
 				//Obedience.minimum = currentPlayer.minObedience;
 
 				Level.current = currentPlayer.level;
-				XP.current = currentPlayer.experience;
+				XP.current = currentPlayer.totalExperience;
 				XP.maximum = 100;
 				XP.minimum = 0;
 				Gems.current = unchecked((uint)currentPlayer.gems); //remember to fix this later lol.

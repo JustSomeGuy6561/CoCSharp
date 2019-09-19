@@ -1,11 +1,11 @@
 ﻿using CoC.UI;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.ModelView
+namespace CoC.WinDesktop.ModelView
 {
 	public abstract class ModelViewBase : NotifierBase
 	{

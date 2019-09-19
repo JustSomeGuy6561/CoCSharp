@@ -3,15 +3,17 @@
 //Author: JustSomeGuy
 //1/5/2019, 3:16 AM
 
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine.Time;
-using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -21,8 +23,6 @@ namespace CoC.Backend.BodyParts
 	// every time we get a new cock, set it to default length if one not provided. increase length by delta, regardless.
 	// every time we get a vagina set its default wetness, looseness, and clitSize to defaults, unless provided. 
 	// breasts - figure out how the fuck we're gonna add new breast rows. 
-
-	//EVERY PIERCING NOW NEEDS TO ALIAS THE PIERCINGS! WOOOO!
 
 	//I had the relatively brilliant idea of storing the GameTime for when something happened - last milking, etc. it means we don't need to update it every hour - we just need to update it when it happens.
 	//it's a relatively simple calculation to get the current hours since - we just diff GameTime now and stored time. Granted, it's now a byte and int instead of just one int, but w/e. I'll trade
@@ -40,10 +40,8 @@ namespace CoC.Backend.BodyParts
 	//which means that despite the fact that Marble and Katherine can have the same lactation multiplier, Marble would take longer to fill up and not be complaining every 3 hours she needs a milking.
 	//RIP katherine, lol.
 
-	public sealed partial class Genitals : SimpleSaveablePart<Genitals>, IBodyPartTimeLazy, IBaseStatPerkAware //for now all the stuff it contains is lazy, so that's all we need.
+	public sealed partial class Genitals : SimpleSaveablePart<Genitals, GenitalsData>, IBodyPartTimeLazy //for now all the stuff it contains is lazy, so that's all we need.
 	{
-		PerkStatBonusGetter perkModifiers;
-
 		public const int MAX_COCKS = 10;
 		public const int MAX_VAGINAS = 2;
 		//max in game that i can find is 5, but they only ever use 4 rows.
@@ -57,8 +55,9 @@ namespace CoC.Backend.BodyParts
 		public const float HEAVY_LACTATION_THRESHOLD = 5.0f;
 		public const float EPIC_LACTATION_THRESHOLD = 7.5f;
 
-		private readonly bool needsLateInit;
-		private readonly bool lateInitNew;//true: new. false: delta
+		private readonly BreastCreator[] breastCreators;
+		private readonly CockCreator[] cockCreators;
+		private readonly VaginaCreator[] vaginaCreators;
 
 
 		public readonly Ass ass;
@@ -90,7 +89,6 @@ namespace CoC.Backend.BodyParts
 
 		public int nippleCount => _breasts.Count * (quadNipples ? 4 : 1);
 		#endregion
-
 
 		#region Nipple Properties
 		public bool blackNipples
@@ -273,7 +271,10 @@ namespace CoC.Backend.BodyParts
 			return lactationModifier - modifier;
 		}
 
+
+#pragma warning disable CS0649 // #never assigned to
 		private GameDateTime timeLastMilked;
+#pragma warning restore CS0649 // #never assigned to
 		public int hoursSinceLastMilked => timeLastMilked.hoursToNow();
 
 #warning TODO: implement time aware for this to fill up over time, a milking and/or suckling method. a means to min/max lactationStatus. 
@@ -287,11 +288,6 @@ namespace CoC.Backend.BodyParts
 		public int hoursSinceLastCum => timeLastCum.hoursToNow();
 		private GameDateTime timeLastOrgasm { get; set; }
 		public int hoursSinceLastOrgasm => timeLastOrgasm.hoursToNow();
-
-		private bool alwaysAtMax => perkModifiers().AlwaysProducesMaxCum;
-
-		private uint perkCumAdd => perkModifiers().BonusCumAdded;
-		private float perkCumMultiply => perkModifiers().BonusCumStacked;
 
 		//we use mL for amount here, but store ball size in inches. Let's do it right, no? 1cm^3 = 1mL
 		public int cumAmount
@@ -312,12 +308,12 @@ namespace CoC.Backend.BodyParts
 					baseValue = balls.size * Measurement.TO_CENTIMETERS;
 					baseValue = 4.0 / 3 * Math.PI * Math.Pow(baseValue / 2, 3) * balls.count * cumMultiplier;
 				}
-				if (hoursSinceLastCum < 12 && !alwaysAtMax) //i'd do 24 but this is Mareth, so.
+				if (hoursSinceLastCum < 12 && !alwaysProducesMaxCum) //i'd do 24 but this is Mareth, so.
 				{
 					baseValue *= hoursSinceLastCum / 12.0;
 				}
-				baseValue *= perkCumMultiply;
-				baseValue += perkCumAdd;
+				baseValue *= bonusCumMultiplier;
+				baseValue += bonusCumAdded;
 
 				if (baseValue > int.MaxValue)
 				{
@@ -379,40 +375,118 @@ namespace CoC.Backend.BodyParts
 		#region Constructors
 
 
-		private Genitals(Gender gender)
+		internal Genitals(Creature source, Gender initialGender) : base(source)
 		{
-			ass = Ass.GenerateDefault();
-			_breasts.Add(Breasts.GenerateFromGender(gender));
-			balls = Balls.GenerateFromGender(gender);
-			_cocks.Add(Cock.GenerateFromGender(gender));
-			_vaginas.Add(Vagina.GenerateFromGender(gender));
+			ass = new Ass(source);
+			balls = new Balls(source, initialGender);
+
+			if (initialGender.HasFlag(Gender.MALE))
+			{
+				cockCreators = new CockCreator[1] { new CockCreator() };
+			}
+			else
+			{
+				cockCreators = new CockCreator[0];
+			}
+			if (initialGender.HasFlag(Gender.FEMALE))
+			{
+				vaginaCreators = new VaginaCreator[1] { new VaginaCreator() };
+			}
+			else
+			{
+				vaginaCreators = new VaginaCreator[0];
+			}
+			breastCreators = new BreastCreator[1] { new BreastCreator(initialGender.HasFlag(Gender.FEMALE) ? CupSize.C : CupSize.FLAT) };
+
 			initHelper(out cocks, out vaginas, out breasts);
 
-			femininity = Femininity.Generate(gender);
-			fertility = Fertility.GenerateFromGender(gender);
-
-			needsLateInit = true;
-			lateInitNew = true;
-
+			femininity = new Femininity(source, initialGender);
+			fertility = new Fertility(source, initialGender);
 		}
 
-		private Genitals(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, byte? femininity, Fertility fertility)
+		internal Genitals(Creature source, Ass ass, BreastCreator[] breasts, CockCreator[] cocks, Balls balls, VaginaCreator[] vaginas, byte? femininity, Fertility fertility) : base(source)
 		{
-			this.ass = ass;
-			CleanCopy(breasts, _breasts, MAX_BREAST_ROWS);
-			this.balls = balls;
-			CleanCopy(cocks, _cocks, MAX_COCKS);
-			CleanCopy(vaginas, _vaginas, MAX_VAGINAS);
+			this.ass = ass ?? throw new ArgumentNullException(nameof(ass));
+			breastCreators = breasts?.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(breastCreators));
+			this.balls = balls ?? throw new ArgumentNullException(nameof(balls));
+			cockCreators = cocks?.Where(x => x != null).ToArray();
+			vaginaCreators = vaginas?.Where(x => x != null).ToArray();
+
+			Gender computedGender = Gender.GENDERLESS;
+			if (cockCreators?.Length > 0)
+			{
+				computedGender |= Gender.MALE;
+			}
+			if (vaginaCreators?.Length > 0)
+			{
+				computedGender |= Gender.FEMALE;
+			}
+			if (breastCreators.Length == 0)
+			{
+				breastCreators = new BreastCreator[1] { new BreastCreator(computedGender.HasFlag(Gender.FEMALE) ? CupSize.C : CupSize.FLAT) };
+			}
+
 			initHelper(out this.cocks, out this.vaginas, out this.breasts);
 
-			this.femininity = femininity != null ? Femininity.Generate(gender, (byte)femininity) : Femininity.Generate(gender);
-			this.fertility = fertility;
+			this.femininity = femininity != null ? new Femininity(source, computedGender, (byte)femininity) : new Femininity(source, computedGender);
+			this.fertility = fertility ?? throw new ArgumentNullException(nameof(fertility));
+		}
 
-			needsLateInit = true;
-			lateInitNew = false;
+		protected internal override void PostPerkInit()
+		{
+			ass.PostPerkInit();
+			balls.PostPerkInit();
+
+			CockPerkHelper CockPerkData = GetCockPerkData();
+			BreastPerkHelper BreastPerkData = GetBreastPerkData();
+			VaginaPerkHelper VaginaPerkData = GetVaginaPerkData();
+
+			if (cockCreators != null)
+			{
+				_cocks.AddRange(cockCreators.Where(x => x != null).Select(x => new Cock(source, CockPerkData, x.type, x.validLength, x.validGirth, x.knot)).Take(MAX_COCKS));
+			}
+			if (vaginaCreators != null)
+			{
+				_vaginas.AddRange(vaginaCreators.Where(x => x != null).Select(x => new Vagina(source, VaginaPerkData, x.type, x.validClitLength, x.looseness,
+					x.wetness, x.virgin, x.hasClitCock)).Take(MAX_VAGINAS));
+			}
+			_breasts.AddRange(breastCreators.Where(x => x != null).Select(x => new Breasts(source, BreastPerkData, x.cupSize, x.validNippleLength)).Take(MAX_BREAST_ROWS));
+
+			femininity.PostPerkInit();
+			fertility.PostPerkInit();
+		}
+
+		protected internal override void LateInit()
+		{
+			ass.LateInit();
+			balls.LateInit();
+
+			cocks.ForEach(x => x.LateInit());
+			vaginas.ForEach(x => x.LateInit());
+			breasts.ForEach(x => x.LateInit());
+
+			femininity.LateInit();
+			fertility.LateInit();
+		}
+
+		public override GenitalsData AsReadOnlyData()
+		{
+			return new GenitalsData(this, GetCockPerkData(), GetVaginaPerkData(), GetBreastPerkData());
 		}
 
 		//delta not needed when we load from a save. 
+
+		private readonly WeakEventSource<GenderChangedEventArgs> genderChangedHandler = new WeakEventSource<GenderChangedEventArgs>();
+		public event EventHandler<GenderChangedEventArgs> onGenderChanged
+		{
+			add => genderChangedHandler.Subscribe(value);
+			remove => genderChangedHandler.Unsubscribe(value);
+		}
+
+		private void NotifyGenderChanged(Gender oldGender)
+		{
+			genderChangedHandler.Raise(source, new GenderChangedEventArgs(oldGender, gender));
+		}
 
 		private void initHelper(out ReadOnlyCollection<Cock> cocks, out ReadOnlyCollection<Vagina> vaginas, out ReadOnlyCollection<Breasts> breasts)
 		{
@@ -437,25 +511,6 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		#endregion
-		#region Generate
-		internal static Genitals GenerateDefault(Gender gender)
-		{
-			return new Genitals(gender);
-		}
-
-		//in deserialization land or creator constructor, generate the shit beforehand, then pass it in here. 
-		//ideally we should use copy constructors on the passed in data, but fuck it, it's internal, so it's "guarenteed" to be valid.
-		//and not referenced anywhere that would fuck this shit up.
-		internal static Genitals Generate(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, byte? femininity, Fertility fertility)
-		{
-			return new Genitals(ass, breasts, cocks, balls, vaginas, femininity, fertility);
-		}
-
-		//internal static Genitals GenerateWithWomb(Ass ass, Breasts[] breasts, Cock[] cocks, Balls balls, Vagina[] vaginas, Femininity femininity, Fertility fertility)
-		//{
-		//	return new Genitals(ass, breasts, cocks, balls, vaginas, femininity, fertility);
-		//}
 
 		#endregion
 		#region Update
@@ -478,7 +533,7 @@ namespace CoC.Backend.BodyParts
 			double avgLength = _breasts.Average((x) => (double)x.nipples.length);
 			double avgCup = _breasts.Average((x) => (double)x.cupSize);
 			byte cup = (byte)Math.Ceiling(avgCup);
-			_breasts.Add(Breasts.Generate((CupSize)cup, (float)avgLength));
+			_breasts.Add(new Breasts(source, GetBreastPerkData(), (CupSize)cup, (float)avgLength));
 			_breasts[_breasts.Count - 1].nipples.setBlackNipple(blackNipples);
 			_breasts[_breasts.Count - 1].nipples.setQuadNipple(quadNipples);
 			_breasts[_breasts.Count - 1].nipples.setNippleStatus(nippleType);
@@ -492,7 +547,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			double avgLength = _breasts.Average((x) => (double)x.nipples.length);
-			_breasts.Add(Breasts.Generate(cup, (float)avgLength));
+			_breasts.Add(new Breasts(source, GetBreastPerkData(), cup, (float)avgLength));
 
 			_breasts[_breasts.Count - 1].nipples.setBlackNipple(blackNipples);
 			_breasts[_breasts.Count - 1].nipples.setQuadNipple(quadNipples);
@@ -506,18 +561,18 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			_cocks.Add(Cock.GenerateDefaultOfType(newCockType));
+			_cocks.Add(new Cock(source, GetCockPerkData(), newCockType));
 
 			return true;
 		}
 
-		internal bool AddCock(CockType newCockType, float length, float girth)
+		internal bool AddCock(CockType newCockType, float length, float girth, float? knotMultiplier = null)
 		{
 			if (numCocks >= MAX_COCKS)
 			{
 				return false;
 			}
-			_cocks.Add(Cock.Generate(newCockType, length, girth));
+			_cocks.Add(new  Cock(source, GetCockPerkData(), newCockType, length, girth, knotMultiplier));
 
 			return true;
 		}
@@ -528,17 +583,27 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			_vaginas.Add(Vagina.GenerateDefaultOfType(newVaginaType));
+			_vaginas.Add(new Vagina(source, GetVaginaPerkData(), newVaginaType));
 			return true;
 		}
 
-		internal bool AddVagina(VaginaType newVaginaType, float clitLength)
+		internal bool AddVagina(VaginaType newVaginaType, float clitLength, bool omnibus = false)
 		{
 			if (numVaginas >= MAX_VAGINAS)
 			{
 				return false;
 			}
-			_vaginas.Add(Vagina.Generate(newVaginaType, clitLength));
+			_vaginas.Add(new Vagina(source, GetVaginaPerkData(), newVaginaType, clitLength, omnibus:omnibus));
+			return true;
+		}
+
+		internal bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness, bool omnibus = false)
+		{
+			if (numVaginas >= MAX_VAGINAS)
+			{
+				return false;
+			}
+			_vaginas.Add(new Vagina(source, GetVaginaPerkData(), newVaginaType, clitLength, looseness, wetness, true, omnibus));
 			return true;
 		}
 		#endregion
@@ -747,7 +812,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return (BiggestTitSize() < CupSize.C && femininity < 75);
 			}
-			
+
 		}
 		#endregion
 
@@ -920,23 +985,6 @@ namespace CoC.Backend.BodyParts
 			return femininity.SetFemininity(newValue);
 		}
 		#endregion
-		#region Femininity Aware and Listener
-		internal void SetupFemininityAware(IFemininityAware femininityAware)
-		{
-			femininity.SetupFemininityAware(femininityAware);
-		}
-
-		internal bool RegisterFemininityListener(IFemininityListener listener)
-		{
-			return femininity.RegisterListener(listener);
-		}
-
-		internal bool DeregisterFemininityListener(IFemininityListener listener)
-		{
-			return femininity.DeregisterListener(listener);
-		}
-		#endregion
-
 		#region TimeListeners
 
 		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
@@ -982,39 +1030,44 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
-		#region Base Perk Data
+	}
 
-		//in the rare case this matters (see femininity)
-		//perks are hooked up AFTER Body Part Awares/Listeners. so 
-		//if it matters, you an assume that any listeners are already active when running late perk inits.
-		void IBaseStatPerkAware.GetBasePerkStats(PerkStatBonusGetter getter)
+	public sealed class GenitalsData
+	{
+		internal readonly CockPerkHelper cockPerks;
+		internal readonly BreastPerkHelper breastPerks;
+		internal readonly VaginaPerkHelper vaginaPerks;
+
+		public readonly ReadOnlyCollection<CockData> cocks;
+		public readonly ReadOnlyCollection<VaginaData> vaginas;
+		public readonly ReadOnlyCollection<BreastData> breasts;
+
+		public readonly FemininityData femininity;
+		public readonly FertilityData fertility;
+
+		public readonly AssData ass;
+		public readonly BallsData balls;
+
+		//cum amount
+		//lactation amount
+
+
+		internal GenitalsData(Genitals source, CockPerkHelper cockData, VaginaPerkHelper vaginaData, BreastPerkHelper breastData)
 		{
-			perkModifiers = getter;
-			BasePerkModifiers data = getter();
-			PassOnBasePerkStatsGetter(ass, getter);
-			_cocks.ForEach(x => PassOnBasePerkStatsGetter(x, getter));
-			_vaginas.ForEach(x => PassOnBasePerkStatsGetter(x, getter));
-			_breasts.ForEach(x => PassOnBasePerkStatsGetter(x, getter));
-			PassOnBasePerkStatsGetter(balls, getter);
-			PassOnBasePerkStatsGetter(fertility, getter);
-			PassOnBasePerkStatsGetter(femininity, getter);
+			cockPerks = cockData ?? throw new ArgumentNullException(nameof(cockData));
+			vaginaPerks = vaginaData ?? throw new ArgumentNullException(nameof(vaginaData));
+			breastPerks = breastData ?? throw new ArgumentNullException(nameof(breastData));
 
-			if (needsLateInit)
-			{
-				_vaginas.ForEach(x => x.DoLateInit(data, lateInitNew));
-				_cocks.ForEach(x => x.DoLateInit(data, lateInitNew));
-				_breasts.ForEach(x => x.DoLateInit(gender, data, lateInitNew));
-				balls.DoLateInit(data, lateInitNew);
-				femininity.DoLateInit(data);
-			}
+			cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x => x.AsReadOnlyData()).ToList());
+			vaginas = new ReadOnlyCollection<VaginaData>(source.vaginas.Select(x => x.AsReadOnlyData()).ToList());
+			breasts = new ReadOnlyCollection<BreastData>(source.breasts.Select(x => x.AsReadOnlyData()).ToList());
+
+			ass = source.ass.AsReadOnlyData();
+			balls = source.balls.AsReadOnlyData();
+
+			femininity = source.femininity.AsReadOnlyData();
+			fertility = source.fertility.AsReadOnlyData();
 		}
-
-		private void PassOnBasePerkStatsGetter(IBaseStatPerkAware perkAware, PerkStatBonusGetter getter)
-		{
-			perkAware.GetBasePerkStats(getter);
-		}
-
-		#endregion
 	}
 }
 

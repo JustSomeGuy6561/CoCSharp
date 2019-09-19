@@ -1,4 +1,4 @@
-﻿namespace CoCWinDesktop.ModelView
+﻿namespace CoC.WinDesktop.ModelView
 {
 	public partial class StandardModelView
 	{

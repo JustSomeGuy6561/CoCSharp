@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Achievements;
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Perks;
 using CoC.Backend.SaveData;
@@ -24,7 +25,7 @@ namespace CoC.Frontend.Engine
 		/// </summary>
 		public static void PreSaveInit()
 		{
-			BasePerkModifiers getExtraData() => new ExtraPerkModifiers();
+			BasePerkModifiers getExtraData(Creature source) => new ExtraPerkModifiers(source);
 
 			BackendInitializer.PreSaveInit(TextOutput.OutputText, AreaManager.placeCollection, AreaManager.locationCollection, 
 				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, getExtraData, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);

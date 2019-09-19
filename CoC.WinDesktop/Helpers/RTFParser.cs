@@ -5,10 +5,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.Helpers
+namespace CoC.WinDesktop.Helpers
 {
 	public static class RTFParser
 	{
+		//NOTE: <a> tag is NOT directly supported. The base for it is in play, and the contentRichTextBox actually checks for it, but I haven't written a regex for it,
+		//nor have i ran a check to see if the color for hyperlinks is in the list of available colors. the only instance that curerntly uses hyperlinks is a very
+		//controlled sub-case for credits, and the URL is given manually. You have no idea how hard that actually was to implement, though. 
+
 		public static string FromHTMLNoHeader(StringBuilder HTMLText, Color defaultColor, out List<Color> colors)
 		{
 			//"Simple" replace
@@ -174,10 +178,10 @@ namespace CoCWinDesktop.Helpers
 
 		//after delving ass-deep in c# source using dotPeek (apparently reference source doesn't want to play nice, idk)
 		//it turns out the hyperlink needs to be quotated in order to work. fun times. 
-		public static string ToRTFUrl(Uri unsafeUrl)
+		public static string ToRTFUrl(Uri unsafeUrl, int colorIndex)
 		{
 			string temp = ToRTFSafeString(unsafeUrl.ToString());
-			return @"{\cf1\f0\lang9{\field{\*\fldinst{HYPERLINK """ + temp + @""" }}{\fldrslt{" + temp + @"\ul0\cf0}}}}";
+			return @"{\cf"+colorIndex+@"\f0\lang9{\field{\*\fldinst{HYPERLINK """ + temp + @""" }}{\fldrslt{" + temp + @"\ul0\cf0}}}}";
 		}
 
 	}

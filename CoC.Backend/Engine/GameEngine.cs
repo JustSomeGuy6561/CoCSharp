@@ -49,7 +49,7 @@ namespace CoC.Backend.Engine
 
 		private static AchievementCollection globalAchievements;
 
-		internal static Func<BasePerkModifiers> constructPerkModifier;
+		internal static Func<Creature, BasePerkModifiers> constructPerkModifier;
 
 		//internal static ReadOnlyDictionary<Type, Func<PerkBase>> perkList;
 
@@ -204,7 +204,7 @@ namespace CoC.Backend.Engine
 		public static void InitializeEngine(Action<string> output,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> gameHomeBases, //Area Engine
-			Func<BasePerkModifiers> perkVariables, //perk data for creatures to use. 
+			Func<Creature, BasePerkModifiers> perkVariables, //perk data for creatures to use. 
 			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficulty) //Game Difficulty Collections.
 		{
 			areaEngine = new AreaEngine(output, gamePlaces, gameLocations, gameDungeons, gameHomeBases);
@@ -214,10 +214,6 @@ namespace CoC.Backend.Engine
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
 			defaultDifficultyIndex = defaultDifficulty;
 			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
-			if (perkVariables() is null)
-			{
-				throw new ArgumentException("perk variables cannot be null.");
-			}
 			_currentPlayer = null;
 		}
 

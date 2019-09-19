@@ -1,6 +1,6 @@
 ﻿using CoC.Frontend.UI.ControllerData;
 using CoC.UI;
-using CoCWinDesktop.Helpers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 	public abstract partial class SideBarBase : NotifierBase
 	{

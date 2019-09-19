@@ -16,16 +16,16 @@ namespace CoC.Frontend.Perks.History
 		{
 			extraModifiers.replaceMasturbateWithMeditate = true;
 
-			byte oldMin = baseModifiers.minLibido;
-			baseModifiers.minLibido.subtractOff(2);
-			delta = oldMin.subtract(baseModifiers.minLibido);
+			sbyte oldMin = baseModifiers.minLibido;
+			baseModifiers.minLibido = baseModifiers.minLibido.subtract(2);
+			delta = oldMin.delta(baseModifiers.minLibido);
 		}
 
 		protected override void OnRemoval()
 		{
 			extraModifiers.replaceMasturbateWithMeditate = false;
 
-			baseModifiers.minLibido.addIn(delta);
+			baseModifiers.minLibido = (sbyte)(baseModifiers.minLibido + delta);
 		}
 	}
 }

@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
+using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -12,51 +13,24 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 
-	public sealed class Antennae : BehavioralSaveablePart<Antennae, AntennaeType>
+	public sealed class Antennae : BehavioralSaveablePart<Antennae, AntennaeType, AntennaeData>
 	{
 
 		public override AntennaeType type { get; protected set; }
 
-		public static AntennaeType defaultType => AntennaeType.NONE;
-		public override bool isDefault => type == defaultType;
+		public override AntennaeType defaultType => AntennaeType.defaultValue;
 
 		public bool hasAntennae => type != AntennaeType.NONE;
 
-		private Antennae(AntennaeType antennaeType)
+		internal Antennae(Creature source) : this(source, AntennaeType.defaultValue)
+		{ }
+
+		internal Antennae(Creature source, AntennaeType antennaeType) : base(source)
 		{
-			type = antennaeType ?? throw new ArgumentNullException();
+			type = antennaeType ?? throw new ArgumentNullException(nameof(antennaeType));
 		}
 
-
-		internal static Antennae GenerateDefault()
-		{
-			return new Antennae(AntennaeType.NONE);
-		}
-
-		internal static Antennae GenerateDefaultOfType(AntennaeType antennaeType)
-		{
-			return new Antennae(antennaeType);
-		}
-
-		internal override bool UpdateType(AntennaeType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return type == newType;
-		}
-
-		internal override bool Restore()
-		{
-			if (type == AntennaeType.NONE)
-			{
-				return false;
-			}
-			type = AntennaeType.NONE;
-			return true;
-		}
+		//default implementations of update and restore are valid. 
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -65,13 +39,21 @@ namespace CoC.Backend.BodyParts
 			type = antennae;
 			return retVal;
 		}
+
+		public override AntennaeData AsReadOnlyData()
+		{
+			return new AntennaeData(this);
+		}
 	}
 
-	public sealed partial class AntennaeType : SaveableBehavior<AntennaeType, Antennae>
+	public sealed partial class AntennaeType : SaveableBehavior<AntennaeType, Antennae, AntennaeData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<AntennaeType> antennaes = new List<AntennaeType>();
 		public static readonly ReadOnlyCollection<AntennaeType> availableTypes = new ReadOnlyCollection<AntennaeType>(antennaes);
+
+		public static AntennaeType defaultValue => AntennaeType.NONE;
+
 
 		//C# 7.2 magic. basically, prevents it from being messed with except internally.
 		private AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,
@@ -126,6 +108,13 @@ namespace CoC.Backend.BodyParts
 
 		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceFullDesc,
 			(x, y) => CockatricePlayer(y), CockatriceTransform, CockatriceRestore);
+	}
+
+	public sealed class AntennaeData : BehavioralSaveablePartData<AntennaeData, Antennae, AntennaeType>
+	{
+
+		internal AntennaeData(Antennae source) : base(GetBehavior(source))
+		{ }
 	}
 
 }

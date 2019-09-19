@@ -1,5 +1,5 @@
-﻿using CoCWinDesktop.ContentWrappers;
-using CoCWinDesktop.Helpers;
+﻿using CoC.WinDesktop.ContentWrappers;
+using CoC.WinDesktop.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace CoCWinDesktop.Views
+namespace CoC.WinDesktop.Views
 {
 	/// <summary>
 	/// Interaction logic for StandardView.xaml

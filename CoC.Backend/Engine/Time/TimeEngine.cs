@@ -11,6 +11,8 @@ using System.Text;
 
 namespace CoC.Backend.Engine.Time
 {
+#warning CONSIDER REWORKING ALL TIME AND AREA ENGINE BULLSHIT FAKE EVENTS TO USE WeakEvent. 
+
 	public sealed class TimeEngine
 	{
 		private readonly Action<string> OutputText;
@@ -266,7 +268,7 @@ namespace CoC.Backend.Engine.Time
 		//boolean variants. (comment out current, uncomment one with 'true')
 
 		//if it helps, think of this as recursive - while it has any special events, it will tell them to call this when they are done. 
-		//it's essentially a while loop, but broken up due to event-based user interraction. 
+		//it's essentially a while loop, but broken up due to event-based user interaction. 
 		private void NextEvent(/*bool firstIteration = false*/)
 		{
 

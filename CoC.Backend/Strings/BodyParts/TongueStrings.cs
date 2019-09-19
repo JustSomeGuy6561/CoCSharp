@@ -28,7 +28,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanTransformStr(Tongue tongue, Player player)
 		{
-			return tongue.restoreString(player);
+			return tongue.RestoreText();
 		}
 		private static string HumanRestoreStr(Tongue tongue, Player player)
 		{

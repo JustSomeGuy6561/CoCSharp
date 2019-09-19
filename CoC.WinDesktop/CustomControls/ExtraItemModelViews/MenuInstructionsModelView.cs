@@ -1,14 +1,14 @@
 ﻿using CoC.Backend.Engine;
 using CoC.Frontend.Engine;
 using CoC.UI;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.ModelView;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.ModelView;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
 
-namespace CoCWinDesktop.CustomControls.ExtraItemModelViews
+namespace CoC.WinDesktop.CustomControls.ExtraItemModelViews
 {
 	public sealed partial class MenuInstructionsModelView : ExtraItemModelViewBase
 	{

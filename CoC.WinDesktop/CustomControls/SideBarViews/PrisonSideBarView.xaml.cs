@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoCWinDesktop.CustomControls.SideBarViews
+namespace CoC.WinDesktop.CustomControls.SideBarViews
 {
 	/// <summary>
 	/// Interaction logic for StatDisplay.xaml

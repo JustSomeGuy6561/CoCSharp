@@ -2,7 +2,7 @@
 using CoC.Backend.Settings;
 using System;
 
-namespace CoCWinDesktop.InterfaceSettings
+namespace CoC.WinDesktop.InterfaceSettings
 {
 	public sealed partial class ImagePackOption : InterfaceOptions
 	{

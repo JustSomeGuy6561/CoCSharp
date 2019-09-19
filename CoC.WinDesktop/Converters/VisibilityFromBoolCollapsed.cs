@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace CoCWinDesktop.Converters
+namespace CoC.WinDesktop.Converters
 {
 	public sealed class VisibilityFromBoolCollapsed : IValueConverter
 	{

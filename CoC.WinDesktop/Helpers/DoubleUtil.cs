@@ -20,7 +20,7 @@ using System;
 using System.Windows;
 using System.Runtime.InteropServices;
   
-namespace CoCWinDesktop.MSInternalCopy
+namespace CoC.WinDesktop.MSInternalCopy
 {
 	internal static class DoubleUtil
 	{

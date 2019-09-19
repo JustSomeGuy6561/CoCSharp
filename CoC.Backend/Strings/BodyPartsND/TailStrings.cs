@@ -25,7 +25,7 @@ namespace CoC.Backend.BodyParts
 		}
 		protected static string NoTailTransformStr(Tail tail, Player player)
 		{
-			return tail.restoreString(player);
+			return tail.RestoreText();
 		}
 		protected static string NoTailRestoreStr(Tail tail, Player player)
 		{
@@ -537,7 +537,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DragonPlayerStr(Tail tail, Player player)
 		{
-			if (tail.epidermis.epidermisType != tail.secondaryEpidermis.epidermisType
+			if (tail.epidermis.currentType != tail.secondaryEpidermis.currentType
 				|| (tail.epidermis.usesFur && !tail.epidermis.fur.Equals(tail.secondaryEpidermis.fur))
 				|| (tail.epidermis.usesTone && tail.epidermis.tone != tail.secondaryEpidermis.tone))
 			{

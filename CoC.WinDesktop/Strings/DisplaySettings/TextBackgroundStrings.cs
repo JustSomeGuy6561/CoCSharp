@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop.DisplaySettings
+namespace CoC.WinDesktop.DisplaySettings
 {
 
 	public partial class TextBackgroundOption

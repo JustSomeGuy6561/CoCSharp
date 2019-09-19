@@ -1,9 +1,9 @@
 ﻿using CoC.Backend.Engine;
 using CoC.Frontend.Engine;
-using CoCWinDesktop.DisplaySettings;
-using CoCWinDesktop.GameCredits;
-using CoCWinDesktop.Helpers;
-using CoCWinDesktop.InterfaceSettings;
+using CoC.WinDesktop.DisplaySettings;
+using CoC.WinDesktop.GameCredits;
+using CoC.WinDesktop.Helpers;
+using CoC.WinDesktop.InterfaceSettings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace CoCWinDesktop.Engine
+namespace CoC.WinDesktop.Engine
 {
     public static class GUI_Initializer
     {

@@ -12,7 +12,7 @@ namespace  CoC.Backend.BodyParts
 	{
 		private static string RemoveAntennaeStr(Antennae antennae, Player p)
 		{
-			return antennae.restoreString(p);
+			return antennae.RestoreText();
 		}
 
 		private static string BeeDesc()

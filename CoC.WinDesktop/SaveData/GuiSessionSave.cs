@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoCWinDesktop
+namespace CoC.WinDesktop
 {
 	public sealed class GuiSessionSave : SessionSaveData
 	{

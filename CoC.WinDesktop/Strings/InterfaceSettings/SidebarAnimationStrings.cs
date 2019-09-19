@@ -1,4 +1,4 @@
-﻿namespace CoCWinDesktop.InterfaceSettings
+﻿namespace CoC.WinDesktop.InterfaceSettings
 {
 	public partial class SidebarAnimationOption
 	{

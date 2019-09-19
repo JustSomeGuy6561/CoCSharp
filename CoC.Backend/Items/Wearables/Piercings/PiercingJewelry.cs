@@ -9,7 +9,7 @@ namespace CoC.Backend.Items.Wearables.Piercings
 {
 	//to whom it may concern: I know a "horseshoe" is a "curved barbell" and that may annoy certain people. 
 	//but from a descriptive/simple standpoint we treat studs and straight barbells identically. Additionally, barbells that are curved due to the anatomy
-	//but otherwise appear straight (vch, navel piercings, prince albert, etc) as straight barbells, event though they are actually curved barbells. 
+	//but otherwise appear straight (vch, navel piercings, prince albert, etc) are also treated as straight barbells, event though they are actually curved barbells. 
 	//To avoid confusion between slightly curved barbells and really curved barbells, i'm using "horseshoe."
 	[Flags]
 	public enum JewelryType { BARBELL_STUD = 1, RING = 2, DANGLER = 4, HOOP = 8, HORSESHOE = 16, /*CHAIN = 32, SPECIAL = 64*/ SPECIAL = 32 }

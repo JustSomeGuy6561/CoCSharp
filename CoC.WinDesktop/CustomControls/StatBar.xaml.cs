@@ -6,7 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 //using System.Windows.Shapes;
 
-namespace CoCWinDesktop.CustomControls
+namespace CoC.WinDesktop.CustomControls
 {
 	/// <summary>
 	/// Interaction logic for StatBar.xaml. Stat Bar is a WPF recreation of the original StatBar, but with slight variations to make the code less spaghetti (also i'm lazy)

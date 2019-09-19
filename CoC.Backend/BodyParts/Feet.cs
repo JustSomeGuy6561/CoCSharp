@@ -2,31 +2,25 @@
 //Description:
 //Author: JustSomeGuy
 //1/24/2019, 9:50 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
+using System;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class Feet : BehavioralPartBase<FootType>
+	public sealed class Feet : PartWithBehaviorAndEventBase<Feet, FootType, FootData>
 	{
-		private Feet(FootType value)
+		internal Feet(Creature source, FootType value) : base(source)
 		{
-			type = value;
+			type = value ?? throw new ArgumentNullException(nameof(value));
 		}
 
-		internal static Feet GenerateDefault(FootType type)
+		public override FootData AsReadOnlyData()
 		{
-			return new Feet(type);
+			return new FootData(type);
 		}
 
-		internal bool UpdateType(FootType newType)
-		{
-			if (newType == null || type == newType)
-			{
-				return false;
-			}
-			type = newType;
-			return true;
-		}
+		//default update is fine
 
 		public override FootType type { get; protected set; }
 
@@ -75,5 +69,20 @@ namespace CoC.Backend.BodyParts
 		public static FootType DRAGON_CLAW = new FootType(FootStyle.CLAWS, DragonClawDesc, DragonClawFullDesc);
 		public static FootType MANDER_CLAW = new FootType(FootStyle.CLAWS, ManderClawDesc, ManderClawFullDesc);
 		public static FootType IMP_CLAW = new FootType(FootStyle.CLAWS, ImpClawDesc, ImpClawFullDesc);
+	}
+
+	public sealed class FootData : BehavioralPartDataBase<FootType>
+	{
+		public bool isFeet => currentType.isFeet;
+		public bool isPaws => currentType.isPaws;
+		public bool isHooves => currentType.isHooves;
+		public bool isInsectoid => currentType.isInsectoid;
+		public bool isClaws => currentType.isClaws;
+		public bool isOther => currentType.isOther;
+
+		public FootData(FootType currentType) : base(currentType)
+		{
+
+		}
 	}
 }
