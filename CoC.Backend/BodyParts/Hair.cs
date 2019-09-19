@@ -152,15 +152,15 @@ namespace CoC.Backend.BodyParts
 
 
 			_length = type.defaultHairLength;
-			if (!type.isFixedLength && hairLength is float validLength) SetHairLength(validLength);
+			if (!type.isFixedLength && hairLength is float validLength) SetHairLengthPrivate(validLength);
 
 			style = hairStyle ?? HairStyle.NO_STYLE;
 
 			isSemiTransparent = false;
 
 			hairColor = type.defaultColor;
-			SetHairColor(color);
-			SetHighlightColor(highlight);
+			SetHairColorPrivate(color, true);
+			SetHighlightColorPrivate(highlight);
 
 			this.isSemiTransparent = hairTransparent;
 		}
@@ -192,7 +192,22 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Update
 
-		//default update is fine.
+		internal override bool UpdateType(HairType newType)
+		{
+			if (newType is null || newType == type)
+			{
+				return false;
+			}
+
+			var oldValue = type;
+			var oldData = AsReadOnlyData();
+			type = newType;
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldValue);
+			return true;
+		}
+
 
 		//i'm gonna be lazy, fuck it. these are internal, anyway. the helpers are on the player class, so i can just parse it there. 
 
@@ -205,6 +220,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			var oldType = type;
 			//auto call the type tf change function. 
 			type = newType;
@@ -215,29 +231,35 @@ namespace CoC.Backend.BodyParts
 				//if we can cut it and our new length is shorter, or if we can lengthen and our length is longer, the length is not already correct
 				if ((type.canCut && validLength < length) || (type.canLengthen && validLength > length) || (validLength != length && ignoreCanLengthenOrCut))
 				{
-					SetHairLength(validLength);
+					SetHairLengthPrivate(validLength);
 				}
 				//otherwise, we can't do anything or we're already the correct length, so do nothing.
 			}
 			if (!HairFurColors.IsNullOrEmpty(newHairColor))
 			{
-				SetHairColor(newHairColor);
+				SetHairColorPrivate(newHairColor, false);
 			}
 			if (newHighlightColor != null)
 			{
-				SetHighlightColor(newHighlightColor);
+				SetHighlightColorPrivate(newHighlightColor);
 			}
 			if (newStyle != null)
 			{
-				SetHairStyle((HairStyle)newStyle);
+				SetHairStylePrivate((HairStyle)newStyle);
 			}
 
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
 
-		//only returns false if it cannot 
+
 		internal bool SetHairColor(HairFurColors newHairColor, bool clearHighlights = false)
+		{
+			return HandleHairChange(() => SetHairColorPrivate(newHairColor, clearHighlights));
+		}
+
+		private bool SetHairColorPrivate(HairFurColors newHairColor, bool clearHighlights)
 		{
 			if (!type.canDye || HairFurColors.IsNullOrEmpty(newHairColor))
 			{
@@ -248,6 +270,11 @@ namespace CoC.Backend.BodyParts
 		}
 
 		internal bool SetHighlightColor(HairFurColors newHighlightColor)
+		{
+			return HandleHairChange(() => SetHighlightColorPrivate(newHighlightColor));
+		}
+
+		private bool SetHighlightColorPrivate(HairFurColors newHighlightColor)
 		{
 			if (!type.canDye || HairFurColors.IsNullOrEmpty(newHighlightColor))
 			{
@@ -261,12 +288,18 @@ namespace CoC.Backend.BodyParts
 		internal bool SetBothHairColors(HairFurColors hairColor, HairFurColors highlightColor)
 		{
 			//single &: force both to run. double &: don't run right if left is false. 99% of time && is ideal. not here.
-			return SetHairColor(hairColor) & SetHighlightColor(highlightColor);
+			return HandleHairChange(() => SetHairColorPrivate(hairColor, false) & SetHighlightColorPrivate(highlightColor));
+		}
+
+		
+		internal bool SetHairStyle(HairStyle newStyle)
+		{
+			return HandleHairChange(() => SetHairStylePrivate(newStyle));
 		}
 
 		//sets the hair style to the new value, returning true if the hairStyle is now the newStyle.
 		//will return false if the current hair type cannot be styled.
-		internal bool SetHairStyle(HairStyle newStyle)
+		private bool SetHairStylePrivate(HairStyle newStyle)
 		{
 			if (type.canStyle)
 			{
@@ -283,7 +316,13 @@ namespace CoC.Backend.BodyParts
 		//variables such as can cut or can lengthen will be ignored. 
 		//of course, if the type has a single, fixed size for hair length, this will not be possible, and therefore return false.
 		//otherwise, it will return true. 
+
 		internal bool SetHairLength(float newLength)
+		{
+			return HandleHairChange(() => SetHairLengthPrivate(newLength));
+		}
+
+		private bool SetHairLengthPrivate(float newLength)
 		{
 			if (type.isFixedLength)
 			{
@@ -296,6 +335,12 @@ namespace CoC.Backend.BodyParts
 
 		internal bool SetTransparency(bool isTransparent)
 		{
+			return HandleHairChange(() => SetTransparencyPrivate(isTransparent));
+		}
+
+
+		private bool SetTransparencyPrivate(bool isTransparent)
+		{
 			isSemiTransparent = isTransparent;
 			return true;
 		}
@@ -307,10 +352,16 @@ namespace CoC.Backend.BodyParts
 		//returns the amount the hair grew.
 		internal float GrowHair(float byAmount, bool ignoreCanLengthen = false)
 		{
+			var oldData = AsReadOnlyData();
 			float currLen = length;
 			if (type.canLengthen || (ignoreCanLengthen && !type.isFixedLength))
 			{
 				length += byAmount;
+			}
+
+			if (length != currLen)
+			{
+				NotifyDataChanged(oldData);
 			}
 			return length - currLen;
 		}
@@ -324,12 +375,35 @@ namespace CoC.Backend.BodyParts
 
 		internal float ShortenHair(float byAmount, bool ignoreCanCut = false)
 		{
+			var oldData = AsReadOnlyData();
 			float currLen = length;
 			if (type.canCut || (!type.isFixedLength && ignoreCanCut))
 			{
 				length -= byAmount;
 			}
+
+			if (length != currLen)
+			{
+				NotifyDataChanged(oldData);
+			}
 			return currLen - length;
+		}
+
+		private T HandleHairChange<T>(Func<T> callback)
+		{
+			var oldData = AsReadOnlyData();
+			T retVal = callback();
+			CheckDataChanged(oldData);
+			return retVal;
+		}
+
+		private void CheckDataChanged(HairData oldData)
+		{
+			if (style != oldData.hairStyle || length != oldData.hairLength || hairColor != oldData.hairColor || highlightColor != oldData.highlightColor
+				|| isSemiTransparent != oldData.isSemiTransparent)
+			{
+				NotifyDataChanged(oldData);
+			}
 		}
 
 		#endregion

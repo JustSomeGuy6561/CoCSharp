@@ -54,7 +54,39 @@ namespace CoC.Backend.BodyParts
 			normalPregnancy?.LateInit();
 			analPregnancy?.LateInit();
 			secondaryNormalPregnancy?.LateInit();
+
+			if (normalPregnancy != null)
+			{
+				normalPregnancy.dataChange += Normal_dataChange;
+			}
+			if (analPregnancy != null)
+			{
+				analPregnancy.dataChange += Anal_dataChange;
+			}
+			if (secondaryNormalPregnancy != null)
+			{
+				secondaryNormalPregnancy.dataChange += Secondary_dataChange;
+			}
 		}
+
+		private void Normal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
+		{
+			NotifyDataChanged(new WombData(e.oldValues, canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
+				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant));
+		}
+
+		private void Anal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
+		{
+			NotifyDataChanged(new WombData(normalPregnancy?.AsReadOnlyData(), canGetPregnant, e.oldValues, canGetAnallyPregnant,
+				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant));
+		}
+
+		private void Secondary_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
+		{
+			NotifyDataChanged(new WombData(normalPregnancy?.AsReadOnlyData(), canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
+				e.oldValues, canGetSecondaryNormalPregnant));
+		}
+
 
 		//public Womb(PregnancyStore normalPregnancy, PregnancyStore analPregnancy, PregnancyStore secondaryVaginalPregnancy)
 		//{
@@ -178,26 +210,40 @@ namespace CoC.Backend.BodyParts
 	public class WombData
 	{
 		//if null, cannot get pregnant via normal vagina.
-		public readonly PregnancyStore vaginalPregnancyStore;
+		public readonly ReadOnlyPregnancyStore vaginalPregnancyStore;
 		public readonly Func<bool, bool> canGetPregnantIfHasVagina;
 
-		public readonly PregnancyStore analPregnancyStore;
+		public readonly ReadOnlyPregnancyStore analPregnancyStore;
 		public readonly Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus;
 
-		public readonly PregnancyStore secondVaginaPregnancyStore;
+		public readonly ReadOnlyPregnancyStore secondVaginaPregnancyStore;
 		public readonly Func<bool, bool> canGetPregnantIfHasSecondVagina;
+
+		public WombData(ReadOnlyPregnancyStore vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina, 
+			ReadOnlyPregnancyStore analPregnancyStore, Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus, 
+			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina)
+		{
+			this.vaginalPregnancyStore = vaginalPregnancyStore;
+			this.canGetPregnantIfHasVagina = canGetPregnantIfHasVagina ?? throw new ArgumentNullException(nameof(canGetPregnantIfHasVagina));
+			this.analPregnancyStore = analPregnancyStore;
+			this.canGetAnallyPregnantIfHasAnus = canGetAnallyPregnantIfHasAnus ?? throw new ArgumentNullException(nameof(canGetAnallyPregnantIfHasAnus));
+			this.secondVaginaPregnancyStore = secondVaginaPregnancyStore;
+			this.canGetPregnantIfHasSecondVagina = canGetPregnantIfHasSecondVagina ?? throw new ArgumentNullException(nameof(canGetPregnantIfHasSecondVagina));
+		}
 
 		internal WombData(Womb source)
 		{
 			if (source is null) throw new ArgumentNullException(nameof(source));
 
-			vaginalPregnancyStore = source.normalPregnancy;
-			analPregnancyStore = source.analPregnancy;
-			secondVaginaPregnancyStore = source.secondaryNormalPregnancy;
+			vaginalPregnancyStore = source.normalPregnancy?.AsReadOnlyData();
+			analPregnancyStore = source.analPregnancy?.AsReadOnlyData();
+			secondVaginaPregnancyStore = source.secondaryNormalPregnancy?.AsReadOnlyData();
 
 			canGetPregnantIfHasVagina = source.canGetPregnant;
 			canGetAnallyPregnantIfHasAnus = source.canGetAnallyPregnant;
 			canGetPregnantIfHasSecondVagina = source.canGetSecondaryNormalPregnant;
 		}
+
+
 	}
 }

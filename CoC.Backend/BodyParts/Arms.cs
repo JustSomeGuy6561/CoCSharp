@@ -27,6 +27,8 @@ namespace CoC.Backend.BodyParts
 	 * An aside: unfortunately, i can't think up a means to memoize the epidermis/secondary epidermis. so it'll have to get them each time. This shouldn't be costly enough to worry about that, though
 	 */
 
+	//Note: Never fires a data change event, as it has no data that can be changed. Note that technically claws could fire a change, but whatever. 
+
 	public sealed class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
 	{
 		public readonly Hands hands;

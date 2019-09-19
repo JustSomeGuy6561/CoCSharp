@@ -22,6 +22,9 @@ namespace CoC.Backend.BodyParts
 	public sealed class Neck : BehavioralSaveablePart<Neck, NeckType, NeckData>, IDyeable
 	{
 		public byte length { get; private set; } = NeckType.MIN_NECK_LENGTH;
+
+		private HairFurColors hairColor => source.hair.hairColor;
+
 		public override NeckType type
 		{
 			get => _type;
@@ -31,7 +34,7 @@ namespace CoC.Backend.BodyParts
 				{
 					byte len = length;
 					HairFurColors col = neckColor;
-					value.convertNeck(ref len, ref col, _type);
+					value.convertNeck(ref len, ref col, hairColor, _type);
 					length = len;
 					neckColor = col;
 				}
@@ -57,21 +60,80 @@ namespace CoC.Backend.BodyParts
 
 		internal Neck(Creature source, NeckType neckType, HairFurColors initialNeckColor = null, byte neckLength = NeckType.MIN_NECK_LENGTH) : this(source, neckType)
 		{
-			GrowNeck(neckLength.subtract(NeckType.MIN_NECK_LENGTH)); //add in the remaining amount.
+			GrowNeckInternal(neckLength.subtract(NeckType.MIN_NECK_LENGTH), true); //add in the remaining amount.
 			var neckCol = neckColor;
 			type.ParseDye(ref neckCol, initialNeckColor);
 			neckColor = neckCol;
 		}
 
-		//default update, restore are fine. may want an additonal update with a length, idk.
+		internal override bool UpdateType(NeckType newType)
+		{
+			if (newType is null || newType == type)
+			{
+				return false;
+			}
+
+			var oldValue = type;
+			var oldData = AsReadOnlyData();
+
+			type = newType;
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldValue);
+			return true;
+		}
+
+		internal bool UpdateTypeWithAddedLength(NeckType newType, byte additionalLength)
+		{
+			if (newType is null || newType == type)
+			{
+				return false;
+			}
+
+			var oldValue = type;
+			var oldData = AsReadOnlyData();
+
+			type = newType;
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldValue);
+			return true;
+		}
+
+		private void CheckDataChanged(NeckData oldData)
+		{
+			if (neckColor != oldData.neckHairColor || length != oldData.neckLength)
+			{
+				NotifyDataChanged(oldData);
+			}
+		}
 
 		internal byte GrowNeck(byte amount)
+		{
+			return GrowNeckInternal(amount, false);
+		}
+
+		private byte GrowNeckInternal(byte amount, bool silent)
 		{
 			if (canGrowNeck)
 			{
 				byte neckLength = length;
 				byte retVal = type.StrengthenTransform(ref neckLength, amount);
-				length = neckLength;
+
+				if (length != neckLength)
+				{
+					NeckData oldData = null;
+					if (!silent)
+					{
+						oldData = AsReadOnlyData();
+					}
+					length = neckLength;
+					if (oldData != null)
+					{
+						NotifyDataChanged(oldData);
+					}
+
+				}
 				return retVal;
 			}
 			return 0;
@@ -179,14 +241,14 @@ namespace CoC.Backend.BodyParts
 			return currNeckLength < maxNeckLength;
 		}
 
-		internal virtual byte StrengthenTransform(ref byte neckLength, byte level)
+		internal virtual byte StrengthenTransform(ref byte neckLength, byte amount)
 		{
-			if (neckLength >= maxNeckLength || level <= 0)
+			if (neckLength >= maxNeckLength || amount == 0)
 			{
 				return 0;
 			}
 			byte oldLength = neckLength;
-			neckLength += level;
+			neckLength += amount;
 			Utils.Clamp(ref neckLength, MIN_NECK_LENGTH, maxNeckLength);
 			return neckLength.subtract(oldLength);
 		}
@@ -210,7 +272,7 @@ namespace CoC.Backend.BodyParts
 		/// </summary>
 		/// <param name="length">the current neck length</param>
 		/// <param name="oldMaxLength"></param>
-		internal virtual void convertNeck(ref byte length, ref HairFurColors color, NeckType oldType)
+		internal virtual void convertNeck(ref byte length, ref HairFurColors color, in HairFurColors currentHairColor, NeckType oldType)
 		{
 			if (maxNeckLength == MIN_NECK_LENGTH)
 			{

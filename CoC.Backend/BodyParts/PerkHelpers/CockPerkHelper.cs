@@ -4,6 +4,7 @@
 //12/29/2018, 10:55 PM
 
 
+using CoC.Backend.Tools;
 using System;
 
 namespace CoC.Backend.BodyParts
@@ -24,7 +25,7 @@ namespace CoC.Backend.BodyParts
 
 		public float NewLength(float? givenLength = null)
 		{
-			float minLength = Math.Max(MinCockLength, NewCockDefaultSize);
+			float minLength = Utils.Clamp2(Math.Max(MinCockLength, NewCockDefaultSize), Cock.MIN_COCK_LENGTH, Cock.MAX_COCK_LENGTH);
 			if (givenLength != null)
 			{
 				givenLength += NewCockSizeDelta;

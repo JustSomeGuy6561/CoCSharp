@@ -11,6 +11,8 @@ using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Perks;
 using System;
 using CoC.Backend.Creatures;
+using CoC.Backend.BodyParts.EventHelpers;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -23,11 +25,29 @@ namespace CoC.Backend.BodyParts
 	{
 		internal float clitGrowthMultiplier = 1;
 		internal float clitShrinkMultiplier = 1;
-		internal float minClitSize = MIN_CLIT_SIZE;
+		internal float minClitSize
+		{
+			get => _minClitSize;
+			set
+			{
+				_minClitSize = value;
+				if (length < minSize)
+				{
+					length = minSize;
+				}
+			}
+		}
+		private float _minClitSize = MIN_CLIT_SIZE;
+
 		internal float minNewClitSize;
 
 		private float resetSize => Math.Max(minNewClitSize, minClitSize);
-		
+
+
+
+		private readonly Vagina parent;
+		private int vaginaIndex => source.genitals.vaginas.IndexOf(parent);
+
 		private static readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
 		private const JewelryType SUPPORTED_CLIT_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 
@@ -55,7 +75,13 @@ namespace CoC.Backend.BodyParts
 			get => _length;
 			private set
 			{
-				_length = Utils.Clamp2(value, minSize, MAX_CLIT_SIZE);
+				Utils.Clamp(ref value, minSize, MAX_CLIT_SIZE);
+				if (_length != value)
+				{
+					var oldData = AsReadOnlyData();
+					_length = value;
+					NotifyDataChanged(oldData);
+				}
 			}
 		}
 		private float _length;
@@ -65,46 +91,42 @@ namespace CoC.Backend.BodyParts
 			get => _omnibusClit;
 			private set
 			{
-				if (value && !_omnibusClit && length < MIN_CLITCOCK_SIZE)
+				if (_omnibusClit != value)
 				{
-					_length = MIN_CLITCOCK_SIZE;
+					ClitData oldData = AsReadOnlyData();
+					_omnibusClit = value;
+					if (length < minSize)
+					{
+						_length = minSize; //don't let the length fire the event. we'll handle it.
+					}
+					NotifyDataChanged(oldData);
 				}
-				_omnibusClit = value;
 			}
 		}
 		private bool _omnibusClit;
-
 		public readonly Piercing<ClitPiercings> clitPiercings;
 
-		internal Clit(Creature source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false) : base(source)
+		internal Clit(Creature source, Vagina parent, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false) 
+			: this(source, parent, initialPerkData, null, isOmnibusClit)
+		{ }
+
+		internal Clit(Creature source, Vagina parent, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false) 
+			: this(source, parent, initialPerkData, (float?)clitSize, isOmnibusClit)
+		{ }
+
+		private Clit(Creature source, Vagina parent, VaginaPerkHelper initialPerkData, float? clitSize, bool isOmnibusClit) : base(source)
 		{
-			length = initialPerkData.NewClitSize();
+			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
+			_length = initialPerkData.NewClitSize(clitSize);
 			if (isOmnibusClit && MIN_CLITCOCK_SIZE > length)
 			{
-				length = MIN_CLITCOCK_SIZE;
+				_length = MIN_CLITCOCK_SIZE;
 			}
 
-			omnibusClit = isOmnibusClit;
+			_omnibusClit = isOmnibusClit;
 			clitPiercings = new Piercing<ClitPiercings>(PiercingLocationUnlocked, JewelryTypeSupported);
 
-			minClitSize = initialPerkData.MinClitSize;
-			minNewClitSize = initialPerkData.DefaultNewClitSize;
-			clitGrowthMultiplier = initialPerkData.ClitGrowthMultiplier;
-			clitShrinkMultiplier = initialPerkData.ClitShrinkMultiplier;
-		}
-
-		internal Clit(Creature source, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false) : base(source)
-		{
-			length = initialPerkData.NewClitSize(clitSize);
-			if (isOmnibusClit && MIN_CLITCOCK_SIZE > length)
-			{
-				length = MIN_CLITCOCK_SIZE;
-			}
-
-			omnibusClit = isOmnibusClit;
-			clitPiercings = new Piercing<ClitPiercings>(PiercingLocationUnlocked, JewelryTypeSupported);
-
-			minClitSize = initialPerkData.MinClitSize;
+			_minClitSize = initialPerkData.MinClitSize;
 			minNewClitSize = initialPerkData.DefaultNewClitSize;
 			clitGrowthMultiplier = initialPerkData.ClitGrowthMultiplier;
 			clitShrinkMultiplier = initialPerkData.ClitShrinkMultiplier;
@@ -112,27 +134,28 @@ namespace CoC.Backend.BodyParts
 
 		public override ClitData AsReadOnlyData()
 		{
-			return new ClitData(this);
+			return new ClitData(this, vaginaIndex);
 		}
 
-		//public Cock AsCock()
-		//{
-		//	if (!omnibusClit)
-		//	{
-		//		return null;
-		//	}
+		public Cock AsClitCock()
+		{
+			if (!omnibusClit)
+			{
+				return null;
+			}
 
-		//	if (clitCock == null)
-		//	{
-		//		clitCock = Cock.GenerateClitCock(this);
-		//	}
-		//	else
-		//	{
-		//		clitCock.SetLength(length + 5);
-		//	}
-		//	return clitCock;
-		//}
-		//private Cock clitCock = null;
+			if (clitCock == null)
+			{
+				clitCock = Cock.GenerateClitCock(source, this);
+			}
+			else
+			{
+				clitCock.SetLength(length + 5);
+			}
+			return clitCock;
+		}
+		private Cock clitCock = null;
+
 		public void Restore()
 		{
 			omnibusClit = false;
@@ -145,7 +168,7 @@ namespace CoC.Backend.BodyParts
 			clitPiercings.Reset();
 		}
 
-		public bool ActivateOmnibusClit()
+		internal bool ActivateOmnibusClit()
 		{
 			if (omnibusClit)
 			{
@@ -155,7 +178,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public bool DeactivateOmnibusClit()
+		internal bool DeactivateOmnibusClit()
 		{
 			if (!omnibusClit)
 			{
@@ -165,13 +188,13 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public float growClit(float amount, bool ignorePerks = false)
+		internal float growClit(float amount, bool ignorePerks = false)
 		{
 			if (length >= MAX_CLIT_SIZE || amount <= 0)
 			{
 				return 0;
 			}
-			
+
 			//hope this never matters but floats don't wrap. which means we're fine, though if it ever happens in debug land, we'll know.
 			float oldLength = length;
 			if (!ignorePerks)
@@ -185,7 +208,7 @@ namespace CoC.Backend.BodyParts
 			return length - oldLength;
 		}
 
-		public float shrinkClit(float amount, bool ignorePerks = false)
+		internal float shrinkClit(float amount, bool ignorePerks = false)
 		{
 			if (length <= MIN_CLIT_SIZE || amount <= 0)
 			{
@@ -204,7 +227,7 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
-		public float SetClitSize(float newSize)
+		internal float SetClitSize(float newSize)
 		{
 			length = newSize;
 			return length;
@@ -297,11 +320,13 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly float length;
 		public readonly bool isClitCock;
+		public readonly int VaginaIndex;
 
-		internal ClitData(Clit source)
+		internal ClitData(Clit source, int currIndex)
 		{
 			length = source.length;
 			isClitCock = source.omnibusClit;
+			VaginaIndex = currIndex;
 		}
 	}
 }

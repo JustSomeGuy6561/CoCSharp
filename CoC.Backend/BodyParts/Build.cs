@@ -2,9 +2,11 @@
 //Description:
 //Author: JustSomeGuy
 //4/10/2019, 4:44 AM
-using CoC.Backend.Tools;
-using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.Creatures;
+using CoC.Backend.Tools;
+using System;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -22,7 +24,16 @@ namespace CoC.Backend.BodyParts
 		public byte heightInInches
 		{
 			get => _heightInInches;
-			private set => _heightInInches = Utils.Clamp2(value, MIN_HEIGHT, MAX_HEIGHT);
+			private set
+			{
+				Utils.Clamp(ref value, MIN_HEIGHT, MAX_HEIGHT);
+				if (_heightInInches != value)
+				{
+					var oldValue = AsReadOnlyData();
+					_heightInInches = value;
+					NotifyDataChanged(oldValue);
+				}
+			}
 		}
 		private byte _heightInInches;
 
@@ -39,7 +50,16 @@ namespace CoC.Backend.BodyParts
 		public byte muscleTone
 		{
 			get => _muscleTone;
-			set => _muscleTone = Utils.Clamp2(value, TONE_FLABBY, TONE_PERFECTLY_DEFINED);
+			private set
+			{
+				Utils.Clamp(ref value, TONE_FLABBY, TONE_PERFECTLY_DEFINED);
+				if (_muscleTone != value)
+				{
+					var oldData = AsReadOnlyData();
+					_muscleTone = value;
+					NotifyDataChanged(oldData);
+				}
+			}
 		}
 		private byte _muscleTone;
 		#endregion
@@ -48,14 +68,23 @@ namespace CoC.Backend.BodyParts
 		public const byte THICKNESS_THIN = 20;
 		public const byte THICKNESS_NORMAL = 35;
 		public const byte THICKNESS_THICK = 50;
-		public const byte THICKNESS_LARGE = 65; 
+		public const byte THICKNESS_LARGE = 65;
 		public const byte THICKNESS_HUGE = 80;
 		public const byte THICKNESS_MASSIVE = 100;
 
 		public byte thickness
 		{
 			get => _thickness;
-			private set => _thickness = Utils.Clamp2(value, THICKNESS_LITHE, THICKNESS_MASSIVE);
+			private set
+			{
+				Utils.Clamp(ref value, THICKNESS_LITHE, THICKNESS_MASSIVE);
+				if (_thickness != value)
+				{
+					var oldData = AsReadOnlyData();
+					_thickness = value;
+					NotifyDataChanged(oldData);
+				}
+			}
 		}
 		private byte _thickness;
 		#endregion
@@ -76,22 +105,48 @@ namespace CoC.Backend.BodyParts
 		public SimpleDescriptor buttShortDescription => butt.ShortDescription;
 		public SimpleDescriptor hipsShortDescription => hips.ShortDescription;
 
-		public SimpleDescriptor buttFullDescription=> ButtFullDesc;
-		public SimpleDescriptor hipsFullDescription=> HipsFullDesc;
+		public SimpleDescriptor buttFullDescription => ButtFullDesc;
+		public SimpleDescriptor hipsFullDescription => HipsFullDesc;
 
 
 		internal Build(Creature source, byte heightInches, byte? characterThickness, byte? characterTone, byte? characterHipSize, byte? characterButtSize) : base(source)
 		{
-			heightInInches = heightInches;
+			_heightInInches = Utils.Clamp2(heightInches, MIN_HEIGHT, MAX_HEIGHT);
 
-			thickness = characterThickness ?? THICKNESS_NORMAL;
-			muscleTone = characterTone ?? TONE_SOFT;
-			butt = new Butt(source, characterButtSize?? Butt.AVERAGE);
+			_thickness = Utils.Clamp2(characterThickness ?? THICKNESS_NORMAL, THICKNESS_LITHE, THICKNESS_MASSIVE);
+			_muscleTone = Utils.Clamp2(characterTone ?? TONE_SOFT, TONE_FLABBY, TONE_PERFECTLY_DEFINED);
+
+			butt = new Butt(source, characterButtSize ?? Butt.AVERAGE);
 			hips = new Hips(source, characterHipSize ?? Hips.AVERAGE);
 		}
 
 		internal Build(Creature source) : this(source, DEFAULT_HEIGHT, THICKNESS_NORMAL, TONE_SOFT, Hips.AVERAGE, Butt.AVERAGE)
 		{
+		}
+
+		protected internal override void PostPerkInit()
+		{
+			butt.PostPerkInit();
+			hips.PostPerkInit();
+		}
+
+		protected internal override void LateInit()
+		{
+			butt.LateInit();
+			hips.LateInit();
+
+			butt.dataChange += Butt_dataChange;
+			hips.dataChange += Hips_dataChange;
+		}
+
+		private void Hips_dataChange(object sender, SimpleDataChangeEvent<Hips, HipData> e)
+		{
+			NotifyDataChanged(new BuildData(heightInInches, muscleTone, thickness, butt.size, e.oldValues.hipSize));
+		}
+
+		private void Butt_dataChange(object sender, SimpleDataChangeEvent<Butt, ButtData> e)
+		{
+			NotifyDataChanged(new BuildData(heightInInches, muscleTone, thickness, e.oldValues.size, hips.size));
 		}
 
 		public byte GrowButt(byte amount = 1)

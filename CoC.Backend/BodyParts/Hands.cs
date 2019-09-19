@@ -9,10 +9,10 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
-	
+	//technically claws do update, but we're not messing with them. it's possible to do, but i just dont feel it's necessary. The data change will never occur.
+
 	public sealed class Hands : PartWithBehaviorAndEventBase<Hands, HandType, HandData>
 	{
-
 		public override HandType type { get; protected set; }
 
 		public Tones clawTone => type.getClawTone(getArmData(true).tone, getArmData(false).tone);

@@ -184,19 +184,6 @@ namespace CoC.Backend.BodyParts
 		}
 		private ushort _perkBonusAnalCapacity;
 
-		private readonly WeakEventSource<SimpleDataChangeEvent<Ass, AssData>> dataChangeSource =
-			new WeakEventSource<SimpleDataChangeEvent<Ass, AssData>>();
-		public event EventHandler<SimpleDataChangeEvent<Ass, AssData>> dataChange
-		{
-			add => dataChangeSource.Subscribe(value);
-			remove => dataChangeSource.Unsubscribe(value);
-		}
-
-		private void NotifyDataChanged(AssData oldData)
-		{
-			dataChangeSource.Raise(this, new SimpleDataChangeEvent<Ass, AssData>(oldData, AsReadOnlyData()));
-		}
-
 		public ushort analCapacity()
 		{
 

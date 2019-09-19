@@ -4,8 +4,10 @@
 //3/26/2019, 8:40 PM
 
 
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.Creatures;
 using System;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -22,6 +24,19 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public abstract DataClass AsReadOnlyData();
+
+		private protected readonly WeakEventSource<SimpleDataChangeEvent<ThisClass, DataClass>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangeEvent<ThisClass, DataClass>>();
+		public event EventHandler<SimpleDataChangeEvent<ThisClass, DataClass>> dataChange
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private protected void NotifyDataChanged(DataClass oldData)
+		{
+			dataChangeSource.Raise(source, new SimpleDataChangeEvent<ThisClass, DataClass>(oldData, AsReadOnlyData()));
+		}
 
 		protected internal virtual void PostPerkInit()
 		{ }

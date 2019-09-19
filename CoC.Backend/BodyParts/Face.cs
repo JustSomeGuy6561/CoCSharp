@@ -18,15 +18,17 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
-	public enum LipPiercingLocation { LABRET, MEDUSA, MONROE_LEFT, MONROE_RIGHT, LOWER_LEFT_1, LOWER_LEFT_2, LOWER_RIGHT_1, LOWER_RIGHT_2 }
+	//ngl, i can never recall if medusa is top and labret bottom, or if it's the opposite. 
+	public enum LipPiercingLocation { LABRET, MEDUSA, MONROE_LEFT, MONROE_RIGHT, LOWER_LEFT_1, LOWER_LEFT_2, LOWER_RIGHT_1, LOWER_RIGHT_2 } 
+
 	public enum EyebrowPiercingLocation { LEFT_1, LEFT_2, RIGHT_1, RIGHT_2 }
 	public enum NosePiercingLocation { LEFT_NOSTRIL, RIGHT_NOSTRIL, SEPTIMUS, BRIDGE }
 
 
 	/*
 	 * Faces are another instance of shit that breaks the epidermis stores only one things rule. You can have a two-tone face, but theres also skin underneath,
-	 * and for some reason you need the skin tone to describe the face in detail. IDK, man. If for some reason, you have a face that has two epidermis values, and
-	 * you need to know the body tone
+	 * and for some reason you need the skin tone to describe the face in detail. IDK, man. Regardless, you have the whole body data, just use that. if you need all three
+	 * for something not in the face itself, it's available, i guess. We're not firing when it changes though.
 	 */
 
 	public sealed class Face : BehavioralSaveablePart<Face, FaceType, FaceData>, ILotionable, ICanAttackWith
@@ -71,7 +73,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private SkinTexture _skinTexture = SkinTexture.NONDESCRIPT;
 
-		Tones epidermisTone => bodyData.mainSkin.tone;
+		public Tones epidermisTone => bodyData.mainSkin.tone;
 
 		internal Face(Creature source) : this(source, FaceType.defaultValue)
 		{ }
@@ -101,6 +103,21 @@ namespace CoC.Backend.BodyParts
 			return new FaceData(this);
 		}
 
+		internal override bool UpdateType(FaceType newType)
+		{
+			if (newType == null || type == newType)
+			{
+				return false;
+			}
+			var oldType = type;
+			var oldData = AsReadOnlyData();
+			type = newType;
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldType);
+			return true;
+		}
+
 		internal bool UpdateFaceWithMorph(FaceType faceType, bool fullMorph)
 		{
 			if (faceType == null || type == faceType)
@@ -108,8 +125,11 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
+
 			type = faceType;
 			isFullMorph = type.hasSecondLevel ? fullMorph : false;
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -121,8 +141,11 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
+
 			type = faceType;
 			skinTexture = complexion;
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -134,17 +157,26 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
+
 			type = faceType;
 			skinTexture = complexion;
 			isFullMorph = type.hasSecondLevel ? fullMorph : false;
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
 
 		internal bool StrengthenFacialMorph()
 		{
-			isFullMorph = type.hasSecondLevel;
-			return isFullMorph;
+			if (!isFullMorph && type.hasSecondLevel)
+			{
+				var oldData = AsReadOnlyData();
+				isFullMorph = true;
+				NotifyDataChanged(oldData);
+				return true;
+			}
+			return false;
 		}
 
 		internal bool WeakenFacialMorph(bool restoreIfAlreadyLevelOne = true)
@@ -152,14 +184,15 @@ namespace CoC.Backend.BodyParts
 			//if full morph, weaken it to half-morph level. 
 			if (isFullMorph)
 			{
+				var oldData = AsReadOnlyData();
 				isFullMorph = false;
+				NotifyDataChanged(oldData);
 				return true;
 			}
 			//otherwise, if we're not human and we are to restore back to human on weaken
-			else if (restoreIfAlreadyLevelOne && type != FaceType.HUMAN)
+			else if (restoreIfAlreadyLevelOne && type != FaceType.defaultValue)
 			{
-				type = FaceType.HUMAN;
-				return true;
+				return Restore();
 			}
 			//we are already human or are told not to convert to human and at the weakest level.
 			return false;
@@ -180,27 +213,32 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			skinTexture = complexion;
+			NotifyDataChanged(oldData);
 			return true;
 		}
 
-		internal override bool Restore()
-		{
-			if (type == FaceType.HUMAN)
-			{
-				return false;
-			}
-			type = FaceType.HUMAN;
-			return true;
-		}
+		//default restore is fine.
 
 		internal void Reset()
 		{
+			var oldData = AsReadOnlyData();
 			type = FaceType.HUMAN;
 			isFullMorph = false;
+			CheckDataChanged(oldData);
 			lipPiercings.Reset();
 			nosePiercings.Reset();
 			eyebrowPiercings.Reset();
+		}
+
+		private void CheckDataChanged(FaceData oldData)
+		{
+			if (!primary.Equals(oldData.primaryEpidermis) || !secondary.Equals(oldData.secondaryEpidermis) ||
+				isFullMorph != oldData.isFullMorph || skinTexture != oldData.skinTexture)
+			{
+				NotifyDataChanged(oldData);
+			}
 		}
 
 		private bool LipPiercingUnlocked(LipPiercingLocation piercingLocation)

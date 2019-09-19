@@ -50,12 +50,24 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Properties
+
+		private int cockIndex => source.genitals.cocks.IndexOf(this);
+
 		internal float cockGrowthMultiplier;
 		internal float cockShrinkMultiplier;
 		internal float minCockLength
 		{
 			get => _minCockLength;
-			set => _minCockLength = value;
+			set
+			{
+				_minCockLength = value;
+				if (cockLength < _minCockLength)
+				{
+					var oldData = AsReadOnlyData();
+					_cockLength = _minCockLength;
+					NotifyDataChanged(oldData);
+				}
+			}
 		}
 		private float _minCockLength = MIN_COCK_LENGTH;
 
@@ -154,6 +166,12 @@ namespace CoC.Backend.BodyParts
 			else return null;
 		}
 
+		internal static Cock GenerateClitCock(Creature source, Clit clit)
+		{
+			//clit cock doesn't care about perks, also this way i can write it easily lol.
+			return new Cock(source, new CockPerkHelper(), CockType.defaultValue, clit.length + 5, DEFAULT_COCK_GIRTH);
+		}
+
 		internal void InitializePiercings(Dictionary<CockPiercings, PiercingJewelry> piercings)
 		{
 #warning Implement Me!
@@ -165,7 +183,15 @@ namespace CoC.Backend.BodyParts
 
 		public override CockData AsReadOnlyData()
 		{
-			return new CockData(this);
+			return new CockData(this, cockIndex);
+		}
+
+		private void CheckDataChanged(CockData oldData)
+		{
+			if (cockLength != oldData.length || this.cockGirth != oldData.girth || knotMultiplier != oldData.knotMultiplier || knotSize != oldData.knotSize)
+			{
+				NotifyDataChanged(oldData);
+			}
 		}
 
 		#region Update
@@ -205,9 +231,12 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			var oldType = type;
 			type = newType;
 			callback?.Invoke();
+
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -242,7 +271,9 @@ namespace CoC.Backend.BodyParts
 			{
 				lengthenAmount *= cockGrowthMultiplier;
 			}
+			var oldData = AsReadOnlyData();
 			updateLength(cockLength + lengthenAmount);
+			CheckDataChanged(oldData);
 			return cockLength - oldLength;
 		}
 
@@ -254,39 +285,51 @@ namespace CoC.Backend.BodyParts
 			{
 				shortenAmount *= cockShrinkMultiplier;
 			}
+			var oldData = AsReadOnlyData();
 			updateLength(cockLength - shortenAmount);
+			CheckDataChanged(oldData);
 			return oldLength - cockLength;
 		}
 
 		internal float SetLength(float newLength)
 		{
+			var oldData = AsReadOnlyData();
 			updateLength(newLength);
+			CheckDataChanged(oldData);
 			return cockLength;
 		}
 
 		internal float ThickenCock(float thickenAmount)
 		{
 			float oldGirth = cockGirth;
+			var oldData = AsReadOnlyData();
 			updateGirth(cockGirth + thickenAmount);
+			CheckDataChanged(oldData);
 			return cockGirth - oldGirth;
 		}
 
 		internal float ThinCock(float thinAmount)
 		{
 			float oldGirth = cockGirth;
+			var oldData = AsReadOnlyData();
 			updateGirth(cockGirth - thinAmount);
+			CheckDataChanged(oldData);
 			return oldGirth - cockGirth;
 		}
 
 		internal float SetGirth(float newGirth)
 		{
+			var oldData = AsReadOnlyData();
 			updateGirth(newGirth);
+			CheckDataChanged(oldData);
 			return cockGirth;
 		}
 
 		internal void SetLengthAndGirth(float newLength, float newGirth)
 		{
+			var oldData = AsReadOnlyData();
 			updateLengthAndGirth(newLength, newGirth);
+			CheckDataChanged(oldData);
 		}
 
 		internal float IncreaseKnotMultiplier(float amount)
@@ -296,8 +339,10 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			float oldMultiplier = knotMultiplier;
+			var oldData = AsReadOnlyData();
 			knotMultiplier += amount;
-			return knotMultiplier - amount;
+			CheckDataChanged(oldData);
+			return knotMultiplier - oldMultiplier;
 		}
 
 		internal float DecreaseKnotMultiplier(float amount)
@@ -307,27 +352,34 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			float oldMultiplier = knotMultiplier;
+			var oldData = AsReadOnlyData();
 			knotMultiplier -= amount;
-			return amount - knotMultiplier;
+			CheckDataChanged(oldData);
+			return oldMultiplier - knotMultiplier;
 		}
 
-		internal bool SetKnotMultiplier(float multiplier)
+		internal float SetKnotMultiplier(float multiplier)
 		{
-			if (multiplier < MIN_KNOT_MULTIPLIER)
+			Utils.Clamp(ref multiplier, MIN_KNOT_MULTIPLIER, MAX_KNOT_MULTIPLIER);
+			if (type.hasKnot)
 			{
-				return multiplier == 0 && !type.hasKnot;
-			}
-			else if (type.hasKnot)
-			{
-				if (multiplier > MAX_KNOT_MULTIPLIER)
-				{
-					multiplier = MAX_KNOT_MULTIPLIER;
-				}
+				var oldData = AsReadOnlyData();
 				knotMultiplier = multiplier;
-				return true;
+				CheckDataChanged(oldData);
 			}
-			return false;
+			return knotMultiplier;
+		}
 
+		internal void SetAll(float newLength, float newGirth, float newKnotMultiplier)
+		{
+			var oldData = AsReadOnlyData();
+			updateLengthAndGirth(newLength, newGirth);
+			Utils.Clamp(ref newKnotMultiplier, MIN_KNOT_MULTIPLIER, MAX_KNOT_MULTIPLIER);
+			if (type.hasKnot)
+			{
+				knotMultiplier = newKnotMultiplier;
+			}
+			CheckDataChanged(oldData);
 		}
 
 		#endregion
@@ -573,14 +625,17 @@ namespace CoC.Backend.BodyParts
 		public readonly float knotSize;
 		public readonly float length;
 		public readonly float girth;
+		public readonly int cockIndex;
+
 		public float cockArea => length * girth;
 
-		public CockData(Cock source) : base(GetBehavior(source))
+		public CockData(Cock source, int currIndex) : base(GetBehavior(source))
 		{
 			knotMultiplier = source.knotMultiplier;
 			length = source.cockLength;
 			girth = source.cockGirth;
 			knotSize = source.knotSize;
+			cockIndex = currIndex;
 		}
 	}
 }

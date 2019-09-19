@@ -81,7 +81,20 @@ namespace CoC.Backend.BodyParts
 			return new WingData(this);
 		}
 
-		//default update is fine since type handles color and size change.
+		internal override bool UpdateType(WingType newType)
+		{
+			if (newType == null || type == newType)
+			{
+				return false;
+			}
+			var oldType = type;
+			var oldData = AsReadOnlyData();
+			type = newType;
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldType);
+			return true;
+		}
 
 		internal bool UpdateWingsAndChangeColor(FeatheredWings featheredWings, HairFurColors featherCol)
 		{
@@ -90,11 +103,14 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = featheredWings;
 			if (featherColor != featherCol && !HairFurColors.IsNullOrEmpty(featherCol) && type.canChangeColor)
 			{
 				featherColor = featherCol;
 			}
+
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -106,6 +122,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = toneWings;
 
 			if (!Tones.IsNullOrEmpty(tone) && type.canChangeColor)
@@ -113,6 +130,8 @@ namespace CoC.Backend.BodyParts
 				wingTone = tone;
 				wingBoneTone = tone;
 			}
+
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -124,6 +143,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = toneWings;
 
 			if (type.canChangeColor)
@@ -139,6 +159,8 @@ namespace CoC.Backend.BodyParts
 					wingBoneTone = boneTone;
 				}
 			}
+
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -150,9 +172,11 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = wingType;
 			if (type.canChangeSize) isLarge = large;
 
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -165,6 +189,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = featheredWings;
 
 			if (type.canChangeSize) isLarge = large;
@@ -174,6 +199,7 @@ namespace CoC.Backend.BodyParts
 				featherColor = featherCol;
 			}
 
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -185,6 +211,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = toneWings;
 
 			if (type.canChangeSize) isLarge = large;
@@ -195,6 +222,7 @@ namespace CoC.Backend.BodyParts
 				wingBoneTone = tone;
 			}
 
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}
@@ -206,6 +234,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = toneWings;
 
 			if (type.canChangeColor)
@@ -223,8 +252,18 @@ namespace CoC.Backend.BodyParts
 			}
 			if (type.canChangeSize) isLarge = large;
 
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
+		}
+
+		private void CheckDataChanged(WingData oldData)
+		{
+			if (wingTone != oldData.wingTone || wingBoneTone != oldData.wingBoneTone || featherColor != oldData.featherColor ||
+				oldData.isLarge != isLarge || type.usesHair != oldData.currentType.usesHair || type.usesTone != oldData.currentType.usesTone)
+			{
+				NotifyDataChanged(oldData);
+			}
 		}
 
 		internal bool GrowLarge()
@@ -233,8 +272,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			isLarge = true;
-			return isLarge;
+			NotifyDataChanged(oldData);
+			return true;
 		}
 
 		internal bool ShrinkToSmall()
@@ -243,18 +284,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			isLarge = false;
+			NotifyDataChanged(oldData);
 			return !isLarge;
-		}
-
-		internal override bool Restore()
-		{
-			if (type == WingType.NONE)
-			{
-				return false;
-			}
-			type = WingType.NONE;
-			return true;
 		}
 
 		internal override bool Validate(bool correctInvalidData)

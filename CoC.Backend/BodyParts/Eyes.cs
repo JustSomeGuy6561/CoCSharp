@@ -73,7 +73,7 @@ namespace CoC.Backend.BodyParts
 		public override EyeType defaultType => EyeType.defaultValue;
 
 		internal Eyes(Creature source) : this(source, EyeType.defaultValue) { }
-
+		
 		//by design, there is no way to update eye color while changing types. Eye types are supposed to respect the current eye color.
 		//if you REALLY want to change this, just call update, then call change. You'll probably want some unique flavor text, though, as
 		//the calls to change color str and update str are not really designed with being called back to back in mind and may sound weird, idk.
@@ -86,8 +86,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			leftIrisColor = color;
 			rightIrisColor = color;
+			NotifyDataChanged(oldData);
 			return true;
 		}
 		internal bool ChangeEyeColor(EyeColor leftEye, EyeColor rightEye)
@@ -96,8 +98,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			leftIrisColor = leftEye;
 			rightIrisColor = rightEye;
+			NotifyDataChanged(oldData);
 			return true;
 		}
 
@@ -114,9 +118,18 @@ namespace CoC.Backend.BodyParts
 
 		internal void Reset()
 		{
+			EyeData OldData = null;
+			if (type != EyeType.HUMAN || leftIrisColor != EyeType.HUMAN.defaultColor || leftIrisColor != rightIrisColor)
+			{
+				OldData = AsReadOnlyData();
+			}
 			type = EyeType.HUMAN;
 			leftIrisColor = type.defaultColor;
 			rightIrisColor = type.defaultColor;
+			if (OldData != null)
+			{
+				NotifyDataChanged(OldData);
+			}
 		}
 
 		internal override bool Validate(bool correctInvalidData)

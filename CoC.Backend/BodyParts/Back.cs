@@ -19,6 +19,7 @@ namespace CoC.Backend.BodyParts
 	//tail now has the ovipositors. ovipositors are no longer perks. in the event bees and spiders need some back type (remember, wings and back are separate), i could just
 	//add an ovipositor type. for now i don't think i need to. the scorpion is still a tail, but i may move it here for ease of coding, though technically it's a tail. idk man.
 
+	//only way data changes is due to dye. i figure that's rare enough not to deal with it.
 
 	public sealed class Back : BehavioralSaveablePart<Back, BackType, BackData>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
@@ -53,7 +54,6 @@ namespace CoC.Backend.BodyParts
 						resources = 0;
 						regenRate = 0;
 					}
-
 					value.ParseEpidermis(epidermis);
 				}
 				_type = value;
@@ -85,7 +85,28 @@ namespace CoC.Backend.BodyParts
 			return new BackData(this);
 		}
 
-		//default standard update is valid. 
+		private void CheckDataChanged(BackData oldData)
+		{
+			if (!oldData.epidermis.Equals(backEpidermis))
+			{
+				NotifyDataChanged(oldData);
+			}
+		}
+
+		internal override bool UpdateType(BackType newType)
+		{
+			if (newType is null || type == newType)
+			{
+				return false;
+			}
+			var oldType = type;
+			var oldData = AsReadOnlyData();
+			type = newType;
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldType);
+			return true;
+		}
 
 		//additional, non-standard update.
 		internal bool UpdateType(DragonBackMane dragonMane, HairFurColors maneColor)
@@ -96,6 +117,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = dragonMane; //sets epidermis to use hair.
 
 			//overrides it if possible.
@@ -104,6 +126,7 @@ namespace CoC.Backend.BodyParts
 				epidermis.ChangeFur(maneColor);
 			}
 
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
 		}

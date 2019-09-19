@@ -543,7 +543,7 @@ namespace CoC.Backend.BodyParts
 
 	/// <summary>
 	/// </summary>
-	public partial class EpidermalData : BehavioralPartDataBase<EpidermisType>
+	public partial class EpidermalData : BehavioralPartDataBase<EpidermisType>, IEquatable<EpidermalData>
 	{
 
 		private readonly FurColor _fur; //NOT NULL EVER!
@@ -638,6 +638,12 @@ namespace CoC.Backend.BodyParts
 			if (currentType == EpidermisType.EMPTY) return "";
 			else if (currentType.usesTone) return tone.AsString();
 			else return fur.AsString();
+		}
+
+		public bool Equals(EpidermalData other)
+		{
+			return ReferenceEquals(this, other) || (!(other is null) && currentType == other.currentType && fur.Equals(other.fur) && furTexture == other.furTexture &&
+				tone == other.tone && skinTexture == other.skinTexture);
 		}
 	}
 }

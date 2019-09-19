@@ -47,14 +47,6 @@ namespace CoC.Backend.BodyParts
 		public const byte GENDERLESS_DEFAULT = ANDROGYNOUS;
 		public const byte HERM_DEFAULT = SLIGHTLY_FEMININE;
 
-		private readonly WeakEventSource<SimpleDataChangeEvent<Femininity, FemininityData>> femininityChangeSource =
-			new WeakEventSource<SimpleDataChangeEvent<Femininity, FemininityData>>();
-		public event EventHandler<SimpleDataChangeEvent<Femininity, FemininityData>> feminityChangedEvent
-		{
-			add => femininityChangeSource.Subscribe(value);
-			remove => femininityChangeSource.Unsubscribe(value);
-		}
-
 		public byte value
 		{
 			get => _value;
@@ -270,7 +262,7 @@ namespace CoC.Backend.BodyParts
 			{
 				var oldData = AsReadOnlyData();
 				value = newValue;
-				femininityChangeSource.Raise(source, new SimpleDataChangeEvent<Femininity, FemininityData>(oldData, AsReadOnlyData()));
+				NotifyDataChanged(oldData);
 			}
 		}
 	}
@@ -284,18 +276,51 @@ namespace CoC.Backend.BodyParts
 
 		//byte value => something, idk.
 
-		public bool isInfertile { get; private set; }
+		public bool isInfertile
+		{
+			get => _isInfertile;
+			private set
+			{
+				if (_isInfertile != value)
+				{
+					var oldData = AsReadOnlyData();
+					_isInfertile = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+		private bool _isInfertile;
 
 		public byte baseFertility
 		{
 			get => _baseValue;
 			private set
 			{
-				_baseValue = Utils.Clamp2<byte>(value, 0, MAX_BASE_FERTILITY);
+				Utils.Clamp<byte>(ref value, 0, MAX_BASE_FERTILITY);
+				if (_baseValue != value)
+				{
+					var oldData = AsReadOnlyData();
+					_baseValue = value;
+					NotifyDataChanged(oldData);
+				}
 			}
 		}
 		private byte _baseValue;
-		internal byte perkBonusFertility = 0;
+		internal byte perkBonusFertility
+		{
+			get => _perkBonusFertility;
+			set
+			{
+				if (_perkBonusFertility != value)
+				{
+					var oldData = AsReadOnlyData();
+					_perkBonusFertility = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+
+		}
+		private byte _perkBonusFertility = 0;
 
 		public override FertilityData AsReadOnlyData()
 		{

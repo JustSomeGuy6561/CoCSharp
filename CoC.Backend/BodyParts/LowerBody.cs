@@ -18,6 +18,8 @@ using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
+	//data changed event will never fire. 
+
 	public sealed class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType, LowerBodyData>, ICanAttackWith
 	{
 		public readonly Feet feet;

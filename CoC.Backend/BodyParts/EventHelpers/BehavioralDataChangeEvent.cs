@@ -4,8 +4,10 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts.EventHelpers
 {
-	public class BehavioralDataChangeEvent<Source, Behavior, Data> : EventArgs where Source : PartWithBehaviorAndEventBase<Source, Behavior, Data> 
-		where Behavior : BehaviorBase where Data : BehavioralPartDataBase<Behavior>
+	public class BehavioralDataChangeEvent<Source, Behavior, Data> : EventArgs 
+		where Source : PartWithBehaviorAndEventBase<Source, Behavior, Data> 
+		where Behavior : BehaviorBase
+		where Data : BehavioralPartDataBase<Behavior>
 	{
 		public readonly Data oldValues;
 		public readonly Data newValues;

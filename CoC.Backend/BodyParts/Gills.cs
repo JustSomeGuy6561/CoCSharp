@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 //using CoC.
 namespace CoC.Backend.BodyParts
 {
+	//has no special data. its data change will never be called.
 
 	public sealed class Gills : BehavioralSaveablePart<Gills, GillType, GillData>
 	{

@@ -80,13 +80,31 @@ namespace CoC.Backend.BodyParts
 
 		//standard update, restore are fine. may want an additional update with tail count, idk.
 
+		internal override bool UpdateType(TailType newType)
+		{
+			if (newType is null || newType == type)
+			{
+				return false;
+			}
+
+			var oldValue = type;
+			var oldData = AsReadOnlyData();
+			type = newType;
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldValue);
+			return true;
+		}
+
 		internal bool GrowAdditionalTail()
 		{
 			if (!type.hasMultipleTails || tailCount >= type.maxTailCount)
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			tailCount++;
+			NotifyDataChanged(oldData);
 			return true;
 		}
 
@@ -97,8 +115,22 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			byte oldCount = tailCount;
+			var oldData = AsReadOnlyData();
 			tailCount = tailCount.add(amount);
-			return tailCount.subtract(oldCount);
+			var result = tailCount.subtract(oldCount);
+			if (result != 0)
+			{
+				NotifyDataChanged(oldData);
+			}
+			return result;
+		}
+
+		private void CheckDataChanged(TailData oldData)
+		{
+			if (oldData.primaryEpidermis != epidermis || oldData.secondaryEpidermis != secondaryEpidermis || oldData.tailCount != tailCount)
+			{
+				NotifyDataChanged(oldData);
+			}
 		}
 
 		internal override bool Validate(bool correctInvalidData)

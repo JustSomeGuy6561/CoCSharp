@@ -2,10 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 10:57 PM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -66,7 +68,7 @@ namespace CoC.Backend.BodyParts
 
 		internal Balls(Creature source, bool hasBalls) : base(source)
 		{
-			setBalls(hasBalls);
+			setBalls(hasBalls, silent:true);
 		}
 
 		internal Balls(Creature source, byte ballCount = DEFAULT_BALLS_COUNT, byte ballSize = DEFAULT_BALLS_SIZE) : base(source)
@@ -77,7 +79,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				setBalls(true, ballCount, ballSize);
+				setBalls(true, ballCount, ballSize, true);
 			}
 		}
 
@@ -89,7 +91,7 @@ namespace CoC.Backend.BodyParts
 		internal static Balls GenerateUniBall(Creature source)
 		{
 			Balls balls = new Balls(source, false);
-			balls.setUniBall(true);
+			balls.setUniBall(true, true);
 			return balls;
 		}
 
@@ -352,7 +354,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Helpers
-		private void setBalls(bool balls, byte numBalls = 0, byte ballSize = 0)
+		private void setBalls(bool balls, byte numBalls = 0, byte ballSize = 0, bool silent = false)
 		{
 			if (balls)
 			{
@@ -372,22 +374,44 @@ namespace CoC.Backend.BodyParts
 				numBalls = 0;
 				ballSize = 0;
 			}
-			count = numBalls;
+			BallsData oldData = null;
+			if (!silent && (count != numBalls || size != ballSize))
+			{
+				oldData = AsReadOnlyData();
+			}
 
+			count = numBalls;
 			size = ballSize;
+			if (oldData != null && !silent)
+			{
+				NotifyDataChanged(oldData);
+			}
 		}
 
-		private void setUniBall(bool isUniBall) //uniball ignores perks.
+		private void setUniBall(bool isUniBall, bool silent = false) //uniball ignores perks.
 		{
+			BallsData oldData = null;
 			if (isUniBall)
 			{
+				if ((count != 1 || size != 1) && !silent)
+				{
+					oldData = AsReadOnlyData();
+				}
 				count = 1;
 				size = 1;
 			}
 			else
 			{
+				if (hasBalls && !silent)
+				{
+					oldData = AsReadOnlyData();
+				}
 				count = 0;
 				size = 0;
+			}
+			if (oldData != null)
+			{
+				NotifyDataChanged(oldData);
 			}
 		}
 		#endregion

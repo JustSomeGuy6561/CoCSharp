@@ -38,6 +38,7 @@ namespace CoC.Backend.BodyParts
 		RIGHT_ANTI_HELIX
 	}
 
+	//lazy, so it actually wont fire any data changed events, even though the ear fur can change. 
 
 	public sealed class Ears : BehavioralSaveablePart<Ears, EarType, EarData>
 	{

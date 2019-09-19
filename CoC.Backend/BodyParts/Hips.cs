@@ -2,10 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //12/28/2018, 1:35 AM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -22,10 +24,19 @@ namespace CoC.Backend.BodyParts
 
 		public byte size
 		{
-			get => _hipsize;
-			private set => _hipsize = Utils.Clamp2(value, BOYISH, INHUMANLY_WIDE);
+			get => _hipSize;
+			private set
+			{
+				Utils.Clamp(ref value, BOYISH, INHUMANLY_WIDE);
+				if (_hipSize != value)
+				{
+					var oldData = AsReadOnlyData();
+					_hipSize = value;
+					NotifyDataChanged(oldData);
+				}
+			}
 		}
-		private byte _hipsize;
+		private byte _hipSize;
 		public SimpleDescriptor AsText => AsStr;
 		public SimpleDescriptor ShortDescription => ShortDesc;
 
@@ -34,7 +45,7 @@ namespace CoC.Backend.BodyParts
 		}
 		internal Hips(Creature source, byte hipSize) : base(source)
 		{
-			size = hipSize;
+			_hipSize = Utils.Clamp2(hipSize, BOYISH, INHUMANLY_WIDE);
 		}
 		public byte index => size;
 

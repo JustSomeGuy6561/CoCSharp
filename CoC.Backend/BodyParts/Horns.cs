@@ -68,7 +68,7 @@ namespace CoC.Backend.BodyParts
 
 		internal Horns(Creature source, HornType hornType, byte additionalStrengthLevel, bool uniform = false) : this(source, hornType)
 		{
-			StrengthenTransform(additionalStrengthLevel, uniform);
+			StrengthenTransformPrivate(additionalStrengthLevel, uniform);
 		}
 		#endregion
 
@@ -91,6 +91,21 @@ namespace CoC.Backend.BodyParts
 		#region Update
 		//standard update is fine.
 
+		internal override bool UpdateType(HornType newType)
+		{
+			if (newType == null || type == newType)
+			{
+				return false;
+			}
+			var oldType = type;
+			var oldData = AsReadOnlyData();
+			type = newType;
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldType);
+			return true;
+		}
+
 		internal bool UpdateAndStrengthenHorns(HornType newType, byte byAmount, bool uniform = false)
 		{
 			if (newType == null || type == newType)
@@ -98,17 +113,34 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
+			var oldData = AsReadOnlyData();
 			type = newType;
-			StrengthenTransform(byAmount, uniform);
+			StrengthenTransformPrivate(byAmount, uniform);
 
+			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldType);
 			return true;
+		}
+
+		private void CheckDataChanged(HornData oldData)
+		{
+			if (numHorns != oldData.hornCount && significantHornSize != oldData.hornLength)
+			{
+				NotifyDataChanged(oldData);
+			}
 		}
 		#endregion
 		#region Horn Specific Methods
 		public bool CanStrengthen => type.CanGrow(numHorns, significantHornSize, femininity);
 
 		internal bool StrengthenTransform(byte numberOfTimes = 1, bool uniform = false)
+		{
+			var oldData = AsReadOnlyData();
+			var retVal = StrengthenTransformPrivate(numberOfTimes, uniform);
+			CheckDataChanged(oldData);
+			return retVal;
+		}
+		private bool StrengthenTransformPrivate(byte numberOfTimes = 1, bool uniform = false)
 		{
 			if (numberOfTimes == 0)
 			{
@@ -120,6 +152,13 @@ namespace CoC.Backend.BodyParts
 		public bool CanWeaken => type.CanShrink(numHorns, significantHornSize, femininity);
 
 		internal bool WeakenTransform(byte byAmount = 1)
+		{
+			var oldData = AsReadOnlyData();
+			var retVal = WeakenTransformPrivate(byAmount);
+			CheckDataChanged(oldData);
+			return retVal;
+		}
+		private bool WeakenTransformPrivate(byte byAmount = 1)
 		{
 			if (byAmount == 0)
 			{

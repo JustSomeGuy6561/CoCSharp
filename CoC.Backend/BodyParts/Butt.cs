@@ -2,10 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //12/26/2018, 11:10 PM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -33,7 +35,17 @@ namespace CoC.Backend.BodyParts
 		public byte size
 		{
 			get => _buttSize;
-			private set => _buttSize = Utils.Clamp2(value, minVal, maxVal);
+			private set
+			{
+
+				Utils.Clamp(ref value, minVal, maxVal);
+				if (_buttSize != value)
+				{
+					var oldData = AsReadOnlyData();
+					_buttSize = value;
+					NotifyDataChanged(oldData);
+				}
+			}
 		}
 		private byte _buttSize;
 
@@ -47,9 +59,10 @@ namespace CoC.Backend.BodyParts
 			else
 			{
 				hasButt = true;
-				_buttSize = size;
+				_buttSize = Utils.Clamp2(size, TIGHT, INCONCEIVABLY_BIG);
 			}
 		}
+
 		internal static Butt GenerateButtless(Creature source)
 		{
 			return new Butt(source, 0);

@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/5/2019, 5:57 PM
 
+using CoC.Backend.Tools;
 using System;
 
 namespace CoC.Backend.BodyParts
@@ -16,7 +17,7 @@ namespace CoC.Backend.BodyParts
 		internal float MinClitSize = Clit.DEFAULT_CLIT_SIZE;
 		internal float NewClitSize(float? givenSize = null)
 		{
-			float minValue = Math.Max(DefaultNewClitSize, MinClitSize);
+			float minValue = Utils.Clamp2(Math.Max(DefaultNewClitSize, MinClitSize), Clit.MIN_CLIT_SIZE, Clit.MAX_CLIT_SIZE);
 			if (givenSize != null)
 			{
 				givenSize += NewClitSizeDelta;

@@ -16,6 +16,9 @@ namespace CoC.Backend.BodyParts
 {
 	public enum TonguePiercingLocation { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
 
+	//ugh. i guess this fires on tongue length change? idk why, but whatever - overruled. i guess if you want to unlock some achievement when your tongue can cosplay
+	//for KISS, you can now easily do that. 
+
 	public sealed class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
 	{
 		public const JewelryType TongueJewelry = JewelryType.BARBELL_STUD;
@@ -44,7 +47,23 @@ namespace CoC.Backend.BodyParts
 			return new TongueData(this);
 		}
 
-		//standard update, restore are fine.
+		internal override bool UpdateType(TongueType newType)
+		{
+			if (newType is null || newType == type)
+			{
+				return false;
+			}
+			var oldType = type;
+			TongueData oldData = null;
+			if (isLongTongue != newType.longTongue)
+			{
+				oldData = AsReadOnlyData();
+			}
+			type = newType;
+			NotifyDataChanged(oldData);
+			NotifyTypeChanged(oldType);
+			return true;
+		}
 
 		internal override bool Validate(bool correctInvalidData)
 		{

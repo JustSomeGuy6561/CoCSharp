@@ -14,12 +14,42 @@ namespace CoC.Backend.BodyParts
 	public sealed class Breasts : SimpleSaveablePart<Breasts, BreastData>, IGrowable, IShrinkable
 	{
 		private Gender currGender => source.genitals.gender;
+		private int currentBreastRow => source.genitals.breasts.IndexOf(this);
 
 		public const CupSize DEFAULT_MALE_SIZE = CupSize.FLAT;
 		public const CupSize DEFAULT_FEMALE_SIZE = CupSize.C;
 
-		internal CupSize maleMinCup;
-		internal CupSize femaleMinCup;
+		internal CupSize maleMinCup
+		{
+			get => _maleMinCup;
+			set
+			{
+				_maleMinCup = value;
+				if (cupSize < minimumCupSize)
+				{
+					var oldValue = AsReadOnlyData();
+					cupSize = minimumCupSize;
+					NotifyDataChanged(oldValue);
+				}
+			}
+		}
+		private CupSize _maleMinCup = CupSize.FLAT;
+		internal CupSize femaleMinCup
+		{
+			get => _femaleMinCup;
+			set
+			{
+				_femaleMinCup = value;
+				if (cupSize < minimumCupSize)
+				{
+					var oldValue = AsReadOnlyData();
+					cupSize = minimumCupSize;
+					NotifyDataChanged(oldValue);
+				}
+			}
+		}
+		private CupSize _femaleMinCup = CupSize.C;
+
 		internal CupSize maleDefaultCup;
 		internal CupSize femaleDefaultCup;
 
@@ -31,11 +61,27 @@ namespace CoC.Backend.BodyParts
 		private bool makeBigTits => bigTiddyMultiplier > 1.1f;
 		private bool makeSmallTits => tinyTiddyMultiplier > 1.1f;
 
-		public float lactationMultiplier { get; private set; }
+		public float lactationMultiplier
+		{
+			get => _lactationMultiplier;
+			private set
+			{
+				if (_lactationMultiplier != value)
+				{
+					_lactationMultiplier = value;
+				}
+			}
+		}
+		private float _lactationMultiplier;
 
 		internal float SetLactation(float lactationAmount)
 		{
-			lactationMultiplier = lactationAmount;
+			if (lactationAmount != lactationMultiplier)
+			{
+				var oldData = AsReadOnlyData();
+				lactationMultiplier = lactationAmount;
+				NotifyDataChanged(oldData);
+			}
 			return lactationMultiplier;
 		}
 
@@ -45,7 +91,7 @@ namespace CoC.Backend.BodyParts
 
 		public override BreastData AsReadOnlyData()
 		{
-			return new BreastData(this);
+			return new BreastData(this, currentBreastRow);
 		}
 
 		public CupSize cupSize
@@ -53,7 +99,13 @@ namespace CoC.Backend.BodyParts
 			get => _cupSize;
 			private set
 			{
-				_cupSize = Utils.ClampEnum2(value, CupSize.FLAT, CupSize.JACQUES00); //enums: icomparable, but not really. woooo!
+				Utils.ClampEnum(ref value, CupSize.FLAT, CupSize.JACQUES00); //enums: icomparable, but not really. woooo!
+				if (_cupSize != value)
+				{
+					var oldData = AsReadOnlyData();
+					_cupSize = value;
+					NotifyDataChanged(oldData);
+				}
 			}
 		}
 		private CupSize _cupSize;
@@ -65,16 +117,16 @@ namespace CoC.Backend.BodyParts
 
 			if (initialGender.HasFlag(Gender.FEMALE))
 			{
-				cupSize = initialPerkData.FemaleNewLength();
+				_cupSize = initialPerkData.FemaleNewLength();
 			}
 			else
 			{
-				cupSize = initialPerkData.MaleNewLength();
+				_cupSize = initialPerkData.MaleNewLength();
 			}
-			nipples = new Nipples(source, initialPerkData, initialGender);
+			nipples = new Nipples(source, this, initialPerkData, initialGender);
 
-			maleMinCup = initialPerkData.MaleMinCup;
-			femaleMinCup = initialPerkData.FemaleMinCup;
+			_maleMinCup = initialPerkData.MaleMinCup;
+			_femaleMinCup = initialPerkData.FemaleMinCup;
 			maleDefaultCup = initialPerkData.MaleNewDefaultCup;
 			femaleDefaultCup = initialPerkData.FemaleNewDefaultCup;
 
@@ -82,21 +134,26 @@ namespace CoC.Backend.BodyParts
 			tinyTiddyMultiplier = initialPerkData.TitsShrinkMultiplier;
 
 			source.genitals.onGenderChanged += OnGenderChanged;
+
+			CupSize min = currGender.HasFlag(Gender.FEMALE) ? femaleMinCup : maleMinCup;
+			if (cupSize < min)
+			{
+				cupSize = min;
+			}
 		}
 		internal Breasts(Creature source, BreastPerkHelper initialPerkData, CupSize cup, float nippleLength) : base(source)
 		{
-			nipples = new Nipples(source, initialPerkData, nippleLength);
-			cupSize = cup;
+			nipples = new Nipples(source, this, initialPerkData, nippleLength);
+			_cupSize = Utils.ClampEnum2(cup, CupSize.FLAT, CupSize.JACQUES00);
 
-			maleMinCup = initialPerkData.MaleMinCup;
-			femaleMinCup = initialPerkData.FemaleMinCup;
+			_maleMinCup = initialPerkData.MaleMinCup;
+			_femaleMinCup = initialPerkData.FemaleMinCup;
 			maleDefaultCup = initialPerkData.MaleNewDefaultCup;
 			femaleDefaultCup = initialPerkData.FemaleNewDefaultCup;
 
 			bigTiddyMultiplier = initialPerkData.TitsGrowthMultiplier;
 			tinyTiddyMultiplier = initialPerkData.TitsShrinkMultiplier;
 
-			source.genitals.onGenderChanged += OnGenderChanged;
 		}
 
 		private void OnGenderChanged(object sender, EventHelpers.GenderChangedEventArgs e)
@@ -108,9 +165,15 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		protected internal override void PostPerkInit()
+		{
+			nipples.PostPerkInit();
+		}
+
 		protected internal override void LateInit()
 		{
 			nipples.LateInit();
+			source.genitals.onGenderChanged += OnGenderChanged;
 		}
 
 		internal byte GrowBreasts(byte byAmount, bool ignorePerks = false)
@@ -125,7 +188,13 @@ namespace CoC.Backend.BodyParts
 				ushort val = (ushort)Math.Round(byAmount * bigTiddyMultiplier);
 				byAmount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
 			}
+
+			var oldData = AsReadOnlyData();
 			cupSize = cupSize.ByteEnumAdd(byAmount);
+			if (cupSize != oldSize)
+			{
+				NotifyDataChanged(oldData);
+			}
 			return cupSize - oldSize;
 		}
 
@@ -141,13 +210,26 @@ namespace CoC.Backend.BodyParts
 				ushort val = (ushort)Math.Round(byAmount * tinyTiddyMultiplier);
 				byAmount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
 			}
+			var oldData = AsReadOnlyData();
+
 			cupSize = cupSize.ByteEnumSubtract(byAmount);
+			if (cupSize != oldSize)
+			{
+				NotifyDataChanged(oldData);
+			}
 			return cupSize - oldSize;
 		}
 
 		internal void setCupSize(CupSize size)
 		{
-			cupSize = Utils.ClampEnum2(size, CupSize.FLAT, CupSize.JACQUES00);
+
+			Utils.ClampEnum(ref size, CupSize.FLAT, CupSize.JACQUES00);
+			if (cupSize != size)
+			{
+				var oldData = AsReadOnlyData();
+				cupSize = size;
+				NotifyDataChanged(oldData);
+			}
 		}
 		public bool MakeMale(bool removeStatus = true)
 		{
@@ -155,12 +237,16 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
+
 			cupSize = maleMinCup;
 			nipples.ShrinkNipple(nipples.length - Nipples.MIN_NIPPLE_LENGTH);
 			if (removeStatus)
 			{
 				nipples.setNippleStatus(NippleStatus.NORMAL);
+				lactationMultiplier = 0f;
 			}
+			NotifyDataChanged(oldData);
 			return true;
 		}
 
@@ -170,6 +256,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
+			var oldData = AsReadOnlyData();
 			if (cupSize < femaleMinCup)
 			{
 				cupSize = femaleMinCup;
@@ -179,6 +266,7 @@ namespace CoC.Backend.BodyParts
 				cupSize = CupSize.B;
 			}
 
+			//nipple data change 
 			if (nipples.length < 0.5)
 			{
 				nipples.GrowNipple(0.5f - nipples.length);
@@ -187,6 +275,7 @@ namespace CoC.Backend.BodyParts
 			{
 				nipples.setNippleStatus(NippleStatus.NORMAL);
 			}
+			NotifyDataChanged(oldData);
 			return true;
 		}
 
@@ -196,6 +285,64 @@ namespace CoC.Backend.BodyParts
 			return nipples.Validate(correctInvalidData);
 		}
 
+		#region Nipple Alias
+
+		internal float GrowNipple(float growAmount, bool ignorePerk = false)
+		{
+			var oldData = AsReadOnlyData();
+			var retVal = nipples.GrowNipple(growAmount, ignorePerk);
+			if (retVal != 0)
+			{
+				NotifyDataChanged(oldData);
+			}
+			return retVal;
+		}
+
+		internal float ShrinkNipple(float shrinkAmount, bool ignorePerk = false)
+		{
+			var oldData = AsReadOnlyData();
+			var retVal = nipples.ShrinkNipple(shrinkAmount, ignorePerk);
+			if (retVal != 0)
+			{
+				NotifyDataChanged(oldData);
+			}
+			return retVal;
+		}
+
+		internal bool setQuadNipple(bool active)
+		{
+			var oldData = AsReadOnlyData();
+			var retVal = nipples.setQuadNipple(active);
+			if (retVal)
+			{
+				NotifyDataChanged(oldData);
+			}
+			return retVal;
+		}
+
+		internal bool setBlackNipple(bool active)
+		{
+			var oldData = AsReadOnlyData();
+			var retVal = nipples.setBlackNipple(active);
+			if (retVal)
+			{
+				NotifyDataChanged(oldData);
+			}
+			return retVal;
+		}
+
+		internal bool setNippleStatus(NippleStatus status)
+		{
+			var oldData = AsReadOnlyData();
+			var retVal = nipples.setNippleStatus(status);
+			if (retVal)
+			{
+				NotifyDataChanged(oldData);
+			}
+			return retVal;
+		}
+
+		#endregion
 		#region IGrowShrinkable
 		bool IGrowable.CanGroPlus()
 		{
@@ -245,13 +392,25 @@ namespace CoC.Backend.BodyParts
 		public readonly NippleData nipples;
 		public readonly CupSize cupSize;
 		public readonly float lactationAmount;
-
-		internal BreastData(Breasts breasts)
+		public readonly int currBreastRowIndex;
+		internal BreastData(Breasts breasts, int currentBreastRow)
 		{
 			if (breasts is null) throw new ArgumentNullException(nameof(breasts));
 			cupSize = breasts.cupSize;
 			nipples = breasts.nipples.AsReadOnlyData();
 			lactationAmount = breasts.lactationMultiplier;
+
+			currBreastRowIndex = currentBreastRow;
+		}
+
+		internal BreastData(Breasts breasts, NippleData overrideNippleData, int currentBreastRow)
+		{
+			if (breasts is null) throw new ArgumentNullException(nameof(breasts));
+			cupSize = breasts.cupSize;
+			nipples = overrideNippleData ?? throw new ArgumentNullException(nameof(overrideNippleData));
+			lactationAmount = breasts.lactationMultiplier;
+
+			currBreastRowIndex = currentBreastRow;
 		}
 	}
 }

@@ -81,13 +81,6 @@ namespace CoC.Backend.BodyParts
 		public EpidermalData mainEpidermis => primary.AsReadOnlyData();
 		public EpidermalData supplementaryEpidermis => secondary.AsReadOnlyData();
 
-		private readonly WeakEventSource<BodyOuterLayerChangedEventArg> epidermalDataChangeSource = new WeakEventSource<BodyOuterLayerChangedEventArg>();
-		public event EventHandler<BodyOuterLayerChangedEventArg> epidermalDataChanged
-		{
-			add => epidermalDataChangeSource.Subscribe(value);
-			remove => epidermalDataChangeSource.Unsubscribe(value);
-		}
-
 		//private readonly Epidermis primaryEpidermis;
 		//private readonly Epidermis secondaryEpidermis;
 
@@ -334,21 +327,26 @@ namespace CoC.Backend.BodyParts
 				EpidermalData oldSkin = mainSkin.AsReadOnlyData();
 				EpidermalData oldPrimary = primary.AsReadOnlyData();
 				EpidermalData oldSecondary = secondary.AsReadOnlyData();
+				EpidermalData oldFur = mainFur.AsReadOnlyData();
 
 				var oldType = type;
 				type = bodyType;
 				type.ParseEpidermisDataOnTransform(mainFur, mainSkin, secondary, hairData, out secondary);
 				extraUpdates?.Invoke();
-
-				NotifyOuterLayerChanged(oldSkin, oldPrimary, oldSecondary);
+				
+				CheckOuterLayerChanged(oldSkin, oldPrimary, oldSecondary, oldFur);
 				NotifyTypeChanged(oldType);
 				return true;
 			}
 		}
 
-		private void NotifyOuterLayerChanged(EpidermalData oldSkin, EpidermalData oldPrimary, EpidermalData oldSecondary)
+		private void CheckOuterLayerChanged(EpidermalData oldSkin, EpidermalData oldPrimary, EpidermalData oldSecondary, EpidermalData oldFur)
 		{
-			epidermalDataChangeSource.Raise(this, new BodyOuterLayerChangedEventArg(oldSkin, oldPrimary, oldSecondary, AsReadOnlyData()));
+			if (!oldSkin.Equals(mainSkin.AsReadOnlyData()) || !oldPrimary.Equals(mainEpidermis) || !oldSecondary.Equals(supplementaryEpidermis))
+			{
+				var oldData = new BodyData(oldPrimary, oldSecondary, oldFur, oldSkin, hairData, type);
+				NotifyDataChanged(oldData);
+			}
 		}
 
 
@@ -531,15 +529,15 @@ namespace CoC.Backend.BodyParts
 		{
 			if (canChange)
 			{
-				EpidermalData oldPrimary, oldSecondary, oldSkin;
+				EpidermalData oldPrimary, oldSecondary, oldSkin, oldFur;
 				oldPrimary = mainEpidermis;
 				oldSecondary = supplementaryEpidermis;
 				oldSkin = mainSkin.AsReadOnlyData();
-
+				oldFur = mainFur.AsReadOnlyData();
 				doChange();
 				if (!silent)
 				{
-					NotifyOuterLayerChanged(oldSkin, oldPrimary, oldSkin);
+					CheckOuterLayerChanged(oldSkin, oldPrimary, oldSecondary, oldFur);
 				}
 				return true;
 			}
@@ -1551,6 +1549,18 @@ namespace CoC.Backend.BodyParts
 
 			activeFur = fur.AsReadOnlyData();
 			mainSkin = skin.AsReadOnlyData();
+		}
+
+		internal BodyData(EpidermalData primary, EpidermalData secondary, EpidermalData fur, EpidermalData skin, in HairData hairData, BodyType bodyType) : base(bodyType)
+		{
+			main = primary ?? throw new ArgumentNullException(nameof(primary));
+			supplementary = secondary ?? throw new ArgumentNullException(nameof(secondary));
+
+			hairColor = hairData.hairColor;
+			hasHair = !hairData.hairDeactivated;
+
+			activeFur = fur ?? throw new ArgumentNullException(nameof(fur));
+			mainSkin = skin ?? throw new ArgumentNullException(nameof(skin));
 		}
 	}
 }

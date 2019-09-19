@@ -2,12 +2,14 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -48,7 +50,8 @@ namespace CoC.Backend.BodyParts
 
 		internal const ushort INVERTED_COUNTDOWN_TIMER = 24 * 7 / 2; //3.5 Days.
 
-
+		private int BreastRowIndex => source.genitals.breasts.IndexOf(parent);
+		private readonly Breasts parent;
 		//i guess we'll call tassels danglers - idk. 
 
 		internal float growthMultiplier = 1;
@@ -62,31 +65,74 @@ namespace CoC.Backend.BodyParts
 			get => _nippleStatus;
 			private set
 			{
-				if (value != _nippleStatus && (value == NippleStatus.FULLY_INVERTED || value == NippleStatus.SLIGHTLY_INVERTED))
+				if (value != _nippleStatus && Enum.IsDefined(typeof(NippleStatus), value)) 
 				{
-					SetupPiercingMagic();
+					var oldData = AsReadOnlyData();
+
+					if (value == NippleStatus.FULLY_INVERTED || value == NippleStatus.SLIGHTLY_INVERTED)
+					{
+						SetupPiercingMagic();
+					}
+					_nippleStatus = value;
+					NotifyDataChanged(oldData);
 				}
-				_nippleStatus = value;
 			}
 		}
 		private NippleStatus _nippleStatus;
 		public float length
 		{
 			get => _length;
-			private set => _length = Utils.Clamp2(value, MIN_NIPPLE_LENGTH, MAX_NIPPLE_LENGTH);
+			private set
+			{
+				Utils.Clamp(ref value, MIN_NIPPLE_LENGTH, MAX_NIPPLE_LENGTH);
+				if (_length != value)
+				{
+					var oldData = AsReadOnlyData();
+					_length = value;
+					NotifyDataChanged(oldData);
+				}
+			}
 		}
 		private float _length;
 
-		public bool quadNipples { get; private set; }
-		public bool blackNipples { get; private set; }
+		public bool quadNipples
+		{
+			get => _quadNipples;
+			private set
+			{
+				if (_quadNipples != value)
+				{
+					var oldData = AsReadOnlyData();
+					_quadNipples = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+		private bool _quadNipples;
+		public bool blackNipples
+		{
+			get => _blackNipples;
+			private set
+			{
+				if (_blackNipples != value)
+				{
+					var oldData = AsReadOnlyData();
+					_blackNipples = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+		private bool _blackNipples;
 
 		public readonly Piercing<NipplePiercings> nipplePiercing;
 
 		public bool isPierced => nipplePiercing.isPierced;
 		public bool wearingJewelry => nipplePiercing.wearingJewelry;
 
-		internal Nipples(Creature source, BreastPerkHelper initialPerkData, Gender gender) : base(source)
+		internal Nipples(Creature source, Breasts parent, BreastPerkHelper initialPerkData, Gender gender) : base(source)
 		{
+			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
+
 			nippleStatus = NippleStatus.NORMAL;
 			length = initialPerkData.NewNippleDefaultLength;
 			blackNipples = false;
@@ -102,8 +148,10 @@ namespace CoC.Backend.BodyParts
 			defaultNippleLength = initialPerkData.NewNippleDefaultLength;
 		}
 
-		internal Nipples(Creature source, BreastPerkHelper initialPerkData, float nippleLength) : base(source)
+		internal Nipples(Creature source, Breasts parent, BreastPerkHelper initialPerkData, float nippleLength) : base(source)
 		{
+			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
+
 			nippleStatus = NippleStatus.NORMAL;
 			length = nippleLength;
 			blackNipples = false;
@@ -121,7 +169,7 @@ namespace CoC.Backend.BodyParts
 
 		public override NippleData AsReadOnlyData()
 		{
-			return new NippleData(this);
+			return new NippleData(this, BreastRowIndex);
 		}
 
 		internal float GrowNipple(float growAmount, bool ignorePerk = false)
@@ -146,19 +194,25 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
-		internal void setQuadNipple(bool active)
+		internal bool setQuadNipple(bool active)
 		{
+			bool retVal = quadNipples != active;
 			quadNipples = active;
+			return retVal;
 		}
 
-		internal void setBlackNipple(bool active)
+		internal bool setBlackNipple(bool active)
 		{
+			bool retVal = blackNipples != active;
 			blackNipples = active;
+			return retVal;
 		}
 
-		internal void setNippleStatus(NippleStatus status)
+		internal bool setNippleStatus(NippleStatus status)
 		{
+			bool retVal = nippleStatus != status;
 			nippleStatus = status;
+			return retVal;
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -360,13 +414,16 @@ namespace CoC.Backend.BodyParts
 		public readonly bool blackNipples;
 		public readonly NippleStatus status;
 		public readonly float length;
+		public readonly int breastRowIndex;
 
-		internal NippleData(Nipples source)
+		internal NippleData(Nipples source, int currbreastRowIndex)
 		{
 			blackNipples = source.blackNipples;
 			quadNipples = source.quadNipples;
 			status = source.nippleStatus;
 			length = source.length;
+
+			breastRowIndex = currbreastRowIndex;
 		}
 	}
 }

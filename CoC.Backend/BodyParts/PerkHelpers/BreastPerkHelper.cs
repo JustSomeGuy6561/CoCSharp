@@ -18,7 +18,7 @@ namespace CoC.Backend.BodyParts
 
 		internal CupSize MaleNewLength(CupSize? givenCup = null)
 		{
-			CupSize minCup = EnumHelper.Max(MaleNewDefaultCup, MaleMinCup);
+			CupSize minCup = Utils.ClampEnum2(EnumHelper.Max(MaleNewDefaultCup, MaleMinCup), CupSize.FLAT, CupSize.JACQUES00);
 			if (givenCup is null || givenCup < minCup)
 			{
 				return minCup;
@@ -28,7 +28,7 @@ namespace CoC.Backend.BodyParts
 
 		internal CupSize FemaleNewLength(CupSize? givenCup = null)
 		{
-			var minCup = EnumHelper.Max(FemaleNewDefaultCup, FemaleMinCup);
+			var minCup = Utils.ClampEnum2(EnumHelper.Max(FemaleNewDefaultCup, FemaleMinCup), CupSize.FLAT, CupSize.JACQUES00);
 			if (givenCup is null || givenCup < minCup)
 			{
 				return minCup;

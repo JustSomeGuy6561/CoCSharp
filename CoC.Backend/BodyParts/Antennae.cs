@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
+	//Note: Never fires a data change event, as it has no data that can be changed.
 
 	public sealed class Antennae : BehavioralSaveablePart<Antennae, AntennaeType, AntennaeData>
 	{
