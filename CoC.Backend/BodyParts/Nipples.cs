@@ -2,14 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
-using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
-using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
-using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -46,39 +44,38 @@ namespace CoC.Backend.BodyParts
 		public const float FUCKABLE_NIPPLE_THRESHOLD = 3f; //above this, fuckable is possible.
 		public const float DICK_NIPPLE_THRESHOLD = 5f; //above this, dick nipples possible.
 
-		public const float LACTATION_THRESHOLD = 1f;
+		//public const float LACTATION_THRESHOLD = 1f;
+		//internal const ushort INVERTED_COUNTDOWN_TIMER = 24 * 7 / 2; //3.5 Days.
 
-		internal const ushort INVERTED_COUNTDOWN_TIMER = 24 * 7 / 2; //3.5 Days.
+		public const float MALE_DEFAULT_LENGTH = MIN_NIPPLE_LENGTH;
+		public const float FEMALE_DEFAULT_LENGTH = 0.5f;
 
-		private int BreastRowIndex => source.genitals.breasts.IndexOf(parent);
+		private Creature creature
+		{
+			get
+			{
+				CreatureStore.TryGetCreature(creatureID, out Creature creatureSource);
+				return creatureSource;
+			}
+		}
+
+		private Gender currGender => creature?.genitals.gender ?? Gender.MALE;
+
+		private int BreastRowIndex => creature?.genitals.breastRows.IndexOf(parent) ?? 0;
 		private readonly Breasts parent;
 		//i guess we'll call tassels danglers - idk. 
 
 		internal float growthMultiplier = 1;
 		internal float shrinkMultiplier = 1;
-		internal bool unlockedDickNipples = false;
 		internal float minNippleLength = MIN_NIPPLE_LENGTH;
 		internal float defaultNippleLength;
 
-		public NippleStatus nippleStatus
-		{
-			get => _nippleStatus;
-			private set
-			{
-				if (value != _nippleStatus && Enum.IsDefined(typeof(NippleStatus), value)) 
-				{
-					var oldData = AsReadOnlyData();
+		public NippleStatus nippleStatus => creature?.genitals.nippleType ?? NippleStatus.NORMAL;
+		public bool quadNipples => creature?.genitals.quadNipples ?? false;
+		public bool blackNipples => creature?.genitals.blackNipples ?? false;
 
-					if (value == NippleStatus.FULLY_INVERTED || value == NippleStatus.SLIGHTLY_INVERTED)
-					{
-						SetupPiercingMagic();
-					}
-					_nippleStatus = value;
-					NotifyDataChanged(oldData);
-				}
-			}
-		}
-		private NippleStatus _nippleStatus;
+		public bool unlockedDickNipples => creature?.genitals.unlockedDickNipples ?? false;
+
 		public float length
 		{
 			get => _length;
@@ -95,75 +92,40 @@ namespace CoC.Backend.BodyParts
 		}
 		private float _length;
 
-		public bool quadNipples
-		{
-			get => _quadNipples;
-			private set
-			{
-				if (_quadNipples != value)
-				{
-					var oldData = AsReadOnlyData();
-					_quadNipples = value;
-					NotifyDataChanged(oldData);
-				}
-			}
-		}
-		private bool _quadNipples;
-		public bool blackNipples
-		{
-			get => _blackNipples;
-			private set
-			{
-				if (_blackNipples != value)
-				{
-					var oldData = AsReadOnlyData();
-					_blackNipples = value;
-					NotifyDataChanged(oldData);
-				}
-			}
-		}
-		private bool _blackNipples;
+		public float width => length < 1 ? length / 2 : length / 4;
 
 		public readonly Piercing<NipplePiercings> nipplePiercing;
 
 		public bool isPierced => nipplePiercing.isPierced;
 		public bool wearingJewelry => nipplePiercing.wearingJewelry;
 
-		internal Nipples(Creature source, Breasts parent, BreastPerkHelper initialPerkData, Gender gender) : base(source)
+		internal Nipples(Guid creatureID, Breasts parent, BreastPerkHelper initialPerkData, Gender gender) : base(creatureID)
 		{
 			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
-			nippleStatus = NippleStatus.NORMAL;
 			length = initialPerkData.NewNippleDefaultLength;
-			blackNipples = false;
-			quadNipples = false;
 
 			nipplePiercing = new Piercing<NipplePiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 
-			SetupPiercingMagic();
+			//SetupPiercingMagic();
 
 			growthMultiplier = initialPerkData.NippleGrowthMultiplier;
 			shrinkMultiplier = initialPerkData.NippleShrinkMultiplier;
-			unlockedDickNipples = initialPerkData.unlockedDickNipples;
 			defaultNippleLength = initialPerkData.NewNippleDefaultLength;
 		}
 
-		internal Nipples(Creature source, Breasts parent, BreastPerkHelper initialPerkData, float nippleLength) : base(source)
+		internal Nipples(Guid creatureID, Breasts parent, BreastPerkHelper initialPerkData, float nippleLength) : base(creatureID)
 		{
 			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
-			nippleStatus = NippleStatus.NORMAL;
 			length = nippleLength;
-			blackNipples = false;
-			quadNipples = false;
 
 			nipplePiercing = new Piercing<NipplePiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 
-			SetupPiercingMagic();
+			//SetupPiercingMagic();
 
 			growthMultiplier = initialPerkData.NippleGrowthMultiplier;
 			shrinkMultiplier = initialPerkData.NippleShrinkMultiplier;
-			unlockedDickNipples = initialPerkData.unlockedDickNipples;
 			defaultNippleLength = initialPerkData.NewNippleDefaultLength;
 		}
 
@@ -194,45 +156,12 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
-		internal bool setQuadNipple(bool active)
-		{
-			bool retVal = quadNipples != active;
-			quadNipples = active;
-			return retVal;
-		}
-
-		internal bool setBlackNipple(bool active)
-		{
-			bool retVal = blackNipples != active;
-			blackNipples = active;
-			return retVal;
-		}
-
-		internal bool setNippleStatus(NippleStatus status)
-		{
-			bool retVal = nippleStatus != status;
-			nippleStatus = status;
-			return retVal;
-		}
-
 		internal override bool Validate(bool correctInvalidData)
 		{
 			//self-validating.
-			bool valid = true;
 			length = length;
-			if (!Enum.IsDefined(typeof(NippleStatus), nippleStatus))
-			{
-				if (correctInvalidData)
-				{
-					nippleStatus = NippleStatus.NORMAL;
-				}
-				valid = false;
-			}
-			if (valid || correctInvalidData)
-			{
-				valid &= nipplePiercing.Validate(correctInvalidData);
-			}
-			return valid;
+
+			return nipplePiercing.Validate(correctInvalidData);
 		}
 
 		private bool PiercingLocationUnlocked(NipplePiercings piercingLocation)
@@ -256,41 +185,51 @@ namespace CoC.Backend.BodyParts
 		public bool EquipOrPierceAt(NipplePiercings piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
 			bool retVal = nipplePiercing.EquipPiercingJewelryAndPierceIfNotPierced(piercingLocation, jewelry, forceIfEnabled);
-			SetupPiercingMagic();
+			//SetupPiercingMagic();
 			return retVal;
 		}
 		public bool EquipPiercingJewelry(NipplePiercings piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
 			bool retVal = nipplePiercing.EquipPiercingJewelry(piercingLocation, jewelry, forceIfEnabled);
-			SetupPiercingMagic();
+			//SetupPiercingMagic();
 			return retVal;
 		}
 		public bool Pierce(NipplePiercings location, PiercingJewelry jewelry)
 		{
 			bool retVal = nipplePiercing.Pierce(location, jewelry);
-			SetupPiercingMagic();
+			//SetupPiercingMagic();
 			return retVal;
 		}
 
 		public PiercingJewelry RemovePiercingJewelry(NipplePiercings location, bool forceRemove = false)
 		{
 			PiercingJewelry jewelry = nipplePiercing.RemovePiercingJewelry(location, forceRemove);
-			SetupPiercingMagic();
+			//SetupPiercingMagic();
 			return jewelry;
 		}
 
-		private void SetupPiercingMagic()
+		//private void SetupPiercingMagic()
+		//{
+		//	if (wearingJewelry && (nippleStatus == NippleStatus.SLIGHTLY_INVERTED || nippleStatus == NippleStatus.FULLY_INVERTED))
+		//	{
+		//		if (invertedNippleCounter == null)
+		//		{
+		//			invertedNippleCounter = 0;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		invertedNippleCounter = null;
+		//	}
+		//}
+
+		internal void Reset(bool resetPiercings = false)
 		{
-			if (wearingJewelry && (nippleStatus == NippleStatus.SLIGHTLY_INVERTED || nippleStatus == NippleStatus.FULLY_INVERTED))
+			length = currGender.HasFlag(Gender.FEMALE) ? FEMALE_DEFAULT_LENGTH : MALE_DEFAULT_LENGTH;
+
+			if (resetPiercings)
 			{
-				if (invertedNippleCounter == null)
-				{
-					invertedNippleCounter = 0;
-				}
-			}
-			else
-			{
-				invertedNippleCounter = null;
+				nipplePiercing.Reset();
 			}
 		}
 
@@ -335,42 +274,52 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-		private ushort? invertedNippleCounter = null;
-
-		internal bool DoPiercingTimeNonsense(bool isPlayer, byte hoursPassed, bool hasOtherBreastRows, out string output)
+		internal void DoNippleFuck(float length, float girth, float knotWidth, bool reachOrgasm)
 		{
-
-
-			if (nippleStatus == NippleStatus.FULLY_INVERTED && wearingJewelry)
-			{
-				nippleStatus = NippleStatus.SLIGHTLY_INVERTED;
-				output = NipplesLessInvertedDueToPiercingInThem(hasOtherBreastRows);
-				invertedNippleCounter = 0;
-				return true;
-			}
-			else if (invertedNippleCounter != null)
-			{
-				invertedNippleCounter = ((ushort)invertedNippleCounter).add(hoursPassed);
-				if (invertedNippleCounter > INVERTED_COUNTDOWN_TIMER)
-				{
-					nippleStatus = NippleStatus.NORMAL;
-					output = NipplesNoLongerInvertedDueToPiercingInThem(hasOtherBreastRows);
-					invertedNippleCounter = null;
-					return true;
-				}
-				else
-				{
-					output = "";
-					return false;
-				}
-			}
-			else
-			{
-				invertedNippleCounter = null;
-				output = "";
-				return false;
-			}
+			throw new NotImplementedException();
 		}
+
+		internal void DoDickNippleSex(bool reachOrgasm)
+		{
+			throw new NotImplementedException();
+		}
+
+		//private ushort? invertedNippleCounter = null;
+
+		//internal bool DoPiercingTimeNonsense(bool isPlayer, byte hoursPassed, bool hasOtherBreastRows, out string output)
+		//{
+
+
+		//	if (nippleStatus == NippleStatus.FULLY_INVERTED && wearingJewelry)
+		//	{
+		//		nippleStatus = NippleStatus.SLIGHTLY_INVERTED;
+		//		output = NipplesLessInvertedDueToPiercingInThem(hasOtherBreastRows);
+		//		invertedNippleCounter = 0;
+		//		return true;
+		//	}
+		//	else if (invertedNippleCounter != null)
+		//	{
+		//		invertedNippleCounter = ((ushort)invertedNippleCounter).add(hoursPassed);
+		//		if (invertedNippleCounter > INVERTED_COUNTDOWN_TIMER)
+		//		{
+		//			nippleStatus = NippleStatus.NORMAL;
+		//			output = NipplesNoLongerInvertedDueToPiercingInThem(hasOtherBreastRows);
+		//			invertedNippleCounter = null;
+		//			return true;
+		//		}
+		//		else
+		//		{
+		//			output = "";
+		//			return false;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		invertedNippleCounter = null;
+		//		output = "";
+		//		return false;
+		//	}
+		//}
 
 		//	//logic: if not normal or inverted, but small enough to be fully inverted => fully inverted
 		//	//same as above, but too large for fully inverted, but too small to be fuckable => slightly inverted
@@ -408,7 +357,7 @@ namespace CoC.Backend.BodyParts
 		//	}
 	}
 
-	public sealed class NippleData
+	public sealed class NippleData : SimpleData
 	{
 		public readonly bool quadNipples;
 		public readonly bool blackNipples;
@@ -416,7 +365,7 @@ namespace CoC.Backend.BodyParts
 		public readonly float length;
 		public readonly int breastRowIndex;
 
-		internal NippleData(Nipples source, int currbreastRowIndex)
+		internal NippleData(Nipples source, int currbreastRowIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			blackNipples = source.blackNipples;
 			quadNipples = source.quadNipples;

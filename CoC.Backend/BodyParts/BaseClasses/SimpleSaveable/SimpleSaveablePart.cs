@@ -12,15 +12,15 @@ using WeakEvent;
 namespace CoC.Backend.BodyParts
 {
 
-	public abstract class SimpleSaveablePart<ThisClass, DataClass> where ThisClass : SimpleSaveablePart<ThisClass, DataClass> where DataClass : class
+	public abstract class SimpleSaveablePart<ThisClass, DataClass> where ThisClass : SimpleSaveablePart<ThisClass, DataClass> where DataClass : SimpleData
 	{
 		internal abstract bool Validate(bool correctInvalidData);
 
-		private protected readonly Creature source;
+		public readonly Guid creatureID;
 
-		private protected SimpleSaveablePart(Creature parent)
+		private protected SimpleSaveablePart(Guid parentGuid)
 		{
-			source = parent ?? throw new ArgumentNullException(nameof(parent));
+			creatureID = parentGuid;
 		}
 
 		public abstract DataClass AsReadOnlyData();
@@ -35,7 +35,7 @@ namespace CoC.Backend.BodyParts
 
 		private protected void NotifyDataChanged(DataClass oldData)
 		{
-			dataChangeSource.Raise(source, new SimpleDataChangeEvent<ThisClass, DataClass>(oldData, AsReadOnlyData()));
+			dataChangeSource.Raise(this, new SimpleDataChangeEvent<ThisClass, DataClass>(oldData, AsReadOnlyData()));
 		}
 
 		protected internal virtual void PostPerkInit()

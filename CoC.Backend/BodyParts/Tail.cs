@@ -7,6 +7,7 @@ using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -24,7 +25,7 @@ namespace CoC.Backend.BodyParts
 		public const JewelryType SUPPORTED_TAIL_PIERCINGS = JewelryType.RING;
 		public const int MAX_ATTACK_CHARGES = 100;
 
-		private BodyData bodyData => source.body.AsReadOnlyData();
+		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
 		public EpidermalData epidermis => type.ParseEpidermis(bodyData);
 		public EpidermalData secondaryEpidermis => type.ParseSecondaryEpidermis(bodyData);
@@ -62,18 +63,18 @@ namespace CoC.Backend.BodyParts
 			return new TailData(this);
 		}
 
-		internal Tail(Creature source) : this(source, TailType.defaultValue)
+		internal Tail(Guid creatureID) : this(creatureID, TailType.defaultValue)
 		{
 		}
 
-		internal Tail(Creature source, TailType tailType) : base(source)
+		internal Tail(Guid creatureID, TailType tailType) : base(creatureID)
 		{
 			_type = tailType ?? throw new ArgumentNullException(nameof(tailType));
 			_tailCount = _type.initialTailCount;
 			tailPiercings = new Piercing<TailPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
-		internal Tail(Creature source, TailType tailType, byte count) : this(source, tailType)
+		internal Tail(Guid creatureID, TailType tailType, byte count) : this(creatureID, tailType)
 		{
 			GrowMultipleAdditionalTails(count.subtract(type.initialTailCount));
 		}
@@ -415,7 +416,7 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermalData primaryEpidermis;
 		public readonly EpidermalData secondaryEpidermis;
 
-		internal TailData(Tail source) : base(GetBehavior(source))
+		internal TailData(Tail source) : base(GetID(source), GetBehavior(source))
 		{
 			tailCount = source.tailCount;
 

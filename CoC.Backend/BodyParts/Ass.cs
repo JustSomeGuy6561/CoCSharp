@@ -210,7 +210,7 @@ namespace CoC.Backend.BodyParts
 		public SimpleDescriptor fullDescription => fullDesc;
 
 		#region Constructor
-		internal Ass(Creature source) : base(source)
+		internal Ass(Guid creatureID) : base(creatureID)
 		{
 			looseness = AnalLooseness.NORMAL;
 			wetness = AnalWetness.NORMAL;
@@ -222,7 +222,7 @@ namespace CoC.Backend.BodyParts
 		//allows PC to masturbate/"practice" w/o losing anal virginity.
 		//if set to false, it will be ignored if looseness is still normal.
 		//nothing here can be null so we're fine.
-		internal Ass(Creature source, AnalWetness analWetness, AnalLooseness analLooseness, bool virginAnus, bool? everPracticedAnal = null) : base(source)
+		internal Ass(Guid creatureID, AnalWetness analWetness, AnalLooseness analLooseness, bool virginAnus, bool? everPracticedAnal = null) : base(creatureID)
 		{
 			wetness = analWetness;
 			looseness = analLooseness;
@@ -574,17 +574,15 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed class AssData
+	public sealed class AssData : SimpleData
 	{
 		public readonly AnalWetness wetness;
 		public readonly AnalLooseness looseness;
 
 		public readonly ushort analCapacity;
 
-		internal AssData(Ass source)
+		internal AssData(Ass source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-
 			wetness = source.wetness;
 			looseness = source.looseness;
 			analCapacity = source.analCapacity();

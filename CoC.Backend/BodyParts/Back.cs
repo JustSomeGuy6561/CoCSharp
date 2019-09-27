@@ -64,15 +64,15 @@ namespace CoC.Backend.BodyParts
 
 		public override BackType defaultType => BackType.defaultValue;
 
-		internal Back(Creature source, BackType backType) : base(source)
+		internal Back(Guid creatureID, BackType backType) : base(creatureID)
 		{
 			_type = backType ?? throw new ArgumentNullException();
 			_type.ParseEpidermis(epidermis);
 		}
 
-		internal Back(Creature source) : this(source, BackType.defaultValue) { }
+		internal Back(Guid creatureID) : this(creatureID, BackType.defaultValue) { }
 
-		internal Back(Creature source, DragonBackMane dragonMane, HairFurColors maneColor) : this(source, dragonMane)
+		internal Back(Guid creatureID, DragonBackMane dragonMane, HairFurColors maneColor) : this(creatureID, dragonMane)
 		{
 			if (!HairFurColors.IsNullOrEmpty(maneColor))
 			{
@@ -364,7 +364,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly EpidermalData epidermis;
 
-		internal BackData(Back back) : base(GetBehavior(back))
+		internal BackData(Back back) : base(GetID(back), GetBehavior(back))
 		{
 			epidermis = back.backEpidermis;
 		}

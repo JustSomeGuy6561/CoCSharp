@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts.EventHelpers
 {
-	public class SimpleDataChangeEvent<Source, Data> : EventArgs where Source : SimpleSaveablePart<Source, Data> where Data:class
+	public class SimpleDataChangeEvent<Source, Data> : EventArgs where Source : SimpleSaveablePart<Source, Data> where Data:SimpleData
 	{
 		public readonly Data oldValues;
 		public readonly Data newValues;

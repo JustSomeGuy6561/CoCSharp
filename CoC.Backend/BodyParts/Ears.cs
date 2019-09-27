@@ -6,6 +6,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -42,7 +43,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class Ears : BehavioralSaveablePart<Ears, EarType, EarData>
 	{
-		private BodyData bodyData => source.body.AsReadOnlyData();
+		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
 		private FurColor earFur => type.ParseFurColor(_earFur, bodyData);
 		private readonly FurColor _earFur = new FurColor();
@@ -51,9 +52,9 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<EarPiercings> earPiercings;
 
-		internal Ears(Creature source) : this(source, EarType.defaultValue) { }
+		internal Ears(Guid creatureID) : this(creatureID, EarType.defaultValue) { }
 
-		internal Ears(Creature source, EarType earType) : base(source)
+		internal Ears(Guid creatureID, EarType earType) : base(creatureID)
 		{
 			type = earType ?? throw new ArgumentNullException(nameof(earType));
 			earPiercings = new Piercing<EarPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
@@ -233,7 +234,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly ReadOnlyFurColor earFurColor;
 
-		internal EarData(Ears source) : base(GetBehavior(source))
+		internal EarData(Ears source) : base(GetID(source), GetBehavior(source))
 		{
 			earFurColor = source.earFurColor;
 		}

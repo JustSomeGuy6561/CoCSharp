@@ -54,7 +54,7 @@ namespace CoC.Backend.Engine.Time
 
 	public interface ITimeLazyListener
 	{
-		EventWrapper reactToTimePassing(byte hoursPassed);
+		string reactToTimePassing(byte hoursPassed);
 	}
 
 	public interface ITimeActiveListener

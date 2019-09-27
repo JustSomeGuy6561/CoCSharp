@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/10/2019, 9:07 PM
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 
@@ -10,6 +11,7 @@ namespace   CoC.Backend.BodyParts
 
 	public sealed partial class Nipples
 	{
+
 		//private static string NippleShortDescription()
 		//{
 		//	return "nipples";
@@ -69,6 +71,17 @@ namespace   CoC.Backend.BodyParts
 				"as your nipples are no longer inverted!" + otherStr;
 			
 		}
+
+		internal string ShortDescription()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		internal string FullDescription()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		//	private string fullDesc(Creature creature)
 		//	{
 		//		var description:String = "";

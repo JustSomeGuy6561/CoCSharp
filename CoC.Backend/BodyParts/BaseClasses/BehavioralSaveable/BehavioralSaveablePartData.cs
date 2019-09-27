@@ -10,8 +10,14 @@ namespace CoC.Backend.BodyParts
 		where BehaviorClass : SaveableBehavior<BehaviorClass, SourceClass, ThisClass>
 
 	{
-		private protected BehavioralSaveablePartData(BehaviorClass currentBehavior) : base(currentBehavior)
+		private protected BehavioralSaveablePartData(Guid creatureID, BehaviorClass currentBehavior) : base(creatureID, currentBehavior)
 		{
+		}
+
+		protected static Guid GetID(SourceClass source)
+		{
+			if (source is null) throw new ArgumentNullException(nameof(source));
+			return source.creatureID;
 		}
 
 		protected static BehaviorClass GetBehavior(SourceClass source)

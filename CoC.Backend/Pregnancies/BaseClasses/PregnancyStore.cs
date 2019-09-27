@@ -41,12 +41,12 @@ namespace CoC.Backend.Pregnancies
 
 		public override ReadOnlyPregnancyStore AsReadOnlyData()
 		{
-			return new ReadOnlyPregnancyStore(spawnType, birthCountdown);
+			return new ReadOnlyPregnancyStore(creatureID, spawnType, birthCountdown);
 		}
 
 		private readonly bool isVagina;
 
-		public PregnancyStore(Creature source, bool isThisVagina) : base(source)
+		public PregnancyStore(Guid creatureID, bool isThisVagina) : base(creatureID)
 		{
 			isVagina = isThisVagina;
 		}
@@ -116,18 +116,7 @@ namespace CoC.Backend.Pregnancies
 			return output;
 		}
 
-		//active takes care of our hoursTilBirth. we only care about Hours Passed because it lets us figure out what our old timer was. 
-		internal EventWrapper reactToTimePassing(byte hoursPassed)
-		{
-			return lazy.reactToTimePassing(hoursPassed);
-		}
-
-		internal EventWrapper reactToHourPassing()
-		{
-			return active.reactToHourPassing();
-		}
-
-		EventWrapper ITimeLazyListener.reactToTimePassing(byte hoursPassed)
+		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
 		{
 			if (isPregnant)
 			{
@@ -136,25 +125,19 @@ namespace CoC.Backend.Pregnancies
 			}
 			else
 			{
-				return EventWrapper.Empty;
+				return null;
 			}
 		}
-
-
-
-		private ITimeActiveListener active => this;
-		private ITimeLazyListener lazy => this;
-
 		#endregion
 	}
 
-	public sealed class ReadOnlyPregnancyStore
+	public sealed class ReadOnlyPregnancyStore : SimpleData
 	{
 		public readonly SpawnType spawnType;
 		public readonly ushort hoursTilBirth;
 
 
-		public ReadOnlyPregnancyStore(SpawnType spawnType, ushort hoursToBirth)
+		public ReadOnlyPregnancyStore(Guid creatureID, SpawnType spawnType, ushort hoursToBirth) : base(creatureID)
 		{
 			this.spawnType = spawnType;
 			hoursTilBirth = hoursToBirth;

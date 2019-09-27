@@ -7,6 +7,7 @@ using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
 using CoC.Backend.SaveData;
@@ -67,7 +68,7 @@ namespace CoC.Backend.BodyParts
 		//Hair, Fur, Tone
 		//private HairFurColors hairColor => hairData().hairColor;
 
-		private HairData hairData => source.hair.AsReadOnlyData();
+		private HairData hairData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.hair.AsReadOnlyData() : new HairData(Guid.Empty);
 
 		private HairFurColors activeHairColor
 		{
@@ -103,9 +104,9 @@ namespace CoC.Backend.BodyParts
 
 		public override BodyType defaultType => BodyType.defaultValue;
 
-		internal Body(Creature source) : this(source, BodyType.defaultValue) { }
+		internal Body(Guid creatureID) : this(creatureID, BodyType.defaultValue) { }
 
-		internal Body(Creature source, BodyType bodyType) : base(source)
+		internal Body(Guid creatureID, BodyType bodyType) : base(creatureID)
 		{
 			type = bodyType ?? throw new ArgumentNullException();
 
@@ -115,9 +116,9 @@ namespace CoC.Backend.BodyParts
 			hipPiercings = new Piercing<HipPiercingLocation>(HipLocationUnlocked, HipSupportedJewelry);
 		}
 
-		internal Body(Creature source, BodyType bodyType, FurColor primaryFurColor = null, FurTexture? primaryFurTexture = null, Tones primarySkinTone = null,
+		internal Body(Guid creatureID, BodyType bodyType, FurColor primaryFurColor = null, FurTexture? primaryFurTexture = null, Tones primarySkinTone = null,
 			SkinTexture? primarySkinTexture = null, FurColor secondaryFurColor = null, FurTexture? secondaryFurTexture = null, Tones secondarySkinTone = null,
-			SkinTexture? secondarySkinTexture = null, bool secondaryUsesPrimaryIfNull = true) : this(source, bodyType)
+			SkinTexture? secondarySkinTexture = null, bool secondaryUsesPrimaryIfNull = true) : this(creatureID, bodyType)
 		{
 			if (secondaryUsesPrimaryIfNull)
 			{
@@ -344,7 +345,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (!oldSkin.Equals(mainSkin.AsReadOnlyData()) || !oldPrimary.Equals(mainEpidermis) || !oldSecondary.Equals(supplementaryEpidermis))
 			{
-				var oldData = new BodyData(oldPrimary, oldSecondary, oldFur, oldSkin, hairData, type);
+				var oldData = new BodyData(creatureID, oldPrimary, oldSecondary, oldFur, oldSkin, hairData, type);
 				NotifyDataChanged(oldData);
 			}
 		}
@@ -598,7 +599,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		public override BodyData AsReadOnlyData()
 		{
-			return new BodyData(primary, secondary, mainFur, mainSkin, hairData, type);
+			return new BodyData(creatureID, primary, secondary, mainFur, mainSkin, hairData, type);
 		}
 
 
@@ -1095,7 +1096,7 @@ namespace CoC.Backend.BodyParts
 				mainSkin = new Epidermis(toneType, toneMember.defaultTone);
 			}
 
-			ParseEpidermisDataOnTransform(mainFur, mainSkin, new Epidermis(), new HairData(), out secondaryEpidermis);
+			ParseEpidermisDataOnTransform(mainFur, mainSkin, new Epidermis(), new HairData(Guid.Empty), out secondaryEpidermis);
 		}
 
 		//validate is called after deserialization. Validate makes the following assumptions that the following are true after deserialization:
@@ -1539,7 +1540,7 @@ namespace CoC.Backend.BodyParts
 		public HairFurColors activeHairColor => hasHair ? hairColor : HairFurColors.NO_HAIR_FUR; //this is the same as hairColor, but will be empty if the character is bald. 
 		public readonly bool hasHair; //boolean determining if the character has any hair. this will be false if the character is bald or cannot grow hair.
 
-		internal BodyData(Epidermis primary, Epidermis secondary, Epidermis fur, Epidermis skin, in HairData hairData, BodyType bodyType) : base(bodyType)
+		internal BodyData(Guid id, Epidermis primary, Epidermis secondary, Epidermis fur, Epidermis skin, in HairData hairData, BodyType bodyType) : base(id, bodyType)
 		{
 			main = primary.AsReadOnlyData();
 			supplementary = secondary.AsReadOnlyData();
@@ -1551,7 +1552,7 @@ namespace CoC.Backend.BodyParts
 			mainSkin = skin.AsReadOnlyData();
 		}
 
-		internal BodyData(EpidermalData primary, EpidermalData secondary, EpidermalData fur, EpidermalData skin, in HairData hairData, BodyType bodyType) : base(bodyType)
+		internal BodyData(Guid id, EpidermalData primary, EpidermalData secondary, EpidermalData fur, EpidermalData skin, in HairData hairData, BodyType bodyType) : base(id, bodyType)
 		{
 			main = primary ?? throw new ArgumentNullException(nameof(primary));
 			supplementary = secondary ?? throw new ArgumentNullException(nameof(secondary));
@@ -1561,6 +1562,18 @@ namespace CoC.Backend.BodyParts
 
 			activeFur = fur ?? throw new ArgumentNullException(nameof(fur));
 			mainSkin = skin ?? throw new ArgumentNullException(nameof(skin));
+		}
+
+		internal BodyData(Guid id) : base(id, BodyType.defaultValue)
+		{
+			main = new Epidermis(BodyType.defaultValue.epidermisType).AsReadOnlyData();
+			supplementary = new EpidermalData();
+
+			hairColor = Hair.DEFAULT_COLOR;
+			hasHair = true;
+
+			activeFur = new EpidermalData();
+			mainSkin = main;
 		}
 	}
 }

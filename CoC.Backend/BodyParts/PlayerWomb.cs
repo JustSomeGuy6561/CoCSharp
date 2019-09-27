@@ -7,6 +7,7 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
+using System;
 
 
 //
@@ -33,7 +34,7 @@ namespace CoC.Backend.BodyParts
 	//ITimeListener: if pregnant or anal pregnant, run them, check what's going on
 	//IDayListender: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant. output it.
 
-	public sealed partial class PlayerWomb : Womb
+	public sealed partial class PlayerWomb : Womb, ITimeDailyListener
 	{
 		//egg related.
 		public bool laysEggs => basiliskWomb || oviposition;
@@ -47,12 +48,12 @@ namespace CoC.Backend.BodyParts
 		public bool defaultKnownEggSize => normalPregnancy.eggsLarge;
 
 		//the player can get anally pregnant, even if the source does not force it. This allows things like bunny eggs in the ass, etc, 
-		public override bool canGetAnallyPregnant(bool hasAnus, bool sourceCanAnallyImpregnate)
+		protected override bool canGetAnallyPregnantCheck(bool hasAnus, bool sourceCanAnallyImpregnate)
 		{
 			return true;
 		}
 
-		public PlayerWomb(Creature source) : base(source, new PregnancyStore(source, true), new PregnancyStore(source, false), new PregnancyStore(source, true))
+		public PlayerWomb(Guid creatureID) : base(creatureID, new PregnancyStore(creatureID, true), new PregnancyStore(creatureID, false), new PregnancyStore(creatureID, true))
 		{
 
 		}
@@ -101,9 +102,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region ITimeListeners
-		protected override byte hourToTrigger => 0;
+		byte ITimeDailyListener.hourToTrigger => 0;
 
-		protected override EventWrapper reactToDailyTrigger()
+		EventWrapper ITimeDailyListener.reactToDailyTrigger()
 		{
 			if (!normalPregnancy.isPregnant && laysEggs && GameEngine.CurrentDay % eggsEveryXDays == 0)
 			{
@@ -114,7 +115,6 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
-		//Base perk stats is fine, no need to override. 
 	}
 
 

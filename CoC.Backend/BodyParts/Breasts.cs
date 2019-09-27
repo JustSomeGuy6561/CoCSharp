@@ -4,6 +4,7 @@
 //1/6/2019, 1:27 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 using System;
 
@@ -13,8 +14,17 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class Breasts : SimpleSaveablePart<Breasts, BreastData>, IGrowable, IShrinkable
 	{
-		private Gender currGender => source.genitals.gender;
-		private int currentBreastRow => source.genitals.breasts.IndexOf(this);
+		private Creature creature
+		{
+			get
+			{
+				CreatureStore.TryGetCreature(creatureID, out Creature creatureSource);
+				return creatureSource;
+			}
+		}
+
+		private Gender currGender => creature?.genitals.gender ?? Gender.MALE;
+		private int currentBreastRow => creature?.genitals.breastRows.IndexOf(this) ?? 0;
 
 		public const CupSize DEFAULT_MALE_SIZE = CupSize.FLAT;
 		public const CupSize DEFAULT_FEMALE_SIZE = CupSize.C;
@@ -61,30 +71,22 @@ namespace CoC.Backend.BodyParts
 		private bool makeBigTits => bigTiddyMultiplier > 1.1f;
 		private bool makeSmallTits => tinyTiddyMultiplier > 1.1f;
 
-		public float lactationMultiplier
+		public float lactationAmount(bool perBreast)
 		{
-			get => _lactationMultiplier;
-			private set
+			if (creature is null)
 			{
-				if (_lactationMultiplier != value)
-				{
-					_lactationMultiplier = value;
-				}
+				return 0;
+			}
+			else if (!perBreast)
+			{
+				return creature.genitals.currentLactationAmount;
+			}
+			else
+			{
+				return creature.genitals.currentLactationAmount / (creature.genitals.breastRows.Count * NUM_BREASTS);
 			}
 		}
-		private float _lactationMultiplier;
-
-		internal float SetLactation(float lactationAmount)
-		{
-			if (lactationAmount != lactationMultiplier)
-			{
-				var oldData = AsReadOnlyData();
-				lactationMultiplier = lactationAmount;
-				NotifyDataChanged(oldData);
-			}
-			return lactationMultiplier;
-		}
-
+		
 
 		public const byte NUM_BREASTS = 2;
 		public byte numBreasts => NUM_BREASTS;
@@ -109,10 +111,14 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private CupSize _cupSize;
+		public uint titFuckCount { get; private set; } = 0;
+		public uint dickNippleFuckCount { get; private set; } = 0;
+		public uint nippleFuckCount { get; private set; } = 0;
+
 		public readonly Nipples nipples;
 		public bool isMale => cupSize == CupSize.FLAT && nipples.length <= .5f;
 
-		internal Breasts(Creature source, BreastPerkHelper initialPerkData, Gender initialGender) : base(source)
+		internal Breasts(Guid creatureID, BreastPerkHelper initialPerkData, Gender initialGender) : base(creatureID)
 		{
 
 			if (initialGender.HasFlag(Gender.FEMALE))
@@ -123,7 +129,7 @@ namespace CoC.Backend.BodyParts
 			{
 				_cupSize = initialPerkData.MaleNewLength();
 			}
-			nipples = new Nipples(source, this, initialPerkData, initialGender);
+			nipples = new Nipples(creatureID, this, initialPerkData, initialGender);
 
 			_maleMinCup = initialPerkData.MaleMinCup;
 			_femaleMinCup = initialPerkData.FemaleMinCup;
@@ -133,7 +139,6 @@ namespace CoC.Backend.BodyParts
 			bigTiddyMultiplier = initialPerkData.TitsGrowthMultiplier;
 			tinyTiddyMultiplier = initialPerkData.TitsShrinkMultiplier;
 
-			source.genitals.onGenderChanged += OnGenderChanged;
 
 			CupSize min = currGender.HasFlag(Gender.FEMALE) ? femaleMinCup : maleMinCup;
 			if (cupSize < min)
@@ -141,9 +146,9 @@ namespace CoC.Backend.BodyParts
 				cupSize = min;
 			}
 		}
-		internal Breasts(Creature source, BreastPerkHelper initialPerkData, CupSize cup, float nippleLength) : base(source)
+		internal Breasts(Guid creatureID, BreastPerkHelper initialPerkData, CupSize cup, float nippleLength) : base(creatureID)
 		{
-			nipples = new Nipples(source, this, initialPerkData, nippleLength);
+			nipples = new Nipples(creatureID, this, initialPerkData, nippleLength);
 			_cupSize = Utils.ClampEnum2(cup, CupSize.FLAT, CupSize.JACQUES00);
 
 			_maleMinCup = initialPerkData.MaleMinCup;
@@ -173,7 +178,7 @@ namespace CoC.Backend.BodyParts
 		protected internal override void LateInit()
 		{
 			nipples.LateInit();
-			source.genitals.onGenderChanged += OnGenderChanged;
+			if (creature != null) creature.genitals.onGenderChanged += OnGenderChanged;
 		}
 
 		internal byte GrowBreasts(byte byAmount, bool ignorePerks = false)
@@ -241,11 +246,6 @@ namespace CoC.Backend.BodyParts
 
 			cupSize = maleMinCup;
 			nipples.ShrinkNipple(nipples.length - Nipples.MIN_NIPPLE_LENGTH);
-			if (removeStatus)
-			{
-				nipples.setNippleStatus(NippleStatus.NORMAL);
-				lactationMultiplier = 0f;
-			}
 			NotifyDataChanged(oldData);
 			return true;
 		}
@@ -271,12 +271,18 @@ namespace CoC.Backend.BodyParts
 			{
 				nipples.GrowNipple(0.5f - nipples.length);
 			}
-			if (removeStatus)
-			{
-				nipples.setNippleStatus(NippleStatus.NORMAL);
-			}
 			NotifyDataChanged(oldData);
 			return true;
+		}
+
+		public void Reset(bool resetPiercings = false)
+		{
+			cupSize = currGender.HasFlag(Gender.FEMALE) ? femaleMinCup: maleMinCup;
+
+			nipples.Reset(resetPiercings);
+			nippleFuckCount = 0;
+			titFuckCount = 0;
+			dickNippleFuckCount = 0;
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -308,40 +314,6 @@ namespace CoC.Backend.BodyParts
 			}
 			return retVal;
 		}
-
-		internal bool setQuadNipple(bool active)
-		{
-			var oldData = AsReadOnlyData();
-			var retVal = nipples.setQuadNipple(active);
-			if (retVal)
-			{
-				NotifyDataChanged(oldData);
-			}
-			return retVal;
-		}
-
-		internal bool setBlackNipple(bool active)
-		{
-			var oldData = AsReadOnlyData();
-			var retVal = nipples.setBlackNipple(active);
-			if (retVal)
-			{
-				NotifyDataChanged(oldData);
-			}
-			return retVal;
-		}
-
-		internal bool setNippleStatus(NippleStatus status)
-		{
-			var oldData = AsReadOnlyData();
-			var retVal = nipples.setNippleStatus(status);
-			if (retVal)
-			{
-				NotifyDataChanged(oldData);
-			}
-			return retVal;
-		}
-
 		#endregion
 		#region IGrowShrinkable
 		bool IGrowable.CanGroPlus()
@@ -387,28 +359,24 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed class BreastData
+	public sealed class BreastData : SimpleData
 	{
 		public readonly NippleData nipples;
 		public readonly CupSize cupSize;
-		public readonly float lactationAmount;
 		public readonly int currBreastRowIndex;
-		internal BreastData(Breasts breasts, int currentBreastRow)
+
+		internal BreastData(Breasts breasts, int currentBreastRow) : base(breasts?.creatureID ?? throw new ArgumentNullException(nameof(breasts)))
 		{
-			if (breasts is null) throw new ArgumentNullException(nameof(breasts));
 			cupSize = breasts.cupSize;
 			nipples = breasts.nipples.AsReadOnlyData();
-			lactationAmount = breasts.lactationMultiplier;
 
 			currBreastRowIndex = currentBreastRow;
 		}
 
-		internal BreastData(Breasts breasts, NippleData overrideNippleData, int currentBreastRow)
+		internal BreastData(Breasts breasts, NippleData overrideNippleData, int currentBreastRow) : base(breasts?.creatureID ?? throw new ArgumentNullException(nameof(breasts)))
 		{
-			if (breasts is null) throw new ArgumentNullException(nameof(breasts));
 			cupSize = breasts.cupSize;
 			nipples = overrideNippleData ?? throw new ArgumentNullException(nameof(overrideNippleData));
-			lactationAmount = breasts.lactationMultiplier;
 
 			currBreastRowIndex = currentBreastRow;
 		}

@@ -1,9 +1,10 @@
 ﻿using CoC.Backend.Creatures;
+using System;
 
 namespace CoC.Backend.BodyParts
 {
 	public sealed class EmptyWomb : Womb
 	{
-		public EmptyWomb(Creature source ) : base(source, null, null, null) { }
+		public EmptyWomb(Guid creatureID ) : base(creatureID, null, null, null) { }
 	}
 }

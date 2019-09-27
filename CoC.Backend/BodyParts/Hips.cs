@@ -40,10 +40,10 @@ namespace CoC.Backend.BodyParts
 		public SimpleDescriptor AsText => AsStr;
 		public SimpleDescriptor ShortDescription => ShortDesc;
 
-		internal Hips(Creature source) : this(source, AVERAGE)
+		internal Hips(Guid creatureID) : this(creatureID, AVERAGE)
 		{
 		}
-		internal Hips(Creature source, byte hipSize) : base(source)
+		internal Hips(Guid creatureID, byte hipSize) : base(creatureID)
 		{
 			_hipSize = Utils.Clamp2(hipSize, BOYISH, INHUMANLY_WIDE);
 		}
@@ -51,7 +51,7 @@ namespace CoC.Backend.BodyParts
 
 		public override HipData AsReadOnlyData()
 		{
-			return new HipData(size);
+			return new HipData(creatureID, size);
 		}
 
 		public byte GrowHips(byte amount = 1)
@@ -105,11 +105,11 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class HipData
+	public sealed class HipData : SimpleData
 	{
 		public readonly byte hipSize;
 
-		internal HipData(byte size)
+		internal HipData(Guid creatureID, byte size) : base(creatureID)
 		{
 			hipSize = size;
 		}

@@ -42,7 +42,7 @@ namespace CoC.Backend.Pregnancies
 		//and how often she gets to check in with the PC. Note that this will not run every hour, to prevent edge cases where in the same waiting span, you see two progress texts. Instead, it will be "lazy"
 		//and run as often as the pc is aware that time passed. So if the PC gets knocked out for 8 hours, it'll only run once, in the last hour of that 8 hour span. 
 
-		protected internal abstract EventWrapper NotifyTimePassed(bool isVaginal, float hoursToBirth, float previousHoursToBirth);
+		protected internal abstract string NotifyTimePassed(bool isVaginal, float hoursToBirth, float previousHoursToBirth);
 
 		//by default, will advance pregnancy to a certain point, and return the amount of time the pregnancy advanced, if any.
 		//If you want to change this behavior or add additional behavior (like adding additional eggs in the case of egg pregnancy)

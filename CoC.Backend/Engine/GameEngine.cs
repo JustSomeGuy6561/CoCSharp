@@ -53,9 +53,29 @@ namespace CoC.Backend.Engine
 
 		//internal static ReadOnlyDictionary<Type, Func<PerkBase>> perkList;
 
-#warning TODO: Fix this engine - use should never be interrupted, but cancelIdle breaks that. in the event someone says goToLocation during a use, it should be ignored - perhaps delayed?
-#warning The best way of doing this, i guess, is to pass any time event a bool that indicates whether current actions can be interrupted. if not, some events may be handled silently. 
-#warning (idk if above fixed, but...) now that idle and use times are separate, consider consuming idle times if a use occurs during idle instead of stacking - that doesnt make sense.
+#warning TODO: Fix this engine - see below:
+		//Needs to be fixed to make occur/needs implementing:
+		//use hours cannot be interrupted, and idle hours should be consumed if a current active/daily trigger uses hours. 
+		//cancel idle only interrupts idle - if there are still hours to be used, they must be used. 
+		//special interrupt scenes need to be given their own code land. when it occurs, the remaining active items for the current hour are ran to completion. any other special interrupts for 
+		//the current hour are queued. 
+		//need a means of internally handling the special interrupt scenes to do the above 
+		//special interrupt scenes cannot occur from lazy land - that doesn't really make sense, as lazies can occur at any time. 
+		//need a means of handling how go to location is handled, especially in terms of use/idle - if you're idling then go to camp, but it's interrupted and you go to tel-adre instead, you need
+		//to stay in Tel-Adre or whatever if it's canceled. 
+		//location cannot be changed during "used" hours, but it can be queued. Upon completion of the current used hours, the location will be updated. 
+		//special interrupt scenes need special logic for location change and time usage - if they need those, they break shit. 
+		
+		//new idea: location change now functions like a one-off reaction - it's added to the time events after the current used time. any additional time used up caused by various reactions and
+		//whatnot will occur AFTER this change. further, location changes are now split into two categories: head toward and go to. if the current location change is a "head toward" variant, it's
+		//possible to change that location without requiring any additional time. For example, if you are heading back to camp when some NPC finds you and drags you to another location, then
+		//you never get to camp. However, if the location change is a go to, it cannot be interrupted. if another location change occurs, it takes an additional hour, and is queued as the last event
+		//in that new hour. this effect stacks as needed. ideally, this kind of collision will never occur, but this is a nice, clean, reasonable means of addressing it. 
+
+		//sub-places need to be handled better. Current idea is to integrate them directly into places. places will need a special "onreturnfromsubplace" for what happens when they say "go back"
+		//in that subplace. note that some sub-places may not allow a "go back". on stay exists, but it's designed for when something happens, time passes, but you stay in the same location.
+		//the on return from sub-place would be for when no time has changed.
+
 		public static byte CurrentHour => timeEngine.CurrentHour;
 		public static int CurrentDay => timeEngine.CurrentDay;
 
@@ -73,19 +93,22 @@ namespace CoC.Backend.Engine
 		//For the most part, you can get away with just using the "ReturnToBaseAfter" function, or, in the aforementioned passed out examples (via combat loss or alcohol, for example)
 		//"ReturnToBaseAfterIdling". However, if you need to do custom things, you have the ability to do so. 
 		
-		//use a certain amount of hours up. The next time PassTime is called, the game will 
+		//use a certain amount of hours up. After all hours are consumed, returns to base.
 		//Use Hours cannot be interrupted. 
 		public static void ReturnToBaseAfter(byte hours)
 		{
-			areaEngine.ReturnToBase();
-			UseHoursPassTime(hours);
+			timeEngine.UseHoursGoToBase(hours, true);
+		}
+
+		public static void ReturnToBaseAfter(byte hours, bool headBackToCurrentLocationIfMoreHoursRemain)
+		{
+			timeEngine.UseHoursGoToBase(hours, headBackToCurrentLocationIfMoreHoursRemain);
 		}
 
 		//99% of the time, the resume callback will probably be Outputting some text about returning to camp, and cancelling the remaining idle hours. 
 		public static void ReturnToBaseAfterIdling(byte hours, ResumeTimeCallback resumeCallback)
 		{
-			IdleHoursPassTime(hours, resumeCallback);
-			areaEngine.ReturnToBaseIdle();
+			timeEngine.IdleHoursGoToBase(hours, resumeCallback);
 		}
 
 		//use a certain number of hours, but continue the current scene as if nothing happened. This is useful for scenes that could consume a variable number of hours depending on
@@ -102,6 +125,17 @@ namespace CoC.Backend.Engine
 			timeEngine.UseHours(hours);
 		}
 
+		//use a certain number of hours. After all hours are consumed, goes to target Area
+		public static void UseHoursThenGotoArea<T>(byte hours) where T : AreaBase
+		{
+			timeEngine.UseHoursGoToArea<T>(hours, true);
+		}
+
+		public static void UseHoursThenGotoArea<T>(byte hours, bool headBackToCurrentLocationIfMoreHoursRemain) where T : AreaBase
+		{
+			timeEngine.UseHoursGoToArea<T>(hours, headBackToCurrentLocationIfMoreHoursRemain);
+		}
+
 		//set aside a certain number of hours, and immediately attempt to consume all of them at the current location
 		//If something happens, resumeCallback will be called with the total number of hours remaining to idle. 
 		public static void IdleHoursPassTime(byte hours, ResumeTimeCallback resumeCallback)
@@ -113,9 +147,10 @@ namespace CoC.Backend.Engine
 		//the current location to the provided area.
 		public static void IdleHoursThenGotoArea<T>(byte hours, ResumeTimeCallback resumeCallback) where T : AreaBase
 		{
-			timeEngine.IdleHours(hours, resumeCallback);
-			areaEngine.SetAreaIdle<T>();
+			timeEngine.IdleHoursGoToArea<T>(hours, resumeCallback);
 		}
+
+
 
 		//cancels any remaining idle hours. If a new destination was set via idle, it will change the current location to that are.
 		public static void CancelRemainingIdleHours()
@@ -127,40 +162,50 @@ namespace CoC.Backend.Engine
 		public static void CancelRemainingIdleHoursOverrideArea<T>() where T: AreaBase
 		{
 			timeEngine.CancelIdle();
-			areaEngine.SetAreaIdle<T>();
+			timeEngine.ChangeLocation<T>(true);
 		}
 
 		public static void CancelRemainingIdleHoursReturnToBase()
 		{
 			timeEngine.CancelIdle();
-			areaEngine.ReturnToBaseIdle();
+			timeEngine.GoToBase(true);
 		}
 
 		//Functions for dealing with time related actions. Should otherwise be useless. 
 
 		public static byte IdleHoursRemaining()
 		{
-			return timeEngine.idleHoursPassed;
+			return timeEngine.idleHours;
 		}
 
 		public static byte UseHoursRemaining()
 		{
-			return timeEngine.usedHoursPassed;
+			return timeEngine.useHours;
 		}
 
 		public static ushort TotalHoursRemaining()
 		{
-			return timeEngine.totalHoursPassed;
+			return timeEngine.totalHours;
 		}
 
 		public static bool IdleDestinationIs<T>() where T : AreaBase
 		{
-			return areaEngine.delayedArea.GetType() == typeof(T);
+			return timeEngine.QueryFinalDestinationType() == typeof(T);
 		}
 
 		public static bool IdleDestinationIsHomeBase()
 		{
-			return areaEngine.delayedArea == areaEngine.currentHomeBase;
+			return timeEngine.QueryFinalDestinationType() == areaEngine.currentHomeBase.GetType();
+		}
+
+		public static void UpdateIdleFinalDestination<T>() where T : AreaBase
+		{
+			timeEngine.UpdateIdleFinalDestination<T>();
+		}
+
+		public static void UpdateIdleFinalDestinationHomeBase()
+		{
+			timeEngine.UpdateIdleFinalDestinationHomeBase();
 		}
 		//End Note. 
 
@@ -179,18 +224,6 @@ namespace CoC.Backend.Engine
 		public static bool ReturnToBaseSilent()
 		{
 			return areaEngine.ReturnToBase();
-		}
-
-		//changes the current area to the provided one, and tells the area engine to run it immediately. Useful for changing areas and doing the expected results. 
-		public static void ChangeAreaRunScene<T>() where T: AreaBase
-		{
-			areaEngine.SetArea<T>();
-			areaEngine.RunArea();
-		}
-
-		public static void ReturnToBaseRunScene()
-		{
-			ReturnToBaseAfter(0);
 		}
 
 		//attempts to unlock the provided area. If the area is already unlocked, it will return false, otherwise it'll return true. Regardless, it'll run

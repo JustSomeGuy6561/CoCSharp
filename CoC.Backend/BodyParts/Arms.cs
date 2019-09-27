@@ -6,6 +6,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -33,7 +34,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly Hands hands;
 
-		private BodyData bodyData => source.body.AsReadOnlyData();
+		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
 		public EpidermalData epidermis => type.GetPrimaryEpidermis(bodyData);
 		public EpidermalData secondaryEpidermis => type.GetSecondaryEpidermis(bodyData);
@@ -70,12 +71,12 @@ namespace CoC.Backend.BodyParts
 		public bool usesTone => type is ToneArms;
 		public bool usesFur => type is FurArms;
 
-		internal Arms(Creature source) : this(source, ArmType.defaultValue) { }
+		internal Arms(Guid creatureID) : this(creatureID, ArmType.defaultValue) { }
 
-		internal Arms(Creature source, ArmType armType) : base(source)
+		internal Arms(Guid creatureID, ArmType armType) : base(creatureID)
 		{
 			_type = armType ?? throw new ArgumentNullException(nameof(armType));
-			hands = new Hands(source, type.handType, (x) => x ? epidermis : secondaryEpidermis);
+			hands = new Hands(creatureID, type.handType, (x) => x ? epidermis : secondaryEpidermis);
 		}
 
 		//default implementation of update and restore are fine
@@ -343,7 +344,7 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermalData secondaryEpidermis;
 		public readonly HandData handData;
 
-		public ArmData(Arms source) : base(GetBehavior(source))
+		public ArmData(Arms source) : base(GetID(source), GetBehavior(source))
 		{
 			handData = source.hands.AsReadOnlyData();
 			primaryEpidermis = source.epidermis;

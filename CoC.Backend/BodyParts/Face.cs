@@ -7,6 +7,7 @@ using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -42,7 +43,7 @@ namespace CoC.Backend.BodyParts
 		public readonly Piercing<NosePiercingLocation> nosePiercings;
 		public readonly Piercing<EyebrowPiercingLocation> eyebrowPiercings;
 
-		private BodyData bodyData => source.body.AsReadOnlyData();
+		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
 		public override FaceType type
 		{
@@ -75,10 +76,10 @@ namespace CoC.Backend.BodyParts
 
 		public Tones epidermisTone => bodyData.mainSkin.tone;
 
-		internal Face(Creature source) : this(source, FaceType.defaultValue)
+		internal Face(Guid creatureID) : this(creatureID, FaceType.defaultValue)
 		{ }
 
-		internal Face(Creature source, FaceType faceType) : base(source)
+		internal Face(Guid creatureID, FaceType faceType) : base(creatureID)
 		{
 			type = faceType ?? throw new ArgumentNullException(nameof(faceType));
 			isFullMorph = false;
@@ -87,7 +88,7 @@ namespace CoC.Backend.BodyParts
 			eyebrowPiercings = new Piercing<EyebrowPiercingLocation>(EyebrowPiercingUnlocked, EyebrowSupportedJewelry);
 		}
 
-		internal Face(Creature source, FaceType faceType, bool? fullMorph = null, SkinTexture complexion = SkinTexture.NONDESCRIPT) : this(source, faceType)
+		internal Face(Guid creatureID, FaceType faceType, bool? fullMorph = null, SkinTexture complexion = SkinTexture.NONDESCRIPT) : this(creatureID, faceType)
 		{
 			skinTexture = complexion;
 			if (faceType.hasSecondLevel && fullMorph is bool morph)
@@ -710,7 +711,7 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermalData secondaryEpidermis;
 		public readonly SkinTexture skinTexture;
 
-		public FaceData(Face source) : base(GetBehavior(source))
+		public FaceData(Face source) : base(GetID(source), GetBehavior(source))
 		{
 			isFullMorph = source.isFullMorph;
 			primaryEpidermis = source.primary;

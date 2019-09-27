@@ -15,7 +15,7 @@ namespace CoC.Backend.BodyParts
 		where BehaviorClass : BehaviorBase
 		where DataClass : BehavioralPartDataBase<BehaviorClass>
 	{
-		private protected readonly Creature source;
+		public readonly Guid creatureID;
 
 		internal virtual bool UpdateType(BehaviorClass newType)
 		{
@@ -32,9 +32,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		
-		private protected PartWithBehaviorAndEventBase(Creature parent)
+		private protected PartWithBehaviorAndEventBase(Guid CreatureID)
 		{
-			source = parent ?? throw new ArgumentNullException(nameof(parent));
+			creatureID = CreatureID;
 		}
 
 		protected readonly WeakEventSource<BodyPartChangedEventArg<DataClass, BehaviorClass>> typeChangeSource =
@@ -48,7 +48,7 @@ namespace CoC.Backend.BodyParts
 
 		protected void NotifyTypeChanged(BehaviorClass previousType)
 		{
-			typeChangeSource.Raise(source, new BodyPartChangedEventArg<DataClass, BehaviorClass>(AsReadOnlyData(), previousType, type));
+			typeChangeSource.Raise(this, new BodyPartChangedEventArg<DataClass, BehaviorClass>(AsReadOnlyData(), previousType, type));
 		}
 
 		protected readonly WeakEventSource<BehavioralDataChangeEvent<ThisClass, BehaviorClass, DataClass>> dataChangeSource =
@@ -62,7 +62,7 @@ namespace CoC.Backend.BodyParts
 
 		protected void NotifyDataChanged(DataClass oldData)
 		{
-			dataChangeSource.Raise(source, new BehavioralDataChangeEvent<ThisClass, BehaviorClass, DataClass>(oldData, AsReadOnlyData()));
+			dataChangeSource.Raise(this, new BehavioralDataChangeEvent<ThisClass, BehaviorClass, DataClass>(oldData, AsReadOnlyData()));
 		}
 	}
 }

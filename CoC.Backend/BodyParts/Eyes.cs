@@ -54,16 +54,16 @@ namespace CoC.Backend.BodyParts
 			return new EyeData(this);
 		}
 
-		internal Eyes(Creature source, EyeType eyeType) : base(source)
+		internal Eyes(Guid creatureID, EyeType eyeType) : base(creatureID)
 		{
 			type = eyeType ?? throw new ArgumentNullException(nameof(eyeType));
 			leftIrisColor = type.defaultColor;
 			rightIrisColor = type.defaultColor;
 		}
 
-		internal Eyes(Creature source, EyeType eyeType, EyeColor color) : this(source, eyeType, color, color)
+		internal Eyes(Guid creatureID, EyeType eyeType, EyeColor color) : this(creatureID, eyeType, color, color)
 		{ }
-		internal Eyes(Creature source, EyeType eyeType, EyeColor leftEye, EyeColor rightEye) : base(source)
+		internal Eyes(Guid creatureID, EyeType eyeType, EyeColor leftEye, EyeColor rightEye) : base(creatureID)
 		{
 			type = eyeType ?? throw new ArgumentNullException(nameof(eyeType));
 			leftIrisColor = leftEye;
@@ -72,7 +72,7 @@ namespace CoC.Backend.BodyParts
 
 		public override EyeType defaultType => EyeType.defaultValue;
 
-		internal Eyes(Creature source) : this(source, EyeType.defaultValue) { }
+		internal Eyes(Guid creatureID) : this(creatureID, EyeType.defaultValue) { }
 		
 		//by design, there is no way to update eye color while changing types. Eye types are supposed to respect the current eye color.
 		//if you REALLY want to change this, just call update, then call change. You'll probably want some unique flavor text, though, as
@@ -269,7 +269,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly byte eyeCount;
 		public readonly ScleraColor scleraColor;
-		internal EyeData(Eyes source) : base(GetBehavior(source))
+		internal EyeData(Eyes source) : base(GetID(source), GetBehavior(source))
 		{
 			leftIrisColor = source.leftIrisColor;
 			rightIrisColor = source.rightIrisColor;

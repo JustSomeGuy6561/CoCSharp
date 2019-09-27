@@ -23,10 +23,10 @@ namespace CoC.Backend.BodyParts
 
 		public bool hasAntennae => type != AntennaeType.NONE;
 
-		internal Antennae(Creature source) : this(source, AntennaeType.defaultValue)
+		internal Antennae(Guid creatureID) : this(creatureID, AntennaeType.defaultValue)
 		{ }
 
-		internal Antennae(Creature source, AntennaeType antennaeType) : base(source)
+		internal Antennae(Guid creatureID, AntennaeType antennaeType) : base(creatureID)
 		{
 			type = antennaeType ?? throw new ArgumentNullException(nameof(antennaeType));
 		}
@@ -114,7 +114,7 @@ namespace CoC.Backend.BodyParts
 	public sealed class AntennaeData : BehavioralSaveablePartData<AntennaeData, Antennae, AntennaeType>
 	{
 
-		internal AntennaeData(Antennae source) : base(GetBehavior(source))
+		internal AntennaeData(Antennae source) : base(GetID(source), GetBehavior(source))
 		{ }
 	}
 

@@ -5,6 +5,7 @@
 
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using System;
 using WeakEvent;
 
@@ -29,7 +30,7 @@ namespace CoC.Backend.BodyParts
 		where ThisClass : BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass> where BehaviorClass : SaveableBehavior<BehaviorClass, ThisClass, DataClass>
 		where DataClass : BehavioralSaveablePartData<DataClass, ThisClass, BehaviorClass>
 	{
-		private protected BehavioralSaveablePart(Creature parent) : base(parent)
+		private protected BehavioralSaveablePart(Guid creatureID) : base(creatureID)
 		{
 		}
 
@@ -69,7 +70,7 @@ namespace CoC.Backend.BodyParts
 
 		public virtual string PlayerDescription()
 		{
-			if (source is Player player)
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is Player player)
 			{
 				return type.playerDescription((ThisClass)this, player);
 			}
@@ -77,7 +78,7 @@ namespace CoC.Backend.BodyParts
 		}
 		public virtual string TransformIntoText(BehaviorClass newBehavior)
 		{
-			if (source is Player player)
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is Player player)
 			{
 				return newBehavior.transformFrom((ThisClass)this, player);
 			}
@@ -85,12 +86,15 @@ namespace CoC.Backend.BodyParts
 		}
 		public virtual string RestoreText()
 		{
-			if (source is Player player)
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is Player player)
 			{
 				return type.restoreString((ThisClass)this, player);
 			}
 			else return "";
 		}
+
+
+
 		//Serialization
 		//Type ISaveableBase.currentSaveType => currentSaveVersion;
 		//Type[] ISaveableBase.saveVersionTypes => saveVersions;

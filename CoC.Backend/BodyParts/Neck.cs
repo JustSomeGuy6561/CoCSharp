@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -23,7 +24,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public byte length { get; private set; } = NeckType.MIN_NECK_LENGTH;
 
-		private HairFurColors hairColor => source.hair.hairColor;
+		private HairFurColors hairColor => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.hair.hairColor : Hair.DEFAULT_COLOR;
 
 		public override NeckType type
 		{
@@ -51,14 +52,14 @@ namespace CoC.Backend.BodyParts
 			return new NeckData(this);
 		}
 
-		internal Neck(Creature source) : this(source, NeckType.defaultValue)
+		internal Neck(Guid creatureID) : this(creatureID, NeckType.defaultValue)
 		{ }
-		internal Neck(Creature source, NeckType neckType) : base(source)
+		internal Neck(Guid creatureID, NeckType neckType) : base(creatureID)
 		{
 			type = neckType ?? throw new ArgumentNullException(nameof(neckType));
 		}
 
-		internal Neck(Creature source, NeckType neckType, HairFurColors initialNeckColor = null, byte neckLength = NeckType.MIN_NECK_LENGTH) : this(source, neckType)
+		internal Neck(Guid creatureID, NeckType neckType, HairFurColors initialNeckColor = null, byte neckLength = NeckType.MIN_NECK_LENGTH) : this(creatureID, neckType)
 		{
 			GrowNeckInternal(neckLength.subtract(NeckType.MIN_NECK_LENGTH), true); //add in the remaining amount.
 			var neckCol = neckColor;
@@ -339,7 +340,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly byte neckLength;
 		public readonly HairFurColors neckHairColor; //if applicable
-		internal NeckData(Neck neck) : base(GetBehavior(neck))
+		internal NeckData(Neck neck) : base(GetID(neck), GetBehavior(neck))
 		{
 			neckLength = neck.length;
 			neckHairColor = neck.neckColor;

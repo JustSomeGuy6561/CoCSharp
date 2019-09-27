@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/18/2019, 9:30 PM
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System.Text;
@@ -11,8 +12,8 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Build
 	{
-		private LowerBodyData lowerBodyData => source.lowerBody.AsReadOnlyData();
-		private BodyData bodyData => source.body.AsReadOnlyData();
+		private LowerBodyData lowerBodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature)? creature.lowerBody.AsReadOnlyData() : new LowerBodyData(creatureID);
+		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
 		private string ButtFullDesc()
 		{

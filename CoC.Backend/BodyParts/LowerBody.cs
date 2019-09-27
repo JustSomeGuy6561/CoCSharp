@@ -8,6 +8,7 @@ using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Races;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -34,7 +35,7 @@ namespace CoC.Backend.BodyParts
 		public const byte SEXTOPED_LEG_COUNT = 6; //for squids/octopi, if i implement them. technically, an octopus is 2 legs and 6 arms, but i like the 6 legs 2 arms because legs have a count, arms dont.
 		public const byte OCTOPED_LEG_COUNT = 8;
 
-		private BodyData bodyData => source.body.AsReadOnlyData();
+		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
 		public override LowerBodyType type
 		{
@@ -59,13 +60,13 @@ namespace CoC.Backend.BodyParts
 		public bool isSextoped => legCount == SEXTOPED_LEG_COUNT;
 		public bool isOctoped => legCount == OCTOPED_LEG_COUNT;
 
-		internal LowerBody(Creature source, LowerBodyType type) : base(source)
+		internal LowerBody(Guid creatureID, LowerBodyType type) : base(creatureID)
 		{
 			_type = type ?? throw new ArgumentNullException(nameof(type));
-			feet = new Feet(source, type.footType);
+			feet = new Feet(creatureID, type.footType);
 		}
 
-		internal LowerBody(Creature source) : this(source, LowerBodyType.defaultValue)
+		internal LowerBody(Guid creatureID) : this(creatureID, LowerBodyType.defaultValue)
 		{ }
 
 		protected internal override void PostPerkInit()
@@ -93,7 +94,7 @@ namespace CoC.Backend.BodyParts
 
 		public override LowerBodyData AsReadOnlyData()
 		{
-			return new LowerBodyData(type, primaryEpidermis, secondaryEpidermis);
+			return new LowerBodyData(creatureID, type, primaryEpidermis, secondaryEpidermis);
 		}
 	}
 
@@ -372,10 +373,16 @@ namespace CoC.Backend.BodyParts
 		public byte legCount => currentType.legCount;
 		public FootType footType => currentType.footType;
 
-		internal LowerBodyData(LowerBodyType type, EpidermalData epidermis, EpidermalData secondary) : base(type)
+		internal LowerBodyData(Guid id, LowerBodyType type, EpidermalData epidermis, EpidermalData secondary) : base(id, type)
 		{
 			primaryEpidermis = epidermis;
 			secondaryEpidermis = secondary;
+		}
+
+		internal LowerBodyData(Guid id) : base(id, LowerBodyType.defaultValue)
+		{
+			primaryEpidermis = new Epidermis(currentType.epidermisType).AsReadOnlyData();
+			secondaryEpidermis = new EpidermalData();
 		}
 	}
 }

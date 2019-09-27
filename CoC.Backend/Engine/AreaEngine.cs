@@ -47,8 +47,6 @@ namespace CoC.Backend.Engine
 		}
 		private AreaBase _currentArea;
 
-		internal AreaBase delayedArea {get; private set;}
-
 		private bool areaChanged = false;
 
 		//defined during a load of file or new game. obtained by the current difficulty. 
@@ -107,24 +105,6 @@ namespace CoC.Backend.Engine
 			bool areaChanged = currentArea != currentHomeBase;
 			currentArea = currentHomeBase;
 			return areaChanged;
-		}
-
-		internal void SetAreaIdle<T>() where T : AreaBase
-		{
-			if (typeof(T).IsSubclassOf(typeof(LocationBase)))
-			{
-				delayedArea = locationLookup[typeof(T)]();
-			}
-			else if (typeof(T).IsSubclassOf(typeof(PlaceBase)))
-			{
-				delayedArea = placeLookup[typeof(T)]();
-			}
-			throw new ArgumentException("Type T must derive PlaceBase or LocationBase, and must be added to the Area Engine in its static constructor");
-		}
-
-		internal void ReturnToBaseIdle()
-		{
-			delayedArea = currentHomeBase;
 		}
 
 		//only should be called during creation or loading a save. I suppose this could also happen during prologue => normal gameplay. 
@@ -247,13 +227,6 @@ namespace CoC.Backend.Engine
 		internal void RunArea()
 		{
 			Action ToDo = null;
-			if (delayedArea != null)
-			{
-				//will automatically check if different and set areaChanged accordingly
-				currentArea = delayedArea;
-				delayedArea = null;
-			}
-
 			if (currentArea is VisitableAreaBase visitable && areaChanged)
 			{
 				visitable.timesVisited++;

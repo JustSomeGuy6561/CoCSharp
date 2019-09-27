@@ -32,10 +32,10 @@ namespace CoC.Backend.BodyParts
 		public bool isLongTongue => type.longTongue;
 		public int length => type.length;
 
-		internal Tongue(Creature source) : this(source, TongueType.defaultValue)
+		internal Tongue(Guid creatureID) : this(creatureID, TongueType.defaultValue)
 		{ }
 
-		internal Tongue(Creature source, TongueType tongueType) : base(source)
+		internal Tongue(Guid creatureID, TongueType tongueType) : base(creatureID)
 		{
 			type = tongueType ?? throw new ArgumentNullException(nameof(tongueType));
 
@@ -175,7 +175,7 @@ namespace CoC.Backend.BodyParts
 	{
 		short length => currentType.length;
 		bool isLongTongue => currentType.longTongue;
-		internal TongueData(Tongue tongue) : base(GetBehavior(tongue))
+		internal TongueData(Tongue tongue) : base(GetID(tongue), GetBehavior(tongue))
 		{
 
 		}

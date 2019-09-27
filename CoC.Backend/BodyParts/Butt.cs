@@ -49,7 +49,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _buttSize;
 
-		internal Butt(Creature source, byte size) : base(source)
+		internal Butt(Guid creatureID, byte size) : base(creatureID)
 		{
 			if (size < TIGHT)
 			{
@@ -63,14 +63,14 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static Butt GenerateButtless(Creature source)
+		internal static Butt GenerateButtless(Guid creatureID)
 		{
-			return new Butt(source, 0);
+			return new Butt(creatureID, 0);
 		}
 
 		public override ButtData AsReadOnlyData()
 		{
-			return new ButtData(size);
+			return new ButtData(creatureID, size);
 		}
 
 		public SimpleDescriptor AsText => AsStr;
@@ -130,10 +130,10 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class ButtData
+	public sealed class ButtData : SimpleData
 	{
 		public readonly byte size;
-		internal ButtData(byte buttSize)
+		internal ButtData(Guid creatureID, byte buttSize) : base(creatureID)
 		{
 			size = buttSize;
 		}

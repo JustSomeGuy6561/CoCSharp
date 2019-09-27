@@ -18,7 +18,7 @@ namespace CoC.Backend.BodyParts
 		public Tones clawTone => type.getClawTone(getArmData(true).tone, getArmData(false).tone);
 
 		private readonly Func<bool, EpidermalData> getArmData;
-		internal Hands(Creature source, HandType handType, Func<bool, EpidermalData> currentEpidermalData) : base(source)
+		internal Hands(Guid creatureID, HandType handType, Func<bool, EpidermalData> currentEpidermalData) : base(creatureID)
 		{
 			type = handType;
 			getArmData = currentEpidermalData;
@@ -122,9 +122,15 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly Tones clawTone;
 
-		public HandData(Hands source) : base(GetBehavior(source))
+		public HandData(Hands source) : base(GetID(source), GetBehavior(source))
 		{
 			this.clawTone = source.clawTone;
+		}
+
+		private static Guid GetID(Hands source)
+		{
+			if (source is null) throw new ArgumentNullException(nameof(source));
+			return source.creatureID;
 		}
 
 		private static HandType GetBehavior(Hands source)

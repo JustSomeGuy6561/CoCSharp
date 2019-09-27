@@ -4,7 +4,9 @@
 //4/9/2019, 1:26 AM
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Numerics;
 
 namespace CoC
@@ -282,6 +284,44 @@ namespace CoC
 			{
 				callback(item);
 			}
+		}
+
+		public static T MaxItem<T,U>(this IEnumerable<T> collection, Func<T,U> getValue) where U:IComparable<U>
+		{
+			if (collection is null || collection.Count() == 0)
+			{
+				return default;
+			}
+			return collection.Aggregate((i1, i2) =>
+			{
+				if (i1 == null) return i2;
+				else if (i2 == null) return i1;
+				return getValue(i1).CompareTo(getValue(i2)) > 0 ? i1 : i2;
+			});
+		}
+
+		public static T MinItem<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : IComparable<U>
+		{
+			if (collection is null || collection.Count() == 0)
+			{
+				return default;
+			}
+			return collection.Aggregate((i1, i2) =>
+			{
+				if (i1 == null) return i2;
+				else if (i2 == null) return i1;
+				return getValue(i1).CompareTo(getValue(i2)) < 0 ? i1 : i2;
+			});
+		}
+
+		public static void Push<T>(this Queue<T> queue, T item)
+		{
+			queue.Enqueue(item);
+		}
+
+		public static T Pop<T>(this Queue<T> queue)
+		{
+			return queue.Dequeue();
 		}
 	}
 }

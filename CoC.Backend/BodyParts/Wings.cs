@@ -56,22 +56,22 @@ namespace CoC.Backend.BodyParts
 		public bool hasWings => type != WingType.NONE;
 		public bool canFly => type != WingType.NONE && isLarge;
 
-		internal Wings(Creature source) : this(source, WingType.defaultValue)
+		internal Wings(Guid creatureID) : this(creatureID, WingType.defaultValue)
 		{ }
 
-		internal Wings(Creature source, WingType wingType) : base(source)
+		internal Wings(Guid creatureID, WingType wingType) : base(creatureID)
 		{
 			type = wingType ?? throw new ArgumentNullException(nameof(wingType));
 		}
 
-		internal Wings(Creature source, TonableWings wingType, Tones tone, Tones boneTone) : this(source, wingType)
+		internal Wings(Guid creatureID, TonableWings wingType, Tones tone, Tones boneTone) : this(creatureID, wingType)
 		{
 			if (boneTone is null) boneTone = tone;
 			wingTone = Tones.IsNullOrEmpty(tone) ? wingType.defaultWingTone : tone;
 			wingBoneTone = Tones.IsNullOrEmpty(boneTone) ? wingType.defaultWingBoneTone : boneTone; //caught via testing. was the same as original tone.
 		}
 
-		internal Wings(Creature source, FeatheredWings wingType, HairFurColors color) : this(source, wingType)
+		internal Wings(Guid creatureID, FeatheredWings wingType, HairFurColors color) : this(creatureID, wingType)
 		{
 			featherColor = HairFurColors.IsNullOrEmpty(color) ? wingType.defaultFeatherColor : color;
 		}
@@ -643,7 +643,7 @@ namespace CoC.Backend.BodyParts
 		public readonly Tones wingBoneTone;
 		public readonly bool isLarge;
 
-		internal WingData(Wings source) : base(GetBehavior(source))
+		internal WingData(Wings source) : base(GetID(source), GetBehavior(source))
 		{
 			featherColor = source.featherColor;
 			wingTone = source.wingTone;

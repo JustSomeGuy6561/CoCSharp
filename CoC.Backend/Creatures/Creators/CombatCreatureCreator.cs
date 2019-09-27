@@ -12,11 +12,6 @@ namespace CoC.Backend.Creatures
 		public byte? speed;
 		public byte? intelligence;
 		public byte? toughness;
-		public byte? sensitivity;
-
-		//secondary stats. 
-		public byte? libido;
-		public byte? corruption;
 
 		//i see no reason for these to be in the creator. 
 		//lust is immediately altered the moment the game starts, and fatigue is reset to 0.

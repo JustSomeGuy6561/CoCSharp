@@ -109,18 +109,18 @@ namespace CoC.Backend.BodyParts
 		public SimpleDescriptor hipsFullDescription => HipsFullDesc;
 
 
-		internal Build(Creature source, byte heightInches, byte? characterThickness, byte? characterTone, byte? characterHipSize, byte? characterButtSize) : base(source)
+		internal Build(Guid creatureID, byte heightInches, byte? characterThickness, byte? characterTone, byte? characterHipSize, byte? characterButtSize) : base(creatureID)
 		{
 			_heightInInches = Utils.Clamp2(heightInches, MIN_HEIGHT, MAX_HEIGHT);
 
 			_thickness = Utils.Clamp2(characterThickness ?? THICKNESS_NORMAL, THICKNESS_LITHE, THICKNESS_MASSIVE);
 			_muscleTone = Utils.Clamp2(characterTone ?? TONE_SOFT, TONE_FLABBY, TONE_PERFECTLY_DEFINED);
 
-			butt = new Butt(source, characterButtSize ?? Butt.AVERAGE);
-			hips = new Hips(source, characterHipSize ?? Hips.AVERAGE);
+			butt = new Butt(creatureID, characterButtSize ?? Butt.AVERAGE);
+			hips = new Hips(creatureID, characterHipSize ?? Hips.AVERAGE);
 		}
 
-		internal Build(Creature source) : this(source, DEFAULT_HEIGHT, THICKNESS_NORMAL, TONE_SOFT, Hips.AVERAGE, Butt.AVERAGE)
+		internal Build(Guid creatureID) : this(creatureID, DEFAULT_HEIGHT, THICKNESS_NORMAL, TONE_SOFT, Hips.AVERAGE, Butt.AVERAGE)
 		{
 		}
 
@@ -141,12 +141,12 @@ namespace CoC.Backend.BodyParts
 
 		private void Hips_dataChange(object sender, SimpleDataChangeEvent<Hips, HipData> e)
 		{
-			NotifyDataChanged(new BuildData(heightInInches, muscleTone, thickness, butt.size, e.oldValues.hipSize));
+			NotifyDataChanged(new BuildData(creatureID, heightInInches, muscleTone, thickness, butt.size, e.oldValues.hipSize));
 		}
 
 		private void Butt_dataChange(object sender, SimpleDataChangeEvent<Butt, ButtData> e)
 		{
-			NotifyDataChanged(new BuildData(heightInInches, muscleTone, thickness, e.oldValues.size, hips.size));
+			NotifyDataChanged(new BuildData(creatureID, heightInInches, muscleTone, thickness, e.oldValues.size, hips.size));
 		}
 
 		public byte GrowButt(byte amount = 1)
@@ -255,11 +255,11 @@ namespace CoC.Backend.BodyParts
 
 		public override BuildData AsReadOnlyData()
 		{
-			return new BuildData(heightInInches, muscleTone, thickness, butt.size, hips.size);
+			return new BuildData(creatureID, heightInInches, muscleTone, thickness, butt.size, hips.size);
 		}
 	}
 
-	public sealed class BuildData
+	public sealed class BuildData : SimpleData
 	{
 		public readonly byte heightInInches;
 		public readonly byte muscleTone;
@@ -267,7 +267,7 @@ namespace CoC.Backend.BodyParts
 		public readonly byte buttSize;
 		public readonly byte hipSize;
 
-		internal BuildData(byte height, byte tone, byte thicc, byte butt, byte hips)
+		internal BuildData(Guid id, byte height, byte tone, byte thicc, byte butt, byte hips) : base(id)
 		{
 			heightInInches = height;
 			muscleTone = tone;
@@ -275,6 +275,15 @@ namespace CoC.Backend.BodyParts
 			buttSize = butt;
 			hipSize = hips;
 
+		}
+
+		internal BuildData(Guid id) : base(id)
+		{
+			heightInInches = Build.DEFAULT_HEIGHT;
+			muscleTone = Build.THICKNESS_NORMAL;
+			thickness = Build.TONE_SOFT;
+			buttSize = Butt.AVERAGE;
+			hipSize = Hips.AVERAGE;
 		}
 	}
 }

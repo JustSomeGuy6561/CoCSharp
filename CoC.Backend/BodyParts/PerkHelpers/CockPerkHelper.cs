@@ -11,11 +11,6 @@ namespace CoC.Backend.BodyParts
 {
 	internal sealed class CockPerkHelper
 	{
-		//how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
-		public float CockGrowthMultiplier = 1.0f;
-
-		//how much more/less should we shrink a cock over base amount? //big cock, cockSock;
-		public float CockShrinkMultiplier = 1.0f;
 
 		//minimum size for any new cocks; //bro/futa perks for now
 		public float NewCockDefaultSize = Cock.DEFAULT_COCK_LENGTH;
@@ -44,10 +39,8 @@ namespace CoC.Backend.BodyParts
 		{
 		}
 
-		public CockPerkHelper(float cockGrowthMultiplier, float cockShrinkMultiplier, float newCockDefaultSize, float newCockSizeDelta, float minCockLength)
+		public CockPerkHelper(float newCockDefaultSize, float newCockSizeDelta, float minCockLength)
 		{
-			CockGrowthMultiplier = cockGrowthMultiplier;
-			CockShrinkMultiplier = cockShrinkMultiplier;
 			NewCockDefaultSize = newCockDefaultSize;
 			NewCockSizeDelta = newCockSizeDelta;
 			MinCockLength = minCockLength;

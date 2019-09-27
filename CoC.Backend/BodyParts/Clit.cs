@@ -13,6 +13,7 @@ using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.BodyParts.EventHelpers;
 using WeakEvent;
+using CoC.Backend.Engine;
 
 namespace CoC.Backend.BodyParts
 {
@@ -46,7 +47,7 @@ namespace CoC.Backend.BodyParts
 
 
 		private readonly Vagina parent;
-		private int vaginaIndex => source.genitals.vaginas.IndexOf(parent);
+		private int vaginaIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.vaginas.IndexOf(parent) : 0;
 
 		private static readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
 		private const JewelryType SUPPORTED_CLIT_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
@@ -106,15 +107,15 @@ namespace CoC.Backend.BodyParts
 		private bool _omnibusClit;
 		public readonly Piercing<ClitPiercings> clitPiercings;
 
-		internal Clit(Creature source, Vagina parent, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false) 
-			: this(source, parent, initialPerkData, null, isOmnibusClit)
+		internal Clit(Guid creatureID, Vagina parent, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false) 
+			: this(creatureID, parent, initialPerkData, null, isOmnibusClit)
 		{ }
 
-		internal Clit(Creature source, Vagina parent, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false) 
-			: this(source, parent, initialPerkData, (float?)clitSize, isOmnibusClit)
+		internal Clit(Guid creatureID, Vagina parent, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false) 
+			: this(creatureID, parent, initialPerkData, (float?)clitSize, isOmnibusClit)
 		{ }
 
-		private Clit(Creature source, Vagina parent, VaginaPerkHelper initialPerkData, float? clitSize, bool isOmnibusClit) : base(source)
+		private Clit(Guid creatureID, Vagina parent, VaginaPerkHelper initialPerkData, float? clitSize, bool isOmnibusClit) : base(creatureID)
 		{
 			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
 			_length = initialPerkData.NewClitSize(clitSize);
@@ -146,7 +147,7 @@ namespace CoC.Backend.BodyParts
 
 			if (clitCock == null)
 			{
-				clitCock = Cock.GenerateClitCock(source, this);
+				clitCock = Cock.GenerateClitCock(creatureID, this);
 			}
 			else
 			{
@@ -316,13 +317,13 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed class ClitData
+	public sealed class ClitData : SimpleData
 	{
 		public readonly float length;
 		public readonly bool isClitCock;
 		public readonly int VaginaIndex;
 
-		internal ClitData(Clit source, int currIndex)
+		internal ClitData(Clit source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			length = source.length;
 			isClitCock = source.omnibusClit;

@@ -2,7 +2,7 @@
 
 namespace CoC.Backend.Engine.Time
 {
-	public sealed class GameDateTime : IComparable<GameDateTime>// saveable
+	public sealed class GameDateTime : IComparable<GameDateTime>, IEquatable<GameDateTime>// saveable
 	{
 		public readonly byte hour;
 		public readonly int day;
@@ -72,6 +72,11 @@ namespace CoC.Backend.Engine.Time
 		public int CompareTo(GameDateTime other)
 		{
 			return -hoursTo(other);
+		}
+
+		public bool Equals(GameDateTime other)
+		{
+			return !(other is null) && this.hour == other.hour && this.day == other.day;
 		}
 	}
 

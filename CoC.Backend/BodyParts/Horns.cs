@@ -7,6 +7,7 @@ using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace CoC.Backend.BodyParts
 		public byte numHorns => _numHorns;
 		private byte _numHorns = 0;
 
-		private FemininityData femininity => source.genitals.femininity.AsReadOnlyData();
+		private FemininityData femininity => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.femininity.AsReadOnlyData() : new FemininityData(creatureID, 50);
 
 		public override HornType type
 		{
@@ -46,11 +47,11 @@ namespace CoC.Backend.BodyParts
 		public override HornType defaultType => HornType.defaultValue;
 
 		#region Constructors
-		internal Horns(Creature source) : this(source, HornType.defaultValue)
+		internal Horns(Guid creatureID) : this(creatureID, HornType.defaultValue)
 		{
 		}
 
-		internal Horns(Creature source, HornType hornType) : base(source)
+		internal Horns(Guid creatureID, HornType hornType) : base(creatureID)
 		{
 			type = hornType ?? throw new ArgumentNullException(nameof(hornType));
 		}
@@ -58,7 +59,7 @@ namespace CoC.Backend.BodyParts
 		//i suppose it's possible to use this for saves, though i'd personally not recommend it. It may be possible to save with invalid horn data
 		//due to a recent femininity change, and we wouldn't want it to auto-validate. I suppose this could lead to a player alterin their horn save data
 		//and it being considered valid, but that's not for us to police. 
-		internal Horns(Creature source, HornType hornType, byte hornLength, byte hornCount) : base(source)
+		internal Horns(Guid creatureID, HornType hornType, byte hornLength, byte hornCount) : base(creatureID)
 		{
 			_type = hornType ?? throw new ArgumentNullException(nameof(hornType));
 			_significantHornSize = hornLength;
@@ -66,7 +67,7 @@ namespace CoC.Backend.BodyParts
 			Validate(true); //check if the horn count/size is valid, given initial femininity. correct it if not. 
 		}
 
-		internal Horns(Creature source, HornType hornType, byte additionalStrengthLevel, bool uniform = false) : this(source, hornType)
+		internal Horns(Guid creatureID, HornType hornType, byte additionalStrengthLevel, bool uniform = false) : this(creatureID, hornType)
 		{
 			StrengthenTransformPrivate(additionalStrengthLevel, uniform);
 		}
@@ -74,7 +75,7 @@ namespace CoC.Backend.BodyParts
 
 		protected internal override void LateInit()
 		{
-			source.genitals.femininity.feminityChangedEvent += FemininityChangedEvent;
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature)) creature.genitals.femininity.dataChange += FemininityChangedEvent;
 			type.onInit(type, ref _numHorns, ref _significantHornSize, femininity);
 		}
 
@@ -187,8 +188,14 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		#region IGenderListener
+		#region IFemininityListener
 		string IFemininityListenerInternal.reactToFemininityChangeFromTimePassing(bool isPlayer, byte hoursPassed, byte oldFemininity)
+		{
+			if (isPlayer) return type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, oldFemininity, femininity);
+			return "";
+		}
+
+		string IFemininityListenerInternal.reactToFemininityChange(byte oldFemininity)
 		{
 			return type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, oldFemininity, femininity);
 		}
@@ -1415,7 +1422,7 @@ namespace CoC.Backend.BodyParts
 		public readonly byte hornLength;
 		public readonly byte hornCount;
 
-		public HornData(Horns source) : base(GetBehavior(source))
+		public HornData(Horns source) : base(GetID(source), GetBehavior(source))
 		{
 			hornCount = source.numHorns;
 			hornLength = source.significantHornSize;

@@ -66,12 +66,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _size;
 
-		internal Balls(Creature source, bool hasBalls) : base(source)
+		internal Balls(Guid creatureID, bool hasBalls) : base(creatureID)
 		{
 			setBalls(hasBalls, silent:true);
 		}
 
-		internal Balls(Creature source, byte ballCount = DEFAULT_BALLS_COUNT, byte ballSize = DEFAULT_BALLS_SIZE) : base(source)
+		internal Balls(Guid creatureID, byte ballCount = DEFAULT_BALLS_COUNT, byte ballSize = DEFAULT_BALLS_SIZE) : base(creatureID)
 		{
 			if (ballCount == 0)
 			{
@@ -84,20 +84,20 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//use this to initialize the balls object when the creature has balls.
-		internal Balls(Creature source, Gender gender) : this(source, gender.HasFlag(Gender.MALE))
+		internal Balls(Guid creatureID, Gender gender) : this(creatureID, gender.HasFlag(Gender.MALE))
 		{
 		}
 
-		internal static Balls GenerateUniBall(Creature source)
+		internal static Balls GenerateUniBall(Guid creatureID)
 		{
-			Balls balls = new Balls(source, false);
+			Balls balls = new Balls(creatureID, false);
 			balls.setUniBall(true, true);
 			return balls;
 		}
 
 		public override BallsData AsReadOnlyData()
 		{
-			return new BallsData(count, size);
+			return new BallsData(creatureID, count, size);
 		}
 
 		//public string shortDescription()
@@ -417,12 +417,12 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed class BallsData
+	public sealed class BallsData : SimpleData
 	{
 		public readonly byte numBalls;
 		public readonly byte ballSize;
 
-		internal BallsData(byte numBalls, byte ballSize)
+		internal BallsData(Guid id, byte numBalls, byte ballSize) : base(id)
 		{
 			this.numBalls = numBalls;
 			this.ballSize = ballSize;

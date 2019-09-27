@@ -16,8 +16,6 @@ namespace CoC.Backend.Engine.Time
 		internal SpecialEvent scene { get; private set; }
 		internal bool isScene { get; private set; }
 
-		internal EventWrapper next = null; //i'd prefer to never use these.
-
 		public EventWrapper(string outputText)
 		{
 			text = outputText;
@@ -50,33 +48,5 @@ namespace CoC.Backend.Engine.Time
 		public static EventWrapper Empty => new EventWrapper(outputText:null);
 
 		public bool IsEmpty => (isScene && scene == null) || (!isScene && string.IsNullOrWhiteSpace(text));
-
-		public void Append(EventWrapper nextEvent)
-		{
-			if (IsNullOrEmpty(nextEvent))
-			{
-				return;
-			}
-			else if (IsEmpty)
-			{
-				Overwrite(nextEvent);
-			}
-			else
-			{
-				EventWrapper iterator = this;
-				while (iterator.next != null)
-				{
-					iterator = iterator.next;
-				}
-				iterator.next = nextEvent;
-			}
-		}
-
-		private void Overwrite(EventWrapper other)
-		{
-			text = other.text;
-			scene = other.scene;
-			isScene = other.isScene;
-		}
 	}
 }

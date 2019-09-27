@@ -7,6 +7,7 @@ using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -57,7 +58,7 @@ namespace CoC.Backend.BodyParts
 		public const float MAX_LENGTH = (float)(float.MaxValue * Measurement.TO_INCHES);
 		public const float MIN_LENGTH = 0;
 
-		private BuildData buildData => source.build.AsReadOnlyData();
+		private BuildData buildData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.build.AsReadOnlyData() : new BuildData(creatureID);
 
 		#region Unique Members
 		//make sure to check this when deserializing - if you dont use the property is may cause errors.
@@ -142,11 +143,11 @@ namespace CoC.Backend.BodyParts
 
 		#region Constructors
 
-		internal Hair(Creature source) : this(source, HairType.defaultValue)
+		internal Hair(Guid creatureID) : this(creatureID, HairType.defaultValue)
 		{ }
 
-		internal Hair(Creature source, HairType hairType, HairFurColors color = null, HairFurColors highlight = null, float? hairLength = null, 
-			HairStyle? hairStyle = null, bool hairTransparent = false) : base(source)
+		internal Hair(Guid creatureID, HairType hairType, HairFurColors color = null, HairFurColors highlight = null, float? hairLength = null, 
+			HairStyle? hairStyle = null, bool hairTransparent = false) : base(creatureID)
 		{
 			_type = hairType ?? throw new ArgumentNullException(nameof(hairType));
 
@@ -435,7 +436,7 @@ namespace CoC.Backend.BodyParts
 		#region HairAwareHelper
 		public override HairData AsReadOnlyData()
 		{
-			return new HairData(type, hairColor, highlightColor, style, length, isSemiTransparent, !isGrowing);
+			return new HairData(creatureID, type, hairColor, highlightColor, style, length, isSemiTransparent, !isGrowing);
 		}
 
 		#endregion
@@ -1024,7 +1025,7 @@ namespace CoC.Backend.BodyParts
 		
 		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
 
-		internal HairData(HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool notGrowing) : base(type)
+		internal HairData(Guid id, HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool notGrowing) : base(id, type)
 		{
 			hairColor = color;
 			highlightColor = highlight;
@@ -1034,7 +1035,7 @@ namespace CoC.Backend.BodyParts
 			isNotGrowing = notGrowing;
 		}
 
-		internal HairData() : base(HairType.defaultValue)
+		internal HairData(Guid id) : base(id, HairType.defaultValue)
 		{
 			hairColor = HairFurColors.NO_HAIR_FUR;
 			highlightColor = HairFurColors.NO_HAIR_FUR;

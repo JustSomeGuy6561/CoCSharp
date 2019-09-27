@@ -15,12 +15,12 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class Gills : BehavioralSaveablePart<Gills, GillType, GillData>
 	{
-		internal Gills(Creature source, GillType gillType) : base(source)
+		internal Gills(Guid creatureID, GillType gillType) : base(creatureID)
 		{
 			type = gillType ?? throw new ArgumentNullException(nameof(gillType));
 		}
 
-		internal Gills(Creature source) : this (source, GillType.defaultValue)
+		internal Gills(Guid creatureID) : this (creatureID, GillType.defaultValue)
 		{ }
 
 		public override GillType type { get; protected set; }
@@ -99,6 +99,6 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class GillData : BehavioralSaveablePartData<GillData, Gills, GillType>
 	{
-		internal GillData(Gills source) : base(GetBehavior(source)) { }
+		internal GillData(Gills source) : base(GetID(source), GetBehavior(source)) { }
 	}
 }

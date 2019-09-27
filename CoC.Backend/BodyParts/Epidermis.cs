@@ -560,7 +560,7 @@ namespace CoC.Backend.BodyParts
 		/// <param name="texture"></param>
 		/// <exception cref="ArgumentNullException">Thrown if type or tones is null</exception>
 		/// <exception cref="ArgumentException">Thrown if fur color is empty</exception>
-		internal EpidermalData(FurBasedEpidermisType type, FurColor furColor, FurTexture texture) : base(type)
+		internal EpidermalData(FurBasedEpidermisType type, FurColor furColor, FurTexture texture) : base(Guid.Empty, type)
 		{
 			if (furColor == null) throw new ArgumentNullException();
 			if (furColor.isEmpty) throw new ArgumentException("Fur Color cannot be empty");
@@ -578,7 +578,7 @@ namespace CoC.Backend.BodyParts
 		/// <param name="texture"></param>
 		/// <exception cref="ArgumentNullException">Thrown is type or tones is null</exception>
 		/// <exception cref="ArgumentException">Thrown if tones is empty</exception>
-		internal EpidermalData(ToneBasedEpidermisType toneType, Tones tones, SkinTexture texture) : base(toneType)
+		internal EpidermalData(ToneBasedEpidermisType toneType, Tones tones, SkinTexture texture) : base(Guid.Empty, toneType)
 		{
 			_tone = tones ?? throw new ArgumentNullException();
 			if (tones.isEmpty) throw new ArgumentException("Tone cannot be empty");
@@ -587,7 +587,7 @@ namespace CoC.Backend.BodyParts
 			_furTexture = FurTexture.NONDESCRIPT;
 		}
 
-		internal EpidermalData() : base(EpidermisType.EMPTY)
+		internal EpidermalData() : base(Guid.Empty, EpidermisType.EMPTY)
 		{
 			_fur = new FurColor();
 			_tone = Tones.NOT_APPLICABLE;

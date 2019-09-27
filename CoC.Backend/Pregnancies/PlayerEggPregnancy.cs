@@ -60,9 +60,9 @@ namespace CoC.Backend.Pregnancies
 			return (EventWrapper)BirthStr(gainedOviMax);
 		}
 
-		protected internal override EventWrapper NotifyTimePassed(bool isVaginal, float hoursToBirth, float previousHoursToBirth)
+		protected internal override string NotifyTimePassed(bool isVaginal, float hoursToBirth, float previousHoursToBirth)
 		{
-			return EventWrapper.Empty;
+			return "";
 		}
 
 		protected internal override string HandleOviElixir(ref ushort timeToBirth, byte strength = 1)

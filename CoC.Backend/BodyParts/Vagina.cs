@@ -4,6 +4,7 @@
 //1/5/2019, 5:57 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -37,7 +38,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Clit clit;
 
-		private int vaginaIndex => source.genitals.vaginas.IndexOf(this);
+		private int vaginaIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.vaginas.IndexOf(this) : 0;
 
 		internal VaginalLooseness minLooseness
 		{
@@ -191,12 +192,12 @@ namespace CoC.Backend.BodyParts
 		public override VaginaType defaultType => VaginaType.defaultValue;
 
 		#region Constructors
-		internal Vagina(Creature source, VaginaPerkHelper initialPerkData) : this(source, initialPerkData, VaginaType.defaultValue, clitLength: initialPerkData.DefaultNewClitSize)
+		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData) : this(creatureID, initialPerkData, VaginaType.defaultValue, clitLength: initialPerkData.DefaultNewClitSize)
 		{ }
 
-		internal Vagina(Creature source, VaginaPerkHelper initialPerkData, VaginaType vaginaType) : base(source)
+		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType) : base(creatureID)
 		{
-			clit = new Clit(source, this, initialPerkData);
+			clit = new Clit(creatureID, this, initialPerkData);
 			virgin = true;
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
 			_wetness = initialPerkData.defaultWetnessNew;
@@ -205,12 +206,12 @@ namespace CoC.Backend.BodyParts
 			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
-		internal Vagina(Creature source, VaginaPerkHelper initialPerkData, VaginaType vaginaType, float clitLength,
-			VaginalLooseness? vaginalLooseness = null, VaginalWetness? vaginalWetness = null, bool? isVirgin = null, bool omnibus = false) : base(source)
+		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType, float clitLength,
+			VaginalLooseness? vaginalLooseness = null, VaginalWetness? vaginalWetness = null, bool? isVirgin = null, bool omnibus = false) : base(creatureID)
 		{
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
 
-			clit = new Clit(source, this, initialPerkData, clitLength, omnibus);
+			clit = new Clit(creatureID, this, initialPerkData, clitLength, omnibus);
 			if (isVirgin is null)
 			{
 				isVirgin = vaginalLooseness == VaginalLooseness.TIGHT || vaginalLooseness is null;
@@ -234,9 +235,9 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Generate
-		internal static Vagina GenerateFromGender(Creature source, VaginaPerkHelper initialPerkData, Gender gender)
+		internal static Vagina GenerateFromGender(Guid creatureID, VaginaPerkHelper initialPerkData, Gender gender)
 		{
-			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(source, initialPerkData);
+			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(creatureID, initialPerkData);
 			else return null;
 		}
 		#endregion
@@ -253,9 +254,9 @@ namespace CoC.Backend.BodyParts
 		internal bool VaginalSex(ushort penetratorArea)
 		{
 			numTimesVaginal++;
-			return PenetrateVagina(penetratorArea, true);
+			return PenetrateVagina(penetratorArea, 0, true);
 		}
-		internal bool PenetrateVagina(ushort penetratorArea, bool takeVirginity = false)
+		internal bool PenetrateVagina(ushort penetratorArea, float knotArea, bool takeVirginity = false)
 		{
 
 			//experience = experience.add(ExperiencedGained);
@@ -731,7 +732,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ushort capacity;
 
-		public VaginaData(Vagina source, int currIndex) : base(GetBehavior(source))
+		public VaginaData(Vagina source, int currIndex) : base(GetID(source), GetBehavior(source))
 		{
 			clit = source.clit.AsReadOnlyData();
 			looseness = source.looseness;

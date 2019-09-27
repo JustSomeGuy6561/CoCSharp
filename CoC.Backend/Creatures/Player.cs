@@ -2,7 +2,6 @@
 //Description:
 //Author: JustSomeGuy
 //2/20/2019, 4:15 PM
-using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
@@ -16,12 +15,13 @@ namespace CoC.Backend.Creatures
 		public const byte DEFAULT_HUNGER = 0;
 		internal const byte MAX_HUNGER = 100;
 
-		public byte hunger
+		public byte hunger => (byte)Math.Floor(hungerTrue);
+		public float hungerTrue
 		{
 			get => _hunger;
 			private set => _hunger = Utils.Clamp2(value, minHunger, maxHunger);
 		}
-		private byte _hunger = 0;
+		private float _hunger = 0;
 
 		internal float hungerGainRate = 1.0f;
 
@@ -34,7 +34,7 @@ namespace CoC.Backend.Creatures
 
 		public Player(PlayerCreator creator) : base(creator)
 		{
-			hunger = DEFAULT_HUNGER;
+			hungerTrue = DEFAULT_HUNGER;
 			//now set up all the listeners.
 			//if any listeners are player specifc, and i mean really player specific, add them here.
 

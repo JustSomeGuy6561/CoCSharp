@@ -10,14 +10,14 @@ namespace CoC.Backend.BodyParts
 {
 	public sealed class Feet : PartWithBehaviorAndEventBase<Feet, FootType, FootData>
 	{
-		internal Feet(Creature source, FootType value) : base(source)
+		internal Feet(Guid creatureID, FootType value) : base(creatureID)
 		{
 			type = value ?? throw new ArgumentNullException(nameof(value));
 		}
 
 		public override FootData AsReadOnlyData()
 		{
-			return new FootData(type);
+			return new FootData(creatureID, type);
 		}
 
 		//default update is fine
@@ -80,7 +80,7 @@ namespace CoC.Backend.BodyParts
 		public bool isClaws => currentType.isClaws;
 		public bool isOther => currentType.isOther;
 
-		public FootData(FootType currentType) : base(currentType)
+		public FootData(Guid id, FootType currentType) : base(id, currentType)
 		{
 
 		}

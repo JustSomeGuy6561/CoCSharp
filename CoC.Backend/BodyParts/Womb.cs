@@ -3,10 +3,12 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public abstract class Womb : SimpleSaveablePart<Womb, WombData>, ITimeDailyListener, ITimeActiveListener, ITimeLazyListener
+	public abstract class Womb : SimpleSaveablePart<Womb, WombData>
 	{
 		//Note: we don't attach these to vagina and ass b/c it's possible to lose a vagina (and perhaps an asshole too if it's possible to TF to anemone or something)
 		//and we wouldn't want this to cause the pregnancy to be lost. 
@@ -14,7 +16,8 @@ namespace CoC.Backend.BodyParts
 
 		//if null, cannot get pregnant via normal vagina.
 		public readonly PregnancyStore normalPregnancy;
-		public virtual bool canGetPregnant(bool hasVagina) => hasVagina && normalPregnancy != null;
+		public bool canGetPregnant(bool hasVagina) => normalPregnancy != null && canGetPregnantCheck(hasVagina);
+		protected virtual bool canGetPregnantCheck(bool hasVagina) => hasVagina;
 
 		//if null, cannot get anally pregnant. 
 		public readonly PregnancyStore analPregnancy;
@@ -22,15 +25,17 @@ namespace CoC.Backend.BodyParts
 		//most anal pregnancy attempts will respect the Womb's stance on anal pregnancies and therefore fail. as of now, the only thing that ignores this is a satyr, or PC with satyr sexuality.
 		//note that it's possible to have a womb that prevents all anal pregnancies without overriding this by setting anal pregnacy store to null.
 		//Note that this means creatures 
-		public virtual bool canGetAnallyPregnant(bool hasAnus, bool sourceOverridesNoAnalPregnancies) => hasAnus && analPregnancy != null && sourceOverridesNoAnalPregnancies;
+		public bool canGetAnallyPregnant(bool hasAnus, bool sourceOverridesNoAnalPregnancies) => analPregnancy != null && canGetAnallyPregnantCheck(hasAnus, sourceOverridesNoAnalPregnancies);
+		protected virtual bool canGetAnallyPregnantCheck(bool hasAnus, bool sourceOverridesNoAnalPregnancies) => hasAnus && sourceOverridesNoAnalPregnancies;
 
 		//allows a third pregnancy store for creatures with two vaginas. defaults to null, so we can't get pregnant through a second vagina. 
 		public readonly PregnancyStore secondaryNormalPregnancy;
 
 		//same as normal pregnancy, though this one uses second vagina. since secondaryNormalPregnancy defaults to null, this defaults to false.
-		public virtual bool canGetSecondaryNormalPregnant(bool hasSecondVagina) => hasSecondVagina && secondaryNormalPregnancy != null;
+		public bool canGetSecondaryNormalPregnant(bool hasSecondVagina) => secondaryNormalPregnancy != null && canGetSecondaryNormalPregnantCheck(hasSecondVagina);
+		protected virtual bool canGetSecondaryNormalPregnantCheck(bool hasSecondVagina) => hasSecondVagina;
 
-		protected Womb(Creature source, PregnancyStore primaryVagina, PregnancyStore anus, PregnancyStore secondaryVagina) : base(source)
+		protected Womb(Guid creatureID, PregnancyStore primaryVagina, PregnancyStore anus, PregnancyStore secondaryVagina) : base(creatureID)
 		{
 			normalPregnancy = primaryVagina;
 			analPregnancy = anus;
@@ -71,27 +76,21 @@ namespace CoC.Backend.BodyParts
 
 		private void Normal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
-			NotifyDataChanged(new WombData(e.oldValues, canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
+			NotifyDataChanged(new WombData(creatureID, e.oldValues, canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
 				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant));
 		}
 
 		private void Anal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
-			NotifyDataChanged(new WombData(normalPregnancy?.AsReadOnlyData(), canGetPregnant, e.oldValues, canGetAnallyPregnant,
+			NotifyDataChanged(new WombData(creatureID, normalPregnancy?.AsReadOnlyData(), canGetPregnant, e.oldValues, canGetAnallyPregnant,
 				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant));
 		}
 
 		private void Secondary_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
-			NotifyDataChanged(new WombData(normalPregnancy?.AsReadOnlyData(), canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
+			NotifyDataChanged(new WombData(creatureID, normalPregnancy?.AsReadOnlyData(), canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
 				e.oldValues, canGetSecondaryNormalPregnant));
 		}
-
-
-		//public Womb(PregnancyStore normalPregnancy, PregnancyStore analPregnancy, PregnancyStore secondaryVaginalPregnancy)
-		//{
-
-		//}
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -107,107 +106,52 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		byte ITimeDailyListener.hourToTrigger => hourToTrigger; //midnight.
-
-		protected virtual byte hourToTrigger => byte.MaxValue; //never triggers.
-
-		EventWrapper ITimeDailyListener.reactToDailyTrigger()
+		internal List<ITimeActiveListener> GetActiveListeners()
 		{
-			//if (!normalPregnancy.isPregnant && laysEggs && GameEngine.CurrentDay % eggsEveryXDays == 0)
-			//{
-			//	normalPregnancy.attemptKnockUp(1, new PlayerEggPregnancy());
-			//	return new EventWrapper(EggSpawnText());
-			//}
-			//return null;
-			return reactToDailyTrigger();
+			List<ITimeActiveListener> activeListeners = new List<ITimeActiveListener>();
+			ITimeActiveListener activeListener = null;
+			activeListener = normalPregnancy as ITimeActiveListener;
+			if (activeListener != null)
+			{
+				activeListeners.Add(activeListener);
+			}
+			activeListener = analPregnancy as ITimeActiveListener;
+			if (activeListener != null)
+			{
+				activeListeners.Add(activeListener);
+			}
+			activeListener = secondaryNormalPregnancy as ITimeActiveListener;
+			if (activeListener != null)
+			{
+				activeListeners.Add(activeListener);
+			}
+			return activeListeners;
 		}
 
-		protected virtual EventWrapper reactToDailyTrigger()
+		internal List<ITimeLazyListener> GetLazyListeners()
 		{
-			return null;
-		}
-
-		EventWrapper ITimeActiveListener.reactToHourPassing()
-		{
-			return reactToHourPassing();
-		}
-
-		protected virtual EventWrapper reactToHourPassing()
-		{
-			EventWrapper wrapper = null;
-			//iirc we only do anal normalPregnancy text if it's bigger than regular one. 
-			if (normalPregnancy?.isPregnant == true)
+			List<ITimeLazyListener> lazyListeners = new List<ITimeLazyListener>();
+			ITimeLazyListener lazyListener = null;
+			lazyListener = normalPregnancy as ITimeLazyListener;
+			if (lazyListener != null)
 			{
-				wrapper = normalPregnancy.reactToHourPassing();
+				lazyListeners.Add(lazyListener);
 			}
-			if (secondaryNormalPregnancy.isPregnant)
+			lazyListener = analPregnancy as ITimeLazyListener;
+			if (lazyListener != null)
 			{
-				EventWrapper secondVagEvent = secondaryNormalPregnancy.reactToHourPassing();
-				if (wrapper != null)
-				{
-					wrapper.Append(secondVagEvent);
-				}
-				else
-				{
-					wrapper = secondVagEvent;
-				}
+				lazyListeners.Add(lazyListener);
 			}
-			if (analPregnancy.isPregnant)
+			lazyListener = secondaryNormalPregnancy as ITimeLazyListener;
+			if (lazyListener != null)
 			{
-				EventWrapper analEvent = analPregnancy.reactToHourPassing();
-				if (wrapper != null)
-				{
-					wrapper.Append(analEvent);
-				}
-				else
-				{
-					wrapper = analEvent;
-				}
+				lazyListeners.Add(lazyListener);
 			}
-			return wrapper;
-		}
-
-		EventWrapper ITimeLazyListener.reactToTimePassing(byte hoursPassed)
-		{
-			return reactToTimePassing(hoursPassed);
-		}
-
-		protected virtual EventWrapper reactToTimePassing(byte hoursPassed)
-		{
-			EventWrapper wrapper = EventWrapper.Empty;
-			if (normalPregnancy?.isPregnant == true)
-			{
-				wrapper = normalPregnancy.reactToTimePassing(hoursPassed);
-			}
-			if (secondaryNormalPregnancy?.isPregnant == true)
-			{
-				EventWrapper secondVagEvent = secondaryNormalPregnancy.reactToTimePassing(hoursPassed);
-				if (wrapper == null)
-				{
-					wrapper = secondVagEvent;
-				}
-				else
-				{
-					wrapper.Append(secondVagEvent);
-				}
-			}
-			if (analPregnancy?.isPregnant == true)
-			{
-				EventWrapper analWrapper = analPregnancy.reactToTimePassing(hoursPassed);
-				if (wrapper == null)
-				{
-					wrapper = analWrapper;
-				}
-				else
-				{
-					wrapper.Append(analWrapper);
-				}
-			}
-			return wrapper;
+			return lazyListeners;
 		}
 	}
 
-	public class WombData
+	public class WombData : SimpleData
 	{
 		//if null, cannot get pregnant via normal vagina.
 		public readonly ReadOnlyPregnancyStore vaginalPregnancyStore;
@@ -219,9 +163,9 @@ namespace CoC.Backend.BodyParts
 		public readonly ReadOnlyPregnancyStore secondVaginaPregnancyStore;
 		public readonly Func<bool, bool> canGetPregnantIfHasSecondVagina;
 
-		public WombData(ReadOnlyPregnancyStore vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina, 
+		public WombData(Guid creatureID, ReadOnlyPregnancyStore vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina, 
 			ReadOnlyPregnancyStore analPregnancyStore, Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus, 
-			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina)
+			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina) : base(creatureID)
 		{
 			this.vaginalPregnancyStore = vaginalPregnancyStore;
 			this.canGetPregnantIfHasVagina = canGetPregnantIfHasVagina ?? throw new ArgumentNullException(nameof(canGetPregnantIfHasVagina));
@@ -231,10 +175,8 @@ namespace CoC.Backend.BodyParts
 			this.canGetPregnantIfHasSecondVagina = canGetPregnantIfHasSecondVagina ?? throw new ArgumentNullException(nameof(canGetPregnantIfHasSecondVagina));
 		}
 
-		internal WombData(Womb source)
+		internal WombData(Womb source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-
 			vaginalPregnancyStore = source.normalPregnancy?.AsReadOnlyData();
 			analPregnancyStore = source.analPregnancy?.AsReadOnlyData();
 			secondVaginaPregnancyStore = source.secondaryNormalPregnancy?.AsReadOnlyData();
