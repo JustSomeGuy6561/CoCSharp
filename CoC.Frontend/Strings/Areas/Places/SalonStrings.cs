@@ -17,7 +17,7 @@ namespace CoC.Frontend.Areas.Places
 		}
 		private static string SalonUnlockText()
 		{
-			var player = GameEngine.currentPlayer;
+			var player = GameEngine.currentlyControlledCharacter;
 			//OutputImage("location-salon"));
 			StringBuilder sb = new StringBuilder("You step inside the cave, and are greeted by a sight you did not expect. The cave's floor is covered with smooth wood panelling " +
 				"and the walls are nearly entirely covered with hanging mirrors. The few stalactites have hooks drilled into them, " +

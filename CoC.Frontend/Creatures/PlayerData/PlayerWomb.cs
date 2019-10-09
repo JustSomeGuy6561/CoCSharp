@@ -2,11 +2,13 @@
 //Description:
 //Author: JustSomeGuy
 //6/28/2019, 10:30 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
+using CoC.Frontend.Pregnancies;
 using System;
 
 
@@ -28,7 +30,7 @@ using System;
 //If you want to wrap pregnancy stores in generic "Wombs" for random NPCs, and give them their own rules, go for it, but wiring it up to the system is on your.
 
 
-namespace CoC.Backend.BodyParts
+namespace CoC.Frontend.Creatures.PlayerData
 {
 	//even though technically butt pregnancies dont occur in the womb, i'm going to store them here. 
 	//ITimeListener: if pregnant or anal pregnant, run them, check what's going on
@@ -53,32 +55,42 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public PlayerWomb(Guid creatureID) : base(creatureID, new PregnancyStore(creatureID, true), new PregnancyStore(creatureID, false), new PregnancyStore(creatureID, true))
+		public PlayerWomb(Guid creatureID) : base(creatureID, new VaginalPregnancyStore(creatureID, 0), new AnalPregnancyStore(creatureID), new VaginalPregnancyStore(creatureID, 1))
 		{
 
 		}
 
 		public void SetEggSize(bool isLarge)
 		{
-			normalPregnancy.SetEggSize(isLarge);
-			analPregnancy.SetEggSize(isLarge);
+			SetNormalEggSize(isLarge);
+			SetSecondaryEggSize(isLarge);
 		}
 
 		//clears egg size "perk". now eggs are sized randomly. 
 		public void ClearEggSize()
 		{
-			normalPregnancy.ClearEggSize();
-			analPregnancy.ClearEggSize();
+			ClearNormalEggSize();
+			ClearSecondaryEggSize();
 		}
 
 		public bool GrantBasiliskWomb()
 		{
 			oviposition = true;
-			if (basiliskWomb == true)
+			if (basiliskWomb)
 			{
 				return false;
 			}
 			basiliskWomb = true;
+			return true;
+		}
+
+		public bool GrantOviposition()
+		{
+			if (oviposition)
+			{
+				return false;
+			}
+			oviposition = true;
 			return true;
 		}
 
@@ -91,14 +103,19 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal override bool Validate(bool correctInvalidData)
+		public bool ClearOviposition()
 		{
-			bool valid = normalPregnancy.Validate(correctInvalidData);
-			if (valid || correctInvalidData)
+			if (!oviposition || basiliskWomb)
 			{
-				valid &= analPregnancy.Validate(correctInvalidData);
+				return false;
 			}
-			return valid;
+			oviposition = false;
+			return true;
+		}
+
+		protected override bool ExtraValidations(bool currentlyValid, bool correctInvalidData)
+		{
+			return currentlyValid;
 		}
 
 		#region ITimeListeners
@@ -108,7 +125,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (!normalPregnancy.isPregnant && laysEggs && GameEngine.CurrentDay % eggsEveryXDays == 0)
 			{
-				normalPregnancy.attemptKnockUp(1, new PlayerEggPregnancy());
+				AttemptNormalKnockUp(1, new PlayerEggPregnancy(creatureID));
 				return new EventWrapper(EggSpawnText());
 			}
 			return null;

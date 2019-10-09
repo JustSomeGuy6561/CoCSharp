@@ -5,6 +5,7 @@ using CoC.Backend.Pregnancies;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -35,7 +36,9 @@ namespace CoC.Backend.BodyParts
 		public bool canGetSecondaryNormalPregnant(bool hasSecondVagina) => secondaryNormalPregnancy != null && canGetSecondaryNormalPregnantCheck(hasSecondVagina);
 		protected virtual bool canGetSecondaryNormalPregnantCheck(bool hasSecondVagina) => hasSecondVagina;
 
-		protected Womb(Guid creatureID, PregnancyStore primaryVagina, PregnancyStore anus, PregnancyStore secondaryVagina) : base(creatureID)
+		public uint totalBirthCount => normalPregnancy?.birthCount + analPregnancy?.birthCount + secondaryNormalPregnancy?.birthCount ?? 0;
+
+		protected Womb(Guid creatureID, VaginalPregnancyStore primaryVagina, AnalPregnancyStore anus, VaginalPregnancyStore secondaryVagina) : base(creatureID)
 		{
 			normalPregnancy = primaryVagina;
 			analPregnancy = anus;
@@ -92,6 +95,74 @@ namespace CoC.Backend.BodyParts
 				e.oldValues, canGetSecondaryNormalPregnant));
 		}
 
+		protected internal bool AttemptNormalKnockUp(float knockupChance, StandardSpawnType type)
+		{
+			return normalPregnancy.attemptKnockUp(knockupChance, type);
+		}
+
+		//sets the egg size for all future egg pregnancies in this womb.
+		protected internal void SetNormalEggSize(bool isLarge)
+		{
+			normalPregnancy.SetEggSize(isLarge);
+		}
+		//clears any set egg size that would otherwise affect all future egg pregnancies in this womb.
+		protected internal void ClearNormalEggSize()
+		{
+			normalPregnancy.ClearEggSize();
+		}
+
+
+		protected internal void ResetNormal(bool clearEggSize = false)
+		{
+			normalPregnancy.Reset(clearEggSize);
+		}
+
+		protected internal bool AttemptSecondaryKnockUp(float knockupChance, StandardSpawnType type)
+		{
+			return secondaryNormalPregnancy.attemptKnockUp(knockupChance, type);
+		}
+
+		//sets the egg size for all future egg pregnancies in this womb.
+		protected internal void SetSecondaryEggSize(bool isLarge)
+		{
+			secondaryNormalPregnancy.SetEggSize(isLarge);
+		}
+		//clears any set egg size that would otherwise affect all future egg pregnancies in this womb.
+		protected internal void ClearSecondaryEggSize()
+		{
+			secondaryNormalPregnancy.ClearEggSize();
+		}
+
+
+		protected internal void ResetSecondary(bool clearEggSize = false)
+		{
+			secondaryNormalPregnancy.Reset(clearEggSize);
+		}
+
+		protected internal bool AttemptAnalKnockUp(float knockupChance, StandardSpawnType type)
+		{
+			return analPregnancy.attemptKnockUp(knockupChance, type);
+		}
+
+		protected internal void ResetAnal()
+		{
+			analPregnancy.Reset(true);
+		}
+
+		protected readonly WeakEventSource<BirthEvent> birthEventSource =
+			new WeakEventSource<BirthEvent>();
+
+		public event EventHandler<BirthEvent> onBirth
+		{
+			add => birthEventSource.Subscribe(value);
+			remove => birthEventSource.Unsubscribe(value);
+		}
+
+		internal void RaiseBirthEvent(StandardSpawnType spawnType, PregnancyStore pregnancyStore)
+		{
+			birthEventSource.Raise(pregnancyStore, new BirthEvent(creatureID, pregnancyStore.AsReadOnlyData(), spawnType.AsReadOnlyData(), totalBirthCount));
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = normalPregnancy?.Validate(correctInvalidData) ?? true;
@@ -103,8 +174,12 @@ namespace CoC.Backend.BodyParts
 			{
 				valid &= secondaryNormalPregnancy?.Validate(correctInvalidData) ?? true;
 			}
+
+			valid &= ExtraValidations(valid, correctInvalidData);
 			return valid;
 		}
+
+		protected abstract bool ExtraValidations(bool currentlyValid, bool correctInvalidData);
 
 		internal List<ITimeActiveListener> GetActiveListeners()
 		{

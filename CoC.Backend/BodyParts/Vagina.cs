@@ -131,9 +131,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private VaginalLooseness _looseness;
 
-		public ushort numTimesVaginal { get; private set; } = 0;
+		public ushort orgasmCount { get; private set; } = 0;
+		public ushort sexCount { get; private set; } = 0;
+		public ushort totalPenetrationCount { get; private set; } = 0;
+		public ushort dryOrgasmCount { get; private set; } = 0;
 
-		public bool virgin { get; private set; }
+		public bool virgin { get; private set; } = true;
 
 		public ushort bonusVaginalCapacity
 		{
@@ -251,16 +254,42 @@ namespace CoC.Backend.BodyParts
 		//default update is fine.
 		#endregion
 		#region Unique Functions
-		internal bool VaginalSex(ushort penetratorArea)
+		
+		internal bool PenetrateVagina(ushort penetratorArea, float knotArea, bool takeVirginity, bool reachOrgasm)
 		{
-			numTimesVaginal++;
-			return PenetrateVagina(penetratorArea, 0, true);
-		}
-		internal bool PenetrateVagina(ushort penetratorArea, float knotArea, bool takeVirginity = false)
-		{
+			totalPenetrationCount++;
 
 			//experience = experience.add(ExperiencedGained);
 			VaginalLooseness oldLooseness = looseness;
+
+			HandleStretching(penetratorArea, knotArea);
+			
+			if (takeVirginity)
+			{
+				sexCount++;
+				virgin = false;
+			}
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
+			
+			return oldLooseness != looseness;
+		}
+
+		internal void OrgasmGeneric(bool dryOrgasm)
+		{
+			orgasmCount++;
+			if (dryOrgasm) dryOrgasmCount++;
+		}
+
+		internal void HandleBirth(ushort size)
+		{
+			HandleStretching(size, 0);
+		}
+
+		private void HandleStretching(ushort penetratorArea, float knotArea)
+		{
 			ushort capacity = VaginalCapacity();
 
 			//don't have to worry about overflow, as +1 will never overflow our artificial max.
@@ -284,12 +313,8 @@ namespace CoC.Backend.BodyParts
 			{
 				vaginaTightenTimer = 0;
 			}
-			if (virgin && takeVirginity)
-			{
-				virgin = false;
-			}
-			return oldLooseness != looseness;
 		}
+
 		#endregion
 		#region Vagina-Specific
 		internal bool Deflower()

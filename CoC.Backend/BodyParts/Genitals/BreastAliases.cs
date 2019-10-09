@@ -5,13 +5,26 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Genitals
 	{
-		public uint timesTitFucked => missingRowTitFuckCount + (uint)breastRows.Sum(x => x.titFuckCount);
-		public uint timesNippleFucked => missingRowNippleFuckCount + (uint)breastRows.Sum(x => x.nippleFuckCount);
-		public uint timesDickNippleFucked => missingRowDickNippleSexCount + (uint)breastRows.Sum(x => x.dickNippleFuckCount);
-
 		private uint missingRowTitFuckCount = 0;
+		private uint missingRowBreastOrgasmCount = 0;
+		private uint missingRowBreastDryOrgasmCount = 0;
+
 		private uint missingRowNippleFuckCount = 0;
 		private uint missingRowDickNippleSexCount = 0;
+		private uint missingRowNippleOrgasmCount = 0;
+		private uint missingRowNippleDryOrgasmCount = 0;
+
+
+		public uint titFuckCount => missingRowTitFuckCount + (uint)breastRows.Sum(x => x.titFuckCount);
+		public uint nippleFuckCount => missingRowNippleFuckCount + (uint)breastRows.Sum(x => x.nippleFuckCount);
+		public uint dickNippleSexCount => missingRowDickNippleSexCount + (uint)breastRows.Sum(x => x.dickNippleFuckCount);
+
+		public uint nippleOrgasmCount => missingRowNippleOrgasmCount.add((uint)breastRows.Sum(x => x.nippleOrgasmCount));
+		public uint nippleDryOrgasmCount => missingRowNippleDryOrgasmCount.add((uint)breastRows.Sum(x => x.nippleDryOrgasmCount));
+		public uint breastOrgasmCount => missingRowBreastOrgasmCount.add((uint)breastRows.Sum(x => x.orgasmCount));
+		public uint breastDryOrgasmCount => missingRowBreastDryOrgasmCount.add((uint)breastRows.Sum(x => x.dryOrgasmCount));
+
+		
 
 		internal CupSize BiggestCupSize()
 		{
@@ -88,16 +101,27 @@ namespace CoC.Backend.BodyParts
 			if (count >= numBreastRows)
 			{
 				missingRowTitFuckCount += _breasts[0].titFuckCount;
+				missingRowBreastOrgasmCount += _breasts[0].orgasmCount;
+				missingRowBreastDryOrgasmCount += _breasts[0].dryOrgasmCount;
+
 				missingRowNippleFuckCount += _breasts[0].nippleFuckCount;
 				missingRowDickNippleSexCount += _breasts[0].dickNippleFuckCount;
-
+				missingRowNippleOrgasmCount += _breasts[0].nippleOrgasmCount;
+				missingRowNippleDryOrgasmCount += _breasts[0].nippleDryOrgasmCount;
 				_breasts[0].Reset();
+
 				count = numBreastRows - 1;
 			}
 			
 			missingRowTitFuckCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.titFuckCount);
+			missingRowBreastOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.orgasmCount);
+			missingRowBreastDryOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.dryOrgasmCount);
+
 			missingRowNippleFuckCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.nippleFuckCount);
 			missingRowDickNippleSexCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.dickNippleFuckCount);
+			missingRowNippleOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.nippleOrgasmCount);
+			missingRowNippleDryOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.nippleDryOrgasmCount);
+
 			_breasts.RemoveRange(numBreastRows - count, count);
 
 			return oldCount - numBreastRows;
@@ -144,21 +168,52 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
+		internal void HandleTittyFuck(int breastIndex, Cock sourceCock, bool reachOrgasm)
+		{
+			HandleTittyFuck(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm);
+		}
+
+		internal void HandleTittyFuck(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm)
+		{
+			HandleTittyFuck(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm);
+		}
+
+		internal void HandleTittyFuck(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm)
+		{
+			_breasts[breastIndex].DoTittyFuck(length, girth, knotWidth, reachOrgasm);
+		}
+
+		internal void HandleTitOrgasmGeneric(int breastIndex, bool dryOrgasm)
+		{
+			_breasts[breastIndex].OrgasmTits(dryOrgasm);
+		}
+
 		internal void HandleNipplePenetration(int breastIndex, Cock sourceCock, bool reachOrgasm)
 		{
-			HandleNipplePenetration(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, reachOrgasm);
+			HandleNipplePenetration(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm);
 		}
 
-		internal void HandleNipplePenetration(int breastIndex, float length, float girth, float knotWidth, bool reachOrgasm)
+		internal void HandleNipplePenetration(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm)
 		{
-			Nipples nipple = _breasts[breastIndex].nipples;
-			nipple.DoNippleFuck(length, girth, knotWidth, reachOrgasm);
+			HandleNipplePenetration(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm);
 		}
 
-		internal void HandleNippleDickPenetrate(int breastIndex, bool reachesOrgasm)
+		internal void HandleNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm)
 		{
 			Nipples nipple = _breasts[breastIndex].nipples;
-			nipple.DoDickNippleSex(reachesOrgasm);
+			nipple.DoNippleFuck(length, girth, knotWidth, cumAmount, reachOrgasm);
+		}
+
+		internal void HandleNippleDickPenetrate(int breastIndex, bool reachOrgasm)
+		{
+			Nipples nipple = _breasts[breastIndex].nipples;
+			nipple.DoDickNippleSex(reachOrgasm);
+		}
+
+		internal void HandleNippleOrgasmGeneric(int breastIndex, bool dryOrgasm)
+		{
+			_breasts[breastIndex].nipples.OrgasmNipplesGeneric(dryOrgasm);
 		}
 	}
 }

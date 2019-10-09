@@ -39,7 +39,7 @@ namespace CoC.Frontend.Strings.Engine
 
 		internal static string ArrivalPartOne()
 		{
-			Gender gender = GameEngine.currentPlayer.genitals.gender;
+			Gender gender = GameEngine.currentlyControlledCharacter.genitals.gender;
 			string arousalStr;
 			switch (gender)
 			{
@@ -70,7 +70,7 @@ namespace CoC.Frontend.Strings.Engine
 
 		internal static string ArrivalPartTwo()
 		{
-			Gender gender = GameEngine.currentPlayer.genitals.gender;
+			Gender gender = GameEngine.currentlyControlledCharacter.genitals.gender;
 			string arousalStr;
 			switch (gender)
 			{

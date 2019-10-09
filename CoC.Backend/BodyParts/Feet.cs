@@ -20,12 +20,53 @@ namespace CoC.Backend.BodyParts
 			return new FootData(creatureID, type);
 		}
 
+		public uint orgasmCount { get; private set; } = 0;
+		public uint dryOrgasmCount { get; private set; } = 0;
+		public uint lickCount { get; private set; } = 0;
+		public uint penetrateCount { get; private set; } = 0;
+		public uint rubCount { get; private set; } = 0;
+
 		//default update is fine
 
 		public override FootType type { get; protected set; }
 
 		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
 
+		internal void GetLicked(bool reachOrgasm)
+		{
+			lickCount++;
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
+		}
+
+		internal void DoPenetrate(bool reachOrgasm)
+		{
+			penetrateCount++;
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
+		}
+
+		internal void DoRubbing(bool reachOrgasm)
+		{
+			rubCount++;
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
+		}
+
+		internal void doGenericOrgasm(bool dryOrgasm)
+		{
+			orgasmCount++;
+			if (dryOrgasm)
+			{
+				dryOrgasmCount++;
+			}
+		}
 	}
 
 	public sealed partial class FootType : BehaviorBase

@@ -183,7 +183,7 @@ namespace CoC.Backend.Creatures
 		//Of course, if womb is set and does not return null, it will be used and the canImpregnateIfFemale bool will be ignored.
 		//Additionally, Special Player Characters should not bother with this value, as it will be ignored. The player will always use the special PlayerWomb.
 		public bool canImpregnateIfFemale = true;
-		public Func<Creature, Womb> wombMaker = null; //complicated, but only way to make it work for multiple instances of one creator. write () => new <whatever> instead of new <whatever>
+		public Func<Guid, Womb> wombMaker = null; //complicated, but only way to make it work for multiple instances of one creator. write () => new <whatever> instead of new <whatever>
 
 
 		//BUILD:

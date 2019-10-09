@@ -68,6 +68,7 @@ namespace CoC.Backend.BodyParts
 
 		internal float bigTiddyMultiplier = 1;
 		internal float tinyTiddyMultiplier = 1;
+
 		private bool makeBigTits => bigTiddyMultiplier > 1.1f;
 		private bool makeSmallTits => tinyTiddyMultiplier > 1.1f;
 
@@ -111,9 +112,14 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private CupSize _cupSize;
+		public uint orgasmCount { get; private set; } = 0;
+		public uint dryOrgasmCount { get; private set; } = 0;
+
 		public uint titFuckCount { get; private set; } = 0;
-		public uint dickNippleFuckCount { get; private set; } = 0;
-		public uint nippleFuckCount { get; private set; } = 0;
+		public uint dickNippleFuckCount => nipples.dickNippleFuckCount;
+		public uint nippleFuckCount => nipples.nippleFuckCount;
+		public uint nippleOrgasmCount => nipples.orgasmCount;
+		public uint nippleDryOrgasmCount => nipples.dryOrgasmCount;
 
 		public readonly Nipples nipples;
 		public bool isMale => cupSize == CupSize.FLAT && nipples.length <= .5f;
@@ -280,9 +286,9 @@ namespace CoC.Backend.BodyParts
 			cupSize = currGender.HasFlag(Gender.FEMALE) ? femaleMinCup: maleMinCup;
 
 			nipples.Reset(resetPiercings);
-			nippleFuckCount = 0;
+			//nippleFuckCount = 0;
 			titFuckCount = 0;
-			dickNippleFuckCount = 0;
+			//dickNippleFuckCount = 0;
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -315,6 +321,22 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 		#endregion
+		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
+		internal void DoTittyFuck(float length, float girth, float knotWidth, bool reachOrgasm)
+		{
+			titFuckCount++;
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
+		}
+
+		internal void OrgasmTits(bool dryOrgasm)
+		{
+			orgasmCount++;
+			if (dryOrgasm) dryOrgasmCount++;
+		}
+
 		#region IGrowShrinkable
 		bool IGrowable.CanGroPlus()
 		{

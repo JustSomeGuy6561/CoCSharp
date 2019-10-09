@@ -1,12 +1,15 @@
-﻿using CoC.Backend.BodyParts;
+﻿using CoC.Backend;
+using CoC.Backend.BodyParts;
 using CoC.Backend.Tools;
+using CoC.Frontend.Items.Consumables;
 using System;
 using System.Text;
 
-namespace CoC.Backend.Pregnancies
+namespace CoC.Frontend.Pregnancies
 {
 	public partial class PlayerEggPregnancy
 	{
+
 		private static string EggSource()
 		{
 			return "eggs";
@@ -23,7 +26,7 @@ namespace CoC.Backend.Pregnancies
 			return Environment.NewLine + Environment.NewLine + "A rumble radiates from your uterus as it shifts uncomfortably and your belly gets a bit larger.";
 		}
 
-		private string BirthStr(bool gainsOviMax)
+		private string BirthStr(bool gainsOviMax, EggBase eggsLaid)
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -55,7 +58,7 @@ namespace CoC.Backend.Pregnancies
 						"You hear the splash of fluid on the ground and look down to see a thick greenish fluid puddling underneath you. There is no time to ponder this development as a rounded object passes down your birth canal, " +
 						"spreading your feminine lips apart and forcing a blush to your cheeks. It plops into the puddle with a splash, and you find yourself feeling visibly delighted to be laying such healthy eggs. " +
 						"Another egg works its way down and you realize the process is turning you on more and more. In total you lay ");
-					sb.Append(eggDescript());
+					sb.Append(eggDescript(eggsLaid));
 					sb.Append(", driving yourself to the very edge of orgasm.");
 				}
 				//High quantity
@@ -84,7 +87,7 @@ namespace CoC.Backend.Pregnancies
 						sb.Append("pulling your folds wide and playing with your clit as another egg pops free from your diminishing belly. You make wet 'schlick'ing sounds as you spread the slime around, vigorously frigging yourself until ");
 					}
 
-					sb.Append("you quiver in orgasm, popping out the last of your eggs as your body twitches nervelessly on the ground. In total you lay " + eggDescript() + ".");
+					sb.Append("you quiver in orgasm, popping out the last of your eggs as your body twitches nervelessly on the ground. In total you lay " + eggDescript(eggsLaid) + ".");
 				}
 			}
 			//Large egg scene
@@ -138,7 +141,7 @@ namespace CoC.Backend.Pregnancies
 						"In time your wits return, leaving you with the realization that you are no longer pregnant. ");
 				}
 
-				sb.Append("\n\nYou gaze down at the mess, counting " + eggDescript() + ".");
+				sb.Append("\n\nYou gaze down at the mess, counting " + eggDescript(eggsLaid) + ".");
 			}
 			if (gainsOviMax)
 			{
@@ -160,7 +163,7 @@ namespace CoC.Backend.Pregnancies
 			
 		}
 
-		public string eggDescript(bool plural = true)
+		private string eggDescript(EggBase eggsLaid, bool plural = true)
 		{
 
 			string descript = "";
@@ -170,7 +173,7 @@ namespace CoC.Backend.Pregnancies
 			{ 
 				descript += "large ";
 			}
-			descript += knownColor.shortDesc();
+			descript += eggsLaid.shortDesc();
 			//EGGS
 			if (plural)
 			{

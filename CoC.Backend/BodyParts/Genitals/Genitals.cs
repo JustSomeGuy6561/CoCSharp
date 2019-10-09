@@ -6,6 +6,7 @@
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
 using CoC.Backend.Tools;
@@ -32,10 +33,21 @@ namespace CoC.Backend.BodyParts
 #warning Make sure to raise events for gender change and pass it along to femininity. Then implement all the various data changes. theres a ton of them.
 
 
-	//Genitals is the new "master class" for all things sex-related. NPCs that don't require the whole creature class can just use this if they can impregnate. I'll create a base class for this.
-	//Note that you could just use cock or vagina or whatever if that's all that's important, but this provides an automated process for all things - it automates milking, time since sexing, 
-	//descriptions, knock-ups, etc, which allows you to not have to worry about it. The only downside so far is that BreastStore != BreastRow, so i've combined them and had to deal with the headache 
-	//that caused. some variables are available in here to allow PC behavior (namely, 48 hours until full breasts, regardless of how high the lactation multiplier is) or normal behavior (breasts fill quicker
+	//Genitals is the new "master class" for all things sex-related. Note that the old breast store and breast rows have been combined, so there's new behavior for everyone, 
+	//but it's even more flexible. Lactation now works like cum - it builds with time, and the amount produced is altered by a multiplier and adder. additionally, it has a fill rate,
+	//which mimicks the old breast store levels 'enum'. To allow some leniency in time before overfull causes fill rate to drop, a buffer timer has been added. 
+	
+	//all sex related functions are available here, with exception to the one that handles receiving oral sex. These are much more specific than the original, but this allows us
+	//to store more metadata and statistics for various achievements, perks, or whatever you may need them for. I'll try to provide helpers where i can, but specific cases like gangbangs/threesomes
+	//and/or strage sexual situations may require you to deal with these directly. Generally, there are two functions that will need to be called - one for each creature involved, with the corresponding part.
+	//so if A is sticking their cock in B's ass, you'd call A.HandleCockPenetrate and B.HandleAnalPenetration. This will handle everything for you, even knockup, if you provide a spawn type. 
+	//you can handle specifics, like if the penetrator or penetratee orgasms or not, and whether or not to count this towards the creature's orgasm count (useful for when multiple body parts
+	//orgasm simultaneously, which should only count as one orgasm). This also applies to group sex or penetration free sex (tribbing, hotdogging, etc)
+	
+	//note that orgasms without the corresponding part being penetrated or penetrating, as the situation requires, is called a "dry" orgasm.
+	
+
+	//some variables are available in here to allow PC behavior (namely, 48 hours until full breasts, regardless of how high the lactation multiplier is) or normal behavior (breasts fill quicker
 	//the higher the lactation multiplier is). Remember, this ruleset works across all NPCs, because lactation amount dependant on breast size, breast count, and lactation multiplier. 
 	//which means that despite the fact that Marble and Katherine can have the same lactation multiplier, Marble would take longer to fill up and not be complaining every 3 hours she needs a milking.
 	//RIP katherine, lol.
@@ -49,6 +61,7 @@ namespace CoC.Backend.BodyParts
 		//i'm not being a dick and reverting that. 4 it is.
 		public const int MAX_BREAST_ROWS = 4;
 
+		//creator let's me do delayed init for perks and such. 
 		private readonly BreastCreator[] breastCreators;
 		private readonly CockCreator[] cockCreators;
 		private readonly VaginaCreator[] vaginaCreators;
@@ -69,10 +82,14 @@ namespace CoC.Backend.BodyParts
 		private readonly List<Vagina> _vaginas = new List<Vagina>(MAX_VAGINAS);
 
 		//public readonly Womb womb;
+		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
 
 		#region public properties for Cock/Breast/Vagina
 		public readonly ReadOnlyCollection<Cock> cocks;
+
 		public readonly ReadOnlyCollection<Vagina> vaginas;
+		
+		public ReadOnlyCollection<Cock> allCocks => new ReadOnlyCollection<Cock>(_cocks.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock())).ToList());
 
 		public readonly ReadOnlyCollection<Breasts> breastRows;
 		public int numCocks => _cocks.Count + (hasClitCock ? _vaginas.Count : 0);
@@ -113,6 +130,13 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private NippleStatus _nippleType;
+
+		public bool unlockedDickNipples
+		{
+			get => _unlockedDickNipples;
+			private set => _unlockedDickNipples = value;
+		}
+		private bool _unlockedDickNipples = false;
 		#endregion
 		//breasts
 
@@ -122,11 +146,12 @@ namespace CoC.Backend.BodyParts
 
 		private GameDateTime timeLastCum { get; set; }
 		public int hoursSinceLastCum => timeLastCum.hoursToNow();
-		private GameDateTime timeLastOrgasm { get; set; }
-		public int hoursSinceLastOrgasm => timeLastOrgasm.hoursToNow();
+		
+
+
 
 		//we use mL for amount here, but store ball size in inches. Let's do it right, no? 1cm^3 = 1mL
-		public int cumAmount
+		public int totalCum
 		{
 			get
 			{
@@ -135,7 +160,8 @@ namespace CoC.Backend.BodyParts
 					return 0;
 				}
 				double baseValue = additionalCum;
-				
+				//each cock will add a small amount
+
 				if (balls.hasBalls)
 				{
 					double ballSizeCm = balls.size * Measurement.TO_CENTIMETERS;
@@ -163,9 +189,13 @@ namespace CoC.Backend.BodyParts
 				{
 					return int.MaxValue;
 				}
-				else if (baseValue < 2)
+
+				//at absolute min, 2units per cock. some large cocks may increase this minimum further. this just makes the sex related functions easier to handle for multiple cocks being used at once
+				double minimumValue = cocks.Sum(x => x.minCumAmount);
+
+				if (baseValue < minimumValue)
 				{
-					baseValue = 2;
+					baseValue = minimumValue;
 				}
 				return (int)Math.Floor(baseValue);
 			}
@@ -174,21 +204,48 @@ namespace CoC.Backend.BodyParts
 		public float knockupRate(byte bonusVirility = 0) => (fertility.currentFertility + bonusVirility) / 100f;
 
 		//ass is readonly, always exists. we don't need any alias magic for it. 
-		public uint timesHadAnalSex => ass.numTimesAnal;
+		public uint analSexCount => ass.sexCount;
+		public uint analPenetrationCount => ass.penetrateCount;
+		public uint analOrgasmCount => ass.orgasmCount;
+		public uint analDryOrgasmCount => ass.dryOrgasmCount;
 
-		internal bool HandleAnalPenetration(float length, float girth, float knotWidth, bool reachOrgasm)
+		internal bool HandleAnalPenetration(float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus, bool takeAnalVirginity, bool reachOrgasm)
 		{
-			return HandleAnalPenetration(length, girth, knotWidth, null, 0, reachOrgasm);
+			ass.PenetrateAsshole((ushort)(length * girth), knotWidth, cumAmount, takeAnalVirginity, reachOrgasm);
+			if (knockupType != null && knockupType is SpawnTypeIncludeAnal analSpawn && womb.canGetAnallyPregnant(true, analSpawn.ignoreAnalPregnancyPreferences))
+			{
+				return womb.analPregnancy.attemptKnockUp(knockupRate(virilityBonus), knockupType);
+			}
+			return false;
 		}
 
-		internal bool HandleAnalPenetration(float length, float girth, float knotWidth, SpawnType knockupType, byte virilityBonus, bool reachOrgasm)
+		internal bool HandleAnalPenetration(Cock source, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm)
 		{
-			throw new NotImplementedException();
+			return HandleAnalPenetration(source.length, source.girth, source.knotSize, knockupType, cumAmountOverride, source.virility, true, reachOrgasm);
 		}
 
-		internal bool HandleAnalPenetration(Cock source, SpawnType knockupType, bool reachOrgasm)
+		internal bool HandleAnalPenetration(Cock source, StandardSpawnType knockupType, bool reachOrgasm)
 		{
-			return HandleAnalPenetration(source.length, source.girth, source.knotSize, knockupType, source.virility, reachOrgasm);
+			return HandleAnalPenetration(source.length, source.girth, source.knotSize, knockupType, source.cumAmount, source.virility, true, reachOrgasm);
+		}
+
+		internal void HandleAnalPenetration(float length, float girth, float knotWidth, float cumAmount, bool takeAnalVirginity, bool reachOrgasm)
+		{
+			HandleAnalPenetration(length, girth, knotWidth, null, cumAmount, 0, takeAnalVirginity, reachOrgasm);
+		}
+
+		internal bool HandleAnalPregnancyOverride(StandardSpawnType knockupType, float knockupRate)
+		{
+			if (knockupType != null && knockupType is SpawnTypeIncludeAnal analSpawn && womb.canGetAnallyPregnant(true, analSpawn.ignoreAnalPregnancyPreferences))
+			{
+				return womb.analPregnancy.attemptKnockUp(knockupRate, knockupType);
+			}
+			return false;
+		}
+
+		internal void HandleAnalOrgasmGeneric(bool dryOrgasm)
+		{
+			ass.OrgasmGeneric(dryOrgasm);
 		}
 
 		//despite my attempts to remove status effects wherever possible, i'm not crazy. Heat/Rut/Dsyfunction seem like ideal status effects. 
@@ -307,6 +364,8 @@ namespace CoC.Backend.BodyParts
 
 			femininity.PostPerkInit();
 			fertility.PostPerkInit();
+
+			womb.PostPerkInit();
 		}
 
 		protected internal override void LateInit()
@@ -320,6 +379,8 @@ namespace CoC.Backend.BodyParts
 
 			femininity.LateInit();
 			fertility.LateInit();
+
+			womb.LateInit();
 		}
 
 		public override GenitalsData AsReadOnlyData()
@@ -327,8 +388,6 @@ namespace CoC.Backend.BodyParts
 			return new GenitalsData(this, GetCockPerkData(), GetVaginaPerkData(), GetBreastPerkData());
 		}
 
-		internal void Orgasmed()
-		{ }
 		internal void Milked()
 		{ }
 

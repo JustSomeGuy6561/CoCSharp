@@ -87,7 +87,7 @@ namespace CoC.UI
 		private string _postControlText;
 
 		public bool dropDownPostTextChanged => DropDownMenu.QueryPostText(out _postControlText);
-		public bool hasPlayer => GameEngine.currentPlayer != null;
+		public bool hasPlayer => GameEngine.currentlyControlledCharacter != null;
 
 		private static GameDateTime currTime()
 		{

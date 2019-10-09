@@ -15,7 +15,7 @@ namespace CoC.Frontend.UI.ControllerData
 
 		internal AppearanceData()
 		{
-			appearanceString = GameEngine.currentPlayer.Appearance;
+			appearanceString = GameEngine.currentlyControlledCharacter.Appearance;
 		}
 	}
 }

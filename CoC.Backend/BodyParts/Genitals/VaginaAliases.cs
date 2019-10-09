@@ -1,13 +1,35 @@
 ﻿using System;
 using System.Linq;
+using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
 
 namespace CoC.Backend.BodyParts
 {
 	public partial class Genitals
 	{
-		public uint timesHadVaginalSex => missingCockSexCount + (uint)_vaginas.Sum(x => x.numTimesVaginal);
 		private uint missingVaginaSexCount;
+		private uint missingVaginaOrgasmCount;
+		private uint missingVaginaDryOrgasmCount;
+		private uint missingVaginaPenetratedCount;
+
+		private uint missingClitPenetrateCount;
+		private uint missingClitCockSexCount;
+		private uint missingClitCockSoundCount;
+		private uint missingClitCockOrgasmCount;
+		private uint missingClitCockDryOrgasmCount;
+
+		public uint vaginalSexCount => missingVaginaSexCount.add((uint)_vaginas.Sum(x => x.sexCount));
+		public uint vaginaPenetratedCount => missingVaginaPenetratedCount.add((uint)_vaginas.Sum(x => x.totalPenetrationCount));
+		public uint vaginalOrgasmCount => missingVaginaOrgasmCount.add((uint)_vaginas.Sum(x => x.orgasmCount));
+		public uint vaginalDryOrgasmCount => missingVaginaDryOrgasmCount.add((uint)_vaginas.Sum(x => x.dryOrgasmCount));
+
+		public uint clitCockSexCount => missingClitCockSexCount.add((uint)_vaginas.Sum(x => x.clit.asCockSexCount));
+		public uint clitCockSoundedCount => missingClitCockSoundCount.add((uint)_vaginas.Sum(x => x.clit.asCockSoundCount));
+		public bool clitCockVirgin => missingClitCockSexCount > 0 ? false : clitCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
+		public uint clitCockOrgasmCount => missingClitCockOrgasmCount.add((uint)_vaginas.Sum(x => x.clit.asCockOrgasmCount));
+		public uint clitCockDryOrgasmCount => missingClitCockDryOrgasmCount.add((uint)_vaginas.Sum(x => x.clit.asCockDryOrgasmCount));
+
+		public uint clitUsedAsPenetratorCount => missingClitPenetrateCount.add((uint)_vaginas.Sum(x => x.clit.penetrateCount));
 
 		internal bool AddVagina(VaginaType newVaginaType)
 		{
@@ -49,11 +71,31 @@ namespace CoC.Backend.BodyParts
 			int oldCount = numVaginas;
 			if (count >= numVaginas)
 			{
+				missingVaginaSexCount.addIn((uint)_vaginas.Sum(x=>x.sexCount));
+				missingVaginaOrgasmCount.addIn((uint)_vaginas.Sum(x=>x.orgasmCount));
+				missingVaginaDryOrgasmCount.addIn((uint)_vaginas.Sum(x=>x.dryOrgasmCount));
+				missingVaginaPenetratedCount.addIn((uint)_vaginas.Sum(x=>x.totalPenetrationCount));
+
+				missingClitPenetrateCount.addIn((uint)_vaginas.Sum(x=>x.clit.penetrateCount));
+				missingClitCockSexCount.addIn((uint)_vaginas.Sum(x=>x.clit.asCockSexCount));
+				missingClitCockSoundCount.addIn((uint)_vaginas.Sum(x=>x.clit.asCockSoundCount));
+				missingClitCockOrgasmCount.addIn((uint)_vaginas.Sum(x=>x.clit.asCockOrgasmCount));
+				missingClitCockDryOrgasmCount.addIn((uint)_vaginas.Sum(x=>x.clit.asCockDryOrgasmCount));
 				_vaginas.Clear();
 				return oldCount;
 			}
 			else
 			{
+				missingVaginaSexCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.sexCount));
+				missingVaginaOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.orgasmCount));
+				missingVaginaDryOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.dryOrgasmCount));
+				missingVaginaPenetratedCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.totalPenetrationCount));
+
+				missingClitPenetrateCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.clit.penetrateCount));
+				missingClitCockSexCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.clit.asCockSexCount));
+				missingClitCockSoundCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.clit.asCockSoundCount));
+				missingClitCockOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.clit.asCockOrgasmCount));
+				missingClitCockDryOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.clit.asCockDryOrgasmCount));
 				_vaginas.RemoveRange(numVaginas - count, count);
 				return oldCount - numVaginas;
 			}
@@ -143,20 +185,20 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region Penetration
-		public bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, bool reachOrgasm)
+		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool takeVirginity, bool reachOrgasm)
 		{
-			return HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, null, 0, reachOrgasm);
+			return HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, null, cumAmount, 0, takeVirginity, reachOrgasm);
 		}
-		public bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, SpawnType knockupType, byte virilityBonus, bool reachOrgasm)
+		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus,  bool takeVirginity,
+			bool reachOrgasm)
 		{
-			
+			_vaginas[vaginaIndex].PenetrateVagina((ushort)(length * girth), knotWidth, takeVirginity, reachOrgasm);
 
-			_vaginas[vaginaIndex].PenetrateVagina((ushort)(length * girth), knotWidth, true);
-			if (vaginaIndex == 0 && womb.canGetPregnant(true))
+			if (vaginaIndex == 0 && womb.canGetPregnant(true) && knockupType != null)
 			{ 
 				return womb.normalPregnancy.attemptKnockUp(knockupRate(virilityBonus), knockupType);
 			}
-			else if (vaginaIndex == 1 && womb.canGetSecondaryNormalPregnant(true))
+			else if (vaginaIndex == 1 && womb.canGetSecondaryNormalPregnant(true) && knockupType != null)
 			{
 				return womb.secondaryNormalPregnancy.attemptKnockUp(knockupRate(virilityBonus), knockupType);
 
@@ -164,24 +206,87 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-
-
-		public bool HandleVaginalPenetration(int vaginaIndex, Cock sourceCock, SpawnType knockupType, bool reachOrgasm)
+		internal bool HandleVaginalPenetration(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, bool reachOrgasm)
 		{
-			return HandleVaginalPenetration(vaginaIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, knockupType, sourceCock.virility, reachOrgasm);
+			return HandleVaginalPenetration(vaginaIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, knockupType, sourceCock.cumAmount, sourceCock.virility, true, reachOrgasm);
 		}
+
+		internal bool HandleVaginalPenetration(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm)
+		{
+			return HandleVaginalPenetration(vaginaIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, knockupType, cumAmountOverride, sourceCock.virility, true, reachOrgasm);
+		}
+
+		internal bool HandleVaginalPregnancyOverride(int vaginaIndex, StandardSpawnType knockupType, float knockupRate)
+		{
+			if (vaginaIndex == 0 && womb.canGetPregnant(_vaginas.Count > 0))
+			{
+				return womb.normalPregnancy.attemptKnockUp(knockupRate, knockupType);
+			}
+			else if (vaginaIndex == 1 && womb.canGetPregnant(_vaginas.Count > 1))
+			{
+				return womb.secondaryNormalPregnancy.attemptKnockUp(knockupRate, knockupType);
+			}
+			return false;
+		}
+
+		//'Dry' orgasm is orgasm without stimulation. 
+		internal void HandleVaginaOrgasmGeneric(int vaginaIndex, bool dryOrgasm)
+		{
+
+			_vaginas[vaginaIndex].OrgasmGeneric(dryOrgasm);
+		}
+
+		internal void HandleClitCockSounding(int vaginaIndex, float penetratorLength, float penetratorWidth, float penetratorKnotSize, float cumAmount, bool reachOrgasm)
+		{
+			if (hasClitCock)
+			{
+				_vaginas[vaginaIndex].clit.AsClitCock()?.SoundCock(penetratorLength, penetratorWidth, penetratorKnotSize, reachOrgasm);
+				if (reachOrgasm)
+				{
+					timeLastCum = GameDateTime.Now;
+				}
+			}
+		}
+
+		internal void HandleClitCockSounding(int vaginaIndex, Cock source, bool reachOrgasm)
+		{
+			HandleClitCockSounding(vaginaIndex, source.length, source.girth, source.knotSize, source.cumAmount, reachOrgasm);
+		}
+
+		internal void HandleClitCockSounding(int vaginaIndex, Cock source, float cumAmountOverride, bool reachOrgasm)
+		{
+			HandleClitCockSounding(vaginaIndex, source.length, source.girth, source.knotSize, cumAmountOverride, reachOrgasm);
+		}
+		//
+
 		#endregion
 
-		#region Penetrated
+		#region Penetrates
 
-		internal void HandleClitCockPenetrate(int penetratorVaginaIndex, bool penetratorReachesOrgasm)
+		internal void HandleClitCockPenetrate(int vaginaIndex, bool reachOrgasm)
 		{
-			throw new NotImplementedException();
+			if (hasClitCock)
+			{
+				_vaginas[vaginaIndex].clit.AsClitCock()?.DoSex(reachOrgasm);
+			}
 		}
 
-		internal void HandleClitPenetrate(int penetratorVaginaIndex, bool penetratorReachesOrgasm)
+		internal void DoClitCockOrgasmGeneric(int vaginaIndex, bool dryOrgasm)
 		{
-			throw new NotImplementedException();
+			if (hasClitCock)
+			{
+				_vaginas[vaginaIndex].clit.AsClitCock()?.OrgasmGeneric(dryOrgasm);
+				timeLastCum = GameDateTime.Now;
+			}
+		}
+
+		internal void HandleClitPenetrate(int vaginaIndex, bool reachOrgasm)
+		{
+			_vaginas[vaginaIndex].clit.DoPenetration();
+			if (reachOrgasm)
+			{
+				_vaginas[vaginaIndex].OrgasmGeneric(false);
+			}
 		}
 
 		#endregion

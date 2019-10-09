@@ -7,5 +7,8 @@ namespace CoC.Backend.Items.Wearables.LowerGarment
 {
 	public abstract class LowerGarmentBase : WearableItemBase
 	{
+		protected LowerGarmentBase(SimpleDescriptor shortName, SimpleDescriptor fullName) : base(shortName, fullName)
+		{
+		}
 	}
 }

@@ -8,86 +8,179 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Genitals
 	{
-		public uint timesCockSounded => missingCockSoundCount + (uint)cocks.Sum(x => x.soundCount);
+		//the number of times had sex with cocks that no longer exist;
+		private uint missingCockSexCount;
+		//number of times had cock sounded for cocks that no longer exist.
+		private uint missingCockSoundCount;
+		//times cock orgasmed for missing cocks.
+		private uint missingCockOrgasmCount;
+		//times cock orgasmed without any stimulation for missing cocks.
+		private uint missingCockDryOrgasmCount;
 
-		public uint timesHadSexWithCock => missingCockSexCount + (uint)cocks.Sum(x => x.sexCount);
+		public uint anyCockSoundedCount => maleCockSoundedCount.add(clitCockSoundedCount);
+		public uint maleCockSoundedCount => missingCockSoundCount + (uint)cocks.Sum(x => x.soundCount);
 
-		public bool cockVirgin => missingCockSexCount > 0 ? true : timesHadSexWithCock == 0; //the first one means no aggregate calculation, for efficiency.
+		public uint maleCockSexCount => missingCockSexCount + (uint)cocks.Sum(x => x.sexCount);
+		public uint anyCockSexCount => maleCockSexCount.add(clitCockSexCount);
+
+		public uint maleCockOrgasmCount => missingCockOrgasmCount.add((uint)cocks.Sum(x => x.orgasmCount));
+		public uint anyCockOrgasmCount => maleCockOrgasmCount.add(clitCockOrgasmCount);
+
+		public uint maleCockDryOrgasmCount => missingCockDryOrgasmCount.add((uint)cocks.Sum(x => x.dryOrgasmCount));
+		public uint anyCockDryOrgasmCount => maleCockDryOrgasmCount.add(clitCockDryOrgasmCount);
+
+		public bool cockVirgin => missingCockSexCount > 0 || missingClitCockSexCount > 0 ? false : anyCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
+		public bool maleCockVirgin => missingCockSexCount > 0 ? false : maleCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
 
 
-		internal float BiggestCockSize()
+		internal float BiggestCockSize(bool allowClitCock = true)
 		{
-			return _cocks.Max(x => x.area);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Max(x => x.area);
 		}
 
-		internal float LongestCockLength()
+		internal float LongestCockLength(bool allowClitCock = true)
 		{
-			return _cocks.Max(x => x.length);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Max(x => x.length);
 		}
 
-		internal float WidestCockMeasure()
+		internal float WidestCockMeasure(bool allowClitCock = true)
 		{
-			return _cocks.Max(x => x.girth);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Max(x => x.girth);
 		}
 
-		internal Cock BiggestCock()
+		internal Cock BiggestCock(bool allowClitCock = true)
 		{
-			return _cocks.Aggregate((x, y) => y.area > x.area ? y : x);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.MaxItem(x => x.area);
 		}
 
-		internal Cock LongestCock()
+		internal Cock LongestCock(bool allowClitCock = true)
 		{
-			return _cocks.MaxItem(x => x.length);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.MaxItem(x => x.length);
 		}
 
-		internal Cock WidestCock()
+		internal Cock WidestCock(bool allowClitCock = true)
 		{
-			return _cocks.MaxItem(x => x.girth);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.MaxItem(x => x.girth);
 		}
 
-		internal float AverageCockSize()
+		internal float AverageCockSize(bool allowClitCock = true)
 		{
-			return _cocks.Average(x => x.area);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Average(x => x.area);
 		}
 
-		internal float AverageCockLength()
+		internal float AverageCockLength(bool allowClitCock = true)
 		{
-			return _cocks.Average(x => x.length);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Average(x => x.length);
 		}
 
-		internal float AverageCockGirth()
+		internal float AverageCockGirth(bool allowClitCock = true)
 		{
-			return _cocks.Average(x => x.girth);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Average(x => x.girth);
 		}
 
-		internal float SmallestCockSize()
+		internal float SmallestCockSize(bool allowClitCock = true)
 		{
-			return _cocks.Min(x => x.area);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Min(x => x.area);
 		}
 
-		internal float ShortestCockLength()
+		internal float ShortestCockLength(bool allowClitCock = true)
 		{
-			return _cocks.Min(x => x.length);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Min(x => x.length);
 		}
 
-		internal float ThinnestCockMeasure()
+		internal float ThinnestCockMeasure(bool allowClitCock = true)
 		{
-			return _cocks.Min(x => x.girth);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.Min(x => x.girth);
 		}
 
-		internal Cock SmallestCock()
+		internal Cock SmallestCock(bool allowClitCock = true)
 		{
-			return _cocks.MinItem(x => x.area);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.MinItem(x => x.area);
 		}
 
-		internal Cock ShortestCock()
+		internal Cock ShortestCock(bool allowClitCock = true)
 		{
-			return _cocks.MinItem(x => x.length);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.MinItem(x => x.length);
 		}
 
-		internal Cock ThinnestCock()
+		internal Cock ThinnestCock(bool allowClitCock = true)
 		{
-			return _cocks.MinItem(x => x.girth);
+			IEnumerable<Cock> cockCollection = _cocks;
+			if (allowClitCock && hasClitCock)
+			{
+				cockCollection = cockCollection.Union(_vaginas.Where(x => x.omnibusClit).Select(x => x.clit.AsClitCock()));
+			}
+			return cockCollection.MinItem(x => x.girth);
 		}
 
 		internal void NormalizeDicks(bool untilEven = false)
@@ -138,12 +231,6 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		//the number of times had sex with cocks that no longer exist;
-		private uint missingCockSexCount;
-		//number of times had cock sounded for cocks that no longer exist.
-		private uint missingCockSoundCount;
-
-
 		internal int RemoveCock(int count = 1)
 		{
 			if (numCocks == 0 || count <= 0)
@@ -156,12 +243,17 @@ namespace CoC.Backend.BodyParts
 			{
 				this.missingCockSexCount += (uint)cocks.Sum(x => x.sexCount);
 				this.missingCockSoundCount += (uint)cocks.Sum(x => x.soundCount);
+				missingCockOrgasmCount += (uint)cocks.Sum(x => x.orgasmCount);
+				missingCockDryOrgasmCount += (uint)cocks.Sum(x => x.dryOrgasmCount);
 				_cocks.Clear();
 			}
 			else
 			{
 				this.missingCockSexCount += (uint)cocks.Skip(numCocks-count).Sum(x => x.sexCount);
 				this.missingCockSoundCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.soundCount);
+				this.missingCockOrgasmCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.orgasmCount);
+				this.missingCockDryOrgasmCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.dryOrgasmCount);
+
 				_cocks.RemoveRange(numCocks - count, count);
 			}
 
@@ -200,13 +292,23 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal void HandleCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, bool reachOrgasm)
+		internal void HandleCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, float knotSize, float cumAmount, bool reachOrgasm)
 		{
-			_cocks[cockIndex].SoundCock(penetratorLength, penetratorWidth, reachOrgasm);
+			_cocks[cockIndex].SoundCock(penetratorLength, penetratorWidth, knotSize, reachOrgasm);
 			if (reachOrgasm)
 			{
 				timeLastCum = GameDateTime.Now;
 			}
+		}
+
+		internal void HandleCockSounding(int cockIndex, Cock sourceCock, bool reachOrgasm)
+		{
+			HandleCockSounding(cockIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm);
+		}
+
+		internal void HandleCockSounding(int cockIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm)
+		{
+			HandleCockSounding(cockIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm);
 		}
 
 		internal void HandleCockPenetrate(int cockIndex, bool reachOrgasm)
@@ -216,6 +318,12 @@ namespace CoC.Backend.BodyParts
 			{
 				timeLastCum = GameDateTime.Now;
 			}
+		}
+
+		internal void DoCockOrgasmGeneric(int cockIndex, bool dryOrgasm)
+		{
+			_cocks[cockIndex].OrgasmGeneric(dryOrgasm);
+			timeLastCum = GameDateTime.Now;
 		}
 	}
 }

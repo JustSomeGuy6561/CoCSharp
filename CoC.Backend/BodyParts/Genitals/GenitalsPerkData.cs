@@ -4,6 +4,14 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Genitals
 	{
+		internal bool TreatAllFluidsAsIfAtMaxLust
+		{
+			get => _treatAllFluidsAsIfAtMaxLust;
+			set => _treatAllFluidsAsIfAtMaxLust = value;
+		}
+		private bool _treatAllFluidsAsIfAtMaxLust;
+
+
 		#region Cocks
 		internal float NewCockSizeDelta
 		{
@@ -214,12 +222,6 @@ namespace CoC.Backend.BodyParts
 			set => _NewNippleDefaultLength = value;
 		}
 		private float _NewNippleDefaultLength = Nipples.MIN_NIPPLE_LENGTH;
-		internal bool unlockedDickNipples
-		{
-			get => _unlockedDickNipples;
-			set => _unlockedDickNipples = value;
-		}
-		private bool _unlockedDickNipples = false;
 		#endregion
 
 		private BreastPerkHelper GetBreastPerkData()

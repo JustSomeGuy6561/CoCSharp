@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CoC.Backend.Pregnancies
 {
-	public abstract partial class SpawnType
+	public abstract partial class StandardSpawnType
 	{
 		//we'll grant these to derived classes, so protected, not private.
 		protected string DefaultOviText(float amountConsumingElixirAdvancedPregnancy, byte OviElixirStrength)

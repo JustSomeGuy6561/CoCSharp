@@ -59,6 +59,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+
 		private Gender currGender => creature?.genitals.gender ?? Gender.MALE;
 
 		private int BreastRowIndex => creature?.genitals.breastRows.IndexOf(parent) ?? 0;
@@ -73,6 +74,13 @@ namespace CoC.Backend.BodyParts
 		public NippleStatus nippleStatus => creature?.genitals.nippleType ?? NippleStatus.NORMAL;
 		public bool quadNipples => creature?.genitals.quadNipples ?? false;
 		public bool blackNipples => creature?.genitals.blackNipples ?? false;
+
+		public uint dickNippleFuckCount { get; private set; } = 0;
+		public uint nippleFuckCount { get; private set; } = 0;
+
+		public uint orgasmCount { get; private set; } = 0;
+		public uint dryOrgasmCount { get; private set; } = 0;
+
 
 		public bool unlockedDickNipples => creature?.genitals.unlockedDickNipples ?? false;
 
@@ -163,6 +171,14 @@ namespace CoC.Backend.BodyParts
 
 			return nipplePiercing.Validate(correctInvalidData);
 		}
+
+		internal void OrgasmNipplesGeneric(bool dryOrgasm)
+		{
+			orgasmCount++;
+			if (dryOrgasm) dryOrgasmCount++;
+		}
+
+		
 
 		private bool PiercingLocationUnlocked(NipplePiercings piercingLocation)
 		{
@@ -274,14 +290,22 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-		internal void DoNippleFuck(float length, float girth, float knotWidth, bool reachOrgasm)
+		internal void DoNippleFuck(float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm)
 		{
-			throw new NotImplementedException();
+			nippleFuckCount++;
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
 		}
 
 		internal void DoDickNippleSex(bool reachOrgasm)
 		{
-			throw new NotImplementedException();
+			dickNippleFuckCount++;
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
 		}
 
 		//private ushort? invertedNippleCounter = null;

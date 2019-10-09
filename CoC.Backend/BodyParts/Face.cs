@@ -8,6 +8,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Engine.Time;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -20,7 +21,7 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	//ngl, i can never recall if medusa is top and labret bottom, or if it's the opposite. 
-	public enum LipPiercingLocation { LABRET, MEDUSA, MONROE_LEFT, MONROE_RIGHT, LOWER_LEFT_1, LOWER_LEFT_2, LOWER_RIGHT_1, LOWER_RIGHT_2 } 
+	public enum LipPiercingLocation { LABRET, MEDUSA, MONROE_LEFT, MONROE_RIGHT, LOWER_LEFT_1, LOWER_LEFT_2, LOWER_RIGHT_1, LOWER_RIGHT_2 }
 
 	public enum EyebrowPiercingLocation { LEFT_1, LEFT_2, RIGHT_1, RIGHT_2 }
 	public enum NosePiercingLocation { LEFT_NOSTRIL, RIGHT_NOSTRIL, SEPTIMUS, BRIDGE }
@@ -75,6 +76,14 @@ namespace CoC.Backend.BodyParts
 		private SkinTexture _skinTexture = SkinTexture.NONDESCRIPT;
 
 		public Tones epidermisTone => bodyData.mainSkin.tone;
+
+		public uint oralCount { get; private set; } = 0;
+		public uint orgasmCount { get; private set; } = 0;
+		public uint dryOrgasmCount { get; private set; } = 0;
+
+		//private GameDateTime timeLastIngestedCum;
+		//public int hoursSinceIngestedCum => timeLastIngestedCum.hoursToNow();
+		//public float lastCumIngestAmount { get; private set; } = 0;
 
 		internal Face(Guid creatureID) : this(creatureID, FaceType.defaultValue)
 		{ }
@@ -221,6 +230,50 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//default restore is fine.
+
+		internal void HandleOralPenetration(float penetratorArea, float knotWidth, float cumAmount, bool reachOrgasm)
+		{
+			oralCount++;
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
+		}
+
+		//internal void IngestCum(float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
+		//{
+		//	if (cumAmount > 0)
+		//	{
+		//		timeLastIngestedCum = GameDateTime.Now;
+		//		lastCumIngestAmount = cumAmount;
+
+		//		CreatureStore.GetCreatureClean(creatureID)?.genitals.ObtainedCum(cumAmount);
+		//	}
+		//}
+
+		internal void HandleOralPenetration(Cock penetrator, bool reachOrgasm)
+		{
+			HandleOralPenetration(penetrator.area, penetrator.knotSize, penetrator.cumAmount, reachOrgasm);
+		}
+		internal void HandleOralPenetration(Cock penetrator, float cumAmountOverride, bool reachOrgasm)
+		{
+			HandleOralPenetration(penetrator.area, penetrator.knotSize, cumAmountOverride, reachOrgasm);
+		}
+		internal void HandleOralOrgasmGeneric(bool dryOrgasm)
+		{
+			orgasmCount++;
+			if (dryOrgasm) dryOrgasmCount++;
+		}
+
+		internal void HandleTonguePenetrate(bool reachOrgasm)
+		{
+			CreatureStore.GetCreatureClean(creatureID)?.tongue.DoPenetrate();
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
+		}
+
 
 		internal void Reset()
 		{

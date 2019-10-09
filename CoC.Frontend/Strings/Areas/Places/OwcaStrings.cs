@@ -17,14 +17,14 @@ namespace CoC.Frontend.Areas.Places
 		}
 		private static string OwcaUnlockText()
 		{
-			Player player = GameEngine.currentPlayer;
+			Player player = GameEngine.currentlyControlledCharacter;
 			string corruptText = player.corruption >= 50 ? " You can't help but smile internally. Let her think that, if she wants." : "";
 			return "Using the vivid memory of your last encounter, you easily find Owca village; the first houses are in sight when you spot someone rushing to you. " +
 				"You recognize Rebecc, the girl you first met in the plains and who begged you for your help. She is smiling, her arms open for a welcoming embrace. " +
 				"Before you even try to say something she is already hugging you, pressing her warm body against yours as she takes you in her arms. " +
 				"She holds you tightly for a minute before kissing you everywhere affectionately; you haven't said a single word and your cheeks and " +
 				"lips are already bearing the mark of her lipstick." + Environment.NewLine + Environment.NewLine + "\"" +
-				SafelyFormattedString.FormattedText("Thank you! Thank you so much, " + GameEngine.currentPlayer.name + "! You are a wonderful person! " +
+				SafelyFormattedString.FormattedText("Thank you! Thank you so much, " + GameEngine.currentlyControlledCharacter.name + "! You are a wonderful person! " +
 					"What you did was noble and selfless. Our people will remember you for years to come!", StringFormats.ITALIC) +
 				corruptText + Environment.NewLine + Environment.NewLine + "She grabs your hand and drags you to her village, hopping joyfully as she keeps " +
 				"thanking you for your heroic gesture. You finally reach her home; a handful of people join you, attracted by the noise she's been making. " +

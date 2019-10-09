@@ -12,7 +12,7 @@ namespace CoC.Frontend.UI.ControllerData
 
 		public override void ParseData()
 		{
-			this.playerStats.Update(GameEngine.currentPlayer);
+			this.playerStats.Update(GameEngine.currentlyControlledCharacter);
 			//for now just ignore enemy stats.
 		}
 	}

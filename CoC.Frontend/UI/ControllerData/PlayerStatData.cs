@@ -6,7 +6,7 @@ namespace CoC.Frontend.UI.ControllerData
 
 	public sealed partial class PlayerStatData
 	{
-		public string nameString => GameEngine.currentPlayer?.name ?? "";
+		public string nameString => GameEngine.currentlyControlledCharacter?.name ?? "";
 
 		internal void Update(Player currentPlayer)
 		{

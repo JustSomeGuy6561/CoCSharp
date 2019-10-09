@@ -16,7 +16,7 @@ namespace CoC.Frontend.Areas.Places
 		}
 		private static string BeachUnlockText()
 		{
-			string corruptText = GameEngine.currentPlayer.corruption > 60 ? " or fuck" : "";
+			string corruptText = GameEngine.currentlyControlledCharacter.corruption > 60 ? " or fuck" : "";
 			return "You journey around the lake, seeking demons to fight" + corruptText + ". The air is fresh, and the grass is cool and soft under your feet." +
 				" Soft waves lap against the muddy sand of the lake-shore, as if radiating outward from the lake. You pass around a few bushes carefully, " +
 				"being wary of hidden 'surprises', and come upon any area of pristine sand, unlike anything you've previously seen in Mareth. You can't help but run towards it, " +

@@ -374,6 +374,23 @@ namespace CoC.Backend.Perks
 		//if no size is provided, the size will be the default new value. 
 		//if a size is provided, the delta value will be added to it. if this value is still lower than the default new value, the default new value will be used instead.
 
+		#region General
+
+		internal bool CalculationsTreatAsIfMaxLust
+		{
+			get => _CalculationsTreatAsIfMaxLust;
+			set
+			{
+				if (_CalculationsTreatAsIfMaxLust != value)
+				{
+					_CalculationsTreatAsIfMaxLust = value;
+				}
+				source.genitals.TreatAllFluidsAsIfAtMaxLust = _CalculationsTreatAsIfMaxLust;
+			}
+		}
+		private bool _CalculationsTreatAsIfMaxLust = false;
+		#endregion
+
 		#region Cock
 		//added to any non-default cock size. 
 		public float NewCockSizeDelta
@@ -407,6 +424,18 @@ namespace CoC.Backend.Perks
 		{
 			get => source.genitals.MinCockLength;
 			set => source.genitals.MinCockLength = value;
+		}
+
+		internal float perkBonusVirilityMultiplier
+		{
+			get => source.genitals.perkBonusVirilityMultiplier;
+			set => source.genitals.perkBonusVirilityMultiplier = value;
+		}
+
+		internal sbyte perkBonusVirility
+		{
+			get => source.genitals.perkBonusVirility;
+			set => source.genitals.perkBonusVirility = value;
 		}
 		#endregion
 		#region Vagina

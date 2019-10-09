@@ -3,13 +3,7 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
-	public partial class PlayerWomb
-	{
-		private static string EggSpawnText()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-	}
+	
 	//public partial class WombType
 	//{
 	//	private static string StandardDesc()

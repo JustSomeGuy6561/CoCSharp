@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //2/20/2019, 4:15 PM
 using CoC.Backend.Engine;
+using CoC.Backend.Inventory;
+using CoC.Backend.Items;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
@@ -45,6 +47,25 @@ namespace CoC.Backend.Creatures
 			//TODO: Add player specific items or whatever.
 		}
 
+		public override void AddStandardItem(CapacityItem item, Action resumeCallback, Action putBackOverride = null, Action abandonItemOverride = null)
+		{
+			if (item is null) throw new ArgumentNullException(nameof(item));
+			if (resumeCallback is null) throw new ArgumentNullException(nameof(resumeCallback));
+
+			int slot = inventoryStore.AddItemReturnSlot(item);
+
+			if (slot != -1)
+			{
+				//print added item(slot)
+				resumeCallback();
+			}
+			else
+			{
+				FullInventoryHelper helper = new FullInventoryHelper(inventoryStore);
+				helper.InitItemsFull(item, resumeCallback, putBackOverride, abandonItemOverride);
+			}
+		}
+
 		public string Appearance()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
@@ -69,5 +90,8 @@ namespace CoC.Backend.Creatures
 				return (uint)max;
 			}
 		}
+
+
+
 	}
 }

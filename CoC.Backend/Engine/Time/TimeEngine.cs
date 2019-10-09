@@ -500,6 +500,7 @@ namespace CoC.Backend.Engine.Time
 				this.locationType = locationType ?? throw new ArgumentNullException(nameof(locationType));
 				this.locationCallback = locationCallback ?? throw new ArgumentNullException(nameof(locationCallback));
 				this.immutable = cannotChange;
+				runTime = timeToChangeLocation ?? throw new ArgumentNullException(nameof(timeToChangeLocation));
 			}
 		}
 	}

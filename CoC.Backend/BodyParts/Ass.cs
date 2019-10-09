@@ -201,7 +201,10 @@ namespace CoC.Backend.BodyParts
 			return (ushort)cap;
 		}
 
-		public ushort numTimesAnal { get; private set; } = 0;
+		public uint sexCount { get; private set; } = 0;
+		public uint penetrateCount { get; private set; } = 0;
+		public uint orgasmCount { get; private set; } = 0;
+		public uint dryOrgasmCount { get; private set; } = 0;
 
 		public bool virgin { get; private set; } = true;
 		public bool everPracticedAnal { get; private set; } = false;
@@ -215,7 +218,6 @@ namespace CoC.Backend.BodyParts
 			looseness = AnalLooseness.NORMAL;
 			wetness = AnalWetness.NORMAL;
 			virgin = true;
-			numTimesAnal = 0;
 		}
 
 		//default behavior is to let the ass determine if it's still virgin.
@@ -318,18 +320,53 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		//Alias these in the creature class, adding the relevant features not in Ass itself (knockup, orgasm)
 		#region Unique Functions
-		internal bool AnalSex(ushort penetratorArea)
+		
+		internal bool PenetrateAsshole(ushort penetratorArea, float knotArea, float cumAmount, bool takeAnalVirginity, bool reachOrgasm/*, byte analExperiencedGained = 1*/)
 		{
-			numTimesAnal++;
-			return PenetrateAsshole(penetratorArea, true);
-		}
-		internal bool PenetrateAsshole(ushort penetratorArea, bool takeAnalVirginity = false/*, byte analExperiencedGained = 1*/)
-		{
+			penetrateCount++;
+			if (!everPracticedAnal)
+			{
+				everPracticedAnal = true;
+			}
 
 			//experience = experience.add(analExperiencedGained);
 			AnalLooseness oldLooseness = looseness;
 			ushort capacity = analCapacity();
 
+			HandleStretching(penetratorArea, knotArea);
+			
+			if (!everPracticedAnal)
+			{
+				everPracticedAnal = true;
+			}
+			if (takeAnalVirginity)
+			{
+				sexCount++;
+				virgin = false;
+			}
+
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
+			return oldLooseness != looseness;
+		}
+
+		internal void OrgasmGeneric(bool dryOrgasm)
+		{
+			orgasmCount++;
+			if (dryOrgasm) dryOrgasmCount++;
+		}
+
+		internal void HandleBirth(ushort size)
+		{
+			HandleStretching(size, 0);
+			virgin = false;
+		}
+
+		private void HandleStretching(ushort penetratorArea, float knotArea)
+		{
+			ushort capacity = analCapacity();
 			//don't have to worry about overflow, as +1 or +2 will never overflow our artificial max.
 			if (penetratorArea >= capacity * 3f)
 			{
@@ -355,16 +392,8 @@ namespace CoC.Backend.BodyParts
 			{
 				buttTightenTimer = 0;
 			}
-			if (!everPracticedAnal)
-			{
-				everPracticedAnal = true;
-			}
-			if (virgin && takeAnalVirginity)
-			{
-				virgin = false;
-			}
-			return oldLooseness != looseness;
 		}
+
 		#endregion
 
 		#region Validate
@@ -372,7 +401,11 @@ namespace CoC.Backend.BodyParts
 		{
 			looseness = looseness;
 			wetness = wetness;
-			if (numTimesAnal > 0 && virgin) //i'm going to let this one go silently.
+			if (penetrateCount > 0 && !everPracticedAnal) //i'm going to let this one go silently.
+			{
+				everPracticedAnal = true;
+			}
+			if (sexCount > 0 && virgin) //see above
 			{
 				virgin = false;
 			}

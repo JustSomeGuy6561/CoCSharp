@@ -44,7 +44,9 @@ namespace CoC.Backend.BodyParts
 
 		private float resetSize => Math.Max(minNewClitSize, minClitSize);
 
+		public uint penetrateCount { get; private set; } = 0;
 
+		public uint orgasmCount => parent.orgasmCount;
 
 		private readonly Vagina parent;
 		private int vaginaIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.vaginas.IndexOf(parent) : 0;
@@ -107,17 +109,17 @@ namespace CoC.Backend.BodyParts
 		private bool _omnibusClit;
 		public readonly Piercing<ClitPiercings> clitPiercings;
 
-		internal Clit(Guid creatureID, Vagina parent, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false) 
-			: this(creatureID, parent, initialPerkData, null, isOmnibusClit)
+		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false) 
+			: this(creatureID, source, initialPerkData, null, isOmnibusClit)
 		{ }
 
-		internal Clit(Guid creatureID, Vagina parent, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false) 
-			: this(creatureID, parent, initialPerkData, (float?)clitSize, isOmnibusClit)
+		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false) 
+			: this(creatureID, source, initialPerkData, (float?)clitSize, isOmnibusClit)
 		{ }
 
-		private Clit(Guid creatureID, Vagina parent, VaginaPerkHelper initialPerkData, float? clitSize, bool isOmnibusClit) : base(creatureID)
+		private Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, float? clitSize, bool isOmnibusClit) : base(creatureID)
 		{
-			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
+			parent = source ?? throw new ArgumentNullException(nameof(source));
 			_length = initialPerkData.NewClitSize(clitSize);
 			if (isOmnibusClit && MIN_CLITCOCK_SIZE > length)
 			{
@@ -156,6 +158,12 @@ namespace CoC.Backend.BodyParts
 			return clitCock;
 		}
 		private Cock clitCock = null;
+
+		internal uint asCockSexCount => clitCock?.sexCount ?? 0;
+		internal uint asCockSoundCount => clitCock?.soundCount ?? 0;
+		internal uint asCockOrgasmCount => clitCock?.orgasmCount ?? 0;
+		internal uint asCockDryOrgasmCount => clitCock?.dryOrgasmCount ?? 0;
+		
 
 		public void Restore()
 		{
@@ -234,11 +242,19 @@ namespace CoC.Backend.BodyParts
 			return length;
 		}
 
+		internal void DoPenetration()
+		{
+			penetrateCount++;
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			length = length;
 			return clitPiercings.Validate(correctInvalidData);
 		}
+
+
+
 		#region Piercing Related
 		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
 		{

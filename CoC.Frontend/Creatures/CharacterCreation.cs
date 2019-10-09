@@ -8,6 +8,7 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Perks;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Engine;
 using CoC.Frontend.Perks;
 using CoC.Frontend.SaveData;

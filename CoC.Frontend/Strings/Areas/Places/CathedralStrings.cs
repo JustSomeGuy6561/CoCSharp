@@ -16,7 +16,7 @@ namespace CoC.Frontend.Areas.Places
 		}
 		private static string CathedralUnlockText()
 		{
-			string lustyText = GameEngine.currentPlayer.libido >= 40 ? " Maybe you could take this with you as a life-sized sex toy?" : "";
+			string lustyText = GameEngine.currentlyControlledCharacter.libido >= 40 ? " Maybe you could take this with you as a life-sized sex toy?" : "";
 			//OutputImage("gargoyle-cathedral"));
 			return "You finally close the distance between yourself and the strange structure, which begins to take shape ahead. Though it's half-buried under " +
 				"what must be years of built-up sand and debris, you can clearly make out high stone walls supported by vaulted arches, broken every so often " +

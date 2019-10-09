@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CoC.Backend;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Backend.Items.Consumables
+namespace CoC.Frontend.Items.Consumables
 {
 	public abstract partial class EggBase
 	{

@@ -46,13 +46,18 @@ namespace CoC.Backend.BodyParts
 		public const float DEFAULT_COCK_GIRTH = 1.25f;
 		//public const float DEFAULT_BIG_COCK_GIRTH = 1.5f;
 
+		public const float MIN_URETHRA_WIDTH = (float)(0.5 * Measurement.TO_INCHES);
+		public const float MIN_CUM = 2;
+
 		public const JewelryType SUPPORTED_JEWELRY_FRENUM = JewelryType.BARBELL_STUD | JewelryType.RING;
 		public const JewelryType SUPPORTED_JEWELRY_ALBERT = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
+
 		#endregion
 
 		#region Properties
+		public readonly bool isClitCock;
 
-		private int cockIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ?  creature.genitals.cocks.IndexOf(this) : 0;
+		private int cockIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? isClitCock ? creature.genitals.cocks.IndexOf(this) : creature.genitals.allCocks.IndexOf(this) : 0;
 
 		private float cockGrowthMultiplier => creature?.genitals.CockGrowthMultiplier ?? 1;
 		private float cockShrinkMultiplier => creature?.genitals.CockShrinkMultiplier ?? 1;
@@ -90,6 +95,10 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Piercing<CockPiercings> cockPiercings;
 
+		public float urethraWidth => Math.Max(type.UrethraWidth(girth), MIN_URETHRA_WIDTH);
+
+		public float minCumAmount => Math.Max(MIN_CUM, (float)(Math.Pow((urethraWidth * Measurement.TO_CENTIMETERS), 2) * Math.PI * length));
+
 		public float knotMultiplier
 		{
 			get => _knotMultiplier;
@@ -117,8 +126,10 @@ namespace CoC.Backend.BodyParts
 
 		public uint soundCount { get; private set; } = 0;
 		public uint sexCount { get; private set; } = 0;
+		public uint orgasmCount { get; private set; } = 0;
+		public uint dryOrgasmCount { get; private set; } = 0;
 
-		public int cumAmount => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.cumAmount : 2;
+		public float cumAmount => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.totalCum : minCumAmount;
 
 		public override CockType type
 		{
@@ -151,10 +162,16 @@ namespace CoC.Backend.BodyParts
 
 			newCockDefaultSize = initialPerkValues.NewCockDefaultSize;
 			minCockLength = initialPerkValues.MinCockLength;
+
+			isClitCock = false;
 		}
 
 		internal Cock(Guid creatureID, CockPerkHelper initialPerkValues, CockType cockType, float length, float girth,
-			float? initialKnotMultiplier = null) : base(creatureID)
+			float? initialKnotMultiplier = null) : this(creatureID, initialPerkValues, cockType, length, girth, initialKnotMultiplier, false)
+		{ }
+
+		private Cock(Guid creatureID, CockPerkHelper initialPerkValues, CockType cockType, float length, float girth,
+			float? initialKnotMultiplier, bool clitCock) : base(creatureID)
 		{
 			type = cockType ?? throw new ArgumentNullException(nameof(cockType));
 			length = initialPerkValues.NewLength(length);
@@ -167,6 +184,9 @@ namespace CoC.Backend.BodyParts
 
 			newCockDefaultSize = initialPerkValues.NewCockDefaultSize;
 			minCockLength = initialPerkValues.MinCockLength;
+
+			isClitCock = clitCock;
+
 		}
 		#endregion
 
@@ -183,7 +203,7 @@ namespace CoC.Backend.BodyParts
 		internal static Cock GenerateClitCock(Guid creatureID, Clit clit)
 		{
 			//clit cock doesn't care about perks, also this way i can write it easily lol.
-			return new Cock(creatureID, new CockPerkHelper(), CockType.defaultValue, clit.length + 5, DEFAULT_COCK_GIRTH);
+			return new Cock(creatureID, new CockPerkHelper(), CockType.defaultValue, clit.length + 5, DEFAULT_COCK_GIRTH, null, true);
 		}
 
 		internal void InitializePiercings(Dictionary<CockPiercings, PiercingJewelry> piercings)
@@ -397,7 +417,7 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Sex-Related
-		internal void SoundCock(float penetratorLength, float penetratorWidth, bool reachOrgasm)
+		internal void SoundCock(float penetratorLength, float penetratorWidth, float penetratorKnotSize, bool reachOrgasm)
 		{
 			soundCount++;
 			//i guess we could do stuff with the cock being sore af or whatever, but whatever. 
@@ -406,7 +426,19 @@ namespace CoC.Backend.BodyParts
 		internal void DoSex(bool reachOrgasm)
 		{
 			sexCount++;
+			if (reachOrgasm)
+			{
+				orgasmCount++;
+			}
 		}
+
+		internal void OrgasmGeneric(bool dryOrgasm)
+		{
+			orgasmCount++;
+			if (dryOrgasm) dryOrgasmCount++;
+		}
+
+
 		#endregion
 		#region Validate
 		internal override bool Validate(bool correctInvalidData)
@@ -636,6 +668,11 @@ namespace CoC.Backend.BodyParts
 				cockType = HUMAN;
 			}
 			return false;
+		}
+
+		internal virtual float UrethraWidth(float girth)
+		{
+			return girth / 8f;
 		}
 
 		public static readonly CockType HUMAN = new CockType(CockGroup.HUMAN, HumanDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);

@@ -7,8 +7,11 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
+using CoC.Backend.Inventory;
+using CoC.Backend.Items;
 using CoC.Backend.Perks;
 using CoC.Backend.Pregnancies;
+using CoC.Backend.StatusEffect;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -175,10 +178,13 @@ namespace CoC.Backend.Creatures
 		public Feet feet => lowerBody.feet;
 
 		public readonly PerkCollection perks;
+		public readonly StatusEffectCollection statusEffects;
 
 		public Womb womb => genitals.womb;
 
 		protected BasePerkModifiers modifiers => perks.baseModifiers;
+
+		protected readonly Inventory.Inventory inventoryStore;
 
 		#region Constructors
 		protected Creature(CreatureCreator creator)
@@ -265,7 +271,7 @@ namespace CoC.Backend.Creatures
 				fertility = new Fertility(id, (byte)creator.fertility, creator.artificiallyInfertile);
 			}
 
-			var womb = creator.wombMaker?.Invoke(this) ?? new GenericWomb(id);
+			var womb = creator.wombMaker?.Invoke(id) ?? new GenericWomb(id);
 
 			var cup = gender.HasFlag(Gender.FEMALE) ? Breasts.DEFAULT_FEMALE_SIZE : Breasts.DEFAULT_MALE_SIZE;
 
@@ -463,8 +469,12 @@ namespace CoC.Backend.Creatures
 
 			//tail.InitializePiercings(creator?.tailPiercings);
 
+			inventoryStore = new Inventory.Inventory();
+
 			perks = new PerkCollection(this);
 			perks.InitPerks(creator.perks?.ToArray());
+
+			statusEffects = new StatusEffectCollection(this);
 
 			DoPostPerkInit();
 			DoLateInit();
@@ -521,7 +531,7 @@ namespace CoC.Backend.Creatures
 		}
 		#endregion
 
-		#region stat updates
+		#region Stat Updates
 		public float IncreaseLibido(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -660,178 +670,626 @@ namespace CoC.Backend.Creatures
 
 
 		#endregion
+		#region Inventory Related
+		public ReadOnlyCollection<ItemSlot> inventory => inventoryStore.itemSlots;
+
+		public byte UnlockAdditionalInventorySlots(byte amount = 1)
+		{
+			return inventoryStore.UnlockAdditionalSlots(amount);
+		}
+
+		public bool AddKeyItemToInventory(KeyItem key)
+		{
+			return inventoryStore.AddItem(key);
+		}
+
+		public bool InventoryHasKeyItem(KeyItem key)
+		{
+			return inventoryStore.HasItem(key);
+		}
+
+		public bool InventoryHasKeyItem(Predicate<KeyItem> condition)
+		{
+			return inventoryStore.HasItem(condition);
+		}
+
+		public KeyItem GetKeyItemFromInventory(Predicate<KeyItem> condition)
+		{
+			return inventoryStore.GetItem(condition);
+		}
+
+		public IEnumerable<KeyItem> GetAllKeyItemsMatching(Predicate<KeyItem> condition)
+		{
+			return inventoryStore.GetAllItems(condition);
+		}
+
+		public bool RemoveKeyItemFromInventory(KeyItem key)
+		{
+			return inventoryStore.RemoveKeyItem(key);
+		}
+
+		public int RemoveKeyItemsFromInventoryWhere(Predicate<KeyItem> condition)
+		{
+			return inventoryStore.RemoveWhere(condition);
+		}
+
+		public bool RemoveFirstKeyItemWhere(Predicate<KeyItem> condition)
+		{
+			return inventoryStore.RemoveFirst(condition);
+		}
+
+		//by default, if a creature not the player somehow is given items, they just throw out extra items. this can of course be overridden. 
+		//in fact, the player overrides this to do its shenanigans when the items are added and already full. 
+		public virtual void AddStandardItem(CapacityItem item, Action resumeCallback, Action putBackOverride = null, Action abandonItemOverride = null)
+		{
+			if (item is null) throw new ArgumentNullException(nameof(item));
+			if (resumeCallback is null) throw new ArgumentNullException(nameof(resumeCallback));
+
+			int slot = inventoryStore.AddItemReturnSlot(item);
+
+			//if slot == -1, we've failed to add it. silently discard it. 
+			resumeCallback();
+		}
+
+
+		public void ClearItemSlot(byte index)
+		{
+			inventoryStore.ClearSlot(index);
+		}
+
+		public void ReplaceItemInSlot(byte index, CapacityItem replacement, bool addIfSameItem = true)
+		{
+			inventoryStore.ReplaceItemInSlot(index, replacement, addIfSameItem);
+		}
+
+		public virtual void UseItem(CapacityItem item, Action resumeCallback)
+		{
+			if (item != null && item.CanUse(this))
+			{
+				item.AttemptToUse(this, (bool x, CapacityItem y) => ReturnFromItemAttempt(item, x, y, resumeCallback));
+			}
+			else
+			{
+				resumeCallback();
+			}
+		}
+
+		public virtual void UseItemInInventory(byte index, Action resumeCallback)
+		{
+			if (inventory[index].itemCount > 0 && inventory[index].item != null && inventory[index].item.CanUse(this))
+			{
+				var item = inventoryStore.itemSlots[index].RemoveItem();
+				item.AttemptToUse(this, (bool x, CapacityItem y) => ReturnFromItemAttempt(item, x, y, resumeCallback));
+			}
+			else
+			{
+				resumeCallback();
+			}
+		}
+
+		protected void ReturnFromItemAttempt(CapacityItem originalItem, bool successfullyUsedItem, CapacityItem replacementItem, Action resumeCallback)
+		{
+			if (successfullyUsedItem)
+			{
+				if (replacementItem != null)
+				{
+					AddStandardItem(replacementItem, resumeCallback);
+				}
+				else
+				{
+					resumeCallback();
+				}
+			}
+			else
+			{
+				AddStandardItem(originalItem, resumeCallback);
+			}
+		}
+
+		#endregion
+		#region Sex-Related
+		//Note: it's possible to have multiple body parts achieve orgasm, but only want to count it as one orgasm for the global total.
+		//this is denoted with the countTowardOrgasmTotal bool. set it to false to prevent these multiple orgasm instances from falsely incrementing the total.
+
+		private void Orgasmed()
+		{
+			this.timeLastOrgasm = GameDateTime.Now;
+			this.orgasmCount++;
+			SetLust(0);
+			//raise orgasm event.
+		}
+
+		#region Take Anal
+		private GameDateTime timeLastOrgasm { get; set; }
+		public int hoursSinceLastOrgasm => timeLastOrgasm.hoursToNow();
+		public uint orgasmCount { get; private set; } = 0;
+
+
+
+		public bool TakeAnalPenetration(float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus, bool countAsSex,
+			bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			bool retVal = genitals.HandleAnalPenetration(length, girth, knotWidth, knockupType, cumAmount, virilityBonus, countAsSex, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+			return retVal;
+		}
+
+		public void TakeAnalPenetrationNoKnockup(float length, float girth, float knotWidth, float cumAmount, bool countAsSex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			genitals.HandleAnalPenetration(length, girth, knotWidth, cumAmount, countAsSex, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+
+		public bool TakeAnalSex(Cock source, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			bool retVal = genitals.HandleAnalPenetration(source, knockupType, cumAmountOverride, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+			return retVal;
+		}
+
+		public bool TakeAnalSex(Cock source, StandardSpawnType knockupType, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			bool retVal = genitals.HandleAnalPenetration(source, knockupType, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+			return retVal;
+		}
+
+		public bool AttemptManualAnalKnockup(StandardSpawnType knockupType, float knockupRate)
+		{
+			return genitals.HandleAnalPregnancyOverride(knockupType, knockupRate);
+		}
 
 		/// <summary>
-		/// Generic sexing for vagina, allows creature to be sexed and possibly knocked up even if the source isn't another creature.
+		/// Provides a means for achieving anal orgasm when not caused by standard penetration and sex functions.
 		/// </summary>
-		/// <param name="vaginaIndex">index of the vagina that is being penetrated.</param>
-		/// <param name="length">length of the penetrator</param>
-		/// <param name="girth">girth of the penetrator</param>
-		/// <param name="knotWidth">any width of a knot if the penetrator has one. negative and 0 are treated as no knot.</param>
-		/// <param name="knockupType">type of spawn this penetrator will create if the creature is successfully knocked up</param>
-		/// <param name="cumAmount">the amount of cum used to knockup the player. affects knockup chance.</param>
-		/// <param name="reachOrgasm">whether or not this creature reaches orgasm as a result of this penetration</param>
-		/// <returns>true if the creature ends up pregnant, false otherwise.</returns>
-		public bool GetVaginallyPenetrated(int vaginaIndex, float length, float girth, float knotWidth, SpawnType knockupType, byte bonusVirility, bool reachOrgasm = true)
+		/// <param name="dryOrgasm">is this particular orgasm caused without any anal stimultion?</param>
+		/// <param name="countTowardOrgasmTotal">does this orgasm count toward the total orgasm count?</param>
+		public void HaveGenericAnalOrgasm(bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
-			return genitals.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, knockupType, bonusVirility, reachOrgasm);
+			genitals.HandleAnalOrgasmGeneric(dryOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+		#endregion
+		#region Give Anal
+		//used to determine if you have an anal-sex fetish, mostly. 
+		public uint TimesFuckedAnotherAss { get; private set; } = 0;
+
+		//public void FuckAButtWithADick(int cockIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		//{
+
+		//}
+		//public void FuckAButtWithAClit(int vaginaIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		//{
+
+		//}
+		//public void FuckAButtWithAClitCock(int vaginaIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		//{
+
+		//}
+		//public void TongueAButt(bool reachOrgasm, bool countTowardOrgasmTotal)
+		//{
+
+		//}
+
+		//public void FuckAButtWithDickNipples(int breastIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		//{
+
+		//}
+
+		public void PenetrateAButtGeneric()
+		{
+			TimesFuckedAnotherAss++;
+		}
+		#endregion
+		#region Take Vaginal
+
+		public bool TakeVaginalPenetrationNoKnockup(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool countAsSex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, cumAmount, countAsSex, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+			return retVal;
+		}
+		public bool TakeVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus, bool countAsSex,
+			bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, knockupType, cumAmount, virilityBonus, countAsSex, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+			return retVal;
 		}
 
-		public bool GetAnallyPenetrated(float length, float girth, float knotWidth, SpawnType knockupType, byte bonusVirility, bool reachOrgasm = true)
+		public bool TakeVaginalSex(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			return genitals.HandleAnalPenetration(length, girth, knotWidth, knockupType, bonusVirility, reachOrgasm);
-		}
-
-		public bool GetVaginallyPenetrated(int vaginaIndex, Creature penetrator, int penetratorCockIndex, SpawnType knockupType, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
-		{
-			Cock sourceCock = penetrator.cocks[penetratorCockIndex];
 			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, sourceCock, knockupType, reachOrgasm);
-			penetrator.genitals.HandleCockPenetrate(penetratorCockIndex, penetratorReachesOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 			return retVal;
 		}
 
-		public bool GetAnallyPenetrated(Creature penetrator, int penetratorCockIndex, SpawnType knockupType, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public bool TakeVaginalSex(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			Cock sourceCock = penetrator.cocks[penetratorCockIndex];
-			bool retVal = genitals.HandleAnalPenetration(sourceCock, knockupType, reachOrgasm);
-			penetrator.genitals.HandleCockPenetrate(penetratorCockIndex, penetratorReachesOrgasm);
+			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, sourceCock, knockupType, cumAmountOverride, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 			return retVal;
 		}
 
-		public bool GetVaginallyPenetratedWithClitCock(int vaginaIndex, Creature penetrator, int penetratorVaginaIndex, SpawnType knockupType, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public bool AttemptManualVaginalKnockup(int vaginaIndex, StandardSpawnType knockupType, float knockupRate)
 		{
-			Cock sourceCock = penetrator.vaginas[penetratorVaginaIndex].clit.AsClitCock();
-			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, sourceCock, knockupType, reachOrgasm);
-			penetrator.genitals.HandleClitCockPenetrate(penetratorVaginaIndex, penetratorReachesOrgasm);
-			return retVal;
+			return genitals.HandleVaginalPregnancyOverride(vaginaIndex, knockupType, knockupRate);
 		}
 
-		public bool GetAnallyPenetratedWithClitCock(Creature penetrator, int penetratorVaginaIndex, SpawnType knockupType, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		//'Dry' orgasm is orgasm without stimulation. 
+		public void HaveGenericVaginalOrgasm(int vaginaIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
-			Cock sourceCock = penetrator.vaginas[penetratorVaginaIndex].clit.AsClitCock();
-			bool retVal = genitals.HandleAnalPenetration(sourceCock, knockupType, reachOrgasm);
-			penetrator.genitals.HandleClitCockPenetrate(penetratorVaginaIndex, penetratorReachesOrgasm);
-			return retVal;
+
+			genitals.HandleVaginaOrgasmGeneric(vaginaIndex, dryOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void GetVaginallyPenetratedWithClit(int vaginaIndex, Creature penetrator, int penetratorVaginaIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void HaveClitCockSounded(int vaginaIndex, float penetratorLength, float penetratorWidth, float penetratorKnotSize, float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			float length = penetrator.vaginas[penetratorVaginaIndex].clit.length;
-			genitals.HandleVaginalPenetration(vaginaIndex, length, 1, 0, null, 0, reachOrgasm);
-			penetrator.genitals.HandleClitPenetrate(penetratorVaginaIndex, penetratorReachesOrgasm);
+			if (genitals.hasClitCock)
+			{
+				genitals.HandleClitCockSounding(vaginaIndex, penetratorLength, penetratorWidth, penetratorKnotSize, cumAmount, reachOrgasm);
+				if (reachOrgasm && countTowardOrgasmTotal)
+				{
+					Orgasmed();
+				}
+			}
 		}
 
-		public void GetAnallyPenetratedWithClit(Creature penetrator, int penetratorVaginaIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void HaveClitCockSounded(int vaginaIndex, Cock source, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			float length = penetrator.vaginas[penetratorVaginaIndex].clit.length;
-			genitals.HandleAnalPenetration(length, 1, 0, null, 0, reachOrgasm);
-			penetrator.genitals.HandleClitPenetrate(penetratorVaginaIndex, penetratorReachesOrgasm);
+			if (genitals.hasClitCock)
+			{
+				genitals.HandleClitCockSounding(vaginaIndex, source, reachOrgasm);
+				if (reachOrgasm && countTowardOrgasmTotal)
+				{
+					Orgasmed();
+				}
+			}
+		}
+		public void HaveClitCockSounded(int vaginaIndex, Cock source, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			if (genitals.hasClitCock)
+			{
+				genitals.HandleClitCockSounding(vaginaIndex, source, cumAmountOverride, reachOrgasm);
+				if (reachOrgasm && countTowardOrgasmTotal)
+				{
+					Orgasmed();
+				}
+			}
+		}
+		//
+
+		#endregion
+		#region Give Vaginal
+		public uint TimesFuckedAnotherVagina { get; private set; } = 0;
+		public uint TimesSoundedAnotherClitCock { get; private set; } = 0;
+
+		public void PenetrateAPussyGeneric()
+		{
+			TimesFuckedAnotherVagina++;
 		}
 
-		public void GetVaginallyPenetratedWithNippleDicks(int vaginaIndex, Creature penetrator, int penetratorBreastIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void SoundAnotherClitCockGeneric()
 		{
-			Nipples source = penetrator.breasts[penetratorBreastIndex].nipples;
-			genitals.HandleVaginalPenetration(vaginaIndex, source.length, source.width, 0, null, 0, reachOrgasm);
-			penetrator.genitals.HandleNippleDickPenetrate(penetratorBreastIndex, penetratorReachesOrgasm);
+			TimesSoundedAnotherClitCock++;
 		}
 
-		public void GetAnallyPenetratedWithNippleDicks(Creature penetrator, int penetratorBreastIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+
+		#endregion
+		#region Vaginal Penetrates
+
+		public void PenetrateSomethingWithAClitCock(int vaginaIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			Nipples source = penetrator.breasts[penetratorBreastIndex].nipples;
-			genitals.HandleAnalPenetration(source.length, source.width, 0, null, 0, reachOrgasm);
-			penetrator.genitals.HandleNippleDickPenetrate(penetratorBreastIndex, penetratorReachesOrgasm);
+			if (genitals.hasClitCock)
+			{
+				genitals.HandleClitCockPenetrate(vaginaIndex, reachOrgasm);
+				if (reachOrgasm && countTowardOrgasmTotal)
+				{
+					Orgasmed();
+				}
+			}
 		}
 
-		public void GetCockSounded(int cockIndex, float penetratorLength, float penetratorWidth, bool reachOrgasm = true)
+		public void HaveGenericClitCockOrgasm(int vaginaIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
-			genitals.HandleCockSounding(cockIndex, penetratorLength, penetratorWidth, reachOrgasm);
+			if (genitals.hasClitCock)
+			{
+				genitals.DoClitCockOrgasmGeneric(vaginaIndex, dryOrgasm);
+				if (countTowardOrgasmTotal)
+				{
+					Orgasmed();
+				}
+			}
 		}
 
-		public void GetCockSoundedWithAClit(int cockIndex, Creature penetrator,  int penetratorVaginaIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		internal void PenetrateSomethingWithAClit(int vaginaIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			float length = penetrator.vaginas[penetratorVaginaIndex].clit.length;
-			genitals.HandleCockSounding(cockIndex, length, 1, reachOrgasm);
-			penetrator.genitals.HandleClitPenetrate(penetratorVaginaIndex, penetratorReachesOrgasm);
+			genitals.HandleClitPenetrate(vaginaIndex, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+		#endregion
+		#region Take Tit-Sex
+		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
+		public void GetTittyFucked(int breastIndex, Cock sourceCock, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			genitals.HandleTittyFuck(breastIndex, sourceCock, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void GetCockSoundedWithAClitCock(int cockIndex, Creature penetrator, int penetratorVaginaIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void GetTittyFucked(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			Cock source = penetrator.vaginas[penetratorVaginaIndex].clit.AsClitCock();
-			genitals.HandleCockSounding(cockIndex, source.length, source.girth, reachOrgasm);
-			penetrator.genitals.HandleClitCockPenetrate(penetratorVaginaIndex, penetratorReachesOrgasm);
+			genitals.HandleTittyFuck(breastIndex, sourceCock, cumAmountOverride, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void GetCockSoundedWithACock(int cockIndex, Creature penetrator, int penetratorCockIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void GetTittyFucked(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			Cock source = penetrator.cocks[penetratorCockIndex];
-			genitals.HandleCockSounding(cockIndex, source.length, source.girth, reachOrgasm);
-			penetrator.genitals.HandleCockPenetrate(penetratorCockIndex, penetratorReachesOrgasm);
+			genitals.HandleTittyFuck(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void GetCockSoundedWithNippleDicks(int cockIndex, Creature penetrator, int penetratorBreastIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void HaveGenericTitOrgasm(int breastIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
-			Nipples source = penetrator.breasts[penetratorBreastIndex].nipples;
-			genitals.HandleCockSounding(cockIndex, source.length, source.width, reachOrgasm);
-			penetrator.genitals.HandleNippleDickPenetrate(penetratorBreastIndex, penetratorReachesOrgasm);
+			genitals.HandleTitOrgasmGeneric(breastIndex, dryOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void GetNippleFucked(int breastIndex, float length, float girth, float knotWidth, bool reachOrgasm = true)
+		public void TakeNipplePenetration(int breastIndex, Cock sourceCock, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			genitals.HandleNipplePenetration(breastIndex, length, girth, knotWidth, reachOrgasm);
-		}
-
-		public void GetNippleFucked(int breastIndex, Creature penetrator, int penetratorCockIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
-		{
-			Cock sourceCock = penetrator.cocks[penetratorCockIndex];
 			genitals.HandleNipplePenetration(breastIndex, sourceCock, reachOrgasm);
-			penetrator.genitals.HandleCockPenetrate(penetratorCockIndex, penetratorReachesOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void GetNippleFuckedWithClitCock(int breastIndex, Creature penetrator, int penetratorbreastIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void TakeNipplePenetration(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			Cock sourceCock = penetrator.vaginas[penetratorbreastIndex].clit.AsClitCock();
-			genitals.HandleNipplePenetration(breastIndex, sourceCock, reachOrgasm);
-			penetrator.genitals.HandleClitCockPenetrate(penetratorbreastIndex, penetratorReachesOrgasm);
+			genitals.HandleNipplePenetration(breastIndex, sourceCock, cumAmountOverride, reachOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void GetNippleFuckedWithClit(int breastIndex, Creature penetrator, int penetratorbreastIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void TakeNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			float length = penetrator.vaginas[penetratorbreastIndex].clit.length;
-			genitals.HandleNipplePenetration(breastIndex, length, 1, 0, reachOrgasm);
-			penetrator.genitals.HandleClitPenetrate(penetratorbreastIndex, penetratorReachesOrgasm);
+			genitals.HandleNipplePenetration(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void GetNippleFuckedWithNippleDicks(int breastIndex, Creature penetrator, int penetratorBreastIndex, bool reachOrgasm = true, bool penetratorReachesOrgasm = true)
+		public void HaveGenericNippleOrgasm(int breastIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
-			Nipples source = penetrator.breasts[penetratorBreastIndex].nipples;
-			genitals.HandleNipplePenetration(breastIndex, source.length, source.width, 0, reachOrgasm);
-			penetrator.genitals.HandleNippleDickPenetrate(penetratorBreastIndex, penetratorReachesOrgasm);
+			genitals.HandleNippleOrgasmGeneric(breastIndex, dryOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void MasturbateCock(int index, bool reachOrgasm = true)
+		#endregion
+		#region Penetrate With Tits
+		public void PenetrateSomethingWithNippleDicks(int breastIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-			genitals.HandleCockPenetrate(index, reachOrgasm);
+			genitals.HandleNippleDickPenetrate(breastIndex, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
+		#endregion
+		#region Give Tit-Sex
+		public uint TimesFuckedSomeTitties { get; private set; } = 0;
+		public uint TimesFuckedANipple { get; private set; } = 0;
 
-		public void MasturbateClitCock(int index, bool reachOrgasm = true)
+		public void PenetrateANippleGeneric()
 		{
-			genitals.HandleClitCockPenetrate(index, reachOrgasm);
+			TimesFuckedANipple++;
 		}
 
-		public void MasturbateFuckableNipples(int index, bool reachOrgasm = true)
+		public void DoATitFuckGeneric()
 		{
-
+			TimesFuckedSomeTitties++;
 		}
-
-		public void MasturbateDickNipples(int index, bool reachOrgasm = true)
+		#endregion
+		#region Take with Cock
+		public void TakeCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, float knotSize, float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-
+			genitals.HandleCockSounding(cockIndex, penetratorLength, penetratorWidth, knotSize, cumAmount, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
 
-		public void MasturbateVagina(int index, bool reachOrgasm = true)
+		public void TakeCockSounding(int cockIndex, Cock sourceCock, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
-
+			genitals.HandleCockSounding(cockIndex, sourceCock, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
 		}
+
+		public void TakeCockSounding(int cockIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			genitals.HandleCockSounding(cockIndex, sourceCock, cumAmountOverride, reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+		#endregion
+		#region Give Cock Sex
+		internal void PenetrateWithCockGeneric(int cockIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			genitals.HandleCockPenetrate(cockIndex, reachOrgasm);
+		}
+
+		internal void HaveGenericCockOrgasm(int cockIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
+		{
+			genitals.DoCockOrgasmGeneric(cockIndex, dryOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+		#endregion
+		#region Take in Mouth (Oral)
+
+		public void TakeOralPenetration(float penetratorArea, float knotWidth, int cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			face.HandleOralPenetration(penetratorArea, knotWidth, cumAmount, reachOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+
+		public void TakeOralSex(Cock penetrator, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			face.HandleOralPenetration(penetrator, reachOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+
+		public void TakeOralSex(Cock penetrator, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			face.HandleOralPenetration(penetrator, cumAmountOverride, reachOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+
+		public void HaveGenericOralOrgasm(bool dryOrgasm, bool countTowardOrgasmTotal)
+		{
+			face.HandleOralOrgasmGeneric(dryOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+		#endregion
+		#region Give With Mouth
+		public void PenetrateSomethingWithTongue(bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			tongue.DoPenetrate();
+			if (reachOrgasm)
+			{
+				face.HandleOralOrgasmGeneric(false);
+				if (countTowardOrgasmTotal)
+				{
+					Orgasmed();
+				}
+			}
+		}
+
+		public void LickSomethingWithTongue(bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			tongue.DoLicking();
+			if (reachOrgasm)
+			{
+				face.HandleOralOrgasmGeneric(false);
+				if (countTowardOrgasmTotal)
+				{
+					Orgasmed();
+				}
+			}
+		}
+
+		#endregion
+		#region Feet Sex - Take
+		public void TakeFootLicking(bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			feet.GetLicked(reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+		#endregion
+		#region Feet-Sex - Give
+		public void PenetrateSomethingWithFeet(bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			feet.DoPenetrate(reachOrgasm);
+
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+
+		public void RubSomethingWithFeet(bool reachOrgasm, bool countTowardOrgasmTotal)
+		{
+			feet.DoRubbing(reachOrgasm);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+
+		public void HaveGenericFootOrgasm(bool dryOrgasm, bool countTowardOrgasmTotal)
+		{
+			feet.doGenericOrgasm(dryOrgasm);
+			if (countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+		}
+		#endregion
+		#endregion
 
 		//everything that modifies data within a body part is supposed to be internal, and then called from here. this way, we can debug eaiser, while still making it somewhat intuitive for non-programmers.
 		//we also do this so that we can correctly handle the data, without the frontend devs having to lookup functions and such. for example, we can create a single function for sexual intercourse

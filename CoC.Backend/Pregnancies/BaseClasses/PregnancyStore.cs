@@ -4,14 +4,18 @@
 //4/7/2019, 7:57 PM
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
+using CoC.Backend.Tools;
 using System;
 
 namespace CoC.Backend.Pregnancies
 {
 	//need way of checking for eggs - if egg pregnancy, they can be fertalized. 
-	public sealed class PregnancyStore : SimpleSaveablePart<PregnancyStore, ReadOnlyPregnancyStore>, ITimeActiveListener, ITimeLazyListener
+	public abstract class PregnancyStore : SimpleSaveablePart<PregnancyStore, ReadOnlyPregnancyStore>, ITimeActiveListener, ITimeLazyListener
 	{
+		private Womb source => CreatureStore.GetCreatureClean(creatureID)?.womb;
+
 		public float pregnancyMultiplier
 		{
 			get
@@ -32,23 +36,24 @@ namespace CoC.Backend.Pregnancies
 		}
 		internal int pregnancyMultiplierCounter = 0;
 
+		public uint birthCount { get; private set; } = 0;
+		public uint totalBirthCount => CreatureStore.GetCreatureClean(creatureID)?.womb.totalBirthCount ?? birthCount;
+
 		//remember, we can have eggs even if we have normal womb due to ovi elixirs. 
 		private bool? eggSize = null;
 		public bool eggSizeKnown => eggSize != null;
 		public bool eggsLarge => eggSize == true;
 
-		public SpawnType spawnType { get; private set; }
+		public StandardSpawnType spawnType { get; private set; }
 
 		public override ReadOnlyPregnancyStore AsReadOnlyData()
 		{
 			return new ReadOnlyPregnancyStore(creatureID, spawnType, birthCountdown);
 		}
 
-		private readonly bool isVagina;
 
-		public PregnancyStore(Guid creatureID, bool isThisVagina) : base(creatureID)
+		private protected PregnancyStore(Guid creatureID) : base(creatureID)
 		{
-			isVagina = isThisVagina;
 		}
 
 		public ushort birthCountdown => hoursTilBirth <= 0 ? (ushort)0 : (ushort)Math.Ceiling(hoursTilBirth); //unless a pregnancy takes 7.50 years, a ushort is enough lol.
@@ -57,17 +62,38 @@ namespace CoC.Backend.Pregnancies
 
 		public bool isPregnant => spawnType != null;
 
-		internal bool attemptKnockUp(float knockupChance, SpawnType type)
+		internal bool attemptKnockUp(float knockupChance, StandardSpawnType type)
 		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			if (knockupChance < 0 || type is null)
+			{
+				return false;
+			}
+			else if (this.spawnType != null)
+			{
+				if (spawnType.HandleNewKnockupAttempt(type, out StandardSpawnType newType)) 
+				{
+					spawnType = newType;
+					return true;
+				}
+				return false;
+			}
+			else if (knockupChance > 1 || Utils.Rand(1000) <= Math.Round(knockupChance * 1000))
+			{
+				spawnType = type;
+				hoursTilBirth = type.hoursToBirth;
+				return true;
+			}
+			return false;
 			//if pregnant: set spawnType and birthCountdown;
 		}
 
+		//sets the egg size for all future egg pregnancies in this womb.
 		internal void SetEggSize(bool isLarge)
 		{
 			eggSize = isLarge;
 		}
 
+		//clears any set egg size that would otherwise affect all future egg pregnancies in this womb.
 		internal void ClearEggSize()
 		{
 			eggSize = null;
@@ -108,36 +134,51 @@ namespace CoC.Backend.Pregnancies
 				//override them if we are pregnant and giving birth.
 				if (hoursTilBirth <= 0)
 				{
-					output = spawnType.HandleBirth(isVagina);
-					spawnType = null; //clear pregnancy.
+					output = DoBirth();
 				}
 			}
 
 			return output;
 		}
 
+		//in the rare event time passing causes premature birthing, you can do it here. 
+		protected EventWrapper DoBirth()
+		{
+			var output = HandleBirthing();
+			spawnType = null; //clear pregnancy.
+			hoursTilBirth = 0;
+			birthCount++;
+			source?.RaiseBirthEvent(spawnType, this);
+			return output;
+		}
+
+		protected abstract EventWrapper HandleBirthing();
+
 		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
 		{
 			if (isPregnant)
 			{
 				float oldHours = hoursTilBirth + pregnancyMultiplier * hoursPassed;
-				return spawnType.NotifyTimePassed(isVagina, hoursTilBirth, oldHours);
+				return NotifyTimePassed(hoursTilBirth, oldHours);
 			}
 			else
 			{
 				return null;
 			}
 		}
+
+		protected abstract string NotifyTimePassed(float hoursTilBirth, float oldHoursToBirth);
+
 		#endregion
 	}
 
 	public sealed class ReadOnlyPregnancyStore : SimpleData
 	{
-		public readonly SpawnType spawnType;
+		public readonly StandardSpawnType spawnType;
 		public readonly ushort hoursTilBirth;
 
 
-		public ReadOnlyPregnancyStore(Guid creatureID, SpawnType spawnType, ushort hoursToBirth) : base(creatureID)
+		public ReadOnlyPregnancyStore(Guid creatureID, StandardSpawnType spawnType, ushort hoursToBirth) : base(creatureID)
 		{
 			this.spawnType = spawnType;
 			hoursTilBirth = hoursToBirth;

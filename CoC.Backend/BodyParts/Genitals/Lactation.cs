@@ -44,10 +44,12 @@ namespace CoC.Backend.BodyParts
 		public const float EPIC_LACTATION_THRESHOLD = 9f;
 		public const float MAX_LACTATION_MODIFIER = 10;
 
+		public bool isOverfull => timeBecameFull?.hoursToNow() >= 0;
 
+		//note: it's possible to actually go over the max capacity if you're overfull, and going at the highest lactation level. Original game set this to 1.5; i'm going to cap it at 1.1
 		public float maximumLactationCapacity => lactation_TotalCapacityMultiplier * (float)breastRows.Sum(x => volumeFromCupSize(x.cupSize) * x.numBreasts);
 		//current maximum capacity. if you aren't lactating, this is 0. 
-		public float currentLactationCapacity => maximumLactationCapacity * lactationLevel;
+		public float currentLactationCapacity => maximumLactationCapacity * lactationLevel * (isOverfull ? 1.1f : 1.0f);
 		private double volumeFromCupSize(CupSize cup)
 		{
 			//fun fact, i'm now more versed in how cup size works than most women - apparently 60% don't get proper fitting cup/bra measures. The more you know. 
@@ -314,6 +316,10 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		//There's actually a strange behavior here in that the moment you become full, you get the overfull bonus (1.1x capacity), even if the amount you are adding would not cause 
+		//you to reach the overfull capacity. frankly, considering the old method was just multiply it by 1.5 regardless of if you just became full or have been for hours,
+		//i think this is fine.
+
 		private string DoLactationCheck(bool isPlayer, byte hoursPassed)
 		{
 			if (currentLactationAmount < currentLactationCapacity)
@@ -326,14 +332,14 @@ namespace CoC.Backend.BodyParts
 				}
 				else if (Math.Ceiling(hoursRequiredToFill) == hoursPassed)
 				{
-					currentLactationAmount = currentLactationCapacity;
 					timeBecameFull = GameDateTime.Now;
+					currentLactationAmount = currentLactationCapacity;
 				}
 				else
 				{
 					hoursPassed -= (byte)Math.Floor(hoursRequiredToFill);
-					currentLactationAmount = currentLactationCapacity;
 					timeBecameFull = GameDateTime.HoursFromNow(-hoursPassed);
+					currentLactationAmount = currentLactationCapacity;
 				}
 			}
 

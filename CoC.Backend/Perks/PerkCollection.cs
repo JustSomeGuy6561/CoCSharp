@@ -54,8 +54,8 @@ namespace CoC.Backend.Perks
 			}
 			else
 			{
-				perkBase.Activate(source);
 				perks.Add(type, perkBase);
+				perkBase.Activate(source);
 				return true;
 			}
 		}
@@ -71,6 +71,7 @@ namespace CoC.Backend.Perks
 			{
 				T data = new T();
 				perks.Add(type, data);
+				data.Activate(source);
 				return true;
 			}
 		}
@@ -87,6 +88,7 @@ namespace CoC.Backend.Perks
 			{
 				T data = new T();
 				perks.Add(type, data);
+				data.Activate(source);
 				return true;
 			}
 		}
@@ -102,6 +104,7 @@ namespace CoC.Backend.Perks
 			else
 			{
 				perks.Add(type, perk);
+				perk.Activate(source);
 				return true;
 			}
 		}

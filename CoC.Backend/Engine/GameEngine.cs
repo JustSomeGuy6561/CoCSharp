@@ -22,20 +22,13 @@ namespace CoC.Backend.Engine
 		public static AreaBase currentArea => areaEngine.currentArea;
 
 		//NYI
-		public static Player currentPlayer
+		public static Player currentlyControlledCharacter => CreatureStore.currentControlledCharacter;
+
+		public static Player playerCharacter
 		{
-			get => _currentPlayer;
-			private set
-			{
-				//unfortunately, this is probably necessary. No weak 
-				if (_currentPlayer != value && _currentPlayer != null)
-				{
-					_currentPlayer.CleanupCreatureForDeletion();
-				}
-				_currentPlayer = value;
-			}
+			get => CreatureStore.activePlayer;
+			private set => CreatureStore.SetActivePlayerCharacter(value);
 		}
-		private static Player _currentPlayer;
 
 		public static ReadOnlyCollection<GameDifficulty> difficulties;
 		public static int defaultDifficultyIndex { get; private set; }
@@ -247,7 +240,6 @@ namespace CoC.Backend.Engine
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
 			defaultDifficultyIndex = defaultDifficulty;
 			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
-			_currentPlayer = null;
 		}
 
 		internal static void PostSaveInit()
@@ -259,13 +251,13 @@ namespace CoC.Backend.Engine
 
 		public static void StartNewGame()
 		{
-			currentPlayer = null;
+			playerCharacter = null;
 			SaveData.SaveSystem.ResetSessionDataForNewGame();
 		}
 
 		public static void InitializeGame(Player player)
 		{
-			currentPlayer = player;
+			playerCharacter = player;
 			SaveData.SaveSystem.MarkGameLoaded();
 		}
 

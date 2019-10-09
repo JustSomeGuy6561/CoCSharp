@@ -9,6 +9,10 @@ namespace CoC.Backend.Items.Wearables.Armor
 {
 	public abstract class ArmorBase : WearableItemBase
 	{
+		protected ArmorBase(SimpleDescriptor shortName, SimpleDescriptor fullName) : base(shortName, fullName)
+		{
+		}
+
 		public abstract bool CanWearWithUpperGarment(/*UpperGarmentBase currentUpperGarment*/);
 
 		public abstract bool CanWearWithLowerGarment(/*LowerGarmentBase currentLowerGarment*/);
