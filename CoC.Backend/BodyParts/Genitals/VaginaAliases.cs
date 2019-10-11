@@ -31,37 +31,49 @@ namespace CoC.Backend.BodyParts
 
 		public uint clitUsedAsPenetratorCount => missingClitPenetrateCount.add((uint)_vaginas.Sum(x => x.clit.penetrateCount));
 
-		internal bool AddVagina(VaginaType newVaginaType)
+		public bool AddVagina(VaginaType newVaginaType)
 		{
 			if (numVaginas >= MAX_VAGINAS)
 			{
 				return false;
 			}
+			var oldGender = gender;
+
 			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkData(), newVaginaType));
+			
+			CheckGenderChanged(oldGender);
 			return true;
 		}
 
-		internal bool AddVagina(VaginaType newVaginaType, float clitLength, bool omnibus = false)
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, bool omnibus = false)
 		{
 			if (numVaginas >= MAX_VAGINAS)
 			{
 				return false;
 			}
+			var oldGender = gender;
+
 			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkData(), newVaginaType, clitLength, omnibus: omnibus));
+
+			CheckGenderChanged(oldGender);
 			return true;
 		}
 
-		internal bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness, bool omnibus = false)
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness, bool omnibus = false)
 		{
 			if (numVaginas >= MAX_VAGINAS)
 			{
 				return false;
 			}
+			var oldGender = gender;
+
 			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkData(), newVaginaType, clitLength, looseness, wetness, true, omnibus));
+
+			CheckGenderChanged(oldGender);
 			return true;
 		}
 
-		internal int RemoveVagina(int count = 1)
+		public int RemoveVagina(int count = 1)
 		{
 			if (numVaginas == 0 || count <= 0)
 			{
@@ -69,6 +81,8 @@ namespace CoC.Backend.BodyParts
 			}
 
 			int oldCount = numVaginas;
+			var oldGender = gender;
+
 			if (count >= numVaginas)
 			{
 				missingVaginaSexCount.addIn((uint)_vaginas.Sum(x=>x.sexCount));
@@ -82,6 +96,8 @@ namespace CoC.Backend.BodyParts
 				missingClitCockOrgasmCount.addIn((uint)_vaginas.Sum(x=>x.clit.asCockOrgasmCount));
 				missingClitCockDryOrgasmCount.addIn((uint)_vaginas.Sum(x=>x.clit.asCockDryOrgasmCount));
 				_vaginas.Clear();
+				//
+				CheckGenderChanged(oldGender);
 				return oldCount;
 			}
 			else
@@ -97,17 +113,19 @@ namespace CoC.Backend.BodyParts
 				missingClitCockOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.clit.asCockOrgasmCount));
 				missingClitCockDryOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.clit.asCockDryOrgasmCount));
 				_vaginas.RemoveRange(numVaginas - count, count);
+				//
+				CheckGenderChanged(oldGender);
 				return oldCount - numVaginas;
 			}
 
 		}
 
-		internal int RemoveExtraVaginas()
+		public int RemoveExtraVaginas()
 		{
 			return RemoveVagina(numVaginas - 1);
 		}
 
-		internal int RemoveAllVaginas()
+		public int RemoveAllVaginas()
 		{
 			return RemoveVagina(numVaginas);
 		}

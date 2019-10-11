@@ -12,29 +12,11 @@ using System;
 namespace CoC.Backend.Pregnancies
 {
 	//need way of checking for eggs - if egg pregnancy, they can be fertalized. 
-	public abstract class PregnancyStore : SimpleSaveablePart<PregnancyStore, ReadOnlyPregnancyStore>, ITimeActiveListener, ITimeLazyListener
+	public abstract class PregnancyStore : SimpleSaveablePart<PregnancyStore, ReadOnlyPregnancyStore>, ITimeActiveListenerFull, ITimeLazyListener
 	{
 		private Womb source => CreatureStore.GetCreatureClean(creatureID)?.womb;
 
-		public float pregnancyMultiplier
-		{
-			get
-			{
-				if (pregnancyMultiplierCounter == 0)
-				{
-					return 1;
-				}
-				else if (pregnancyMultiplierCounter > 0)
-				{
-					return 1 + pregnancyMultiplierCounter / 2.0f;
-				}
-				else
-				{
-					return 1 / (1 - pregnancyMultiplierCounter / 2.0f);
-				}
-			}
-		}
-		internal int pregnancyMultiplierCounter = 0;
+		public float pregnancyMultiplier => source?.pregnancyMultiplier ?? 1.0f;
 
 		public uint birthCount { get; private set; } = 0;
 		public uint totalBirthCount => CreatureStore.GetCreatureClean(creatureID)?.womb.totalBirthCount ?? birthCount;
@@ -123,10 +105,10 @@ namespace CoC.Backend.Pregnancies
 		}
 
 		#region ITimeListener
-		EventWrapper ITimeActiveListener.reactToHourPassing()
+		EventWrapper ITimeActiveListenerFull.reactToHourPassing()
 		{
 			//set initial out values so we can return safely. 
-			EventWrapper output = EventWrapper.Empty;
+			EventWrapper output = null;
 
 			if (isPregnant)
 			{
@@ -134,7 +116,7 @@ namespace CoC.Backend.Pregnancies
 				//override them if we are pregnant and giving birth.
 				if (hoursTilBirth <= 0)
 				{
-					output = DoBirth();
+					output = new EventWrapper(DoBirth());
 				}
 			}
 
@@ -142,7 +124,7 @@ namespace CoC.Backend.Pregnancies
 		}
 
 		//in the rare event time passing causes premature birthing, you can do it here. 
-		protected EventWrapper DoBirth()
+		protected SpecialEvent DoBirth()
 		{
 			var output = HandleBirthing();
 			spawnType = null; //clear pregnancy.
@@ -152,7 +134,7 @@ namespace CoC.Backend.Pregnancies
 			return output;
 		}
 
-		protected abstract EventWrapper HandleBirthing();
+		protected abstract SpecialEvent HandleBirthing();
 
 		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
 		{

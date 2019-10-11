@@ -26,32 +26,32 @@ namespace CoC.Backend.BodyParts
 
 		
 
-		internal CupSize BiggestCupSize()
+		public CupSize BiggestCupSize()
 		{
 			return (CupSize)_breasts.Max(x => (byte?)x?.cupSize);
 		}
 
-		internal CupSize AverageCupSize()
+		public CupSize AverageCupSize()
 		{
 			return (CupSize)(byte)Math.Ceiling(_breasts.Average(x => (double)x.cupSize));
 		}
 
-		internal CupSize SmallestCupSize()
+		public CupSize SmallestCupSize()
 		{
 			return (CupSize)_breasts.Min(x => (byte?)x?.cupSize);
 		}
 
-		internal Breasts LargestBreast()
+		public Breasts LargestBreast()
 		{
 			return _breasts.MaxItem(x => (byte)x.cupSize);
 		}
 
-		internal Breasts SmallestBreast()
+		public Breasts SmallestBreast()
 		{
 			return  _breasts.MinItem(x => (byte)x.cupSize);
 		}
 
-		internal bool AddBreastRow()
+		public bool AddBreastRow()
 		{
 			if (numBreastRows >= MAX_BREAST_ROWS)
 			{
@@ -63,7 +63,7 @@ namespace CoC.Backend.BodyParts
 			_breasts.Add(new Breasts(creatureID, GetBreastPerkData(), cup, length));
 			return true;
 		}
-		internal bool AddBreastRowAverage()
+		public bool AddBreastRowAverage()
 		{
 			if (numBreastRows >= MAX_BREAST_ROWS)
 			{
@@ -78,7 +78,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal bool AddBreastRow(CupSize cup)
+		public bool AddBreastRow(CupSize cup)
 		{
 			if (numBreastRows >= MAX_BREAST_ROWS)
 			{
@@ -89,7 +89,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal int RemoveBreastRow(int count = 1)
+		public int RemoveBreastRow(int count = 1)
 		{
 			if (count < 0 || numBreastRows == 1 && _breasts[0].isMale)
 			{
@@ -127,7 +127,7 @@ namespace CoC.Backend.BodyParts
 			return oldCount - numBreastRows;
 		}
 
-		internal int RemoveExtraBreastRows()
+		public int RemoveExtraBreastRows()
 		{
 			return RemoveBreastRow(numBreastRows - 1);
 		}
@@ -138,7 +138,7 @@ namespace CoC.Backend.BodyParts
 		/// will completely average all values.
 		/// </summary>
 		/// <param name="untilEven">if true, forces all breast rows to average value, if false, only one unit.</param>
-		internal void NormalizeBreasts(bool untilEven = false)
+		public void NormalizeBreasts(bool untilEven = false)
 		{
 			if (numBreastRows == 1)
 			{

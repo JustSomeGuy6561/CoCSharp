@@ -10,12 +10,12 @@ namespace CoC.Backend.Perks
 		{
 		}
 
-		internal bool attemptStackIncrease()
+		public bool attemptStackIncrease()
 		{
 			return OnStackIncreaseAttempt();
 		}
 
-		internal bool attemptStackDecrease()
+		public bool attemptStackDecrease()
 		{
 			return OnStackDecreaseAttempt();
 		}

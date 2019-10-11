@@ -167,7 +167,7 @@ namespace CoC.Frontend.Pregnancies
 		{
 
 			string descript = "";
-			descript += Utils.Count(eggCount) + " ";
+			descript += Utils.NumberAsText(eggCount) + " ";
 
 			if (largeEggs)
 			{ 

@@ -24,6 +24,11 @@ namespace CoC.Backend.Creatures
 		internal const byte BASE_MAX_INTELLIGENCE = 100;
 		internal const byte BASE_MAX_FATIGUE = 100;
 
+		public void AddHP(uint v)
+		{
+			throw new NotImplementedException();
+		}
+
 		//Note: Min stat is given priority for all of these - if a computed max value is less than the current minimum, the minimum is the maximum. 
 		//all max stats are floored (capped below) to 50, meaning they cannot drop below 50. 
 		//ideally i'd prefer to cap mins to the same value, but that doesn't seem to be the case in given code. 
@@ -370,6 +375,145 @@ namespace CoC.Backend.Creatures
 		{
 			intelligenceTrue = value;
 			return intelligenceTrue;
+		}
+
+		public void IncreaseCombatCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, byte str = 0, byte tou = 0, byte spe = 0, byte inte = 0, bool ignorePerks = false)
+		{
+			IncreaseCreatureStats(lust, lib, sens, corr);
+
+			float amount;
+			if (str != 0)
+			{
+				amount = str;
+				if (!ignorePerks) amount *= StrengthGainMultiplier;
+				strengthTrue += amount;
+			}
+			if (tou != 0)
+			{
+				amount = tou;
+				if (!ignorePerks) amount *= ToughnessGainMultiplier;
+				toughnessTrue += amount;
+			}
+			if (spe != 0)
+			{
+				amount = spe;
+				if (!ignorePerks) amount *= SpeedGainMultiplier;
+				speedTrue += amount;
+			}
+			if (inte != 0)
+			{
+				amount = inte;
+				if (!ignorePerks) amount *= IntelligenceGainMultiplier;
+				intelligenceTrue += amount;
+			}
+		}
+
+		public void DecreaseCombatCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, byte str = 0, byte tou = 0, byte spe = 0, byte inte = 0, bool ignorePerks = false)
+		{
+			DecreaseCreatureStats(lust, lib, sens, corr);
+
+			float amount;
+			if (str != 0)
+			{
+				amount = str;
+				if (!ignorePerks) amount *= StrengthLossMultiplier;
+				strengthTrue -= amount;
+			}
+			if (tou != 0)
+			{
+				amount = tou;
+				if (!ignorePerks) amount *= ToughnessLossMultiplier;
+				toughnessTrue -= amount;
+			}
+			if (spe != 0)
+			{
+				amount = spe;
+				if (!ignorePerks) amount *= SpeedLossMultiplier;
+				speedTrue -= amount;
+			}
+			if (inte != 0)
+			{
+				amount = inte;
+				if (!ignorePerks) amount *= IntelligenceLossMultiplier;
+				intelligenceTrue -= amount;
+			}
+		}
+
+		public void SetCombatCreatureStats(byte? lus = null, byte? lib = null, byte? sens = null, byte? corr = null, byte? str = null, byte? tou = null, byte? spe = null, byte? inte = null)
+		{
+			SetCreatureStats(lust, lib, sens, corr);
+
+			if (str is byte ltb)
+			{
+				strengthTrue = ltb;
+			}
+			if (tou is byte lbb)
+			{
+				toughnessTrue = lbb;
+			}
+			if (spe is byte sb)
+			{
+				speedTrue = sb;
+			}
+			if (inte is byte cb)
+			{
+				intelligenceTrue = cb;
+			}
+		}
+
+		public void DeltaCombatCreatureStats(short lus = 0, short lib = 0, short sens = 0, short corr = 0, short str = 0, short tou = 0, short spe = 0, short inte = 0, bool ignorePerks = false)
+		{
+			DeltaCreatureStats(lust, lib, sens, corr);
+
+			float amount;
+			if (str < 0)
+			{
+				amount = str;
+				if (!ignorePerks) amount *= StrengthLossMultiplier;
+				strengthTrue += amount;
+			}
+			else if (str > 0)
+			{
+				amount = str;
+				if (!ignorePerks) amount *= StrengthGainMultiplier;
+				strengthTrue += amount;
+			}
+			if (tou < 0)
+			{
+				amount = tou;
+				if (!ignorePerks) amount *= ToughnessLossMultiplier;
+				toughnessTrue += amount;
+			}
+			else if (tou > 0)
+			{
+				amount = tou;
+				if (!ignorePerks) amount *= ToughnessGainMultiplier;
+				toughnessTrue += amount;
+			}
+			if (spe < 0)
+			{
+				amount = spe;
+				if (!ignorePerks) amount *= SpeedLossMultiplier;
+				speedTrue += amount;
+			}
+			else if (spe > 0)
+			{
+				amount = spe;
+				if (!ignorePerks) amount *= SpeedGainMultiplier;
+				speedTrue += amount;
+			}
+			if (inte < 0)
+			{
+				amount = inte;
+				if (!ignorePerks) amount *= IntelligenceLossMultiplier;
+				intelligenceTrue += amount;
+			}
+			else if (inte > 0)
+			{
+				amount = inte;
+				if (!ignorePerks) amount *= IntelligenceGainMultiplier;
+				intelligenceTrue += amount;
+			}
 		}
 
 		public float spellCost(double baseCost)

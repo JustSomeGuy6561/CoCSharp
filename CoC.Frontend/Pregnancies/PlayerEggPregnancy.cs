@@ -32,7 +32,7 @@ namespace CoC.Frontend.Pregnancies
 			: base(creatureID, EggSource, BIRTH_TIME, largeClutch, isLarge, color)
 		{ }
 
-		protected override EventWrapper HandleVaginalBirth(byte vaginalIndex)
+		protected override SpecialEvent HandleVaginalBirth(byte vaginalIndex)
 		{
 			//we know the creature is the player, so ignore the id.
 
@@ -58,7 +58,7 @@ namespace CoC.Frontend.Pregnancies
 			player.SetLust(player.maxLust);
 
 			var egg = knownEggType(largeEggs);
-			return new EventWrapper(new GainItemEventWrapper(player, egg, () => BirthStr(gainedOviMax, egg)));
+			return GainItemEventHelper.GainItemEvent(player, egg, () => BirthStr(gainedOviMax, egg));
 		}
 
 		protected override string NotifyVaginalBirthingProgressed(byte vaginalIndex, float hoursToBirth, float previousHoursToBirth)

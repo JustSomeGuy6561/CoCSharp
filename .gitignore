@@ -277,3 +277,4 @@ __pycache__/
 *.sln
 *.settings
 /CoC.WinDesktop/resources/sprites/source
+/consumables

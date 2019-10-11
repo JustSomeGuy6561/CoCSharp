@@ -57,38 +57,66 @@ namespace CoC.Backend.Engine.Time
 		string reactToTimePassing(byte hoursPassed);
 	}
 
-	public interface ITimeActiveListener
+	public interface ITimeActiveListenerFull
 	{
 		EventWrapper reactToHourPassing();
 	}
 
-	public interface ITimeDailyListener
+	public interface ITimeDailyListenerFull
 	{
 		byte hourToTrigger { get; }
 
 		EventWrapper reactToDailyTrigger();
 	}
 
-	public interface ITimeDayMultiListener
+	public interface ITimeDayMultiListenerFull
 	{
 		byte[] triggerHours { get; }
 		EventWrapper reactToTrigger(byte currHour);
 	}
 
+	public interface ITimeActiveListenerSimple
+	{
+		string reactToHourPassing();
+	}
+
+	public interface ITimeDailyListenerSimple
+	{
+		byte hourToTrigger { get; }
+
+		string reactToDailyTrigger();
+	}
+
+	public interface ITimeDayMultiListenerSimple
+	{
+		byte[] triggerHours { get; }
+		string reactToTrigger(byte currHour);
+	}
+
 	internal static class TimeListenerHelpers
 	{
-		public static SingleDayWrapper[] ToSingleDayCollection(this ITimeDayMultiListener listener)
+		public static SingleDayWrapperFull[] ToSingleDayCollection(this ITimeDayMultiListenerFull listener)
 		{
-			return Array.ConvertAll(listener.triggerHours, (x) => new SingleDayWrapper(x, listener));
+			return Array.ConvertAll(listener.triggerHours, (x) => new SingleDayWrapperFull(x, listener));
 		}
 
-		public static SingleDayWrapper ToSingleDay(this ITimeDayMultiListener listener, byte hour)
+		public static SingleDayWrapperFull ToSingleDay(this ITimeDayMultiListenerFull listener, byte hour)
 		{
-			return listener.triggerHours.Contains(hour) ? new SingleDayWrapper(hour, listener) : null;
+			return listener.triggerHours.Contains(hour) ? new SingleDayWrapperFull(hour, listener) : null;
+		}
+
+		public static SingleDayWrapperSimple[] ToSingleDayCollection(this ITimeDayMultiListenerSimple listener)
+		{
+			return Array.ConvertAll(listener.triggerHours, (x) => new SingleDayWrapperSimple(x, listener));
+		}
+
+		public static SingleDayWrapperSimple ToSingleDay(this ITimeDayMultiListenerSimple listener, byte hour)
+		{
+			return listener.triggerHours.Contains(hour) ? new SingleDayWrapperSimple(hour, listener) : null;
 		}
 	}
 
-	internal sealed class SingleDayWrapper : ITimeDailyListener
+	internal sealed class SingleDayWrapperFull : ITimeDailyListenerFull
 	{
 		private readonly Func<EventWrapper> callback;
 
@@ -96,7 +124,22 @@ namespace CoC.Backend.Engine.Time
 
 		public EventWrapper reactToDailyTrigger() => callback();
 
-		public SingleDayWrapper(byte hour, ITimeDayMultiListener listener)
+		public SingleDayWrapperFull(byte hour, ITimeDayMultiListenerFull listener)
+		{
+			hourToTrigger = hour;
+			callback = () => listener.reactToTrigger(hour);
+		}
+	}
+
+	internal sealed class SingleDayWrapperSimple : ITimeDailyListenerSimple
+	{
+		private readonly Func<string> callback;
+
+		public byte hourToTrigger { get; }
+
+		public string reactToDailyTrigger() => callback();
+
+		public SingleDayWrapperSimple(byte hour, ITimeDayMultiListenerSimple listener)
 		{
 			hourToTrigger = hour;
 			callback = () => listener.reactToTrigger(hour);

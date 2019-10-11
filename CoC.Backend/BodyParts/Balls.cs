@@ -227,7 +227,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal byte EnlargeBalls(byte amount, bool ignorePerks = false)
+		public byte EnlargeBalls(byte amount, bool ignorePerks = false)
 		{
 			if (!hasBalls || size == MAX_BALLS_SIZE || amount == 0)
 			{
@@ -256,7 +256,7 @@ namespace CoC.Backend.BodyParts
 			return size.subtract(originalSize);
 		}
 
-		internal byte ShrinkBalls(byte amount, bool ignorePerks = false)
+		public byte ShrinkBalls(byte amount, bool ignorePerks = false)
 		{
 			if (!hasBalls || size == MIN_BALLS_SIZE)
 			{

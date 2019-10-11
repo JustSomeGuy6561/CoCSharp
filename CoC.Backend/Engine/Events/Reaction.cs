@@ -20,22 +20,21 @@ namespace CoC.Backend.Engine.Events
 	public sealed class TimeReaction : IComparable<TimeReaction>
 	{
 		public readonly GameDateTime procTime;
-		public Action onProc { get; private set; }
-		public EventWrapper eventWrapper { get; private set; }
+		public readonly Func<EventWrapper> onProc;
 
 		//fires immediately.
-		public TimeReaction(Action procAction, EventWrapper wrapper)
+		public TimeReaction(Func<EventWrapper> doProc)
 		{
-			onProc = procAction;
-			eventWrapper = wrapper;
+			onProc = doProc ?? throw new ArgumentNullException(nameof(doProc));
+
 			procTime = GameDateTime.Now;
 		}
 
 		//fires after a delay. if randomized is set to true, it'll occur at some point between now and the delay. Note that you should make this delay relatively small. 
-		public TimeReaction(Action procAction, EventWrapper wrapper, byte delay, bool randomized = false)
+		public TimeReaction(Func<EventWrapper> doProc, byte delay, bool randomized = false)
 		{
-			onProc = procAction;
-			eventWrapper = wrapper;
+			onProc = doProc ?? throw new ArgumentNullException(nameof(doProc));
+
 			procTime = GameDateTime.HoursFromNow(randomized ? (byte)Utils.Rand(delay) : delay);
 		}
 
@@ -44,11 +43,10 @@ namespace CoC.Backend.Engine.Events
 			return procTime.CompareTo(other.procTime);
 		}
 
-		public void UpdateReaction(Action newActionOnProc, EventWrapper newWrapper)
-		{
-			onProc = newActionOnProc;
-			eventWrapper = newWrapper;
-		}
+		//public void UpdateReaction(Func<EventWrapper> doProc)
+		//{
+		//	onProc = doProc;
+		//}
 	}
 
 	//these are designed for one-off Encounters. if you need something that consistently procs every x times or always procs if conditions are met, use

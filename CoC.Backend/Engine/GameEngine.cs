@@ -322,34 +322,64 @@ namespace CoC.Backend.Engine
 			return timeEngine.lazyListeners.Remove(listener);
 		}
 
-		public static bool RegisterActiveListener(ITimeActiveListener listener)
+		public static bool RegisterActiveListener(ITimeActiveListenerFull listener)
 		{
-			return timeEngine.activeListeners.Add(listener);
+			return timeEngine.fullActiveListeners.Add(listener);
 		}
 
-		public static bool DeregisterActiveListener(ITimeActiveListener listener)
+		public static bool DeregisterActiveListener(ITimeActiveListenerFull listener)
 		{
-			return timeEngine.activeListeners.Remove(listener);
+			return timeEngine.fullActiveListeners.Remove(listener);
 		}
 
-		public static bool RegisterDailyListener(ITimeDailyListener listener)
+		public static bool RegisterDailyListener(ITimeDailyListenerFull listener)
 		{
-			return timeEngine.dailyListeners.Add(listener);
+			return timeEngine.fullDailyListeners.Add(listener);
 		}
 
-		public static bool DeregisterDailyListener(ITimeDailyListener listener)
+		public static bool DeregisterDailyListener(ITimeDailyListenerFull listener)
 		{
-			return timeEngine.dailyListeners.Remove(listener);
+			return timeEngine.fullDailyListeners.Remove(listener);
 		}
 
-		public static bool RegisterDayMultiListener(ITimeDayMultiListener listener)
+		public static bool RegisterDayMultiListener(ITimeDayMultiListenerFull listener)
 		{
-			return timeEngine.dayMultiListeners.Add(listener);
+			return timeEngine.fullMultiTimeListeners.Add(listener);
 		}
 
-		public static bool DeregisterDayMultiListener(ITimeDayMultiListener listener)
+		public static bool DeregisterDayMultiListener(ITimeDayMultiListenerFull listener)
 		{
-			return timeEngine.dayMultiListeners.Remove(listener);
+			return timeEngine.fullMultiTimeListeners.Remove(listener);
+		}
+
+		public static bool RegisterActiveListener(ITimeActiveListenerSimple listener)
+		{
+			return timeEngine.simpleActiveListeners.Add(listener);
+		}
+
+		public static bool DeregisterActiveListener(ITimeActiveListenerSimple listener)
+		{
+			return timeEngine.simpleActiveListeners.Remove(listener);
+		}
+
+		public static bool RegisterDailyListener(ITimeDailyListenerSimple listener)
+		{
+			return timeEngine.simpleDailyListeners.Add(listener);
+		}
+
+		public static bool DeregisterDailyListener(ITimeDailyListenerSimple listener)
+		{
+			return timeEngine.simpleDailyListeners.Remove(listener);
+		}
+
+		public static bool RegisterDayMultiListener(ITimeDayMultiListenerSimple listener)
+		{
+			return timeEngine.simpleMultiTimeListeners.Add(listener);
+		}
+
+		public static bool DeregisterDayMultiListener(ITimeDayMultiListenerSimple listener)
+		{
+			return timeEngine.simpleMultiTimeListeners.Remove(listener);
 		}
 
 		public static void AddTimeReaction(TimeReaction reaction)

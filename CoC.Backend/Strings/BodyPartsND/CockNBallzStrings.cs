@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 4:08 PM
+using System;
 using CoC.Backend.Creatures;
 
 namespace CoC.Backend.BodyParts

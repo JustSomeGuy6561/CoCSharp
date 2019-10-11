@@ -9,6 +9,9 @@ using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Inventory;
 using CoC.Backend.Items;
+using CoC.Backend.Items.Wearables.Armor;
+using CoC.Backend.Items.Wearables.LowerGarment;
+using CoC.Backend.Items.Wearables.UpperGarment;
 using CoC.Backend.Perks;
 using CoC.Backend.Pregnancies;
 using CoC.Backend.StatusEffect;
@@ -18,16 +21,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace CoC.Backend.Creatures
 {
 	//creature class breaks with non-standard creatures - it's generall 
 	public enum CreatureType { STANDARD, PRIMITIVE, ARTIFICIAL }
 
-	public abstract class Creature
+	public abstract class Creature : ITimeActiveListenerSimple, ITimeDayMultiListenerSimple, ITimeLazyListener, IInteractiveStorage<CapacityItem>
 	{
 		public const byte DEFAULT_LIBIDO = 0;
 		public const byte DEFAULT_SENSITIVITY = 0;
+
 		public const byte DEFAULT_CORRUPTION = 0;
 		//always start as these values;
 		public const byte DEFAULT_LUST = 0;
@@ -47,6 +52,7 @@ namespace CoC.Backend.Creatures
 			get => _libido;
 			private protected set => _libido = Utils.Clamp2(value, minLibido, maxLibido);
 		}
+
 		private float _libido = 0;
 
 		public byte sensitivity => (byte)Math.Floor(sensitivityTrue);
@@ -184,7 +190,38 @@ namespace CoC.Backend.Creatures
 
 		protected BasePerkModifiers modifiers => perks.baseModifiers;
 
-		protected readonly Inventory.Inventory inventoryStore;
+		protected readonly Inventory.BasicInventory inventoryStore;
+
+#warning NYI
+		//raise equipment changed. 
+		public ArmorBase armor { get; protected set; }
+
+		public UpperGarmentBase upperGarment { get; protected set; }
+		public LowerGarmentBase lowerGarment { get; protected set; }
+
+		//public Weapon weapon { get; protected set; }
+		//public Weapon weapon { get; protected set; }
+
+		//protected bool antennaeParticipatesInTimeEvents = true;
+		//protected bool armsParticipatesInTimeEvents = true;
+		//protected bool backParticipatesInTimeEvents = true;
+		////protected bool beardParticipatesInTimeEvents = true;
+		//protected bool bodyParticipatesInTimeEvents = true;
+		//protected bool buildParticipatesInTimeEvents = true;
+		//protected bool earsParticipatesInTimeEvents = true;
+		//protected bool eyesParticipatesInTimeEvents = true;
+		//protected bool faceParticipatesInTimeEvents = true;
+
+		//protected bool genitalsParticipatesInTimeEvents = true;
+		//protected bool gillsParticipatesInTimeEvents = true;
+		//protected bool hairParticipatesInTimeEvents = true;
+		//protected bool hornsParticipatesInTimeEvents = true;
+		//protected bool lowerBodyParticipatesInTimeEvents = true;
+		//protected bool neckParticipatesInTimeEvents = true;
+		//protected bool tailParticipatesInTimeEvents = true;
+		//protected bool tongueParticipatesInTimeEvents = true;
+		//protected bool wingsParticipatesInTimeEvents = true;
+
 
 		#region Constructors
 		protected Creature(CreatureCreator creator)
@@ -469,7 +506,7 @@ namespace CoC.Backend.Creatures
 
 			//tail.InitializePiercings(creator?.tailPiercings);
 
-			inventoryStore = new Inventory.Inventory();
+			inventoryStore = new Inventory.BasicInventory();
 
 			perks = new PerkCollection(this);
 			perks.InitPerks(creator.perks?.ToArray());
@@ -478,6 +515,9 @@ namespace CoC.Backend.Creatures
 
 			DoPostPerkInit();
 			DoLateInit();
+
+			AttachBodyListeners();
+			FreezeCreature(); //by default. simply call unfreeze where needed.
 		}
 
 		//internal Creature(CreatureSaveFormat format)
@@ -528,6 +568,16 @@ namespace CoC.Backend.Creatures
 			tail.LateInit();
 			tongue.LateInit();
 			wings.LateInit();
+		}
+
+		private protected virtual void AttachBodyListeners()
+		{
+			lazyBodyListeners.Add(back);
+			lazyBodyListeners.Add(genitals);
+			lazyBodyListeners.Add(hair);
+			dailyBodyListeners.Add(genitals);
+			//back, femininity, genitals, hair - lazy.
+			//genitals - daily.
 		}
 		#endregion
 
@@ -668,10 +718,300 @@ namespace CoC.Backend.Creatures
 			return lustTrue;
 		}
 
+		public void IncreaseCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, bool ignorePerks = false)
+		{
+			float amount;
+			if (lus != 0)
+			{
+				amount = lus;
+				if (!ignorePerks) amount *= LustGainMultiplier;
+				lustTrue += amount;
+			}
+			if (lib != 0)
+			{
+				amount = lib;
+				if (!ignorePerks) amount *= LibidoGainMultiplier;
+				libidoTrue += amount;
+			}
+			if (sens != 0)
+			{
+				amount = sens;
+				if (!ignorePerks) amount *= SensitivityGainMultiplier;
+				sensitivityTrue += amount;
+			}
+			if (corr != 0)
+			{
+				amount = corr;
+				if (!ignorePerks) amount *= CorruptionGainMultiplier;
+				corruptionTrue += amount;
+			}
+		}
+
+		public void DecreaseCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, bool ignorePerks = false)
+		{
+			float amount;
+			if (lus != 0)
+			{
+				amount = lus;
+				if (!ignorePerks) amount *= LustLossMultiplier;
+				lustTrue -= amount;
+			}
+			if (lib != 0)
+			{
+				amount = lib;
+				if (!ignorePerks) amount *= LibidoLossMultiplier;
+				libidoTrue -= amount;
+			}
+			if (sens != 0)
+			{
+				amount = sens;
+				if (!ignorePerks) amount *= SensitivityLossMultiplier;
+				sensitivityTrue -= amount;
+			}
+			if (corr != 0)
+			{
+				amount = corr;
+				if (!ignorePerks) amount *= CorruptionLossMultiplier;
+				corruptionTrue -= amount;
+			}
+		}
+
+		public void SetCreatureStats(byte? lus = null, byte? lib = null, byte? sens = null, byte? corr = null)
+		{
+			if (lus is byte ltb)
+			{
+				lustTrue = ltb;
+			}
+			if (lib is byte lbb)
+			{
+				libidoTrue = lbb;
+			}
+			if (sens is byte sb)
+			{
+				sensitivityTrue = sb;
+			}
+			if (corr is byte cb)
+			{
+				corruptionTrue = cb;
+			}
+		}
+
+		public void DeltaCreatureStats(short lus = 0, short lib = 0, short sens = 0, short corr = 0, bool ignorePerks = false)
+		{
+			float amount;
+			if (lus < 0)
+			{
+				amount = lus;
+				if (!ignorePerks) amount *= LustLossMultiplier;
+				lustTrue += amount;
+			}
+			else if (lus > 0)
+			{
+				amount = lus;
+				if (!ignorePerks) amount *= LustGainMultiplier;
+				lustTrue += amount;
+			}
+			if (lib < 0)
+			{
+				amount = lib;
+				if (!ignorePerks) amount *= LibidoLossMultiplier;
+				libidoTrue += amount;
+			}
+			else if (lib > 0)
+			{
+				amount = lib;
+				if (!ignorePerks) amount *= LibidoGainMultiplier;
+				libidoTrue += amount;
+			}
+			if (sens < 0)
+			{
+				amount = sens;
+				if (!ignorePerks) amount *= SensitivityLossMultiplier;
+				sensitivityTrue += amount;
+			}
+			else if (sens > 0)
+			{
+				amount = sens;
+				if (!ignorePerks) amount *= SensitivityGainMultiplier;
+				sensitivityTrue += amount;
+			}
+			if (corr < 0)
+			{
+				amount = corr;
+				if (!ignorePerks) amount *= CorruptionLossMultiplier;
+				corruptionTrue += amount;
+			}
+			else if (corr > 0)
+			{
+				amount = corr;
+				if (!ignorePerks) amount *= CorruptionGainMultiplier;
+				corruptionTrue += amount;
+			}
+		}
 
 		#endregion
+		#region Add/Remove Genitals Related
+
+		#region Breast Add/Remove
+		public bool AddBreastRow()
+		{
+			return genitals.AddBreastRow();
+		}
+		public bool AddBreastRowAverage()
+		{
+			return genitals.AddBreastRowAverage();
+		}
+
+		public bool AddBreastRow(CupSize cup)
+		{
+			return genitals.AddBreastRow(cup);
+		}
+
+		public int RemoveBreastRow(int count = 1)
+		{
+			return genitals.RemoveBreastRow(count);
+		}
+
+		public int RemoveExtraBreastRows()
+		{
+			return genitals.RemoveExtraBreastRows();
+		}
+		#endregion
+		#region Cock Add/Remove
+		public bool AddCock(CockType newCockType)
+		{
+			return genitals.AddCock(newCockType);
+		}
+
+		public bool AddCock(CockType newCockType, float length, float girth, float? knotMultiplier = null)
+		{
+			return genitals.AddCock(newCockType, length, girth, knotMultiplier);
+		}
+
+		public int RemoveCock(int count = 1)
+		{
+			return genitals.RemoveCock(count);
+		}
+
+		public int RemoveExtraCocks()
+		{
+			return genitals.RemoveExtraCocks();
+		}
+
+		public int RemoveAllCocks()
+		{
+			return genitals.RemoveAllCocks();
+		}
+		#endregion
+		#region Vagina Add/Remove
+
+		public bool AddVagina(VaginaType newVaginaType)
+		{
+			return genitals.AddVagina(newVaginaType);
+		}
+
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, bool omnibus = false)
+		{
+			return genitals.AddVagina(newVaginaType, clitLength, omnibus);
+		}
+
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness, bool omnibus = false)
+		{
+			return genitals.AddVagina(newVaginaType, clitLength, looseness, wetness, omnibus);
+		}
+
+		public int RemoveVagina(int count = 1)
+		{
+			return genitals.RemoveVagina(count);
+		}
+
+		public int RemoveExtraVaginas()
+		{
+			return genitals.RemoveExtraVaginas();
+		}
+
+		public int RemoveAllVaginas()
+		{
+			return genitals.RemoveAllVaginas();
+		}
+		#endregion
+
+		#endregion
+		#region Equipment Related
+		//equip is handled by use item. 
+
+		//all equipment is handled by the item system, because removing, equiping, and replacing all have an effect on the item system, be it removing, replacing, or adding items into
+		//the inventory as a result. Thus, all of these are internal. These are simply helpers responsible for actually setting the values in this class, which cannot be done elsewhere
+		//because of access restrictions.
+
+		internal ArmorBase ReplaceArmorInternal(ArmorBase armorBase)
+		{
+			if (armorBase is null)
+			{
+				return RemoveArmorManual();
+			}
+			else
+			{
+				var retVal = armor;
+				armor = armorBase;
+				retVal?.OnRemove(this);
+				return retVal;
+			}
+		}
+
+		public ArmorBase RemoveArmorManual()
+		{
+			var retVal = armor;
+			retVal?.OnRemove(this);
+			return retVal;
+		}
+
+		internal UpperGarmentBase ReplaceUpperGarmentInternal(UpperGarmentBase upperGarmentBase)
+		{
+			if (upperGarmentBase is null)
+			{
+				return RemoveUpperGarmentManual();
+			}
+			else
+			{
+				var retVal = upperGarment;
+				upperGarment = upperGarmentBase;
+				retVal?.OnRemove(this);
+				return retVal;
+			}
+		}
+
+		public UpperGarmentBase RemoveUpperGarmentManual()
+		{
+			var retVal = upperGarment;
+			retVal?.OnRemove(this);
+			return retVal;
+		}
+
+		internal LowerGarmentBase ReplaceLowerGarmentInternal(LowerGarmentBase lowerGarmentBase)
+		{
+			if (lowerGarmentBase is null)
+			{
+				return RemoveLowerGarmentManual();
+			}
+			else
+			{
+				var retVal = lowerGarment;
+				lowerGarment = lowerGarmentBase;
+				retVal?.OnRemove(this);
+				return retVal;
+			}
+		}
+
+		public LowerGarmentBase RemoveLowerGarmentManual()
+		{
+			var retVal = lowerGarment;
+			retVal?.OnRemove(this);
+			return retVal;
+		}
+		#endregion
 		#region Inventory Related
-		public ReadOnlyCollection<ItemSlot> inventory => inventoryStore.itemSlots;
+		public ReadOnlyCollection<ReadOnlyItemSlot> inventory => inventoryStore.itemSlots;
 
 		public byte UnlockAdditionalInventorySlots(byte amount = 1)
 		{
@@ -718,19 +1058,75 @@ namespace CoC.Backend.Creatures
 			return inventoryStore.RemoveFirst(condition);
 		}
 
-		//by default, if a creature not the player somehow is given items, they just throw out extra items. this can of course be overridden. 
-		//in fact, the player overrides this to do its shenanigans when the items are added and already full. 
-		public virtual void AddStandardItem(CapacityItem item, Action resumeCallback, Action putBackOverride = null, Action abandonItemOverride = null)
+		ReadOnlyCollection<ReadOnlyItemSlot> IInteractiveStorage<CapacityItem>.ItemSlots()
 		{
-			if (item is null) throw new ArgumentNullException(nameof(item));
-			if (resumeCallback is null) throw new ArgumentNullException(nameof(resumeCallback));
-
-			int slot = inventoryStore.AddItemReturnSlot(item);
-
-			//if slot == -1, we've failed to add it. silently discard it. 
-			resumeCallback();
+			return inventory;
 		}
 
+		string IInteractiveStorage<CapacityItem>.PlaceItemInSlot(CapacityItem item, byte slot)
+		{
+			return PlaceItemInCreatureStorageText(item, slot);
+		}
+		protected abstract string PlaceItemInCreatureStorageText(CapacityItem item, byte slot);
+
+		string IInteractiveStorage<CapacityItem>.ReturnItemToSlot(CapacityItem item, byte slot)
+		{
+			return ReturnItemToCreatureStorageText(item, slot);
+		}
+		protected abstract string ReturnItemToCreatureStorageText(CapacityItem item, byte slot);
+
+		string IInteractiveStorage<CapacityItem>.ReplaceItemInSlotWith(CapacityItem item, byte slot)
+		{
+			return ReplaceItemInCreatureStorageWithNewItemText(item, slot);
+		}
+		protected abstract string ReplaceItemInCreatureStorageWithNewItemText(CapacityItem newItem, byte slot);
+
+		public CapacityItem RetrieveItemFromSlot(byte slot)
+		{
+			return inventoryStore.RemoveItem(slot);
+		}
+
+		public bool PlaceItem(CapacityItem item, byte slot)
+		{
+			return inventoryStore.AddItemBack(slot, item);
+		}
+
+		bool IInteractiveStorage<CapacityItem>.ReplaceItem(CapacityItem replacement, byte slot)
+		{
+			var item = inventory[slot].item;
+			ReplaceItemInSlot(slot, item, true);
+			return item != inventory[slot].item;
+		}
+
+
+		public int TryAddItem(CapacityItem item)
+		{
+			if (item is null) throw new ArgumentNullException(nameof(item));
+
+			return inventoryStore.AddItemReturnSlot(item);
+		}
+
+		public bool TryAddItem(CapacityItem item, out string whatHappened)
+		{
+			if (item is null) throw new ArgumentNullException(nameof(item));
+
+			int slot = inventoryStore.AddItemReturnSlot(item);
+			if (slot != -1)
+			{
+				whatHappened = AddedItemToSlot(item, slot);
+				return true;
+			}
+			else
+			{
+				whatHappened = ItemsAreFull();
+				return false;
+			}
+		}
+
+		private string ItemsAreFull()
+		{
+			throw new NotImplementedException();
+		}
 
 		public void ClearItemSlot(byte index)
 		{
@@ -742,48 +1138,280 @@ namespace CoC.Backend.Creatures
 			inventoryStore.ReplaceItemInSlot(index, replacement, addIfSameItem);
 		}
 
-		public virtual void UseItem(CapacityItem item, Action resumeCallback)
+		public void UseItemManual(CapacityItem item, UseItemCallback onUseItemReturn)
 		{
-			if (item != null && item.CanUse(this))
+			if (item is null) throw new ArgumentNullException(nameof(item));
+			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
+
+			if (item.CanUse(this))
 			{
-				item.AttemptToUse(this, (bool x, CapacityItem y) => ReturnFromItemAttempt(item, x, y, resumeCallback));
+				item.AttemptToUse(this, onUseItemReturn);
 			}
 			else
 			{
-				resumeCallback();
+				onUseItemReturn(false, item.CantUseExplanation(this), item);
 			}
 		}
 
-		public virtual void UseItemInInventory(byte index, Action resumeCallback)
+		public void UseItemInInventoryManual(byte index, UseItemCallback onUseItemReturn)
 		{
+			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
+			if (index >= inventory.Count) throw new IndexOutOfRangeException("inventory does not have that many slots currently.");
+
 			if (inventory[index].itemCount > 0 && inventory[index].item != null && inventory[index].item.CanUse(this))
 			{
-				var item = inventoryStore.itemSlots[index].RemoveItem();
-				item.AttemptToUse(this, (bool x, CapacityItem y) => ReturnFromItemAttempt(item, x, y, resumeCallback));
+				var item = inventoryStore.RemoveItem(index);
+				item.AttemptToUse(this, onUseItemReturn);
+			}
+			else if (inventory[index].itemCount == 0 || inventory[index].item == null)
+			{
+				onUseItemReturn(false, NoItemInSlotErrorText(), null);
 			}
 			else
 			{
-				resumeCallback();
+				onUseItemReturn(false, inventory[index].item.CantUseExplanation(this), null);
 			}
 		}
 
-		protected void ReturnFromItemAttempt(CapacityItem originalItem, bool successfullyUsedItem, CapacityItem replacementItem, Action resumeCallback)
+		public void EquipArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
 		{
-			if (successfullyUsedItem)
+			if (armor.CanUse(this))
 			{
-				if (replacementItem != null)
-				{
-					AddStandardItem(replacementItem, resumeCallback);
-				}
-				else
-				{
-					resumeCallback();
-				}
+				armor.AttemptToUseSafe(this, onUseItemReturn);
 			}
 			else
 			{
-				AddStandardItem(originalItem, resumeCallback);
+				onUseItemReturn(false, armor.CantUseExplanation(this), armor);
 			}
+		}
+
+		public void EquipArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		{
+			if (inventory[index].itemCount > 0 && inventory[index].item is ArmorBase && inventory[index].item.CanUse(this))
+			{
+				var item = (ArmorBase)inventoryStore.RemoveItem(index);
+				item.AttemptToUseSafe(this, onUseItemReturn);
+			}
+			else if (inventory[index].itemCount == 0 || inventory[index].item == null)
+			{
+				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+			}
+			else if (!(inventory[index].item is ArmorBase))
+			{
+				onUseItemReturn(false, InCorrectTypeErrorText(typeof(ArmorBase)), null);
+			}
+			else
+			{
+				onUseItemReturn(false, inventory[index].item.CantUseExplanation(this), null);
+			}
+		}
+
+		public void ReplaceArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		{
+			if (armor is null)
+			{
+				var item = RemoveArmorManual();
+				onUseItemReturn(true, null, item);
+			}
+			else if (armor.CanUse(this))
+			{
+				armor.AttemptToUseSafe(this, onUseItemReturn);
+			}
+			else
+			{
+				onUseItemReturn(false, armor.CantUseExplanation(this), armor);
+			}
+		}
+
+		public void ReplaceArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		{
+			if (inventory[index] == null || inventory[index].itemCount == 0)
+			{
+				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+			}
+			else if (!(inventory[index].item is ArmorBase newArmor))
+			{
+				onUseItemReturn(false, InCorrectTypeErrorText(typeof(ArmorBase)), null);
+			}
+			else if (!newArmor.CanUse(this))
+			{
+				onUseItemReturn(false, newArmor.CantUseExplanation(this), newArmor);
+			}
+			else
+			{
+				newArmor.AttemptToUseSafe(this, onUseItemReturn);
+			}
+		}
+
+		public void EquipUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		{
+			if (upperGarment.CanUse(this))
+			{
+				upperGarment.AttemptToUseSafe(this, onUseItemReturn);
+			}
+			else
+			{
+				onUseItemReturn(false, upperGarment.CantUseExplanation(this), upperGarment);
+			}
+		}
+
+		public void EquipUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		{
+			if (inventory[index].itemCount > 0 && inventory[index].item is UpperGarmentBase && inventory[index].item.CanUse(this))
+			{
+				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
+				item.AttemptToUseSafe(this, onUseItemReturn);
+			}
+			else if (inventory[index].itemCount == 0 || inventory[index].item == null)
+			{
+				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+			}
+			else if (!(inventory[index].item is UpperGarmentBase))
+			{
+				onUseItemReturn(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), null);
+			}
+			else
+			{
+				onUseItemReturn(false, inventory[index].item.CantUseExplanation(this), null);
+			}
+		}
+
+		public void ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		{
+			if (upperGarment is null)
+			{
+				var item = RemoveUpperGarmentManual();
+				onUseItemReturn(true, null, item);
+			}
+			else if (upperGarment.CanUse(this))
+			{
+				upperGarment.AttemptToUseSafe(this, onUseItemReturn);
+			}
+			else
+			{
+				onUseItemReturn(false, upperGarment.CantUseExplanation(this), upperGarment);
+			}
+		}
+
+		public void ReplaceUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		{
+			if (inventory[index] == null || inventory[index].itemCount == 0)
+			{
+				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+			}
+			else if (!(inventory[index].item is UpperGarmentBase newUpperGarment))
+			{
+				onUseItemReturn(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), null);
+			}
+			else if (!newUpperGarment.CanUse(this))
+			{
+				onUseItemReturn(false, newUpperGarment.CantUseExplanation(this), newUpperGarment);
+			}
+			else
+			{
+				newUpperGarment.AttemptToUseSafe(this, onUseItemReturn);
+			}
+		}
+
+		public void EquipLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		{
+			if (lowerGarment.CanUse(this))
+			{
+				lowerGarment.AttemptToUseSafe(this, onUseItemReturn);
+			}
+			else
+			{
+				onUseItemReturn(false, lowerGarment.CantUseExplanation(this), lowerGarment);
+			}
+		}
+
+		public void EquipLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		{
+			if (inventory[index].itemCount > 0 && inventory[index].item is LowerGarmentBase && inventory[index].item.CanUse(this))
+			{
+				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
+				item.AttemptToUseSafe(this, onUseItemReturn);
+			}
+			else if (inventory[index].itemCount == 0 || inventory[index].item == null)
+			{
+				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+			}
+			else if (!(inventory[index].item is LowerGarmentBase))
+			{
+				onUseItemReturn(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), null);
+			}
+			else
+			{
+				onUseItemReturn(false, inventory[index].item.CantUseExplanation(this), null);
+			}
+		}
+
+		public void ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		{
+			if (lowerGarment is null)
+			{
+				var item = RemoveLowerGarmentManual();
+				onUseItemReturn(true, null, item);
+			}
+			else if (lowerGarment.CanUse(this))
+			{
+				lowerGarment.AttemptToUseSafe(this, onUseItemReturn);
+			}
+			else
+			{
+				onUseItemReturn(false, lowerGarment.CantUseExplanation(this), lowerGarment);
+			}
+		}
+
+		public void ReplaceLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		{
+			if (inventory[index] == null || inventory[index].itemCount == 0)
+			{
+				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+			}
+			else if (!(inventory[index].item is LowerGarmentBase newLowerGarment))
+			{
+				onUseItemReturn(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), null);
+			}
+			else if (!newLowerGarment.CanUse(this))
+			{
+				onUseItemReturn(false, newLowerGarment.CantUseExplanation(this), newLowerGarment);
+			}
+			else
+			{
+				newLowerGarment.AttemptToUseSafe(this, onUseItemReturn);
+			}
+		}
+
+		private string NoItemInSlotErrorText()
+		{
+			throw new NotImplementedException();
+		}
+		private string ReturnItemToPreviousSlotFailedForSomeReasonText(byte originalIndex, CapacityItem originalItem)
+		{
+			throw new NotImplementedException();
+		}
+
+		private string ReturnItemToPreviousSlotText(byte originalIndex, CapacityItem originalItem)
+		{
+			throw new NotImplementedException();
+		}
+
+		
+
+		private string InCorrectTypeErrorText(Type type)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected string AddedItemToSlot(CapacityItem item, int slot)
+		{
+			throw new NotImplementedException();
+		}
+
+		private string FailedToAddItemAutomaticallyDiscard(CapacityItem item)
+		{
+			throw new NotImplementedException();
 		}
 
 		#endregion
@@ -1764,315 +2392,132 @@ namespace CoC.Backend.Creatures
 		#endregion
 		#endregion*/
 
+		#region TimeListeners
+
+		private protected readonly List<IBodyPartTimeLazy> lazyBodyListeners = new List<IBodyPartTimeLazy>();
+		private protected readonly List<IBodyPartTimeActive> activeBodyListeners = new List<IBodyPartTimeActive>();
+		private protected readonly List<IBodyPartTimeDaily> dailyBodyListeners = new List<IBodyPartTimeDaily>();
+		private protected readonly List<IBodyPartTimeDayMulti> multiDailyBodyListeners = new List<IBodyPartTimeDayMulti>();
+		
+		public bool timeAware { get; private set; } = false;
+
+
+		public void FreezeCreature()
+		{
+			timeAware = false;
+			CreatureStore.markInactive(id);
+		}
+
+		public void UnFreezeCreature()
+		{
+			timeAware = true;
+			CreatureStore.markActive(id, this);
+		}
+
+		private string QueryActiveBodyListenerData()
+		{
+			StringBuilder sb = new StringBuilder();
+			activeBodyListeners.ForEach(x => sb.Append(x.reactToHourPassing(this is Player)));
+			return sb.ToString();
+		}
+
+		private string QueryLazyBodyListenerData(byte hoursPassed)
+		{
+			StringBuilder sb = new StringBuilder();
+			lazyBodyListeners.ForEach(x => sb.Append(x.reactToTimePassing(this is Player, hoursPassed)));
+			return sb.ToString();
+		}
+
+		private string QueryDailyBodyListenerData(byte currentHour)
+		{
+			StringBuilder sb = new StringBuilder();
+			dailyBodyListeners.ForEach(x=> { if (x.hourToTrigger == currentHour) sb.Append(x.reactToDailyTrigger(this is Player)); });
+			multiDailyBodyListeners.ForEach(x=> { if (x.triggerHours.Contains(currentHour)) sb.Append(x.reactToTrigger(this is Player, currentHour)); });
+
+			return sb.ToString();
+		}
+
+		internal IEnumerable<ITimeDailyListenerFull> QueryFullDailyListeners(byte currentHour)
+		{
+			return womb.GetDailyListeners().Where(x => x.hourToTrigger == currentHour);
+		}
+
+		internal IEnumerable<ITimeDailyListenerSimple> QuerySimpleDailyListeners(byte currentHour)
+		{
+			var res = new List<ITimeDailyListenerSimple>();
+			if (womb is ITimeDailyListenerSimple ds && ds.hourToTrigger == currentHour)
+			{
+				res.Add(ds);
+			}
+			return res;
+		}
+
+		internal IEnumerable<ITimeDayMultiListenerFull> QueryFullDayMultiListeners(byte currentHour)
+		{
+			return womb.GetDayMultiListeners().Where(x => x.triggerHours.Contains(currentHour));
+		}
+
+		internal IEnumerable<ITimeDayMultiListenerSimple> QuerySimpleDayMultiListeners(byte currentHour)
+		{
+			var res = new List<ITimeDayMultiListenerSimple>()
+			{
+				this
+			};
+			return res;
+		}
+
+		internal IEnumerable<ITimeLazyListener> QueryLazyListeners()
+		{
+			return womb.GetLazyListeners().Union(new ITimeLazyListener[1] { this });
+		}
+
+		internal IEnumerable<ITimeActiveListenerFull> QueryFullActiveListeners()
+		{
+			return womb.GetActiveListeners();
+		}
+
+		internal IEnumerable<ITimeActiveListenerSimple> QuerySimpleActiveListeners()
+		{
+			List<ITimeActiveListenerSimple> res = new List<ITimeActiveListenerSimple>
+			{
+				this
+			};
+			return res;
+		}
+
+
+		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
+		{
+			return QueryLazyBodyListenerData(hoursPassed);
+		}
+
+		string ITimeActiveListenerSimple.reactToHourPassing()
+		{
+			return QueryActiveBodyListenerData();
+		}
+
+		byte[] ITimeDayMultiListenerSimple.triggerHours
+		{
+			get
+			{
+				return dailyBodyListeners.Select(x => x.hourToTrigger).Union(multiDailyBodyListeners.SelectMany(x => x.triggerHours)).Distinct().ToArray();
+			}
+		}
+
+
+		string ITimeDayMultiListenerSimple.reactToTrigger(byte currHour)
+		{
+			return QueryDailyBodyListenerData(currHour);
+		}
+
+		#endregion
+
 		#region Body Part Piercing Aliases and Event Helpers
 
 		#endregion
-		#region Time Listeners
-
-		private bool isPlayer => this is Player;
-
-		#region "Anonymous" classes
-		//C# isn't java, so we don't have anonymous classes. This is the closest we can achieve. YMMV on which is better. 
-		//basically, we need to wrap all the body part events into something the game engine can handle. i'd do it all in creature, but 
-		//there's the whole multipage mess to deal with. 
-		private sealed class LazyWrapper : ITimeLazyListener
-		{
-			public readonly IBodyPartTimeLazy listener;
-			private readonly bool isPlayer;
-
-			public string reactToTimePassing(byte hoursPassed)
-			{
-				return listener.reactToTimePassing(isPlayer, hoursPassed);
-			}
-
-			public LazyWrapper(bool player, IBodyPartTimeLazy lazyMember)
-			{
-				isPlayer = player;
-				listener = lazyMember;
-			}
-		}
-
-		private sealed class ActiveWrapper : ITimeActiveListener
-		{
-			public readonly IBodyPartTimeActive listener;
-			private readonly bool isPlayer;
-
-			public EventWrapper reactToHourPassing()
-			{
-				return new EventWrapper(listener.reactToHourPassing(isPlayer));
-			}
-
-			public ActiveWrapper(bool player, IBodyPartTimeActive activeMember)
-			{
-				isPlayer = player;
-				listener = activeMember;
-			}
-		}
-
-		private sealed class DailyWrapper : ITimeDailyListener
-		{
-			public readonly IBodyPartTimeDaily listener;
-			private readonly bool isPlayer;
-
-			public byte hourToTrigger => listener.hourToTrigger;
-
-			public EventWrapper reactToDailyTrigger()
-			{
-				return new EventWrapper(listener.reactToDailyTrigger(isPlayer));
-			}
-
-			public DailyWrapper(bool player, IBodyPartTimeDaily activeMember)
-			{
-				isPlayer = player;
-				listener = activeMember;
-			}
-		}
-
-		private sealed class DayMultiWrapper : ITimeDayMultiListener
-		{
-			public readonly IBodyPartTimeDayMulti listener;
-			private readonly bool isPlayer;
-
-			public byte[] triggerHours => listener.triggerHours;
-
-			public EventWrapper reactToTrigger(byte currHour)
-			{
-				return new EventWrapper(listener.reactToTrigger(isPlayer, currHour));
-			}
-
-			public DayMultiWrapper(bool player, IBodyPartTimeDayMulti activeMember)
-			{
-				isPlayer = player;
-				listener = activeMember;
-			}
-		}
-		#endregion
-		//we store a reference to all the listeners, bot the ones we use and the ones the game engine uses, so when we create or destroy this class, we don't "leak" events.
-
-		private protected bool listenersActive { get; private set; } = false;
-		private readonly Dictionary<IBodyPartTimeLazy, LazyWrapper> lazyListeners = new Dictionary<IBodyPartTimeLazy, LazyWrapper>();
-		private readonly Dictionary<IBodyPartTimeActive, ActiveWrapper> activeListeners = new Dictionary<IBodyPartTimeActive, ActiveWrapper>();
-		private readonly Dictionary<IBodyPartTimeDaily, DailyWrapper> dailyListeners = new Dictionary<IBodyPartTimeDaily, DailyWrapper>();
-		private readonly Dictionary<IBodyPartTimeDayMulti, DayMultiWrapper> dayMultiListeners = new Dictionary<IBodyPartTimeDayMulti, DayMultiWrapper>();
-
-		#region Register/Deregister
-		private protected bool AddTimeListener(IBodyPartTimeLazy listener)
-		{
-			if (lazyListeners.ContainsKey(listener))
-			{
-				return false;
-			}
-			else
-			{
-				LazyWrapper wrapper = new LazyWrapper(isPlayer, listener);
-				lazyListeners.Add(listener, wrapper);
-				if (listenersActive)
-				{
-					GameEngine.RegisterLazyListener(wrapper);
-				}
-				return true;
-			}
-		}
-
-		private protected bool RemoveTimeListener(IBodyPartTimeLazy listener)
-		{
-			if (!lazyListeners.ContainsKey(listener))
-			{
-				return false;
-			}
-			else
-			{
-				LazyWrapper wrapper = lazyListeners[listener];
-				lazyListeners.Remove(listener);
-				if (listenersActive)
-				{
-					GameEngine.DeregisterLazyListener(wrapper);
-				}
-				return true;
-			}
-		}
-
-		private protected bool AddTimeListener(IBodyPartTimeActive listener)
-		{
-			if (activeListeners.ContainsKey(listener))
-			{
-				return false;
-			}
-			else
-			{
-				ActiveWrapper wrapper = new ActiveWrapper(isPlayer, listener);
-				activeListeners.Add(listener, wrapper);
-				if (listenersActive)
-				{
-					GameEngine.RegisterActiveListener(wrapper);
-				}
-				return true;
-			}
-		}
-
-		private protected bool RemoveTimeListener(IBodyPartTimeActive listener)
-		{
-			if (!activeListeners.ContainsKey(listener))
-			{
-				return false;
-			}
-			else
-			{
-				ActiveWrapper wrapper = activeListeners[listener];
-				activeListeners.Remove(listener);
-				if (listenersActive)
-				{
-					GameEngine.DeregisterActiveListener(wrapper);
-				}
-				return true;
-			}
-		}
-
-		private protected bool AddTimeListener(IBodyPartTimeDaily listener)
-		{
-			if (dailyListeners.ContainsKey(listener))
-			{
-				return false;
-			}
-			else
-			{
-				DailyWrapper wrapper = new DailyWrapper(isPlayer, listener);
-				dailyListeners.Add(listener, wrapper);
-				if (listenersActive)
-				{
-					GameEngine.RegisterDailyListener(wrapper);
-				}
-				return true;
-			}
-		}
-
-		private protected bool RemoveTimeListener(IBodyPartTimeDaily listener)
-		{
-			if (!dailyListeners.ContainsKey(listener))
-			{
-				return false;
-			}
-			else
-			{
-				DailyWrapper wrapper = dailyListeners[listener];
-				dailyListeners.Remove(listener);
-				if (listenersActive)
-				{
-					GameEngine.DeregisterDailyListener(wrapper);
-				}
-				return true;
-			}
-		}
-
-		private protected bool AddTimeListener(IBodyPartTimeDayMulti listener)
-		{
-			if (dayMultiListeners.ContainsKey(listener))
-			{
-				return false;
-			}
-			else
-			{
-				DayMultiWrapper wrapper = new DayMultiWrapper(isPlayer, listener);
-				dayMultiListeners.Add(listener, wrapper);
-				if (listenersActive)
-				{
-					GameEngine.RegisterDayMultiListener(wrapper);
-				}
-				return true;
-			}
-		}
-
-		private protected bool RemoveTimeListener(IBodyPartTimeDayMulti listener)
-		{
-			if (!dayMultiListeners.ContainsKey(listener))
-			{
-				return false;
-			}
-			else
-			{
-				DayMultiWrapper wrapper = dayMultiListeners[listener];
-				dayMultiListeners.Remove(listener);
-				if (listenersActive)
-				{
-					GameEngine.DeregisterDayMultiListener(wrapper);
-				}
-				return true;
-			}
-		}
-		#endregion
-		protected void ActivateTimeListeners()
-		{
-			if (!listenersActive)
-			{
-				listenersActive = true;
-				foreach (var listener in lazyListeners.Values)
-				{
-					GameEngine.RegisterLazyListener(listener);
-				}
-				foreach (var listener in activeListeners.Values)
-				{
-					GameEngine.RegisterActiveListener(listener);
-				}
-				foreach (var listener in dailyListeners.Values)
-				{
-					GameEngine.RegisterDailyListener(listener);
-				}
-				foreach (var listener in dayMultiListeners.Values)
-				{
-					GameEngine.RegisterDayMultiListener(listener);
-				}
-			}
-		}
-
-		protected void DeactivateTimeListeners()
-		{
-			if (listenersActive)
-			{
-				listenersActive = false;
-				foreach (var listener in lazyListeners.Values)
-				{
-					GameEngine.DeregisterLazyListener(listener);
-				}
-				foreach (var listener in activeListeners.Values)
-				{
-					GameEngine.DeregisterActiveListener(listener);
-				}
-				foreach (var listener in dailyListeners.Values)
-				{
-					GameEngine.DeregisterDailyListener(listener);
-				}
-				foreach (var listener in dayMultiListeners.Values)
-				{
-					GameEngine.DeregisterDayMultiListener(listener);
-				}
-			}
-		}
-
-		#endregion
-
 		//public
 
 
-		#region DESTRUCTOR/FINALIZER
-		~Creature()
-		{
-			CleanupCreatureForDeletion();
-		}
-
-		internal void CleanupCreatureForDeletion()
-		{
-			if (listenersActive)
-			{
-				//remove all events if any exist. 
-				DeactivateTimeListeners();
-
-				lazyListeners.Clear();
-				activeListeners.Clear();
-				dailyListeners.Clear();
-				dayMultiListeners.Clear();
-			}
-		}
-		#endregion
 
 	}
 }

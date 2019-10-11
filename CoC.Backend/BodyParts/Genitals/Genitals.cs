@@ -262,6 +262,15 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		private void CheckGenderChanged(Gender oldGender)
+		{
+			if (gender != oldGender)
+			{
+				genderChangedHandler.Raise(this, new GenderChangedEventArgs(oldGender, gender));
+			}
+		}
+
+
 		public bool hasClitCock
 		{
 			get => _hasClitCock;

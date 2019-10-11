@@ -25,6 +25,15 @@ namespace CoC.Frontend.Perks
 
 		public ExtraPerkModifiers(Creature parent) : base(parent)
 		{
+			parent.womb.onBirth += Womb_onBirth;
+		}
+
+		private void Womb_onBirth(object sender, Backend.Pregnancies.BirthEvent e)
+		{
+			if (e.totalBirthCount >= 10 && !source.perks.HasPerk<BroodMotherPerk>())
+			{
+				source.perks.AddPerk<BroodMotherPerk>();
+			}
 		}
 	}
 

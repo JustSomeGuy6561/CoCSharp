@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //3/22/2019, 6:11 PM
 using CoC.Backend.Engine;
+using CoC.Backend.Items;
 using CoC.Backend.SaveData;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,21 @@ namespace CoC.Backend.Creatures
 		public virtual double GetAscensionHP(double hp)
 		{
 			return hp *  BackendSessionSave.data.NewGamePlusLevel * 1.50;
+		}
+
+		protected override string PlaceItemInCreatureStorageText(CapacityItem item, byte slot)
+		{
+			return "The monster places the " + item.shortName() + " in its " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+		}
+
+		protected override string ReturnItemToCreatureStorageText(CapacityItem item, byte slot)
+		{
+			return "The monster returns the " + item.shortName() + " to its " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+		}
+
+		protected override string ReplaceItemInCreatureStorageWithNewItemText(CapacityItem newItem, byte slot)
+		{
+			return "The monster replaces the " + inventory[slot].item.shortName() + " in its " + Tools.Utils.NumberAsPlace(slot) + " pouch with " + newItem.shortName() + ". ";
 		}
 	}
 }

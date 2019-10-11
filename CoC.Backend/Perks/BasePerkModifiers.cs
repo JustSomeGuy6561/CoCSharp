@@ -369,6 +369,28 @@ namespace CoC.Backend.Perks
 			set => source.genitals.fertility.perkBonusFertility = value;
 		}
 
+		public void incPregSpeedByOne()
+		{
+			source.genitals.womb.pregnancyMultiplierCounter += 2;
+		}
+		public void incPregSpeedByHalf()
+		{
+			source.genitals.womb.pregnancyMultiplierCounter += 1;
+		}
+
+		public void decPregSpeedByOne()
+		{
+			source.genitals.womb.pregnancyMultiplierCounter -= 2;
+		}
+		public void decPregSpeedByHalf()
+		{
+			source.genitals.womb.pregnancyMultiplierCounter -= 1;
+		}
+
+		public float pregnancyMultiplier => source.genitals.womb.pregnancyMultiplier;
+
+		//below is the actual formula. 
+
 		#endregion
 		//For the following endowments - the behavior is different based on how the endowment is generated - 
 		//if no size is provided, the size will be the default new value. 

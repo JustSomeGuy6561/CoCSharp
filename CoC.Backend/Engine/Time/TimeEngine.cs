@@ -48,39 +48,59 @@ namespace CoC.Backend.Engine.Time
 
 
 		private readonly Action<string> OutputText;
-		private Action<Action> DoNext => MenuHelpers.DoNext;
+		private readonly Action ClearOutput;
+
+		private void DoNext(Action action)
+		{
+			MenuHelpers.DoNext(() =>
+			{
+				ClearOutput();
+				anyContentCurrentlyOnThePage = false;
+				action();
+			});
+		}
+
 		private readonly AreaEngine areaEngine;
 
 		//the actual important info for the time engine - the day and hour. 
 		internal byte CurrentHour { get; private set; }
 		internal int CurrentDay { get; private set; }
 
+		#region Persistent Data
 		//what i would do for a linked hashset in C#. Update: Nevermind, That's what friends (and beer, apparently) are for. -JSG
 
 		//lazies will only update when they need to. This generally means they will only update once, at the end of the given timeframe, before the final destination is locked in (if applicable)
 		//however, if there are multiple location changes in one timeframe, they will update just before each location change. 
 		internal readonly OrderedHashSet<ITimeLazyListener> lazyListeners = new OrderedHashSet<ITimeLazyListener>();
 		//these run every hour.
-		internal readonly OrderedHashSet<ITimeActiveListener> activeListeners = new OrderedHashSet<ITimeActiveListener>();
+		internal readonly OrderedHashSet<ITimeActiveListenerSimple> simpleActiveListeners = new OrderedHashSet<ITimeActiveListenerSimple>();
+		internal readonly OrderedHashSet<ITimeActiveListenerFull> fullActiveListeners = new OrderedHashSet<ITimeActiveListenerFull>();
 		//these run once a day, at a given time.
-		internal readonly OrderedHashSet<ITimeDailyListener> dailyListeners = new OrderedHashSet<ITimeDailyListener>();
+		internal readonly OrderedHashSet<ITimeDailyListenerSimple> simpleDailyListeners = new OrderedHashSet<ITimeDailyListenerSimple>();
+		internal readonly OrderedHashSet<ITimeDailyListenerFull> fullDailyListeners = new OrderedHashSet<ITimeDailyListenerFull>();
 		//these run multiple times a day, at a collection of given times.
-		internal readonly OrderedHashSet<ITimeDayMultiListener> dayMultiListeners = new OrderedHashSet<ITimeDayMultiListener>();
+		internal readonly OrderedHashSet<ITimeDayMultiListenerSimple> simpleMultiTimeListeners = new OrderedHashSet<ITimeDayMultiListenerSimple>();
+		internal readonly OrderedHashSet<ITimeDayMultiListenerFull> fullMultiTimeListeners = new OrderedHashSet<ITimeDayMultiListenerFull>();
 
 		//i wrote the priority queue though - that wasn't too hard. though it also isn't even remotely bulletproof. 
 
 		//this is a list of special reactions that only run once. They are then removed from the queue.
 		//it is possible to add special reactions at any time, usually as a result of certain conditions being met. 
 		internal readonly PriorityQueue<TimeReaction> reactions = new PriorityQueue<TimeReaction>();
+		#endregion
 
-
-		//Event variables - these are used to process the current hour. 
-		private Queue<ITimeActiveListener> activeQueue = new Queue<ITimeActiveListener>();
-		private Queue<ITimeLazyListener> lazyQueue = new Queue<ITimeLazyListener>();
-		private Queue<ITimeDailyListener> dailyQueue = new Queue<ITimeDailyListener>();
+		#region Data For Current Hour Event/Callbacks, etc.
 
 		//list of special events we found while processing the current hour - these are given their own page, so we need to store them.
-		private Queue<SpecialEvent> specialEvents = new Queue<SpecialEvent>();
+		private Queue<Func<EventWrapper>> fullEventHandler;
+
+		//used to help determine if we should call the resume callback at the end of this hour. unless a special event occurs or we are forced to change location,
+		//we just assume we kept sleeping or whatever we were doing, so we shouldn't call it then. however, when a special event occurs or we change location, then we definitely need this.
+		private bool hadSpecialEventThisHour;
+		#endregion
+		#region Data For Time Engine Current Run
+
+		private bool anyContentCurrentlyOnThePage;
 
 		private bool running; //is the time engine currently processing any time related stuff?
 		private GameDateTime lastTimeLaziesRan; //the last time we updated the lazy items with their lazy data. 
@@ -89,10 +109,11 @@ namespace CoC.Backend.Engine.Time
 		//used to help display the events. Any events that don't require their own page will have their contents written here. 
 		private readonly StringBuilder outputMagic = new StringBuilder();
 
+		#endregion
+
 		//it's possible for some idle events to want to print some sort of text or handle something when resuming from an interrupt.
 		//this allows that.
 		private ResumeTimeCallback resumeActionsCallback = null;
-
 
 		private readonly LinkedList<UseHoursLocationHelper> locationChanges = new LinkedList<UseHoursLocationHelper>();
 		//the final location to go to after an idle, if applicable. if the final hour has a different location set, this will be ignored. 
@@ -121,27 +142,27 @@ namespace CoC.Backend.Engine.Time
 		{
 			addHours(hours, true);
 			resumeActionsCallback = resumeCallback;
-			finalDestination = new UseHoursLocationHelper(areaEngine.currentArea.GetType(), () => { }, GameDateTime.Now.delta(idleHours), false);
+			finalDestination = new UseHoursLocationHelper(areaEngine.currentArea.GetType(), () => null, GameDateTime.Now.delta(idleHours), false);
 			RunEngine();
 		}
 
-		internal void IdleHoursGoToArea<T>(byte hours, ResumeTimeCallback resumeCallback) where T : AreaBase
+		internal void IdleHoursGoToArea<T>(byte hours, ResumeTimeCallback resumeCallback, SimpleDescriptor travelToAreaText = null) where T : AreaBase
 		{
 			addHours(hours, true);
 			if (locationChanges.Count == 0)
 			{
-				finalDestination = new UseHoursLocationHelper(typeof(T), () => areaEngine.SetArea<T>(), GameDateTime.Now.delta(idleHours), false);
+				finalDestination = new UseHoursLocationHelper(typeof(T), () => { areaEngine.SetArea<T>(); return travelToAreaText?.Invoke(); }, GameDateTime.Now.delta(idleHours), false);
 			}
 			resumeActionsCallback = resumeCallback;
 			RunEngine();
 		}
 
-		internal void IdleHoursGoToBase(byte hours, ResumeTimeCallback resumeCallback)
+		internal void IdleHoursGoToBase(byte hours, ResumeTimeCallback resumeCallback, SimpleDescriptor travelToAreaText = null)
 		{
 			addHours(hours, true);
 			if (locationChanges.Count == 0)
 			{
-				finalDestination = new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => areaEngine.ReturnToBase(), GameDateTime.Now.delta(idleHours), false);
+				finalDestination = new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => { areaEngine.ReturnToBase(); return travelToAreaText?.Invoke(); }, GameDateTime.Now.delta(idleHours), false);
 			}
 			resumeActionsCallback = resumeCallback;
 			RunEngine();
@@ -166,16 +187,16 @@ namespace CoC.Backend.Engine.Time
 			addHours(hours, false);
 		}
 
-		internal void UseHoursGoToArea<T>(byte hours, bool mustGoToLocationAfterTimeUp) where T : AreaBase
+		internal void UseHoursGoToArea<T>(byte hours, bool mustGoToLocationAfterTimeUp, SimpleDescriptor travelToAreaText = null) where T : AreaBase
 		{
 			addHours(hours, false);
 
 			GameDateTime time = GameDateTime.HoursFromNow(hours + useHours);
-			locationChanges.AddLast(new UseHoursLocationHelper(typeof(T), () => areaEngine.SetArea<T>(), time, mustGoToLocationAfterTimeUp));
+			locationChanges.AddLast(new UseHoursLocationHelper(typeof(T), () => { areaEngine.SetArea<T>(); return travelToAreaText?.Invoke(); }, time, mustGoToLocationAfterTimeUp));
 			RunEngine();
 		}
 
-		internal void ChangeLocation<T>(bool mustGoToLocation) where T : AreaBase
+		internal void ChangeLocation<T>(bool mustGoToLocation, SimpleDescriptor travelToAreaText = null) where T : AreaBase
 		{
 			if (locationChanges.Count > 0)
 			{
@@ -183,17 +204,17 @@ namespace CoC.Backend.Engine.Time
 				if (locationChanges.Last.Value.immutable)
 				{
 					time = time.delta(1);
-					locationChanges.AddLast(new UseHoursLocationHelper(typeof(T), () => areaEngine.SetArea<T>(), time, mustGoToLocation));
+					locationChanges.AddLast(new UseHoursLocationHelper(typeof(T), () => { areaEngine.SetArea<T>(); return travelToAreaText?.Invoke(); }, time, mustGoToLocation));
 				}
 				else
 				{
-					locationChanges.Last.Value = new UseHoursLocationHelper(typeof(T), () => areaEngine.SetArea<T>(), time, mustGoToLocation);
+					locationChanges.Last.Value = new UseHoursLocationHelper(typeof(T), () => { areaEngine.SetArea<T>(); return travelToAreaText?.Invoke(); }, time, mustGoToLocation);
 				}
 				RunEngine();
 			}
 			else if (running)
 			{
-				locationChanges.AddLast(new UseHoursLocationHelper(typeof(T), () => areaEngine.SetArea<T>(), GameDateTime.Now, mustGoToLocation));
+				locationChanges.AddLast(new UseHoursLocationHelper(typeof(T), () => { areaEngine.SetArea<T>(); return travelToAreaText?.Invoke(); }, GameDateTime.Now, mustGoToLocation));
 				RunEngine();
 			}
 			else
@@ -203,15 +224,15 @@ namespace CoC.Backend.Engine.Time
 			}
 		}
 
-		internal void UseHoursGoToBase(byte hours, bool mustGoToLocationAfterTimeUp)
+		internal void UseHoursGoToBase(byte hours, bool mustGoToLocationAfterTimeUp, SimpleDescriptor travelToAreaText = null)
 		{
 			addHours(hours, false);
 			GameDateTime time = GameDateTime.HoursFromNow(hours + useHours);
-			locationChanges.AddLast(new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => areaEngine.ReturnToBase(), time, mustGoToLocationAfterTimeUp));
+			locationChanges.AddLast(new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => { areaEngine.ReturnToBase(); return travelToAreaText?.Invoke(); }, time, mustGoToLocationAfterTimeUp));
 			RunEngine();
 		}
 
-		internal void GoToBase(bool mustGoToLocation)
+		internal void GoToBase(bool mustGoToLocation, SimpleDescriptor travelToAreaText = null)
 		{
 			if (locationChanges.Count > 0)
 			{
@@ -219,17 +240,17 @@ namespace CoC.Backend.Engine.Time
 				if (locationChanges.Last.Value.immutable)
 				{
 					time = time.delta(1);
-					locationChanges.AddLast(new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => areaEngine.ReturnToBase(), time, mustGoToLocation));
+					locationChanges.AddLast(new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => { areaEngine.ReturnToBase(); return travelToAreaText?.Invoke(); }, time, mustGoToLocation));
 				}
 				else
 				{
-					locationChanges.Last.Value = new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => areaEngine.ReturnToBase(), time, mustGoToLocation);
+					locationChanges.Last.Value = new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => { areaEngine.ReturnToBase(); return travelToAreaText?.Invoke(); }, time, mustGoToLocation);
 				}
 				RunEngine();
 			}
 			else if (running)
 			{
-				locationChanges.AddLast(new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => areaEngine.ReturnToBase(), GameDateTime.Now, mustGoToLocation));
+				locationChanges.AddLast(new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => { areaEngine.ReturnToBase(); return travelToAreaText?.Invoke(); }, GameDateTime.Now, mustGoToLocation));
 				RunEngine();
 			}
 			else
@@ -251,14 +272,14 @@ namespace CoC.Backend.Engine.Time
 			}
 		}
 
-		internal void UpdateIdleFinalDestination<T>() where T : AreaBase
+		internal void UpdateIdleFinalDestination<T>(SimpleDescriptor travelToAreaText = null) where T : AreaBase
 		{
-			finalDestination = new UseHoursLocationHelper(typeof(T), () => areaEngine.SetArea<T>(), GameDateTime.HoursFromNow(totalHours), false);
+			finalDestination = new UseHoursLocationHelper(typeof(T), () => { areaEngine.SetArea<T>(); return travelToAreaText?.Invoke(); }, GameDateTime.HoursFromNow(totalHours), false);
 		}
 
-		internal void UpdateIdleFinalDestinationHomeBase()
+		internal void UpdateIdleFinalDestinationHomeBase(SimpleDescriptor travelToAreaText = null)
 		{
-			finalDestination = new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => areaEngine.ReturnToBase(), GameDateTime.HoursFromNow(totalHours), false);
+			finalDestination = new UseHoursLocationHelper(areaEngine.currentHomeBase.GetType(), () => { areaEngine.ReturnToBase(); return travelToAreaText?.Invoke(); }, GameDateTime.HoursFromNow(totalHours), false);
 		}
 
 		private void RunEngine()
@@ -267,22 +288,22 @@ namespace CoC.Backend.Engine.Time
 			{
 				hasAnyOutput = false;
 				running = true;
+
+				ClearOutput();
+				anyContentCurrentlyOnThePage = false;
 				InitializeNewHour();
 			}
 		}
+
 
 		//assumes we have hours to pass. always precede this with a totalHoursPassed > 0 check.
 		private void InitializeNewHour()
 		{
 			incrementHour();
 
-			if (specialEvents != null)
+			if (fullEventHandler != null)
 			{
-				specialEvents.Clear();
-			}
-			else
-			{
-				specialEvents = new Queue<SpecialEvent>();
+				fullEventHandler = null;
 			}
 
 			RunHour();
@@ -309,141 +330,178 @@ namespace CoC.Backend.Engine.Time
 
 		private void RunHour()
 		{
+			hadSpecialEventThisHour = false;
 			outputMagic.Clear();
 
-			//Linq magic. Basically, convert all dayMultis currently proccing into a single hour variant, which works with ITimeDailyListener.
-			IEnumerable<ITimeDailyListener> converts = dayMultiListeners.Where((x) => x.triggerHours.Contains(CurrentHour)).Select((x) => x.ToSingleDay(CurrentHour));
-			//then we union that together with the current OrderedHashSet
-			//since both are ordered hashsets, they will preserve order from IEnumerable, though all entries with a single hour proc will go before the converted multi proc ones.
-			dailyQueue = new Queue<ITimeDailyListener>(dailyListeners.Where((x) => x.hourToTrigger == CurrentHour).Union(converts));
+			//Linq for the win! Simple version: take all reactions, full daily, multi-daily, and active listeners, and convert them into a function that returns an eventwrapper.
+			//similarly, for all creatures currently participating in time events, take all their daily, multi-daily, and active items (collection of collections), and flatten them into one
+			//collection for each type. we union all of these results together into one giant collection of items for this engine to parse. this giant collection is passed into the constructor
+			//for a queue, and then we're good to go. 
+			IEnumerable<Func<EventWrapper>> eventsToParse = reactions.Select(x => x.onProc)
+				.Union(fullDailyListeners.Where(x => x.hourToTrigger == CurrentHour).Select<ITimeDailyListenerFull, Func<EventWrapper>>(x => x.reactToDailyTrigger))
+				.Union(CreatureStore.activeCreatureList.SelectMany(x => x.QueryFullDailyListeners(CurrentHour).Select<ITimeDailyListenerFull, Func<EventWrapper>>(y => y.reactToDailyTrigger)))
+				.Union(fullMultiTimeListeners.Where(x => x.triggerHours.Contains(CurrentHour)).Select<ITimeDayMultiListenerFull, Func<EventWrapper>>(x => () => x.reactToTrigger(CurrentHour)))
+				.Union(CreatureStore.activeCreatureList.SelectMany(x => x.QueryFullDayMultiListeners(CurrentHour).Select<ITimeDayMultiListenerFull, Func<EventWrapper>>(y => () => y.reactToTrigger(CurrentHour))))
+				.Union(fullActiveListeners.Select<ITimeActiveListenerFull, Func<EventWrapper>>(x => x.reactToHourPassing))
+				.Union(CreatureStore.activeCreatureList.SelectMany(x=> x.QueryFullActiveListeners().Select<ITimeActiveListenerFull, Func<EventWrapper>>(y => y.reactToHourPassing)));
 
-			while (!reactions.isEmpty && reactions.Peek().procTime.CompareTo(GameDateTime.Now) <= 0)
-			{
-				EventWrapper wrapper = reactions.Pop().eventWrapper;
-				if (!wrapper.isScene)
-				{
-					outputMagic.Append(wrapper.text);
-				}
-				else
-				{
-					specialEvents.Enqueue(wrapper.scene);
-				}
-			}
-
-			while (dailyQueue.Count > 0)
-			{
-				ITimeDailyListener item = dailyQueue.Dequeue();
-				EventWrapper wrapper = item.reactToDailyTrigger();
-				if (!wrapper.isScene)
-				{
-					outputMagic.Append(wrapper.text);
-				}
-				else
-				{
-					specialEvents.Enqueue(wrapper.scene);
-				}
-			}
-
-			activeQueue = new Queue<ITimeActiveListener>(activeListeners);
-
-			while (activeQueue.Count > 0)
-			{
-				ITimeActiveListener item = activeQueue.Dequeue();
-				EventWrapper wrapper = item.reactToHourPassing();
-				if (!wrapper.isScene)
-				{
-					outputMagic.Append(wrapper.text);
-				}
-				else
-				{
-					specialEvents.Enqueue(wrapper.scene);
-				}
-			}
-			if (outputMagic.Length != 0)
-			{
-				hasAnyOutput = true;
-				OutputText(outputMagic.ToString());
-				outputMagic.Clear();
-			}
-			//will we need a new page for the next hour/lazies if caught up?
-			//NextEvent(true);
-			NextEvent();
+			fullEventHandler = new Queue<Func<EventWrapper>>();
+			HandleFullEvents();
 		}
 
-		//Currently, the first special event will be on the same page as all the short, non-special stuff.
-		//If i read the code correctly, that's what we currently do, but if that's not the desired result, we can fix it. 
-		//To do so, uncomment the first iteration code in NextEvent, then toggle the NextEvent functions in CatchUpLazies and RunHour to their 
-		//boolean variants. (comment out current, uncomment one with 'true')
-
-		//if it helps, think of this as recursive - while it has any special events, it will tell them to call this when they are done. 
-		//it's essentially a while loop, but broken up due to event-based user interaction. 
-		private void NextEvent(/*bool firstIteration = false*/)
+		private void HandleFullEvents()
 		{
-
-			if (specialEvents.Count > 0)
+			if (!reactions.isEmpty && reactions.Peek().procTime.CompareTo(GameDateTime.Now) <= 0)
 			{
-				//set up the next iteration
-				Action next;
-
-				//if we're the last special event and we have a special resume callback. 
-				if (specialEvents.Count == 1 && resumeActionsCallback != null)
+				TimeReaction element = reactions.Pop();
+				EventWrapper result = element.onProc();
+				if (EventWrapper.IsNullOrEmpty(result))
 				{
-					next = () => DoNext(() => { resumeActionsCallback(totalHours, areaEngine.currentArea); NextEvent(); });
+					HandleFullEvents();
+				}
+				else if (!result.isScene)
+				{
+					outputMagic.Append(result.text);
+					HandleFullEvents();
 				}
 				else
 				{
-					next = () => DoNext(() => NextEvent());
-				}
-				hasAnyOutput = true;
-				SpecialEvent item = specialEvents.Dequeue();
+					hadSpecialEventThisHour = true;
+					hasAnyOutput = true;
 
-				//if (firstIteration)
-				//{
-				//	DoNext(() => item.BuildInitialScene(next));
-				//}
-				//else
-				//{
-				item.BuildInitialScene(isIdleHour, idleHours > 0, next);
-				//}
+					if (anyContentCurrentlyOnThePage)
+					{
+						DoNext(() => result.scene.BuildInitialScene(isIdleHour, idleHours > 0, () => DoNext(HandleFullEvents)));
+					}
+					else
+					{
+						result.scene.BuildInitialScene(isIdleHour, idleHours > 0, () => DoNext(HandleFullEvents));
+					}
+				}
 			}
-			else if (locationChanges.First.Value.runTime == GameDateTime.Now)
+			else
 			{
-				RunLazies();
+				HandleSimpleEvents();
+			}
+		}
+
+		private void HandleSimpleEvents()
+		{
+			//then we union that together with the current OrderedHashSet
+			//since both are ordered hashsets, they will preserve order from IEnumerable, though all entries with a single hour proc will go before the converted multi proc ones.
+			Queue<ITimeDailyListenerSimple> simpleDaily = new Queue<ITimeDailyListenerSimple>(simpleDailyListeners.Where((x) => x.hourToTrigger == CurrentHour)
+				.Union(CreatureStore.activeCreatureList.SelectMany(x=>x.QuerySimpleDailyListeners(CurrentHour)))
+				.Union(simpleMultiTimeListeners.Where((x) => x.triggerHours.Contains(CurrentHour)).Select((x) => x.ToSingleDay(CurrentHour)))
+				.Union(CreatureStore.activeCreatureList.SelectMany(x=>x.QuerySimpleDayMultiListeners(CurrentHour).Select(y=>y.ToSingleDay(CurrentHour)))));
+
+			while (simpleDaily.Count > 0)
+			{
+				outputMagic.Append(simpleDaily.Dequeue().reactToDailyTrigger());
+			}
+
+			Queue<ITimeActiveListenerSimple> simpleActives = new Queue<ITimeActiveListenerSimple>(simpleActiveListeners
+				.Union(CreatureStore.activeCreatureList.SelectMany(x=>x.QuerySimpleActiveListeners())));
+			while (simpleActives.Count > 0)
+			{
+				outputMagic.Append(simpleActives.Dequeue().reactToHourPassing());
+			}
+
+			if (outputMagic.Length > 0)
+			{
+				OutputText(outputMagic.ToString());
+				outputMagic.Clear();
+				hasAnyOutput = true;
+				anyContentCurrentlyOnThePage = true;
+				CheckLocation(true);
+			}
+			else
+			{
+				CheckLocation(false);
+			}
+		}
+
+		private void CheckLocation(bool hasContentOnPage)
+		{
+			if (locationChanges.First.Value.runTime == GameDateTime.Now)
+			{
+				RunLazies(); //guarenteed to be string only, so this is fine. also, it does not call nextEvent - it assumes its caller will handle the extraneous stuff. 
+
+				//pop the first element of the locations list. 
 				var firstItem = locationChanges.First.Value;
 				locationChanges.RemoveFirst();
-				firstItem.locationCallback();
-				NextEvent();
+				//run its callback so it can say "you trudged over to your new location"
+				var text = firstItem.locationCallback();
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					OutputText(text);
+					anyContentCurrentlyOnThePage = true;
+					hasAnyOutput = true;
+				}
+
+				hadSpecialEventThisHour = true;
+
+				CheckResume();
 			}
-			else if (totalHours > 0)
+			else
+			{
+				CheckResume();
+			}
+		}
+
+		private void CheckResume()
+		{
+			if (hadSpecialEventThisHour && resumeActionsCallback != null)
+			{
+				resumeActionsCallback(totalHours, areaEngine.currentArea);
+				CheckHour();
+			}
+			else
+			{
+				CheckHour();
+			}
+		}
+
+		private void CheckHour()
+		{
+			if (totalHours > 0)
 			{
 				InitializeNewHour();
 			}
 			else
 			{
-				if (lastTimeLaziesRan?.Equals(GameDateTime.Now) != true)
-				{
-					RunLazies();
-					finalDestination?.locationCallback();
-				}
-				ReturnExecution();
+				FinalCheck();
 			}
 		}
 
+		private void FinalCheck()
+		{
+			if (lastTimeLaziesRan?.Equals(GameDateTime.Now) != true) //if false, or last time lazies ran is null, hence the weird != true.
+			{
+				RunLazies();
+				string text = finalDestination?.locationCallback(); //trudge toward your final destination. 
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					OutputText(text);
+					//hasAnyOutput = true; imo this would be annoying if this was the only thing that forced it to a new page.
+				}
+			}
+			ReturnExecution();
+		}
+
+		//DOES NOT CALL NEXT EVENT! It will return execution to its caller immediately, without any consequence.
 		private void RunLazies()
 		{
 			outputMagic.Clear();
 
-			lastTimeLaziesRan = GameDateTime.Now;
-
-			lazyQueue = new Queue<ITimeLazyListener>(lazyListeners);
-
 			int hoursPassed = lastTimeLaziesRan.hoursToNow();
 			byte lazyHoursPassed = hoursPassed > byte.MaxValue ? byte.MaxValue : (byte)hoursPassed;
 
+			Queue<ITimeLazyListener> lazyQueue = new Queue<ITimeLazyListener>(lazyListeners.Union(CreatureStore.activeCreatureList.SelectMany(x => x.QueryLazyListeners())));
+
 			while (lazyQueue.Count > 0)
 			{
-				ITimeLazyListener item = lazyQueue.Dequeue();
-				outputMagic.Append(item.reactToTimePassing(lazyHoursPassed) ?? "");
+				var item = lazyQueue.Pop();
+				outputMagic.Append(item.reactToTimePassing(lazyHoursPassed));
 			}
 
 			if (outputMagic.Length != 0)
@@ -452,6 +510,8 @@ namespace CoC.Backend.Engine.Time
 				OutputText(outputMagic.ToString());
 				outputMagic.Clear();
 			}
+
+			lastTimeLaziesRan = GameDateTime.Now;
 		}
 
 		private void ReturnExecution()
@@ -491,11 +551,11 @@ namespace CoC.Backend.Engine.Time
 		private class UseHoursLocationHelper
 		{
 			public readonly Type locationType;
-			public readonly Action locationCallback;
+			public readonly Func<string> locationCallback;
 			public readonly bool immutable;
 			public readonly GameDateTime runTime;
 
-			public UseHoursLocationHelper(Type locationType, Action locationCallback, GameDateTime timeToChangeLocation, bool cannotChange)
+			public UseHoursLocationHelper(Type locationType, Func<string> locationCallback, GameDateTime timeToChangeLocation, bool cannotChange)
 			{
 				this.locationType = locationType ?? throw new ArgumentNullException(nameof(locationType));
 				this.locationCallback = locationCallback ?? throw new ArgumentNullException(nameof(locationCallback));

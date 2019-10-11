@@ -32,8 +32,7 @@ namespace CoC.Backend.BodyParts
 		public bool cockVirgin => missingCockSexCount > 0 || missingClitCockSexCount > 0 ? false : anyCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
 		public bool maleCockVirgin => missingCockSexCount > 0 ? false : maleCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
 
-
-		internal float BiggestCockSize(bool allowClitCock = true)
+		public float BiggestCockSize(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -43,7 +42,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Max(x => x.area);
 		}
 
-		internal float LongestCockLength(bool allowClitCock = true)
+		public float LongestCockLength(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -53,7 +52,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Max(x => x.length);
 		}
 
-		internal float WidestCockMeasure(bool allowClitCock = true)
+		public float WidestCockMeasure(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -63,7 +62,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Max(x => x.girth);
 		}
 
-		internal Cock BiggestCock(bool allowClitCock = true)
+		public Cock BiggestCock(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -73,7 +72,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.MaxItem(x => x.area);
 		}
 
-		internal Cock LongestCock(bool allowClitCock = true)
+		public Cock LongestCock(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -83,7 +82,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.MaxItem(x => x.length);
 		}
 
-		internal Cock WidestCock(bool allowClitCock = true)
+		public Cock WidestCock(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -93,7 +92,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.MaxItem(x => x.girth);
 		}
 
-		internal float AverageCockSize(bool allowClitCock = true)
+		public float AverageCockSize(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -103,7 +102,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Average(x => x.area);
 		}
 
-		internal float AverageCockLength(bool allowClitCock = true)
+		public float AverageCockLength(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -113,7 +112,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Average(x => x.length);
 		}
 
-		internal float AverageCockGirth(bool allowClitCock = true)
+		public float AverageCockGirth(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -123,7 +122,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Average(x => x.girth);
 		}
 
-		internal float SmallestCockSize(bool allowClitCock = true)
+		public float SmallestCockSize(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -133,7 +132,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Min(x => x.area);
 		}
 
-		internal float ShortestCockLength(bool allowClitCock = true)
+		public float ShortestCockLength(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -143,7 +142,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Min(x => x.length);
 		}
 
-		internal float ThinnestCockMeasure(bool allowClitCock = true)
+		public float ThinnestCockMeasure(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -153,7 +152,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.Min(x => x.girth);
 		}
 
-		internal Cock SmallestCock(bool allowClitCock = true)
+		public Cock SmallestCock(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -163,7 +162,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.MinItem(x => x.area);
 		}
 
-		internal Cock ShortestCock(bool allowClitCock = true)
+		public Cock ShortestCock(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -173,7 +172,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.MinItem(x => x.length);
 		}
 
-		internal Cock ThinnestCock(bool allowClitCock = true)
+		public Cock ThinnestCock(bool allowClitCock = true)
 		{
 			IEnumerable<Cock> cockCollection = _cocks;
 			if (allowClitCock && hasClitCock)
@@ -183,7 +182,7 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.MinItem(x => x.girth);
 		}
 
-		internal void NormalizeDicks(bool untilEven = false)
+		public void NormalizeDicks(bool untilEven = false)
 		{
 			if (numCocks == 1)
 			{
@@ -231,13 +230,42 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal int RemoveCock(int count = 1)
+		public bool AddCock(CockType newCockType)
+		{
+			if (numCocks == MAX_COCKS)
+			{
+				return false;
+			}
+			var oldGender = gender;
+
+			_cocks.Add(new Cock(creatureID, GetCockPerkData(), newCockType));
+
+			CheckGenderChanged(oldGender);
+			return true;
+		}
+
+		public bool AddCock(CockType newCockType, float length, float girth, float? knotMultiplier = null)
+		{
+			if (numCocks >= MAX_COCKS)
+			{
+				return false;
+			}
+			var oldGender = gender;
+
+			_cocks.Add(new Cock(creatureID, GetCockPerkData(), newCockType, length, girth, knotMultiplier));
+
+			CheckGenderChanged(oldGender);
+			return true;
+		}
+
+		public int RemoveCock(int count = 1)
 		{
 			if (numCocks == 0 || count <= 0)
 			{
 				return 0;
 			}
 			int oldCount = numCocks;
+			var oldGender = gender;
 
 			if (count > numCocks)
 			{
@@ -257,39 +285,18 @@ namespace CoC.Backend.BodyParts
 				_cocks.RemoveRange(numCocks - count, count);
 			}
 
+			CheckGenderChanged(oldGender);
 			return oldCount - numCocks;
 		}
 
-		internal int RemoveExtraCocks()
+		public int RemoveExtraCocks()
 		{
 			return RemoveCock(numCocks - 1);
 		}
 
-		internal int RemoveAllCocks()
+		public int RemoveAllCocks()
 		{
 			return RemoveCock(numCocks);
-		}
-
-		internal bool AddCock(CockType newCockType)
-		{
-			if (numCocks == MAX_COCKS)
-			{
-				return false;
-			}
-			_cocks.Add(new Cock(creatureID, GetCockPerkData(), newCockType));
-
-			return true;
-		}
-
-		internal bool AddCock(CockType newCockType, float length, float girth, float? knotMultiplier = null)
-		{
-			if (numCocks >= MAX_COCKS)
-			{
-				return false;
-			}
-			_cocks.Add(new Cock(creatureID, GetCockPerkData(), newCockType, length, girth, knotMultiplier));
-
-			return true;
 		}
 
 		internal void HandleCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, float knotSize, float cumAmount, bool reachOrgasm)
@@ -324,6 +331,76 @@ namespace CoC.Backend.BodyParts
 		{
 			_cocks[cockIndex].OrgasmGeneric(dryOrgasm);
 			timeLastCum = GameDateTime.Now;
+		}
+
+		public bool hasBalls => balls.hasBalls;
+		public bool uniBall => balls.uniBall;
+
+		public byte numberOfBalls => balls.count;
+		public byte ballSize => balls.size;
+
+		public bool GrowBalls()
+		{
+			return balls.growBalls();
+		}
+
+		public bool GrowBalls(byte numBalls, byte newSize = Balls.DEFAULT_BALLS_SIZE)
+		{
+			return balls.growBalls(numBalls, newSize);
+		}
+
+		public bool GrowUniBall()
+		{
+			return balls.growUniBall();
+		}
+
+		public bool ChangeBallsUniBall()
+		{
+			return balls.makeUniBall();
+		}
+
+		public bool GrowOrChangeUniBall()
+		{
+			if (hasBalls)
+			{
+				return ChangeBallsUniBall();
+			}
+			else
+			{
+				return GrowUniBall();
+			}
+		}
+
+		public bool ChangeBallsNormal()
+		{
+			return balls.makeStandard();
+		}
+
+		public bool GrowOrChangeBallsNormal()
+		{
+			if (hasBalls)
+			{
+				return ChangeBallsNormal();
+			}
+			else
+			{
+				return GrowBalls();
+			}
+		}
+
+		public byte AddBalls(byte addAmount)
+		{
+			return balls.addBalls(addAmount);
+		}
+
+		//
+		public byte RemoveBalls(byte removeAmount)
+		{
+			return balls.removeBalls(removeAmount);
+		}
+		public bool RemoveAllBalls()
+		{
+			return balls.removeAllBalls();
 		}
 	}
 }

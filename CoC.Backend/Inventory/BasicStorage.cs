@@ -8,24 +8,27 @@ using System.Text;
 
 namespace CoC.Backend.Inventory
 {
-	public sealed class Inventory
+	public class BasicStorage<T> where T: CapacityItem
 	{
-		//ten inventory slots, each with a bool for unlocked, and an item slot for what they're holding.
-		private readonly HashSet<KeyItem> keyItems = new HashSet<KeyItem>();
-		public IReadOnlyCollection<KeyItem> keyItemCollection => keyItems;
+		public readonly byte maxSlots;
 
-		private readonly List<ItemSlot> slotStorage = new List<ItemSlot>();
+		public BasicStorage(byte maxItems)
+		{
+			maxSlots = maxItems;
+		}
 
-		public readonly ReadOnlyCollection<ItemSlot> itemSlots;
-		public const byte MAX_SLOTS = 10;
+		public BasicStorage(byte maxItems, byte initialUnlockedSlots)
+		{
+			maxSlots = maxItems;
+			currentlyUnlockedSlots = Math.Min(initialUnlockedSlots, maxItems);
+		}
 
-		//automatically handles allocating the right space for the slot storage. 
 		public byte currentlyUnlockedSlots
 		{
 			get => _currentlyUnlockedSlots;
 			private set
 			{
-				Utils.Clamp(ref value, (byte)0, MAX_SLOTS);
+				Utils.Clamp(ref value, (byte)0, maxSlots);
 
 				if (_currentlyUnlockedSlots != value)
 				{
@@ -42,12 +45,10 @@ namespace CoC.Backend.Inventory
 			}
 		}
 		private byte _currentlyUnlockedSlots = 0;
-		internal Inventory()
-		{
-			itemSlots = new ReadOnlyCollection<ItemSlot>(slotStorage);
 
-			currentlyUnlockedSlots = 3; //start with 3 unlocked slots.
-		}
+		private readonly List<ItemSlot> slotStorage = new List<ItemSlot>();
+
+		public ReadOnlyCollection<ReadOnlyItemSlot> itemSlots => new ReadOnlyCollection<ReadOnlyItemSlot>(slotStorage.Select(x => x?.AsReadOnly()).ToList());
 
 		public byte UnlockAdditionalSlots(byte amount = 1)
 		{
@@ -56,47 +57,7 @@ namespace CoC.Backend.Inventory
 			return currentlyUnlockedSlots.subtract(oldCount);
 		}
 
-		public bool AddItem(KeyItem key)
-		{
-			return keyItems.Add(key);
-		}
-
-		public bool HasItem(KeyItem key)
-		{
-			return keyItems.Contains(key);
-		}
-
-		public bool HasItem(Predicate<KeyItem> condition)
-		{
-			return keyItems.FirstOrDefault(new Func<KeyItem, bool>(condition)) != null;
-		}
-
-		public KeyItem GetItem(Predicate<KeyItem> condition)
-		{
-			return keyItems.FirstOrDefault(new Func<KeyItem, bool>(condition));
-		}
-
-		public IEnumerable<KeyItem> GetAllItems(Predicate<KeyItem> condition)
-		{
-			return keyItems.Where(new Func<KeyItem, bool>(condition));
-		}
-
-		public bool RemoveKeyItem(KeyItem key)
-		{
-			return keyItems.Remove(key);
-		}
-
-		public int RemoveWhere(Predicate<KeyItem> condition)
-		{
-			return keyItems.RemoveWhere(condition);
-		}
-
-		public bool RemoveFirst(Predicate<KeyItem> condition)
-		{
-			return keyItems.Remove(GetItem(condition));
-		}
-
-		public bool AddItem(CapacityItem item)
+		public bool AddItem(T item)
 		{
 			if (item is null)
 			{
@@ -129,7 +90,7 @@ namespace CoC.Backend.Inventory
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		public int AddItemReturnSlot(CapacityItem item)
+		public int AddItemReturnSlot(T item)
 		{
 			if (item is null)
 			{
@@ -163,6 +124,27 @@ namespace CoC.Backend.Inventory
 			return -1;
 		}
 
+		public bool AddItemBack(byte originalIndex, CapacityItem originalItem)
+		{
+			if (originalIndex >= currentlyUnlockedSlots)
+			{
+				return false;
+			}
+			else if (slotStorage[originalIndex].item != null && slotStorage[originalIndex].item != originalItem)
+			{
+				return false;
+			}
+			else if (slotStorage[originalIndex].item == originalItem && slotStorage[originalIndex].itemCount >= slotStorage[originalIndex].item.maxCapacityPerSlot)
+			{
+				return false;
+			}
+			else
+			{
+				slotStorage[originalIndex].AddOrReplaceItem(originalItem);
+				return true;
+			}
+		}
+
 		public void ClearSlot(byte index)
 		{
 			if (index > slotStorage.Count)
@@ -172,7 +154,7 @@ namespace CoC.Backend.Inventory
 			slotStorage[index].ClearItem();
 		}
 
-		public void ReplaceItemInSlot(byte index, CapacityItem replacement, bool addIfSameItem = true)
+		public void ReplaceItemInSlot(byte index, T replacement, bool addIfSameItem = true)
 		{
 			if (index > slotStorage.Count)
 			{
@@ -193,7 +175,7 @@ namespace CoC.Backend.Inventory
 			}
 		}
 
-		public CapacityItem RemoveItem(byte slotIndex)
+		public T RemoveItem(byte slotIndex)
 		{
 			if (slotIndex > slotStorage.Count)
 			{
@@ -201,68 +183,8 @@ namespace CoC.Backend.Inventory
 			}
 			else
 			{
-				return slotStorage[slotIndex].RemoveItem();
+				return (T)slotStorage[slotIndex].RemoveItem();
 			}
-		}
-	}
-
-	public sealed class ItemSlot
-	{
-		public CapacityItem item { get; private set; }
-		public byte itemCount { get; private set; }
-
-		internal bool AddOrReplaceItem(CapacityItem newItem)
-		{
-			if (newItem is null)
-			{
-				return false;
-			}
-			else if (item != newItem)
-			{
-				item = newItem;
-				itemCount = 1;
-				return true;
-			}
-			else if (itemCount >= item.maxCapacityPerSlot)
-			{
-				return false;
-			}
-			else
-			{
-				itemCount++;
-				return true;
-			}
-		}
-
-		internal CapacityItem RemoveItem()
-		{
-			if (item is null)
-			{
-				return null;
-			}
-			else if (itemCount == 0)
-			{
-				item = null;
-				return null;
-			}
-			else if (itemCount == 1)
-			{
-				CapacityItem retVal = item;
-				item = null;
-				itemCount--;
-				return retVal;
-			}
-			else
-			{
-				itemCount--;
-				return item;
-			}
-		}
-
-		internal void ClearItem()
-		{
-			itemCount = 0;
-			item = null;
 		}
 	}
 }

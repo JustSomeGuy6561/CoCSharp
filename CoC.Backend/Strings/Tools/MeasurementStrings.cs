@@ -9,7 +9,7 @@ namespace CoC.Backend.Tools
 
 		private static string AsText(int number)
 		{
-			return Utils.Count(number);
+			return Utils.NumberAsText(number);
 		}
 
 		private static string meterDesc(bool plural = false)
@@ -70,7 +70,7 @@ namespace CoC.Backend.Tools
 			{
 				sb.Append(" roughly ");
 			}
-			sb.Append(Utils.Count(val));
+			sb.Append(Utils.NumberAsText(val));
 			return sb.ToString();
 		}
 
@@ -95,7 +95,7 @@ namespace CoC.Backend.Tools
 					extra = " and a half";
 				}
 			}
-			return " roughly " + Utils.Count(val) + extra;
+			return " roughly " + Utils.NumberAsText(val) + extra;
 		}
 	}
 }

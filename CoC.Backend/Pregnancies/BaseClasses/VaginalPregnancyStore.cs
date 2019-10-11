@@ -15,9 +15,9 @@ namespace CoC.Backend.Pregnancies
 			this.vaginaIndex = vaginaIndex;
 		}
 
-		protected override EventWrapper HandleBirthing()
+		protected override SpecialEvent HandleBirthing()
 		{
-			EventWrapper retVal = spawnType.HandleVaginalBirth(vaginaIndex);
+			SpecialEvent retVal = spawnType.HandleVaginalBirth(vaginaIndex);
 			CreatureStore.GetCreatureClean(creatureID)?.genitals.vaginas[vaginaIndex].HandleBirth(spawnType.sizeOfCreatureAtBirth);
 			return retVal;
 		}

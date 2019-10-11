@@ -26,7 +26,7 @@ namespace CoC.Backend.Engine
 		public static bool AddButton(byte index, string title, Action callback)
 		{
 			if (index >= MAX_BUTTONS) throw new IndexOutOfRangeException();
-
+			if (callback is null) throw new ArgumentNullException(nameof(callback), "Callback cannot be null or the button would never do anything");
 			if (buttonHelper[index] != null) return false;
 
 			buttonsChanged = true;

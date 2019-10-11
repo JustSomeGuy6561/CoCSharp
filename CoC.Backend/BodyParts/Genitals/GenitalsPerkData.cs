@@ -173,16 +173,16 @@ namespace CoC.Backend.BodyParts
 			set => CheckChanged(ref _MaleNewDefaultCup, value, () => _breasts.ForEach(x => x.maleDefaultCup = value));
 		}
 		private CupSize _MaleNewDefaultCup = Breasts.DEFAULT_MALE_SIZE;
-		internal CupSize FemaleMinCup
+		public CupSize FemaleMinCup
 		{
 			get => _FemaleMinCup;
-			set => CheckChanged(ref _FemaleMinCup, value, () => _breasts.ForEach(x => x.femaleMinCup = value));
+			internal set => CheckChanged(ref _FemaleMinCup, value, () => _breasts.ForEach(x => x.femaleMinCup = value));
 		}
 		private CupSize _FemaleMinCup = CupSize.FLAT;
-		internal CupSize MaleMinCup
+		public CupSize MaleMinCup
 		{
 			get => _MaleMinCup;
-			set => CheckChanged(ref _MaleMinCup, value, () => _breasts.ForEach(x => x.maleMinCup = value));
+			internal set => CheckChanged(ref _MaleMinCup, value, () => _breasts.ForEach(x => x.maleMinCup = value));
 		}
 		private CupSize _MaleMinCup = CupSize.FLAT;
 		internal float TitsGrowthMultiplier

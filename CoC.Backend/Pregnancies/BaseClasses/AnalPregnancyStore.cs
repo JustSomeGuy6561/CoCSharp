@@ -13,9 +13,9 @@ namespace CoC.Backend.Pregnancies
 		{
 		}
 
-		protected override EventWrapper HandleBirthing()
+		protected override SpecialEvent HandleBirthing()
 		{
-			var retVal = ((SpawnTypeIncludeAnal)spawnType).HandleAnalBirth(creatureID);
+			SpecialEvent retVal = ((SpawnTypeIncludeAnal)spawnType).HandleAnalBirth(creatureID);
 			CreatureStore.GetCreatureClean(creatureID)?.genitals.ass.HandleBirth(spawnType.sizeOfCreatureAtBirth);
 			return retVal;
 		}

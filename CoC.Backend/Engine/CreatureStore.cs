@@ -12,6 +12,11 @@ namespace CoC.Backend.Engine
 			[Guid.Empty] = null,
 		};
 
+		//artificially keeps creatures alive with a strong reference so they can participate in the time engine. 
+		private static readonly Dictionary<Guid, Creature> activeCreatures = new Dictionary<Guid, Creature>();
+
+		internal static IEnumerable<Creature> activeCreatureList => activeCreatures.Values;
+
 		public static Player currentControlledCharacter { get; private set; } = null;
 		public static Player activePlayer { get; private set; } = null;
 
@@ -113,6 +118,35 @@ namespace CoC.Backend.Engine
 #endif
 				//overwrite the weak reference to use the provided value.
 				creatureLookup[pc.id].SetTarget(pc);
+			}
+		}
+
+		internal static void markInactive(Guid id)
+		{
+			activeCreatures.Remove(id);
+		}
+
+		internal static void markActive(Guid id, Creature creature)
+		{
+			if (!creatureLookup.ContainsKey(id))
+			{
+				creatureLookup.Add(id, new WeakReference<Creature>(creature));
+			}
+			else
+			{
+				creatureLookup[id].TryGetTarget(out Creature stored);
+				if (stored != creature)
+				{
+					creatureLookup[id].SetTarget(creature);
+				}
+			}
+			if (!activeCreatures.ContainsKey(id))
+			{
+				activeCreatures.Add(id, creature);
+			}
+			else if (activeCreatures[id] != creature)
+			{
+				activeCreatures[id] = creature;
 			}
 		}
 	}

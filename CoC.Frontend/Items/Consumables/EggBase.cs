@@ -35,10 +35,17 @@ namespace CoC.Frontend.Items.Consumables
 		protected readonly SimpleDescriptor colorStr;
 		public bool isLarge { get; private set; }
 
-		protected EggBase(SimpleDescriptor colorText, bool large, DescriptorWithArg<bool> shortText, DescriptorWithArg<bool> longText) : base(() => shortText(large), () => longText(large))
+		protected EggBase(SimpleDescriptor colorText, bool large, DescriptorWithArg<bool> shortText, DescriptorWithArg<bool> longText, DescriptorWithArg<bool> descText) 
+			: base(checkValid(shortText, large, nameof(shortText)), checkValid(longText, large, nameof(longText)), checkValid(descText, large, nameof(descText)))
 		{
 			colorStr = colorText;
 			isLarge = large;
+		}
+
+		private static SimpleDescriptor checkValid(DescriptorWithArg<bool> fn, bool value, string name)
+		{
+			if (fn is null) throw new ArgumentNullException(name);
+			else return () => fn(value);
 		}
 
 		public virtual SimpleDescriptor shortDesc => ShortDescription;

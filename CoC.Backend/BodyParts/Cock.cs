@@ -296,7 +296,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Attribute Updates
 
-		internal float LengthenCock(float lengthenAmount, bool ignorePerk = false)
+		public float LengthenCock(float lengthenAmount, bool ignorePerk = false)
 		{
 			if (lengthenAmount <= 0) return 0;
 
@@ -311,7 +311,7 @@ namespace CoC.Backend.BodyParts
 			return length - oldLength;
 		}
 
-		internal float ShortenCock(float shortenAmount, bool ignorePerk = false)
+		public float ShortenCock(float shortenAmount, bool ignorePerk = false)
 		{
 			if (shortenAmount <= 0) return 0;
 			float oldLength = length;
@@ -325,7 +325,7 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
-		internal float SetLength(float newLength)
+		public float SetLength(float newLength)
 		{
 			var oldData = AsReadOnlyData();
 			updateLength(newLength);
@@ -333,7 +333,7 @@ namespace CoC.Backend.BodyParts
 			return length;
 		}
 
-		internal float ThickenCock(float thickenAmount)
+		public float ThickenCock(float thickenAmount)
 		{
 			float oldGirth = girth;
 			var oldData = AsReadOnlyData();
@@ -342,7 +342,7 @@ namespace CoC.Backend.BodyParts
 			return girth - oldGirth;
 		}
 
-		internal float ThinCock(float thinAmount)
+		public float ThinCock(float thinAmount)
 		{
 			float oldGirth = girth;
 			var oldData = AsReadOnlyData();
@@ -351,7 +351,7 @@ namespace CoC.Backend.BodyParts
 			return oldGirth - girth;
 		}
 
-		internal float SetGirth(float newGirth)
+		public float SetGirth(float newGirth)
 		{
 			var oldData = AsReadOnlyData();
 			updateGirth(newGirth);
@@ -359,14 +359,14 @@ namespace CoC.Backend.BodyParts
 			return girth;
 		}
 
-		internal void SetLengthAndGirth(float newLength, float newGirth)
+		public void SetLengthAndGirth(float newLength, float newGirth)
 		{
 			var oldData = AsReadOnlyData();
 			updateLengthAndGirth(newLength, newGirth);
 			CheckDataChanged(oldData);
 		}
 
-		internal float IncreaseKnotMultiplier(float amount)
+		public float IncreaseKnotMultiplier(float amount)
 		{
 			if (!type.hasKnot)
 			{
@@ -379,7 +379,7 @@ namespace CoC.Backend.BodyParts
 			return knotMultiplier - oldMultiplier;
 		}
 
-		internal float DecreaseKnotMultiplier(float amount)
+		public float DecreaseKnotMultiplier(float amount)
 		{
 			if (!type.hasKnot)
 			{
@@ -392,7 +392,7 @@ namespace CoC.Backend.BodyParts
 			return oldMultiplier - knotMultiplier;
 		}
 
-		internal float SetKnotMultiplier(float multiplier)
+		public float SetKnotMultiplier(float multiplier)
 		{
 			Utils.Clamp(ref multiplier, MIN_KNOT_MULTIPLIER, MAX_KNOT_MULTIPLIER);
 			if (type.hasKnot)
@@ -404,7 +404,7 @@ namespace CoC.Backend.BodyParts
 			return knotMultiplier;
 		}
 
-		internal void SetAll(float newLength, float newGirth, float newKnotMultiplier)
+		public void SetAll(float newLength, float newGirth, float newKnotMultiplier)
 		{
 			var oldData = AsReadOnlyData();
 			updateLengthAndGirth(newLength, newGirth);

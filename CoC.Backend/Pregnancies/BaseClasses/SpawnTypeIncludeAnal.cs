@@ -11,7 +11,7 @@ namespace CoC.Backend.Pregnancies
 		{
 		}
 
-		protected internal abstract EventWrapper HandleAnalBirth(Guid creatureID);
+		protected internal abstract SpecialEvent HandleAnalBirth(Guid creatureID);
 
 		protected internal abstract string NotifyAnalBirthingProgressed(Guid creatureID, float hoursToBirth, float previousHoursToBirth);
 

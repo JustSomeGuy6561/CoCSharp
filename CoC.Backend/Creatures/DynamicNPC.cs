@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //6/28/2019, 8:30 PM
+using CoC.Backend.Items;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,7 +27,22 @@ namespace CoC.Backend.Creatures
 
 			//then activate them. 
 			//occurs AFTER the creature constructor, so we're fine.
-			ActivateTimeListeners();
+			UnFreezeCreature();
+		}
+
+		protected override string PlaceItemInCreatureStorageText(CapacityItem item, byte slot)
+		{
+			return "The NPC places the " + item.shortName() + " in its " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+		}
+
+		protected override string ReturnItemToCreatureStorageText(CapacityItem item, byte slot)
+		{
+			return "The NPC returns the " + item.shortName() + " to its " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+		}
+
+		protected override string ReplaceItemInCreatureStorageWithNewItemText(CapacityItem newItem, byte slot)
+		{
+			return "The NPC replaces the " + inventory[slot].item.shortName() + " in its " + Tools.Utils.NumberAsPlace(slot) + " pouch with " + newItem.shortName() + ". ";
 		}
 	}
 }

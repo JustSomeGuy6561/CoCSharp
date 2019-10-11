@@ -14,6 +14,7 @@ namespace CoC.Backend.Tools
 	public static class Utils
 	{
 		private static readonly string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" };
+		private static readonly string[] place = { "zeroth", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "nineth", "tenth" };
 
 		private static Random rnd = new Random();
 
@@ -210,13 +211,41 @@ namespace CoC.Backend.Tools
 			return (int)Math.Round(Lerp(minX, maxX, x, minY, maxY));
 		}
 
-		public static string Count(int x)
+		public static string NumberAsText(int x)
 		{
 			if (x >= 0 && x <= 10)
 			{
 				return numbers[x];
 			}
 			else return x.ToString();
+		}
+
+		public static string NumberAsPlace(int x)
+		{
+			if (x >= 0 && x <= 10)
+			{
+				return place[x];
+			}
+			else if (x < 0 && x >= -10)
+			{
+				return "negative " + place[x];
+			}
+			else if (x % 10 == 1)
+			{
+				return x + "st";
+			}
+			else if (x % 10 == 2)
+			{
+				return x + "nd";
+			}
+			else if (x % 10 == 3)
+			{
+				return x + "rd";
+			}
+			else
+			{
+				return x + "th";
+			}
 		}
 	}
 

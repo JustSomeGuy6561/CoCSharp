@@ -36,7 +36,7 @@ namespace CoC.Frontend.Creatures.PlayerData
 	//ITimeListener: if pregnant or anal pregnant, run them, check what's going on
 	//IDayListender: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant. output it.
 
-	public sealed partial class PlayerWomb : Womb, ITimeDailyListener
+	public sealed partial class PlayerWomb : Womb, ITimeDailyListenerSimple
 	{
 		//egg related.
 		public bool laysEggs => basiliskWomb || oviposition;
@@ -119,14 +119,14 @@ namespace CoC.Frontend.Creatures.PlayerData
 		}
 
 		#region ITimeListeners
-		byte ITimeDailyListener.hourToTrigger => 0;
+		byte ITimeDailyListenerSimple.hourToTrigger => 0;
 
-		EventWrapper ITimeDailyListener.reactToDailyTrigger()
+		string ITimeDailyListenerSimple.reactToDailyTrigger()
 		{
 			if (!normalPregnancy.isPregnant && laysEggs && GameEngine.CurrentDay % eggsEveryXDays == 0)
 			{
 				AttemptNormalKnockUp(1, new PlayerEggPregnancy(creatureID));
-				return new EventWrapper(EggSpawnText());
+				return EggSpawnText();
 			}
 			return null;
 		}

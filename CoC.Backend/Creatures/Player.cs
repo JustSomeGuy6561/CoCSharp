@@ -42,33 +42,34 @@ namespace CoC.Backend.Creatures
 
 			//then activate them. 
 			//occurs AFTER the creature constructor, so we're fine.
-			ActivateTimeListeners();
+			UnFreezeCreature();
 
 			//TODO: Add player specific items or whatever.
 		}
 
-		public override void AddStandardItem(CapacityItem item, Action resumeCallback, Action putBackOverride = null, Action abandonItemOverride = null)
+		internal void refillHunger(byte sateHungerAmount)
 		{
-			if (item is null) throw new ArgumentNullException(nameof(item));
-			if (resumeCallback is null) throw new ArgumentNullException(nameof(resumeCallback));
-
-			int slot = inventoryStore.AddItemReturnSlot(item);
-
-			if (slot != -1)
-			{
-				//print added item(slot)
-				resumeCallback();
-			}
-			else
-			{
-				FullInventoryHelper helper = new FullInventoryHelper(inventoryStore);
-				helper.InitItemsFull(item, resumeCallback, putBackOverride, abandonItemOverride);
-			}
+			throw new NotImplementedException();
 		}
 
 		public string Appearance()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		protected override string PlaceItemInCreatureStorageText(CapacityItem item, byte slot)
+		{
+			return "You place the " + item.shortName() + " in your " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+		}
+
+		protected override string ReturnItemToCreatureStorageText(CapacityItem item, byte slot)
+		{
+			return "You return the " + item.shortName() + " to your " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+		}
+
+		protected override string ReplaceItemInCreatureStorageWithNewItemText(CapacityItem newItem, byte slot)
+		{
+			return "You replace the " + inventory[slot].item.shortName() + " in your " + Tools.Utils.NumberAsPlace(slot) + " pouch with " + newItem.shortName() + ". ";
 		}
 
 		public override uint maxHealth
@@ -90,8 +91,5 @@ namespace CoC.Backend.Creatures
 				return (uint)max;
 			}
 		}
-
-
-
 	}
 }

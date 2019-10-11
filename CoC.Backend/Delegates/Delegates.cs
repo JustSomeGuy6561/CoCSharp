@@ -6,6 +6,7 @@
 using CoC.Backend.Areas;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 
 namespace CoC.Backend
 {
@@ -30,10 +31,15 @@ namespace CoC.Backend
 	public delegate void PlayerFunction(Player player);
 
 	/// <summary>
-	/// Used to 
+	/// Used to resume idleing, called after all the complicated hourly stuff completes.
 	/// </summary>
-	/// <param name="hoursRemaining"></param>
-	/// <param name="currentLocation"></param>
-	/// <param name="isIdling"></param>
-	public delegate void ResumeTimeCallback(ushort hoursRemaining, AreaBase currentLocation);
+	/// <param name="hoursRemaining">number of hours left in the current idle period. </param>
+	/// <param name="currentLocation">The current location the player finds themselves in after doing their hourly business</param>
+	/// <returns>any text for the engine to print out.</returns>
+	public delegate string ResumeTimeCallback(ushort hoursRemaining, AreaBase currentLocation);
+
+
+	//passed into the item use function. It's called when the item is used, successfully or otherwise. This is due to the delayed, event-based nature of the item.
+	public delegate void UseItemCallback(bool successfullyUsedItem, string itemUseContext, CapacityItem replacementItem);
+	public delegate void UseItemCallbackSafe<T>(bool successfullyUsedItem, string itemUseContext, T replacementItem) where T : CapacityItem;
 }

@@ -29,10 +29,10 @@ namespace CoC.Backend.BodyParts
 		public const CupSize DEFAULT_MALE_SIZE = CupSize.FLAT;
 		public const CupSize DEFAULT_FEMALE_SIZE = CupSize.C;
 
-		internal CupSize maleMinCup
+		public CupSize maleMinCup
 		{
 			get => _maleMinCup;
-			set
+			internal set
 			{
 				_maleMinCup = value;
 				if (cupSize < minimumCupSize)
@@ -44,10 +44,10 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private CupSize _maleMinCup = CupSize.FLAT;
-		internal CupSize femaleMinCup
+		public CupSize femaleMinCup
 		{
 			get => _femaleMinCup;
-			set
+			internal set
 			{
 				_femaleMinCup = value;
 				if (cupSize < minimumCupSize)
@@ -102,7 +102,7 @@ namespace CoC.Backend.BodyParts
 			get => _cupSize;
 			private set
 			{
-				Utils.ClampEnum(ref value, CupSize.FLAT, CupSize.JACQUES00); //enums: icomparable, but not really. woooo!
+				Utils.ClampEnum(ref value, minimumCupSize, CupSize.JACQUES00); //enums: icomparable, but not really. woooo!
 				if (_cupSize != value)
 				{
 					var oldData = AsReadOnlyData();
@@ -187,7 +187,7 @@ namespace CoC.Backend.BodyParts
 			if (creature != null) creature.genitals.onGenderChanged += OnGenderChanged;
 		}
 
-		internal byte GrowBreasts(byte byAmount, bool ignorePerks = false)
+		public byte GrowBreasts(byte byAmount, bool ignorePerks = false)
 		{
 			if (cupSize >= CupSize.JACQUES00)
 			{
@@ -209,7 +209,7 @@ namespace CoC.Backend.BodyParts
 			return cupSize - oldSize;
 		}
 
-		internal byte ShrinkBreasts(byte byAmount, bool ignorePerks = false)
+		public byte ShrinkBreasts(byte byAmount, bool ignorePerks = false)
 		{
 			if (cupSize <= CupSize.FLAT)
 			{
@@ -231,7 +231,7 @@ namespace CoC.Backend.BodyParts
 			return cupSize - oldSize;
 		}
 
-		internal void setCupSize(CupSize size)
+		public void setCupSize(CupSize size)
 		{
 
 			Utils.ClampEnum(ref size, CupSize.FLAT, CupSize.JACQUES00);
@@ -299,7 +299,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Nipple Alias
 
-		internal float GrowNipple(float growAmount, bool ignorePerk = false)
+		public float GrowNipple(float growAmount, bool ignorePerk = false)
 		{
 			var oldData = AsReadOnlyData();
 			var retVal = nipples.GrowNipple(growAmount, ignorePerk);
@@ -310,7 +310,7 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		internal float ShrinkNipple(float shrinkAmount, bool ignorePerk = false)
+		public float ShrinkNipple(float shrinkAmount, bool ignorePerk = false)
 		{
 			var oldData = AsReadOnlyData();
 			var retVal = nipples.ShrinkNipple(shrinkAmount, ignorePerk);

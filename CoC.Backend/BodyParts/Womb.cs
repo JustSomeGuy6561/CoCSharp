@@ -13,15 +13,33 @@ namespace CoC.Backend.BodyParts
 	{
 		//Note: we don't attach these to vagina and ass b/c it's possible to lose a vagina (and perhaps an asshole too if it's possible to TF to anemone or something)
 		//and we wouldn't want this to cause the pregnancy to be lost. 
-
+		public float pregnancyMultiplier
+		{
+			get
+			{
+				if (pregnancyMultiplierCounter == 0)
+				{
+					return 1;
+				}
+				else if (pregnancyMultiplierCounter > 0)
+				{
+					return 1 + pregnancyMultiplierCounter / 2.0f;
+				}
+				else
+				{
+					return 1 / (1 - pregnancyMultiplierCounter / 2.0f);
+				}
+			}
+		}
+		internal int pregnancyMultiplierCounter = 0;
 
 		//if null, cannot get pregnant via normal vagina.
-		public readonly PregnancyStore normalPregnancy;
+		public readonly VaginalPregnancyStore normalPregnancy;
 		public bool canGetPregnant(bool hasVagina) => normalPregnancy != null && canGetPregnantCheck(hasVagina);
 		protected virtual bool canGetPregnantCheck(bool hasVagina) => hasVagina;
 
 		//if null, cannot get anally pregnant. 
-		public readonly PregnancyStore analPregnancy;
+		public readonly AnalPregnancyStore analPregnancy;
 		//basically, by default, the normal creature cannot become anally pregnant, unless the source attempting to anally knock them up expressly says they don't care.
 		//most anal pregnancy attempts will respect the Womb's stance on anal pregnancies and therefore fail. as of now, the only thing that ignores this is a satyr, or PC with satyr sexuality.
 		//note that it's possible to have a womb that prevents all anal pregnancies without overriding this by setting anal pregnacy store to null.
@@ -30,7 +48,7 @@ namespace CoC.Backend.BodyParts
 		protected virtual bool canGetAnallyPregnantCheck(bool hasAnus, bool sourceOverridesNoAnalPregnancies) => hasAnus && sourceOverridesNoAnalPregnancies;
 
 		//allows a third pregnancy store for creatures with two vaginas. defaults to null, so we can't get pregnant through a second vagina. 
-		public readonly PregnancyStore secondaryNormalPregnancy;
+		public readonly VaginalPregnancyStore secondaryNormalPregnancy;
 
 		//same as normal pregnancy, though this one uses second vagina. since secondaryNormalPregnancy defaults to null, this defaults to false.
 		public bool canGetSecondaryNormalPregnant(bool hasSecondVagina) => secondaryNormalPregnancy != null && canGetSecondaryNormalPregnantCheck(hasSecondVagina);
@@ -181,29 +199,33 @@ namespace CoC.Backend.BodyParts
 
 		protected abstract bool ExtraValidations(bool currentlyValid, bool correctInvalidData);
 
-		internal List<ITimeActiveListener> GetActiveListeners()
+		internal IEnumerable<ITimeActiveListenerFull> GetActiveListeners()
 		{
-			List<ITimeActiveListener> activeListeners = new List<ITimeActiveListener>();
-			ITimeActiveListener activeListener = null;
-			activeListener = normalPregnancy as ITimeActiveListener;
+			List<ITimeActiveListenerFull> activeListeners = new List<ITimeActiveListenerFull>();
+			ITimeActiveListenerFull activeListener = null;
+			activeListener = normalPregnancy as ITimeActiveListenerFull;
 			if (activeListener != null)
 			{
 				activeListeners.Add(activeListener);
 			}
-			activeListener = analPregnancy as ITimeActiveListener;
+			activeListener = analPregnancy as ITimeActiveListenerFull;
 			if (activeListener != null)
 			{
 				activeListeners.Add(activeListener);
 			}
-			activeListener = secondaryNormalPregnancy as ITimeActiveListener;
+			activeListener = secondaryNormalPregnancy as ITimeActiveListenerFull;
 			if (activeListener != null)
 			{
 				activeListeners.Add(activeListener);
+			}
+			if (this is ITimeActiveListenerFull active)
+			{
+				activeListeners.Add(active);
 			}
 			return activeListeners;
 		}
 
-		internal List<ITimeLazyListener> GetLazyListeners()
+		internal IEnumerable<ITimeLazyListener> GetLazyListeners()
 		{
 			List<ITimeLazyListener> lazyListeners = new List<ITimeLazyListener>();
 			ITimeLazyListener lazyListener = null;
@@ -222,7 +244,31 @@ namespace CoC.Backend.BodyParts
 			{
 				lazyListeners.Add(lazyListener);
 			}
+			if (this is ITimeLazyListener lazy)
+			{
+				lazyListeners.Add(lazy);
+			}
 			return lazyListeners;
+		}
+
+		internal IEnumerable<ITimeDailyListenerFull> GetDailyListeners()
+		{
+			List<ITimeDailyListenerFull> dailyListeners = new List<ITimeDailyListenerFull>();
+			if (this is ITimeDailyListenerFull daily)
+			{
+				dailyListeners.Add(daily);
+			}
+			return dailyListeners;
+		}
+
+		internal IEnumerable<ITimeDayMultiListenerFull> GetDayMultiListeners()
+		{
+			List<ITimeDayMultiListenerFull> dayMultiListeners = new List<ITimeDayMultiListenerFull>();
+			if (this is ITimeDayMultiListenerFull dayMulti)
+			{
+				dayMultiListeners.Add(dayMulti);
+			}
+			return dayMultiListeners;
 		}
 	}
 
