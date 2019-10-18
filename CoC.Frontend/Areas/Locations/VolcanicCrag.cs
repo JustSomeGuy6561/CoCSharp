@@ -5,7 +5,6 @@ using CoC.Frontend.Encounters.VolcanicCrag;
 using CoC.Frontend.SaveData;
 using System.Collections.Generic;
 using System.Linq;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Locations
 {

@@ -13,7 +13,7 @@ using CoC.Backend.Engine;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using CoC.Frontend.Display;
+using CoC.Backend.UI;
 using CoC.Frontend.Engine;
 using CoC.Frontend.Tools;
 using CoC.Frontend.UI;
@@ -75,13 +75,13 @@ namespace CoC.Frontend.Items.Consumables
 		private UseItemCallback resumeFromThisMadness;
 		private StandardDisplay display;
 
-		public override PageDataWrapper AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
+		public override DisplayBase AttemptToUse(Creature target, DisplayBase currentDisplay, UseItemCallback postItemUseCallback)
 		{
-			display = new StandardDisplay();
+			display = (StandardDisplay)currentDisplay;
 			resumeFromThisMadness = postItemUseCallback;
 
 			display.ClearButtons();
-			display.AddContent(QueryLocationText());
+			display.OutputText(QueryLocationText());
 
 			ButtonListMaker buttonMaker = new ButtonListMaker(display, 3, 5);
 
@@ -97,9 +97,9 @@ namespace CoC.Frontend.Items.Consumables
 				}
 			}
 
-			buttonMaker.CreateButtons(GlobalStrings.CANCEL(), true, () => resumeFromThisMadness(false, CancelLotionContext(), this));
+			buttonMaker.CreateButtons(GlobalStrings.CANCEL(), true, () => resumeFromThisMadness(false, new StandardDisplay(CancelLotionContext()), this));
 
-			return new PageDataWrapper(display);
+			return display;
 		}
 
 		private string QueryLocationText()
@@ -116,7 +116,7 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			display.ClearOutput();
 
-			display.AddContent("Try to lotion this shit idk fix me later");
+			display.OutputText("Try to lotion this shit idk fix me later");
 
 			for (byte x = 0; x < bodyPart.numLotionableMembers; x++)
 			{
@@ -149,23 +149,25 @@ namespace CoC.Frontend.Items.Consumables
 
 		private void DoApplyLotion(Creature target, Func<SkinTexture,bool> applyCallback, string locationDesc, string overrideText)
 		{
-			string retString;
 			bool retVal = applyCallback(this.lotionType);
+
+			display.ClearOutput();
+
 			if (!string.IsNullOrEmpty(overrideText))
 			{
-				retString = overrideText;
+				display.OutputText(overrideText);
 			}
 			if (applyCallback(this.lotionType))
 			{
-				retString = SuccessTextGeneric(target, locationDesc);
+				display.OutputText(SuccessTextGeneric(target, locationDesc));
 			}
 			else
 			{
-				retString = FailTextGeneric(target, locationDesc);
+				display.OutputText(FailTextGeneric(target, locationDesc));
 			}
 			BodyLotion retItem = retVal ? null : this;
 
-			resumeFromThisMadness(true, retString, null);
+			resumeFromThisMadness(true, display, null);
 		}
 
 		private string SuccessTextGeneric(Creature target, string locationDesc)
@@ -184,8 +186,6 @@ namespace CoC.Frontend.Items.Consumables
 
 		private StringBuilder StartText(Creature target, string locationDesc)
 		{
-			ViewOptions.ClearOutput();
-
 			StringBuilder sb = new StringBuilder();
 			if (!target.wearingAnything)
 			{

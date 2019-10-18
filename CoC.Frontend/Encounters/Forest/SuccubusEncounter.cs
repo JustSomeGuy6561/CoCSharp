@@ -4,7 +4,7 @@
 //4/5/2019, 9:46 PM
 using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using System;
 
 namespace CoC.Frontend.Encounters.Forest
@@ -16,7 +16,7 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override int chances => CHANCES;
 
-		protected override PageDataBase Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
 			throw new NotImplementedException();
 		}

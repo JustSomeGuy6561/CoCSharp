@@ -6,7 +6,6 @@ using CoC.Frontend.Encounters.GlacialRift;
 using CoC.Frontend.SaveData;
 using System.Collections.Generic;
 using System.Linq;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Locations
 {
@@ -54,6 +53,7 @@ namespace CoC.Frontend.Areas.Locations
 			randomEncounters.Add(new WalkThroughGlacialRiftEncounter());
 			//NPCs
 			randomEncounters.Add(new ValeriaAtGlacialRiftEncounter()); //technically you fight her but whatever.
+			
 			//monsters
 			randomEncounters.Add(new ValkyrieEncounter());
 			randomEncounters.Add(new FrostGiantEncounter());

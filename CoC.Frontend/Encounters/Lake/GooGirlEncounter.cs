@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 
 namespace CoC.Frontend.Encounters.Lake
 {
@@ -20,7 +20,7 @@ namespace CoC.Frontend.Encounters.Lake
 			throw new NotImplementedException();
 		}
 
-		protected override PageDataBase Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
 			throw new NotImplementedException();
 		}

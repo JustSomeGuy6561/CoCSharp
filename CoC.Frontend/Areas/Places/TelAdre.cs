@@ -1,13 +1,12 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Places
 {
@@ -46,7 +45,7 @@ namespace CoC.Frontend.Areas.Places
 			protected set => FrontendSessionSave.data.TelAdreExplorationCount = value;
 		}
 
-		protected override PageDataBase ExplorePlace()
+		protected override void ExplorePlace(DisplayBase currentDisplay)
 		{
 			throw new NotImplementedException();
 		}

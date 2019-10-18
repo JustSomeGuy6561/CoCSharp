@@ -44,7 +44,7 @@ namespace CoC.Frontend.Areas.Places
 	//		protected set => FrontendSessionSave.data.AnzuPalaceExplorationCount = value;
 	//	}
 
-	//	protected override DisplayBase ExplorePlace()
+	//	protected override DisplayBase LoadPlace()
 	//	{
 	//		throw new NotImplementedException();
 	//	}

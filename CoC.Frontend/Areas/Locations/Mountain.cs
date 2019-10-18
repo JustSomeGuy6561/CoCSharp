@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Locations
 {

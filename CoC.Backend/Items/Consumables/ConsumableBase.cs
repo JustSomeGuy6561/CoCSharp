@@ -4,7 +4,6 @@
 //6/27/2019, 6:32 PM
 
 using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
 using CoC.Backend.UI;
 
 namespace CoC.Backend.Items.Consumables

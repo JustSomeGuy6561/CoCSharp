@@ -1,5 +1,6 @@
 ﻿using CoC.Backend.Engine;
 using CoC.Backend.SaveData;
+using CoC.Frontend.Areas.HomeBases;
 
 namespace CoC.Frontend.Engine.Difficulties
 {
@@ -20,6 +21,11 @@ namespace CoC.Frontend.Engine.Difficulties
 		public override double monsterHPMultiplier()
 		{
 			return 2.0;
+		}
+
+		public override void OnGameStart()
+		{
+			GameEngine.SetHomeBase<Camp>();
 		}
 
 		public override bool IsEnabled(bool isGlobal, out string whyNot)

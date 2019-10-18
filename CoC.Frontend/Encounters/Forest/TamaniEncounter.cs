@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //4/5/2019, 10:22 PM
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Frontend.Creatures.NPCs;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override int chances => CHANCES;
 
-		protected override PageDataBase Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
 			throw new NotImplementedException();
 		}

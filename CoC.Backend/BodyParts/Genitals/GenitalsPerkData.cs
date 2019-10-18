@@ -261,7 +261,7 @@ namespace CoC.Backend.BodyParts
 
 		private void handleCumChange()
 		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			//throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		#endregion

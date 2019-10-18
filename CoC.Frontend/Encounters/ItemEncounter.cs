@@ -1,18 +1,20 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Encounters;
+using CoC.Backend.Engine;
+using CoC.Backend.Items;
+using CoC.Backend.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Encounters
 {
 	internal class ItemEncounter : RandomEncounter
 	{
-		protected readonly Item item;
+		protected readonly CapacityItem item;
 		protected readonly int chance;
 		protected readonly SimpleDescriptor obtainText;
-		public ItemEncounter(Item drop, int dropRate, SimpleDescriptor gainItemText)
+		public ItemEncounter(CapacityItem drop, int dropRate, SimpleDescriptor gainItemText)
 		{
 			item = drop;
 			chance = dropRate;
@@ -31,10 +33,10 @@ namespace CoC.Frontend.Encounters
 			return true;
 		}
 
-		protected override void Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
-			OutputText(obtainText());
-			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			currentDisplay.OutputText(obtainText());
+			currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1));
 		}
 	}
 }

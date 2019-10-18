@@ -4,11 +4,11 @@
 //4/5/2019, 10:40 PM
 using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Encounters.Forest
 {
@@ -20,10 +20,11 @@ namespace CoC.Frontend.Encounters.Forest
 			return !deepwoodsFound && Areas.Locations.Forest.timesExploredForest >= 20;
 		}
 
-		protected override PageDataBase Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
-#warning may want to combine these.
-			GameEngine.UnlockArea<Areas.Locations.Deepwoods>();
+			GameEngine.UnlockArea<Areas.Locations.Deepwoods>(out string unlockText);
+			currentDisplay.OutputText(unlockText);
+			currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(2));
 		}
 
 		protected override bool encounterDisabled()

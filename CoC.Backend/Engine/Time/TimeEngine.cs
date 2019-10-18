@@ -286,9 +286,14 @@ namespace CoC.Backend.Engine.Time
 				currentContentPage = pageMaker();
 				InitializeNewHour();
 			}
-			else
+			else if (running)
 			{
 				QueryPageStatus();
+			}
+			else
+			{
+				var item = pageMaker();
+				displayPage(areaEngine.RunArea(item));
 			}
 		}
 
@@ -462,7 +467,7 @@ namespace CoC.Backend.Engine.Time
 
 			if (!newPage)
 			{
-				areaEngine.RunArea(currentContentPage);
+				displayPage(areaEngine.RunArea(currentContentPage));
 			}
 			else
 			{

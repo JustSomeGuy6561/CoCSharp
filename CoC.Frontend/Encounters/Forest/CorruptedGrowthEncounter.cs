@@ -4,7 +4,7 @@
 //4/5/2019, 9:46 PM
 using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using CoC.Frontend.SaveData;
 using System;
@@ -43,7 +43,7 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override int chances => amountDestroyed >= 100 ? 0 : (int)Math.Floor(20 - 9 * amountDestroyed / 50.0 );
 
-		protected override PageDataBase Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
 			int rando = Utils.Rand(20);
 			if (rando < 4)

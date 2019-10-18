@@ -5,7 +5,7 @@
 using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
-//using CoC.Frontend.Encounters.Deepwoods;
+using CoC.Frontend.Encounters.Deepwoods;
 using CoC.Frontend.Encounters.Forest;
 using CoC.Frontend.SaveData;
 using System.Collections.Generic;
@@ -32,22 +32,22 @@ namespace CoC.Frontend.Areas.Locations
 		{
 			//initialize encounters here. 
 			//generic
-			//randomEncounters.Add(new WalkInDeepwoods());
-			//randomEncounters.Add(new GatherWood());
-			////NPCs
-			//randomEncounters.Add(new FaerieEncounter());
-			////monsters
-			//randomEncounters.Add(new CorruptedGrowthEncounter());
-			//randomEncounters.Add(new TamaniEncounter());
-			//randomEncounters.Add(new DryadEncounter());
-			////items
-			
-			////semi-random (NPCs in this case)
-			//semiRandomEncounters.Add(new AkbalEncounter());
-			//semiRandomEncounters.Add(new AikoDeepwoodsEncounter());
-			////triggers
-			//triggeredEncounters.Add(new FeraEncounter());
-			//triggeredEncounters.Add(new DiscoverDeepCaveEncounter());
+			randomEncounters.Add(new WalkInDeepwoods());
+			randomEncounters.Add(new GatherWood());
+			//NPCs
+			randomEncounters.Add(new FaerieEncounter());
+			//monsters
+			randomEncounters.Add(new CorruptedGrowthEncounter());
+			randomEncounters.Add(new TamaniEncounter());
+			randomEncounters.Add(new DryadEncounter());
+			//items
+
+			//semi-random (NPCs in this case)
+			semiRandomEncounters.Add(new AkbalEncounter());
+			semiRandomEncounters.Add(new AikoDeepwoodsEncounter());
+			//triggers
+			triggeredEncounters.Add(new FeraEncounter());
+			triggeredEncounters.Add(new DiscoverDeepCaveEncounter());
 		}
 
 		public Deepwoods() : base(DeepwoodsName, UNLOCK_LEVEL, randomEncounters, semiRandomEncounters, triggeredEncounters)

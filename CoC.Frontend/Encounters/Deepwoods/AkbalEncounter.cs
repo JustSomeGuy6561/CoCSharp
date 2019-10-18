@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //4/6/2019, 12:03 AM
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 
 namespace CoC.Frontend.Encounters.Deepwoods
 {
@@ -25,7 +25,7 @@ namespace CoC.Frontend.Encounters.Deepwoods
 			throw new System.NotImplementedException();
 		}
 
-		protected override PageDataBase Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
 			throw new System.NotImplementedException();
 		}

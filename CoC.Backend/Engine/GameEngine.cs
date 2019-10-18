@@ -69,7 +69,7 @@ namespace CoC.Backend.Engine
 
 		public static void SetDifficulty(byte difficultySetting)
 		{
-			
+			difficulties[difficultySetting].OnGameStart();
 		}
 
 		//Time flow follows video game logic - when you're doing some scene, time is stopped. However, whatever you're doing takes time - it's just that that time passes after
@@ -162,6 +162,8 @@ namespace CoC.Backend.Engine
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
 			defaultDifficultyIndex = defaultDifficulty;
 			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
+
+			AreaBase.SetPageMaker(pageDataConstructor);
 		}
 
 		internal static void PostSaveInit()

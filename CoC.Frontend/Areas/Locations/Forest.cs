@@ -58,31 +58,31 @@ namespace CoC.Frontend.Areas.Locations
 
 		static Forest()
 		{
-			////generic
-			//randomEncounters.Add(new TripOnRoot());
-			//randomEncounters.Add(new WalkInWoods());
-			//randomEncounters.Add(new GatherWood());
+			//generic
+			randomEncounters.Add(new TripOnRoot());
+			randomEncounters.Add(new WalkInWoods());
+			randomEncounters.Add(new GatherWood());
 			randomEncounters.Add(new BigJunkEncounter(typeof(Forest)));
-			////NPCs
-			//randomEncounters.Add(new EssrayleForestEncounter());
-			////monsters
-			//randomEncounters.Add(new BeeGirlEncounter());
-			//randomEncounters.Add(new CorruptedGrowthEncounter());
-			//randomEncounters.Add(new MimicEncounter(ForestMimic));
-			//randomEncounters.Add(new SuccubusEncounter());
-			//randomEncounters.Add(new TamaniEncounter());
-			//randomEncounters.Add(new DryadEncounter());
-			////all the imps. 
-			//randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
-			////all the goblins.
-			//randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
-			////items
+			//NPCs
+			randomEncounters.Add(new EssrayleForestEncounter());
+			//monsters
+			randomEncounters.Add(new BeeGirlEncounter());
+			randomEncounters.Add(new CorruptedGrowthEncounter());
+			randomEncounters.Add(new MimicEncounter(ForestMimic));
+			randomEncounters.Add(new SuccubusEncounter());
+			randomEncounters.Add(new TamaniEncounter());
+			randomEncounters.Add(new DryadEncounter());
+			//all the imps. 
+			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
+			//all the goblins.
+			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
+			//items
 
-			////semi-random (NPCs in this case)
-			//semiRandomEncounters.Add(new JojoForestEncounter());
-			//semiRandomEncounters.Add(new MarbleForestEncounter());
-			////triggers
-			//triggeredOccurances.Add(new FindDeepwoods());
+			//semi-random (NPCs in this case)
+			semiRandomEncounters.Add(new JojoForestEncounter());
+			semiRandomEncounters.Add(new MarbleForestEncounter());
+			//triggers
+			triggeredOccurances.Add(new FindDeepwoods());
 		}
 
 		protected override SimpleDescriptor UnlockText => ForestUnlock;

@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //4/5/2019, 8:26 PM
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 
 namespace CoC.Frontend.Encounters.Forest
 {
@@ -21,7 +21,7 @@ namespace CoC.Frontend.Encounters.Forest
 			throw new System.NotImplementedException();
 		}
 
-		protected override PageDataBase Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
 			throw new System.NotImplementedException();
 		}

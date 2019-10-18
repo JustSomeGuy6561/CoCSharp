@@ -2,7 +2,7 @@
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
 using CoC.Frontend.Encounters.Common;
-//using CoC.Frontend.Encounters.Lake;
+using CoC.Frontend.Encounters.Lake;
 using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
@@ -22,18 +22,18 @@ namespace CoC.Frontend.Areas.Locations
 
 		static Lake()
 		{
-			//randomEncounters.Add(new FetishCultistEncounter());
-			//randomEncounters.Add(new AprilFoolsEncounter());
+			randomEncounters.Add(new FetishCultistEncounter());
+			randomEncounters.Add(new AprilFoolsEncounter());
 
-			//randomEncounters.Add(new GooCreatureEncounter());
+			randomEncounters.Add(new GooCreatureEncounter());
 			//all the imps. 
 			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
 			//all the goblins.
 			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
 			randomEncounters.Add(new BigJunkEncounter(typeof(Lake)));
-			//randomEncounters.Add(new WalkAlongLakeEncounter());
-			//randomEncounters.Add(new KaijuEncounter());
-			//randomEncounters.Add(new IzmaLakeEncounter());
+			randomEncounters.Add(new WalkAlongLakeEncounter());
+			randomEncounters.Add(new KaijuEncounter());
+			randomEncounters.Add(new IzmaLakeEncounter());
 
 			////find the foods.
 

@@ -5,7 +5,7 @@
 using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
-using static CoC.Frontend.UI.TextOutput;
+using CoC.Backend.UI;
 
 namespace CoC.Frontend.Encounters.Forest
 {
@@ -17,10 +17,11 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override int chances => CHANCES;
 
-		protected override PageDataBase Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
 			//player.TakeDamage(10);
-			OutputText(flavorText());
+			GameEngine.currentlyControlledCharacter.TakeDamage(10);
+			currentDisplay.OutputText(flavorText());
 		}
 
 		protected override bool encounterDisabled()
