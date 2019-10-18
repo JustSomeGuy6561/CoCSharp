@@ -19,31 +19,26 @@ namespace CoC.Frontend.UI
 
 		public bool active { get; private set; } = false;
 
-		public ReadOnlyCollection<DropDownEntry> entries { get; }
+		public readonly ReadOnlyCollection<DropDownEntry> entries;
 		private readonly List<DropDownEntry> entryHolder;
 
 		public DropDownEntry defaultEntry { get; private set; }
 
 
-		internal static void SetPostDropDownMenuText(SimpleDescriptor text)
+		internal void SetPostDropDownMenuText(SimpleDescriptor text)
 		{
-			if (!instance.active)
+			if (!active)
 			{
 				return;
 			}
 			else
 			{
-				instance.selectPostText = text;
-				instance.postContentChanged = true;
+				selectPostText = text;
+				postContentChanged = true;
 			}
 		}
 
 		private SimpleDescriptor selectPostText = null;
-
-		internal static void ClearData()
-		{
-			instance.Clear();
-		}
 
 		private void Clear()
 		{
@@ -65,51 +60,49 @@ namespace CoC.Frontend.UI
 		}
 
 
-		private DropDownMenu(DropDownEntry[] selectableEntries)
+		internal DropDownMenu()
 		{
-			entryHolder = new List<DropDownEntry>(selectableEntries);
+			entryHolder = new List<DropDownEntry>();
 			entries = new ReadOnlyCollection<DropDownEntry>(entryHolder);
 		}
 
-		internal static bool ActivateDropDownMenu(DropDownEntry[] entries)
+		internal bool ActivateDropDownMenu(DropDownEntry[] entries)
 		{
-			bool retVal = !instance.active;
-			instance.active = true;
-			instance.UpdateInputField(entries);
+			bool retVal = !active;
+			active = true;
+			UpdateInputField(entries);
 
-			instance.statusChanged = true;
+			statusChanged = true;
 
 			return retVal;
 		}
 
-		internal static bool DeactivateDropDownMenu()
+		internal bool DeactivateDropDownMenu()
 		{
-			if (instance.active == false)
+			if (active == false)
 			{
 				return false;
 			}
-			instance.active = false;
+			active = false;
 
-			instance.Clear();
+			Clear();
 			return true;
 		}
 
-		private static readonly DropDownMenu instance = new DropDownMenu(new DropDownEntry[0]);
 		private string postText => selectPostText?.Invoke() ?? "";
 
-		internal static bool QueryStatus(out DropDownMenu dropDownMenu)
+		internal bool QueryStatus()
 		{
-			bool retVal = instance.statusChanged;
-			dropDownMenu = instance;
-			instance.statusChanged = false;
+			bool retVal = statusChanged;
+			statusChanged = false;
 			return retVal;
 		}
 
-		internal static bool QueryPostText(out string postControlText)
+		internal bool QueryPostText(out string postControlText)
 		{
-			bool retVal = instance.postContentChanged;
-			postControlText = instance.postText;
-			instance.postContentChanged = false;
+			bool retVal = postContentChanged;
+			postControlText = postText;
+			postContentChanged = false;
 			return retVal;
 		}
 	}

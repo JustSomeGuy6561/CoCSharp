@@ -13,6 +13,8 @@ namespace CoC.Backend.BodyParts
 {
 	public sealed partial class Hips : SimpleSaveablePart<Hips, HipData>, IShrinkable //Gro+ doesn't work on hips.
 	{
+		public override string BodyPartName() => Name();
+
 		public const byte BOYISH = 0;
 		public const byte SLENDER = 2;
 		public const byte AVERAGE = 4;

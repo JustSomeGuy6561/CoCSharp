@@ -22,9 +22,18 @@ namespace CoC.Backend.Items.Wearables.LowerGarment
 		protected virtual void OnEquip(Creature wearer) { }
 		protected abstract string EquipText(Creature wearer);
 
-		public override bool CanUse(Creature creature)
+		public override bool CanUse(Creature creature, out string whyNot)
 		{
-			return base.CanUse(creature) && creature.armor?.CanWearWithLowerGarment(this) == true;
+			if (!base.CanUse(creature, out whyNot))
+			{
+				return false;
+			}
+			if (creature.armor?.CanWearWithLowerGarment(this, out whyNot) == false)
+			{
+				return false;
+			}
+			whyNot = null;
+			return true;
 		}
 	}
 }

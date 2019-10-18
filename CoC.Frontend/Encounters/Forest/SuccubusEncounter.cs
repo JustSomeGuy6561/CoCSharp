@@ -16,7 +16,7 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override int chances => CHANCES;
 
-		protected override void Run()
+		protected override PageDataBase Run()
 		{
 			throw new NotImplementedException();
 		}

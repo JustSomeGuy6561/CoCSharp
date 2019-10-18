@@ -7,6 +7,13 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Wings
+	{
+		public static string Name()
+		{
+			return "Wings";
+		}
+	}
 	public partial class WingType
 	{
 		private static string Wing2Text()

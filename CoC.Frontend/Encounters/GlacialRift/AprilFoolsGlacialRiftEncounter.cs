@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Encounters;
+using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Encounters.GlacialRift
 {
@@ -19,7 +20,7 @@ namespace CoC.Frontend.Encounters.GlacialRift
 			throw new System.NotImplementedException();
 		}
 
-		protected override void Run()
+		protected override PageDataBase Run()
 		{
 			throw new System.NotImplementedException();
 		}

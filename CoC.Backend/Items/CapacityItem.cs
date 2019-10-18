@@ -1,4 +1,6 @@
 ﻿using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,16 +28,17 @@ namespace CoC.Backend.Items
 		/// Checks to see if the given creature can use this item. Note that just because an item can be used doesn't mean it will ultimately succeed, i.e. if the player cancels it.
 		/// </summary>
 		/// <param name="target">The creature attempting to use this item.</param>
+		/// <param name="whyNot">A string explaining why the current item cannot be used. only checked if this returns false.</param>
 		/// <returns>true if the creature can use this item, false otherwise.</returns>
-		public abstract bool CanUse(Creature target);
-		/// <summary>
-		/// The explanation for why the CanUse function on the given creature fails. If it should succeed, the behavior is not defined. 
-		/// </summary>
-		/// <param name="creature">The creature attempting to use this item</param>
-		/// <returns>a description explaining why it cannot be used.</returns>
-		public abstract string CantUseExplanation(Creature creature);
+		public abstract bool CanUse(Creature target, out string whyNot);
 
-		public abstract void AttemptToUse(Creature target, UseItemCallback postItemUseCallback);
+		/// <summary>
+		/// Attempts to use the item, returning either its own page if it needs several pages, or the results of postItemUseCallback.
+		/// </summary>
+		/// <param name="target">the creature attempting to use this item.</param>
+		/// <param name="postItemUseCallback">Callback to call when the item is actually used. </param>
+		/// <returns>Either a page, or a string, explaining what it did, or why it failed.</returns>
+		public abstract DisplayBase AttemptToUse(Creature target, DisplayBase currentPage, UseItemCallback postItemUseCallback);
 
 		//how much it costs to buy this item. Generally, the sell price is 1/2 it's value because video game capitalism. Items that cannot be bought should be given a price of 0;
 		protected abstract int monetaryValue { get; }

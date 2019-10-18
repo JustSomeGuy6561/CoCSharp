@@ -5,10 +5,10 @@ using CoC.Backend.Perks;
 using CoC.Backend.SaveData;
 using CoC.Frontend.Areas;
 using CoC.Frontend.Areas.Locations;
+using CoC.Frontend.UI;
 using CoC.Frontend.GameCredits;
 using CoC.Frontend.Perks;
 using CoC.Frontend.SaveData;
-using CoC.Frontend.UI;
 using System;
 using System.IO;
 
@@ -27,7 +27,7 @@ namespace CoC.Frontend.Engine
 		{
 			BasePerkModifiers getExtraData(Creature source) => new ExtraPerkModifiers(source);
 
-			BackendInitializer.PreSaveInit(TextOutput.OutputText, AreaManager.placeCollection, AreaManager.locationCollection, 
+			BackendInitializer.PreSaveInit(() => new StandardDisplay(), DisplayManager.LoadDisplay, AreaManager.placeCollection, AreaManager.locationCollection, 
 				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, getExtraData, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);
 
 			CreditManager.AddCreditCategory(new FrontendCredits());

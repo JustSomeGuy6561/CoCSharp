@@ -41,8 +41,9 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override int monetaryValue => 0;
 
-		public override bool CanUse(Creature target)
+		public override bool CanUse(Creature target, out string whyNot)
 		{
+			whyNot = null;
 			return true;
 		}
 
@@ -58,11 +59,6 @@ namespace CoC.Frontend.Items.Consumables
 				resultsOfUse = "";
 			}
 			return true;
-		}
-
-		public override string CantUseExplanation(Creature creature)
-		{
-			return "";
 		}
 
 		public override byte maxCapacityPerSlot => 5;

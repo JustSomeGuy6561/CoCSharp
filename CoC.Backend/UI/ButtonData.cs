@@ -7,7 +7,7 @@ using CoC.Backend.Strings;
 using System;
 using System.Collections.ObjectModel;
 
-namespace CoC.Backend.Engine
+namespace CoC.Backend.UI
 {
 	//Button Data, Like Output, is generated every time. We don't need to know when it updates - we assume it never updates unless language changes.
 	//In the event of a language change, we're already redoing the GUI, so this isn't a problem. 

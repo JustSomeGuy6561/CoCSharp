@@ -8,6 +8,7 @@ using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -21,8 +22,10 @@ namespace CoC.Backend.BodyParts
 	//This class is so much harder to implement than i thought it'd be.
 	//Edit so much later: This class is probably the most complicated i've implemented to date. I still need to add attack data.
 
-	public sealed class Horns : BehavioralSaveablePart<Horns, HornType, HornData>, IGrowable, IShrinkable, IFemininityListenerInternal, ICanAttackWith
+	public sealed partial class Horns : BehavioralSaveablePart<Horns, HornType, HornData>, IGrowable, IShrinkable, IFemininityListenerInternal, ICanAttackWith
 	{
+
+		public override string BodyPartName() => Name();
 
 		public byte significantHornSize => _significantHornSize;
 		private byte _significantHornSize = 0;

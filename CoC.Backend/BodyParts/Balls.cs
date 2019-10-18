@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using WeakEvent;
@@ -95,19 +96,21 @@ namespace CoC.Backend.BodyParts
 			return balls;
 		}
 
+		public override string BodyPartName() => Name();
+
 		public override BallsData AsReadOnlyData()
 		{
 			return new BallsData(creatureID, count, size);
 		}
 
-		//public string shortDescription()
-		//{
-		//	if (hasBalls) return BallsDescript(count, size, uniBall);
-		//	else return GlobalStrings.None();
-		//}
+		public string ShortDescription()
+		{
+			if (hasBalls) return BallsDescript(count, size, uniBall);
+			else return GlobalStrings.None();
+		}
 
-		//public DescriptorWithArg<Balls> fullDescription => BallsFullDesc;
-		//public TypeAndPlayerDelegate<Balls> TypeAndPlayerDelegate => BallsPlayerStr;
+		public DescriptorWithArg<Balls> FullDescription => BallsFullDesc;
+		public TypeAndPlayerDelegate<Balls> PlayerStr => BallsPlayerStr;
 
 		#region Unique Functions and Updating Properties
 		//Grows a pair of balls. returns false if it already has balls. 

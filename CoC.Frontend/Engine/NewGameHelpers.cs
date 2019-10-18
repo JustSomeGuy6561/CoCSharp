@@ -7,17 +7,18 @@ using CoC.Backend.Engine;
 using CoC.Backend.SaveData;
 using CoC.Backend.Strings;
 using CoC.Frontend.Creatures;
+using CoC.Frontend.UI;
 using CoC.Frontend.SaveData;
 using CoC.Frontend.Strings.Engine;
-using CoC.Frontend.UI;
-using static CoC.Backend.Engine.ButtonManager;
-using static CoC.Frontend.UI.TextOutput;
 using static CoC.Frontend.UI.ViewOptions;
-using static CoC.Frontend.UI.ControllerData.SpriteAndCreditsOutput;
+using CoC.Backend.UI;
+
 namespace CoC.Frontend.Engine
 {
 	public static class NewGameHelpers
 	{
+		private static StandardDisplay currentDisplay;
+
 		public static void NewGame()
 		{
 			//clear all the extraneous data stored in the various engines in the backend. 
@@ -29,58 +30,70 @@ namespace CoC.Frontend.Engine
 			HideMenu();
 			HideStats();
 
-			ClearOutput();
-			OutputText(NewGameHelperText.IntroText());
-			InputField.ActivateInputField();
-			DropDownMenu.ActivateDropDownMenu(SpecialCharacters.SpecialCharacterDropDownList());
-			AddButton(0, GlobalStrings.OK(), ChooseName);
+			if (currentDisplay is null)
+			{
+				currentDisplay = new StandardDisplay();
+			}
+			DisplayManager.LoadDisplay(currentDisplay);
+
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(NewGameHelperText.IntroText());
+			currentDisplay.ActivateInputField();
+			currentDisplay.ActivateDropDownMenu(SpecialCharacters.SpecialCharacterDropDownList(currentDisplay));
+			currentDisplay.AddButton(0, GlobalStrings.OK(), ChooseName);
 		}
 
 		private static void ChooseName()
 		{
-			if (string.IsNullOrWhiteSpace(InputField.output))
+			if (string.IsNullOrWhiteSpace(currentDisplay.GetOutput()))
 			{
 				return;
 			}
 			else
 			{
-				ClearOutput();
-				string playerName = InputField.output.Trim();
+				currentDisplay.ClearOutput();
+				string playerName = currentDisplay.GetOutput().Trim();
 				string check = playerName.CapitalizeFirstLetter();
 				PlayerCreator pc;
 				if (!SpecialCharacters.specialCharacterLookup.ContainsKey(check))
 				{
 					pc = new PlayerCreator(playerName);
-					CharacterCreation creator = new CharacterCreation(pc);
+					CharacterCreation creator = new CharacterCreation(currentDisplay, pc);
 					creator.SetGenderGeneric();
 				}
 				else
 				{
 					PromptSpecial(check);
 				}
-				InputField.ClearData();
+				currentDisplay.ClearInputData();
 			}
 		}
 
 		private static void PromptSpecial(string specialName)
 		{
-			OutputText(NewGameHelperText.PromptSpecial());
-			AddButton(0, NewGameHelperText.SpecialName(), () => ParseSpecial(specialName, true));
-			AddButton(1, NewGameHelperText.ContinueOn(), () => ParseSpecial(specialName, false));
+			currentDisplay.OutputText(NewGameHelperText.PromptSpecial());
+			currentDisplay.AddButton(0, NewGameHelperText.SpecialName(), () => ParseSpecial(specialName, true));
+			currentDisplay.AddButton(1, NewGameHelperText.ContinueOn(), () => ParseSpecial(specialName, false));
 		}
 
 		private static void ParseSpecial(string name, bool useSpecial)
 		{
 			PlayerCreator pc = useSpecial ? SpecialCharacters.specialCharacterLookup[name]() : new PlayerCreator(name);
-			CharacterCreation creator = new CharacterCreation(pc);
+			CharacterCreation creator = new CharacterCreation(currentDisplay, pc);
 			creator.SetGenderSpecial(useSpecial);
 		}
 
 		public static void NewGamePlus(Player currentPlayer)
 		{
+			if (currentDisplay == null)
+			{
+				currentDisplay = new StandardDisplay();
+			}
+			currentDisplay.ClearOutput();
+
 			//parse the current player to New Game Plus related PlayerCreator;
 			PlayerCreator pc = new PlayerCreator(currentPlayer.name);
-			CharacterCreation creator = new CharacterCreation(pc, true);
+			CharacterCreation creator = new CharacterCreation(currentDisplay, pc, true);
 			creator.SetGenderGeneric();
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -96,67 +109,70 @@ namespace CoC.Frontend.Engine
 			BackendSessionSave.data.RealismEnabled = false;
 			BackendSessionSave.data.hardcoreMode = false;
 
+			GameEngine.SetDifficulty(1);
+
 			StartTheGame(player);
 		}
 
 		public static void StartTheGame(Player player)
 		{
 			GameEngine.InitializeGame(player);
-			GameEngine.InitializeTime(0, 11);
-			ClearOutput();
+			GameEngine.InitializeOrJumpTime(0, 11);
+			currentDisplay.ClearOutput();
 			ShowStats();
 			//if (flags[kFLAGS.GRIMDARK_MODE] > 0)
 			//{
-			//	OutputText("You are prepared for what is to come. Most of the last year has been spent honing your body and mind to prepare for the challenges ahead. You are the Champion of Ingnam. The one who will journey to the demon realm and guarantee the safety of your friends and family, even though you'll never see them again. You wipe away a tear as you enter the courtyard and see Elder... Wait a minute...\n\n");
-			//	OutputText("Something is not right. Elder Nomur is already dead. Ingnam has been mysteriously pulled into the demon realm and the surroundings look much worse than you've expected. A ruined portal frame stands in the courtyard, obviously no longer functional and instead serves as a grim reminder on the now-ceased tradition of annual sacrifice of Champions. Wooden palisades surround the town of Ingnam and outside the walls, spears are set out and angled as a mean to make the defenses more intimidating. As if that wasn't enough, some of the spears have demonic skulls impaled on them.");
+			//currentDisplay.OutputText("You are prepared for what is to come. Most of the last year has been spent honing your body and mind to prepare for the challenges ahead. You are the Champion of Ingnam. The one who will journey to the demon realm and guarantee the safety of your friends and family, even though you'll never see them again. You wipe away a tear as you enter the courtyard and see Elder... Wait a minute...\n\n");
+			//currentDisplay.OutputText("Something is not right. Elder Nomur is already dead. Ingnam has been mysteriously pulled into the demon realm and the surroundings look much worse than you've expected. A ruined portal frame stands in the courtyard, obviously no longer functional and instead serves as a grim reminder on the now-ceased tradition of annual sacrifice of Champions. Wooden palisades surround the town of Ingnam and outside the walls, spears are set out and angled as a mean to make the defenses more intimidating. As if that wasn't enough, some of the spears have demonic skulls impaled on them.");
 			//	flags[kFLAGS.IN_INGNAM] = 1;
 			//	doNext(creatorMenu);
 			//	return;
 			//}
-			OutputImage("camp-arrival");
-			OutputText(NewGameHelperText.ArrivalPartOne());
-			//dynStats("lus", 15);
-			MenuHelpers.DoNext(ArrivalPartTwo);
+			currentDisplay.OutputImage("camp-arrival");
+			currentDisplay.OutputText(NewGameHelperText.ArrivalPartOne());
+			GameEngine.currentlyControlledCharacter.IncreaseLust(15);
+			currentDisplay.DoNext(ArrivalPartTwo);
 
 		}
 
 		private static void ArrivalPartTwo()
 		{
-			ClearOutput();
-			//dynStats("lus", 40, "cor", 2);
-			GameEngine.InitializeTime(0, 18);
+			currentDisplay.ClearOutput();
+			GameEngine.currentlyControlledCharacter.IncreaseCreatureStats(lus: 40, corr: 2);
+			GameEngine.InitializeOrJumpTime(0, 18);
 
-			OutputImage("encounter-zetaz");
-			SetSprite("zetaz_imp.png");
-			OutputText(NewGameHelperText.ArrivalPartThree());
-			
-			MenuHelpers.DoNext(ArrivalPartThree);
+			currentDisplay.OutputImage("encounter-zetaz");
+			currentDisplay.SetSprite("zetaz_imp.png");
+			currentDisplay.OutputText(NewGameHelperText.ArrivalPartThree());
+
+			currentDisplay.DoNext(ArrivalPartThree);
 		}
 		private static void ArrivalPartThree()
 		{
-			ClearOutput();
-			//dynStats("lus", -30);
-			OutputImage("item-draft-lust");
-			OutputText(NewGameHelperText.ArrivalPartThree());
-			MenuHelpers.DoNext(ArrivalPartFour);
+			currentDisplay.ClearOutput();
+			GameEngine.currentlyControlledCharacter.DecreaseLust(30);
+			currentDisplay.OutputImage("item-draft-lust");
+			currentDisplay.OutputText(NewGameHelperText.ArrivalPartThree());
+			currentDisplay.DoNext(ArrivalPartFour);
 		}
 		private static void ArrivalPartFour()
 		{
-			ClearOutput();
-			OutputImage("zetaz-runaway");
-			OutputText(NewGameHelperText.ArrivalPartFour());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputImage("zetaz-runaway");
+			currentDisplay.OutputText(NewGameHelperText.ArrivalPartFour());
 
-			MenuHelpers.DoNext(ArrivalPartFive);
+			currentDisplay.DoNext(ArrivalPartFive);
 		}
 		private static void ArrivalPartFive()
 		{
-			ClearOutput();
-			OutputImage("camp-portal");
-			ClearSprite();
-			OutputText(NewGameHelperText.ArrivalPartFive());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputImage("camp-portal");
+			currentDisplay.ClearSprite();
+			currentDisplay.OutputText(NewGameHelperText.ArrivalPartFive());
+			currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(0));
 			//awardAchievement("Newcomer", kACHIEVEMENTS.STORY_NEWCOMER, true, true);
-			//MenuHelpers.DoNext(() => GameEngine.ReturnToBaseAfter(0));
-			MenuHelpers.DoNext(NewGame);//debug helping.
+			//currentDisplay.DoNext(() => GameEngine.ReturnToBaseAfter(0));
+			//currentDisplay.DoNext(NewGame);//debug helping.
 		}
 	}
 }

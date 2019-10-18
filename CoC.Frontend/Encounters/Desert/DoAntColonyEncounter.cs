@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Encounters;
+using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Encounters.Desert
 {
@@ -20,7 +21,7 @@ namespace CoC.Frontend.Encounters.Desert
 			throw new System.NotImplementedException();
 		}
 
-		protected override void Run()
+		protected override PageDataBase Run()
 		{
 			throw new System.NotImplementedException();
 		}

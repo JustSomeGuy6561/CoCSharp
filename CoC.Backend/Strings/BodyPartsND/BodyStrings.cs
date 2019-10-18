@@ -12,6 +12,11 @@ namespace CoC.Backend.BodyParts
 
 	public partial class Body
 	{
+		public static string Name()
+		{
+			return "Body";
+		}
+
 		private string MultiDye(HairFurColors dyeColor, HashSet<byte> indices)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();

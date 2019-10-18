@@ -8,6 +8,7 @@ using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Encounters.Forest
 {
@@ -19,7 +20,7 @@ namespace CoC.Frontend.Encounters.Forest
 			return !deepwoodsFound && Areas.Locations.Forest.timesExploredForest >= 20;
 		}
 
-		protected override void Run()
+		protected override PageDataBase Run()
 		{
 #warning may want to combine these.
 			GameEngine.UnlockArea<Areas.Locations.Deepwoods>();

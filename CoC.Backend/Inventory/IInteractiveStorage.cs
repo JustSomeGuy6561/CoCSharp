@@ -23,5 +23,6 @@ namespace CoC.Backend.Inventory
 		bool PlaceItem(T item, byte slot);
 
 		int TryAddItem(T item);
+		bool CanAddItem(T item);
 	}
 }

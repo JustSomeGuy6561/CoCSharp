@@ -2,16 +2,16 @@
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Tools;
+using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Encounters.Common
 {
 	internal partial class BigJunkEncounter
 	{
-		private static void OutputBigJunkText(bool isForest, bool isLake)
+		private static void OutputBigJunkText(StandardDisplay display, bool isForest, bool isLake)
 		{
 			/*
 			Player player = GameEngine.currentPlayer;
@@ -32,7 +32,7 @@ namespace CoC.Frontend.Encounters.Common
 				helperText1 = "sandy dunes of the desert";
 				helperText2 = "sandscape behind you. The incredibly hot surface of the desert causes your loins to sweat heavily and fills them with relentless heat.";
 			}
-			OutputText("Walking along the " + helperText1 + ", you find yourself increasingly impeded by the bulk of your " + largestCock.fullDescription() + " dragging along the " + helperText2);
+			display.OutputText("Walking along the " + helperText1 + ", you find yourself increasingly impeded by the bulk of your " + largestCock.fullDescription() + " dragging along the " + helperText2);
 			if (player.cocks.Count == 1)
 			{
 				if (isForest)
@@ -51,28 +51,28 @@ namespace CoC.Frontend.Encounters.Common
 					helperText1 = " along the dunes";
 					helperText2 = " the rough textured tongue of a monstrous animal sliding along the head of your " + largestCock.shortDescription() + ".";
 				}
-				OutputText(" As it drags" + helperText1 + ", the sensation forces you to imagine" + helperText2);
+				display.OutputText(" As it drags" + helperText1 + ", the sensation forces you to imagine" + helperText2);
 			}
 			else //(player.cocks.length >= 2) 
 			{
 				if (isForest)
 				{
 					helperText1 = " across the grass, twigs, and exposed tree roots";
-					helperText2 = " rough fingers of " + Utils.Count(player.genitals.numCocks) + " different monstrous hands were sliding over each shaft, gently jerking them off.";
+					helperText2 = " rough fingers of " + Utils.NumberAsText(player.genitals.numCocks) + " different monstrous hands were sliding over each shaft, gently jerking them off.";
 				}
 				else if (isLake)
 				{
 					helperText1 = " through the mud";
-					helperText2 = " lips of " + Utils.Count(player.genitals.numCocks) + " different cunts were slobbering over each one.";
+					helperText2 = " lips of " + Utils.NumberAsText(player.genitals.numCocks) + " different cunts were slobbering over each one.";
 				}
 				else
 				{
 					helperText1 = " through the sands";
-					helperText2 = " rough textured tongues of " + Utils.Count(player.genitals.numCocks) + " different monstrous animals were slobbering over each one.";
+					helperText2 = " rough textured tongues of " + Utils.NumberAsText(player.genitals.numCocks) + " different monstrous animals were slobbering over each one.";
 				}
-				OutputText(" With all of your " + player.genitals.AllCocksShortDesc() + " dragging" + helperText1 + ", they begin feeling as if the" + helperText2);
+				display.OutputText(" With all of your " + player.genitals.AllCocksShortDesc() + " dragging" + helperText1 + ", they begin feeling as if the" + helperText2);
 			}
-			OutputText(Environment.NewLine + Environment.NewLine);
+			display.OutputText(Environment.NewLine + Environment.NewLine);
 			
 			//PARAGRAPH 2
 			if (player.lowerBody.isQuadruped)
@@ -85,7 +85,7 @@ namespace CoC.Frontend.Encounters.Common
 				helperText1 = "your torso to the ground. Normally your erection would merely raise itself skyward";
 				helperText2 = "forcibly pivoting at the hips until your torso is compelled to rest face down atop your " + player.genitals.AllCocksShortDesc() + ".";
 			}
-			OutputText(" The impending erection can't seem to be stopped. Your sexual frustration forces stiffness into your " + player.genitals.AllCocksShortDesc() + ", which forces" +
+			display.OutputText(" The impending erection can't seem to be stopped. Your sexual frustration forces stiffness into your " + player.genitals.AllCocksShortDesc() + ", which forces" +
 				helperText1 + ", but your genitals have grown too large and heavy for your " + player.hips.ShortDescription() + " to hold them aloft. Instead, you feel your body" + helperText2);
 
 			if (player.biggestTitSize() >= 35)
@@ -97,22 +97,22 @@ namespace CoC.Frontend.Encounters.Common
 				else
 				{
 
-					OutputText(" Your " + player.chestDesc() + "hang lewdly off your torso to rest" + helperText1 + ".Their immense weight anchors your body, further preventing your torso from lifting itself up." + helperText2;
+					display.OutputText(" Your " + player.chestDesc() + "hang lewdly off your torso to rest" + helperText1 + ".Their immense weight anchors your body, further preventing your torso from lifting itself up." + helperText2;
 				}
 			}
 
 			if (player.hasBalls)
 			{
-				if (isForest) helperText1 = " Your " + player.balls.ShortDesc() + " pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + " and onto the fertile soil of the forest.";
-				else if (isLake) helperText1 = " Your " + player.balls.ShortDesc() + " pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + " and into the waters of the nearby lake.";
-				else helperText1 = " The fiery warmth of the desert caresses it, causing your " + player.balls.ShortDesc() + " to pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + ".";
+				if (isForest) helperText1 = " Your " + player.balls.ShortDescription() + " pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + " and onto the fertile soil of the forest.";
+				else if (isLake) helperText1 = " Your " + player.balls.ShortDescription() + " pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + " and into the waters of the nearby lake.";
+				else helperText1 = " The fiery warmth of the desert caresses it, causing your " + player.balls.ShortDescription() + " to pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + ".";
 				
-				OutputText(" Your " + player.skin.tone + " " + player.sackDescript() + " rests beneath your raised " + player.buttDescript() + "." + helperText1);
+				display.OutputText(" Your " + player.skin.tone + " " + player.sackDescript() + " rests beneath your raised " + player.buttDescript() + "." + helperText1);
 			}
 
 			if (player.hasVagina)
 			{
-				OutputText("  Your " + player.vaginaDescript() + " and " + player.clitDescript() + " are thoroughly squashed between the bulky flesh where your male genitals protrude from between your hips and the " + player.buttDescript() + " above.");
+				display.OutputText("  Your " + player.vaginaDescript() + " and " + player.clitDescript() + " are thoroughly squashed between the bulky flesh where your male genitals protrude from between your hips and the " + player.buttDescript() + " above.");
 				if (player.lowerBody.isQuadruped)
 				{
 					//IF CHARACTER HAS A DROOLING PUSSY ADD SENTENCE
@@ -125,7 +125,7 @@ namespace CoC.Frontend.Encounters.Common
 						else if (isLake) helperText2 = "the mud beneath you. The sloppy fem-spunk only makes the ground more muddy.";
 						else helperText2 = "Juices stream from your womanhood and begin pooling on the hot sand beneath you.";
 
-						OutputText(helperText1 + helperText2);
+						display.OutputText(helperText1 + helperText2);
 					}
 				}
 				else
@@ -137,18 +137,18 @@ namespace CoC.Frontend.Encounters.Common
 						else if (isLake) helperText1 = "the wet ground beneath you. The drooling fem-spunk only makes the ground more muddy.";
 						else helperText1 = " the hot sand beneath you. Wisps of steam rise up into the air only to tease your genitals further.";
 
-						OutputText("Juices stream from your womanhood and begin pooling on " + helperText1);
+						display.OutputText("Juices stream from your womanhood and begin pooling on " + helperText1);
 					}
 				}
 			}
 
 			//PARAGRAPH 3
 
-			OutputText(Environment.NewLine + Environment.NewLine + "You realize you are effectively trapped here by your own body.");
+			display.OutputText(Environment.NewLine + Environment.NewLine + "You realize you are effectively trapped here by your own body.");
 			//CORRUPTION BASED CHARACTER'S VIEW OF SITUATION
-			if (player.corruption < 33) OutputText(" Panic slips into your heart as you realize that if any dangerous predator were to find you in this state, you'd be completely defenseless.  You must find a way to regain your mobility immediately!");
-			else if (player.corruption < 66) OutputText(" You realize that if any dangerous predator were to find you in this state, you'd be completely defenseless!  You must find a way to regain your mobility... yet there is a certain appeal to imagining how pleasurable it would be for a sexual predator to take advantage of your obscene body.");
-			else OutputText(" Your endowments have rendered you completely helpless should any predators find you.  Somewhere in your heart, you find this prospect almost exhilarating.  The idea of being a helpless fucktoy for a wandering beast is unusually inviting to you.  Were it not for the thought that you might starve to death, you'd be incredibly tempted to remain right where you are.");
+			if (player.corruption < 33) display.OutputText(" Panic slips into your heart as you realize that if any dangerous predator were to find you in this state, you'd be completely defenseless.  You must find a way to regain your mobility immediately!");
+			else if (player.corruption < 66) display.OutputText(" You realize that if any dangerous predator were to find you in this state, you'd be completely defenseless!  You must find a way to regain your mobility... yet there is a certain appeal to imagining how pleasurable it would be for a sexual predator to take advantage of your obscene body.");
+			else display.OutputText(" Your endowments have rendered you completely helpless should any predators find you.  Somewhere in your heart, you find this prospect almost exhilarating.  The idea of being a helpless fucktoy for a wandering beast is unusually inviting to you.  Were it not for the thought that you might starve to death, you'd be incredibly tempted to remain right where you are.");
 
 			//SCENE END = IF CHARACTER HAS FULL WINGS
 			if (player.wings.canFly)
@@ -156,7 +156,7 @@ namespace CoC.Frontend.Encounters.Common
 				if (isForest) helperText1 = " out of the forest";
 				else if (isLake) helperText1 = " out of the mud";
 				else helperText1 = " across the hot sands";
-				OutputText(" You extend your wings and flap as hard as you can until at last, you manage to lighten the bulk of your body. It helps just enough to let you drag your genitals" + helperText1 + " and back to camp.The ordeal takes nearly an hour for you to return and deal with.");
+				display.OutputText(" You extend your wings and flap as hard as you can until at last, you manage to lighten the bulk of your body. It helps just enough to let you drag your genitals" + helperText1 + " and back to camp.The ordeal takes nearly an hour for you to return and deal with.");
 			}
 			//SCENE END IF CHARACTER HAS CENTAUR BODY
 			else if (player.lowerBody.isQuadruped)
@@ -180,7 +180,7 @@ namespace CoC.Frontend.Encounters.Common
 						" Eventually, with a crude crawl, your legs manage to push the bulk of your body onto more solid ground. With great difficulty, you spend the next hour shuffling your genitals across the sandscape and back to camp.";
 				}
 
-				OutputText("  You struggle and work your multiple legs against the" + helperText1 + ".  Your " + player.feet() + " have consistent trouble finding footing as the" + helperText2);
+				display.OutputText("  You struggle and work your multiple legs against the" + helperText1 + ".  Your " + player.feet() + " have consistent trouble finding footing as the" + helperText2);
 			}
 			//SCENE END = FOR ALL OTHER CHARACTERS
 			else
@@ -188,7 +188,7 @@ namespace CoC.Frontend.Encounters.Common
 				if (isForest) helperText1 = " across the forest floor.";
 				else if (isLake) helperText1 = " through the mud.";
 				else helperText1 = " across the warm sand.";
-				OutputText(" You struggle and push with your " + player.legs() + " as hard as you can, but it's no use. You do the only thing you can and begin stroking your " +
+				display.OutputText(" You struggle and push with your " + player.legs() + " as hard as you can, but it's no use. You do the only thing you can and begin stroking your " +
 					player.genitals.AllCocksShortDesc() + " with as much vigor as you can muster. Eventually your body tenses and a light load of jizz erupts from your body, " +
 					"but the orgasm is truly mild compared to what you need. You're simply too weary from struggling to give yourself the masturbation you truly need, but you continue to try." +
 					" Nearly an hour later " + player.genitals.AllCocksFullDesc() + " has softened enough to allow you to stand again, and you make your way back to camp, still dragging your genitals" + helperText1); 

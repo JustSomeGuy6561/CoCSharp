@@ -4,15 +4,15 @@
 //12/26/2018, 7:58 PM
 
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Creatures;
 using System;
 
 namespace CoC.Backend.BodyParts
 {
 	//technically claws do update, but we're not messing with them. it's possible to do, but i just dont feel it's necessary. The data change will never occur.
-
-	public sealed class Hands : PartWithBehaviorAndEventBase<Hands, HandType, HandData>
+	public sealed partial class Hands : PartWithBehaviorAndEventBase<Hands, HandType, HandData>
 	{
+		public override string BodyPartName() => Name();
+
 		public override HandType type { get; protected set; }
 
 		public Tones clawTone => type.getClawTone(getArmData(true).tone, getArmData(false).tone);
@@ -54,7 +54,7 @@ namespace CoC.Backend.BodyParts
 		public bool isOther => !(isClaws || isHands || isPaws);
 
 		protected readonly HandStyle handStyle;
-		public virtual Tones getClawTone (Tones primaryTone, Tones secondaryTone)
+		public virtual Tones getClawTone(Tones primaryTone, Tones secondaryTone)
 		{
 			if (canTone())
 			{

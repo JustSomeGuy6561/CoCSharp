@@ -43,7 +43,7 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override int chances => amountDestroyed >= 100 ? 0 : (int)Math.Floor(20 - 9 * amountDestroyed / 50.0 );
 
-		protected override void Run()
+		protected override PageDataBase Run()
 		{
 			int rando = Utils.Rand(20);
 			if (rando < 4)

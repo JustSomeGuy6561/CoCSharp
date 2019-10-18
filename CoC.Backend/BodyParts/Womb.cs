@@ -9,8 +9,13 @@ using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
-	public abstract class Womb : SimpleSaveablePart<Womb, WombData>
+	public abstract partial class Womb : SimpleSaveablePart<Womb, WombData>
 	{
+		public override string BodyPartName()
+		{
+			return Name();
+		}
+
 		//Note: we don't attach these to vagina and ass b/c it's possible to lose a vagina (and perhaps an asshole too if it's possible to TF to anemone or something)
 		//and we wouldn't want this to cause the pregnancy to be lost. 
 		public float pregnancyMultiplier

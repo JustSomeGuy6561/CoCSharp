@@ -3,7 +3,6 @@
 //Author: JustSomeGuy
 //4/15/2019, 9:13 PM
 
-using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 
@@ -17,8 +16,10 @@ namespace CoC.Backend.BodyParts
 {
 	//it wraps a byte. I dunno. 
 	//now capping max base fertility to 75. Perks could boost this past the base 75 value. 
-	public sealed class Fertility : SimpleSaveablePart<Fertility, FertilityData>
+	public sealed partial class Fertility : SimpleSaveablePart<Fertility, FertilityData>
 	{
+		public override string BodyPartName() => Name();
+
 		public const byte MAX_TOTAL_FERTILITY = byte.MaxValue - 5;
 		public const byte MAX_BASE_FERTILITY = 75;
 

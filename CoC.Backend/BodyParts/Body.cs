@@ -3,11 +3,11 @@
 //Author: JustSomeGuy
 //1/18/2019, 9:56 PM
 
-using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
 using CoC.Backend.SaveData;
@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -82,6 +81,8 @@ namespace CoC.Backend.BodyParts
 		public EpidermalData mainEpidermis => primary.AsReadOnlyData();
 		public EpidermalData supplementaryEpidermis => secondary.AsReadOnlyData();
 
+		public bool hasSecondaryEpidermis => !secondary.isEmpty;
+
 		//private readonly Epidermis primaryEpidermis;
 		//private readonly Epidermis secondaryEpidermis;
 
@@ -93,6 +94,7 @@ namespace CoC.Backend.BodyParts
 		private readonly Epidermis mainFur; //stores the current fur that is primarily used. if it's a multi-fur, the secondary fur is stored in supplementary epidermis. if it's no-fur, this is empty.
 		public bool furActive => ReferenceEquals(mainFur, primary) || ReferenceEquals(mainFur, secondary);
 		private readonly Epidermis mainSkin; //stores the current skin that is primarily used. if it's multi-tone, the secondary tone is stored in the supplementary epidermis.
+		public EpidermalData primarySkin => mainSkin.AsReadOnlyData();
 		private bool skinActive => ReferenceEquals(mainSkin, primary) || ReferenceEquals(mainSkin, secondary);
 
 		private Epidermis primary => type.primaryIsFur ? mainFur : mainSkin;
@@ -148,6 +150,8 @@ namespace CoC.Backend.BodyParts
 			ChangeSkin(true, primarySkinTone, primarySkinTexture, true);
 			ChangeSkin(false, secondarySkinTone, secondarySkinTexture, true);
 		}
+
+		public override string BodyPartName() => Name();
 
 		#region Updates
 
@@ -334,7 +338,7 @@ namespace CoC.Backend.BodyParts
 				type = bodyType;
 				type.ParseEpidermisDataOnTransform(mainFur, mainSkin, secondary, hairData, out secondary);
 				extraUpdates?.Invoke();
-				
+
 				CheckOuterLayerChanged(oldSkin, oldPrimary, oldSecondary, oldFur);
 				NotifyTypeChanged(oldType);
 				return true;
@@ -1481,7 +1485,6 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 	}
-
 	public sealed class KitsuneBodyType : CompoundBodyType
 	{
 		public Tones defaultTone => ((ToneBodyMember)primary).defaultTone;
@@ -1502,9 +1505,9 @@ namespace CoC.Backend.BodyParts
 			secondaryEpidermis = mainFur;
 		}
 	}
-
 	public sealed class CockatriceBodyType : CompoundBodyType
 	{
+
 		public FurColor defaultFeathers => ((FurBodyMember)primary).defaultFur;
 		public Tones defaultScales => ((ToneBodyMember)secondary).defaultTone;
 

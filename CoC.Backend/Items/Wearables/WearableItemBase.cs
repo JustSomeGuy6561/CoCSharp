@@ -11,7 +11,7 @@ namespace CoC.Backend.Items.Wearables
 		{
 		}
 
-		protected abstract bool CanWearWithBodyData(Creature creature);
+		protected abstract bool CanWearWithBodyData(Creature creature, out string whyNot);
 
 		/// <summary>
 		/// Equip the item. At this point, CanUse has been called. It's assumed that this will always succeed at this point. 
@@ -26,11 +26,6 @@ namespace CoC.Backend.Items.Wearables
 			return EquipItem(target, out resultsOfUseText);
 		}
 
-		//protected override T UseItem(Creature target, bool outputResultsOfUse)
-		//{
-		//	return EquipItem(target, outputResultsOfUse);
-		//}
-
 		/// <summary>
 		/// Remove this item. this cannot fail. update any perks, reactions, and/or status effects as necessary.
 		/// </summary>
@@ -39,9 +34,9 @@ namespace CoC.Backend.Items.Wearables
 
 		public override byte maxCapacityPerSlot => 1;
 
-		public override bool CanUse(Creature creature)
+		public override bool CanUse(Creature creature, out string whyNot)
 		{
-			return CanWearWithBodyData(creature);
+			return CanWearWithBodyData(creature, out whyNot);
 		}
 	}
 }

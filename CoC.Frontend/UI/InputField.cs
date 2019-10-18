@@ -38,12 +38,7 @@ namespace CoC.Frontend.UI
 
 		public int? maxChars { get; private set; }
 
-		internal static void ClearData()
-		{
-			instance.Clear();
-		}
-
-		private void Clear()
+		internal void Clear()
 		{
 			input = "";
 			defaultInput = "";
@@ -82,7 +77,7 @@ namespace CoC.Frontend.UI
 
 		public static Regex COLOR => new Regex(@"^#?[0-9A-Fa-f]{6}?"); //standard #000000 color. html allows named colors, too, so this isn't used in out parser. 
 
-		internal static string output => instance.input;
+		internal string output => input;
 
 		//we'll allow null regex. Null value is treated as allowing everything. 
 		private void UpdateInputField(Regex possibleInputCharacters, Regex validInputString, string defaultValue, string titleText, int? maxLength)
@@ -97,15 +92,14 @@ namespace CoC.Frontend.UI
 			ContentChangedSinceLastQuery = true;
 		}
 
-		internal static bool QueryStatus(out InputField inputField)
+		internal bool QueryStatus()
 		{
-			bool retVal = instance.ContentChangedSinceLastQuery;
-			inputField = instance;
-			instance.ContentChangedSinceLastQuery = false;
+			bool retVal = ContentChangedSinceLastQuery;
+			ContentChangedSinceLastQuery = false;
 			return retVal;
 		}
 
-		private InputField()
+		internal InputField()
 		{
 			limitValidInputCharacters = null;
 			checkTextForValidity = null;
@@ -115,44 +109,44 @@ namespace CoC.Frontend.UI
 			maxChars = null;
 		}
 
-		internal static bool ActivateInputField(Regex possibleInputCharacters, Regex validInputString, string defaultValue = "", string titleText = "", int? maxLength = null)
+		internal bool ActivateInputField(Regex possibleInputCharacters, Regex validInputString, string defaultValue = "", string titleText = "", int? maxLength = null)
 		{
 			if (possibleInputCharacters is null) validInputString = null;
 
-			bool retVal = !instance.active;
-			instance.active = true;
-			instance.UpdateInputField(possibleInputCharacters, validInputString, defaultValue, titleText, maxLength);
+			bool retVal = !active;
+			active = true;
+			UpdateInputField(possibleInputCharacters, validInputString, defaultValue, titleText, maxLength);
 
-			instance.ContentChangedSinceLastQuery = true;
+			ContentChangedSinceLastQuery = true;
 			return true;
 		}
 
-		internal static bool ActivateInputField(string defaultValue = "", string titleText = "", int? maxLength = null)
+		internal bool ActivateInputField(string defaultValue = "", string titleText = "", int? maxLength = null)
 		{
-			bool retVal = !instance.active;
-			instance.active = true;
-			instance.UpdateInputField(null, null, defaultValue, titleText, maxLength);
+			bool retVal = !active;
+			active = true;
+			UpdateInputField(null, null, defaultValue, titleText, maxLength);
 
-			instance.ContentChangedSinceLastQuery = true;
+			ContentChangedSinceLastQuery = true;
 			return true;
 		}
 
-		internal static void UpdateInputText(string newDefaultText)
+		internal void UpdateInputText(string newDefaultText)
 		{
-			instance.defaultInput = newDefaultText;
-			instance.input = newDefaultText;
+			defaultInput = newDefaultText;
+			input = newDefaultText;
 
-			instance.ContentChangedSinceLastQuery = true;
+			ContentChangedSinceLastQuery = true;
 		}
 
-		internal static bool DeactivateInputField()
+		internal bool DeactivateInputField()
 		{
-			if (!instance.active)
+			if (!active)
 			{
 				return false;
 			}
-			instance.active = false;
-			instance.ContentChangedSinceLastQuery = true;
+			active = false;
+			ContentChangedSinceLastQuery = true;
 			return true;
 		}
 
@@ -160,7 +154,5 @@ namespace CoC.Frontend.UI
 		{
 			input = output;
 		}
-
-		private static readonly InputField instance = new InputField();
 	}
 }

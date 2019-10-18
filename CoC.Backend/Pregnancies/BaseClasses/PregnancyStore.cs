@@ -8,12 +8,18 @@ using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Tools;
 using System;
+using CoC.Backend.Reaction;
 
 namespace CoC.Backend.Pregnancies
 {
 	//need way of checking for eggs - if egg pregnancy, they can be fertalized. 
 	public abstract class PregnancyStore : SimpleSaveablePart<PregnancyStore, ReadOnlyPregnancyStore>, ITimeActiveListenerFull, ITimeLazyListener
 	{
+		public override string BodyPartName()
+		{
+			return Womb.Name(); //idk. really, this should implement saveable, not body part saveable. 
+		}
+
 		private Womb source => CreatureStore.GetCreatureClean(creatureID)?.womb;
 
 		public float pregnancyMultiplier => source?.pregnancyMultiplier ?? 1.0f;
@@ -105,10 +111,10 @@ namespace CoC.Backend.Pregnancies
 		}
 
 		#region ITimeListener
-		EventWrapper ITimeActiveListenerFull.reactToHourPassing()
+		TimeReactionBase ITimeActiveListenerFull.reactToHourPassing()
 		{
 			//set initial out values so we can return safely. 
-			EventWrapper output = null;
+			TimeReactionBase output = null;
 
 			if (isPregnant)
 			{
@@ -116,7 +122,7 @@ namespace CoC.Backend.Pregnancies
 				//override them if we are pregnant and giving birth.
 				if (hoursTilBirth <= 0)
 				{
-					output = new EventWrapper(DoBirth());
+					output = DoBirth();
 				}
 			}
 
@@ -124,7 +130,7 @@ namespace CoC.Backend.Pregnancies
 		}
 
 		//in the rare event time passing causes premature birthing, you can do it here. 
-		protected SpecialEvent DoBirth()
+		protected DynamicTimeReaction DoBirth()
 		{
 			var output = HandleBirthing();
 			spawnType = null; //clear pregnancy.
@@ -134,7 +140,7 @@ namespace CoC.Backend.Pregnancies
 			return output;
 		}
 
-		protected abstract SpecialEvent HandleBirthing();
+		protected abstract DynamicTimeReaction HandleBirthing();
 
 		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
 		{

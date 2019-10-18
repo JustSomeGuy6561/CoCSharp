@@ -3,17 +3,15 @@
 //Author: JustSomeGuy
 //1/5/2019, 6:03 PM
 using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.UI;
+using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
+using System;
 using System.Diagnostics;
 using System.Linq;
-using CoC.Backend.SaveData;
-using CoC.Backend.Items.Wearables.Piercings;
-using CoC.Backend.Perks;
-using System;
-using CoC.Backend.Creatures;
-using CoC.Backend.BodyParts.EventHelpers;
-using WeakEvent;
-using CoC.Backend.Engine;
 
 namespace CoC.Backend.BodyParts
 {
@@ -21,9 +19,10 @@ namespace CoC.Backend.BodyParts
 	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
 	//note: perks are guarenteed to be valid by the time this is created, so it's post perk init won't be called. 
-
-	public sealed class Clit : SimpleSaveablePart<Clit, ClitData>, IGrowable, IShrinkable
+	public sealed partial class Clit : SimpleSaveablePart<Clit, ClitData>, IGrowable, IShrinkable
 	{
+		public override string BodyPartName() => Name();
+
 		internal float clitGrowthMultiplier = 1;
 		internal float clitShrinkMultiplier = 1;
 		internal float minClitSize
@@ -109,11 +108,11 @@ namespace CoC.Backend.BodyParts
 		private bool _omnibusClit;
 		public readonly Piercing<ClitPiercings> clitPiercings;
 
-		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false) 
+		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false)
 			: this(creatureID, source, initialPerkData, null, isOmnibusClit)
 		{ }
 
-		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false) 
+		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false)
 			: this(creatureID, source, initialPerkData, (float?)clitSize, isOmnibusClit)
 		{ }
 
@@ -163,7 +162,7 @@ namespace CoC.Backend.BodyParts
 		internal uint asCockSoundCount => clitCock?.soundCount ?? 0;
 		internal uint asCockOrgasmCount => clitCock?.orgasmCount ?? 0;
 		internal uint asCockDryOrgasmCount => clitCock?.dryOrgasmCount ?? 0;
-		
+
 
 		public void Restore()
 		{

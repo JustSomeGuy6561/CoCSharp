@@ -2,12 +2,19 @@
 //Description:
 //Author: JustSomeGuy
 //1/12/2019, 3:34 AM
-using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Horns
+	{
+		public static string Name()
+		{
+			return "Horns";
+		}
+	}
+
 	public partial class HornType
 	{
 		private static string NoHornsShortDesc()

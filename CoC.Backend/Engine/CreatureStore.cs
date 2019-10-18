@@ -9,7 +9,7 @@ namespace CoC.Backend.Engine
 	{
 		private static readonly Dictionary<Guid, WeakReference<Creature>> creatureLookup = new Dictionary<Guid, WeakReference<Creature>>()
 		{
-			[Guid.Empty] = null,
+			[Guid.Empty] = new WeakReference<Creature>(null),
 		};
 
 		//artificially keeps creatures alive with a strong reference so they can participate in the time engine. 
@@ -30,7 +30,7 @@ namespace CoC.Backend.Engine
 
 			foreach (var pair in creatureLookup)
 			{
-				if (pair.Value.TryGetTarget(out Creature value))
+				if (pair.Value.TryGetTarget(out Creature value) == true)
 				{
 					if (value == creature)
 					{
@@ -85,7 +85,10 @@ namespace CoC.Backend.Engine
 
 		internal static void SetActivePlayerCharacter(Player player)
 		{
-			CheckPlayerInStore(player);
+			if (player != null)
+			{
+				CheckPlayerInStore(player);
+			}
 			activePlayer = player;
 			currentControlledCharacter = player;
 		}

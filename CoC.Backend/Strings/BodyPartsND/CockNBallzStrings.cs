@@ -2,11 +2,18 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 4:08 PM
-using System;
 using CoC.Backend.Creatures;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Cock
+	{
+		public static string Name()
+		{
+			return "Cock";
+		}
+	}
+
 	public partial class CockType
 	{
 		private static string HumanDesc()
@@ -434,7 +441,12 @@ namespace CoC.Backend.BodyParts
 
 	public partial class Balls
 	{
-		private static string BallsDescript(int ballcount, int size)
+		public static string Name()
+		{
+			return "Balls";
+		}
+
+		private static string BallsDescript(int ballcount, int size, bool uniball)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

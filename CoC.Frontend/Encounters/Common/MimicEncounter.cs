@@ -5,7 +5,7 @@
 using CoC.Backend;
 using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -34,7 +34,7 @@ namespace CoC.Frontend.Encounters.Common
 			return player.level >= 3;
 		}
 
-		protected override void Run()
+		protected override void Run(DisplayBase currentPage)
 		{
 			throw new NotImplementedException();
 		}

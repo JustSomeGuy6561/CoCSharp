@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //4/5/2019, 4:58 PM
 using CoC.Backend.Encounters;
+using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
 
@@ -35,12 +37,12 @@ namespace CoC.Backend.Areas
 			triggerScenes = triggers;
 		}
 
-		internal override void RunArea()
+		internal override DisplayBase RunArea()
 		{
-			RollScene();
+			return RollScene();
 		}
 
-		protected virtual void RollScene()
+		protected virtual DisplayBase RollScene()
 		{
 			Encounter currentScene;
 			//check trigger scenes, add them if not already in queue.
@@ -102,8 +104,10 @@ namespace CoC.Backend.Areas
 				}
 			}
 
+			var display = pageMaker();
+
 			//run the scene.
-			currentScene.Run();
+			currentScene.Run(display);
 
 			//if the scene is now complete, remove it from the hashset/dictionary that contains it. 
 			if (currentScene.isCompleted)
@@ -137,6 +141,8 @@ namespace CoC.Backend.Areas
 					semiRandomScenes[entry]++;
 				}
 			}
+
+			return display;
 		}
 
 	}

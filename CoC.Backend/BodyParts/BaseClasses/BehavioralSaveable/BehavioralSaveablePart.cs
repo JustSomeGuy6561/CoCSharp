@@ -3,9 +3,11 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
+using CoC.Backend.BodyParts.BaseClasses;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using System;
 using WeakEvent;
 

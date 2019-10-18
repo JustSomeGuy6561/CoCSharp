@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.UI;
 using CoC.WinDesktop.ContentWrappers;
 using CoC.WinDesktop.ContentWrappers.ButtonWrappers;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -28,6 +30,8 @@ namespace CoC.WinDesktop.ModelView
 
 		public const byte INPUT_FIELD_MAX_CHARS = 16;
 		public const char INPUT_FIELD_WIDEST_CHAR = 'W';
+
+		Controller controller => Controller.instance;
 
 		#region StatBar
 		private readonly StatDisplayParser statDisplayParser;
@@ -266,8 +270,6 @@ namespace CoC.WinDesktop.ModelView
 		private int LastLanguageIndex;
 #pragma warning restore IDE0044 // Add readonly modifier
 
-		private Controller controller => Controller.instance;
-
 		private Action lastAction;
 
 		//private readonly StringParserUtil parser = StringUtils.GetParser;
@@ -318,14 +320,14 @@ namespace CoC.WinDesktop.ModelView
 			else
 			{
 				lastAction = OnSwitchTo;
-				controller.ForceReloadFromGUI();
+				Controller.ForceReloadFromGUI();
 				runner.resumeGameAction();
 			}
 		}
 
 		private void DoNewGame()
 		{
-			controller.DoNewGame();
+			Controller.DoNewGame();
 			ParseData();
 		}
 
@@ -341,6 +343,8 @@ namespace CoC.WinDesktop.ModelView
 
 			lastAction = ParseData;
 
+			//update the data in the controller. 
+			controller.QueryData();
 
 			//handle main menu and stat visibility
 			showTopRow = controller.displayTopMenu;
@@ -386,7 +390,8 @@ namespace CoC.WinDesktop.ModelView
 					CultureInfo cultureInfo = CultureInfo.CurrentCulture;
 					FlowDirection flowDirection = cultureInfo.TextInfo.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 					Typeface typeface = new Typeface(runner.TextFontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal, new FontFamily("Times New Roman"));
-					FormattedText formattedText = new FormattedText(maxLength.ToString(), CultureInfo.CurrentCulture, flowDirection, typeface, runner.FontSizeEms, runner.FontColor);
+					FormattedText formattedText = new FormattedText(maxLength.ToString(), CultureInfo.CurrentCulture, flowDirection, typeface, runner.FontSizeEms, runner.FontColor,
+						VisualTreeHelper.GetDpi(new TextBlock()).PixelsPerDip);
 
 					InputInUse = true;
 					InputWidth = formattedText.Width + 6; //the offset for empty is 6. No Longer need to multiply by 4/3 b/c we're actually using ems now. 

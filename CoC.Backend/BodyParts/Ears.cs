@@ -7,6 +7,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -40,9 +41,10 @@ namespace CoC.Backend.BodyParts
 	}
 
 	//lazy, so it actually wont fire any data changed events, even though the ear fur can change. 
-
-	public sealed class Ears : BehavioralSaveablePart<Ears, EarType, EarData>
+	public sealed partial class Ears : BehavioralSaveablePart<Ears, EarType, EarData>
 	{
+		public override string BodyPartName() => Name();
+
 		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
 		private FurColor earFur => type.ParseFurColor(_earFur, bodyData);

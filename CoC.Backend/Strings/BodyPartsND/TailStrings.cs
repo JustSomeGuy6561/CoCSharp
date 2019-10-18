@@ -9,6 +9,14 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Tail
+	{
+		public static string Name()
+		{
+			return "Tail";
+		}
+	}
+
 	public partial class TailType
 	{
 		protected static string NoTailShortDesc()
@@ -338,7 +346,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//return "A soft " + tail.epidermis.justColor() + " cat-tail sprouts just above your " +
-				//player.butt.shortDescription() + ", curling and twisting with every step to maintain perfect balance.";
+			//player.butt.shortDescription() + ", curling and twisting with every step to maintain perfect balance.";
 
 		}
 		private static string CatTransformStr(Tail tail, Player player)
@@ -424,7 +432,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//return "A short, soft bunny tail sprouts just above your " + player.butt.shortDescription()
-				//+ ", twitching constantly whenever you don't think about it.";
+			//+ ", twitching constantly whenever you don't think about it.";
 		}
 		private static string RabbitTransformStr(Tail tail, Player player)
 		{
@@ -845,7 +853,7 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 
 			//return "A thin imp tail almost as long as you are tall hangs from above your "
-				//+ player.butt.shortDescription() + ", dotted at the end with a small puff of hair.";
+			//+ player.butt.shortDescription() + ", dotted at the end with a small puff of hair.";
 		}
 		private static string ImpTransformStr(Tail tail, Player player)
 		{

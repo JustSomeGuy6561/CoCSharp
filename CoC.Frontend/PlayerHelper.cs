@@ -4,76 +4,76 @@
 //2/27/2019, 10:07 PM
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
-using static CoC.Frontend.UI.TextOutput;
+using CoC.Frontend.UI;
 
 namespace CoC.Frontend
 {
 	internal static class PlayerHelper
 	{
-		public static bool UpdateAntennaeAndDisplayMessage(this Player player, AntennaeType newType)
+		public static bool UpdateAntennaeDisplayMessageOnActivePage(this Player player, AntennaeType newType, StandardDisplay display)
 		{
 			if (player.antennae.type != newType)
 			{
-				OutputText(player.antennae.TransformIntoText(newType));
+				display.OutputText(player.antennae.TransformIntoText(newType));
 				return player.UpdateAntennae(newType);
 			}
 			return false;
 		}
 
-		public static bool RestoreAntennaeAndDisplayMessage(this Player player)
+		public static bool RestoreAntennaeDisplayMessageOnActivePage(this Player player, StandardDisplay display)
 		{
 			if (!player.antennae.isDefault)
 			{
-				OutputText(player.antennae.RestoreText());
+				display.OutputText(player.antennae.RestoreText());
 				return player.RestoreAntennae();
 			}
 			return false;
 		}
-
-		public static bool UpdateArmsAndDisplayMessage(this Player player, ArmType newType)
+		/*
+		public static bool UpdateArmsDisplayMessageOnActivePage(this Player player, ArmType newType)
 		{
 			if (player.arms.type != newType)
 			{
-				OutputText(player.arms.TransformIntoText(newType));
+				DisplayManager.GetCurrentDisplay().OutputText(player.arms.TransformIntoText(newType));
 			}
 			return player.UpdateArms(newType);
 		}
 
-		public static bool RestoreArmsAndDisplayMessage(this Player player)
+		public static bool RestoreArmsDisplayMessageOnActivePage(this Player player)
 		{
 			if (!player.arms.isDefault)
 			{
-				OutputText(player.arms.RestoreText());
+				DisplayManager.GetCurrentDisplay().OutputText(player.arms.RestoreText());
 				return player.RestoreArms();
 			}
 			return false;
 		}
 
-		public static bool UpdateEyesAndDisplayMessage(this Player player, EyeType newType)
+		public static bool UpdateEyesDisplayMessageOnActivePage(this Player player, EyeType newType)
 		{
 			if (player.eyes.type != newType)
 			{
-				OutputText(player.eyes.TransformIntoText(newType));
+				DisplayManager.GetCurrentDisplay().OutputText(player.eyes.TransformIntoText(newType));
 				return player.UpdateEyes(newType);
 			}
 			return false;
 		}
 
-		public static bool RestoreEyesAndDisplayMessage(this Player player)
+		public static bool RestoreEyesDisplayMessageOnActivePage(this Player player)
 		{
 			if (!player.eyes.isDefault)
 			{
-				OutputText(player.eyes.RestoreText());
+				DisplayManager.GetCurrentDisplay().OutputText(player.eyes.RestoreText());
 				return player.RestoreEyes();
 			}
 			return false;
 		}
 
-		public static bool UpdateTongueAndDisplayMessage(this Player player, TongueType newType)
+		public static bool UpdateTongueDisplayMessageOnActivePage(this Player player, TongueType newType)
 		{
 			if (player.tongue.type != newType)
 			{
-				OutputText(player.tongue.TransformIntoText(newType));
+				DisplayManager.GetCurrentDisplay().OutputText(player.tongue.TransformIntoText(newType));
 				return player.UpdateTongue(newType);
 			}
 			return false;
@@ -83,10 +83,11 @@ namespace CoC.Frontend
 		{
 			if (!player.tongue.isDefault)
 			{
-				OutputText(player.tongue.RestoreText());
+				DisplayManager.GetCurrentDisplay().OutputText(player.tongue.RestoreText());
 				return player.RestoreTongue();
 			}
 			return false;
 		}
+	*/
 	}
 }

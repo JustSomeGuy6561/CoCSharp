@@ -157,7 +157,15 @@ namespace CoC.Backend.BodyParts
 			return Environment.NewLine + SafelyFormattedString.FormattedText("Your hair's growth has reached a new threshold, giving you " + fullDescription() + ".", StringFormats.BOLD) + Environment.NewLine;
 		}
 	}
-	public partial class HairType
+	public partial class Hair
+{
+public static string Name()
+{
+return "Hair";
+}
+}
+
+public partial class HairType
 	{
 
 		private static string NoHairDesc()

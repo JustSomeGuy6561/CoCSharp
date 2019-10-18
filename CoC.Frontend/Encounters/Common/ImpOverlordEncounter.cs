@@ -4,7 +4,7 @@
 //4/6/2019, 3:50 AM
 using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace CoC.Frontend.Encounters.Common
 			return player.level >= 12;
 		}
 
-		protected override void Run()
+		protected override void Run(DisplayBase currentPage)
 		{
 			throw new NotImplementedException();
 		}

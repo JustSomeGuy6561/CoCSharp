@@ -7,6 +7,14 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Gills
+	{
+		public static string Name()
+		{
+			return "Gills";
+		}
+	}
+
 	public partial class GillType
 	{
 

@@ -8,6 +8,14 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Arms
+	{
+		public static string Name()
+		{
+			return "Arms";
+		}
+	}
+
 	public partial class ArmType
 	{
 		private static string HumanDescStr()
@@ -346,9 +354,9 @@ namespace CoC.Backend.BodyParts
 		private static string CockatriceTransformStr(Arms oldArms, Player player)
 		{
 			return "Prickling discomfort suddenly erupts all over your body, like every last inch of your skin has suddenly developed"
-			+ " pins and needles. You try to rub feeling back into your body, but only succeed in shifting the feeling to your arms." 
-			+ " Your arms feel like they are " + (oldArms.usesFur ? "shedding" : "molting") + ". Sure enough, the old" 
-			+ " outer layer falls off, replaced with leathery scales. Additionally, the upper part of your arms gain feathers, covering them" 
+			+ " pins and needles. You try to rub feeling back into your body, but only succeed in shifting the feeling to your arms."
+			+ " Your arms feel like they are " + (oldArms.usesFur ? "shedding" : "molting") + ". Sure enough, the old"
+			+ " outer layer falls off, replaced with leathery scales. Additionally, the upper part of your arms gain feathers, covering them"
 			+ " from shoulder to elbow, where they end in a fluffy cuff. As suddenly as the itching came it fades, leaving you to marvel"
 			+ " over your new arms.\n<b>You now have cockatrice arms!</b>";
 		}
@@ -369,11 +377,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RedPandaPlayerStr(Arms arm, Player player)
 		{
-			return arm.epidermis.furTexture.ToString() +", " + arm.epidermis.justColor() + " fluff cover your arms. Your paws have " + arm.hands.shortDescription() + ".";
+			return arm.epidermis.furTexture.ToString() + ", " + arm.epidermis.justColor() + " fluff cover your arms. Your paws have " + arm.hands.shortDescription() + ".";
 		}
 		private static string RedPandaTransformStr(Arms oldArms, Player player)
 		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease(); 
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string RedPandaRestoreStr(Arms currentArms, Player player)
 		{

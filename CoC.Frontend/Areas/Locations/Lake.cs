@@ -2,13 +2,12 @@
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
 using CoC.Frontend.Encounters.Common;
-using CoC.Frontend.Encounters.Lake;
+//using CoC.Frontend.Encounters.Lake;
 using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Locations
 {
@@ -23,33 +22,33 @@ namespace CoC.Frontend.Areas.Locations
 
 		static Lake()
 		{
-			randomEncounters.Add(new FetishCultistEncounter());
-			randomEncounters.Add(new AprilFoolsEncounter());
+			//randomEncounters.Add(new FetishCultistEncounter());
+			//randomEncounters.Add(new AprilFoolsEncounter());
 
-			randomEncounters.Add(new GooCreatureEncounter());
+			//randomEncounters.Add(new GooCreatureEncounter());
 			//all the imps. 
 			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
 			//all the goblins.
 			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
 			randomEncounters.Add(new BigJunkEncounter(typeof(Lake)));
-			randomEncounters.Add(new WalkAlongLakeEncounter());
-			randomEncounters.Add(new KaijuEncounter());
-			randomEncounters.Add(new IzmaLakeEncounter());
+			//randomEncounters.Add(new WalkAlongLakeEncounter());
+			//randomEncounters.Add(new KaijuEncounter());
+			//randomEncounters.Add(new IzmaLakeEncounter());
 
-			//find the foods.
+			////find the foods.
 
-			semiRandomEncounters.Add(new RathazulLakeEncounter());
-			semiRandomEncounters.Add(new DisoverFarmEncounter());
-			semiRandomEncounters.Add(new DiscoverTownRuinsEncounter());
+			//semiRandomEncounters.Add(new RathazulLakeEncounter());
+			//semiRandomEncounters.Add(new DisoverFarmEncounter());
+			//semiRandomEncounters.Add(new DiscoverTownRuinsEncounter());
 
 			//only available if pregnant.
-			semiRandomEncounters.Add(new EggPregnancyLakeEncounter());
+			//semiRandomEncounters.Add(new EggPregnancyLakeEncounter());
 
 			//find the NU-DEST BEEEEEEEEEEACH! 
 			//https://www.youtube.com/watch?v=c8WZ8DDejd4
 			//i can't find a clip of the dub, but i suppose both work.
 			//beach replaces "Boat" as a place, as "Boat" was more like a location with all the RNG. i've moved everything in "Boat" to various places within Beach. 
-			triggeredOccurances.Add(new DiscoverBeachEncounter());
+			//triggeredOccurances.Add(new DiscoverBeachEncounter());
 		}
 
 		private static HashSet<RandomEncounter> GetRandomEncounters()

@@ -11,12 +11,12 @@ using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Perks;
 using CoC.Backend.Tools;
+using CoC.Frontend.UI;
 using CoC.Frontend.Items.Materials.Jewelry;
 using CoC.Frontend.Perks.Endowment;
 using CoC.Frontend.Perks.History;
 using CoC.Frontend.Strings.Creatures;
 using CoC.Frontend.Strings.Items.Wearables.Piercings;
-using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
 
@@ -39,7 +39,10 @@ namespace CoC.Frontend.Creatures
 		//technically, hashsets are ordered until something is removed, and since we'll never remove anything, we can abuse this. 
 		private static readonly HashSet<string> charactersWithPartialHistory;
 		private static readonly HashSet<string> charactersWithFullHistory;
-		public static DropDownEntry[] SpecialCharacterDropDownList()
+
+		//private static StandardDisplay currentDisplay => DisplayManager.GetCurrentDisplay();
+
+		public static DropDownEntry[] SpecialCharacterDropDownList(StandardDisplay currentDisplay)
 		{
 			DropDownEntry[] retVal = new DropDownEntry[nameAndFlavorText.Count];//+2 later for helpers.
 
@@ -48,8 +51,8 @@ namespace CoC.Frontend.Creatures
 			{
 				return () =>
 				{
-					InputField.UpdateInputText(name);
-					DropDownMenu.SetPostDropDownMenuText(text);
+					currentDisplay.UpdateInputText(name);
+					currentDisplay.SetPostDropDownMenuText(text);
 				};
 			}
 			foreach (var entry in nameAndFlavorText)

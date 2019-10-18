@@ -4,30 +4,30 @@ using System.Text;
 
 namespace CoC.Frontend.UI.ControllerData
 {
-	public static class SpriteAndCreditsOutput
+	public class SpriteAndCreditsOutput
 	{
-		private static string SpriteName; //name of the sprite. if the GUI needs to parse it to find the actual image, that's the GUI's job.
-		private static bool spriteChanged;
+		private string SpriteName; //name of the sprite. if the GUI needs to parse it to find the actual image, that's the GUI's job.
+		private bool spriteChanged;
 
 
-		private static string CreatorCredit;
+		private string CreatorCredit;
 
-		public static void SetSprite(string name)
+		internal void SetSprite(string name)
 		{
 			SpriteName = name;
 		}
 
-		public static void ClearSprite()
+		internal void ClearSprite()
 		{
 			SpriteName = null;
 		}
 
-		private static void SetCreator(string creator)
+		internal void SetCreator(string creator)
 		{
 			CreatorCredit = creator;
 		}
 
-		internal static bool QuerySpriteCreditData(out string sprite, out string creator)
+		internal bool QuerySpriteCreditData(out string sprite, out string creator)
 		{
 			bool retVal = spriteChanged;
 			sprite = SpriteName;

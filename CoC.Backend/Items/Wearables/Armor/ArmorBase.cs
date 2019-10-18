@@ -26,13 +26,36 @@ namespace CoC.Backend.Items.Wearables.Armor
 		protected virtual void OnEquip(Creature wearer) { }
 		protected abstract string EquipText(Creature wearer);
 
-		public abstract bool CanWearWithUpperGarment(UpperGarmentBase currentUpperGarment);
+		public abstract bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment, out string whyNot);
 
-		public abstract bool CanWearWithLowerGarment(LowerGarmentBase currentLowerGarment);
+		public abstract bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot);
 
-		public override bool CanUse(Creature creature)
+		//by default, body data is given priority, and if it fails the why not is just for that. then, if that passes, we check the garments and return them.
+		//if you prefer more control, override this. 
+		public override bool CanUse(Creature creature, out string whyNot)
 		{
-			return CanWearWithBodyData(creature) && CanWearWithLowerGarment(creature.lowerGarment) && CanWearWithUpperGarment(creature.upperGarment);
+			if (!CanWearWithBodyData(creature, out whyNot))
+			{
+				return false;
+			}
+			else
+			{
+				bool result = true;
+				whyNot = "";
+
+				if (!CanWearWithUpperGarment(creature.upperGarment, out string outText))
+				{
+					whyNot = outText;
+					result = false;
+				}
+				if (!CanWearWithLowerGarment(creature.lowerGarment, out outText))
+				{
+					whyNot += outText;
+					result = false;
+				}
+
+				return result;
+			}
 		}
 
 		public abstract bool supportsBulgeArmor { get; }

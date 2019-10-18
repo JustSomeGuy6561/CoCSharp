@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Engine.Time;
+using CoC.Backend.Reaction;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,11 +8,11 @@ namespace CoC.Backend.Pregnancies
 {
 	public abstract class SpawnTypeIncludeAnal : StandardSpawnType
 	{
-		protected SpawnTypeIncludeAnal(Guid creatureID, SimpleDescriptor nameOfFather, ushort birthTime) : base(creatureID, nameOfFather, birthTime)
+		protected SpawnTypeIncludeAnal(Guid creatureID, SimpleDescriptor desc, SimpleDescriptor nameOfFather, ushort birthTime) : base(creatureID, desc, nameOfFather, birthTime)
 		{
 		}
 
-		protected internal abstract SpecialEvent HandleAnalBirth(Guid creatureID);
+		protected internal abstract DynamicTimeReaction HandleAnalBirth(Guid creatureID);
 
 		protected internal abstract string NotifyAnalBirthingProgressed(Guid creatureID, float hoursToBirth, float previousHoursToBirth);
 

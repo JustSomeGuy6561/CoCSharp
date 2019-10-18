@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System;
@@ -35,8 +36,15 @@ namespace CoC.Backend.BodyParts
 
 	public enum NippleStatus { NORMAL, FULLY_INVERTED, SLIGHTLY_INVERTED, FUCKABLE, DICK_NIPPLE }
 	public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
+
+
 	public sealed partial class Nipples : SimpleSaveablePart<Nipples, NippleData>, IGrowable, IShrinkable
 	{
+		public override string BodyPartName()
+		{
+			return Name();
+		}
+
 		public const float MIN_NIPPLE_LENGTH = 0.25f;
 		public const float MAX_NIPPLE_LENGTH = 50f;
 

@@ -4,7 +4,7 @@
 //4/6/2019, 12:43 AM
 using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System;
 
@@ -21,7 +21,7 @@ namespace CoC.Frontend.Encounters.Common
 		public ImpEncounter() : base() { }
 
 		protected override int chances => Utils.LerpRound(1,  20, (int)player.level, 20, 10);
-		protected override void Run()
+		protected override void Run(DisplayBase currentPage)
 		{
 			throw new NotImplementedException();
 		}

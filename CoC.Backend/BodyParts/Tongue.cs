@@ -4,7 +4,6 @@
 //1/6/2019, 1:26 AM
 
 using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Engine.Time;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
@@ -18,9 +17,10 @@ namespace CoC.Backend.BodyParts
 
 	//ugh. i guess this fires on tongue length/width change? idk why, but whatever - overruled. i guess if you want to unlock some achievement when your tongue can cosplay
 	//for KISS, you can now easily do that. 
-
-	public sealed class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
+	public sealed partial class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
 	{
+		public override string BodyPartName() => Name();
+
 		public const JewelryType TongueJewelry = JewelryType.BARBELL_STUD;
 		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 

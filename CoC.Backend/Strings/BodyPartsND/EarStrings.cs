@@ -7,6 +7,14 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Ears
+	{
+		public static string Name()
+		{
+			return "Ears";
+		}
+	}
+
 	public partial class EarType
 	{
 		private static string HumanDescStr()

@@ -7,8 +7,21 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
-	public partial class Vagina
+	public partial class Clit
 	{
+		public static string Name()
+		{
+			return "Clit";
+		}
+	}
+
+		public partial class Vagina
+	{
+		public static string Name()
+		{
+			return "Vagina";
+		}
+
 		private string VaginaTightenedUpDueToInactivity(VaginalLooseness currentLooseness)
 		{
 			string recoverText;
@@ -29,6 +42,7 @@ namespace CoC.Backend.BodyParts
 
 		}
 	}
+
 	public partial class VaginaType
 	{
 		private static string VagHumanDesc()

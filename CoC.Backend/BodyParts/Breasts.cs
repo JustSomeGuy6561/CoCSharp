@@ -5,15 +5,17 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System;
 
 namespace CoC.Backend.BodyParts
 {
 	//Note: Breasts aren't generated until after perks have been created. Thus, their post perk init is never called, but initial constructor can use perk data without fail.
-
-	public sealed class Breasts : SimpleSaveablePart<Breasts, BreastData>, IGrowable, IShrinkable
+	public sealed partial class Breasts : SimpleSaveablePart<Breasts, BreastData>, IGrowable, IShrinkable
 	{
+		public override string BodyPartName() => Name();
+
 		private Creature creature
 		{
 			get
@@ -87,7 +89,7 @@ namespace CoC.Backend.BodyParts
 				return creature.genitals.currentLactationAmount / (creature.genitals.breastRows.Count * NUM_BREASTS);
 			}
 		}
-		
+
 
 		public const byte NUM_BREASTS = 2;
 		public byte numBreasts => NUM_BREASTS;
@@ -283,7 +285,7 @@ namespace CoC.Backend.BodyParts
 
 		public void Reset(bool resetPiercings = false)
 		{
-			cupSize = currGender.HasFlag(Gender.FEMALE) ? femaleMinCup: maleMinCup;
+			cupSize = currGender.HasFlag(Gender.FEMALE) ? femaleMinCup : maleMinCup;
 
 			nipples.Reset(resetPiercings);
 			//nippleFuckCount = 0;

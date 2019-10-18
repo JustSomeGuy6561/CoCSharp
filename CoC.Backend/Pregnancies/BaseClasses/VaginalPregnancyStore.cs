@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Engine.Time;
+using CoC.Backend.Reaction;
 
 namespace CoC.Backend.Pregnancies
 {
@@ -15,9 +17,9 @@ namespace CoC.Backend.Pregnancies
 			this.vaginaIndex = vaginaIndex;
 		}
 
-		protected override SpecialEvent HandleBirthing()
+		protected override DynamicTimeReaction HandleBirthing()
 		{
-			SpecialEvent retVal = spawnType.HandleVaginalBirth(vaginaIndex);
+			DynamicTimeReaction retVal = spawnType.HandleVaginalBirth(vaginaIndex);
 			CreatureStore.GetCreatureClean(creatureID)?.genitals.vaginas[vaginaIndex].HandleBirth(spawnType.sizeOfCreatureAtBirth);
 			return retVal;
 		}

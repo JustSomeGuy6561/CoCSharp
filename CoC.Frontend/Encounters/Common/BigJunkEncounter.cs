@@ -2,12 +2,13 @@
 //Description:
 //Author: JustSomeGuy
 //4/5/2019, 9:49 PM
-using CoC.Backend;
-using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
+using CoC.Backend.Engine;
+using CoC.Backend.Tools;
+using CoC.Backend.UI;
+using CoC.Frontend.UI;
 using System;
 using System.Diagnostics;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Encounters.Common
 {
@@ -30,7 +31,7 @@ namespace CoC.Frontend.Encounters.Common
 			return 0;
 		}
 
-		protected override void Run()
+		protected override void Run(DisplayBase currentDisplay)
 		{
 			bool isForest = true, isLake = false;
 
@@ -50,11 +51,10 @@ namespace CoC.Frontend.Encounters.Common
 					"this new location within the big junk encounter text function.");
 			}
 #endif
-			OutputBigJunkText(isForest, isLake);
-			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
-			//dynStats("lus", 25 + rand(player.cor / 5), "scale", false);
-			//player.changeFatigue(5);
-			//doNext(camp.returnToCampUseOneHour);
+			OutputBigJunkText(StandardDisplay.ToStandard(currentDisplay), isForest, isLake); //look, you can safely cast it, this is overkill, but whatever.
+			player.IncreaseLustBy(25 + Utils.Rand(player.corruption / 5));
+			player.GainFatigue(5);
+			currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1));
 		}
 
 		protected override bool encounterDisabled()

@@ -3,9 +3,9 @@
 //Author: JustSomeGuy
 //4/5/2019, 8:11 PM
 using CoC.Backend.Encounters;
-using System;
+using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CoC.Backend.Areas
 {
@@ -13,7 +13,7 @@ namespace CoC.Backend.Areas
 	{
 		public abstract bool isDisabled { get; protected set; }
 
-		protected abstract void ExplorePlace();
+		protected abstract void ExplorePlace(DisplayBase display);
 
 		protected readonly HashSet<TriggeredEncounter> interrupts = new HashSet<TriggeredEncounter>();
 
@@ -26,31 +26,29 @@ namespace CoC.Backend.Areas
 			}
 		}
 
-		internal override void RunArea()
+		internal override DisplayBase RunArea()
 		{
-			LoadPlace();
+			return LoadPlace();
 		}
 
-		protected virtual void LoadPlace()
+		protected virtual DisplayBase LoadPlace()
 		{
-			bool interrupted = false;
+			DisplayBase display = pageMaker(); //if overriding this, use the implementation available (i.e. the frontend can just say new StandardDisplay() or whatever the implementer is called)
 			foreach (var interrupt in interrupts)
 			{
 				if (interrupt.isActive && interrupt.isTriggered())
 				{
-					interrupted = true;
-					interrupt.Run();
+					interrupt.Run(display);
 					if (interrupt.isCompleted)
 					{
 						interrupts.Remove(interrupt);
 					}
-					break;
+					return display;
 				}
 			}
-			if (!interrupted)
-			{
-				ExplorePlace();
-			}
+			//we didnt hit an interrupt, so we're fine to display normally. 
+			ExplorePlace(display);
+			return display;
 		}
 
 	}

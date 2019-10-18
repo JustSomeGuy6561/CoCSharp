@@ -2,13 +2,12 @@
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
 using CoC.Frontend.Encounters.Common;
-using CoC.Frontend.Encounters.Desert;
+//using CoC.Frontend.Encounters.Desert;
 using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static CoC.Frontend.UI.TextOutput;
 
 namespace CoC.Frontend.Areas.Locations
 {
@@ -52,26 +51,26 @@ namespace CoC.Frontend.Areas.Locations
 
 		static Desert()
 		{
-			randomEncounters.Add(new NagaEncounter());
-			randomEncounters.Add(new SandTrapEncounter());
-			randomEncounters.Add(new GhouldEncounter());
-			randomEncounters.Add(new SandWitchEncounter());
-			randomEncounters.Add(new CumWitchEncounter());
-			randomEncounters.Add(new FindNailsEncounter());
+			//randomEncounters.Add(new NagaEncounter());
+			//randomEncounters.Add(new SandTrapEncounter());
+			//randomEncounters.Add(new GhouldEncounter());
+			//randomEncounters.Add(new SandWitchEncounter());
+			//randomEncounters.Add(new CumWitchEncounter());
+			//randomEncounters.Add(new FindNailsEncounter());
 			randomEncounters.Add(new MimicEncounter(DesertMimicText));
 			randomEncounters.Add(new BigJunkEncounter(typeof(Desert)));
-			randomEncounters.Add(new MirageEncounter());
-			randomEncounters.Add(new SuccubusWandererEncounter());
-			randomEncounters.Add(new DesertWalkEncounter());
-			randomEncounters.Add(new DemonPackEncounter());
+			//randomEncounters.Add(new MirageEncounter());
+			//randomEncounters.Add(new SuccubusWandererEncounter());
+			//randomEncounters.Add(new DesertWalkEncounter());
+			//randomEncounters.Add(new DemonPackEncounter());
 
-			semiRandomEncounters.Add(new DiscoverTelAdreEncounter());
-			semiRandomEncounters.Add(new DoAntColonyEncounter()); //demon pack on first encounter - it's weird. 
-			semiRandomEncounters.Add(new FindDesertDungeonEncounter());
-			semiRandomEncounters.Add(new FindChestEncounter());
-			semiRandomEncounters.Add(new FindFountainEncounter());
+			//semiRandomEncounters.Add(new DiscoverTelAdreEncounter());
+			//semiRandomEncounters.Add(new DoAntColonyEncounter()); //demon pack on first encounter - it's weird. 
+			//semiRandomEncounters.Add(new FindDesertDungeonEncounter());
+			//semiRandomEncounters.Add(new FindChestEncounter());
+			//semiRandomEncounters.Add(new FindFountainEncounter());
 
-			triggeredOccurances.Add(new PregnantSandWitchEncounter());
+			//triggeredOccurances.Add(new PregnantSandWitchEncounter());
 
 		}
 

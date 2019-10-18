@@ -7,6 +7,7 @@ using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
 using CoC.Backend.Tools;
@@ -391,6 +392,8 @@ namespace CoC.Backend.BodyParts
 
 			womb.LateInit();
 		}
+
+		public override string BodyPartName() => Name();
 
 		public override GenitalsData AsReadOnlyData()
 		{

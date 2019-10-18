@@ -50,8 +50,9 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override int monetaryValue => 1000;
 
-		public override bool CanUse(Creature target)
+		public override bool CanUse(Creature target, out string whyNot)
 		{
+			whyNot = null;
 			return true;
 		}
 
@@ -68,11 +69,6 @@ namespace CoC.Frontend.Items.Consumables
 
 			resultsOfUse = OutputThatShit();
 			return true;
-		}
-
-		public override string CantUseExplanation(Creature creature)
-		{
-			return null;
 		}
 	}
 }

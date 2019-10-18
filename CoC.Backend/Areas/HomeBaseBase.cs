@@ -1,5 +1,6 @@
 ﻿using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using System.Collections.Generic;
 
 namespace CoC.Backend.Areas
@@ -20,10 +21,19 @@ namespace CoC.Backend.Areas
 		/// </summary>
 		protected internal abstract void OnReload();
 
-		internal override void RunArea()
+		internal override DisplayBase RunArea()
 		{
+			var areaPage = pageMaker();
 			//ToDo: add the buttons and all their magic.
+
+			areaPage.OutputText("You're running the home base! yay!");
+
+
+			//ToDo: handle any home base reaction parsing magic. 
+
 			//foreach visitor: 
+
+
 			foreach (var npc in Visitors)
 			{
 				SimpleDescriptor descriptor = OverrideDefaultIdleTextForCampNPC(npc, GameEngine.CurrentHour);
@@ -31,8 +41,11 @@ namespace CoC.Backend.Areas
 				{
 					descriptor = ((ICampNPC)npc).idleBaseDescription(GameEngine.CurrentHour);
 				}
-
+				areaPage.OutputText(descriptor());
 			}
+
+			//load the various buttons.
+			return areaPage;
 		}
 
 		//if this location has special text for a given NPC, you have the opportunity to return a string pointer referring to that text.

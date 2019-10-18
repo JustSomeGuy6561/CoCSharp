@@ -57,6 +57,19 @@ namespace CoC.Backend.Inventory
 			return currentlyUnlockedSlots.subtract(oldCount);
 		}
 
+		public bool CanAddItem(T item)
+		{
+			if (item is null) return false;
+			if (slotStorage.Exists(x => x.item == item && x.itemCount < item.maxCapacityPerSlot))
+			{
+				return true;
+			}
+			else
+			{
+				return slotStorage.Exists(x => x.isEmpty);
+			}
+		}
+
 		public bool AddItem(T item)
 		{
 			if (item is null)
@@ -71,14 +84,14 @@ namespace CoC.Backend.Inventory
 				{
 					if (match.itemCount < match.item.maxCapacityPerSlot)
 					{
-						return match.AddOrReplaceItem(item);
+						return match.AddItem(item);
 					}
 				}
 			}
-			ItemSlot emptySlot = slotStorage.Find(x => x.item is null);
+			ItemSlot emptySlot = slotStorage.Find(x => x.isEmpty);
 			if (emptySlot != null)
 			{
-				return emptySlot.AddOrReplaceItem(item);
+				return emptySlot.AddItem(item);
 			}
 
 			//Notify user they cannot add the item.
@@ -104,7 +117,7 @@ namespace CoC.Backend.Inventory
 				{
 					if (match.itemCount < match.item.maxCapacityPerSlot)
 					{
-						if (match.AddOrReplaceItem(item))
+						if (match.AddItem(item))
 						{
 							return slotStorage.IndexOf(match);
 						}
@@ -114,7 +127,7 @@ namespace CoC.Backend.Inventory
 
 			for (int x = 0; x < slotStorage.Count; x++)
 			{
-				if (slotStorage[x].item is null && slotStorage[x].AddOrReplaceItem(item))
+				if ((slotStorage[x].isEmpty) && slotStorage[x].AddItem(item))
 				{
 					return x;
 				}
@@ -130,18 +143,9 @@ namespace CoC.Backend.Inventory
 			{
 				return false;
 			}
-			else if (slotStorage[originalIndex].item != null && slotStorage[originalIndex].item != originalItem)
-			{
-				return false;
-			}
-			else if (slotStorage[originalIndex].item == originalItem && slotStorage[originalIndex].itemCount >= slotStorage[originalIndex].item.maxCapacityPerSlot)
-			{
-				return false;
-			}
 			else
 			{
-				slotStorage[originalIndex].AddOrReplaceItem(originalItem);
-				return true;
+				return slotStorage[originalIndex].AddItem(originalItem);
 			}
 		}
 
@@ -160,18 +164,9 @@ namespace CoC.Backend.Inventory
 			{
 				return;
 			}
-			else if (addIfSameItem && replacement == slotStorage[index].item)
-			{
-				slotStorage[index].AddOrReplaceItem(replacement);
-			}
-			else if (replacement == slotStorage[index].item)
-			{
-				slotStorage[index].ClearItem();
-				slotStorage[index].AddOrReplaceItem(replacement);
-			}
 			else
 			{
-				slotStorage[index].AddOrReplaceItem(replacement);
+				slotStorage[index].ReplaceItem(replacement, addIfSameItem);
 			}
 		}
 

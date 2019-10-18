@@ -7,6 +7,7 @@ using CoC.Frontend.Creatures.NPCs;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Encounters.Forest
 {
@@ -27,7 +28,7 @@ namespace CoC.Frontend.Encounters.Forest
 			return Essrayle.isUnlocked && !Essrayle.caughtBySandWitches;
 		}
 
-		protected override void Run()
+		protected override PageDataBase Run()
 		{
 			throw new NotImplementedException();
 		}

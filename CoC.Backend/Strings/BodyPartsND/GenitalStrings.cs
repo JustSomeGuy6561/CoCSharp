@@ -6,6 +6,11 @@ namespace CoC.Backend.BodyParts
 {
 	partial class Genitals
 	{
+		public static string Name()
+		{
+			return "Genitals";
+		}
+
 		private string AllCocksShort()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();

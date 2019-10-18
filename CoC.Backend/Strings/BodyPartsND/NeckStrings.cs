@@ -6,7 +6,15 @@ using CoC.Backend.Creatures;
 
 namespace CoC.Backend.BodyParts
 {
-	public partial class NeckType
+	public partial class Neck
+{
+public static string Name()
+{
+return "Neck";
+}
+}
+
+public partial class NeckType
 	{
 		private string GenericButtonDesc()
 		{

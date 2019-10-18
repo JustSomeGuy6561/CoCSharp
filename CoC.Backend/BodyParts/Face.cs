@@ -8,7 +8,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.Engine.Time;
+using CoC.Backend.UI;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -32,9 +32,10 @@ namespace CoC.Backend.BodyParts
 	 * and for some reason you need the skin tone to describe the face in detail. IDK, man. Regardless, you have the whole body data, just use that. if you need all three
 	 * for something not in the face itself, it's available, i guess. We're not firing when it changes though.
 	 */
-
-	public sealed class Face : BehavioralSaveablePart<Face, FaceType, FaceData>, ILotionable, ICanAttackWith
+	public sealed partial class Face : BehavioralSaveablePart<Face, FaceType, FaceData>, ILotionable, ICanAttackWith
 	{
+
+		public override string BodyPartName() => Name();
 
 		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 		//private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.HORSESHOE; //can't use as nose is a pain.

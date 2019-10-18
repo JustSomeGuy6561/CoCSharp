@@ -7,6 +7,14 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Back
+	{
+		public static string Name()
+		{
+			return "Back";
+		}
+	}
+
 	public partial class BackType
 	{
 		private string GenericBtnkDesc()

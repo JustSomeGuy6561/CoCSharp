@@ -14,8 +14,9 @@ namespace CoC.Backend.BodyParts
 {
 	//Note: Never fires a data change event, as it has no data that can be changed.
 
-	public sealed class Antennae : BehavioralSaveablePart<Antennae, AntennaeType, AntennaeData>
+	public sealed partial class Antennae : BehavioralSaveablePart<Antennae, AntennaeType, AntennaeData>
 	{
+		public override string BodyPartName() => Name();
 
 		public override AntennaeType type { get; protected set; }
 

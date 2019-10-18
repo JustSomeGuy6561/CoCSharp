@@ -71,6 +71,11 @@ namespace CoC.Backend.BodyParts
 
 	public sealed partial class Ass
 	{
+		public static string Name()
+		{
+			return "Ass";
+		}
+
 		private string shortDesc()
 		{
 			return AssDesc(false);
@@ -155,6 +160,14 @@ namespace CoC.Backend.BodyParts
 				recoverText = " recovers from the brutal stretching it has received and tightens up.";
 			}
 			return Environment.NewLine + SafelyFormattedString.FormattedText("Your " + shortDesc() + recoverText, StringFormats.BOLD) + Environment.NewLine;
+		}
+	}
+
+	public sealed partial class Butt
+	{
+		public static string Name()
+		{
+			return "Butt";
 		}
 	}
 }

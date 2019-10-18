@@ -8,20 +8,19 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Perks;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using CoC.Frontend.Areas;
 using CoC.Frontend.Creatures.PlayerData;
+using CoC.Frontend.UI;
 using CoC.Frontend.Engine;
 using CoC.Frontend.Perks;
 using CoC.Frontend.SaveData;
-using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using static CoC.Backend.Engine.ButtonManager;
-using static CoC.Backend.Engine.MenuHelpers;
-using static CoC.Frontend.UI.TextOutput;
 using static CoC.Frontend.UI.ViewOptions;
+using CoC.Backend.UI;
 //minor rework of creator. I'm just going to make this dynamic (meaning you have to instantiate it, even though there's only one at a time)
 //because more often than not this won't be in use and therefore has no reason to be stored in memory. this also allows it to function like a true event-based program. 
 
@@ -68,9 +67,13 @@ namespace CoC.Frontend.Creatures
 		private readonly bool newGamePlus;
 
 		private bool hermUnlocked => FrontendGlobalSave.data.UnlockedNewGameHerm;
+
+		private readonly StandardDisplay currentDisplay;
+
 		#region Constructor
-		internal CharacterCreation(PlayerCreator specialCreator, bool isNewGamePlus = false)
+		internal CharacterCreation(StandardDisplay display, PlayerCreator specialCreator, bool isNewGamePlus = false)
 		{
+			currentDisplay = display ?? throw new ArgumentNullException(nameof(display));
 			newGamePlus = isNewGamePlus;
 
 			creator = specialCreator ?? throw new ArgumentNullException();
@@ -154,23 +157,26 @@ namespace CoC.Frontend.Creatures
 			//if (creator.will == null) creator. = 80;
 		}
 		#endregion
+
 		#region What's in a Name?
+
+
 		internal void SetGenderGeneric()
 		{
-			ClearOutput();
-			ClearButtons();
+			currentDisplay.ClearOutput();
+			currentDisplay.ClearButtons();
 			if (genderLocked)
 			{
 				defaultGenderHelper(creator.defaultGender)();
 			}
 			else if (creator.defaultGender != null)
 			{
-				OutputText(GenderQuestionWithDefault((Gender)creator.defaultGender));
+				currentDisplay.OutputText(GenderQuestionWithDefault((Gender)creator.defaultGender));
 				GenderOptions(defaultGenderHelper(creator.defaultGender));
 			}
 			else
 			{
-				OutputText(GenderQuestion());
+				currentDisplay.OutputText(GenderQuestion());
 				GenderOptions();
 			}
 		}
@@ -179,11 +185,11 @@ namespace CoC.Frontend.Creatures
 		internal void SetGenderSpecial(bool isSpecial)
 		{
 
-			ClearOutput();
+			currentDisplay.ClearOutput();
 			if (isSpecial)
 			{
 				//also prints out text for locked or semi-locked characters.
-				OutputText(SpecialText());
+				currentDisplay.OutputText(SpecialText());
 				//if (isLocked)
 				//{
 				//	DoNext(CreatePlayer);
@@ -198,19 +204,19 @@ namespace CoC.Frontend.Creatures
 				}
 				else if (creator.defaultGender != null)
 				{
-					OutputText(GenderQuestionWithDefault((Gender)creator.defaultGender));
+					currentDisplay.OutputText(GenderQuestionWithDefault((Gender)creator.defaultGender));
 					GenderOptions(defaultGenderHelper(creator.defaultGender));
 				}
 				else
 				{
-					OutputText(GenderQuestion2());
+					currentDisplay.OutputText(GenderQuestion2());
 					GenderOptions();
 				}
 			}
 			else
 			{
-				OutputText(NotSpecialText());
-				OutputText(GenderQuestion2());
+				currentDisplay.OutputText(NotSpecialText());
+				currentDisplay.OutputText(GenderQuestion2());
 				GenderOptions();
 			}
 		}
@@ -218,15 +224,15 @@ namespace CoC.Frontend.Creatures
 		#region Gender
 		private void GenderOptions(Action defaultAction = null)
 		{
-			AddButton(0, GlobalStrings.MAN(), GenderMale);
-			AddButton(1, GlobalStrings.WOMAN(), GenderFemale);
+			currentDisplay.AddButton(0, GlobalStrings.MAN(), GenderMale);
+			currentDisplay.AddButton(1, GlobalStrings.WOMAN(), GenderFemale);
 			if (hermUnlocked)
 			{
-				AddButton(2, GlobalStrings.HERM(), GenderHerm);
+				currentDisplay.AddButton(2, GlobalStrings.HERM(), GenderHerm);
 			}
 			if (defaultAction != null)
 			{
-				AddButton(4, GlobalStrings.DEFAULT(), defaultAction);
+				currentDisplay.AddButton(4, GlobalStrings.DEFAULT(), defaultAction);
 			}
 		}
 
@@ -277,16 +283,16 @@ namespace CoC.Frontend.Creatures
 
 			if (!buildLocked)
 			{
-				ClearOutput();
-				//OutputText(images.showImage("event-question"));
-				OutputText(BuildText(Gender.MALE));
+				currentDisplay.ClearOutput();
+				//currentDisplay.OutputText(images.showImage("event-question"));
+				currentDisplay.OutputText(BuildText(Gender.MALE));
 
-				AddButton(0, MaleBuild(0), BuildLeanMale);
-				AddButton(1, MaleBuild(1), BuildAverageMale);
-				AddButton(2, MaleBuild(2), BuildThickMale);
-				AddButton(3, MaleBuild(3), BuildGirlyMale);
+				currentDisplay.AddButton(0, MaleBuild(0), BuildLeanMale);
+				currentDisplay.AddButton(1, MaleBuild(1), BuildAverageMale);
+				currentDisplay.AddButton(2, MaleBuild(2), BuildThickMale);
+				currentDisplay.AddButton(3, MaleBuild(3), BuildGirlyMale);
 				//if default enabled and can be overridden
-				//AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), defaultBuildHelper(Gender.MALE, creator.thickness, creator.femininity), DefaultBuildHint());
+				//currentScene.AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), defaultBuildHelper(Gender.MALE, creator.thickness, creator.femininity), DefaultBuildHint());
 			}
 			else
 			{
@@ -321,15 +327,15 @@ namespace CoC.Frontend.Creatures
 
 			if (!buildLocked)
 			{
-				ClearOutput();
-				//OutputText(images.showImage("event-question"));
-				OutputText(BuildText(Gender.FEMALE));
-				AddButton(0, FemaleBuild(0), BuildSlenderFemale);
-				AddButton(1, FemaleBuild(1), BuildAverageFemale);
-				AddButton(2, FemaleBuild(2), BuildCurvyFemale);
-				AddButton(3, FemaleBuild(3), BuildTomboyishFemale);
+				currentDisplay.ClearOutput();
+				//currentDisplay.OutputText(images.showImage("event-question"));
+				currentDisplay.OutputText(BuildText(Gender.FEMALE));
+				currentDisplay.AddButton(0, FemaleBuild(0), BuildSlenderFemale);
+				currentDisplay.AddButton(1, FemaleBuild(1), BuildAverageFemale);
+				currentDisplay.AddButton(2, FemaleBuild(2), BuildCurvyFemale);
+				currentDisplay.AddButton(3, FemaleBuild(3), BuildTomboyishFemale);
 				//if default enabled and can be overridden
-				//AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), defaultBuildHelper(Gender.FEMALE, creator.thickness, creator.femininity), DefaultBuildHint());
+				//currentScene.AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), defaultBuildHelper(Gender.FEMALE, creator.thickness, creator.femininity), DefaultBuildHint());
 			}
 			else
 			{
@@ -370,9 +376,9 @@ namespace CoC.Frontend.Creatures
 
 			if (!buildLocked)
 			{
-				ClearOutput();
-				//OutputText(images.showImage("event-question"));
-				OutputText(BuildText(Gender.HERM));
+				currentDisplay.ClearOutput();
+				//currentDisplay.OutputText(images.showImage("event-question"));
+				currentDisplay.OutputText(BuildText(Gender.HERM));
 
 				HermButtons(0, BuildSlenderFemale);
 				HermButtons(1, BuildAverageFemale);
@@ -394,7 +400,7 @@ namespace CoC.Frontend.Creatures
 		private bool HermButtons(byte index, Action callback)
 		{
 			Triple<string> data = HermButtonData(index);
-			return AddButtonWithToolTip(index, data.first, callback, data.second, data.third);
+			return currentDisplay.AddButtonWithToolTip(index, data.first, callback, data.second, data.third);
 		}
 
 		internal void GenderNoGender()
@@ -420,14 +426,14 @@ namespace CoC.Frontend.Creatures
 
 			if (!buildLocked)
 			{
-				ClearOutput();
-				OutputText(BuildText(Gender.GENDERLESS));
+				currentDisplay.ClearOutput();
+				currentDisplay.OutputText(BuildText(Gender.GENDERLESS));
 
 				GenderlessButtons(0, BuildGirlyMale);
 				GenderlessButtons(1, BuildTomboyishFemale);
 				GenderlessButtons(2, BuildAndrogynous);
 				//if default enabled and can be overridden
-				//AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), defaultBuildHelper(Gender.GENDERLESS, creator.thickness, creator.femininity), DefaultBuildHint());
+				//currentScene.AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), defaultBuildHelper(Gender.GENDERLESS, creator.thickness, creator.femininity), DefaultBuildHint());
 			}
 			else
 			{
@@ -437,7 +443,7 @@ namespace CoC.Frontend.Creatures
 		private bool GenderlessButtons(byte index, Action callback)
 		{
 			Triple<string> data = GenderlessButtonData(index);
-			return AddButtonWithToolTip(index, data.first, callback, data.second, data.third);
+			return currentDisplay.AddButtonWithToolTip(index, data.first, callback, data.second, data.third);
 		}
 		#endregion
 		#region Build
@@ -633,24 +639,24 @@ namespace CoC.Frontend.Creatures
 		{
 			if (!complexionLocked)
 			{
-				ClearOutput();
-				//OutputText(images.showImage("event-question"));
-				OutputText(ComplexionText());
-				AddButton(0, Tones.LIGHT.AsString(), () => SetComplexion(Tones.LIGHT));
-				AddButton(1, Tones.FAIR.AsString(), () => SetComplexion(Tones.FAIR));
-				AddButton(2, Tones.OLIVE.AsString(), () => SetComplexion(Tones.OLIVE));
-				AddButton(3, Tones.DARK.AsString(), () => SetComplexion(Tones.DARK));
+				currentDisplay.ClearOutput();
+				//currentDisplay.OutputText(images.showImage("event-question"));
+				currentDisplay.OutputText(ComplexionText());
+				currentDisplay.AddButton(0, Tones.LIGHT.AsString(), () => SetComplexion(Tones.LIGHT));
+				currentDisplay.AddButton(1, Tones.FAIR.AsString(), () => SetComplexion(Tones.FAIR));
+				currentDisplay.AddButton(2, Tones.OLIVE.AsString(), () => SetComplexion(Tones.OLIVE));
+				currentDisplay.AddButton(3, Tones.DARK.AsString(), () => SetComplexion(Tones.DARK));
 				if (!hitCustomizationMenu && !complexionLocked && !Tones.IsNullOrEmpty(creator.complexion)) //currently impossible. complexion locks if not null. may change in future, idk.
 				{
-					AddButton(4, GlobalStrings.DEFAULT(), () => SetComplexion(creator.complexion));
+					currentDisplay.AddButton(4, GlobalStrings.DEFAULT(), () => SetComplexion(creator.complexion));
 				}
-				AddButton(5, Tones.EBONY.AsString(), () => SetComplexion(Tones.EBONY));
-				AddButton(6, Tones.MAHOGANY.AsString(), () => SetComplexion(Tones.MAHOGANY));
-				AddButton(7, Tones.RUSSET.AsString(), () => SetComplexion(Tones.RUSSET));
+				currentDisplay.AddButton(5, Tones.EBONY.AsString(), () => SetComplexion(Tones.EBONY));
+				currentDisplay.AddButton(6, Tones.MAHOGANY.AsString(), () => SetComplexion(Tones.MAHOGANY));
+				currentDisplay.AddButton(7, Tones.RUSSET.AsString(), () => SetComplexion(Tones.RUSSET));
 
 				if (hitCustomizationMenu)
 				{
-					AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
+					currentDisplay.AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
 				}
 			}
 			else if (!hitCustomizationMenu)
@@ -681,9 +687,9 @@ namespace CoC.Frontend.Creatures
 			}
 			else
 			{
-				ClearOutput();
-				//OutputText(images.showImage("event-question"));
-				OutputText(ConfirmComplexionText(choice));
+				currentDisplay.ClearOutput();
+				//currentDisplay.OutputText(images.showImage("event-question"));
+				currentDisplay.OutputText(ConfirmComplexionText(choice));
 				if (!furLocked)
 				{
 					ChooseFur();
@@ -709,34 +715,34 @@ namespace CoC.Frontend.Creatures
 		//we only go here if the fur color is not locked.
 		private void ChooseFur(bool primaryFur = true)
 		{
-			ClearOutput();
-			OutputText(ChooseFurStr(primaryFur));
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ChooseFurStr(primaryFur));
 
-			AddButton(0, SolidColorStr(), () => ChooseFurColor(primaryFur, true, false));
-			AddButton(1, MultiColorStr(), () => ChooseFurColor(primaryFur, true, true));
+			currentDisplay.AddButton(0, SolidColorStr(), () => ChooseFurColor(primaryFur, true, false));
+			currentDisplay.AddButton(1, MultiColorStr(), () => ChooseFurColor(primaryFur, true, true));
 			if (!furLocked && !FurColor.IsNullOrEmpty(creator.furColor))
 			{
-				AddButton(4, GlobalStrings.DEFAULT(), () => ChooseHairColor(false));
+				currentDisplay.AddButton(4, GlobalStrings.DEFAULT(), () => ChooseHairColor(false));
 			}
 		}
 
 		private void ChooseFurColor(bool isPrimaryFur, bool isPrimaryColor, bool hasMultipleColors)
 		{
 
-			ClearOutput();
-			OutputText(ChooseFurColorStr());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ChooseFurColorStr());
 
 			List<DropDownEntry> vars = HairFurColors.AvailableHairFurColors().ConvertAll(x => new DropDownEntry(x.AsString(), () => ConfirmFurColor(x, isPrimaryFur, isPrimaryColor, hasMultipleColors)));
-			DropDownMenu.ActivateDropDownMenu(vars.ToArray());
+			currentDisplay.ActivateDropDownMenu(vars.ToArray());
 
 
 			if (setPrimaryFur)
 			{
-				AddButton(9, GlobalStrings.BACK(), FurOptions);
+				currentDisplay.AddButton(9, GlobalStrings.BACK(), FurOptions);
 			}
 			if (hitCustomizationMenu)
 			{
-				AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+				currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 			}
 		}
 
@@ -765,16 +771,16 @@ namespace CoC.Frontend.Creatures
 				NextAction = () => ChooseFurPattern(isPrimaryFur);
 			}
 
-			ClearOutput();
-			OutputText(SelectedColor(color, isPrimaryFur, isPrimaryColor, isMulticolored));
-			AddButton(0, GlobalStrings.CONFIRM(), NextAction);
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(SelectedColor(color, isPrimaryFur, isPrimaryColor, isMulticolored));
+			currentDisplay.AddButton(0, GlobalStrings.CONFIRM(), NextAction);
 			if (setPrimaryFur)
 			{
-				AddButton(9, GlobalStrings.BACK(), FurOptions);
+				currentDisplay.AddButton(9, GlobalStrings.BACK(), FurOptions);
 			}
 			if (hitCustomizationMenu)
 			{
-				AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+				currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 			}
 		}
 
@@ -786,10 +792,10 @@ namespace CoC.Frontend.Creatures
 				SetColor(isPrimaryFur, true);
 			}
 
-			bool buttonMaker(byte index, FurMulticolorPattern pattern) => AddButton(index, pattern.AsString(), () => callback(pattern));
+			bool buttonMaker(byte index, FurMulticolorPattern pattern) => currentDisplay.AddButton(index, pattern.AsString(), () => callback(pattern));
 
-			ClearOutput();
-			OutputText(ChooseFurPatternStr());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ChooseFurPatternStr());
 			buttonMaker(0, FurMulticolorPattern.NO_PATTERN);
 			buttonMaker(1, FurMulticolorPattern.MIXED);
 			buttonMaker(2, FurMulticolorPattern.SPOTTED);
@@ -797,11 +803,11 @@ namespace CoC.Frontend.Creatures
 
 			if (setPrimaryFur)
 			{
-				AddButton(9, GlobalStrings.BACK(), FurOptions);
+				currentDisplay.AddButton(9, GlobalStrings.BACK(), FurOptions);
 			}
 			if (hitCustomizationMenu)
 			{
-				AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+				currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 			}
 		}
 
@@ -827,10 +833,10 @@ namespace CoC.Frontend.Creatures
 			if (!setPrimaryFur)
 			{
 				setPrimaryFur = true;
-				ClearOutput();
-				OutputText(FurColorFirstRunStr(created));
-				AddButton(0, FurOptionsStr(), FurOptions);
-				AddButton(1, GlobalStrings.CONTINUE(), () => ChooseHairColor(false));
+				currentDisplay.ClearOutput();
+				currentDisplay.OutputText(FurColorFirstRunStr(created));
+				currentDisplay.AddButton(0, FurOptionsStr(), FurOptions);
+				currentDisplay.AddButton(1, GlobalStrings.CONTINUE(), () => ChooseHairColor(false));
 			}
 			else
 			{
@@ -843,47 +849,47 @@ namespace CoC.Frontend.Creatures
 
 		private void FurOptions()
 		{
-			ClearOutput();
-			OutputText(FurOptionsText());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(FurOptionsText());
 
-			AddButton(0, FurStr(true), () => ChooseFur(true));
-			AddButton(1, FurTextureStr(true), () => ChooseFurTexture(true));
+			currentDisplay.AddButton(0, FurStr(true), () => ChooseFur(true));
+			currentDisplay.AddButton(1, FurTextureStr(true), () => ChooseFurTexture(true));
 			if (multiFurred)
 			{
-				AddButton(2, FurStr(false), () => ChooseFur(false));
-				AddButton(3, FurTextureStr(false), () => ChooseFurTexture(false));
+				currentDisplay.AddButton(2, FurStr(false), () => ChooseFur(false));
+				currentDisplay.AddButton(3, FurTextureStr(false), () => ChooseFurTexture(false));
 			}
 			if (hitCustomizationMenu)
 			{
-				AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+				currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 			}
 			else
 			{
-				AddButton(14, GlobalStrings.CONTINUE(), () => ChooseHairColor(false));
+				currentDisplay.AddButton(14, GlobalStrings.CONTINUE(), () => ChooseHairColor(false));
 			}
 		}
 
 		private void ChooseFurTexture(bool isPrimary)
 		{
-			bool buttonMaker(byte index, FurTexture texture) => AddButton(index, texture.AsString(), () => SetFurTexture(texture, isPrimary));
+			bool buttonMaker(byte index, FurTexture texture) => currentDisplay.AddButton(index, texture.AsString(), () => SetFurTexture(texture, isPrimary));
 
-			ClearOutput();
-			OutputText(ChooseTextureText(isPrimary));
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ChooseTextureText(isPrimary));
 
 			buttonMaker(0, FurTexture.FLUFFY);
 			buttonMaker(1, FurTexture.SMOOTH);
 			buttonMaker(2, FurTexture.SHINY);
 			buttonMaker(3, FurTexture.SOFT);
-			AddButton(4, GlobalStrings.DEFAULT(), () => SetFurTexture(FurTexture.NONDESCRIPT, isPrimary));
+			currentDisplay.AddButton(4, GlobalStrings.DEFAULT(), () => SetFurTexture(FurTexture.NONDESCRIPT, isPrimary));
 			buttonMaker(5, FurTexture.MANGEY);
 
 			if (setPrimaryFur)
 			{
-				AddButton(9, GlobalStrings.BACK(), FurOptions);
+				currentDisplay.AddButton(9, GlobalStrings.BACK(), FurOptions);
 			}
 			if (hitCustomizationMenu)
 			{
-				AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+				currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 			}
 		}
 
@@ -909,31 +915,31 @@ namespace CoC.Frontend.Creatures
 		{
 			if (!hairLocked)
 			{
-				ClearOutput();
+				currentDisplay.ClearOutput();
 				string output = isHighlight ? HighlightText() : HairText();
-				OutputText(output);
+				currentDisplay.OutputText(output);
 
-				AddButton(0, HairFurColors.BLONDE.AsString(), () => SetHair(HairFurColors.BLONDE, isHighlight));
-				AddButton(1, HairFurColors.BROWN.AsString(), () => SetHair(HairFurColors.BROWN, isHighlight));
-				AddButton(2, HairFurColors.BLACK.AsString(), () => SetHair(HairFurColors.BLACK, isHighlight));
-				AddButton(3, HairFurColors.RED.AsString(), () => SetHair(HairFurColors.RED, isHighlight));
+				currentDisplay.AddButton(0, HairFurColors.BLONDE.AsString(), () => SetHair(HairFurColors.BLONDE, isHighlight));
+				currentDisplay.AddButton(1, HairFurColors.BROWN.AsString(), () => SetHair(HairFurColors.BROWN, isHighlight));
+				currentDisplay.AddButton(2, HairFurColors.BLACK.AsString(), () => SetHair(HairFurColors.BLACK, isHighlight));
+				currentDisplay.AddButton(3, HairFurColors.RED.AsString(), () => SetHair(HairFurColors.RED, isHighlight));
 				//if has a default hair color and we're in the first run of hair color.
 				if (!isHighlight && !hitHairOptions && !HairFurColors.IsNullOrEmpty(creator.hairColor)) //currently can't be hit - the hair is locked if not null.
 				{
-					AddButton(4, GlobalStrings.DEFAULT(), () => SetHair(creator.hairColor, false));
+					currentDisplay.AddButton(4, GlobalStrings.DEFAULT(), () => SetHair(creator.hairColor, false));
 				}
-				AddButton(5, HairFurColors.GRAY.AsString(), () => SetHair(HairFurColors.GRAY, isHighlight));
-				AddButton(6, HairFurColors.WHITE.AsString(), () => SetHair(HairFurColors.WHITE, isHighlight));
-				AddButton(7, HairFurColors.AUBURN.AsString(), () => SetHair(HairFurColors.AUBURN, isHighlight));
+				currentDisplay.AddButton(5, HairFurColors.GRAY.AsString(), () => SetHair(HairFurColors.GRAY, isHighlight));
+				currentDisplay.AddButton(6, HairFurColors.WHITE.AsString(), () => SetHair(HairFurColors.WHITE, isHighlight));
+				currentDisplay.AddButton(7, HairFurColors.AUBURN.AsString(), () => SetHair(HairFurColors.AUBURN, isHighlight));
 
 
 				if (hitHairOptions)
 				{
-					AddButton(9, GlobalStrings.BACK(), HairOptions);
+					currentDisplay.AddButton(9, GlobalStrings.BACK(), HairOptions);
 				}
 				if (hitCustomizationMenu)
 				{
-					AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+					currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 				}
 			}
 			else if (!hitCustomizationMenu)
@@ -971,10 +977,10 @@ namespace CoC.Frontend.Creatures
 			}
 			if (!hitHairOptions)
 			{
-				ClearOutput();
-				OutputText(ConfirmHairFirstRun(color));
-				AddButton(0, HairOptionStr(), HairOptions);
-				AddButton(1, GlobalStrings.CONTINUE(), GenericStyleCustomizeMenu);
+				currentDisplay.ClearOutput();
+				currentDisplay.OutputText(ConfirmHairFirstRun(color));
+				currentDisplay.AddButton(0, HairOptionStr(), HairOptions);
+				currentDisplay.AddButton(1, GlobalStrings.CONTINUE(), GenericStyleCustomizeMenu);
 			}
 			else
 			{
@@ -986,48 +992,48 @@ namespace CoC.Frontend.Creatures
 
 		private void HairOptions()
 		{
-			ClearOutput();
-			OutputText(HairOptionsText(hitCustomizationMenu));
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(HairOptionsText(hitCustomizationMenu));
 			hitHairOptions = true;
 
 #warning Perhaps add what the current style data is here?
 
-			AddButton(0, HairColorStr(), () => ChooseHairColor(false));
-			AddButton(1, HighlightColorStr(), () => ChooseHairColor(true));
-			AddButton(2, HairLengthStr(), () => ChooseHairLength());
-			AddButton(3, HairStyleStr(), ChooseHairStyle);
+			currentDisplay.AddButton(0, HairColorStr(), () => ChooseHairColor(false));
+			currentDisplay.AddButton(1, HighlightColorStr(), () => ChooseHairColor(true));
+			currentDisplay.AddButton(2, HairLengthStr(), () => ChooseHairLength());
+			currentDisplay.AddButton(3, HairStyleStr(), ChooseHairStyle);
 
 			//did we come from customization? 
 			string buttonText = hitCustomizationMenu ? GlobalStrings.RETURN() : GlobalStrings.CONTINUE();
-			AddButton(14, buttonText, GenericStyleCustomizeMenu);
+			currentDisplay.AddButton(14, buttonText, GenericStyleCustomizeMenu);
 		}
 
 		private void ChooseHairLength(bool clearOutput = true)
 		{
 			if (clearOutput)
 			{
-				ClearOutput();
+				currentDisplay.ClearOutput();
 			}
-			OutputText(ChooseHairLengthStr());
+			currentDisplay.OutputText(ChooseHairLengthStr());
 			//null operators ftw! basically, if hairLength is null, empty str. if not, call its ToString.
-			InputField.ActivateInputField(InputField.INPUT_POSITIVE_NUMBERS, InputField.VALID_POSITIVE_NUMBERS, creator.hairLength?.ToString() ?? "", HairLengthStr());
-			AddButton(0, GlobalStrings.CONFIRM(), SetHairLength);
-			AddButton(9, GlobalStrings.BACK(), HairOptions);
+			currentDisplay.ActivateInputField(InputField.INPUT_POSITIVE_NUMBERS, InputField.VALID_POSITIVE_NUMBERS, creator.hairLength?.ToString() ?? "", HairLengthStr());
+			currentDisplay.AddButton(0, GlobalStrings.CONFIRM(), SetHairLength);
+			currentDisplay.AddButton(9, GlobalStrings.BACK(), HairOptions);
 			if (hitCustomizationMenu)
 			{
-				AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+				currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 			}
 		}
 
 		private void SetHairLength()
 		{
-			if (string.IsNullOrEmpty(InputField.output))
+			if (string.IsNullOrEmpty(currentDisplay.GetOutput()))
 			{
 				return;
 			}
-			ClearOutput();
-			InputField.DeactivateInputField();
-			if (float.TryParse(InputField.output, out float parsedInput))
+			currentDisplay.ClearOutput();
+			currentDisplay.DeactivateInputField();
+			if (float.TryParse(currentDisplay.GetOutput(), out float parsedInput))
 			{
 				double parsed = parsedInput;
 				if (Measurement.UsesMetric)
@@ -1037,12 +1043,12 @@ namespace CoC.Frontend.Creatures
 
 				if (parsed > creator.heightInInches)
 				{
-					OutputText(HairTooLongStr(parsedInput));
+					currentDisplay.OutputText(HairTooLongStr(parsedInput));
 					ChooseHairLength(false);
 				}
 				else if (parsed < 0)
 				{
-					OutputText(NegativeNumberHairStr(parsedInput));
+					currentDisplay.OutputText(NegativeNumberHairStr(parsedInput));
 					ChooseHairLength(false);
 				}
 				else
@@ -1053,17 +1059,17 @@ namespace CoC.Frontend.Creatures
 			}
 			else
 			{
-				OutputText(NotANumberInput(InputField.output));
+				currentDisplay.OutputText(NotANumberInput(currentDisplay.GetOutput()));
 				ChooseHairLength(false);
 			}
 		}
 
 		private void ChooseHairStyle()
 		{
-			bool buttonMaker(byte index, HairStyle style) => AddButton(index, style.AsString(), () => SetHairStyle(style));
+			bool buttonMaker(byte index, HairStyle style) => currentDisplay.AddButton(index, style.AsString(), () => SetHairStyle(style));
 
-			ClearOutput();
-			OutputText(ChooseHairStyleStr());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ChooseHairStyleStr());
 
 			buttonMaker(0, HairStyle.STRAIGHT);
 			buttonMaker(1, HairStyle.CURLY);
@@ -1074,10 +1080,10 @@ namespace CoC.Frontend.Creatures
 			buttonMaker(6, HairStyle.PONYTAIL);
 			buttonMaker(7, HairStyle.BRAIDED);
 
-			AddButton(9, GlobalStrings.BACK(), HairOptions);
+			currentDisplay.AddButton(9, GlobalStrings.BACK(), HairOptions);
 			if (hitCustomizationMenu)
 			{
-				AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+				currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 			}
 		}
 
@@ -1104,30 +1110,30 @@ namespace CoC.Frontend.Creatures
 			else
 			{
 				hitCustomizationMenu = true;
-				ClearOutput();
+				currentDisplay.ClearOutput();
 				//mainView.nameBox.visible = false;
 				//mainView.nameBox.maxChars = 16;
 				//mainView.nameBox.restrict = null;
-				//OutputText(images.showImage("event-creation"));
+				//currentDisplay.OutputText(images.showImage("event-creation"));
 
-				OutputText(GenericCustomizationText());
+				currentDisplay.OutputText(GenericCustomizationText());
 
 				//reuse the old menus - why be redundant? This way there's less code to maintain.
-				AddButtonOrAddDisabledWithToolTip(0, ComplexionStr(), !complexionLocked, ChooseComplexion, ComplexionLockedStr());
-				AddButtonOrAddDisabledWithToolTip(1, HairOptionStr(), !hairLocked, HairOptions, HairLockedStr()); //include highlight and hairStyle here, as well as length?
+				currentDisplay.AddButtonOrAddDisabledWithToolTip(0, ComplexionStr(), !complexionLocked, ChooseComplexion, ComplexionLockedStr());
+				currentDisplay.AddButtonOrAddDisabledWithToolTip(1, HairOptionStr(), !hairLocked, HairOptions, HairLockedStr()); //include highlight and hairStyle here, as well as length?
 
 				//if (canGrowBeard)
 				//{
-				//	AddButtonOrAddDisabledWithToolTip(2, BeardOptionStr(), beardLocked, MenuBeardSettings, BeardLockedStr());
+				//	currentScene.AddButtonOrAddDisabledWithToolTip(2, BeardOptionStr(), beardLocked, MenuBeardSettings, BeardLockedStr());
 				//}
 
-				AddButtonOrAddDisabledWithToolTip(3, EyeColorStr(), !eyesLocked, MenuEyeColor, EyeLockedStr()); //include heterochromea option here
-				if (hasFur) AddButtonOrAddDisabledWithToolTip(4, FurColorStr(), !furLocked, FurOptions, FurLockedStr());
-				AddButtonOrAddDisabledWithToolTip(5, HeightStr(), !heightLocked, ChooseHeight, HeightLockedStr());
-				if (chosenGender.HasFlag(Gender.MALE)) AddButtonOrAddDisabledWithToolTip(6, CockSizeStr(), !cockLocked, MenuCockLength, CockLockedStr());
-				if (chosenGender.HasFlag(Gender.FEMALE)) AddButtonOrAddDisabledWithToolTip(7, ClitSizeStr(), !clitLocked, MenuClitLength, ClitLockedStr());
-				AddButtonOrAddDisabledWithToolTip(8, BreastSizeStr(), !breastsLocked, menuBreastSize, BreastsLockedStr());
-				AddButton(9, GlobalStrings.CONTINUE(), ChooseEndowment);
+				currentDisplay.AddButtonOrAddDisabledWithToolTip(3, EyeColorStr(), !eyesLocked, MenuEyeColor, EyeLockedStr()); //include heterochromea option here
+				if (hasFur) currentDisplay.AddButtonOrAddDisabledWithToolTip(4, FurColorStr(), !furLocked, FurOptions, FurLockedStr());
+				currentDisplay.AddButtonOrAddDisabledWithToolTip(5, HeightStr(), !heightLocked, ChooseHeight, HeightLockedStr());
+				if (chosenGender.HasFlag(Gender.MALE)) currentDisplay.AddButtonOrAddDisabledWithToolTip(6, CockSizeStr(), !cockLocked, MenuCockLength, CockLockedStr());
+				if (chosenGender.HasFlag(Gender.FEMALE)) currentDisplay.AddButtonOrAddDisabledWithToolTip(7, ClitSizeStr(), !clitLocked, MenuClitLength, ClitLockedStr());
+				currentDisplay.AddButtonOrAddDisabledWithToolTip(8, BreastSizeStr(), !breastsLocked, menuBreastSize, BreastsLockedStr());
+				currentDisplay.AddButton(9, GlobalStrings.CONTINUE(), ChooseEndowment);
 			}
 		}
 		#endregion
@@ -1137,26 +1143,26 @@ namespace CoC.Frontend.Creatures
 
 		//private void MenuBeardSettings()
 		//{
-		//	ClearOutput();
-		//	OutputText("You can choose your beard length and style.\n\n");
-		//	OutputText("Beard: " + );
+		//	currentDisplay.ClearOutput();
+		//	currentDisplay.OutputText("You can choose your beard length and style.\n\n");
+		//	currentDisplay.OutputText("Beard: " + );
 
-		//	AddButton(0, "Style", menuBeardStyle);
-		//	AddButton(1, "Length", menuBeardLength);
-		//	AddButton(14, "Back", GenericStyleCustomizeMenu);
+		//	currentScene.AddButton(0, "Style", menuBeardStyle);
+		//	currentScene.AddButton(1, "Length", menuBeardLength);
+		//	currentScene.AddButton(14, "Back", GenericStyleCustomizeMenu);
 		//}
 		//private void menuBeardStyle()
 		//{
-		//	ClearOutput();
-		//	//OutputText(images.showImage("event-question"));
-		//	OutputText("What beard style would you like?");
+		//	currentDisplay.ClearOutput();
+		//	//currentDisplay.OutputText(images.showImage("event-question"));
+		//	currentDisplay.OutputText("What beard style would you like?");
 
-		//	AddButton(0, "Normal", () => chooseBeardStyle());
-		//	AddButton(1, "Goatee", () => chooseBeardStyle());
-		//	AddButton(2, "Clean-cut", () => chooseBeardStyle());
-		//	AddButton(3, "Mountainman", () => chooseBeardStyle());
-		//	AddButton(9, GlobalStrings.BACK(), menuBeardSettings);
-		//	AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+		//	currentScene.AddButton(0, "Normal", () => chooseBeardStyle());
+		//	currentScene.AddButton(1, "Goatee", () => chooseBeardStyle());
+		//	currentScene.AddButton(2, "Clean-cut", () => chooseBeardStyle());
+		//	currentScene.AddButton(3, "Mountainman", () => chooseBeardStyle());
+		//	currentScene.AddButton(9, GlobalStrings.BACK(), menuBeardSettings);
+		//	currentScene.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 		//}
 
 		//private void chooseBeardStyle(BeardStyle beardStyle)
@@ -1166,18 +1172,18 @@ namespace CoC.Frontend.Creatures
 		//}
 		//private void menuBeardLength()
 		//{
-		//	ClearOutput();
-		//	//OutputText(images.showImage("event-question"));
-		//	OutputText("How long would you like your beard be? \n\nNote: Beard will slowly grow over time, just like in the real world. Unless you have no beard. You can change your beard style later in the game.");
-		//	AddButton(0, "No Beard", () => chooseBeardLength(0));
-		//	AddButton(1, "Trim", () => chooseBeardLength(0.1f));
-		//	AddButton(2, "Short", () => chooseBeardLength(0.2f));
-		//	AddButton(3, "Medium", () => chooseBeardLength(5f));
-		//	AddButton(4, "Mod. Long", () => chooseBeardLength(5f));
-		//	AddButton(5, "Long", () => chooseBeardLength(3f));
-		//	AddButton(6, "Very Long", () => chooseBeardLength(6f));
-		//	AddButton(9, GlobalStrings.BACK(), menuBeardSettings);
-		//	AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+		//	currentDisplay.ClearOutput();
+		//	//currentDisplay.OutputText(images.showImage("event-question"));
+		//	currentDisplay.OutputText("How long would you like your beard be? \n\nNote: Beard will slowly grow over time, just like in the real world. Unless you have no beard. You can change your beard style later in the game.");
+		//	currentScene.AddButton(0, "No Beard", () => chooseBeardLength(0));
+		//	currentScene.AddButton(1, "Trim", () => chooseBeardLength(0.1f));
+		//	currentScene.AddButton(2, "Short", () => chooseBeardLength(0.2f));
+		//	currentScene.AddButton(3, "Medium", () => chooseBeardLength(5f));
+		//	currentScene.AddButton(4, "Mod. Long", () => chooseBeardLength(5f));
+		//	currentScene.AddButton(5, "Long", () => chooseBeardLength(3f));
+		//	currentScene.AddButton(6, "Very Long", () => chooseBeardLength(6f));
+		//	currentScene.AddButton(9, GlobalStrings.BACK(), menuBeardSettings);
+		//	currentScene.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 		//}
 		//private void chooseBeardLength(float length)
 		//{
@@ -1190,8 +1196,8 @@ namespace CoC.Frontend.Creatures
 		// ----------------- EYE COLOR -------------------
 		private void MenuEyeColor()
 		{
-			AddButton(0, MonoChromaticStr(), () => ChooseEyeColor(true, true));
-			AddButton(1, HeteroChromaticStr(), () => ChooseEyeColor(true, false));
+			currentDisplay.AddButton(0, MonoChromaticStr(), () => ChooseEyeColor(true, true));
+			currentDisplay.AddButton(1, HeteroChromaticStr(), () => ChooseEyeColor(true, false));
 		}
 
 		private EyeColor? left, right;
@@ -1200,16 +1206,16 @@ namespace CoC.Frontend.Creatures
 			left = null;
 			right = null;
 
-			ClearOutput();
-			OutputText(ChooseEyeStr());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ChooseEyeStr());
 			ChooseEyeColor2(true, isLeftEye, isBothEyes);
 		}
 
 		private void ChooseEyeColor2(bool isPage1, bool isLeftEye, bool isBothEyes)
 		{
-			bool buttonMaker(byte index, EyeColor color) => AddButton(index, color.AsString(), () => SetEyeColor(color, isLeftEye, isBothEyes));
+			bool buttonMaker(byte index, EyeColor color) => currentDisplay.AddButton(index, color.AsString(), () => SetEyeColor(color, isLeftEye, isBothEyes));
 
-			ClearButtons();
+			currentDisplay.ClearButtons();
 			if (isPage1)
 			{
 				//buttonMaker(0, EyeColor.AMBER);
@@ -1221,7 +1227,7 @@ namespace CoC.Frontend.Creatures
 				buttonMaker(6, EyeColor.HAZEL);
 				buttonMaker(7, EyeColor.RED);
 				buttonMaker(8, EyeColor.VIOLET);
-				ButtonNextPage(() => ChooseEyeColor2(true, isLeftEye, isBothEyes), 10);
+				currentDisplay.ButtonNextPage(() => ChooseEyeColor2(true, isLeftEye, isBothEyes), 10);
 			}
 			else
 			{
@@ -1232,7 +1238,7 @@ namespace CoC.Frontend.Creatures
 				buttonMaker(5, EyeColor.INDIGO);
 				buttonMaker(6, EyeColor.TAN);
 				buttonMaker(7, EyeColor.BLACK);
-				ButtonPreviousPage(() => ChooseEyeColor2(true, isLeftEye, isBothEyes));
+				currentDisplay.ButtonPreviousPage(() => ChooseEyeColor2(true, isLeftEye, isBothEyes));
 			}
 
 			if (!isBothEyes && !isLeftEye)
@@ -1241,15 +1247,15 @@ namespace CoC.Frontend.Creatures
 				{
 					EyeColor color;
 					color = creator.rightEyeColor != null ? (EyeColor)creator.rightEyeColor : (EyeColor)creator.leftEyeColor;
-					AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), () => SetEyeColor(color, false, false), UseCurrentEyeColor(false));
+					currentDisplay.AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), () => SetEyeColor(color, false, false), UseCurrentEyeColor(false));
 				}
-				AddButtonWithToolTip(9, MonoChromaticStr(), () => SetEyeColor((EyeColor)left, true, true), IChangedMyMindIllTakeMonochromaticEyesFor200Alex());
+				currentDisplay.AddButtonWithToolTip(9, MonoChromaticStr(), () => SetEyeColor((EyeColor)left, true, true), IChangedMyMindIllTakeMonochromaticEyesFor200Alex());
 			}
 			else if (!isBothEyes && creator.leftEyeColor != null)
 			{
-				AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), () => SetEyeColor((EyeColor)creator.leftEyeColor, true, false), UseCurrentEyeColor(true));
+				currentDisplay.AddButtonWithToolTip(4, GlobalStrings.DEFAULT(), () => SetEyeColor((EyeColor)creator.leftEyeColor, true, false), UseCurrentEyeColor(true));
 			}
-			AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
+			currentDisplay.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 		}
 
 		private void SetEyeColor(EyeColor color, bool isLeftEye, bool isBothEyes)
@@ -1284,8 +1290,8 @@ namespace CoC.Frontend.Creatures
 		//----------------- heightInInches -----------------
 		private void ChooseHeight()
 		{
-			ClearOutput();
-			OutputText(SetHeightStr());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(SetHeightStr());
 
 			if (creator.heightInInches < 48)
 			{
@@ -1296,11 +1302,11 @@ namespace CoC.Frontend.Creatures
 
 
 
-			InputField.ActivateInputField(InputField.INPUT_POSITIVE_INTEGERS_NOSIGN, InputField.VALID_POSITIVE_INTEGERS_NOSIGN, 
+			currentDisplay.ActivateInputField(InputField.INPUT_POSITIVE_INTEGERS_NOSIGN, InputField.VALID_POSITIVE_INTEGERS_NOSIGN, 
 				creator.heightInInches.ToString(), HeightStr(), maxLength);
 
-			AddButton(0, GlobalStrings.OK(), ConfirmHeight);
-			AddButton(4, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
+			currentDisplay.AddButton(0, GlobalStrings.OK(), ConfirmHeight);
+			currentDisplay.AddButton(4, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
 		}
 		private void ConfirmHeight()
 		{
@@ -1315,17 +1321,17 @@ namespace CoC.Frontend.Creatures
 				min = MIN_HEIGHT_IN;
 				max = MAX_HEIGHT_CM;
 			}
-			ClearOutput();
-			bool successful = int.TryParse(InputField.output, out int parsedInt);
+			currentDisplay.ClearOutput();
+			bool successful = int.TryParse(currentDisplay.GetOutput(), out int parsedInt);
 
 			if (!successful)
 			{
-				OutputText(InvalidHeightStr(InputField.output));
+				currentDisplay.OutputText(InvalidHeightStr(currentDisplay.GetOutput()));
 			}
 			else if (parsedInt < min || parsedInt > max)
 			{
-				OutputText(InvalidHeightStr(parsedInt));
-				DoNext(ChooseHeight); //off to the heightInInches selection!
+				currentDisplay.OutputText(InvalidHeightStr(parsedInt));
+				currentDisplay.DoNext(ChooseHeight); //off to the heightInInches selection!
 				return;
 			}
 			else
@@ -1340,9 +1346,9 @@ namespace CoC.Frontend.Creatures
 				}
 
 			}
-			ClearOutput();
-			OutputText(ConfirmHeightStr());
-			DoYesNo(GenericStyleCustomizeMenu, ChooseHeight);
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ConfirmHeightStr());
+			currentDisplay.DoYesNo(GenericStyleCustomizeMenu, ChooseHeight);
 		}
 		#endregion
 		#region Cock
@@ -1355,10 +1361,10 @@ namespace CoC.Frontend.Creatures
 
 		private void MenuCockLength()
 		{
-			bool buttonMaker(byte index, float val, bool metric) => AddButton(index, Measurement.ToNearestHalfSmallUnit(val, true, false),
+			bool buttonMaker(byte index, float val, bool metric) => currentDisplay.AddButton(index, Measurement.ToNearestHalfSmallUnit(val, true, false),
 				() => ChooseCockLength(metric ? (float)(val * Measurement.TO_INCHES) : val));
-			ClearOutput();
-			OutputText(CockLengthStr());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(CockLengthStr());
 			byte count = 0;
 			float size, max, delta;
 			if (Measurement.UsesMetric)
@@ -1381,7 +1387,7 @@ namespace CoC.Frontend.Creatures
 				size += delta;
 			}
 
-			AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
+			currentDisplay.AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
 		}
 
 		private void ChooseCockLength(float length)
@@ -1400,10 +1406,10 @@ namespace CoC.Frontend.Creatures
 
 		private void MenuClitLength()
 		{
-			bool buttonMaker(byte index, float val, bool metric) => AddButton(index, Measurement.ToNearestQuarterInchOrHalfCentimeter(val, true),
+			bool buttonMaker(byte index, float val, bool metric) => currentDisplay.AddButton(index, Measurement.ToNearestQuarterInchOrHalfCentimeter(val, true),
 				() => ChooseClitLength(metric ? (float)(val * Measurement.TO_INCHES) : val));
-			ClearOutput();
-			OutputText(ClitLengthStr());
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ClitLengthStr());
 			byte count = 0;
 			float size, max, delta;
 			if (Measurement.UsesMetric)
@@ -1426,7 +1432,7 @@ namespace CoC.Frontend.Creatures
 				size += delta;
 			}
 
-			AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
+			currentDisplay.AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
 		}
 
 		private void ChooseClitLength(float length)
@@ -1439,9 +1445,9 @@ namespace CoC.Frontend.Creatures
 		//----------------- BREAST SIZE -----------------
 		private void menuBreastSize()
 		{
-			bool buttonMaker(byte index, CupSize cup, bool condition) => AddButtonIf(index, cup.AsText(), condition, () => ChooseBreastSize(cup));
-			ClearOutput();
-			OutputText(ChooseBreastStr());
+			bool buttonMaker(byte index, CupSize cup, bool condition) => currentDisplay.AddButtonIf(index, cup.AsText(), condition, () => ChooseBreastSize(cup));
+			currentDisplay.ClearOutput();
+			currentDisplay.OutputText(ChooseBreastStr());
 
 			buttonMaker(0, CupSize.FLAT, creator.femininity < 50);
 			buttonMaker(1, CupSize.A, creator.femininity < 60);
@@ -1449,7 +1455,7 @@ namespace CoC.Frontend.Creatures
 			buttonMaker(3, CupSize.C, creator.femininity >= 50);
 			buttonMaker(4, CupSize.D, creator.femininity >= 60);
 			buttonMaker(5, CupSize.DD, creator.femininity >= 70);
-			AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
+			currentDisplay.AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
 		}
 
 		private void ChooseBreastSize(CupSize size)
@@ -1473,9 +1479,9 @@ namespace CoC.Frontend.Creatures
 		{
 			if (!endowmentLocked)
 			{
-				ClearOutput();
+				currentDisplay.ClearOutput();
 				//OutputImage("event-question"));
-				OutputText(EndowmentQuestionStr());
+				currentDisplay.OutputText(EndowmentQuestionStr());
 
 				List<EndowmentPerkBase> data = EndowmentPerkBase.endowmentPerks.Select(x => x()).Where(x => x.IsUnlocked(chosenGender)).ToList();
 
@@ -1484,7 +1490,7 @@ namespace CoC.Frontend.Creatures
 					for (byte x = 0; x < data.Count; x++)
 					{
 						byte y = x;
-						AddButton(x, data[x].buttonText(), () => ConfirmEndowment(data[y]));
+						currentDisplay.AddButton(x, data[x].buttonText(), () => ConfirmEndowment(data[y]));
 					}
 				}
 				else
@@ -1502,13 +1508,13 @@ namespace CoC.Frontend.Creatures
 
 		private void ConfirmEndowment(EndowmentPerkBase endowment)
 		{
-			ClearOutput();
+			currentDisplay.ClearOutput();
 			//OutputImage("event-question"));
 
-			OutputText(endowment.unlockEndowmentText());
+			currentDisplay.OutputText(endowment.unlockEndowmentText());
 
-			AddButton(0, GlobalStrings.YES(), () => ActivateEndowment(endowment));
-			AddButton(1, GlobalStrings.NO(), ChooseEndowment);
+			currentDisplay.AddButton(0, GlobalStrings.YES(), () => ActivateEndowment(endowment));
+			currentDisplay.AddButton(1, GlobalStrings.NO(), ChooseEndowment);
 		}
 
 		private void ActivateEndowment(EndowmentPerkBase endowment)
@@ -1527,9 +1533,9 @@ namespace CoC.Frontend.Creatures
 
 			if (!historyLocked)
 			{
-				ClearOutput();
+				currentDisplay.ClearOutput();
 				//OutputImage("event-question"));
-				OutputText(HistoryQuestionStr());
+				currentDisplay.OutputText(HistoryQuestionStr());
 
 				List<HistoryPerkBase> data = HistoryPerkBase.historyPerks.Select(x => x()).ToList();
 
@@ -1538,7 +1544,7 @@ namespace CoC.Frontend.Creatures
 					for (byte x = 0; x < data.Count; x++)
 					{
 						byte y = x;
-						AddButton(x, data[x].buttonText(), () => ConfirmHistory(data[y]));
+						currentDisplay.AddButton(x, data[x].buttonText(), () => ConfirmHistory(data[y]));
 					}
 				}
 				else
@@ -1554,13 +1560,13 @@ namespace CoC.Frontend.Creatures
 
 		private void ConfirmHistory(HistoryPerkBase history)
 		{
-			ClearOutput();
+			currentDisplay.ClearOutput();
 			//OutputImage("event-question"));
 
-			OutputText(history.unlockHistoryText());
+			currentDisplay.OutputText(history.unlockHistoryText());
 
-			AddButton(0, GlobalStrings.YES(), () => ActivateHistory(history));
-			AddButton(1, GlobalStrings.NO(), ChooseHistory);
+			currentDisplay.AddButton(0, GlobalStrings.YES(), () => ActivateHistory(history));
+			currentDisplay.AddButton(1, GlobalStrings.NO(), ChooseHistory);
 		}
 
 		private void ActivateHistory(HistoryPerkBase history)
@@ -1629,24 +1635,24 @@ namespace CoC.Frontend.Creatures
 				}
 				private void chooseModeHardcoreSlot()
 				{
-					ClearOutput();
-					OutputText("You have chosen Hardcore Mode. In this mode, the game forces autosave and if you encounter a Bad End, your save file is <b>DELETED</b>! \n\nDebug Mode and Easy Mode are disabled in this game mode. \n\nPlease choose a slot to save in. You may not make multiple copies of saves.");
+					currentDisplay.ClearOutput();
+					currentDisplay.OutputText("You have chosen Hardcore Mode. In this mode, the game forces autosave and if you encounter a Bad End, your save file is <b>DELETED</b>! \n\nDebug Mode and Easy Mode are disabled in this game mode. \n\nPlease choose a slot to save in. You may not make multiple copies of saves.");
 					menu();
 					for (var i:int = 0; i < 14; i++)
 			{
-						AddButton(i, "Slot " + (i + 1), function(slot: int) :*
+						currentScene.AddButton(i, "Slot " + (i + 1), function(slot: int) :*
 			{
 							flags[kFLAGS.HARDCORE_SLOT] = "CoC_" + slot;
 							startTheGame();
 						}, i + 1);
 					}
-					AddButton(14, "Back", chooseGameModes);
+					currentScene.AddButton(14, "Back", chooseGameModes);
 				}
 				//GRIMDARK!
 				private void chooseModeGrimdark()
 				{
-					ClearOutput();
-					OutputText("You have chosen Grimdark Mode. This will drastically alter gameplay and there will be a lot of new obstacles. Enemies are beefed up and the game will be much darker and edgier with plenty of environment changes. Is this what you choose?");
+					currentDisplay.ClearOutput();
+					currentDisplay.OutputText("You have chosen Grimdark Mode. This will drastically alter gameplay and there will be a lot of new obstacles. Enemies are beefed up and the game will be much darker and edgier with plenty of environment changes. Is this what you choose?");
 					flags[kFLAGS.GRIMDARK_MODE] = 1;
 					flags[kFLAGS.HUNGER_ENABLED] = 1;
 					flags[kFLAGS.GAME_DIFFICULTY] = 3;
@@ -1657,28 +1663,28 @@ namespace CoC.Frontend.Creatures
 				//Choose the game mode when called!
 				private void chooseGameModes()
 				{
-					ClearOutput();
-					OutputText(images.showImage("event-creation"));
-					OutputText("Choose a game mode.\n\n");
-					OutputText("<b>Survival:</b> ");
-					if (flags[kFLAGS.HUNGER_ENABLED] == 0) OutputText("Normal Mode. You don't have to eat.\n");
-					if (flags[kFLAGS.HUNGER_ENABLED] == 0.5) OutputText("Survival Mode. You get hungry from time to time.\n");
-					if (flags[kFLAGS.HUNGER_ENABLED] == 1) OutputText("Realistic Mode. You get hungry from time to time and cum production is capped. In addition, it's a bad idea to have oversized parts.\n");
-					OutputText("<b>Hardcore:</b> ");
-					if (flags[kFLAGS.HARDCORE_MODE] == 0) OutputText("Normal Mode. You choose when you want to save and load.\n");
-					if (flags[kFLAGS.HARDCORE_MODE] == 1) OutputText("Hardcore Mode. The game forces save and if you get a Bad End, your save file is deleted. Disables difficulty selection, debug mode, Low Standarts and Hyper Happy mode once the game is started. For the veteran CoC creators only.\n");
-					OutputText("<b>Difficulty:</b> ");
-					if (flags[kFLAGS.GAME_DIFFICULTY] == 0) OutputText("Normal Mode. No stats changes. Game is nice and simple.\n");
-					if (flags[kFLAGS.GAME_DIFFICULTY] == 1) OutputText("Hard Mode. Enemies have would have extra 25% HP and 15% damage.\n");
-					if (flags[kFLAGS.GAME_DIFFICULTY] == 2) OutputText("Nightmare Mode. Enemies would have extra 50% HP and 30% damage.\n");
-					if (flags[kFLAGS.GAME_DIFFICULTY] == 3) OutputText("Extreme Mode. Enemies would have extra 100% HP and 50% damage.\n");
-					if (debug) OutputText("<b>Grimdark mode:</b> (In dev) In the grimdark future, there are only rape and corruptions. Lots of things are changed and Lethice has sent out her minions to wall the borders and put up a lot of puzzles. Can you defeat her in this mode in as few bad ends as possible?\n");
+					currentDisplay.ClearOutput();
+					currentDisplay.OutputText(images.showImage("event-creation"));
+					currentDisplay.OutputText("Choose a game mode.\n\n");
+					currentDisplay.OutputText("<b>Survival:</b> ");
+					if (flags[kFLAGS.HUNGER_ENABLED] == 0) currentDisplay.OutputText("Normal Mode. You don't have to eat.\n");
+					if (flags[kFLAGS.HUNGER_ENABLED] == 0.5) currentDisplay.OutputText("Survival Mode. You get hungry from time to time.\n");
+					if (flags[kFLAGS.HUNGER_ENABLED] == 1) currentDisplay.OutputText("Realistic Mode. You get hungry from time to time and cum production is capped. In addition, it's a bad idea to have oversized parts.\n");
+					currentDisplay.OutputText("<b>Hardcore:</b> ");
+					if (flags[kFLAGS.HARDCORE_MODE] == 0) currentDisplay.OutputText("Normal Mode. You choose when you want to save and load.\n");
+					if (flags[kFLAGS.HARDCORE_MODE] == 1) currentDisplay.OutputText("Hardcore Mode. The game forces save and if you get a Bad End, your save file is deleted. Disables difficulty selection, debug mode, Low Standarts and Hyper Happy mode once the game is started. For the veteran CoC creators only.\n");
+					currentDisplay.OutputText("<b>Difficulty:</b> ");
+					if (flags[kFLAGS.GAME_DIFFICULTY] == 0) currentDisplay.OutputText("Normal Mode. No stats changes. Game is nice and simple.\n");
+					if (flags[kFLAGS.GAME_DIFFICULTY] == 1) currentDisplay.OutputText("Hard Mode. Enemies have would have extra 25% HP and 15% damage.\n");
+					if (flags[kFLAGS.GAME_DIFFICULTY] == 2) currentDisplay.OutputText("Nightmare Mode. Enemies would have extra 50% HP and 30% damage.\n");
+					if (flags[kFLAGS.GAME_DIFFICULTY] == 3) currentDisplay.OutputText("Extreme Mode. Enemies would have extra 100% HP and 50% damage.\n");
+					if (debug) currentDisplay.OutputText("<b>Grimdark mode:</b> (In dev) In the grimdark future, there are only rape and corruptions. Lots of things are changed and Lethice has sent out her minions to wall the borders and put up a lot of puzzles. Can you defeat her in this mode in as few bad ends as possible?\n");
 					menu();
-					AddButton(0, "Survival", chooseModeSurvival);
-					AddButton(1, "Hardcore", chooseModeHardcore);
-					AddButton(2, "Difficulty", chooseModeDifficulty);
-					if (debug) AddButton(3, "Grimdark", chooseModeGrimdark);
-					AddButton(4, "Start!", flags[kFLAGS.HARDCORE_MODE] == 1 ? chooseModeHardcoreSlot : startTheGame);
+					currentScene.AddButton(0, "Survival", chooseModeSurvival);
+					currentScene.AddButton(1, "Hardcore", chooseModeHardcore);
+					currentScene.AddButton(2, "Difficulty", chooseModeDifficulty);
+					if (debug) currentScene.AddButton(3, "Grimdark", chooseModeGrimdark);
+					currentScene.AddButton(4, "Start!", flags[kFLAGS.HARDCORE_MODE] == 1 ? chooseModeHardcoreSlot : startTheGame);
 				}
 
 				private void startTheGame()
@@ -1705,9 +1711,9 @@ namespace CoC.Frontend.Creatures
 						arrival();
 						return;
 					}
-					ClearOutput();
-					OutputText(images.showImage("location-ingnam"));
-					OutputText("Would you like to play through the 3-day prologue in Ingnam or just skip?");
+					currentDisplay.ClearOutput();
+					currentDisplay.OutputText(images.showImage("location-ingnam"));
+					currentDisplay.OutputText("Would you like to play through the 3-day prologue in Ingnam or just skip?");
 					doYesNo(goToIngnam, arrival);
 				}
 				public void goToIngnam()
@@ -1721,7 +1727,7 @@ namespace CoC.Frontend.Creatures
 			//		public void ascensionMenu()
 			//		{
 			//			hideStats();
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			hideMenus();
 			//			mainView.nameBox.visible = false;
 			//			if (creator.hasVagina()) outputText(images.showImage("camp-ascension-female"));
@@ -1740,7 +1746,7 @@ namespace CoC.Frontend.Creatures
 			//		//Perk Selection
 			//		private void ascensionPerkMenu()
 			//		{
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			outputText("You can spend your Ascension Perk Points on special perks not available at level-up!");
 			//			outputText("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
 			//			menu();
@@ -1757,7 +1763,7 @@ namespace CoC.Frontend.Creatures
 			//		}
 			//		private void ascensionPerkSelection(perk:* = null, maxLevel:int = 10)
 			//		{
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			outputText("Perk Effect: " + perk.longDesc);
 			//			outputText("\nCurrent level: " + creator.perkv1(perk) + (maxLevel > 0 ? " / " + maxLevel : " (No maximum level)") + "");
 			//			if (creator.perkv1(perk) >= maxLevel && maxLevel > 0) outputText(" <b>(Maximum)</b>");
@@ -1782,7 +1788,7 @@ namespace CoC.Frontend.Creatures
 			//		//Perk Permery
 			//		private void ascensionPermeryMenu(page:int = 1)
 			//		{
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			outputText("For the price of a few points, you can make certain perks permanent and they will carry over in future ascensions. In addition, if the perks come from transformations, they will stay even if you no longer meet the requirements.");
 			//			outputText("\n\nCurrent Cost: " + permanentizeCost() + " Ascension Points");
 			//			outputText("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
@@ -1833,7 +1839,7 @@ namespace CoC.Frontend.Creatures
 			//		//Respec
 			//		private void respecLevelPerks()
 			//		{
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			if (creator.ascensionPerkPoints < 5)
 			//			{
 			//				outputText("You need at least 5 Ascension Perk Points to respec level-up perks. You have " + creator.ascensionPerkPoints + ".");
@@ -1861,7 +1867,7 @@ namespace CoC.Frontend.Creatures
 			//		//Rename
 			//		private void renamePrompt()
 			//		{
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			outputText("You may choose to change your name.");
 			//			mainView.promptCharacterName();
 			//			mainView.nameBox.text = creator.short;
@@ -1874,7 +1880,7 @@ namespace CoC.Frontend.Creatures
 			//		}
 			//		private void reincarnatePrompt()
 			//		{
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			outputText("Would you like to reincarnate and start a new life as a Champion?");
 			//			doYesNo(reincarnate, ascensionMenu);
 			//		}
@@ -1883,7 +1889,7 @@ namespace CoC.Frontend.Creatures
 			//			flags[kFLAGS.NEW_GAME_PLUS_LEVEL]++;
 			//			customcreatorProfile = null;
 			//			newGameGo();
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			mainView.nameBox.visible = false;
 			//			boxNames.visible = false;
 			//			outputText("Everything fades to white and finally... black. You can feel yourself being whisked back to reality as you slowly awaken in your room. You survey your surroundings and recognize almost immediately; you are in your room inside the inn in Ingnam! You get up and look around. ");
@@ -1928,7 +1934,7 @@ namespace CoC.Frontend.Creatures
 			//		}
 			//		private void routeToGenderChoiceReincarnation()
 			//		{
-			//			ClearOutput();
+			//			currentDisplay.ClearOutput();
 			//			genericGenderChoice();
 			//		}
 			//		private Boolean isAscensionPerk(perk:Perk, respec:Boolean = false)

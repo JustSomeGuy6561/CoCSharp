@@ -4,6 +4,7 @@
 //4/5/2019, 10:22 PM
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 
 namespace CoC.Backend.Encounters
 {
@@ -15,7 +16,7 @@ namespace CoC.Backend.Encounters
 		public bool isActive => encounterUnlocked();
 		public bool isCompleted => encounterDisabled();
 
-		internal protected abstract void Run();
+		internal protected abstract void Run(DisplayBase currentDisplay);
 
 		internal protected abstract bool encounterUnlocked();
 		internal protected abstract bool encounterDisabled();

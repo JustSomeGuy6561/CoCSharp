@@ -7,8 +7,21 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Fertility
+	{
+		public static string Name()
+		{
+			return "Fertility";
+		}
+	}
+
 	public partial class Femininity
 	{
+		public static string Name()
+		{
+			return "Femininity";
+		}
+
 		//diff: how did our femininity change? positive means more female, negative means more male. 0 means no change.
 
 		private string FemininityChangedDueToGenderHormonesStr(short diff)

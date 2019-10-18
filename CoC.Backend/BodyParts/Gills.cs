@@ -2,7 +2,6 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 7:29 PM
-using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -12,15 +11,16 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	//has no special data. its data change will never be called.
-
-	public sealed class Gills : BehavioralSaveablePart<Gills, GillType, GillData>
+	public sealed partial class Gills : BehavioralSaveablePart<Gills, GillType, GillData>
 	{
+		public override string BodyPartName() => Name();
+
 		internal Gills(Guid creatureID, GillType gillType) : base(creatureID)
 		{
 			type = gillType ?? throw new ArgumentNullException(nameof(gillType));
 		}
 
-		internal Gills(Guid creatureID) : this (creatureID, GillType.defaultValue)
+		internal Gills(Guid creatureID) : this(creatureID, GillType.defaultValue)
 		{ }
 
 		public override GillType type { get; protected set; }
@@ -92,7 +92,7 @@ namespace CoC.Backend.BodyParts
 		protected readonly int _index;
 		public override int index => _index;
 
-		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x,y) => x.type.restoreString(x,y), GlobalStrings.RevertAsDefault);
+		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
 		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneFullDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
 		public static readonly GillType FISH = new GillType(FishDescStr, FishFullDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
 	}

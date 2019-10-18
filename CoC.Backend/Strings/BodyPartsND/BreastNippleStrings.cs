@@ -8,9 +8,21 @@ using CoC.Backend.Tools;
 
 namespace   CoC.Backend.BodyParts
 {
+	public partial class Breasts
+	{
+		public static string Name()
+		{
+			return "Breasts";
+		}
+	}
+
 
 	public sealed partial class Nipples
 	{
+		public static string Name()
+		{
+			return "Nipples";
+		}
 
 		//private static string NippleShortDescription()
 		//{

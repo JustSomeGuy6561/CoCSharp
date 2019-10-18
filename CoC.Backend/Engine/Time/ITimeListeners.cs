@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //6/29/2019, 11:55 PM
+using CoC.Backend.Reaction;
 using System;
 using System.Linq;
 
@@ -59,20 +60,20 @@ namespace CoC.Backend.Engine.Time
 
 	public interface ITimeActiveListenerFull
 	{
-		EventWrapper reactToHourPassing();
+		TimeReactionBase reactToHourPassing();
 	}
 
 	public interface ITimeDailyListenerFull
 	{
 		byte hourToTrigger { get; }
 
-		EventWrapper reactToDailyTrigger();
+		TimeReactionBase reactToDailyTrigger();
 	}
 
 	public interface ITimeDayMultiListenerFull
 	{
 		byte[] triggerHours { get; }
-		EventWrapper reactToTrigger(byte currHour);
+		TimeReactionBase reactToTrigger(byte currHour);
 	}
 
 	public interface ITimeActiveListenerSimple
@@ -118,11 +119,11 @@ namespace CoC.Backend.Engine.Time
 
 	internal sealed class SingleDayWrapperFull : ITimeDailyListenerFull
 	{
-		private readonly Func<EventWrapper> callback;
+		private readonly Func<TimeReactionBase> callback;
 
 		public byte hourToTrigger { get; }
 
-		public EventWrapper reactToDailyTrigger() => callback();
+		public TimeReactionBase reactToDailyTrigger() => callback();
 
 		public SingleDayWrapperFull(byte hour, ITimeDayMultiListenerFull listener)
 		{

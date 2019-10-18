@@ -14,9 +14,11 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	//may once have been multidyeable, as we skip button location 4; location 3 is wings.
-	public sealed class Wings : BehavioralSaveablePart<Wings, WingType, WingData>, IDyeable, IMultiToneable //if combat grants a boost to running via wings, just add a hasWings check.
+	public sealed partial class Wings : BehavioralSaveablePart<Wings, WingType, WingData>, IDyeable, IMultiToneable //if combat grants a boost to running via wings, just add a hasWings check.
 	{
-		public HairFurColors featherColor
+		public override string BodyPartName() => Name();
+
+public HairFurColors featherColor
 		{
 			get => _featherColor;
 			private set => _featherColor = value;

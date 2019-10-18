@@ -6,6 +6,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -19,9 +20,10 @@ namespace CoC.Backend.BodyParts
 	//despite the fact that most lizards have their neck out the back of the their head (and most fish, for that matter)
 	//they were never implemented. it seemed like a half-baked idea, so it's no longer here. if it ever becomes full-baked,
 	//by all means, add it back.
-
-	public sealed class Neck : BehavioralSaveablePart<Neck, NeckType, NeckData>, IDyeable
+	public sealed partial class Neck : BehavioralSaveablePart<Neck, NeckType, NeckData>, IDyeable
 	{
+		public override string BodyPartName() => Name();
+
 		public byte length { get; private set; } = NeckType.MIN_NECK_LENGTH;
 
 		private HairFurColors hairColor => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.hair.hairColor : Hair.DEFAULT_COLOR;

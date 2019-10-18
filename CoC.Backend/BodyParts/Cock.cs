@@ -6,6 +6,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System;
@@ -28,10 +29,11 @@ namespace CoC.Backend.BodyParts
 	//whoever decided to use the AS3 equivalent hack for an enum, though, not so much. that was some ugly ass shit.
 
 	//Note: this class exists after perks have been created, so it's postperk init is not called. 
-
-	public sealed class Cock : BehavioralSaveablePart<Cock, CockType, CockData>, IGrowable, IShrinkable
+public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockData>, IGrowable, IShrinkable
 	{
 
+		public override string BodyPartName() => Name();
+		
 		#region Consts
 
 		public const float MAX_COCK_LENGTH = 240f;

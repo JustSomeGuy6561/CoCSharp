@@ -68,6 +68,8 @@ namespace CoC.Backend.Creatures
 		}
 		private float _strength = 0;
 
+		public float relativeStrength => strengthTrue * (100f / maxStrength);
+
 		public byte toughness => (byte)Math.Floor(toughnessTrue);
 		public float toughnessTrue
 		{
@@ -75,6 +77,9 @@ namespace CoC.Backend.Creatures
 			private protected set => _toughness = Utils.Clamp2(value, minToughness, maxToughness);
 		}
 		private float _toughness = 0;
+
+		public float relativeToughness => toughnessTrue * (100f / maxToughness);
+
 		public byte speed => (byte)Math.Floor(speedTrue);
 		public float speedTrue
 		{
@@ -82,6 +87,9 @@ namespace CoC.Backend.Creatures
 			private protected set => _speed = Utils.Clamp2(value, minSpeed, maxSpeed);
 		}
 		private float _speed = 0;
+
+		public float relativeSpeed => speedTrue * (100f / maxSpeed);
+
 		public byte intelligence => (byte)Math.Floor(intelligenceTrue);
 		public float intelligenceTrue
 		{
@@ -90,6 +98,8 @@ namespace CoC.Backend.Creatures
 		}
 		private float _intelligence = 0;
 
+		public float relativeIntelligence => intelligenceTrue * (100f / maxIntelligence);
+
 		public byte fatigue => (byte)Math.Floor(fatigueTrue);
 		public float fatigueTrue
 		{
@@ -97,6 +107,8 @@ namespace CoC.Backend.Creatures
 			private protected set => _fatigue = Utils.Clamp2(value, minFatigue, maxFatigue);
 		}
 		private float _fatigue = 0;
+
+		public float relativeFatigue => fatigueTrue * (100f / maxFatigue);
 
 		protected internal virtual sbyte bonusMinStrength { get; set; }
 		protected virtual byte baseMinStrength => 0;
@@ -236,6 +248,19 @@ namespace CoC.Backend.Creatures
 		//	private protected set => _currentHealth = Utils.Clamp2(value, (uint)0, maxHealth);
 		//}
 		//private uint _currentHealth = 0;
+		public float IncreaseStrengthBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = strengthTrue;
+			float delta = percent * maxStrength;
+			if (!ignorePerks)
+			{
+				delta *= StrengthGainMultiplier;
+			}
+			strengthTrue += delta;
+			return strengthTrue - oldValue;
+		}
+
 		public float IncreaseStrength(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -249,6 +274,19 @@ namespace CoC.Backend.Creatures
 			var oldValue = strengthTrue;
 			strengthTrue += amount;
 			return strengthTrue - oldValue;
+		}
+
+		public float IncreaseToughnessBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = toughnessTrue;
+			float delta = percent * maxToughness;
+			if (!ignorePerks)
+			{
+				delta *= ToughnessGainMultiplier;
+			}
+			toughnessTrue += delta;
+			return toughnessTrue - oldValue;
 		}
 
 		public float IncreaseToughness(float amount = 1, bool ignorePerks = false)
@@ -266,6 +304,19 @@ namespace CoC.Backend.Creatures
 			return toughnessTrue - oldValue;
 		}
 
+		public float IncreaseSpeedBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = speedTrue;
+			float delta = percent * maxSpeed;
+			if (!ignorePerks)
+			{
+				delta *= SpeedGainMultiplier;
+			}
+			speedTrue += delta;
+			return speedTrue - oldValue;
+		}
+
 		public float IncreaseSpeed(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -279,6 +330,19 @@ namespace CoC.Backend.Creatures
 			var oldValue = speedTrue;
 			speedTrue += amount;
 			return speedTrue - oldValue;
+		}
+
+		public float IncreaseIntelligenceBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = intelligenceTrue;
+			float delta = percent * maxIntelligence;
+			if (!ignorePerks)
+			{
+				delta *= IntelligenceGainMultiplier;
+			}
+			intelligenceTrue += delta;
+			return intelligenceTrue - oldValue;
 		}
 
 		public float IncreaseIntelligence(float amount = 1, bool ignorePerks = false)
@@ -296,6 +360,19 @@ namespace CoC.Backend.Creatures
 			return intelligenceTrue - oldValue;
 		}
 
+		public float DecreaseStrengthBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = strengthTrue;
+			float delta = percent * maxStrength;
+			if (!ignorePerks)
+			{
+				delta *= StrengthLossMultiplier;
+			}
+			strengthTrue -= delta;
+			return oldValue - strengthTrue;
+		}
+
 		public float DecreaseStrength(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -309,6 +386,19 @@ namespace CoC.Backend.Creatures
 			var oldValue = strengthTrue;
 			strengthTrue -= amount;
 			return oldValue - strengthTrue;
+		}
+
+		public float DecreaseToughnessBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = toughnessTrue;
+			float delta = percent * maxToughness;
+			if (!ignorePerks)
+			{
+				delta *= ToughnessLossMultiplier;
+			}
+			toughnessTrue -= delta;
+			return oldValue - toughnessTrue;
 		}
 
 		public float DecreaseToughness(float amount = 1, bool ignorePerks = false)
@@ -326,6 +416,19 @@ namespace CoC.Backend.Creatures
 			return oldValue - toughnessTrue;
 		}
 
+		public float DecreaseSpeedBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = speedTrue;
+			float delta = percent * maxSpeed;
+			if (!ignorePerks)
+			{
+				delta *= SpeedLossMultiplier;
+			}
+			speedTrue -= delta;
+			return oldValue - speedTrue;
+		}
+
 		public float DecreaseSpeed(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -339,6 +442,19 @@ namespace CoC.Backend.Creatures
 			var oldValue = speedTrue;
 			speedTrue -= amount;
 			return oldValue - speedTrue;
+		}
+
+		public float DecreaseIntelligenceBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = intelligenceTrue;
+			float delta = percent * maxIntelligence;
+			if (!ignorePerks)
+			{
+				delta *= IntelligenceLossMultiplier;
+			}
+			intelligenceTrue -= delta;
+			return oldValue - intelligenceTrue;
 		}
 
 		public float DecreaseIntelligence(float amount = 1, bool ignorePerks = false)
@@ -356,21 +472,53 @@ namespace CoC.Backend.Creatures
 			return oldValue - intelligenceTrue;
 		}
 
+		public float SetStrengthPercent(float percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float value = maxStrength * percent;
+			strengthTrue = value;
+			return strengthTrue;
+		}
+
 		public float SetStrength(byte value)
 		{
 			strengthTrue = value;
 			return strengthTrue;
 		}
+		public float SetToughnessPercent(float percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float value = maxToughness * percent;
+			toughnessTrue = value;
+			return toughnessTrue;
+		}
+
 		public float SetToughness(byte value)
 		{
 			toughnessTrue = value;
 			return toughnessTrue;
 		}
+		public float SetSpeedPercent(float percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float value = maxSpeed * percent;
+			speedTrue = value;
+			return speedTrue;
+		}
+
 		public float SetSpeed(byte value)
 		{
 			speedTrue = value;
 			return speedTrue;
 		}
+		public float SetIntelligencePercent(float percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float value = maxIntelligence * percent;
+			intelligenceTrue = value;
+			return intelligenceTrue;
+		}
+
 		public float SetIntelligence(byte value)
 		{
 			intelligenceTrue = value;
@@ -516,10 +664,48 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
+		public float GainFatigue(float amount, bool ignorePerks = false)
+		{
+			var oldValue = fatigueTrue;
+			fatigueTrue += amount;
+			return fatigueTrue - oldValue;
+		}
+
+		public float RecoverFatigue(float amount, bool ignorePerks = false)
+		{
+			var oldValue = fatigueTrue;
+			if (!ignorePerks)
+			{
+				amount *= FatigueRegenRate;
+			}
+			fatigueTrue -= amount;
+			return oldValue - fatigueTrue;
+		}
+		public float ChangeFatigue(short delta, bool ignorePerks = false)
+		{
+			bool lose = delta < 0;
+
+			if (delta < 0)
+			{
+				delta *= -1;
+			}
+			Utils.Clamp(ref delta, byte.MinValue, byte.MaxValue);
+			byte amount = (byte)delta;
+			if (lose)
+			{
+
+				return RecoverFatigue(amount, ignorePerks);
+			}
+			else
+			{
+				return GainFatigue(amount, ignorePerks);
+			}
+		}
 		public float spellCost(double baseCost)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
 
 		public float physicalCost(double baseCost)
 		{

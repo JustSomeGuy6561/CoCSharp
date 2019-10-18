@@ -1,6 +1,7 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.Encounters;
+using CoC.Backend.Engine;
 using CoC.Frontend.SaveData;
 using System;
 using System.Collections.Generic;
@@ -61,7 +62,7 @@ namespace CoC.Frontend.Areas.Places
 			protected set => FrontendSessionSave.data.BeachExplorationCount = value;
 		}
 
-		protected override void ExplorePlace()
+		protected override PageDataBase ExplorePlace()
 		{
 			throw new NotImplementedException();
 		}

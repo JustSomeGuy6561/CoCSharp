@@ -8,6 +8,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Races;
@@ -20,8 +21,10 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	public enum TailPiercings { SUCCUBUS_SPADE }
-	public sealed class Tail : BehavioralSaveablePart<Tail, TailType, TailData>, ICanAttackWith
+	public sealed partial class Tail : BehavioralSaveablePart<Tail, TailType, TailData>, ICanAttackWith
 	{
+		public override string BodyPartName() => Name();
+
 		public const JewelryType SUPPORTED_TAIL_PIERCINGS = JewelryType.RING;
 		public const int MAX_ATTACK_CHARGES = 100;
 
@@ -405,7 +408,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public static PiercingJewelry GenerateTailJewelry(this Body body, JewelryMaterial jewelryMaterial)
 		{
-				return new GenericPiercing(JewelryType.RING, jewelryMaterial);
+			return new GenericPiercing(JewelryType.RING, jewelryMaterial);
 		}
 	}
 

@@ -2,6 +2,8 @@
 //Description:
 //Author: JustSomeGuy
 //4/7/2019, 7:37 PM
+using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +11,16 @@ namespace CoC.Backend.Areas
 {
 	public abstract class AreaBase
 	{
+		private protected static Func<DisplayBase> pageMaker;
+
+		internal static void SetPageMaker(Func<DisplayBase> newPageFn)
+		{
+			pageMaker = newPageFn ?? throw new ArgumentNullException(nameof(newPageFn));
+		}
+
 		public readonly SimpleDescriptor name;
+
+
 
 		private protected AreaBase(SimpleDescriptor areaName)
 		{
@@ -20,9 +31,11 @@ namespace CoC.Backend.Areas
 		//manually update values for your area based on whether or not the player is just reaching this area or returning to it after doing something,
 		//you may override OnEnter and OnStay
 
-		//Runs the current area normally. Internally, the current area is checked for any special reactions that may be associated with it, and if none exist,
-		//calls this function. OnEnter or OnStay will be called before RunArea is called. 
-		internal abstract void RunArea();
+		/// <summary>
+		/// Returns a new page with the required content and buttons for running this area. 
+		/// </summary>
+		/// <returns></returns>
+		internal abstract DisplayBase RunArea();
 
 		//Triggers when an area is entered from another area. Allows you to implement any custom logic your area needs when this occurs. Internally, 
 		//the game will automatically increment timesVisited, if applicable. 

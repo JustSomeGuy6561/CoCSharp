@@ -2,14 +2,14 @@
 //Description:
 //Author: JustSomeGuy
 //1/24/2019, 9:50 PM
-using CoC.Backend.Creatures;
-using CoC.Backend.Tools;
 using System;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed class Feet : PartWithBehaviorAndEventBase<Feet, FootType, FootData>
+	public sealed partial class Feet : PartWithBehaviorAndEventBase<Feet, FootType, FootData>
 	{
+		public override string BodyPartName() => Name();
+
 		internal Feet(Guid creatureID, FootType value) : base(creatureID)
 		{
 			type = value ?? throw new ArgumentNullException(nameof(value));

@@ -3,9 +3,11 @@
 //Author: JustSomeGuy
 //2/20/2019, 4:13 PM
 using CoC.Backend.BodyParts;
+using CoC.Backend.BodyParts.BaseClasses;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Inventory;
 using CoC.Backend.Items;
@@ -52,8 +54,9 @@ namespace CoC.Backend.Creatures
 			get => _libido;
 			private protected set => _libido = Utils.Clamp2(value, minLibido, maxLibido);
 		}
-
 		private float _libido = 0;
+
+		public float relativeLibido => libidoTrue * (100f / maxLibido);
 
 		public byte sensitivity => (byte)Math.Floor(sensitivityTrue);
 		public float sensitivityTrue
@@ -63,6 +66,8 @@ namespace CoC.Backend.Creatures
 		}
 		private float _sensitivity = 0;
 
+		public float relativeSensitivity => sensitivityTrue * (100f / maxSensitivity);
+
 		public byte corruption => (byte)Math.Floor(corruptionTrue);
 		public float corruptionTrue
 		{
@@ -71,6 +76,8 @@ namespace CoC.Backend.Creatures
 		}
 		private float _corruption = 0;
 
+		public float relativeCorruption => corruptionTrue * (100f / maxCorruption);
+
 		public byte lust => (byte)Math.Floor(lustTrue);
 		public float lustTrue
 		{
@@ -78,6 +85,8 @@ namespace CoC.Backend.Creatures
 			private protected set => _lust = Utils.Clamp2(value, minLust, maxLust);
 		}
 		private float _lust = 0;
+
+		public float relativeLust => lustTrue * (100f / maxLust);
 
 		protected internal virtual sbyte bonusMinLibido { get; set; }
 		protected virtual byte baseMinLibido => 0;
@@ -188,6 +197,17 @@ namespace CoC.Backend.Creatures
 
 		public Womb womb => genitals.womb;
 
+		//other aliases that are nice.
+
+		public bool hasBalls => genitals.hasBalls;
+
+		public bool hasMaleCock => cocks.Count > 0;
+		public bool hasCock => genitals.allCocks.Count > 0;
+
+		public bool hasClitCock => genitals.hasClitCock;
+
+		public bool hasVagina => vaginas.Count > 0;
+
 		protected BasePerkModifiers modifiers => perks.baseModifiers;
 
 		protected readonly Inventory.BasicInventory inventoryStore;
@@ -198,6 +218,9 @@ namespace CoC.Backend.Creatures
 
 		public UpperGarmentBase upperGarment { get; protected set; }
 		public LowerGarmentBase lowerGarment { get; protected set; }
+
+		public bool wearingAnything => armor != null || upperGarment != null || lowerGarment != null;
+
 
 		//public Weapon weapon { get; protected set; }
 		//public Weapon weapon { get; protected set; }
@@ -222,6 +245,7 @@ namespace CoC.Backend.Creatures
 		//protected bool tongueParticipatesInTimeEvents = true;
 		//protected bool wingsParticipatesInTimeEvents = true;
 
+		public readonly ReadOnlyCollection<IBodyPart> bodyParts;
 
 		#region Constructors
 		protected Creature(CreatureCreator creator)
@@ -516,6 +540,30 @@ namespace CoC.Backend.Creatures
 			DoPostPerkInit();
 			DoLateInit();
 
+			List<IBodyPart> bps = new List<IBodyPart>()
+			{
+				antennae,
+				arms,
+				back,
+				//beard,
+				body,
+				build,
+				ears,
+				eyes,
+				face,
+				genitals,
+				gills,
+				hair,
+				horns,
+				lowerBody,
+				neck,
+				tail,
+				tongue,
+				wings,
+			};
+
+			bodyParts = new ReadOnlyCollection<IBodyPart>(bps);
+
 			AttachBodyListeners();
 			FreezeCreature(); //by default. simply call unfreeze where needed.
 		}
@@ -582,6 +630,19 @@ namespace CoC.Backend.Creatures
 		#endregion
 
 		#region Stat Updates
+		public float IncreaseLibidoBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = libidoTrue;
+			float delta = percent * maxLibido;
+			if (!ignorePerks)
+			{
+				delta *= LibidoGainMultiplier;
+			}
+			libidoTrue += delta;
+			return libidoTrue - oldValue;
+		}
+
 		public float IncreaseLibido(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -596,6 +657,19 @@ namespace CoC.Backend.Creatures
 			libidoTrue += amount;
 			return libidoTrue - oldValue;
 		}
+		public float DecreaseLibidoBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = libidoTrue;
+			float delta = percent * maxLibido;
+			if (!ignorePerks)
+			{
+				delta *= LibidoLossMultiplier;
+			}
+			libidoTrue -= delta;
+			return oldValue - libidoTrue;
+		}
+
 		public float DecreaseLibido(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -610,10 +684,31 @@ namespace CoC.Backend.Creatures
 			libidoTrue -= amount;
 			return oldValue - libidoTrue;
 		}
+		public float SetLibidoPercent(float percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float value = maxLibido * percent;
+			libidoTrue = value;
+			return libidoTrue;
+		}
+
 		public float SetLibido(byte value)
 		{
 			libidoTrue = value;
 			return libidoTrue;
+		}
+
+		public float IncreaseSensitivityBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = sensitivityTrue;
+			float delta = percent * maxSensitivity;
+			if (!ignorePerks)
+			{
+				delta *= SensitivityGainMultiplier;
+			}
+			sensitivityTrue += delta;
+			return sensitivityTrue - oldValue;
 		}
 
 		public float IncreaseSensitivity(float amount = 1, bool ignorePerks = false)
@@ -630,6 +725,19 @@ namespace CoC.Backend.Creatures
 			sensitivityTrue += amount;
 			return sensitivityTrue - oldValue;
 		}
+		public float DecreaseSensitivityBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = sensitivityTrue;
+			float delta = percent * maxSensitivity;
+			if (!ignorePerks)
+			{
+				delta *= SensitivityLossMultiplier;
+			}
+			sensitivityTrue -= delta;
+			return oldValue - sensitivityTrue;
+		}
+
 		public float DecreaseSensitivity(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -644,10 +752,31 @@ namespace CoC.Backend.Creatures
 			sensitivityTrue -= amount;
 			return oldValue - sensitivityTrue;
 		}
+		public float SetSensitivityPercent(float percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float value = maxSensitivity * percent;
+			sensitivityTrue = value;
+			return sensitivityTrue;
+		}
+
 		public float SetSensitivity(byte value)
 		{
 			sensitivityTrue = value;
 			return sensitivityTrue;
+		}
+
+		public float IncreaseCorruptionBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = corruptionTrue;
+			float delta = percent * maxCorruption;
+			if (!ignorePerks)
+			{
+				delta *= CorruptionGainMultiplier;
+			}
+			corruptionTrue += delta;
+			return corruptionTrue - oldValue;
 		}
 
 		public float IncreaseCorruption(float amount = 1, bool ignorePerks = false)
@@ -664,6 +793,19 @@ namespace CoC.Backend.Creatures
 			corruptionTrue += amount;
 			return corruptionTrue - oldValue;
 		}
+		public float DecreaseCorruptionBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = corruptionTrue;
+			float delta = percent * maxCorruption;
+			if (!ignorePerks)
+			{
+				delta *= CorruptionLossMultiplier;
+			}
+			corruptionTrue -= delta;
+			return oldValue - corruptionTrue;
+		}
+
 		public float DecreaseCorruption(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -678,10 +820,31 @@ namespace CoC.Backend.Creatures
 			corruptionTrue -= amount;
 			return oldValue - corruptionTrue;
 		}
+		public float SetCorruptionPercent(float percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float value = maxCorruption * percent;
+			corruptionTrue = value;
+			return corruptionTrue;
+		}
+
 		public float SetCorruption(byte value)
 		{
 			corruptionTrue = value;
 			return corruptionTrue;
+		}
+
+		public float IncreaseLustBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = lustTrue;
+			float delta = percent * maxLust;
+			if (!ignorePerks)
+			{
+				delta *= LustGainMultiplier;
+			}
+			lustTrue += delta;
+			return lustTrue - oldValue;
 		}
 
 		public float IncreaseLust(float amount = 1, bool ignorePerks = false)
@@ -698,6 +861,19 @@ namespace CoC.Backend.Creatures
 			lustTrue += amount;
 			return lustTrue - oldValue;
 		}
+		public float DecreaseLustBy(float percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float oldValue = lustTrue;
+			float delta = percent * maxLust;
+			if (!ignorePerks)
+			{
+				delta *= LustLossMultiplier;
+			}
+			lustTrue -= delta;
+			return oldValue - lustTrue;
+		}
+
 		public float DecreaseLust(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -712,6 +888,14 @@ namespace CoC.Backend.Creatures
 			lustTrue -= amount;
 			return oldValue - lustTrue;
 		}
+		public float SetLustPercent(float percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			float value = maxLust * percent;
+			lustTrue = value;
+			return lustTrue;
+		}
+
 		public float SetLust(byte value)
 		{
 			lustTrue = value;
@@ -1098,6 +1282,10 @@ namespace CoC.Backend.Creatures
 			return item != inventory[slot].item;
 		}
 
+		public bool CanAddItem(CapacityItem item)
+		{
+			return inventoryStore.CanAddItem(item);
+		}
 
 		public int TryAddItem(CapacityItem item)
 		{
@@ -1138,250 +1326,293 @@ namespace CoC.Backend.Creatures
 			inventoryStore.ReplaceItemInSlot(index, replacement, addIfSameItem);
 		}
 
-		public void UseItemManual(CapacityItem item, UseItemCallback onUseItemReturn)
+		public void UseItemManual(CapacityItem item, DisplayBase currentPage, UseItemCallback onUseItemReturn)
 		{
 			if (item is null) throw new ArgumentNullException(nameof(item));
 			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
 
-			if (item.CanUse(this))
+			if (item.CanUse(this, out string whyNot))
 			{
-				item.AttemptToUse(this, onUseItemReturn);
+				item.AttemptToUse(this, currentPage, onUseItemReturn);
 			}
 			else
 			{
-				onUseItemReturn(false, item.CantUseExplanation(this), item);
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, item);
 			}
 		}
 
-		public void UseItemInInventoryManual(byte index, UseItemCallback onUseItemReturn)
+		public void UseItemInInventoryManual(byte index, DisplayBase currentPage, UseItemCallback onUseItemReturn)
 		{
 			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
 			if (index >= inventory.Count) throw new IndexOutOfRangeException("inventory does not have that many slots currently.");
 
-			if (inventory[index].itemCount > 0 && inventory[index].item != null && inventory[index].item.CanUse(this))
+			if (inventory[index].isEmpty)
+			{
+				currentPage.OutputText(NoItemInSlotErrorText());
+				onUseItemReturn(false, currentPage, null);
+			}
+			else if (!inventory[index].item.CanUse(this, out string whyNot))
+			{
+				currentPage.OutputText(NoItemInSlotErrorText());
+				onUseItemReturn(false, currentPage, null);
+			}
+			else
 			{
 				var item = inventoryStore.RemoveItem(index);
-				item.AttemptToUse(this, onUseItemReturn);
-			}
-			else if (inventory[index].itemCount == 0 || inventory[index].item == null)
-			{
-				onUseItemReturn(false, NoItemInSlotErrorText(), null);
-			}
-			else
-			{
-				onUseItemReturn(false, inventory[index].item.CantUseExplanation(this), null);
+				item.AttemptToUse(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void EquipArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		public void EquipArmorManual(ArmorBase armor, DisplayBase currentPage, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
 		{
-			if (armor.CanUse(this))
+			if (armor is null)
 			{
-				armor.AttemptToUseSafe(this, onUseItemReturn);
+				return;
+			}
+			else if (!armor.CanUse(this, out string whyNot))
+			{
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, armor);
 			}
 			else
 			{
-				onUseItemReturn(false, armor.CantUseExplanation(this), armor);
+				armor.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void EquipArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		public void EquipArmorFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
 		{
-			if (inventory[index].itemCount > 0 && inventory[index].item is ArmorBase && inventory[index].item.CanUse(this))
+			if (inventory[index].isEmpty)
+			{
+				currentPage.OutputText(NoItemInSlotErrorText());
+				onUseItemReturn(false, currentPage, null);
+			}
+			else if (!(inventory[index].item is ArmorBase armorItem))
+			{
+				currentPage.OutputText(InCorrectTypeErrorText(typeof(ArmorBase)));
+				onUseItemReturn(false, currentPage, null);
+			}
+			else if (!armorItem.CanUse(this, out string whyNot))
+			{
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, null);
+			}
+			else
 			{
 				var item = (ArmorBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, onUseItemReturn);
-			}
-			else if (inventory[index].itemCount == 0 || inventory[index].item == null)
-			{
-				onUseItemReturn(false, NoItemInSlotErrorText(), null);
-			}
-			else if (!(inventory[index].item is ArmorBase))
-			{
-				onUseItemReturn(false, InCorrectTypeErrorText(typeof(ArmorBase)), null);
-			}
-			else
-			{
-				onUseItemReturn(false, inventory[index].item.CantUseExplanation(this), null);
+				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void ReplaceArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		public void ReplaceArmorManual(ArmorBase armor, DisplayBase currentPage, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
 		{
 			if (armor is null)
 			{
 				var item = RemoveArmorManual();
-				onUseItemReturn(true, null, item);
+				onUseItemReturn(true, currentPage, item);
 			}
-			else if (armor.CanUse(this))
+			if (!armor.CanUse(this, out string whyNot))
 			{
-				armor.AttemptToUseSafe(this, onUseItemReturn);
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, armor);
 			}
 			else
 			{
-				onUseItemReturn(false, armor.CantUseExplanation(this), armor);
+				armor.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void ReplaceArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		public void ReplaceArmorFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
 		{
-			if (inventory[index] == null || inventory[index].itemCount == 0)
+			if (inventory[index].isEmpty)
 			{
-				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+				currentPage.OutputText(NoItemInSlotErrorText());
+				onUseItemReturn(false, currentPage, null);
 			}
-			else if (!(inventory[index].item is ArmorBase newArmor))
+			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
-				onUseItemReturn(false, InCorrectTypeErrorText(typeof(ArmorBase)), null);
+				currentPage.OutputText(InCorrectTypeErrorText(typeof(ArmorBase)));
+				onUseItemReturn(false, currentPage, null);
 			}
-			else if (!newArmor.CanUse(this))
+			else if (!armorItem.CanUse(this, out string whyNot))
 			{
-				onUseItemReturn(false, newArmor.CantUseExplanation(this), newArmor);
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, null);
 			}
 			else
 			{
-				newArmor.AttemptToUseSafe(this, onUseItemReturn);
+				var item = (ArmorBase)inventoryStore.RemoveItem(index);
+				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void EquipUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		public void EquipUpperGarmentManual(UpperGarmentBase upperGarment, DisplayBase currentPage, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
 		{
-			if (upperGarment.CanUse(this))
+			if (upperGarment is null)
 			{
-				upperGarment.AttemptToUseSafe(this, onUseItemReturn);
+				return;
+			}
+			else if (!upperGarment.CanUse(this, out string whyNot))
+			{
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, upperGarment);
 			}
 			else
 			{
-				onUseItemReturn(false, upperGarment.CantUseExplanation(this), upperGarment);
+				upperGarment.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void EquipUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		public void EquipUpperGarmentFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
 		{
-			if (inventory[index].itemCount > 0 && inventory[index].item is UpperGarmentBase && inventory[index].item.CanUse(this))
+			if (inventory[index].isEmpty)
+			{
+				currentPage.OutputText(NoItemInSlotErrorText());
+				onUseItemReturn(false, currentPage, null);
+			}
+			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
+			{
+				currentPage.OutputText(InCorrectTypeErrorText(typeof(UpperGarmentBase)));
+				onUseItemReturn(false, currentPage, null);
+			}
+			else if (!upperGarmentItem.CanUse(this, out string whyNot))
+			{
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, null);
+			}
+			else
 			{
 				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, onUseItemReturn);
-			}
-			else if (inventory[index].itemCount == 0 || inventory[index].item == null)
-			{
-				onUseItemReturn(false, NoItemInSlotErrorText(), null);
-			}
-			else if (!(inventory[index].item is UpperGarmentBase))
-			{
-				onUseItemReturn(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), null);
-			}
-			else
-			{
-				onUseItemReturn(false, inventory[index].item.CantUseExplanation(this), null);
+				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		public void ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, DisplayBase currentPage, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
 		{
 			if (upperGarment is null)
 			{
 				var item = RemoveUpperGarmentManual();
-				onUseItemReturn(true, null, item);
+				onUseItemReturn(true, currentPage, item);
 			}
-			else if (upperGarment.CanUse(this))
+			if (!upperGarment.CanUse(this, out string whyNot))
 			{
-				upperGarment.AttemptToUseSafe(this, onUseItemReturn);
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, upperGarment);
 			}
 			else
 			{
-				onUseItemReturn(false, upperGarment.CantUseExplanation(this), upperGarment);
+				upperGarment.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void ReplaceUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		public void ReplaceUpperGarmentFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
 		{
-			if (inventory[index] == null || inventory[index].itemCount == 0)
+			if (inventory[index].isEmpty)
 			{
-				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+				currentPage.OutputText(NoItemInSlotErrorText());
+				onUseItemReturn(false, currentPage, null);
 			}
-			else if (!(inventory[index].item is UpperGarmentBase newUpperGarment))
+			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
-				onUseItemReturn(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), null);
+				currentPage.OutputText(InCorrectTypeErrorText(typeof(UpperGarmentBase)));
+				onUseItemReturn(false, currentPage, null);
 			}
-			else if (!newUpperGarment.CanUse(this))
+			else if (!upperGarmentItem.CanUse(this, out string whyNot))
 			{
-				onUseItemReturn(false, newUpperGarment.CantUseExplanation(this), newUpperGarment);
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, null);
 			}
 			else
 			{
-				newUpperGarment.AttemptToUseSafe(this, onUseItemReturn);
+				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
+				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void EquipLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		public void EquipLowerGarmentManual(LowerGarmentBase lowerGarment, DisplayBase currentPage, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
 		{
-			if (lowerGarment.CanUse(this))
+			if (lowerGarment is null)
 			{
-				lowerGarment.AttemptToUseSafe(this, onUseItemReturn);
+				return;
+			}
+			else if (!lowerGarment.CanUse(this, out string whyNot))
+			{
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, lowerGarment);
 			}
 			else
 			{
-				onUseItemReturn(false, lowerGarment.CantUseExplanation(this), lowerGarment);
+				lowerGarment.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void EquipLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		public void EquipLowerGarmentFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
 		{
-			if (inventory[index].itemCount > 0 && inventory[index].item is LowerGarmentBase && inventory[index].item.CanUse(this))
+			if (inventory[index].isEmpty)
+			{
+				currentPage.OutputText(NoItemInSlotErrorText());
+				onUseItemReturn(false, currentPage, null);
+			}
+			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
+			{
+				currentPage.OutputText(InCorrectTypeErrorText(typeof(LowerGarmentBase)));
+				onUseItemReturn(false, currentPage, null);
+			}
+			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
+			{
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, null);
+			}
+			else
 			{
 				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, onUseItemReturn);
-			}
-			else if (inventory[index].itemCount == 0 || inventory[index].item == null)
-			{
-				onUseItemReturn(false, NoItemInSlotErrorText(), null);
-			}
-			else if (!(inventory[index].item is LowerGarmentBase))
-			{
-				onUseItemReturn(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), null);
-			}
-			else
-			{
-				onUseItemReturn(false, inventory[index].item.CantUseExplanation(this), null);
+				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		public void ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, DisplayBase currentPage, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
 		{
 			if (lowerGarment is null)
 			{
 				var item = RemoveLowerGarmentManual();
-				onUseItemReturn(true, null, item);
+				onUseItemReturn(true, currentPage, item);
 			}
-			else if (lowerGarment.CanUse(this))
+			if (!lowerGarment.CanUse(this, out string whyNot))
 			{
-				lowerGarment.AttemptToUseSafe(this, onUseItemReturn);
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, lowerGarment);
 			}
 			else
 			{
-				onUseItemReturn(false, lowerGarment.CantUseExplanation(this), lowerGarment);
+				lowerGarment.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
 
-		public void ReplaceLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		public void ReplaceLowerGarmentFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
 		{
-			if (inventory[index] == null || inventory[index].itemCount == 0)
+			if (inventory[index].isEmpty)
 			{
-				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+				currentPage.OutputText(NoItemInSlotErrorText());
+				onUseItemReturn(false, currentPage, null);
 			}
-			else if (!(inventory[index].item is LowerGarmentBase newLowerGarment))
+			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
-				onUseItemReturn(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), null);
+				currentPage.OutputText(InCorrectTypeErrorText(typeof(LowerGarmentBase)));
+				onUseItemReturn(false, currentPage, null);
 			}
-			else if (!newLowerGarment.CanUse(this))
+			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
 			{
-				onUseItemReturn(false, newLowerGarment.CantUseExplanation(this), newLowerGarment);
+				currentPage.OutputText(whyNot);
+				onUseItemReturn(false, currentPage, null);
 			}
 			else
 			{
-				newLowerGarment.AttemptToUseSafe(this, onUseItemReturn);
+				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
+				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
 			}
 		}
+
 
 		private string NoItemInSlotErrorText()
 		{
@@ -1397,7 +1628,7 @@ namespace CoC.Backend.Creatures
 			throw new NotImplementedException();
 		}
 
-		
+
 
 		private string InCorrectTypeErrorText(Type type)
 		{
@@ -2398,7 +2629,7 @@ namespace CoC.Backend.Creatures
 		private protected readonly List<IBodyPartTimeActive> activeBodyListeners = new List<IBodyPartTimeActive>();
 		private protected readonly List<IBodyPartTimeDaily> dailyBodyListeners = new List<IBodyPartTimeDaily>();
 		private protected readonly List<IBodyPartTimeDayMulti> multiDailyBodyListeners = new List<IBodyPartTimeDayMulti>();
-		
+
 		public bool timeAware { get; private set; } = false;
 
 
@@ -2431,8 +2662,8 @@ namespace CoC.Backend.Creatures
 		private string QueryDailyBodyListenerData(byte currentHour)
 		{
 			StringBuilder sb = new StringBuilder();
-			dailyBodyListeners.ForEach(x=> { if (x.hourToTrigger == currentHour) sb.Append(x.reactToDailyTrigger(this is Player)); });
-			multiDailyBodyListeners.ForEach(x=> { if (x.triggerHours.Contains(currentHour)) sb.Append(x.reactToTrigger(this is Player, currentHour)); });
+			dailyBodyListeners.ForEach(x => { if (x.hourToTrigger == currentHour) sb.Append(x.reactToDailyTrigger(this is Player)); });
+			multiDailyBodyListeners.ForEach(x => { if (x.triggerHours.Contains(currentHour)) sb.Append(x.reactToTrigger(this is Player, currentHour)); });
 
 			return sb.ToString();
 		}

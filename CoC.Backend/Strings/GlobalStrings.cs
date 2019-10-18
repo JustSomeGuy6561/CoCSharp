@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/29/2018, 2:04 PM
+using System;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 
@@ -68,6 +69,8 @@ namespace CoC.Backend.Strings
 			return new string(chars);
 		}
 
+		
+
 		//simple plural check for strings ending in S.
 		public static bool IsPluralWithS(this string text)
 		{
@@ -91,7 +94,12 @@ namespace CoC.Backend.Strings
 		public static string CONTINUE() => CONTINUE(true);
 		public static string RETURN() => RETURN(true);
 		public static string CONFIRM() => CONFIRM(true);
+		public static string NEVERMIND() => NEVERMIND(true);
 
+		public static string NEVERMIND(bool capital)
+		{
+			return capital ? "Nevermind" : "nevermind";
+		}
 		public static string YES(bool capital)
 		{
 			return capital ? "Yes" : "yes";

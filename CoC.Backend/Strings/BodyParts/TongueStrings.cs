@@ -10,7 +10,14 @@ using System.Text;
 namespace CoC.Backend.BodyParts
 {
 	//full desc adds "pierced " 30% of the time, if pierced.
-
+	public partial class Tongue
+	{
+		public static string Name()
+		{
+			return "Tongue";
+		}
+	}
+	
 	public partial class TongueType
 	{
 		private static string HumanDesc()

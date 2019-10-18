@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Encounters;
+using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Encounters.HighMountain
 {
@@ -21,7 +22,7 @@ namespace CoC.Frontend.Encounters.HighMountain
 			throw new System.NotImplementedException();
 		}
 
-		protected override void Run()
+		protected override PageDataBase Run()
 		{
 			throw new System.NotImplementedException();
 		}

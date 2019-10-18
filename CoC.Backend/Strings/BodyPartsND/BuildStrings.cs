@@ -12,6 +12,11 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Build
 	{
+		public static string Name()
+		{
+			return "Build";
+		}
+
 		private LowerBodyData lowerBodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature)? creature.lowerBody.AsReadOnlyData() : new LowerBodyData(creatureID);
 		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
@@ -264,6 +269,11 @@ namespace CoC.Backend.BodyParts
 
 	public partial class Hips
 	{
+		public static string Name()
+		{
+			return "Hips";
+		}
+
 		private string AsStr()
 		{
 			if (size <= BOYISH)

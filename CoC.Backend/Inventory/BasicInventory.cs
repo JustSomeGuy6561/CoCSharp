@@ -106,6 +106,11 @@ namespace CoC.Backend.Inventory
 		{
 			return storage.AddItemBack(originalIndex, originalItem);
 		}
+
+		public bool CanAddItem(CapacityItem item)
+		{
+			return storage.CanAddItem(item);
+		}
 	}
 
 	public sealed class ItemSlot
@@ -117,6 +122,52 @@ namespace CoC.Backend.Inventory
 		{
 			return new ReadOnlyItemSlot(this);
 		}
+
+		public bool AddItem(CapacityItem newItem)
+		{
+
+			if (newItem is null)
+			{
+				throw new ArgumentNullException(nameof(newItem));
+			}
+			else if (isEmpty || item == newItem && itemCount < item.maxCapacityPerSlot)
+			{
+				//shouldn't be necessary, but idk.
+				if (isEmpty)
+				{
+					itemCount = 0;
+				}
+
+				itemCount++;
+				return true;
+			}
+			return false;
+		}
+
+		public bool ReplaceItem(CapacityItem newItem, bool addIfSame = true)
+		{
+			if (newItem is null)
+			{
+				throw new ArgumentNullException(nameof(newItem));
+			}
+			else if (item != newItem || !addIfSame)
+			{
+				item = newItem;
+				itemCount = 1;
+				return true;
+			}
+			else if (itemCount >= item.maxCapacityPerSlot)
+			{
+				return false;
+			}
+			else
+			{
+				itemCount++;
+				return true;
+			}
+		}
+
+		public bool isEmpty => item is null || itemCount == 0;
 
 		public bool AddOrReplaceItem(CapacityItem newItem)
 		{
@@ -177,6 +228,8 @@ namespace CoC.Backend.Inventory
 	{
 		public readonly CapacityItem item;
 		public readonly byte itemCount;
+
+		public bool isEmpty => item is null || itemCount == 0;
 
 		internal ReadOnlyItemSlot(ItemSlot source)
 		{

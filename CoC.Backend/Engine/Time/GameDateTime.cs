@@ -71,7 +71,8 @@ namespace CoC.Backend.Engine.Time
 
 		public int CompareTo(GameDateTime other)
 		{
-			return -hoursTo(other);
+			if (other is null) return 1;
+			else return -hoursTo(other);
 		}
 
 		public bool Equals(GameDateTime other)

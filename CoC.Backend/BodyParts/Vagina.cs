@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -31,6 +32,12 @@ namespace CoC.Backend.BodyParts
 
 	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType, VaginaData>, IBodyPartTimeLazy
 	{
+		public override string BodyPartName()
+		{
+			return Name();
+		}
+
+
 		private const JewelryType SUPPORTED_LABIA_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 
 		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
@@ -254,7 +261,7 @@ namespace CoC.Backend.BodyParts
 		//default update is fine.
 		#endregion
 		#region Unique Functions
-		
+
 		internal bool PenetrateVagina(ushort penetratorArea, float knotArea, bool takeVirginity, bool reachOrgasm)
 		{
 			totalPenetrationCount++;
@@ -263,7 +270,7 @@ namespace CoC.Backend.BodyParts
 			VaginalLooseness oldLooseness = looseness;
 
 			HandleStretching(penetratorArea, knotArea);
-			
+
 			if (takeVirginity)
 			{
 				sexCount++;
@@ -273,7 +280,7 @@ namespace CoC.Backend.BodyParts
 			{
 				orgasmCount++;
 			}
-			
+
 			return oldLooseness != looseness;
 		}
 
@@ -747,8 +754,9 @@ namespace CoC.Backend.BodyParts
 
 	}
 
-	public sealed class VaginaData : BehavioralSaveablePartData<VaginaData, Vagina, VaginaType>
+	public sealed partial class VaginaData : BehavioralSaveablePartData<VaginaData, Vagina, VaginaType>
 	{
+
 		public readonly ClitData clit;
 		public readonly VaginalLooseness looseness;
 		public readonly VaginalWetness wetness;

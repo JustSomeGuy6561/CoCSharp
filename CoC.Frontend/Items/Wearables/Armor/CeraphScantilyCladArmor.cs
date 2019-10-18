@@ -42,11 +42,23 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		protected override int monetaryValue => 0;
 		public override bool canSell => true;
 
-		public override bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment) => true;
+		public override bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment, out string whyNot)
+		{
+			whyNot = null;
+			return true;
+		}
 
-		public override bool CanWearWithUpperGarment(UpperGarmentBase upperGarment) => true;
+		public override bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot)
+		{
+			whyNot = null;
+			return true;
+		}
 
-		protected override bool CanWearWithBodyData(Creature creature) => true;
+		protected override bool CanWearWithBodyData(Creature creature, out string whyNot)
+		{
+			whyNot = null;
+			return true;
+		}
 
 		//swap armor. underclothes are irrelevant. then, remove the armor. return the old armor. Net result: ceraph armor is gone. old armor to inventory (can be reworn if items full). 
 		//perk updated. 
@@ -77,11 +89,6 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		protected override string EquipText(Creature wearer)
 		{
 			return EquipTheArmorDammit();
-		}
-
-		public override string CantUseExplanation(Creature creature)
-		{
-			return null;
 		}
 
 		public override bool supportsBulgeArmor => false;

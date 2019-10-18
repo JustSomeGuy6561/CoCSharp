@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Engine.Time;
+using CoC.Backend.Reaction;
 
 namespace CoC.Backend.Pregnancies
 {
@@ -13,9 +15,9 @@ namespace CoC.Backend.Pregnancies
 		{
 		}
 
-		protected override SpecialEvent HandleBirthing()
+		protected override DynamicTimeReaction HandleBirthing()
 		{
-			SpecialEvent retVal = ((SpawnTypeIncludeAnal)spawnType).HandleAnalBirth(creatureID);
+			DynamicTimeReaction retVal = ((SpawnTypeIncludeAnal)spawnType).HandleAnalBirth(creatureID);
 			CreatureStore.GetCreatureClean(creatureID)?.genitals.ass.HandleBirth(spawnType.sizeOfCreatureAtBirth);
 			return retVal;
 		}

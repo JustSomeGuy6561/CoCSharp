@@ -7,6 +7,7 @@ using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace CoC.Backend.BodyParts
 {
 	public sealed partial class Femininity : SimpleSaveablePart<Femininity, FemininityData>, IBodyPartTimeLazy
 	{
+		public override string BodyPartName() => Name();
+
 		internal readonly HashSet<IFemininityListenerInternal> internalFemininityListeners = new HashSet<IFemininityListenerInternal>();
 
 		private Creature creature

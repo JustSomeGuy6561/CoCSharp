@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CoC.Backend.Engine;
+using CoC.Backend.UI;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -79,19 +81,23 @@ namespace CoC.Backend.Areas
 		//does the player get to see the dungeon in the list of available dungeons, assuming they found it? If false, there needs to be some other way to enter the dungeon. 
 		public abstract bool isHidden { get; }
 
-		internal override void RunArea()
+		internal override DisplayBase RunArea()
 		{
+			DisplayBase newPage = pageMaker();
+
 			if (currentRoom is null)
 			{
 				currentRoom = entranceRoom;
-				OnDungeonEnter();
+				OnDungeonEnter(newPage);
 			}
 
-			currentRoom.onEnter();
+			
+			currentRoom.onEnter(newPage);
+			return newPage;
 		}
 
-		//
-		protected virtual void OnDungeonEnter() { }
+		//a virtual function that handles any random data initialization, as needed. it should not print anything. 
+		protected virtual void OnDungeonEnter(DisplayBase display) { }
 
 	}
 }

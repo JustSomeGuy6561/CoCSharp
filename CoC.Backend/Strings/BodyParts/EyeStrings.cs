@@ -32,6 +32,14 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	public partial class Eyes
+	{
+			public static string Name()
+			{
+				return "Eyes";
+			}
+		}
+
 	public partial class EyeType
 	{
 		private static string HumanEyeChange(EyeColor oldLeft, EyeColor newLeft, EyeColor oldRight, EyeColor newRight)

@@ -8,6 +8,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -42,6 +43,9 @@ namespace CoC.Backend.BodyParts
 
 	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType, HairData>, ISimultaneousMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
+		public override string BodyPartName() => Name();
+
+
 		internal static readonly HairFurColors DEFAULT_COLOR = HairFurColors.BLACK;
 
 		//right now, accelerated growth lasts 8 hours. changing the accelorator level to non-zero will reset this to 8 hours. Changing it to zero will immediately set the duration to zero.
@@ -146,7 +150,7 @@ namespace CoC.Backend.BodyParts
 		internal Hair(Guid creatureID) : this(creatureID, HairType.defaultValue)
 		{ }
 
-		internal Hair(Guid creatureID, HairType hairType, HairFurColors color = null, HairFurColors highlight = null, float? hairLength = null, 
+		internal Hair(Guid creatureID, HairType hairType, HairFurColors color = null, HairFurColors highlight = null, float? hairLength = null,
 			HairStyle? hairStyle = null, bool hairTransparent = false) : base(creatureID)
 		{
 			_type = hairType ?? throw new ArgumentNullException(nameof(hairType));
@@ -292,7 +296,7 @@ namespace CoC.Backend.BodyParts
 			return HandleHairChange(() => SetHairColorPrivate(hairColor, false) & SetHighlightColorPrivate(highlightColor));
 		}
 
-		
+
 		internal bool SetHairStyle(HairStyle newStyle)
 		{
 			return HandleHairChange(() => SetHairStylePrivate(newStyle));
@@ -409,7 +413,7 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Restore
-		
+
 		//default restore is fine.
 
 		internal void Reset()
@@ -1022,7 +1026,7 @@ namespace CoC.Backend.BodyParts
 		public bool isNoHair => currentType == HairType.NO_HAIR;
 		public bool hairDeactivated => currentType == HairType.NO_HAIR || (hairLength == 0 && isNotGrowing);
 		public bool isBald => isNoHair || hairLength == 0;
-		
+
 		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
 
 		internal HairData(Guid id, HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool notGrowing) : base(id, type)

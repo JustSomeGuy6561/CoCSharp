@@ -7,7 +7,15 @@ using CoC.Backend.Creatures;
 
 namespace CoC.Backend.BodyParts
 {
-	public partial class LowerBodyType
+	public partial class LowerBody
+{
+public static string Name()
+{
+return "LowerBody";
+}
+}
+
+public partial class LowerBodyType
 	{
 		//private static string HumanPlayer(Player player)
 		//{

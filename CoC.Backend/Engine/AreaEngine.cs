@@ -1,6 +1,7 @@
 ﻿using CoC.Backend.Areas;
-using CoC.Backend.Engine.Events;
+using CoC.Backend.Reaction;
 using CoC.Backend.Tools;
+using CoC.Backend.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,7 +30,9 @@ namespace CoC.Backend.Engine
 		private readonly Dictionary<Type, PriorityQueue<PlaceReaction>> placeReactionStorage = new Dictionary<Type, PriorityQueue<PlaceReaction>>();
 		private readonly Dictionary<Type, PriorityQueue<LocationReaction>> locationReactionStorage = new Dictionary<Type, PriorityQueue<LocationReaction>>();
 		private readonly PriorityQueue<HomeBaseReaction> homeBaseReactions = new PriorityQueue<HomeBaseReaction>();
-		private readonly Action<string> outputText;
+
+		private readonly Func<DisplayBase> pageMaker;
+		private readonly Action<DisplayBase> displayPage;
 
 #warning if treating areas within places as places, this areaChanged logic will fail. figure out way to fix. 
 
@@ -52,10 +55,12 @@ namespace CoC.Backend.Engine
 		//defined during a load of file or new game. obtained by the current difficulty. 
 		internal HomeBaseBase currentHomeBase { get; private set; }
 
-		internal AreaEngine(Action<string> output, ReadOnlyDictionary<Type, Func<PlaceBase>> places, ReadOnlyDictionary<Type, Func<LocationBase>> locations,
+		internal AreaEngine(Func<DisplayBase> pageDataConstructor, Action<DisplayBase> pageDisplayFn,
+			ReadOnlyDictionary<Type, Func<PlaceBase>> places, ReadOnlyDictionary<Type, Func<LocationBase>> locations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> dungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases)
 		{
-			outputText = output ?? throw new ArgumentNullException(nameof(output));
+			pageMaker = pageDataConstructor ?? throw new ArgumentNullException(nameof(pageDataConstructor));
+			displayPage = pageDisplayFn ?? throw new ArgumentNullException(nameof(pageDisplayFn));
 			placeLookup = places ?? throw new ArgumentNullException(nameof(places));
 			locationLookup = locations ?? throw new ArgumentNullException(nameof(locations));
 			dungeonLookup = dungeons ?? throw new ArgumentNullException(nameof(dungeons));
@@ -73,31 +78,46 @@ namespace CoC.Backend.Engine
 			//only one home base per session. so we don't need to worry about a lookup table.
 		}
 
+		internal void ForceReload()
+		{
+			if (!(currentArea is HomeBaseBase))
+			{
+				currentArea = currentHomeBase;
+				((HomeBaseBase)currentArea).OnReload();
+			}
+		}
+
 		#region Change Location
-		internal bool SetArea<T>() where T : AreaBase
+
+		internal bool SetArea(Type type)
 		{
 			AreaBase prevArea = currentArea;
-			if (typeof(T).IsSubclassOf(typeof(LocationBase)))
+			if (type.IsSubclassOf(typeof(LocationBase)))
 			{
-				currentArea = locationLookup[typeof(T)]();
+				currentArea = locationLookup[type]();
 			}
-			else if (typeof(T).IsSubclassOf(typeof(PlaceBase)))
+			else if (type.IsSubclassOf(typeof(PlaceBase)))
 			{
-				currentArea = placeLookup[typeof(T)]();
+				currentArea = placeLookup[type]();
 			}
-			else if (typeof(T).IsSubclassOf(typeof(DungeonBase)))
+			else if (type.IsSubclassOf(typeof(DungeonBase)))
 			{
-				currentArea = dungeonLookup[typeof(T)]();
+				currentArea = dungeonLookup[type]();
 			}
-			else if (typeof(T) == currentHomeBase.GetType())
+			else if (type == currentHomeBase.GetType())
 			{
 				currentArea = currentHomeBase;
 			}
 			else
 			{
-				throw new ArgumentException("Type T must derive PlaceBase, DungeonBase, or LocationBase, or must be the current HomeBase. Additionally, it must be be properly initialized so the Game Engine knows of it.");
+				throw new ArgumentException("type must derive PlaceBase, DungeonBase, or LocationBase, or must be the current HomeBase. Additionally, it must be be properly initialized so the Game Engine knows of it.");
 			}
 			return prevArea != currentArea;
+		}
+
+		internal bool SetArea<T>() where T : AreaBase
+		{
+			return SetArea(typeof(T));
 		}
 
 		internal bool ReturnToBase()
@@ -224,9 +244,9 @@ namespace CoC.Backend.Engine
 		}
 		#endregion
 
-		internal void RunArea()
+		internal DisplayBase RunArea(DisplayBase currentPage)
 		{
-			Action ToDo = null;
+			Func<DisplayBase> ToDo = null;
 			if (currentArea is VisitableAreaBase visitable && areaChanged)
 			{
 				visitable.timesVisited++;
@@ -299,11 +319,14 @@ namespace CoC.Backend.Engine
 				}
 				areaChanged = false;
 			}
-			ToDo();
+			var res = ToDo();
+			res.CombineWith(currentPage, false);//combine the current page into the resulting page, before the contents of the resulting page.
+
+			return res;
 		}
 
 		//cannot unlock a base camp - hence this distinction. 
-		internal bool UnlockArea<T>() where T : VisitableAreaBase
+		internal bool UnlockArea<T>(out string unlockText) where T : VisitableAreaBase
 		{
 			VisitableAreaBase area = null;
 			if (typeof(T).IsSubclassOf(typeof(LocationBase)))
@@ -321,9 +344,11 @@ namespace CoC.Backend.Engine
 			//find it via place, location, dungeon lookup.
 			if (area is null || area.isUnlocked)
 			{
+				unlockText = null;
 				return false;
 			}
-			outputText(area.Unlock());
+
+			unlockText = area.Unlock();
 			return true;
 		}
 	}

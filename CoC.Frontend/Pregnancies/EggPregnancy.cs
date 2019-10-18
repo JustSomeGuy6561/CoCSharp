@@ -19,7 +19,8 @@ namespace CoC.Frontend.Pregnancies
 		protected internal bool largeEggs { get; protected set; }
 		protected internal Func<bool, EggBase> knownEggType { get; protected set; }
 
-		public EggPregnancy(Guid creatureID, SimpleDescriptor eggText, ushort spawnTimer, bool largeClutch = false, bool? isLarge = null, Func<bool, EggBase> color = null) : base(creatureID, eggText, spawnTimer)
+		public EggPregnancy(Guid creatureID, SimpleDescriptor eggText, SimpleDescriptor eggSourceText, ushort spawnTimer, bool largeClutch = false, bool? isLarge = null, 
+			Func<bool, EggBase> color = null) : base(creatureID, eggText, eggSourceText, spawnTimer)
 		{
 			largeEggs = isLarge ?? Utils.RandBool();
 			knownEggType = color;

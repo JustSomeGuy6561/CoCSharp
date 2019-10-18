@@ -8,6 +8,14 @@ using System;
 
 namespace  CoC.Backend.BodyParts
 {
+	public partial class Antennae
+	{
+		public static string Name()
+		{
+			return "Antennae";
+		}
+	}
+
 	public partial class AntennaeType
 	{
 		private static string RemoveAntennaeStr(Antennae antennae, Player p)

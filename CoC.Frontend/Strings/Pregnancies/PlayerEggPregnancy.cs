@@ -9,6 +9,10 @@ namespace CoC.Frontend.Pregnancies
 {
 	public partial class PlayerEggPregnancy
 	{
+		private static string EggDesc()
+		{
+			return "Egg Pregnancy";
+		}
 
 		private static string EggSource()
 		{

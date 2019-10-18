@@ -9,8 +9,8 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Races;
-using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -20,9 +20,10 @@ using System.Linq;
 namespace CoC.Backend.BodyParts
 {
 	//data changed event will never fire. 
-
-	public sealed class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType, LowerBodyData>, ICanAttackWith
+	public sealed partial class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType, LowerBodyData>, ICanAttackWith
 	{
+		public override string BodyPartName() => Name();
+
 		public readonly Feet feet;
 		//No magic constants. Woo!
 		//not even remotely necessary, but it makes it a hell of a lot easier to debug

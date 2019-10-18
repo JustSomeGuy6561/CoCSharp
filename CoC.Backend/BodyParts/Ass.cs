@@ -239,6 +239,10 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
+
+		public override string BodyPartName() => Name();
+
+
 		public override AssData AsReadOnlyData()
 		{
 			return new AssData(this);

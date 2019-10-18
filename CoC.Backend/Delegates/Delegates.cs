@@ -6,6 +6,8 @@
 using CoC.Backend.Areas;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Items;
 
 namespace CoC.Backend
@@ -40,6 +42,12 @@ namespace CoC.Backend
 
 
 	//passed into the item use function. It's called when the item is used, successfully or otherwise. This is due to the delayed, event-based nature of the item.
-	public delegate void UseItemCallback(bool successfullyUsedItem, string itemUseContext, CapacityItem replacementItem);
-	public delegate void UseItemCallbackSafe<T>(bool successfullyUsedItem, string itemUseContext, T replacementItem) where T : CapacityItem;
+	public delegate DisplayBase UseItemCallback(bool successfullyUsedItem, DisplayBase currentPage, CapacityItem replacementItem);
+	//public delegate PageDataWrapper UseItemCallback(bool successfullyUsedItem, CapacityItem replacementItem);
+	public delegate DisplayBase UseItemCallbackSafe<T>(bool successfullyUsedItem, DisplayBase currentPage, T replacementItem) where T : CapacityItem;
+	//public delegate PageDataWrapper UseItemCallbackSafe<T>(bool successfullyUsedItem, T replacementItem) where T : CapacityItem;
+
+
+	public delegate string SimpleReactionDelegate(bool currentlyIdling, bool hasIdleHours);
+
 }

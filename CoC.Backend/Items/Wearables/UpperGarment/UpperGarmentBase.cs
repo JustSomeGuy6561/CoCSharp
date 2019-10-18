@@ -11,8 +11,11 @@ namespace CoC.Backend.Items.Wearables.UpperGarment
 		{
 		}
 
-		protected override bool CanWearWithBodyData(Creature creature)
+		//by default, upper garments seem to not care. undergarments do based on lower body type, but not these. hence this default. of course, if you need to limit it,
+		//override this.
+		protected override bool CanWearWithBodyData(Creature creature, out string whyNot)
 		{
+			whyNot = null;
 			return true;
 		}
 
@@ -27,9 +30,18 @@ namespace CoC.Backend.Items.Wearables.UpperGarment
 		protected virtual void OnEquip(Creature wearer) { }
 		protected abstract string EquipText(Creature wearer);
 
-		public override bool CanUse(Creature creature)
+		public override bool CanUse(Creature creature, out string whyNot)
 		{
-			return base.CanUse(creature) && creature.armor?.CanWearWithUpperGarment(this) == true;
+			if (!base.CanUse(creature, out whyNot))
+			{
+				return false;
+			}
+			if (creature.armor?.CanWearWithUpperGarment(this, out whyNot) == false)
+			{
+				return false;
+			}
+			whyNot = null;
+			return true;
 		}
 	}
 }

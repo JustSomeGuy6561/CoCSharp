@@ -5,6 +5,14 @@
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Feet
+	{
+		public static string Name()
+		{
+			return "Feet";
+		}
+	}
+
 	public sealed partial class FootType
 	{
 		private static string HumanDesc()

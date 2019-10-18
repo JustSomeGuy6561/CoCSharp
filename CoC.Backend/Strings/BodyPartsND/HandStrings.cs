@@ -7,6 +7,14 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Hands
+	{
+		public static string Name()
+		{
+			return "Hands";
+		}
+	}
+
 	public partial class HandType
 	{
 		private static string HumanShort() { return "hands"; }

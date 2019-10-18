@@ -8,6 +8,7 @@ using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Pregnancies;
+using CoC.Backend.Reaction;
 using CoC.Backend.Tools;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Engine.Time;
@@ -29,10 +30,10 @@ namespace CoC.Frontend.Pregnancies
 		private const ushort BIRTH_SIZE = 20;
 
 		public PlayerEggPregnancy(Guid creatureID, bool largeClutch = false, bool? isLarge = null, Func<bool, EggBase> color = null) 
-			: base(creatureID, EggSource, BIRTH_TIME, largeClutch, isLarge, color)
+			: base(creatureID, EggDesc, EggSource, BIRTH_TIME, largeClutch, isLarge, color)
 		{ }
 
-		protected override SpecialEvent HandleVaginalBirth(byte vaginalIndex)
+		protected override DynamicTimeReaction HandleVaginalBirth(byte vaginalIndex)
 		{
 			//we know the creature is the player, so ignore the id.
 
@@ -58,7 +59,7 @@ namespace CoC.Frontend.Pregnancies
 			player.SetLust(player.maxLust);
 
 			var egg = knownEggType(largeEggs);
-			return GainItemEventHelper.GainItemEvent(player, egg, () => BirthStr(gainedOviMax, egg));
+			return GainItemHelper.GainItemEvent(player, egg, () => BirthStr(gainedOviMax, egg));
 		}
 
 		protected override string NotifyVaginalBirthingProgressed(byte vaginalIndex, float hoursToBirth, float previousHoursToBirth)

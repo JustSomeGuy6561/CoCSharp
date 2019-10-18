@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/18/2019, 9:56 PM
+using CoC.Backend.BodyParts.BaseClasses;
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.Creatures;
 using System;
@@ -10,7 +11,7 @@ using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {	
-	public abstract class PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass> : BehavioralPartBase<BehaviorClass, DataClass> 
+	public abstract class PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass> : BehavioralPartBase<BehaviorClass, DataClass>, IBehavioralBodyPart
 		where ThisClass: PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass> 
 		where BehaviorClass : BehaviorBase
 		where DataClass : BehavioralPartDataBase<BehaviorClass>
@@ -63,6 +64,23 @@ namespace CoC.Backend.BodyParts
 		protected void NotifyDataChanged(DataClass oldData)
 		{
 			dataChangeSource.Raise(this, new BehavioralDataChangeEvent<ThisClass, BehaviorClass, DataClass>(oldData, AsReadOnlyData()));
+		}
+
+		Type IBehavioralBodyPart.BehaviorType()
+		{
+			return typeof(BehaviorClass);
+		}
+
+		public abstract string BodyPartName();
+
+		Type IBodyPart.BaseType()
+		{
+			return typeof(ThisClass);
+		}
+
+		Type IBodyPart.DataType()
+		{
+			return typeof(DataClass);
 		}
 	}
 }

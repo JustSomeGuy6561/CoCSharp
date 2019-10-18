@@ -3,10 +3,10 @@
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
 
-using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -29,9 +29,10 @@ namespace CoC.Backend.BodyParts
 	 */
 
 	//Note: Never fires a data change event, as it has no data that can be changed. Note that technically claws could fire a change, but whatever. 
-
-	public sealed class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
+	public sealed partial class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
 	{
+		public override string BodyPartName() => Name();
+
 		public readonly Hands hands;
 
 		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);

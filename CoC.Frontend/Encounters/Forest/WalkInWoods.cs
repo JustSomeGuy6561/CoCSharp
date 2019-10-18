@@ -6,6 +6,7 @@ using CoC.Backend.Encounters;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Encounters.Forest
 {
@@ -24,7 +25,7 @@ namespace CoC.Frontend.Encounters.Forest
 			return true;
 		}
 
-		protected override void Run()
+		protected override PageDataBase Run()
 		{
 			throw new NotImplementedException();
 		}

@@ -6,7 +6,6 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Creatures;
 using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
@@ -20,10 +19,11 @@ namespace CoC.Backend.BodyParts
 	//add an ovipositor type. for now i don't think i need to. the scorpion is still a tail, but i may move it here for ease of coding, though technically it's a tail. idk man.
 
 	//only way data changes is due to dye. i figure that's rare enough not to deal with it.
-
-	public sealed class Back : BehavioralSaveablePart<Back, BackType, BackData>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
+	public sealed partial class Back : BehavioralSaveablePart<Back, BackType, BackData>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
-		//public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
+		public override string BodyPartName() => Name();
+
+		public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
 		public EpidermalData backEpidermis => epidermis.AsReadOnlyData();
 
 		private Epidermis epidermis = new Epidermis();
@@ -321,7 +321,6 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 	}
-
 	public sealed class AttackableBackType : BackType
 	{
 		private readonly EpidermalData baseAppearance;

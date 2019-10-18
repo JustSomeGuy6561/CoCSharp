@@ -68,6 +68,8 @@ namespace CoC.Backend.BodyParts
 			return new Butt(creatureID, 0);
 		}
 
+		public override string BodyPartName() => Name();
+
 		public override ButtData AsReadOnlyData()
 		{
 			return new ButtData(creatureID, size);

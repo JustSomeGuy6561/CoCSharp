@@ -3,7 +3,7 @@
 //Author: JustSomeGuy
 //5/1/2019, 9:32 PM
 using CoC.Backend.BodyParts;
-using CoC.Backend.Engine.Time;
+using CoC.Backend.Reaction;
 using System;
 
 namespace CoC.Backend.Pregnancies
@@ -20,14 +20,22 @@ namespace CoC.Backend.Pregnancies
 
 	public abstract partial class StandardSpawnType : SimpleSaveablePart<StandardSpawnType, StandardSpawnData>
 	{
+		private readonly SimpleDescriptor description; //what is it?
+
 		public readonly SimpleDescriptor father;
 		public readonly ushort hoursToBirth;
 
 		// will probably need father text, youngling text. but for now all i need is the father, i guess.
-		protected StandardSpawnType(Guid creatureID, SimpleDescriptor nameOfFather, ushort birthTime) : base(creatureID)
+		protected StandardSpawnType(Guid creatureID, SimpleDescriptor desc, SimpleDescriptor nameOfFather, ushort birthTime) : base(creatureID)
 		{
-			father = nameOfFather;
+			father = nameOfFather?? throw new ArgumentNullException(nameof(nameOfFather));
+			description = desc ?? throw new ArgumentNullException(nameof(desc));
 			hoursToBirth = birthTime;
+		}
+
+		public override string BodyPartName()
+		{
+			return description();
 		}
 
 		protected float percentAlong(ushort currentTimeLeft) => 1 - (currentTimeLeft / hoursToBirth);
@@ -45,7 +53,7 @@ namespace CoC.Backend.Pregnancies
 		//set outputOnOwnPage to true. If you return false, outputWrapper and outputOnOwnPage will be ignored. Due to the "out" parameter, you must set them to something. i'd recommend OutputWrapper.Empty
 		//and "false" be the defaults, and change them to whatever you need if it actually needs to spit out text.
 
-		protected internal abstract SpecialEvent HandleVaginalBirth(byte vaginalIndex);
+		protected internal abstract DynamicTimeReaction HandleVaginalBirth(byte vaginalIndex);
 
 		//similarly, notifyTimePassed is always called. Generally, this will just be used to tell the game whether or not you have progress text to display, and what it is, but there may be cases where
 		//you want to do additional things as the pregnancy progresses. For example, when the PC is pregnant w/ Marble's kid, Marble will attempt to build a nursery, but it depends on how much time she has

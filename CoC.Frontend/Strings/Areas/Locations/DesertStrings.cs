@@ -6,11 +6,12 @@ using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CoC.Backend.Engine;
 
 namespace CoC.Frontend.Areas.Locations
 {

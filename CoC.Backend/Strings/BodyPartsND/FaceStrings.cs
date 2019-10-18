@@ -7,6 +7,14 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class Face
+	{
+		public static string Name()
+		{
+			return "Face";
+		}
+	}
+
 	public partial class FaceType
 	{
 		private string FaceStr()
@@ -441,7 +449,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return "The raccoon-like features covering your face start to fall away, leaving a mostly-human face. " 
+				return "The raccoon-like features covering your face start to fall away, leaving a mostly-human face. "
 					+ "A thin layer remains here and there, notably around your eyes, giving the appearance of you wearing a ferret mask. ";
 			}
 		}

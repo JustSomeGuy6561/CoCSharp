@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //2/20/2019, 4:15 PM
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 using CoC.Backend.Inventory;
 using CoC.Backend.Items;
 using CoC.Backend.SaveData;
@@ -26,6 +27,7 @@ namespace CoC.Backend.Creatures
 		private float _hunger = 0;
 
 		internal float hungerGainRate = 1.0f;
+		
 
 		private sbyte bonusMinHunger { get; set; }
 		public byte minHunger => DEFAULT_HUNGER.delta(bonusMinHunger);

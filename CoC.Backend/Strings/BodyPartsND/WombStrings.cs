@@ -3,7 +3,14 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
-	
+	public partial class Womb
+	{
+		public static string Name()
+		{
+			return "Womb";
+		}
+	}
+
 	//public partial class WombType
 	//{
 	//	private static string StandardDesc()
