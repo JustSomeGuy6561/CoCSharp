@@ -31,7 +31,7 @@ namespace CoC.Frontend.Encounters.Common
 			return 0;
 		}
 
-		protected override void Run(DisplayBase currentDisplay)
+		protected override void RunEncounter()
 		{
 			bool isForest = true, isLake = false;
 
@@ -51,7 +51,9 @@ namespace CoC.Frontend.Encounters.Common
 					"this new location within the big junk encounter text function.");
 			}
 #endif
-			OutputBigJunkText(StandardDisplay.ToStandard(currentDisplay), isForest, isLake); //look, you can safely cast it, this is overkill, but whatever.
+
+			StandardDisplay currentDisplay = DisplayManager.GetCurrentDisplay();
+			OutputBigJunkText(currentDisplay, isForest, isLake);
 			player.IncreaseLustBy(25 + Utils.Rand(player.corruption / 5));
 			player.GainFatigue(5);
 			currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1));

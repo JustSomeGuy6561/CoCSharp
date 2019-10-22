@@ -26,7 +26,7 @@ namespace CoC.Frontend.Encounters.Common
 			return player.level >= 16;
 		}
 
-		protected override void Run(DisplayBase currentPage)
+		protected override void RunEncounter()
 		{
 			throw new NotImplementedException();
 		}

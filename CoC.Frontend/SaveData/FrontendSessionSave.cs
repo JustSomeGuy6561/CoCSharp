@@ -109,7 +109,9 @@ namespace CoC.Frontend.SaveData
 		//is during game start, i guess. 
 		internal bool? SillyModeLocal = null;
 		internal bool? WaterSportsLocal = null;
-
-
+		internal byte cabinProgress = 0;
+		internal byte wallProgress = 0;
+		internal ushort wallSkullCount = 0;
+		internal ushort wallStatueCount = 0;
 	}
 }

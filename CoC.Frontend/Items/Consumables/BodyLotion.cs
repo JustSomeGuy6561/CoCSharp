@@ -15,7 +15,6 @@ using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using CoC.Backend.UI;
 using CoC.Frontend.Engine;
-using CoC.Frontend.Tools;
 using CoC.Frontend.UI;
 using System;
 using System.Text;
@@ -28,7 +27,7 @@ namespace CoC.Frontend.Items.Consumables
 	//the logic is all in place. unfortunately, anything that requires events
 	//becomes a clusterfuck really quickly. 
 
-	public sealed class BodyLotion : ConsumableBase
+	public sealed class BodyLotion : ConsumableWithMenuBase
 	{
 		private readonly SkinTexture lotionType;
 		private string lotionStrLower => lotionType.AsString().ToLower();
@@ -73,34 +72,7 @@ namespace CoC.Frontend.Items.Consumables
 
 
 		private UseItemCallback resumeFromThisMadness;
-		private StandardDisplay display;
-
-		public override DisplayBase AttemptToUse(Creature target, DisplayBase currentDisplay, UseItemCallback postItemUseCallback)
-		{
-			display = (StandardDisplay)currentDisplay;
-			resumeFromThisMadness = postItemUseCallback;
-
-			display.ClearButtons();
-			display.OutputText(QueryLocationText());
-
-			ButtonListMaker buttonMaker = new ButtonListMaker(display, 3, 5);
-
-			foreach (var bodyPart in target.bodyParts)
-			{
-				if (bodyPart is ILotionable lotionable)
-				{
-					buttonMaker.AddButtonToList(bodyPart.BodyPartName(), lotionable.canLotion(), () => ApplyLotion(target, lotionable));
-				}
-				else if (bodyPart is IMultiLotionable multiLotionable)
-				{
-					buttonMaker.AddButtonToList(bodyPart.BodyPartName() + "...", true, () => TryMultiLotionable(target, multiLotionable, buttonMaker));
-				}
-			}
-
-			buttonMaker.CreateButtons(GlobalStrings.CANCEL(), true, () => resumeFromThisMadness(false, new StandardDisplay(CancelLotionContext()), this));
-
-			return display;
-		}
+		private StandardDisplay display => DisplayManager.GetCurrentDisplay();
 
 		private string QueryLocationText()
 		{
@@ -153,21 +125,22 @@ namespace CoC.Frontend.Items.Consumables
 
 			display.ClearOutput();
 
+			string result = null;
 			if (!string.IsNullOrEmpty(overrideText))
 			{
-				display.OutputText(overrideText);
+				result = overrideText;
 			}
-			if (applyCallback(this.lotionType))
+			else if (applyCallback(this.lotionType))
 			{
-				display.OutputText(SuccessTextGeneric(target, locationDesc));
+				result = SuccessTextGeneric(target, locationDesc);
 			}
 			else
 			{
-				display.OutputText(FailTextGeneric(target, locationDesc));
+				result = FailTextGeneric(target, locationDesc);
 			}
 			BodyLotion retItem = retVal ? null : this;
 
-			resumeFromThisMadness(true, display, null);
+			resumeFromThisMadness(true, result, null);
 		}
 
 		private string SuccessTextGeneric(Creature target, string locationDesc)
@@ -219,6 +192,31 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			resultsOfUse = null;
 			return true;
+		}
+
+		protected override void BuildMenu(Creature target, UseItemCallback postItemUseCallback)
+		{
+			StandardDisplay display = DisplayManager.GetCurrentDisplay();
+			resumeFromThisMadness = postItemUseCallback;
+
+			display.ClearButtons();
+			display.OutputText(QueryLocationText());
+
+			ButtonListMaker buttonMaker = new ButtonListMaker(display);
+
+			foreach (var bodyPart in target.bodyParts)
+			{
+				if (bodyPart is ILotionable lotionable)
+				{
+					buttonMaker.AddButtonToList(bodyPart.BodyPartName(), lotionable.canLotion(), () => ApplyLotion(target, lotionable));
+				}
+				else if (bodyPart is IMultiLotionable multiLotionable)
+				{
+					buttonMaker.AddButtonToList(bodyPart.BodyPartName() + "...", true, () => TryMultiLotionable(target, multiLotionable, buttonMaker));
+				}
+			}
+
+			buttonMaker.CreateButtons(GlobalStrings.CANCEL(), true, () => resumeFromThisMadness(false, CancelLotionContext(), this));
 		}
 	}
 }

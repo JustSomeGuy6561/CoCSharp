@@ -208,6 +208,9 @@ namespace CoC.Backend.Creatures
 
 		public bool hasVagina => vaginas.Count > 0;
 
+		public Gender gender => genitals.gender;
+
+
 		protected BasePerkModifiers modifiers => perks.baseModifiers;
 
 		protected readonly Inventory.BasicInventory inventoryStore;
@@ -1132,7 +1135,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (armorBase is null)
 			{
-				return RemoveArmorManual();
+				return RemoveArmorInternal();
 			}
 			else
 			{
@@ -1143,7 +1146,7 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public ArmorBase RemoveArmorManual()
+		internal ArmorBase RemoveArmorInternal()
 		{
 			var retVal = armor;
 			retVal?.OnRemove(this);
@@ -1154,7 +1157,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (upperGarmentBase is null)
 			{
-				return RemoveUpperGarmentManual();
+				return RemoveUpperGarmentInternal();
 			}
 			else
 			{
@@ -1165,7 +1168,7 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public UpperGarmentBase RemoveUpperGarmentManual()
+		internal UpperGarmentBase RemoveUpperGarmentInternal()
 		{
 			var retVal = upperGarment;
 			retVal?.OnRemove(this);
@@ -1176,7 +1179,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (lowerGarmentBase is null)
 			{
-				return RemoveLowerGarmentManual();
+				return RemoveLowerGarmentInternal();
 			}
 			else
 			{
@@ -1187,7 +1190,7 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public LowerGarmentBase RemoveLowerGarmentManual()
+		internal LowerGarmentBase RemoveLowerGarmentInternal()
 		{
 			var retVal = lowerGarment;
 			retVal?.OnRemove(this);
@@ -1326,45 +1329,42 @@ namespace CoC.Backend.Creatures
 			inventoryStore.ReplaceItemInSlot(index, replacement, addIfSameItem);
 		}
 
-		public void UseItemManual(CapacityItem item, DisplayBase currentPage, UseItemCallback onUseItemReturn)
+		public void UseItemManual(CapacityItem item, UseItemCallback onUseItemReturn)
 		{
 			if (item is null) throw new ArgumentNullException(nameof(item));
 			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
 
 			if (item.CanUse(this, out string whyNot))
 			{
-				item.AttemptToUse(this, currentPage, onUseItemReturn);
+				item.AttemptToUse(this, onUseItemReturn);
 			}
 			else
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, item);
+				onUseItemReturn(false, whyNot, item);
 			}
 		}
 
-		public void UseItemInInventoryManual(byte index, DisplayBase currentPage, UseItemCallback onUseItemReturn)
+		public void UseItemInInventoryManual(byte index, UseItemCallback onUseItemReturn)
 		{
 			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
 			if (index >= inventory.Count) throw new IndexOutOfRangeException("inventory does not have that many slots currently.");
 
 			if (inventory[index].isEmpty)
 			{
-				currentPage.OutputText(NoItemInSlotErrorText());
-				onUseItemReturn(false, currentPage, null);
+				onUseItemReturn(false, NoItemInSlotErrorText(), null);
 			}
 			else if (!inventory[index].item.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(NoItemInSlotErrorText());
-				onUseItemReturn(false, currentPage, null);
+				onUseItemReturn(false, whyNot, null);
 			}
 			else
 			{
 				var item = inventoryStore.RemoveItem(index);
-				item.AttemptToUse(this, currentPage, onUseItemReturn);
+				item.AttemptToUse(this, onUseItemReturn);
 			}
 		}
 
-		public void EquipArmorManual(ArmorBase armor, DisplayBase currentPage, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		public void EquipArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postEquipCallback)
 		{
 			if (armor is null)
 			{
@@ -1372,82 +1372,81 @@ namespace CoC.Backend.Creatures
 			}
 			else if (!armor.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, armor);
+				postEquipCallback(false, whyNot, armor);
 			}
 			else
 			{
-				armor.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				armor.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void EquipArmorFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		public void EquipArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
-				currentPage.OutputText(NoItemInSlotErrorText());
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, NoItemInSlotErrorText(), null);
 			}
 			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
-				currentPage.OutputText(InCorrectTypeErrorText(typeof(ArmorBase)));
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), null);
 			}
 			else if (!armorItem.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, whyNot, null);
 			}
 			else
 			{
 				var item = (ArmorBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void ReplaceArmorManual(ArmorBase armor, DisplayBase currentPage, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		public ArmorBase RemoveArmorManual(out string removeText)
+		{
+			var retVal = RemoveArmorInternal();
+			removeText = retVal.OnRemoveText();
+			return retVal;
+		}
+
+		public void ReplaceArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
 			if (armor is null)
 			{
-				var item = RemoveArmorManual();
-				onUseItemReturn(true, currentPage, item);
+				var item = RemoveArmorManual(out string removeText);
+				postReplaceArmorCallback(true, removeText, item);
 			}
 			if (!armor.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, armor);
+				postReplaceArmorCallback(false, whyNot, armor);
 			}
 			else
 			{
-				armor.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				armor.AttemptToUseSafe(this, postReplaceArmorCallback);
 			}
 		}
 
-		public void ReplaceArmorFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<ArmorBase> onUseItemReturn)
+		public void ReplaceArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
-				currentPage.OutputText(NoItemInSlotErrorText());
-				onUseItemReturn(false, currentPage, null);
+				postReplaceArmorCallback(false, NoItemInSlotErrorText(), null);
 			}
 			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
-				currentPage.OutputText(InCorrectTypeErrorText(typeof(ArmorBase)));
-				onUseItemReturn(false, currentPage, null);
+				postReplaceArmorCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), null);
 			}
 			else if (!armorItem.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, null);
+				postReplaceArmorCallback(false, whyNot, null);
 			}
 			else
 			{
 				var item = (ArmorBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				item.AttemptToUseSafe(this, postReplaceArmorCallback);
 			}
 		}
 
-		public void EquipUpperGarmentManual(UpperGarmentBase upperGarment, DisplayBase currentPage, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		public void EquipUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postEquipCallback)
 		{
 			if (upperGarment is null)
 			{
@@ -1455,82 +1454,81 @@ namespace CoC.Backend.Creatures
 			}
 			else if (!upperGarment.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, upperGarment);
+				postEquipCallback(false, whyNot, upperGarment);
 			}
 			else
 			{
-				upperGarment.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				upperGarment.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void EquipUpperGarmentFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		public void EquipUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
-				currentPage.OutputText(NoItemInSlotErrorText());
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, NoItemInSlotErrorText(), null);
 			}
 			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
-				currentPage.OutputText(InCorrectTypeErrorText(typeof(UpperGarmentBase)));
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), null);
 			}
 			else if (!upperGarmentItem.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, whyNot, null);
 			}
 			else
 			{
 				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, DisplayBase currentPage, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		public UpperGarmentBase RemoveUpperGarmentManual(out string removeText)
+		{
+			var retVal = RemoveUpperGarmentInternal();
+			removeText = retVal.OnRemoveText();
+			return retVal;
+		}
+
+		public void ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
 			if (upperGarment is null)
 			{
-				var item = RemoveUpperGarmentManual();
-				onUseItemReturn(true, currentPage, item);
+				var item = RemoveUpperGarmentManual(out string removeText);
+				postReplaceUpperGarmentCallback(true, removeText, item);
 			}
 			if (!upperGarment.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, upperGarment);
+				postReplaceUpperGarmentCallback(false, whyNot, upperGarment);
 			}
 			else
 			{
-				upperGarment.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				upperGarment.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
 
-		public void ReplaceUpperGarmentFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<UpperGarmentBase> onUseItemReturn)
+		public void ReplaceUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
-				currentPage.OutputText(NoItemInSlotErrorText());
-				onUseItemReturn(false, currentPage, null);
+				postReplaceUpperGarmentCallback(false, NoItemInSlotErrorText(), null);
 			}
 			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
-				currentPage.OutputText(InCorrectTypeErrorText(typeof(UpperGarmentBase)));
-				onUseItemReturn(false, currentPage, null);
+				postReplaceUpperGarmentCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), null);
 			}
 			else if (!upperGarmentItem.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, null);
+				postReplaceUpperGarmentCallback(false, whyNot, null);
 			}
 			else
 			{
 				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				item.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
 
-		public void EquipLowerGarmentManual(LowerGarmentBase lowerGarment, DisplayBase currentPage, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		public void EquipLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postEquipCallback)
 		{
 			if (lowerGarment is null)
 			{
@@ -1538,81 +1536,79 @@ namespace CoC.Backend.Creatures
 			}
 			else if (!lowerGarment.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, lowerGarment);
+				postEquipCallback(false, whyNot, lowerGarment);
 			}
 			else
 			{
-				lowerGarment.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				lowerGarment.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void EquipLowerGarmentFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		public void EquipLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
-				currentPage.OutputText(NoItemInSlotErrorText());
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, NoItemInSlotErrorText(), null);
 			}
 			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
-				currentPage.OutputText(InCorrectTypeErrorText(typeof(LowerGarmentBase)));
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), null);
 			}
 			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, null);
+				postEquipCallback(false, whyNot, null);
 			}
 			else
 			{
 				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, DisplayBase currentPage, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		public LowerGarmentBase RemoveLowerGarmentManual(out string removeText)
+		{
+			var retVal = RemoveLowerGarmentInternal();
+			removeText = retVal.OnRemoveText();
+			return retVal;
+		}
+
+		public void ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
 			if (lowerGarment is null)
 			{
-				var item = RemoveLowerGarmentManual();
-				onUseItemReturn(true, currentPage, item);
+				var item = RemoveLowerGarmentManual(out string removeText);
+				postReplaceLowerGarmentCallback(true, removeText, item);
 			}
 			if (!lowerGarment.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, lowerGarment);
+				postReplaceLowerGarmentCallback(false, whyNot, lowerGarment);
 			}
 			else
 			{
-				lowerGarment.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				lowerGarment.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
 			}
 		}
 
-		public void ReplaceLowerGarmentFromInventoryManual(byte index, DisplayBase currentPage, UseItemCallbackSafe<LowerGarmentBase> onUseItemReturn)
+		public void ReplaceLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
-				currentPage.OutputText(NoItemInSlotErrorText());
-				onUseItemReturn(false, currentPage, null);
+				postReplaceLowerGarmentCallback(false, NoItemInSlotErrorText(), null);
 			}
 			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
-				currentPage.OutputText(InCorrectTypeErrorText(typeof(LowerGarmentBase)));
-				onUseItemReturn(false, currentPage, null);
+				postReplaceLowerGarmentCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), null);
 			}
 			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
 			{
-				currentPage.OutputText(whyNot);
-				onUseItemReturn(false, currentPage, null);
+				postReplaceLowerGarmentCallback(false, whyNot, null);
 			}
 			else
 			{
 				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, currentPage, onUseItemReturn);
+				item.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
 			}
 		}
-
 
 		private string NoItemInSlotErrorText()
 		{

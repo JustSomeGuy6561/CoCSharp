@@ -45,7 +45,7 @@ namespace CoC.Frontend.Areas.Places
 			protected set => FrontendSessionSave.data.TelAdreExplorationCount = value;
 		}
 
-		protected override void ExplorePlace(DisplayBase currentDisplay)
+		protected override void ExplorePlace()
 		{
 			throw new NotImplementedException();
 		}

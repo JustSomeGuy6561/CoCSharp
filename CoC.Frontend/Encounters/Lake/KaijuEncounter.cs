@@ -20,7 +20,7 @@ namespace CoC.Frontend.Encounters.Lake
 			throw new NotImplementedException();
 		}
 
-		protected override void Run(DisplayBase currentDisplay)
+		protected override void RunEncounter()
 		{
 			throw new NotImplementedException();
 		}

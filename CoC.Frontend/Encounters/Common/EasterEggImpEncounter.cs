@@ -27,7 +27,7 @@ namespace CoC.Frontend.Encounters.Common
 			return true;
 		}
 
-		protected override void Run(DisplayBase currentPage)
+		protected override void RunEncounter()
 		{
 			throw new NotImplementedException();
 		}

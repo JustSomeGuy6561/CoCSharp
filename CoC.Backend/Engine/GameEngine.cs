@@ -99,6 +99,7 @@ namespace CoC.Backend.Engine
 			timeEngine.ResumeTimePassing();
 		}
 
+
 		//End Note. 
 
 		//some context to below: to allow a time jump and then allow you to call UseHours and such, we'd have to: 
@@ -132,6 +133,12 @@ namespace CoC.Backend.Engine
 			return areaEngine.SetArea<T>();
 		}
 
+		public static void GoToAreaAndRun(Type areaType)
+		{
+			areaEngine.SetArea(areaType);
+			areaEngine.RunArea();
+		}
+
 		public static bool ReturnToBaseSilent()
 		{
 			return areaEngine.ReturnToBase();
@@ -149,26 +156,44 @@ namespace CoC.Backend.Engine
 			return areaEngine.UnlockArea<T>(out unlockText);
 		}
 
+		public static bool UnlockArea(Type type, out string unlockText)
+		{
+			return areaEngine.UnlockArea(type, out unlockText);
+		}
 
-		public static void InitializeEngine(Func<DisplayBase> pageDataConstructor, Action<DisplayBase> displayPage,
+		public static bool anyUnlockedPlaces => areaEngine.anyUnlockedPlaces;
+
+		public static ReadOnlyDictionary<Type, string> GetUnlockedPlaces() => areaEngine.GetUnlockedPlaces();
+		
+		public static bool anyUnlockedLocations => areaEngine.anyUnlockedLocations; 
+
+		public static ReadOnlyDictionary<Type, string> GetUnlockedLocations() => areaEngine.GetUnlockedLocations();
+		
+		public static bool anyUnlockedDungeons => areaEngine.anyUnlockedDungeons; 
+
+		public static ReadOnlyDictionary<Type, string> GetUnlockedDungeons() => areaEngine.GetUnlockedDungeons();
+
+
+		public static void InitializeEngine(Func<DisplayBase> pageDataConstructor, Func<DisplayBase> currentPageGetter, Action<DisplayBase> currentPageSetter,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> gameHomeBases, //Area Engine
 			Func<Creature, BasePerkModifiers> perkVariables, //perk data for creatures to use. 
 			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficulty) //Game Difficulty Collections.
 		{
-			areaEngine = new AreaEngine(pageDataConstructor, displayPage, gamePlaces, gameLocations, gameDungeons, gameHomeBases);
-			timeEngine = new TimeEngine(pageDataConstructor, displayPage, areaEngine);
+			areaEngine = new AreaEngine(pageDataConstructor, currentPageGetter, currentPageSetter, gamePlaces, gameLocations, gameDungeons, gameHomeBases);
+			timeEngine = new TimeEngine(pageDataConstructor, currentPageGetter, currentPageSetter, areaEngine);
 
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
 			defaultDifficultyIndex = defaultDifficulty;
 			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
 
-			AreaBase.SetPageMaker(pageDataConstructor);
+			AreaBase.SetPageMaker(currentPageGetter);
 		}
 
 		internal static void PostSaveInit()
 		{
 			globalAchievements = new AchievementCollection();
+
 		}
 
 
@@ -177,12 +202,16 @@ namespace CoC.Backend.Engine
 		{
 			playerCharacter = null;
 			SaveData.SaveSystem.ResetSessionDataForNewGame();
+
 		}
 
-		public static void InitializeGame(Player player)
+
+		public static void InitializeGame(Player player, Action firstExplorationPage)
 		{
 			playerCharacter = player;
 			SaveData.SaveSystem.MarkGameLoaded();
+			areaEngine.OnNewGame();
+			Exploration.SetupForNewGame(new Action[] { firstExplorationPage });
 		}
 
 		public static void OnGameCompletion()
@@ -316,6 +345,8 @@ namespace CoC.Backend.Engine
 			return timeEngine.reactions.Remove(reaction);
 		}
 
+		
+
 		public static bool HasOneOffReaction(OneOffTimeReactionBase reaction)
 		{
 			return timeEngine.reactions.Contains(reaction);
@@ -329,6 +360,11 @@ namespace CoC.Backend.Engine
 		public static void AddLocationReaction(LocationReaction reaction)
 		{
 			areaEngine.AddReaction(reaction);
+		}
+
+		public static void AddHomeBaseReaction(HomeBaseReaction homeBaseReaction)
+		{
+			areaEngine.AddReaction(homeBaseReaction);
 		}
 
 		public static bool RemovePlaceReaction(PlaceReaction reaction)

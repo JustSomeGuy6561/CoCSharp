@@ -115,11 +115,7 @@ namespace CoC.Frontend.UI
 			return true;
 		}
 
-		public ButtonData GetButtonData(byte index)
-		{
-			if (index >= buttons.Length) throw new IndexOutOfRangeException();
-			return buttons[index];
-		}
+		
 
 		public bool QueryButtons(out ReadOnlyCollection<ButtonData> buttonCollection)
 		{
@@ -293,11 +289,6 @@ namespace CoC.Frontend.UI
 		internal string GetOutput()
 		{
 			return input.output;
-		}
-
-		public static StandardDisplay ToStandard(DisplayBase basePage)
-		{
-			return basePage as StandardDisplay;
 		}
 	}
 }

@@ -46,7 +46,7 @@ namespace CoC.Frontend.Areas.Places
 			protected set => FrontendSessionSave.data.SalonExplorationCount = value;
 		}
 
-		protected override void ExplorePlace(DisplayBase currentDisplay)
+		protected override void ExplorePlace()
 		{
 			throw new NotImplementedException();
 		}

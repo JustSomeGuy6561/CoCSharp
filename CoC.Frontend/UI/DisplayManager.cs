@@ -33,6 +33,11 @@ namespace CoC.Frontend.UI
 			}
 		}
 
+		internal static StandardDisplay GetCurrentDisplay()
+		{
+			return currentDisplay;
+		}
+
 		internal static bool QueryDisplay(out StandardDisplay display)
 		{
 			var changed = displayChanged;

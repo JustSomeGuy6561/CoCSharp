@@ -32,7 +32,14 @@ namespace CoC.Backend.Engine
 		private readonly PriorityQueue<HomeBaseReaction> homeBaseReactions = new PriorityQueue<HomeBaseReaction>();
 
 		private readonly Func<DisplayBase> pageMaker;
-		private readonly Action<DisplayBase> displayPage;
+		private readonly Action<DisplayBase> SetCurrentPage;
+		private readonly Func<DisplayBase> GetCurrentPage;
+
+		private int currentLanguage;
+
+		private readonly Dictionary<Type, string> unlockedPlaces = new Dictionary<Type, string>();
+		private readonly Dictionary<Type, string> unlockedLocations = new Dictionary<Type, string>();
+		private readonly Dictionary<Type, string> unlockedDungeons = new Dictionary<Type, string>();
 
 #warning if treating areas within places as places, this areaChanged logic will fail. figure out way to fix. 
 
@@ -55,12 +62,13 @@ namespace CoC.Backend.Engine
 		//defined during a load of file or new game. obtained by the current difficulty. 
 		internal HomeBaseBase currentHomeBase { get; private set; }
 
-		internal AreaEngine(Func<DisplayBase> pageDataConstructor, Action<DisplayBase> pageDisplayFn,
+		internal AreaEngine(Func<DisplayBase> pageDataConstructor, Func<DisplayBase> currentPageGetter, Action<DisplayBase> currentPageSetter,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> places, ReadOnlyDictionary<Type, Func<LocationBase>> locations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> dungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases)
 		{
 			pageMaker = pageDataConstructor ?? throw new ArgumentNullException(nameof(pageDataConstructor));
-			displayPage = pageDisplayFn ?? throw new ArgumentNullException(nameof(pageDisplayFn));
+			GetCurrentPage = currentPageGetter ?? throw new ArgumentNullException(nameof(currentPageGetter));
+			SetCurrentPage = currentPageSetter ?? throw new ArgumentNullException(nameof(currentPageSetter));
 			placeLookup = places ?? throw new ArgumentNullException(nameof(places));
 			locationLookup = locations ?? throw new ArgumentNullException(nameof(locations));
 			dungeonLookup = dungeons ?? throw new ArgumentNullException(nameof(dungeons));
@@ -75,7 +83,12 @@ namespace CoC.Backend.Engine
 				locationReactionStorage.Add(key, new PriorityQueue<LocationReaction>());
 			}
 			//dungeons don't have interrupts.
-			//only one home base per session. so we don't need to worry about a lookup table.
+		}
+
+		internal void OnNewGame()
+		{
+			currentLanguage = LanguageEngine.currentLanguageIndex;
+			Exploration.InitializeAreas(GetCurrentPage, locationLookup.Values);
 		}
 
 		internal void ForceReload()
@@ -128,7 +141,7 @@ namespace CoC.Backend.Engine
 		}
 
 		//only should be called during creation or loading a save. I suppose this could also happen during prologue => normal gameplay. 
-		internal void ChangeHomeBase<T>() where T: HomeBaseBase
+		internal void ChangeHomeBase<T>() where T : HomeBaseBase
 		{
 			if (!homeBaseLookup.ContainsKey(typeof(T)))
 			{
@@ -244,9 +257,9 @@ namespace CoC.Backend.Engine
 		}
 		#endregion
 
-		internal DisplayBase RunArea(DisplayBase currentPage)
+		internal void RunArea()
 		{
-			Func<DisplayBase> ToDo = null;
+			Action ToDo = null;
 			if (currentArea is VisitableAreaBase visitable && areaChanged)
 			{
 				visitable.timesVisited++;
@@ -284,7 +297,7 @@ namespace CoC.Backend.Engine
 			{
 				if (homeBaseReactions.Peek().timesToVisitUntilProccing <= 0)
 				{
-					ToDo = homeBaseReactions.Pop().onTrigger;
+					ToDo = () => homeBaseReactions.Pop().onTrigger(false);
 				}
 			}
 
@@ -314,32 +327,38 @@ namespace CoC.Backend.Engine
 				{
 					foreach (HomeBaseReaction data in homeBaseReactions)
 					{
-						data.VisitLocation();
+						data.OnVisit();
 					}
 				}
 				areaChanged = false;
 			}
-			var res = ToDo();
-			res.CombineWith(currentPage, false);//combine the current page into the resulting page, before the contents of the resulting page.
-
-			return res;
+			ToDo();
 		}
 
 		//cannot unlock a base camp - hence this distinction. 
 		internal bool UnlockArea<T>(out string unlockText) where T : VisitableAreaBase
 		{
+			return UnlockArea(typeof(T), out unlockText);
+		}
+
+		internal bool UnlockArea(Type type, out string unlockText)
+		{
 			VisitableAreaBase area = null;
-			if (typeof(T).IsSubclassOf(typeof(LocationBase)))
+			bool location = false, place = false, dungeon = false;
+			if (type.IsSubclassOf(typeof(LocationBase)))
 			{
-				area = locationLookup[typeof(T)]();
+				area = locationLookup[type]();
+				location = true;
 			}
-			else if (typeof(T).IsSubclassOf(typeof(PlaceBase)))
+			else if (type.IsSubclassOf(typeof(PlaceBase)))
 			{
-				area = placeLookup[typeof(T)]();
+				area = placeLookup[type]();
+				place = true;
 			}
-			else if (typeof(T).IsSubclassOf(typeof(DungeonBase)))
+			else if (type.IsSubclassOf(typeof(DungeonBase)))
 			{
-				area = dungeonLookup[typeof(T)]();
+				area = dungeonLookup[type]();
+				dungeon = true;
 			}
 			//find it via place, location, dungeon lookup.
 			if (area is null || area.isUnlocked)
@@ -348,8 +367,64 @@ namespace CoC.Backend.Engine
 				return false;
 			}
 
+			if (location)
+			{
+				unlockedLocations.Add(type, area.name());
+			}
+			else if (place)
+			{
+				unlockedPlaces.Add(type, area.name());
+			}
+			else if (dungeon)
+			{
+				unlockedDungeons.Add(type, area.name());
+			}
 			unlockText = area.Unlock();
 			return true;
+		}
+		public bool anyUnlockedPlaces => unlockedPlaces.Count > 0;
+
+		public ReadOnlyDictionary<Type, string> GetUnlockedPlaces()
+		{
+			CheckLanguage();
+			return new ReadOnlyDictionary<Type, string>(unlockedPlaces);
+		}
+
+		public bool anyUnlockedLocations => unlockedLocations.Count > 0;
+
+		public ReadOnlyDictionary<Type, string> GetUnlockedLocations()
+		{
+			CheckLanguage();
+			return new ReadOnlyDictionary<Type, string>(unlockedLocations);
+		}
+
+		public bool anyUnlockedDungeons => unlockedDungeons.Count > 0;
+
+		public ReadOnlyDictionary<Type, string> GetUnlockedDungeons()
+		{
+			CheckLanguage();
+			return new ReadOnlyDictionary<Type, string>(unlockedDungeons);
+		}
+
+
+
+		private void CheckLanguage()
+		{
+			if (LanguageEngine.currentLanguageIndex != currentLanguage)
+			{
+				UpdateSource(unlockedLocations, x => locationLookup[x]().name());
+				UpdateSource(unlockedPlaces, x => placeLookup[x]().name());
+				UpdateSource(unlockedDungeons, x => dungeonLookup[x]().name());
+				currentLanguage = LanguageEngine.currentLanguageIndex;
+			}
+		}
+
+		private void UpdateSource(Dictionary<Type, string> lookup, Func<Type, string> getText)
+		{
+			foreach (var key in lookup.Keys)
+			{
+				lookup[key] = getText(key);
+			}
 		}
 	}
 }

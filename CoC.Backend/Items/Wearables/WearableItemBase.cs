@@ -32,6 +32,11 @@ namespace CoC.Backend.Items.Wearables
 		/// <param name="wearer">The creature that is removing this item</param>
 		protected internal virtual void OnRemove(Creature wearer) { }
 
+		protected internal virtual string OnRemoveText()
+		{
+			return "You remove your " + this.shortName();
+		}
+
 		public override byte maxCapacityPerSlot => 1;
 
 		public override bool CanUse(Creature creature, out string whyNot)

@@ -38,7 +38,7 @@ namespace CoC.Backend.Items
 		/// <param name="target">the creature attempting to use this item.</param>
 		/// <param name="postItemUseCallback">Callback to call when the item is actually used. </param>
 		/// <returns>Either a page, or a string, explaining what it did, or why it failed.</returns>
-		public abstract DisplayBase AttemptToUse(Creature target, DisplayBase currentPage, UseItemCallback postItemUseCallback);
+		public abstract void AttemptToUse(Creature target, UseItemCallback postItemUseCallback);
 
 		//how much it costs to buy this item. Generally, the sell price is 1/2 it's value because video game capitalism. Items that cannot be bought should be given a price of 0;
 		protected abstract int monetaryValue { get; }

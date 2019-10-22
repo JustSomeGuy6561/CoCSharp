@@ -3,6 +3,7 @@ using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
 using CoC.Backend.Items;
 using CoC.Backend.UI;
+using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,8 +34,9 @@ namespace CoC.Frontend.Encounters
 			return true;
 		}
 
-		protected override void Run(DisplayBase currentDisplay)
+		protected override void RunEncounter()
 		{
+			StandardDisplay currentDisplay = DisplayManager.GetCurrentDisplay();
 			currentDisplay.OutputText(obtainText());
 			currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1));
 		}

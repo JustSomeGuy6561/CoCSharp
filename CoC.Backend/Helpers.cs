@@ -286,6 +286,14 @@ namespace CoC
 			}
 		}
 
+		public static void ForEach<T>(this IEnumerable<T> collection, Action<T> callback)
+		{
+			foreach (T item in collection)
+			{
+				callback(item);
+			}
+		}
+
 		public static T MaxItem<T,U>(this IEnumerable<T> collection, Func<T,U> getValue) where U:IComparable<U>
 		{
 			if (collection is null || collection.Count() == 0)

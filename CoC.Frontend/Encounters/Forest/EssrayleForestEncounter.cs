@@ -28,7 +28,7 @@ namespace CoC.Frontend.Encounters.Forest
 			return Essrayle.isUnlocked && !Essrayle.caughtBySandWitches;
 		}
 
-		protected override void Run(DisplayBase currentDisplay)
+		protected override void RunEncounter()
 		{
 			throw new NotImplementedException();
 		}

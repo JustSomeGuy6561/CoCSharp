@@ -9,6 +9,7 @@ using CoC.Backend.Items;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
+using CoC.Backend.BodyParts;
 
 namespace CoC.Backend.Creatures
 {
@@ -74,6 +75,9 @@ namespace CoC.Backend.Creatures
 			return "You replace the " + inventory[slot].item.shortName() + " in your " + Tools.Utils.NumberAsPlace(slot) + " pouch with " + newItem.shortName() + ". ";
 		}
 
+#warning NYI
+		public bool hasAnyStashes => false; 
+
 		public override uint maxHealth
 		{
 			get
@@ -93,5 +97,6 @@ namespace CoC.Backend.Creatures
 				return (uint)max;
 			}
 		}
+
 	}
 }

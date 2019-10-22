@@ -14,8 +14,7 @@ namespace CoC.Backend.Scenes
 		/// <summary>
 		/// Runs the current scene, and returns a means to display the current scene.
 		/// </summary>
-		/// <param name="displaySubsequentPagesCallback">A callback that will display any subsequent pages if your scene requires multiple pages.</param>
 		/// <returns>a page that displays the scene. </returns>
-		DisplayBase RunSceneGetDisplay(Action<DisplayBase> displaySubsequentPagesCallback);
+		DisplayBase RunSceneGetDisplay();
 	}
 }

@@ -4,7 +4,6 @@
 //6/27/2019, 6:32 PM
 
 using CoC.Backend.Creatures;
-using CoC.Backend.UI;
 
 namespace CoC.Backend.Items.Consumables
 {
@@ -35,10 +34,9 @@ namespace CoC.Backend.Items.Consumables
 		protected abstract bool OnConsumeAttempt(Creature consumer, out string resultsOfUse);
 
 		//note: consumables that require a menu will need to overwrite this. items that return another item will, as well. 
-		public override DisplayBase AttemptToUse(Creature target, DisplayBase currentPage, UseItemCallback postItemUseCallback)
+		public override void AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
 		{
 			bool result = OnConsumeAttempt(target, out string consumeResults);
-			currentPage.OutputText(consumeResults);
 			CapacityItem item = this;
 
 			if (result)
@@ -50,7 +48,7 @@ namespace CoC.Backend.Items.Consumables
 				item = null;
 			}
 
-			return postItemUseCallback(result, currentPage, item);
+			postItemUseCallback(result, consumeResults, item);
 		}
 
 		public override byte maxCapacityPerSlot => 10;

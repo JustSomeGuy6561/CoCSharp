@@ -12,6 +12,7 @@ using CoC.Frontend.SaveData;
 using CoC.Frontend.Strings.Engine;
 using static CoC.Frontend.UI.ViewOptions;
 using CoC.Backend.UI;
+using System;
 
 namespace CoC.Frontend.Engine
 {
@@ -116,7 +117,7 @@ namespace CoC.Frontend.Engine
 
 		public static void StartTheGame(Player player)
 		{
-			GameEngine.InitializeGame(player);
+			GameEngine.InitializeGame(player, FirstExplorationPage);
 			GameEngine.InitializeOrJumpTime(0, 11);
 			currentDisplay.ClearOutput();
 			ShowStats();
@@ -173,6 +174,14 @@ namespace CoC.Frontend.Engine
 			//awardAchievement("Newcomer", kACHIEVEMENTS.STORY_NEWCOMER, true, true);
 			//currentDisplay.DoNext(() => GameEngine.ReturnToBaseAfter(0));
 			//currentDisplay.DoNext(NewGame);//debug helping.
+		}
+
+		private static void FirstExplorationPage()
+		{
+			var display = DisplayManager.GetCurrentDisplay();
+			display.ClearOutput();
+			display.OutputText(NewGameHelperText.FirstExploration());
+			display.DoNext(() => GameEngine.UseHoursGoToBase(1));
 		}
 	}
 }

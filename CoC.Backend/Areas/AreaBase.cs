@@ -11,11 +11,11 @@ namespace CoC.Backend.Areas
 {
 	public abstract class AreaBase
 	{
-		private protected static Func<DisplayBase> pageMaker;
+		private protected static Func<DisplayBase> GetCurrentDisplay;
 
-		internal static void SetPageMaker(Func<DisplayBase> newPageFn)
+		internal static void SetPageMaker(Func<DisplayBase> currentDisplayCallback)
 		{
-			pageMaker = newPageFn ?? throw new ArgumentNullException(nameof(newPageFn));
+			GetCurrentDisplay = currentDisplayCallback ?? throw new ArgumentNullException(nameof(currentDisplayCallback));
 		}
 
 		public readonly SimpleDescriptor name;
@@ -35,7 +35,7 @@ namespace CoC.Backend.Areas
 		/// Returns a new page with the required content and buttons for running this area. 
 		/// </summary>
 		/// <returns></returns>
-		internal abstract DisplayBase RunArea();
+		internal abstract void RunArea();
 
 		//Triggers when an area is entered from another area. Allows you to implement any custom logic your area needs when this occurs. Internally, 
 		//the game will automatically increment timesVisited, if applicable. 

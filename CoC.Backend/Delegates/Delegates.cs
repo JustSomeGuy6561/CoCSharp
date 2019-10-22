@@ -40,14 +40,17 @@ namespace CoC.Backend
 	/// <returns>any text for the engine to print out.</returns>
 	public delegate string ResumeTimeCallback(ushort hoursRemaining, AreaBase currentLocation);
 
-
 	//passed into the item use function. It's called when the item is used, successfully or otherwise. This is due to the delayed, event-based nature of the item.
-	public delegate DisplayBase UseItemCallback(bool successfullyUsedItem, DisplayBase currentPage, CapacityItem replacementItem);
+	public delegate void UseItemCallback(bool successfullyUsedItem, string whatHappened, CapacityItem replacementItem);
 	//public delegate PageDataWrapper UseItemCallback(bool successfullyUsedItem, CapacityItem replacementItem);
-	public delegate DisplayBase UseItemCallbackSafe<T>(bool successfullyUsedItem, DisplayBase currentPage, T replacementItem) where T : CapacityItem;
+	public delegate void UseItemCallbackSafe<T>(bool successfullyUsedItem, string whatHappened, T replacementItem) where T : CapacityItem;
 	//public delegate PageDataWrapper UseItemCallbackSafe<T>(bool successfullyUsedItem, T replacementItem) where T : CapacityItem;
 
 
 	public delegate string SimpleReactionDelegate(bool currentlyIdling, bool hasIdleHours);
+
+	//public delegate void RunPageCallback(DisplayBase currentDisplay);
+
+	public delegate void HomeBaseReactionCallback(bool isReload);
 
 }

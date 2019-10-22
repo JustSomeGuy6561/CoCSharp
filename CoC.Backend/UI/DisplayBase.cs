@@ -8,6 +8,7 @@ namespace CoC.Backend.UI
 	//building block for any visual output. base class has just content and buttons. Needs to be implemented in frontend, and a constructor reference passed back to backend in initialization
 	//
 
+	//public abstract class DisplayBase2
 	public abstract class DisplayBase
 	{
 		public const byte BUTTON_ROWS = 3;
@@ -61,6 +62,7 @@ namespace CoC.Backend.UI
 		}
 
 		protected DisplayBase()
+		//protected DisplayBase2()
 		{
 
 		}
@@ -78,6 +80,7 @@ namespace CoC.Backend.UI
 		/// </summary>
 		/// <param name="otherPage"></param>
 		/// <param name="after"></param>
+		//public virtual void CombineWith(DisplayBase2 otherPage, bool after)
 		public virtual void CombineWith(DisplayBase otherPage, bool after)
 		{
 			if (otherPage is null || otherPage.content.Length == 0)
@@ -120,11 +123,19 @@ namespace CoC.Backend.UI
 
 		public void ClearButtons()
 		{
+			if (buttons.Any(x => x != null))
+			{
+				buttonsChanged = true;
+			}
 			Array.Clear(buttons, 0, buttons.Length);
 		}
 
 		public virtual void ClearContent()
 		{
+			if (content.Length > 0)
+			{
+				contentChanged = true;
+			}
 			content.Clear();
 		}
 
@@ -139,6 +150,12 @@ namespace CoC.Backend.UI
 			bool retVal = contentChanged;
 			contentChanged = false;
 			return retVal;
+		}
+
+		public ButtonData GetButtonData(byte index)
+		{
+			if (index >= buttons.Length) throw new IndexOutOfRangeException();
+			return buttons[index];
 		}
 
 		//public static DisplayBase GenerateMultiPage(string content, ButtonData cancelButton, ButtonData[] buttons)

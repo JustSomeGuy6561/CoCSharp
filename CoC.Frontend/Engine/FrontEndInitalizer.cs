@@ -27,7 +27,7 @@ namespace CoC.Frontend.Engine
 		{
 			BasePerkModifiers getExtraData(Creature source) => new ExtraPerkModifiers(source);
 
-			BackendInitializer.PreSaveInit(() => new StandardDisplay(), DisplayManager.LoadDisplay, AreaManager.placeCollection, AreaManager.locationCollection, 
+			BackendInitializer.PreSaveInit(() => new StandardDisplay(), DisplayManager.GetCurrentDisplay, DisplayManager.LoadDisplay, AreaManager.placeCollection, AreaManager.locationCollection, 
 				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, getExtraData, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);
 
 			CreditManager.AddCreditCategory(new FrontendCredits());

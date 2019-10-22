@@ -78,7 +78,8 @@ namespace CoC.Backend.Engine.Time
 
 
 		private readonly Func<DisplayBase> pageMaker;
-		private readonly Action<DisplayBase> displayPage;
+		private readonly Func<DisplayBase> GetCurrentPage;
+		private readonly Action<DisplayBase> SetCurrentPage;
 		//private readonly Action<string> OutputText;
 		//private readonly Action ClearOutput;
 
@@ -102,7 +103,7 @@ namespace CoC.Backend.Engine.Time
 			if (activePages.Count > 0)
 			{
 				DisplayBase nextPage = activePages.Dequeue();
-				displayPage(nextPage);
+				SetCurrentPage(nextPage);
 			}
 			else
 			{
@@ -161,10 +162,11 @@ namespace CoC.Backend.Engine.Time
 		private bool isIdleTime => useHours == 0;
 		private bool hasAnyIdleTime => idleHours > 0;
 
-		internal TimeEngine(Func<DisplayBase> pageDataMaker, Action<DisplayBase> displayThePage, AreaEngine areaEngineReference)
+		internal TimeEngine(Func<DisplayBase> pageDataMaker, Func<DisplayBase> currentPageGetter, Action<DisplayBase> currentPageSetter, AreaEngine areaEngineReference)
 		{
 			pageMaker = pageDataMaker ?? throw new ArgumentNullException(nameof(pageDataMaker));
-			displayPage = displayThePage ?? throw new ArgumentNullException(nameof(displayThePage));
+			GetCurrentPage = currentPageGetter ?? throw new ArgumentNullException(nameof(currentPageGetter));
+			SetCurrentPage = currentPageSetter ?? throw new ArgumentNullException(nameof(currentPageSetter));
 			areaEngine = areaEngineReference ?? throw new ArgumentNullException(nameof(areaEngineReference));
 		}
 
@@ -292,8 +294,7 @@ namespace CoC.Backend.Engine.Time
 			}
 			else
 			{
-				var item = pageMaker();
-				displayPage(areaEngine.RunArea(item));
+				areaEngine.RunArea();
 			}
 		}
 
@@ -397,7 +398,16 @@ namespace CoC.Backend.Engine.Time
 					display.CombineWith(newHourHeader, false);
 					newHourHeader = null;
 				}
-				activePages.Enqueue(display);
+				//enqueue the current page. create a new page, and load that. 
+				if (ReferenceEquals(display, GetCurrentPage()))
+				{
+					activePages.Enqueue(display);
+					SetCurrentPage(pageMaker());
+				}
+				else
+				{
+					GetCurrentPage().ClearOutput();
+				}
 			}
 		}
 
@@ -419,6 +429,7 @@ namespace CoC.Backend.Engine.Time
 
 		private void DoLazies()
 		{
+			hitLazies = true;
 			int hoursPassed = startTime.hoursToNow();
 			byte lazyHoursPassed = hoursPassed > byte.MaxValue ? byte.MaxValue : (byte)hoursPassed;
 
@@ -463,16 +474,16 @@ namespace CoC.Backend.Engine.Time
 
 			startTime = null;
 			newHourHeader = null;
-
+			hitLazies = false;
 
 			if (!newPage)
 			{
-				displayPage(areaEngine.RunArea(currentContentPage));
+				areaEngine.RunArea();
 			}
 			else
 			{
-				currentContentPage.DoNext(() => displayPage(areaEngine.RunArea(null)));
-				displayPage(currentContentPage);
+				currentContentPage.DoNext(areaEngine.RunArea);
+				SetCurrentPage(currentContentPage);
 			}
 
 			currentContentPage = null;

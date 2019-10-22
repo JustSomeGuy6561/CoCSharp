@@ -18,10 +18,11 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override bool encounterUnlocked()
 		{
-			throw new System.NotImplementedException();
+#warning NYI
+			return false;
 		}
 
-		protected override void Run(DisplayBase currentDisplay)
+		protected override void RunEncounter()
 		{
 			throw new System.NotImplementedException();
 		}

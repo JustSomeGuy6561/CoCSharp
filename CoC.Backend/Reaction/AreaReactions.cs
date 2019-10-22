@@ -18,16 +18,16 @@ namespace CoC.Backend.Reaction
 		public byte timesToVisitUntilProccing { get; private set; }
 
 		internal readonly Type targetLocation;
-		public Func<DisplayBase> onTrigger { get; private set; }
+		public Action onTrigger { get; private set; }
 
-		private LocationReaction(Func<DisplayBase> reaction, Type locationType, byte delay = 0)
+		private LocationReaction(Action reaction, Type locationType, byte delay = 0)
 		{
 			targetLocation = locationType;
 			onTrigger = reaction;
 			timesToVisitUntilProccing = delay;
 		}
 
-		public static LocationReaction CreateLocationReaction<T>(Func<DisplayBase> reaction) where T : LocationBase
+		public static LocationReaction CreateLocationReaction<T>(Action reaction) where T : LocationBase
 		{
 			if (typeof(T) == typeof(LocationBase))
 			{
@@ -36,7 +36,7 @@ namespace CoC.Backend.Reaction
 			return new LocationReaction(reaction, typeof(T));
 		}
 
-		public static LocationReaction CreateLocationReaction<T>(Func<DisplayBase> reaction, byte delay) where T : LocationBase
+		public static LocationReaction CreateLocationReaction<T>(Action reaction, byte delay) where T : LocationBase
 		{
 			if (typeof(T) == typeof(LocationBase))
 			{
@@ -65,9 +65,9 @@ namespace CoC.Backend.Reaction
 		public byte timesToVisitUntilProccing { get; private set; }
 
 		internal readonly Type targetPlace;
-		public Func<DisplayBase> onTrigger { get; private set; }
+		public Action onTrigger { get; private set; }
 
-		private PlaceReaction(Func<DisplayBase> reaction, Type place, byte delay = 0)
+		private PlaceReaction(Action reaction, Type place, byte delay = 0)
 		{
 			targetPlace = place;
 			onTrigger = reaction;
@@ -76,7 +76,7 @@ namespace CoC.Backend.Reaction
 
 		//yes, i hid the constructor. C# hates generics with a passion with regards to derived. Class<X> != Class<Y> where Y derives X, and cannot be coerced to do so any way i could find.
 		//this is the only way i could find around it that's still useful - forcing an Average Joe to use the Type class is a recipe for disaster. using <T> is not. 
-		public static PlaceReaction CreatePlaceReaction<T>(Func<DisplayBase> reaction) where T : PlaceBase
+		public static PlaceReaction CreatePlaceReaction<T>(Action reaction) where T : PlaceBase
 		{
 			if (typeof(T) == typeof(PlaceBase))
 			{
@@ -85,7 +85,7 @@ namespace CoC.Backend.Reaction
 			return new PlaceReaction(reaction, typeof(T));
 		}
 
-		public static PlaceReaction CreatePlaceReaction<T>(Func<DisplayBase> reaction, byte delay) where T : PlaceBase
+		public static PlaceReaction CreatePlaceReaction<T>(Action reaction, byte delay) where T : PlaceBase
 		{
 			if (typeof(T) == typeof(PlaceBase))
 			{
@@ -111,22 +111,12 @@ namespace CoC.Backend.Reaction
 	{
 		public byte timesToVisitUntilProccing { get; private set; }
 
-		public Func<DisplayBase> onTrigger { get; private set; }
+		public HomeBaseReactionCallback onTrigger { get; private set; }
 
-		private HomeBaseReaction(Func<DisplayBase> reaction, byte delay = 0)
+		public HomeBaseReaction(HomeBaseReactionCallback reaction, byte delay = 0)
 		{
 			onTrigger = reaction;
 			timesToVisitUntilProccing = delay;
-		}
-
-		public static HomeBaseReaction CreateHomeBaseReaction(Func<DisplayBase> reaction)
-		{
-			return new HomeBaseReaction(reaction);
-		}
-
-		public static HomeBaseReaction CreateHomeBaseReaction(Func<DisplayBase> reaction, byte delay)
-		{
-			return new HomeBaseReaction(reaction, delay);
 		}
 
 		public int CompareTo(HomeBaseReaction other)
@@ -134,10 +124,12 @@ namespace CoC.Backend.Reaction
 			return timesToVisitUntilProccing.CompareTo(other.timesToVisitUntilProccing);
 		}
 
-		internal void VisitLocation()
+		internal void OnVisit()
 		{
 			timesToVisitUntilProccing--;
 		}
+
+
 	}
 
 }

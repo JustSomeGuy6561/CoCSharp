@@ -13,7 +13,7 @@ namespace CoC.Backend.Areas
 	{
 		public abstract bool isDisabled { get; protected set; }
 
-		protected abstract void ExplorePlace(DisplayBase display);
+		protected abstract void ExplorePlace();
 
 		protected readonly HashSet<TriggeredEncounter> interrupts = new HashSet<TriggeredEncounter>();
 
@@ -26,29 +26,26 @@ namespace CoC.Backend.Areas
 			}
 		}
 
-		internal override DisplayBase RunArea()
+		internal override void RunArea()
 		{
-			return LoadPlace();
+			LoadPlace();
 		}
 
-		protected virtual DisplayBase LoadPlace()
+		protected virtual void LoadPlace()
 		{
-			DisplayBase display = pageMaker(); //if overriding this, use the implementation available (i.e. the frontend can just say new StandardDisplay() or whatever the implementer is called)
 			foreach (var interrupt in interrupts)
 			{
 				if (interrupt.isActive && interrupt.isTriggered())
 				{
-					interrupt.Run(display);
+					interrupt.RunEncounter();
 					if (interrupt.isCompleted)
 					{
 						interrupts.Remove(interrupt);
 					}
-					return display;
 				}
 			}
 			//we didnt hit an interrupt, so we're fine to display normally. 
-			ExplorePlace(display);
-			return display;
+			ExplorePlace();
 		}
 
 	}

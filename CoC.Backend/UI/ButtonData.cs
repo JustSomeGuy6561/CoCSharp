@@ -45,6 +45,10 @@ namespace CoC.Backend.UI
 			tooltipStr = tip ?? "";
 			tooltipTitleStr = replacementTitle ?? "";
 			enabled = active;
+			if (active && callback is null)
+			{
+				throw new ArgumentException("Callback cannot be null if the button is active");
+			}
 			onClick = callback;
 		}
 

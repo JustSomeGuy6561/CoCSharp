@@ -4,6 +4,7 @@
 //Note: date follows MMDDYYYY format.
 //10/14/2019 10:49:00 AM
 
+using CoC.Backend;
 using CoC.Backend.Areas;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
@@ -24,10 +25,10 @@ namespace CoC.Frontend.UI
 
 		public void RunAndDisplayScene()
 		{
-			DisplayManager.LoadDisplay(((IScene)this).RunSceneGetDisplay(DisplayManager.LoadDisplay));
+			DisplayManager.LoadDisplay(((IScene)this).RunSceneGetDisplay());
 		}
-
-		DisplayBase IScene.RunSceneGetDisplay(Action<DisplayBase> displaySubsequentPagesCallback)
+	
+		DisplayBase IScene.RunSceneGetDisplay()
 		{
 			RunScene();
 			return currentDisplay;

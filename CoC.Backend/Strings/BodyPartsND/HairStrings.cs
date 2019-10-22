@@ -4,6 +4,7 @@
 //1/1/2019private static string 12:21 PM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 using System;
 using System.ComponentModel;
@@ -121,7 +122,7 @@ namespace CoC.Backend.BodyParts
 
 		private static string SemiTransparentStr(bool isSemiTransparent) { return isSemiTransparent ? " semi-transparent" : ""; }
 
-		private string HairStr()
+		public static string Name()
 		{
 			return "Hair";
 		}
@@ -159,10 +160,7 @@ namespace CoC.Backend.BodyParts
 	}
 	public partial class Hair
 {
-public static string Name()
-{
-return "Hair";
-}
+
 }
 
 public partial class HairType
@@ -204,8 +202,9 @@ public partial class HairType
 		}
 		private static string NormalFullDesc(Hair hair)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return DefaultFullDesc(hair, NormalDesc());
 		}
+
 		private static string NormalPlayerStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -475,6 +474,30 @@ public partial class HairType
 		private static string VineRestoreStr(Hair hair, Player player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string DefaultFullDesc(Hair hair, string shortDesc)
+		{
+			if (hair.length == 0) return Utils.RandomChoice("shaved", "bald", "smooth", "hairless", "glabrous") + " head";
+
+			StringBuilder sb = new StringBuilder();
+
+			byte creatureHeight = CreatureStore.GetCreatureClean(hair.creatureID)?.build.heightInInches ?? Build.DEFAULT_HEIGHT;
+
+			if (hair.length < 1) sb.Append(Utils.RandomChoice("close-cropped, ", "trim, ", "very short, "));
+			else if (hair.length < 3) sb.Append("short, ");
+			else if (hair.length < 6) sb.Append("shaggy, ");
+			else if (hair.length < 10) sb.Append("moderately long, ");
+			else if (hair.length < 16) sb.Append(Utils.RandomChoice("long, ", "shoulder-length, "));
+			else if (hair.length < 26) sb.Append(Utils.RandomChoice("very long, ", "flowing locks of "));
+
+			else if (hair.length < 40) sb.Append("ass-length, ");
+			else if (hair.length < creatureHeight) sb.Append("obscenely long, ");
+			else // if (hair.length >= tallness)
+				sb.Append(Utils.RandomChoice("floor-length, ", "floor-dragging, "));
+
+			sb.Append(shortDesc);
+			return sb.ToString();
 		}
 	}
 }

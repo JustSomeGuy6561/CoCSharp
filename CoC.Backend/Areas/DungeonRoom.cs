@@ -9,10 +9,10 @@ namespace CoC.Backend.Areas
 	{
 		public readonly SimpleDescriptor name;
 
-		public readonly Action<DisplayBase> onEnter;
-		public readonly Action<DisplayBase> onReEnter;
+		public readonly Action onEnter;
+		public readonly Action onReEnter;
 
-		public DungeonRoom(SimpleDescriptor roomName, Action<DisplayBase> onAllEnters)
+		public DungeonRoom(SimpleDescriptor roomName, Action onAllEnters)
 		{
 			name = roomName ?? throw new ArgumentNullException(nameof(roomName));
 
@@ -20,7 +20,7 @@ namespace CoC.Backend.Areas
 			onReEnter = onAllEnters;
 		}
 
-		public DungeonRoom(SimpleDescriptor roomName, Action<DisplayBase> onFirstEnter, Action<DisplayBase> onSubsequentEnters)
+		public DungeonRoom(SimpleDescriptor roomName, Action onFirstEnter, Action onSubsequentEnters)
 		{
 			name = roomName ?? throw new ArgumentNullException(nameof(roomName));
 

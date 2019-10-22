@@ -16,7 +16,7 @@ namespace CoC.Backend.Encounters
 		public bool isActive => encounterUnlocked();
 		public bool isCompleted => encounterDisabled();
 
-		internal protected abstract void Run(DisplayBase currentDisplay);
+		internal protected abstract void RunEncounter();
 
 		internal protected abstract bool encounterUnlocked();
 		internal protected abstract bool encounterDisabled();
@@ -47,8 +47,6 @@ namespace CoC.Backend.Encounters
 	public abstract class TriggeredEncounter : Encounter
 	{
 		internal protected abstract bool isTriggered();
-
-
 	}
 
 }

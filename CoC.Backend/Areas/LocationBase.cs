@@ -36,12 +36,12 @@ namespace CoC.Backend.Areas
 			triggerScenes = triggers;
 		}
 
-		internal override DisplayBase RunArea()
+		internal override void RunArea()
 		{
-			return RollScene();
+			RollScene();
 		}
 
-		protected virtual DisplayBase RollScene()
+		protected virtual void RollScene()
 		{
 			Encounter currentScene;
 			//check trigger scenes, add them if not already in queue.
@@ -103,10 +103,8 @@ namespace CoC.Backend.Areas
 				}
 			}
 
-			var display = pageMaker();
-
 			//run the scene.
-			currentScene.Run(display);
+			currentScene.RunEncounter();
 
 			//if the scene is now complete, remove it from the hashset/dictionary that contains it. 
 			if (currentScene.isCompleted)
@@ -140,9 +138,6 @@ namespace CoC.Backend.Areas
 					semiRandomScenes[entry]++;
 				}
 			}
-
-			return display;
 		}
-
 	}
 }

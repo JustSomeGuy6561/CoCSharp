@@ -13,8 +13,8 @@ namespace CoC.Frontend.SaveData
 	{
 		public static FrontendGlobalSave data => SaveSystem.GetGlobalSave<FrontendGlobalSave>();
 
-		//internal bool UnlockedNewGameHerm = false;
-		internal bool UnlockedNewGameHerm = true; //testing
+		internal bool UnlockedNewGameHerm = false;
+		//internal bool UnlockedNewGameHerm = true; //testing
 
 		internal bool? AllowWaterSports = false;
 		internal bool? SillyModeGlobal = null;

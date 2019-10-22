@@ -20,7 +20,7 @@ namespace CoC.Backend.Engine
 	{
 		//rundown: to allow you to do whatever you want in the frontend, some data needs to be passed back here. 
 
-		public static void PreSaveInit(Func<DisplayBase> pageDataConstructor, Action<DisplayBase> displayPage,
+		public static void PreSaveInit(Func<DisplayBase> PageConstructor, Func<DisplayBase> GetCurrentPage, Action<DisplayBase> SetCurrentPage,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, 
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases, //AreaEngine
 			Func<Creature, BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
@@ -42,7 +42,8 @@ namespace CoC.Backend.Engine
 #warning Add method to read file and load global backend game data. 
 
 			//initialize game engine.
-			GameEngine.InitializeEngine(pageDataConstructor, displayPage, gamePlaces, gameLocations, gameDungeons, homeBases, perkModifiers, gameDifficulties, defaultDifficultyIndex);
+			GameEngine.InitializeEngine(PageConstructor, GetCurrentPage, SetCurrentPage, gamePlaces, gameLocations, gameDungeons, homeBases, perkModifiers, 
+				gameDifficulties, defaultDifficultyIndex);
 		}
 
 		public static void LatePreSaveInit()

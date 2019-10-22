@@ -512,7 +512,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (index == 0)
 			{
-				return HairStr();
+				return Name();
 			}
 			else
 			{
@@ -555,24 +555,32 @@ namespace CoC.Backend.BodyParts
 			HairStyle hairStyle = style;
 			float newLength = length;
 
-			byte growMin = Math.Min(hoursPassed, growthCountdownTimer);
-
-			float unitsGrown = growthMultiplier * growMin;
-
-			if (hoursPassed >= growthCountdownTimer)
+			float unitsGrown;
+			if (growthCountdownTimer > 0 && growthAccelerationLevel > 0)
 			{
-				growthCountdownTimer = 0;
-				growthAccelerationLevel = 0;
+				byte growMin = Math.Min(hoursPassed, growthCountdownTimer);
 
-				unitsGrown += hoursPassed.subtract(growthCountdownTimer);
-				if (isPlayer)
+				unitsGrown = growthMultiplier * growMin;
+
+				if (hoursPassed >= growthCountdownTimer)
 				{
-					sb.Append(NoMoreAcceleratedGrowthFrownyFace());
+					growthCountdownTimer = 0;
+					growthAccelerationLevel = 0;
+
+					unitsGrown += hoursPassed.subtract(growthCountdownTimer);
+					if (isPlayer)
+					{
+						sb.Append(NoMoreAcceleratedGrowthFrownyFace());
+					}
+				}
+				else
+				{
+					growthCountdownTimer -= hoursPassed;
 				}
 			}
 			else
 			{
-				growthCountdownTimer -= hoursPassed;
+				unitsGrown = hoursPassed;
 			}
 
 			//run the hair lengthening regardless, but only do the output if it's the player.
@@ -592,7 +600,6 @@ namespace CoC.Backend.BodyParts
 					(newLength >= 40 && length < 40) || (newLength >= 40 && newLength >= tallness && length < tallness))
 				{
 					sb.Append(HairLongerStr());
-
 				}
 
 			}

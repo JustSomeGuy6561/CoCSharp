@@ -24,14 +24,18 @@ namespace CoC.Frontend.Engine.Time
 		}
 
 		//used for standard gameplay, which requires a callback to handle once the item has been added successfully. 
-		public static void GainItemWithCallback(StandardDisplay currentDisplay, Creature source, CapacityItem item, Action<StandardDisplay> resumeCallback)
+		public static void GainItemWithCallback(StandardDisplay currentDisplay, Creature source, CapacityItem item, Action resumeCallback)
 		{
 			if (source.CanAddItem(item))
 			{
-
+				int slot = source.TryAddItem(item);
+				DisplayManager.GetCurrentDisplay().OutputText(((IInteractiveStorage<CapacityItem>)source).PlaceItemInSlot(item, (byte)slot));
+				resumeCallback();
 			}
-
-			DisplayManager.LoadDisplay(new ItemFullHelper(source, item, currentDisplay.GetOutput(), resumeCallback).Init());
+			else
+			{
+				DisplayManager.LoadDisplay(new ItemFullHelper(source, item, currentDisplay.GetOutput(), resumeCallback).Init());
+			}
 		}
 	}
 
@@ -50,7 +54,7 @@ namespace CoC.Frontend.Engine.Time
 
 		protected override DisplayBase AsFullPageScene(bool currentlyIdling, bool hasIdleHours)
 		{
-			return new ItemFullHelper(source, target, howItemWasObtainedText(), (x) => { DisplayManager.LoadDisplay(x); GameEngine.ResumeExection(); }).Init();
+			return new ItemFullHelper(source, target, howItemWasObtainedText(), () => GameEngine.ResumeExection()).Init();
 		}
 
 		protected override string AsTextScene(bool currentlyIdling, bool hasIdleHours)
@@ -70,6 +74,7 @@ namespace CoC.Frontend.Engine.Time
 	/// Basically, all the data needs to be stored temporarily, so this acts like an anonymous class to do so, though it's not anonymous for clarity.
 	/// </summary>
 	/// <typeparam name="T">Item type, if applicable. if generic, store as capacity item.</typeparam>
+
 	public class ItemFullHelper<T> where T:CapacityItem<T>
 	{
 		private readonly IInteractiveStorage<T> inventory;
@@ -82,7 +87,8 @@ namespace CoC.Frontend.Engine.Time
 		private StandardDisplay display;
 
 		//
-		public ItemFullHelper(IInteractiveStorage<T> source, T item, string context, Action resumeCallback, Action returnItemFunction = null, Action cancelItemOverride = null)
+		public ItemFullHelper(IInteractiveStorage<T> source, T item, string context, Action resumeCallback,
+			Action returnItemFunction = null, Action cancelItemOverride = null)
 		{
 			this.inventory = source ?? throw new ArgumentNullException(nameof(source));
 			this.item = item ?? throw new ArgumentNullException(nameof(item));
@@ -152,7 +158,6 @@ namespace CoC.Frontend.Engine.Time
 
 		private void DefaultAbandonAction()
 		{
-			//print abandonText
 			DoReturn();
 		}
 
@@ -160,19 +165,24 @@ namespace CoC.Frontend.Engine.Time
 		{
 			inventory.ReplaceItem(item, index);
 			display.OutputText(inventory.ReplaceItemInSlotWith(item, index));
+			DisplayManager.LoadDisplay(display); //if not already, probably redundant. oh well. 
+			resumeCallback();
 		}
 
 		private void AttemptToUseItem()
 		{
-			item.AttemptToUseSafe(CreatureStore.currentControlledCharacter, display, (x,y,z) => PostItemUseAttempt(x, (StandardDisplay)y, z));
+			item.AttemptToUseSafe(CreatureStore.currentControlledCharacter, (x, y, z) => PostItemUseAttempt(x, y, z));
 		}
 
-		private DisplayBase PostItemUseAttempt(bool succeeded, StandardDisplay display, T newItem)
+		private void PostItemUseAttempt(bool succeeded, string whatHappened, T newItem)
 		{
+			display.ClearOutput();
+
+			display.OutputText(whatHappened);
+
 			if (succeeded && newItem is null)
 			{
 				DoReturn();
-				return display;
 			}
 			else
 			{
@@ -181,13 +191,12 @@ namespace CoC.Frontend.Engine.Time
 					item = newItem;
 				}
 				FullItemsChooseAction();
-				return display;
 			}
 		}
 
 		private void DoReturn()
 		{
-			
+			resumeCallback();
 		}
 		//		public static PageDataWrapper GainItem<T>(IInteractiveStorage<T> source, T item, string context, Action resumeCallback) where T:CapacityItem
 		//		{
@@ -208,21 +217,20 @@ namespace CoC.Frontend.Engine.Time
 		//			}
 		//		}
 	}
-
 	public class ItemFullHelper
 	{
 		private readonly IInteractiveStorage<CapacityItem> inventory;
 		private CapacityItem item;
 		private readonly string context;
-		private readonly Action<StandardDisplay> resumeCallback;
-		private readonly Action<StandardDisplay> returnCallback;
-		private readonly Action<StandardDisplay> abandonCallback;
+		private readonly Action resumeCallback;
+		private readonly Action returnCallback;
+		private readonly Action abandonCallback;
 
 		private StandardDisplay display;
 
 		//
-		public ItemFullHelper(IInteractiveStorage<CapacityItem> source, CapacityItem item, string context, Action<StandardDisplay> resumeCallback, 
-			Action<StandardDisplay> returnItemFunction = null, Action<StandardDisplay> cancelItemOverride = null)
+		public ItemFullHelper(IInteractiveStorage<CapacityItem> source, CapacityItem item, string context, Action resumeCallback, 
+			Action returnItemFunction = null, Action cancelItemOverride = null)
 		{
 			this.inventory = source ?? throw new ArgumentNullException(nameof(source));
 			this.item = item ?? throw new ArgumentNullException(nameof(item));
@@ -260,14 +268,14 @@ namespace CoC.Frontend.Engine.Time
 			}
 			if (returnCallback != null)
 			{
-				DoButton(12, putBackText(), () => returnCallback(display));
+				DoButton(12, putBackText(), returnCallback);
 			}
 			if (item.CanUse(CreatureStore.currentControlledCharacter, out string _))
 			{
 				DoButton(13, useText(), AttemptToUseItem);
 			}
 
-			DoButton(14, abandonText(), () => abandonCallback(display));
+			DoButton(14, abandonText(), abandonCallback);
 		}
 
 		private void DoButton(byte index, string content, Action callback)
@@ -290,13 +298,8 @@ namespace CoC.Frontend.Engine.Time
 			return "Abandon";
 		}
 
-		private void DefaultAbandonAction(StandardDisplay display)
-		{
-			if (!ReferenceEquals(display, this.display))
-			{
-				this.display = display;
-				DisplayManager.LoadDisplay(display); //if not already, probably redundant. oh well. 
-			}
+		private void DefaultAbandonAction()
+		{ 
 			DoReturn();
 		}
 
@@ -305,24 +308,23 @@ namespace CoC.Frontend.Engine.Time
 			inventory.ReplaceItem(item, index);
 			display.OutputText(inventory.ReplaceItemInSlotWith(item, index));
 			DisplayManager.LoadDisplay(display); //if not already, probably redundant. oh well. 
-			resumeCallback(display);
+			resumeCallback();
 		}
 
 		private void AttemptToUseItem()
 		{
-			item.AttemptToUse(CreatureStore.currentControlledCharacter, display, (x, y, z) => PostItemUseAttempt(x, (StandardDisplay)y, z));
+			item.AttemptToUse(CreatureStore.currentControlledCharacter, (x, y, z) => PostItemUseAttempt(x, y, z));
 		}
 
-		private DisplayBase PostItemUseAttempt(bool succeeded, StandardDisplay display, CapacityItem newItem)
+		private void PostItemUseAttempt(bool succeeded, string whatHappened, CapacityItem newItem)
 		{
-			if (!ReferenceEquals(display, this.display))
-			{
-				this.display = display;
-				DisplayManager.LoadDisplay(display);
-			}
+			display.ClearOutput();
+
+			display.OutputText(whatHappened);
+
 			if (succeeded && newItem is null)
 			{
-				return DoReturn();
+				DoReturn();
 			}
 			else
 			{
@@ -331,14 +333,12 @@ namespace CoC.Frontend.Engine.Time
 					item = newItem;
 				}
 				FullItemsChooseAction();
-				return display;
 			}
 		}
 
-		private StandardDisplay DoReturn()
+		private void DoReturn()
 		{
-			resumeCallback(display);
-			return display;
+			resumeCallback();
 		}
 		//		public static PageDataWrapper GainItem<T>(IInteractiveStorage<T> source, T item, string context, Action resumeCallback) where T:CapacityItem
 		//		{

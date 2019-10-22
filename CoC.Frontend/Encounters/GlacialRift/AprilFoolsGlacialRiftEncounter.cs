@@ -20,7 +20,7 @@ namespace CoC.Frontend.Encounters.GlacialRift
 			throw new System.NotImplementedException();
 		}
 
-		protected override void Run(DisplayBase currentDisplay)
+		protected override void RunEncounter()
 		{
 			throw new System.NotImplementedException();
 		}

@@ -6,6 +6,7 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
 using CoC.Backend.UI;
+using CoC.Frontend.UI;
 
 namespace CoC.Frontend.Encounters.Forest
 {
@@ -17,10 +18,11 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override int chances => CHANCES;
 
-		protected override void Run(DisplayBase currentDisplay)
+		protected override void RunEncounter()
 		{
 			//player.TakeDamage(10);
 			GameEngine.currentlyControlledCharacter.TakeDamage(10);
+			StandardDisplay currentDisplay = DisplayManager.GetCurrentDisplay();
 			currentDisplay.OutputText(flavorText());
 		}
 
