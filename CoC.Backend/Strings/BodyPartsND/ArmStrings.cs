@@ -26,15 +26,15 @@ namespace CoC.Backend.BodyParts
 		{
 			return HumanDescStr();
 		}
-		private static string HumanPlayerStr(Arms arm, Player player)
+		private static string HumanPlayerStr(Arms arm, PlayerBase player)
 		{
 			return "";
 		}
-		private static string HumanTransformStr(Arms oldArms, Player player)
+		private static string HumanTransformStr(Arms oldArms, PlayerBase player)
 		{
 			return oldArms.RestoreText();
 		}
-		private static string HumanRestoreStr(Arms currentArms, Player player)
+		private static string HumanRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return GlobalStrings.RevertAsDefault(currentArms, player);
 		}
@@ -46,11 +46,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return arm.epidermis.justColor() + " feathered arms";
 		}
-		private static string HarpyPlayerStr(Arms arm, Player player)
+		private static string HarpyPlayerStr(Arms arm, PlayerBase player)
 		{
 			return "Feathers hang off your arms from shoulder to wrist, giving them a slightly wing-like look.";
 		}
-		private static string HarpyTransformStr(Arms oldArms, Player player)
+		private static string HarpyTransformStr(Arms oldArms, PlayerBase player)
 		{
 			StringBuilder retVal = new StringBuilder("You look on in horror while");
 			if (oldArms.epidermis.usesFur)
@@ -73,7 +73,7 @@ namespace CoC.Backend.BodyParts
 			retVal.Append("The feathery limbs might help you maneuver if you were to fly, but there's no way they'd support you alone.");
 			return retVal.ToString();
 		}
-		private static string HarpyRestoreStr(Arms currentArms, Player player)
+		private static string HarpyRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return "You scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
 				+ "Glancing down in irritation, you discover that your feathery arms are shedding their feathery coating."
@@ -87,11 +87,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "chitinous " + arm.epidermis.justColor() + " spider arms";
 		}
-		private static string SpiderPlayerStr(Arms arm, Player player)
+		private static string SpiderPlayerStr(Arms arm, PlayerBase player)
 		{
 			return arm.epidermis.fullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves from a distance.";
 		}
-		private static string SpiderTransformStr(Arms oldArms, Player player)
+		private static string SpiderTransformStr(Arms oldArms, PlayerBase player)
 		{
 			StringBuilder retVal = new StringBuilder();
 			if (oldArms.type == ArmType.HARPY)
@@ -110,7 +110,7 @@ namespace CoC.Backend.BodyParts
 			retVal.Append("You touch the onyx exoskeleton and discover to your delight that you can still feel through it as naturally as your own skin.");
 			return retVal.ToString();
 		}
-		private static string SpiderRestoreStr(Arms currentArms, Player player)
+		private static string SpiderRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return "\n\nYou scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
 				+ "Glancing down in irritation, you discover that your arms' chitinous covering is flaking away."
@@ -124,11 +124,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return BeeDescStr();
 		}
-		private static string BeePlayerStr(Arms arm, Player player)
+		private static string BeePlayerStr(Arms arm, PlayerBase player)
 		{
 			return arm.epidermis.fullDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves ended with a yellow fuzz from a distance.";
 		}
-		private static string BeeTransformStr(Arms oldArms, Player player)
+		private static string BeeTransformStr(Arms oldArms, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("\n\n");
 			if (oldArms.type == ArmType.SPIDER)
@@ -156,7 +156,7 @@ namespace CoC.Backend.BodyParts
 			}
 			return sb.ToString();
 		}
-		private static string BeeRestoreStr(Arms currentArms, Player player)
+		private static string BeeRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return "\n\nYou arms start to itch like crazy, and no matter how much you scrath, you can't shake the itch. Looking down, you see the cause - the exoskeleton covering"
 				+ "your arm is flaking away. Not to be outdone, the yellow fur towards the end starts to fall out as well."
@@ -170,11 +170,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return DragonDescStr();
 		}
-		private static string DragonPlayerStr(Arms arm, Player player)
+		private static string DragonPlayerStr(Arms arm, PlayerBase player)
 		{
 			return PredatorPlayerStr(arm, player);
 		}
-		private static string DragonTransformStr(Arms oldArms, Player player)
+		private static string DragonTransformStr(Arms oldArms, PlayerBase player)
 		{
 			if (oldArms.type.isPredatorArms())
 			{
@@ -186,7 +186,7 @@ namespace CoC.Backend.BodyParts
 				"appearance has changed into those of some reptilian killer with shield-shaped " + player.body.mainEpidermis.tone +
 				" scales and powerful, thick, curved steel-gray claws replacing your fingernails.\n<b>You now have dragon arms.</b>";
 		}
-		private static string DragonRestoreStr(Arms currentArms, Player player)
+		private static string DragonRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PredatorRestoreStr(currentArms, player);
 		}
@@ -198,11 +198,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return arm.epidermis.justColor() + " predator arms ending in imp claws";
 		}
-		private static string ImpPlayerStr(Arms arm, Player player)
+		private static string ImpPlayerStr(Arms arm, PlayerBase player)
 		{
 			return PredatorPlayerStr(arm, player);
 		}
-		private static string ImpTransformStr(Arms oldArms, Player player)
+		private static string ImpTransformStr(Arms oldArms, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (player.arms.type != HUMAN)
@@ -223,7 +223,7 @@ namespace CoC.Backend.BodyParts
 			}
 			return sb.ToString();
 		}
-		private static string ImpRestoreStr(Arms currentArms, Player player)
+		private static string ImpRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PredatorRestoreStr(currentArms, player);
 		}
@@ -236,11 +236,11 @@ namespace CoC.Backend.BodyParts
 			return "predator arms with " + arm.hands.fullDescription();
 
 		}
-		private static string LizardPlayerStr(Arms arm, Player player)
+		private static string LizardPlayerStr(Arms arm, PlayerBase player)
 		{
 			return PredatorPlayerStr(arm, player);
 		}
-		private static string LizardTransformStr(Arms oldArms, Player player)
+		private static string LizardTransformStr(Arms oldArms, PlayerBase player)
 		{
 			if (oldArms.type.isPredatorArms())
 			{
@@ -252,7 +252,7 @@ namespace CoC.Backend.BodyParts
 				+ "those of some reptilian killer, complete with scales and claws in place of fingernails. Strangely, your claws seem to match the "
 				+ "tone of your arms.\n<b>You now have reptilian arms.</b>";
 		}
-		private static string LizardRestoreStr(Arms currentArms, Player player)
+		private static string LizardRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PredatorRestoreStr(currentArms, player);
 		}
@@ -264,17 +264,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "salamander arms with " + arm.hands.fullDescription();
 		}
-		private static string SalamanderPlayerStr(Arms arm, Player player)
+		private static string SalamanderPlayerStr(Arms arm, PlayerBase player)
 		{
 			return arm.epidermis.fullDescription() + "cover your arms from the biceps down, and your fingernails are now " + arm.hands.fullDescription();
 		}
-		private static string SalamanderTransformStr(Arms oldArms, Player player)
+		private static string SalamanderTransformStr(Arms oldArms, PlayerBase player)
 		{
 			return "You scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. After a longer moment of"
 				+ " ignoring it you finally glance down in irritation, only to discover that your arms former appearance has changed into those of a salamander,"
 				+ " complete with leathery, red scales and short, fiery-red claws replacing your fingernails.  <b>You now have salamander arms.</b>";
 		}
-		private static string SalamanderRestoreStr(Arms currentArms, Player player)
+		private static string SalamanderRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return "\n\nYou scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
 				+ "Glancing down in irritation, you discover that your once scaly arms are shedding their scales and that"
@@ -289,14 +289,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolf-like arms and " + arm.hands.shortDescription();
 		}
-		private static string WolfPlayerStr(Arms arm, Player player)
+		private static string WolfPlayerStr(Arms arm, PlayerBase player)
 		{
 			return "Your arms are shaped like a wolf's, overly muscular at your shoulders and biceps before quickly slimming down."
 				+ " They're covered in " + arm.epidermis.fullDescription() + " and end in paws with just enough flexibility to be used as hands."
 				+ " They're rather difficult to move in directions besides back and forth.";
 		}
 		//based off dog. it was never implemented in game, even though there was text for the PC having them. 
-		private static string WolfTransformStr(Arms oldArms, Player player)
+		private static string WolfTransformStr(Arms oldArms, PlayerBase player)
 		{
 			bool armChanged = false;
 			StringBuilder sb = new StringBuilder("Your arms feel stiff, and despite any attempt to move them, they just sit there, limply." +
@@ -332,7 +332,7 @@ namespace CoC.Backend.BodyParts
 				+ " <b>Your arms have become like those of a wolf!</b>");
 			return sb.ToString();
 		}
-		private static string WolfRestoreStr(Arms currentArms, Player player)
+		private static string WolfRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PawRestoreString();
 		}
@@ -344,14 +344,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return arm.epidermis.fur.AsString() + ", feathered cockatrice arms with " + arm.hands.fullDescription();
 		}
-		private static string CockatricePlayerStr(Arms arm, Player player)
+		private static string CockatricePlayerStr(Arms arm, PlayerBase player)
 		{
 			return "Your arms are covered in " + arm.epidermis.fullDescription()
 		  + " from the shoulder down to the elbow where they stop in a fluffy cuff. A handful of long feathers grow from your"
 		  + " elbow in the form of vestigial wings, and while they may not let you fly, they certainly help you jump. Your lower"
 		  + " arm is coated in " + arm.secondaryEpidermis.fullDescription() + " and your fingertips terminate in " + arm.hands.shortDescription() + ".";
 		}
-		private static string CockatriceTransformStr(Arms oldArms, Player player)
+		private static string CockatriceTransformStr(Arms oldArms, PlayerBase player)
 		{
 			return "Prickling discomfort suddenly erupts all over your body, like every last inch of your skin has suddenly developed"
 			+ " pins and needles. You try to rub feeling back into your body, but only succeed in shifting the feeling to your arms."
@@ -360,7 +360,7 @@ namespace CoC.Backend.BodyParts
 			+ " from shoulder to elbow, where they end in a fluffy cuff. As suddenly as the itching came it fades, leaving you to marvel"
 			+ " over your new arms.\n<b>You now have cockatrice arms!</b>";
 		}
-		private static string CockatriceRestoreStr(Arms currentArms, Player player)
+		private static string CockatriceRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return "You scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch. "
 				+ "You quickly notice your arms are shedding their scales, and while this is normal, you've never seen it to this extent. "
@@ -375,15 +375,15 @@ namespace CoC.Backend.BodyParts
 		{
 			return arm.epidermis.fullDescription() + "panda-arms";
 		}
-		private static string RedPandaPlayerStr(Arms arm, Player player)
+		private static string RedPandaPlayerStr(Arms arm, PlayerBase player)
 		{
 			return arm.epidermis.furTexture.ToString() + ", " + arm.epidermis.justColor() + " fluff cover your arms. Your paws have " + arm.hands.shortDescription() + ".";
 		}
-		private static string RedPandaTransformStr(Arms oldArms, Player player)
+		private static string RedPandaTransformStr(Arms oldArms, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaRestoreStr(Arms currentArms, Player player)
+		private static string RedPandaRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PawRestoreString();
 		}
@@ -395,17 +395,17 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretPlayerStr(Arms arm, Player player)
+		private static string FerretPlayerStr(Arms arm, PlayerBase player)
 		{
 			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms, turning into "
 				+ arm.secondaryEpidermis.fullDescription() + " from elbows to paws."
 				+ " The latter have " + arm.hands.fullDescription();
 		}
-		private static string FerretTransformStr(Arms oldArms, Player player)
+		private static string FerretTransformStr(Arms oldArms, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretRestoreStr(Arms currentArms, Player player)
+		private static string FerretRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PawRestoreString();
 		}
@@ -417,15 +417,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatPlayerStr(Arms arm, Player player)
+		private static string CatPlayerStr(Arms arm, PlayerBase player)
 		{
 			return CatFoxPlayerStr(arm, player);
 		}
-		private static string CatTransformStr(Arms oldArms, Player player)
+		private static string CatTransformStr(Arms oldArms, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatRestoreStr(Arms currentArms, Player player)
+		private static string CatRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PawRestoreString();
 		}
@@ -437,12 +437,12 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogPlayerStr(Arms arm, Player player)
+		private static string DogPlayerStr(Arms arm, PlayerBase player)
 		{
 			return "Soft, " + arm.epidermis.justColor() + " fluff covers your arms. Your paw-like hands have " + arm.hands.fullDescription()
 				+ ". With the right legs (and the right motivation), you could run with them, much like the hellounds you see in the mountains.";
 		}
-		private static string DogTransformStr(Arms oldArms, Player player)
+		private static string DogTransformStr(Arms oldArms, PlayerBase player)
 		{
 			bool armChanged = false;
 			StringBuilder sb = new StringBuilder("Your arms feel stiff, and despite any attempt to move them, they just sit there, limply." +
@@ -478,7 +478,7 @@ namespace CoC.Backend.BodyParts
 				+ " <b>Your arms have become like those of a dog!</b>");
 			return sb.ToString();
 		}
-		private static string DogRestoreStr(Arms currentArms, Player player)
+		private static string DogRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PawRestoreString();
 		}
@@ -490,15 +490,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxPlayerStr(Arms arm, Player player)
+		private static string FoxPlayerStr(Arms arm, PlayerBase player)
 		{
 			return CatFoxPlayerStr(arm, player);
 		}
-		private static string FoxTransformStr(Arms oldArms, Player player)
+		private static string FoxTransformStr(Arms oldArms, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxRestoreStr(Arms currentArms, Player player)
+		private static string FoxRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			return PawRestoreString();
 		}
@@ -511,31 +511,31 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooPlayerStr(Arms arm, Player player)
+		private static string GooPlayerStr(Arms arm, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooTransformStr(Arms oldArms, Player player)
+		private static string GooTransformStr(Arms oldArms, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooRestoreStr(Arms currentArms, Player player)
+		private static string GooRestoreStr(Arms currentArms, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 
-		private static string CatFoxPlayerStr(Arms arms, Player player)
+		private static string CatFoxPlayerStr(Arms arms, PlayerBase player)
 		{
 			return "Soft, " + arms.epidermis.justColor() + " fluff covers your arms. Your paw-like hands have " + arms.hands.fullDescription() + ".";
 		}
 
-		private static string PredatorPlayerStr(Arms arms, Player player)
+		private static string PredatorPlayerStr(Arms arms, PlayerBase player)
 		{
 			return "Your arms are covered by " + arms.epidermis.shortDescription() + " and your hands are noew " + arms.hands.fullDescription() + ".";
 		}
 
-		private static string PredatorRestoreStr(Arms arms, Player player)
+		private static string PredatorRestoreStr(Arms arms, PlayerBase player)
 		{
 			return "\n\nYou feel a sudden tingle in your " + arms.hands.shortDescription() + " and then you realize,"
 				+ " that they have become normal human fingernails again. Your arms quickly follow suit. "

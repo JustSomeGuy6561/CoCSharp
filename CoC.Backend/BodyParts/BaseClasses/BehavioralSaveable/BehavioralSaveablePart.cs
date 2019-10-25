@@ -72,7 +72,7 @@ namespace CoC.Backend.BodyParts
 
 		public virtual string PlayerDescription()
 		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is Player player)
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
 				return type.playerDescription((ThisClass)this, player);
 			}
@@ -80,7 +80,7 @@ namespace CoC.Backend.BodyParts
 		}
 		public virtual string TransformIntoText(BehaviorClass newBehavior)
 		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is Player player)
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
 				return newBehavior.transformFrom((ThisClass)this, player);
 			}
@@ -88,7 +88,7 @@ namespace CoC.Backend.BodyParts
 		}
 		public virtual string RestoreText()
 		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is Player player)
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
 				return type.restoreString((ThisClass)this, player);
 			}

@@ -17,8 +17,8 @@ namespace CoC.Backend.Engine
 
 		internal static IEnumerable<Creature> activeCreatureList => activeCreatures.Values;
 
-		public static Player currentControlledCharacter { get; private set; } = null;
-		public static Player activePlayer { get; private set; } = null;
+		public static PlayerBase currentControlledCharacter { get; private set; } = null;
+		public static PlayerBase activePlayer { get; private set; } = null;
 
 
 		internal static Guid GenerateCreature(Creatures.Creature creature)
@@ -83,7 +83,7 @@ namespace CoC.Backend.Engine
 			return creature;
 		}
 
-		internal static void SetActivePlayerCharacter(Player player)
+		internal static void SetActivePlayerCharacter(PlayerBase player)
 		{
 			if (player != null)
 			{
@@ -93,7 +93,7 @@ namespace CoC.Backend.Engine
 			currentControlledCharacter = player;
 		}
 
-		public static void TakeControlOfQuestCharacter(Player questCharacter)
+		public static void TakeControlOfQuestCharacter(PlayerBase questCharacter)
 		{
 			CheckPlayerInStore(questCharacter);
 
@@ -108,7 +108,7 @@ namespace CoC.Backend.Engine
 			}
 		}
 
-		private static void CheckPlayerInStore(Player pc)
+		private static void CheckPlayerInStore(PlayerBase pc)
 		{
 			if (!creatureLookup.ContainsKey(pc.id))
 			{

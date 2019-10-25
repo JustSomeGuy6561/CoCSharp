@@ -10,11 +10,15 @@ using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
 using CoC.Backend.BodyParts;
+using CoC.Backend.Perks;
 
 namespace CoC.Backend.Creatures
 {
-
-	public sealed class Player : CombatCreature
+	/// <summary>
+	/// PlayerBase is the base class for the player. due to the fact that the player needs a ton of stuff in the frontend, frankly it makes more sense to just make it abstract. I was doing 
+	/// crazy workarounds with extensions and extra data classes that were abstract here with a constructor passed in from the frontend, and that's just a gaudy band-aid fix. 
+	/// </summary>
+	public abstract class PlayerBase : CombatCreature
 	{
 		public const byte DEFAULT_HUNGER = 0;
 		internal const byte MAX_HUNGER = 100;
@@ -37,7 +41,7 @@ namespace CoC.Backend.Creatures
 		public byte maxHunger => HandleMaxStat(MAX_HUNGER.delta(bonusMaxHunger), minHunger);
 
 
-		public Player(PlayerCreator creator) : base(creator)
+		public PlayerBase(PlayerCreatorBase creator) : base(creator)
 		{
 			hungerTrue = DEFAULT_HUNGER;
 			//now set up all the listeners.

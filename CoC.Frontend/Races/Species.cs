@@ -3,9 +3,11 @@
 //Author: JustSomeGuy
 //12/27/2018, 12:30 AM
 
+using CoC.Backend;
+using CoC.Backend.Creatures;
 using System.Collections.Generic;
 
-namespace CoC.Backend.Races
+namespace CoC.Frontend.Races
 {
 	//in the event you want to randomly generate content, it may be helpful to have a means to generate a creature creator from a given species. 
 	//to do so, uncomment the abstract function, and do so for all species defined.
@@ -36,6 +38,8 @@ namespace CoC.Backend.Races
 			}
 			throw new System.ArgumentException("the integer does not match any valid species");
 		}
+
+		public abstract byte Score(Creature source);
 
 		//generates a random CreatureCreator of the given species, using the gender parameter as the suggested gender.
 		//it will respect that unless the species prohibits that gender (anemone are herms, goblins female, etc).

@@ -181,10 +181,24 @@ namespace CoC.Backend.Creatures
 		//if they have an ass, and the source creature attempting the anal pregnancy has satyr sexuality (or the equivalent thereof). 
 		//if it is false, it will generate an Empty Womb, which prevents the creature from getting pregnant ever. 
 		//Of course, if womb is set and does not return null, it will be used and the canImpregnateIfFemale bool will be ignored.
-		//Additionally, Special Player Characters should not bother with this value, as it will be ignored. The player will always use the special PlayerWomb.
-		public bool canImpregnateIfFemale = true;
-		public Func<Guid, Womb> wombMaker = null; //complicated, but only way to make it work for multiple instances of one creator. write () => new <whatever> instead of new <whatever>
+		//Note that this is virtual; the player creator will override this to always return a specific value, and thus any values set here will be ignored. 
+		public bool canImpregnateIfFemale = true; //or herm. 
 
+		public Func<Guid, Womb> overrideWombConstructor;
+
+		public virtual Womb GetWomb(Guid creatureID)
+		{
+			if (!(overrideWombConstructor is null))
+			{
+				var womb = overrideWombConstructor(creatureID);
+				if (!(womb is null))
+				{
+					return womb;
+				}
+			}
+			if (canImpregnateIfFemale) return new GenericWomb(creatureID);
+			else return new EmptyWomb(creatureID);
+		}
 
 		//BUILD:
 
@@ -219,6 +233,8 @@ namespace CoC.Backend.Creatures
 		public bool blackNipples = false;
 		public bool quadNipples = false;
 		public float lactationMultiplier = 0;
+
+		//perks
 
 		public List<PerkBase> perks;
 	}

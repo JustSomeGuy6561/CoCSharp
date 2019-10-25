@@ -53,7 +53,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagHumanPlayerStr(Vagina vagina, Player player)
+		private static string VagHumanPlayerStr(Vagina vagina, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -65,15 +65,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagEquinePlayerStr(Vagina vagina, Player player)
+		private static string VagEquinePlayerStr(Vagina vagina, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagEquineTransformStr(Vagina vagina, Player player)
+		private static string VagEquineTransformStr(Vagina vagina, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagEquineRestoreStr(Vagina vagina, Player player)
+		private static string VagEquineRestoreStr(Vagina vagina, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -85,15 +85,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagSandTrapPlayerStr(Vagina vagina, Player player)
+		private static string VagSandTrapPlayerStr(Vagina vagina, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagSandTrapTransformStr(Vagina vagina, Player player)
+		private static string VagSandTrapTransformStr(Vagina vagina, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagSandTrapRestoreStr(Vagina vagina, Player player)
+		private static string VagSandTrapRestoreStr(Vagina vagina, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

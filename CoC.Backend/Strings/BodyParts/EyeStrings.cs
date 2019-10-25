@@ -61,7 +61,7 @@ namespace CoC.Backend.BodyParts
 				return "a pair of " + eyes.leftIrisColor.AsString() + " human eyes";
 			}
 		}
-		private static string HumanPlayerStr(Eyes eyes, Player player)
+		private static string HumanPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -69,13 +69,13 @@ namespace CoC.Backend.BodyParts
 			}
 			else return "You have normal " + eyes.leftIrisColor.AsString() + " eyes.";
 		}
-		private static string HumanTransformStr(Eyes originalEyes, Player player)
+		private static string HumanTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			return originalEyes.RestoreText();
 		}
 		//these eyes / these eyes have seen a lot of loves...
 		//(holy shit i'm old.)
-		private static string HumanRestoreStr(Eyes theseEyes, Player player)
+		private static string HumanRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return GlobalStrings.RevertAsDefault(theseEyes, player);
 		}
@@ -131,7 +131,7 @@ namespace CoC.Backend.BodyParts
 				return "two pairs of " + eyes.leftIrisColor + " spider eyes";
 			}
 		}
-		private static string SpiderPlayerStr(Eyes eyes, Player player)
+		private static string SpiderPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your eyes appear human - if your pupils were fully dialated all the time, and partially reflected the light. A faint ring of ");
 			if (eyes.isHeterochromia)
@@ -149,7 +149,7 @@ namespace CoC.Backend.BodyParts
 			}
 			return sb.ToString();
 		}
-		private static string SpiderTransformStr(Eyes originalEyes, Player player)
+		private static string SpiderTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			if (originalEyes.eyeCount < 4)
 			{
@@ -164,7 +164,7 @@ namespace CoC.Backend.BodyParts
 				return "Your eyes shift, becoming more spiderlike. You now have <b>two pairs of spider-eyes, the second on your forehead just above the first.</b> This will take some getting used to!";
 			}
 		}
-		private static string SpiderRestoreStr(Eyes theseEyes, Player player)
+		private static string SpiderRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return "A dull ache hits your forehead near your second set of eyes. suddenly your eyesight goes out of focus and a stabbing pain "
 				+ "hits as your facial structure changes. You quickly realize your spider eyes are gone! <b>You have normal eyes again!</b>";
@@ -181,11 +181,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "a half dozen " + eyes.leftIrisColor.AsString() + " sandtrap eyes surrounded by an inky blackness";
 		}
-		private static string SandTrapPlayerStr(Eyes eyes, Player player)
+		private static string SandTrapPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			return " Your eyes are solid spheres of inky, alien darkness.";
 		}
-		private static string SandTrapTransformStr(Eyes originalEyes, Player player)
+		private static string SandTrapTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("You blink, and then blink again. It feels like something is irritating your eyes."
 				+ " Panic sets in as black suddenly blooms in the corner of your left eye and then your right, as if drops of ink were falling into them."
@@ -213,7 +213,7 @@ namespace CoC.Backend.BodyParts
 				+ "change apparently hasn't affected your vision.");
 			return sb.ToString();
 		}
-		private static string SandTrapRestoreStr(Eyes theseEyes, Player player)
+		private static string SandTrapRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return "Your eyes... itch? It's truly a strange feeling, though you suppose it's similar to shedding or molting, just... on your eyes."
 				+ "Suddenly, the blackness covering your sclera falls off, leaving you with <b> normal eyes again!</b>";
@@ -396,7 +396,7 @@ namespace CoC.Backend.BodyParts
 				return "a pair of " + eyes.leftIrisColor.AsString() + " reptilian eyes";
 			}
 		}
-		private static string LizardPlayerStr(Eyes eyes, Player player)
+		private static string LizardPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your eyes are those of a lizard with vertically slitted pupils and ");
 			if (eyes.isHeterochromia)
@@ -452,7 +452,7 @@ namespace CoC.Backend.BodyParts
 			sb.Append(" They come with the typical second set of eyelids, allowing you to blink twice as much as others.");
 			return sb.ToString();
 		}
-		private static string LizardTransformStr(Eyes originalEyes, Player player)
+		private static string LizardTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			if (originalEyes.isReptilian)
 				return "Your eyes change slightly in their appearance.\n<b>You now have lizard eyes.</b>";
@@ -481,7 +481,7 @@ namespace CoC.Backend.BodyParts
 				return sb.ToString();
 			}
 		}
-		private static string LizardRestoreStr(Eyes theseEyes, Player player)
+		private static string LizardRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return ReptilianCatRestoreStr(theseEyes, player);
 		}
@@ -609,7 +609,7 @@ namespace CoC.Backend.BodyParts
 				return "a pair of " + eyes.leftIrisColor.AsString() + " draconic eyes";
 			}
 		}
-		private static string DragonPlayerStr(Eyes eyes, Player player)
+		private static string DragonPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your eyes are prideful, fierce dragon eyes with vertically slitted pupils and burning orange irises.");
 			if (eyes.isHeterochromia)
@@ -644,7 +644,7 @@ namespace CoC.Backend.BodyParts
 			sb.Append("They glitter even in the darkness and they come with the typical second set of eyelids, allowing you to blink twice as much as others. ");
 			return sb.ToString();
 		}
-		private static string DragonTransformStr(Eyes originalEyes, Player player)
+		private static string DragonTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (originalEyes.isReptilian)
@@ -671,7 +671,7 @@ namespace CoC.Backend.BodyParts
 			sb.Append("<b>You now have fierce dragon eyes.</b>");
 			return sb.ToString();
 		}
-		private static string DragonRestoreStr(Eyes theseEyes, Player player)
+		private static string DragonRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return ReptilianCatRestoreStr(theseEyes, player);
 		}
@@ -793,7 +793,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + " basilisk eyes";
 		}
-		private static string BasiliskPlayerStr(Eyes eyes, Player player)
+		private static string BasiliskPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your eyes are those of a basilisk, dull grey reptilian pools with vertically slitted pupils");
 			if (eyes.isHeterochromia)
@@ -835,7 +835,7 @@ namespace CoC.Backend.BodyParts
 
 		//unless some weird shit happens (some sort of randomizer item), this should never be used. 
 		//the only way to get these is via Benoit, and that is an edge case that should implement its own transform text.
-		private static string BasiliskTransformStr(Eyes originalEyes, Player player)
+		private static string BasiliskTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (originalEyes.isReptilian)
@@ -875,7 +875,7 @@ namespace CoC.Backend.BodyParts
 			sb.Append("<b>You now have mesmerizing basilisk eyes.</b>");
 			return sb.ToString();
 		}
-		private static string BasiliskRestoreStr(Eyes theseEyes, Player player)
+		private static string BasiliskRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return ReptilianCatRestoreStr(theseEyes, player) + " You're gonna miss the ability to turn things to stone with a glare, though.";
 		}
@@ -901,7 +901,7 @@ namespace CoC.Backend.BodyParts
 		//most of these i've kept the color in the vanilla code, and adapted it to use the iris color.
 		//for wolf, i've just replaced "amber" with the right color. it seemed right to me, idk. if you wish to 
 		//make it like the others, go for it.
-		private static string WolfPlayerStr(Eyes eyes, Player player)
+		private static string WolfPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your ");
 			if (eyes.isHeterochromia)
@@ -919,7 +919,7 @@ namespace CoC.Backend.BodyParts
 			sb.Append(" eyes are circled by darkness to help keep the sun from obscuring your view and have a second eyelid to keep them wet. You're rather near-sighted, but your peripherals are great!");
 			return sb.ToString();
 		}
-		private static string WolfTransformStr(Eyes originalEyes, Player player)
+		private static string WolfTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("You feel a sudden surge of pain in your face as your eye");
 			if (originalEyes.eyeCount < 2)
@@ -942,7 +942,7 @@ namespace CoC.Backend.BodyParts
 				+ "Your peripherals and night vision has probably improved, too.");
 			return sb.ToString();
 		}
-		private static string WolfRestoreStr(Eyes theseEyes, Player player)
+		private static string WolfRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return "Your eyes feel strangely in focus, like you just put on a pair of glasses. Then it hits you: <b>You have normal eyes again!</b> You are gonna miss the night vision, but you'll " +
 				"certainly take being able to distinguish yellows and greens again.";
@@ -979,7 +979,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + " cockatrice eyes";
 		}
-		private static string CockatricePlayerStr(Eyes eyes, Player player)
+		private static string CockatricePlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("Your eyes have the slit-shaped pupils of a reptile, but your irises are an electric blue. Lightning-like streaks");
 			if (eyes.isHeterochromia)
@@ -998,7 +998,7 @@ namespace CoC.Backend.BodyParts
 			sb.Append(" spiderweb through your irises, betraying their power. When excited your pupils dilate into wide circles.");
 			return sb.ToString();
 		}
-		private static string CockatriceTransformStr(Eyes originalEyes, Player player)
+		private static string CockatriceTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("Your eyes suddenly burn, tears streaming down your cheeks. Curious as to what's happening, "
 				+ "you quickly find a source of water and watch the changes unfold.");
@@ -1015,7 +1015,7 @@ namespace CoC.Backend.BodyParts
 				+ " much of a poker face anymore." + System.Environment.NewLine + "<b>You now have cockatrice eyes!</b>");
 			return sb.ToString();
 		}
-		private static string CockatriceRestoreStr(Eyes theseEyes, Player player)
+		private static string CockatriceRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return "Your eyes feel less powerful, and you have a sinking feeling you know the cause. Finding a source of water nearby, you watch, mesmerized, as your cockatrice eyes shift back to normal."
 				+ "The little lines in your irises expand outward, overtaking the rapidly dwindling blue that defines a cockatrice's eyes. At the same time, your irises shrink down to a more human size, "
@@ -1041,7 +1041,7 @@ namespace CoC.Backend.BodyParts
 				return "a pair of " + eyes.leftIrisColor.AsString() + " feline eyes";
 			}
 		}
-		private static string CatPlayerStr(Eyes eyes, Player player)
+		private static string CatPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your eyes are similar to those of a cat, with slit pupils and ");
 			if (eyes.isHeterochromia)
@@ -1059,7 +1059,7 @@ namespace CoC.Backend.BodyParts
 			}
 			return sb.ToString();
 		}
-		private static string CatTransformStr(Eyes originalEyes, Player player)
+		private static string CatTransformStr(Eyes originalEyes, PlayerBase player)
 		{
 			return "For a moment your sight shifts as the ambient light suddenly turns extremely bright, almost blinding you."
 				+ " You walk around disoriented until the luminosity fades back to normal."
@@ -1067,12 +1067,12 @@ namespace CoC.Backend.BodyParts
 				+ (originalEyes.eyeCount != 2 ? " You seem to have regained the normal single pair of eyes, and what's more, your " : " Your ")
 				+ "pupils have become cat-like." + System.Environment.NewLine + "<b>You now have cat-eyes!</b>";
 		}
-		private static string CatRestoreStr(Eyes theseEyes, Player player)
+		private static string CatRestoreStr(Eyes theseEyes, PlayerBase player)
 		{
 			return ReptilianCatRestoreStr(theseEyes, player);
 		}
 
-		private static string ReptilianCatRestoreStr(Eyes oldEyes, Player player)
+		private static string ReptilianCatRestoreStr(Eyes oldEyes, PlayerBase player)
 		{
 			return "Your pupils shorten and widen, becoming round again. Your irises return to their original color, and shrink down to a human size. Where they used to be is a familiar white sclera."
 				+ " <b>You have human eyes again!</b>";

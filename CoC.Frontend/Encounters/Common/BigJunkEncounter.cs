@@ -9,6 +9,7 @@ using CoC.Backend.UI;
 using CoC.Frontend.UI;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace CoC.Frontend.Encounters.Common
 {
@@ -22,12 +23,14 @@ namespace CoC.Frontend.Encounters.Common
 		}
 		protected override int chances => bigJunkChance();
 
+		private bool bigJunkAvailable => player.genitals.LongestCockLength() > player.build.heightInInches && player.cocks.Sum(x => x.girth) >= 12;
+
 		private int bigJunkChance()
 		{
-			//if (player.largestCock > player.height && player.totalCockGirth >= 12)
-			//{
-			//	return (int)Math.Floor(20 * (1 + (player.LargestCock() - player.heuight) / 25.0));
-			//}
+			if (bigJunkAvailable)
+			{
+				return (int)Math.Floor(20 * (1 + (player.genitals.LongestCockLength() - player.build.heightInInches) / 25.0));
+			}
 			return 0;
 		}
 
@@ -66,8 +69,7 @@ namespace CoC.Frontend.Encounters.Common
 
 		protected override bool encounterUnlocked()
 		{
-			//return player.largestCock > player.height && player.totalCockGirth >= 12;
-			return false;
+			return bigJunkAvailable;
 		}
 	}
 }

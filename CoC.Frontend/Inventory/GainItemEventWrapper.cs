@@ -13,18 +13,19 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace CoC.Frontend.Engine.Time
+namespace CoC.Frontend.Inventory
 {
 	public static class GainItemHelper
 	{
 		//used for events that require items. Resumes execution once the item is obtained, no way to return an item or have any special callback for throw out. 
-		public static DynamicTimeReaction GainItemEvent(Creature source, CapacityItem item, SimpleDescriptor gainItemContext)
+		public static DynamicTimeReaction GainItemEvent(this Creature source, CapacityItem item, SimpleDescriptor gainItemContext)
 		{
 			return new GainItemSpecialEvent(source, item, gainItemContext);
 		}
 
-		//used for standard gameplay, which requires a callback to handle once the item has been added successfully. 
-		public static void GainItemWithCallback(StandardDisplay currentDisplay, Creature source, CapacityItem item, Action resumeCallback)
+		//used for standard gameplay, which requires a callback to handle once the item has been added successfully. The content is guarenteed to be written to the display before the callback
+		//is called. 
+		public static void GainItemWithCallback(this Creature source, CapacityItem item, string originalOutput, Action resumeCallback)
 		{
 			if (source.CanAddItem(item))
 			{
@@ -34,7 +35,7 @@ namespace CoC.Frontend.Engine.Time
 			}
 			else
 			{
-				DisplayManager.LoadDisplay(new ItemFullHelper(source, item, currentDisplay.GetOutput(), resumeCallback).Init());
+				new ItemFullHelper(source, item, originalOutput, resumeCallback).Init();
 			}
 		}
 	}
@@ -226,7 +227,7 @@ namespace CoC.Frontend.Engine.Time
 		private readonly Action returnCallback;
 		private readonly Action abandonCallback;
 
-		private StandardDisplay display;
+		private readonly StandardDisplay display;
 
 		//
 		public ItemFullHelper(IInteractiveStorage<CapacityItem> source, CapacityItem item, string context, Action resumeCallback, 
@@ -238,18 +239,21 @@ namespace CoC.Frontend.Engine.Time
 			this.resumeCallback = resumeCallback ?? throw new ArgumentNullException(nameof(resumeCallback));
 			this.returnCallback = returnItemFunction;
 			this.abandonCallback = cancelItemOverride ?? DefaultAbandonAction;
+
+			display = DisplayManager.GetCurrentDisplay();
+			display.ClearOutput();
+			display.OutputText(context);
 		}
 
-		public DisplayBase Init()
+		public StandardDisplay Init()
 		{
 			var slot = inventory.TryAddItem(item);
 			if (slot != -1)
 			{
-				return new StandardDisplay(context + inventory.PlaceItemInSlot(item, (byte)slot)); //should never occur.
+				throw new NotSupportedException("Full items helper will have serious side-effects if called when the inventory is not full, and is thus unsupported");
 			}
 			else
 			{
-				display = new StandardDisplay();
 				FullItemsChooseAction();
 				return display;
 			}

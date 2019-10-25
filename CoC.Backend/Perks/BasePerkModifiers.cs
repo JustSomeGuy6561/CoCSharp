@@ -8,13 +8,13 @@ using System;
 
 namespace CoC.Backend.Perks
 {
+	//these are wired directly into the creature. unfortunately it's nigh impossible to wire 
 
-
-	public abstract class BasePerkModifiers
+	public sealed class BasePerkModifiers
 	{
-		protected readonly Creature source;
-		protected CombatCreature combatSource => source as CombatCreature;
-		protected Player playerSource => source as Player;
+		private readonly Creature source;
+		private CombatCreature combatSource => source as CombatCreature;
+		private PlayerBase playerSource => source as PlayerBase;
 
 		public BasePerkModifiers(Creature parent)
 		{

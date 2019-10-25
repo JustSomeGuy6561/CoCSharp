@@ -1578,7 +1578,7 @@ namespace CoC.Frontend.Creatures
 
 		private void CreatePlayer()
 		{
-			Player player = new Player(creator);
+			PlayerBase player = new PlayerBase(creator);
 			NewGameHelpers.ChooseSettings(player);
 		}
 

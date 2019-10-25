@@ -29,7 +29,7 @@ namespace CoC.Frontend.Areas.Locations
 
 		private static string DesertUnlock()
 		{
-			Player player = GameEngine.currentlyControlledCharacter;
+			PlayerBase player = GameEngine.currentlyControlledCharacter;
 
 			string footString;
 			if (player.feet.type.isFeet) footString = "inside your footwear, between your toes.";

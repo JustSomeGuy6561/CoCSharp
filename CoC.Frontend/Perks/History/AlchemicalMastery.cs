@@ -13,13 +13,13 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			ExtraPerkModifiers data = extraModifiers;
+			ExtendedPerkModifiers data = extraModifiers;
 			data.itemForgeCostReduction.addIn(1);
 		}
 
 		protected override void OnRemoval()
 		{
-			ExtraPerkModifiers data = extraModifiers;
+			ExtendedPerkModifiers data = extraModifiers;
 			data.itemForgeCostReduction.subtractOff(1);
 		}
 	}

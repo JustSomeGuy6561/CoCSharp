@@ -16,21 +16,21 @@ namespace CoC.Backend
 	public delegate string SimpleDescriptor();
 	public delegate string DescriptorWithArg<T>(T arg);
 
-	public delegate string PlayerStr(Player player);
-	public delegate string ChangeStr<T>(T newBehavior, Player player);
-	public delegate string RestoreStr(Player player);
+	public delegate string PlayerStr(PlayerBase player);
+	public delegate string ChangeStr<T>(T newBehavior, PlayerBase player);
+	public delegate string RestoreStr(PlayerBase player);
 
 
-	public delegate string TypeAndPlayerDelegate<T>(T type, Player player);
-	public delegate string ChangeType<T>(T newType, Player player);
-	public delegate string RestoreType<T>(T originalType, Player player);
+	public delegate string TypeAndPlayerDelegate<T>(T type, PlayerBase player);
+	public delegate string ChangeType<T>(T newType, PlayerBase player);
+	public delegate string RestoreType<T>(T originalType, PlayerBase player);
 
 	//these may be changed or removed.
 	public delegate string AdjColorDescriptor(string adj, CoCColors color);
 	public delegate void CombatDelegate(Creature player, Creature enemy);
 
 	//every function that uses a button will follow this format. note that with lambdas they can take virtually anything.
-	public delegate void PlayerFunction(Player player);
+	public delegate void PlayerFunction(PlayerBase player);
 
 	/// <summary>
 	/// Used to resume idleing, called after all the complicated hourly stuff completes.

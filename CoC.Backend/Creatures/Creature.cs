@@ -335,7 +335,7 @@ namespace CoC.Backend.Creatures
 				fertility = new Fertility(id, (byte)creator.fertility, creator.artificiallyInfertile);
 			}
 
-			var womb = creator.wombMaker?.Invoke(id) ?? new GenericWomb(id);
+			var womb = creator.GetWomb(id);
 
 			var cup = gender.HasFlag(Gender.FEMALE) ? Breasts.DEFAULT_FEMALE_SIZE : Breasts.DEFAULT_MALE_SIZE;
 
@@ -533,7 +533,7 @@ namespace CoC.Backend.Creatures
 
 			//tail.InitializePiercings(creator?.tailPiercings);
 
-			inventoryStore = new Inventory.BasicInventory();
+			inventoryStore = new BasicInventory();
 
 			perks = new PerkCollection(this);
 			perks.InitPerks(creator.perks?.ToArray());
@@ -1056,7 +1056,7 @@ namespace CoC.Backend.Creatures
 
 		public int RemoveBreastRow(int count = 1)
 		{
-			return genitals.RemoveBreastRow(count);
+			return genitals.RemoveBreastRows(count);
 		}
 
 		public int RemoveExtraBreastRows()
@@ -2644,22 +2644,22 @@ namespace CoC.Backend.Creatures
 		private string QueryActiveBodyListenerData()
 		{
 			StringBuilder sb = new StringBuilder();
-			activeBodyListeners.ForEach(x => sb.Append(x.reactToHourPassing(this is Player)));
+			activeBodyListeners.ForEach(x => sb.Append(x.reactToHourPassing(this is PlayerBase)));
 			return sb.ToString();
 		}
 
 		private string QueryLazyBodyListenerData(byte hoursPassed)
 		{
 			StringBuilder sb = new StringBuilder();
-			lazyBodyListeners.ForEach(x => sb.Append(x.reactToTimePassing(this is Player, hoursPassed)));
+			lazyBodyListeners.ForEach(x => sb.Append(x.reactToTimePassing(this is PlayerBase, hoursPassed)));
 			return sb.ToString();
 		}
 
 		private string QueryDailyBodyListenerData(byte currentHour)
 		{
 			StringBuilder sb = new StringBuilder();
-			dailyBodyListeners.ForEach(x => { if (x.hourToTrigger == currentHour) sb.Append(x.reactToDailyTrigger(this is Player)); });
-			multiDailyBodyListeners.ForEach(x => { if (x.triggerHours.Contains(currentHour)) sb.Append(x.reactToTrigger(this is Player, currentHour)); });
+			dailyBodyListeners.ForEach(x => { if (x.hourToTrigger == currentHour) sb.Append(x.reactToDailyTrigger(this is PlayerBase)); });
+			multiDailyBodyListeners.ForEach(x => { if (x.triggerHours.Contains(currentHour)) sb.Append(x.reactToTrigger(this is PlayerBase, currentHour)); });
 
 			return sb.ToString();
 		}

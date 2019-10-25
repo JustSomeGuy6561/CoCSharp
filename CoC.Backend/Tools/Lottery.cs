@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace CoC.Backend.Tools
 {
-	internal class Lottery<T> : IRandom<T>
+	public class Lottery<T> : IRandom<T>
 	{
 		private Dictionary<T, int> data = new Dictionary<T, int>();
 

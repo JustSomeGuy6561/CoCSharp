@@ -27,7 +27,7 @@ namespace CoC.Backend.Perks
 		internal PerkCollection(Creature sourceCreature)
 		{
 			source = sourceCreature ?? throw new ArgumentNullException(nameof(sourceCreature));
-			baseModifiers = GameEngine.constructPerkModifier(source);
+			baseModifiers = new BasePerkModifiers(sourceCreature);
 			if (baseModifiers is null)
 			{
 				throw new ArgumentException("BaseModifiers, set during the game Engine initialization, returned null. Ensure this is not null.");

@@ -2,16 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //4/7/2019, 8:42 PM
-using CoC.Backend;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.Engine.Time;
-using CoC.Backend.Items.Consumables;
-using CoC.Backend.Pregnancies;
 using CoC.Backend.Reaction;
 using CoC.Backend.Tools;
 using CoC.Frontend.Creatures.PlayerData;
-using CoC.Frontend.Engine.Time;
+using CoC.Frontend.Inventory;
 using CoC.Frontend.Items.Consumables;
 using CoC.Frontend.StatusEffect;
 using System;
@@ -24,12 +20,12 @@ namespace CoC.Frontend.Pregnancies
 
 	public sealed partial class PlayerEggPregnancy : EggPregnancy
 	{
-		private Player player => CreatureStore.activePlayer ?? throw new ArgumentException("Active Player is null in Creature Store. Should never happen");
+		private PlayerBase player => CreatureStore.activePlayer ?? throw new ArgumentException("Active Player is null in Creature Store. Should never happen");
 
 		private const ushort BIRTH_TIME = 50;
 		private const ushort BIRTH_SIZE = 20;
 
-		public PlayerEggPregnancy(Guid creatureID, bool largeClutch = false, bool? isLarge = null, Func<bool, EggBase> color = null) 
+		public PlayerEggPregnancy(Guid creatureID, bool largeClutch = false, bool? isLarge = null, Func<bool, EggBase> color = null)
 			: base(creatureID, EggDesc, EggSource, BIRTH_TIME, largeClutch, isLarge, color)
 		{ }
 
@@ -52,7 +48,7 @@ namespace CoC.Frontend.Pregnancies
 					((PlayerWomb)player.womb).GrantOviposition();
 					gainedOviMax = true;
 				}
-				
+
 			}
 
 			player.HaveGenericVaginalOrgasm(vaginalIndex, false, true);

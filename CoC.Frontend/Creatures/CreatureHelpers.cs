@@ -4,21 +4,42 @@
 //10/11/2019 1:24:57 AM
 
 using CoC.Backend.Creatures;
-using CoC.Backend.Inventory;
-using CoC.Backend.Items;
-using CoC.Backend.Items.Consumables;
-using CoC.Backend.Items.Wearables.Armor;
-using CoC.Backend.Items.Wearables.LowerGarment;
-using CoC.Backend.Items.Wearables.UpperGarment;
-using CoC.Backend.Tools;
-using CoC.Frontend.Inventory;
-using CoC.Frontend.UI;
-using System;
+using CoC.Frontend.Perks;
 
 namespace CoC.Frontend.Creatures
 {
-	//public static class CreatureHelper
-	//{
+	public static class CreatureHelper
+	{
+		public static ExtendedPerkModifiers GetExtraPerks(this Creature creature)
+		{
+			if (creature is IExtendedCreature extended)
+			{
+				return extended.extendedPerkModifiers;
+			}
+			return null;
+		}
+
+		public static ExtendedCreatureData GetExtraData(this Creature creature)
+		{
+			if (creature is IExtendedCreature extended)
+			{
+				return extended.extendedData;
+			}
+			return null;
+		}
+
+		public static bool IsCorruptEnough(this Creature creature, byte targetLevel)
+		{
+			if (creature is IExtendedCreature extended)
+			{
+				return targetLevel <= creature.corruption + extended.extendedPerkModifiers.corruptionRequiredOffset;
+			}
+			else
+			{
+				return targetLevel <= creature.corruption;
+			}
+		}
+	}
 	//	public static void AddItem(this Creature creature, CapacityItem item, Action resumeCallback)
 	//	{
 	//		if (creature.TryAddItem(item, out string result))

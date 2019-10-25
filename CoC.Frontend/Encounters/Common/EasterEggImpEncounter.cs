@@ -5,16 +5,21 @@
 using CoC.Backend.Creatures;
 using CoC.Backend.Encounters;
 using CoC.Backend.Engine;
+using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Backend.UI;
+using CoC.Frontend.Inventory;
+using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CoC.Frontend.Encounters.Common
 {
-	class EasterEggImpEncounter : RandomEncounter
+	partial class EasterEggImpEncounter : RandomEncounter
 	{
+		private StandardDisplay currentDisplay => DisplayManager.GetCurrentDisplay();
+
 		protected override int chances => Utils.LerpRound(1, 20, (int)player.level, 2, 0);
 			
 		protected override bool encounterDisabled()
@@ -29,7 +34,14 @@ namespace CoC.Frontend.Encounters.Common
 
 		protected override void RunEncounter()
 		{
-			throw new NotImplementedException();
+			currentDisplay.ClearOutput();
+			string context = "A small imp bursts from behind a rock and buzzes towards you. You prepare for a fight, but it stays high and simply flies above you. " +
+				"Suddenly another imp appears from nowhere and attacks the first. In the tussle one of them drops an item, which you handily catch, as the scrapping demons " +
+				"fight their way out of sight. ";
+			//unlockCodexImps();
+				throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			ConsumableBase item = null; //imp food, incubus draft, succubus milk. 
+			GainItemHelper.GainItemWithCallback(player, item, context, () => currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1)));
 		}
 	}
 }

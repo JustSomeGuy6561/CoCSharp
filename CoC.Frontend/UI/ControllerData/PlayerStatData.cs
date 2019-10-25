@@ -8,7 +8,7 @@ namespace CoC.Frontend.UI.ControllerData
 	{
 		public string nameString => GameEngine.currentlyControlledCharacter?.name ?? "";
 
-		internal void Update(Player currentPlayer)
+		internal void Update(PlayerBase currentPlayer)
 		{
 			if (currentPlayer != null)
 			{

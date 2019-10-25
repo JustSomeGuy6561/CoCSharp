@@ -25,7 +25,7 @@ namespace CoC.Frontend.Engine
 		/// </summary>
 		public static void PreSaveInit()
 		{
-			BasePerkModifiers getExtraData(Creature source) => new ExtraPerkModifiers(source);
+			BasePerkModifiers getExtraData(Creature source) => new ExtendedPerkModifiers(source);
 
 			BackendInitializer.PreSaveInit(() => new StandardDisplay(), DisplayManager.GetCurrentDisplay, DisplayManager.LoadDisplay, AreaManager.placeCollection, AreaManager.locationCollection, 
 				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, getExtraData, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);

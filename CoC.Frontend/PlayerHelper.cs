@@ -10,7 +10,7 @@ namespace CoC.Frontend
 {
 	internal static class PlayerHelper
 	{
-		public static bool UpdateAntennaeDisplayMessageOnActivePage(this Player player, AntennaeType newType, StandardDisplay display)
+		public static bool UpdateAntennaeDisplayMessageOnActivePage(this PlayerBase player, AntennaeType newType, StandardDisplay display)
 		{
 			if (player.antennae.type != newType)
 			{
@@ -20,7 +20,7 @@ namespace CoC.Frontend
 			return false;
 		}
 
-		public static bool RestoreAntennaeDisplayMessageOnActivePage(this Player player, StandardDisplay display)
+		public static bool RestoreAntennaeDisplayMessageOnActivePage(this PlayerBase player, StandardDisplay display)
 		{
 			if (!player.antennae.isDefault)
 			{

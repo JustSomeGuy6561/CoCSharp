@@ -29,15 +29,15 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericFullDesc(tongue, HumanDesc());
 		}
-		private static string HumanPlayerStr(Tongue tongue, Player player)
+		private static string HumanPlayerStr(Tongue tongue, PlayerBase player)
 		{
 			return "";
 		}
-		private static string HumanTransformStr(Tongue tongue, Player player)
+		private static string HumanTransformStr(Tongue tongue, PlayerBase player)
 		{
 			return tongue.RestoreText();
 		}
-		private static string HumanRestoreStr(Tongue tongue, Player player)
+		private static string HumanRestoreStr(Tongue tongue, PlayerBase player)
 		{
 			return GlobalStrings.RevertAsDefault(tongue, player);
 		}
@@ -49,11 +49,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericFullDesc(tongue, SnakeDesc());
 		}
-		private static string SnakePlayerStr(Tongue tongue, Player player)
+		private static string SnakePlayerStr(Tongue tongue, PlayerBase player)
 		{
 			return "A snake-like tongue occasionally flits between your lips, tasting the air.";
 		}
-		private static string SnakeTransformStr(Tongue tongue, Player player)
+		private static string SnakeTransformStr(Tongue tongue, PlayerBase player)
 		{
 			if (tongue.type == HUMAN)
 			{
@@ -72,7 +72,7 @@ namespace CoC.Backend.BodyParts
 					+ " By the time the transformation has finished, <b>your tongue has changed into a long, forked snake-tongue.</b>";
 			}
 		}
-		private static string SnakeRestoreStr(Tongue tongue, Player player)
+		private static string SnakeRestoreStr(Tongue tongue, PlayerBase player)
 		{
 			return GenericRestoreStr(tongue, player);
 		}
@@ -84,13 +84,13 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericFullDesc(tongue, DemonicDesc());
 		}
-		private static string DemonicPlayerStr(Tongue tongue, Player player)
+		private static string DemonicPlayerStr(Tongue tongue, PlayerBase player)
 		{
 			return "A slowly undulating tongue occasionally slips from between your lips."
 				+ " It hangs nearly two feet long when you let the whole thing slide out, though you can retract it to appear normal.";
 		}
 		//currently game only allows snake tongue => demon tongue. i'll assume that's the default, but create a custom one for other use.
-		private static string DemonicTransformStr(Tongue tongue, Player player)
+		private static string DemonicTransformStr(Tongue tongue, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (tongue.type == SNAKE)
@@ -112,7 +112,7 @@ namespace CoC.Backend.BodyParts
 			sb.Append("You find it easy to move and control, as natural as walking. <b> You now have a long demon-tongue.</b>");
 			return sb.ToString();
 		}
-		private static string DemonicRestoreStr(Tongue tongue, Player player)
+		private static string DemonicRestoreStr(Tongue tongue, PlayerBase player)
 		{
 			return GenericRestoreStr(tongue, player);
 		}
@@ -124,18 +124,18 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericFullDesc(tongue, DraconicDesc());
 		}
-		private static string DraconicPlayerStr(Tongue tongue, Player player)
+		private static string DraconicPlayerStr(Tongue tongue, PlayerBase player)
 		{
 			return "Your mouth contains a thick, fleshy tongue that, if you so desire, can telescope to a distance of about " + Measurement.ToNearestHalfLargeUnit(48, false, true) +"."
 				+ " It has sufficient manual dexterity that you can use it almost like a third arm.";
 		}
-		private static string DraconicTransformStr(Tongue tongue, Player player)
+		private static string DraconicTransformStr(Tongue tongue, PlayerBase player)
 		{
 			return "Your tongue suddenly falls out of your mouth and begins undulating as it grows longer. For a moment it swings wildly, "
 				+ "completely out of control; but then settles down and you find you can control it at will, almost like a limb. "
 				+ "You're able to stretch it to nearly 4 feet and retract it back into your mouth to the point it looks like a normal human tongue. <b>You now have a draconic tongue.</b>";
 		}
-		private static string DraconicRestoreStr(Tongue tongue, Player player)
+		private static string DraconicRestoreStr(Tongue tongue, PlayerBase player)
 		{
 			return GenericRestoreStr(tongue, player);
 		}
@@ -147,11 +147,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericFullDesc(tongue, EchidnaDesc());
 		}
-		private static string EchidnaPlayerStr(Tongue tongue, Player player)
+		private static string EchidnaPlayerStr(Tongue tongue, PlayerBase player)
 		{
 			return "A thin echidna tongue, at least a foot long, occasionally flits out from between your lips. ";
 		}
-		private static string EchidnaTransformStr(Tongue tongue, Player player)
+		private static string EchidnaTransformStr(Tongue tongue, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("You feel an uncomfortable pressure in your tongue as it begins to shift and change. ");
 			if (tongue.type == SNAKE)
@@ -169,7 +169,7 @@ namespace CoC.Backend.BodyParts
 			sb.Append("It has to be at least a foot long. <b>You now have an echidna tongue!</b>");
 			return sb.ToString();
 		}
-		private static string EchidnaRestoreStr(Tongue tongue, Player player)
+		private static string EchidnaRestoreStr(Tongue tongue, PlayerBase player)
 		{
 			return GenericRestoreStr(tongue, player);
 		}
@@ -181,12 +181,12 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericFullDesc(tongue, LizardDesc());
 		}
-		private static string LizardPlayerStr(Tongue tongue, Player player)
+		private static string LizardPlayerStr(Tongue tongue, PlayerBase player)
 		{
 			return "Your mouth contains a thick, fleshy lizard tongue, bringing to mind the tongue of large predatory reptiles."
 				+ " It can reach up to one foot, its forked tips tasting the air as they flick at the end of each movement.";
 		}
-		private static string LizardTransformStr(Tongue tongue, Player player)
+		private static string LizardTransformStr(Tongue tongue, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("Your tongue goes numb, making your surprised noise little more than a gurgle as your tongue flops comically. ");
 			sb.AppendLine();
@@ -232,7 +232,7 @@ namespace CoC.Backend.BodyParts
 				+ "\n\n<b>You now have a lizard tongue!</b>");
 			return sb.ToString();
 		}
-		private static string LizardRestoreStr(Tongue tongue, Player player)
+		private static string LizardRestoreStr(Tongue tongue, PlayerBase player)
 		{
 			return GenericRestoreStr(tongue, player);
 		}
@@ -244,11 +244,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericFullDesc(tongue, CatDesc());
 		}
-		private static string CatPlayerStr(Tongue tongue, Player player)
+		private static string CatPlayerStr(Tongue tongue, PlayerBase player)
 		{
 			return "Your tongue is rough like that of a cat. You sometimes groom yourself with it.";
 		}
-		private static string CatTransformStr(Tongue tongue, Player player)
+		private static string CatTransformStr(Tongue tongue, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (tongue.isLongTongue)
@@ -263,7 +263,7 @@ namespace CoC.Backend.BodyParts
 				+ " similar to the tongue of a cat. At least you will be able to groom yourself properly with <b>your new cat tongue</b>.");
 			return sb.ToString();
 		}
-		private static string CatRestoreStr(Tongue tongue, Player player)
+		private static string CatRestoreStr(Tongue tongue, PlayerBase player)
 		{
 			return GenericRestoreStr(tongue, player);
 		}
@@ -282,7 +282,7 @@ namespace CoC.Backend.BodyParts
 			return sb.ToString();
 		}
 
-		private static string GenericRestoreStr(Tongue tongue, Player player)
+		private static string GenericRestoreStr(Tongue tongue, PlayerBase player)
 		{
 			return "You feel something strange inside your face as your tongue shrinks and recedes until it feels smooth and rounded. <b>You realize your tongue has changed back into human tongue!</b>";
 		}

@@ -41,7 +41,7 @@ namespace CoC.Backend.Items.Consumables
 
 			if (result)
 			{
-				if (target is Player player)
+				if (target is PlayerBase player)
 				{
 					player.refillHunger(sateHungerAmount);
 				}

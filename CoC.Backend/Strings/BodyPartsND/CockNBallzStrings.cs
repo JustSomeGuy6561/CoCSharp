@@ -24,15 +24,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanPlayerStr(Cock cock, Player player)
+		private static string HumanPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanTransformStr(Cock cock, Player player)
+		private static string HumanTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanRestoreStr(Cock cock, Player player)
+		private static string HumanRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -44,15 +44,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorsePlayerStr(Cock cock, Player player)
+		private static string HorsePlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseTransformStr(Cock cock, Player player)
+		private static string HorseTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseRestoreStr(Cock cock, Player player)
+		private static string HorseRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -64,15 +64,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogPlayerStr(Cock cock, Player player)
+		private static string DogPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogTransformStr(Cock cock, Player player)
+		private static string DogTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogRestoreStr(Cock cock, Player player)
+		private static string DogRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -84,15 +84,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonPlayerStr(Cock cock, Player player)
+		private static string DemonPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonTransformStr(Cock cock, Player player)
+		private static string DemonTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonRestoreStr(Cock cock, Player player)
+		private static string DemonRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -104,15 +104,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string TentaclePlayerStr(Cock cock, Player player)
+		private static string TentaclePlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string TentacleTransformStr(Cock cock, Player player)
+		private static string TentacleTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string TentacleRestoreStr(Cock cock, Player player)
+		private static string TentacleRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -124,15 +124,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatPlayerStr(Cock cock, Player player)
+		private static string CatPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatTransformStr(Cock cock, Player player)
+		private static string CatTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatRestoreStr(Cock cock, Player player)
+		private static string CatRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -144,15 +144,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardPlayerStr(Cock cock, Player player)
+		private static string LizardPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardTransformStr(Cock cock, Player player)
+		private static string LizardTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardRestoreStr(Cock cock, Player player)
+		private static string LizardRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -164,15 +164,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemonePlayerStr(Cock cock, Player player)
+		private static string AnemonePlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneTransformStr(Cock cock, Player player)
+		private static string AnemoneTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneRestoreStr(Cock cock, Player player)
+		private static string AnemoneRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -184,15 +184,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooPlayerStr(Cock cock, Player player)
+		private static string KangarooPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooTransformStr(Cock cock, Player player)
+		private static string KangarooTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooRestoreStr(Cock cock, Player player)
+		private static string KangarooRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -204,15 +204,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonPlayerStr(Cock cock, Player player)
+		private static string DragonPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonTransformStr(Cock cock, Player player)
+		private static string DragonTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(Cock cock, Player player)
+		private static string DragonRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -224,15 +224,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DisplacerPlayerStr(Cock cock, Player player)
+		private static string DisplacerPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DisplacerTransformStr(Cock cock, Player player)
+		private static string DisplacerTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DisplacerRestoreStr(Cock cock, Player player)
+		private static string DisplacerRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -244,15 +244,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxPlayerStr(Cock cock, Player player)
+		private static string FoxPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxTransformStr(Cock cock, Player player)
+		private static string FoxTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxRestoreStr(Cock cock, Player player)
+		private static string FoxRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -264,15 +264,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeePlayerStr(Cock cock, Player player)
+		private static string BeePlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeTransformStr(Cock cock, Player player)
+		private static string BeeTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeRestoreStr(Cock cock, Player player)
+		private static string BeeRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -284,15 +284,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigPlayerStr(Cock cock, Player player)
+		private static string PigPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigTransformStr(Cock cock, Player player)
+		private static string PigTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigRestoreStr(Cock cock, Player player)
+		private static string PigRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -304,15 +304,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AvianPlayerStr(Cock cock, Player player)
+		private static string AvianPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AvianTransformStr(Cock cock, Player player)
+		private static string AvianTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AvianRestoreStr(Cock cock, Player player)
+		private static string AvianRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -324,15 +324,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoPlayerStr(Cock cock, Player player)
+		private static string RhinoPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoTransformStr(Cock cock, Player player)
+		private static string RhinoTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoRestoreStr(Cock cock, Player player)
+		private static string RhinoRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -344,15 +344,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaPlayerStr(Cock cock, Player player)
+		private static string EchidnaPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaTransformStr(Cock cock, Player player)
+		private static string EchidnaTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaRestoreStr(Cock cock, Player player)
+		private static string EchidnaRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -364,15 +364,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfPlayerStr(Cock cock, Player player)
+		private static string WolfPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfTransformStr(Cock cock, Player player)
+		private static string WolfTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfRestoreStr(Cock cock, Player player)
+		private static string WolfRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -384,15 +384,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaPlayerStr(Cock cock, Player player)
+		private static string RedPandaPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaTransformStr(Cock cock, Player player)
+		private static string RedPandaTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaRestoreStr(Cock cock, Player player)
+		private static string RedPandaRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -404,15 +404,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretPlayerStr(Cock cock, Player player)
+		private static string FerretPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretTransformStr(Cock cock, Player player)
+		private static string FerretTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretRestoreStr(Cock cock, Player player)
+		private static string FerretRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -425,15 +425,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooPlayerStr(Cock cock, Player player)
+		private static string GooPlayerStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooTransformStr(Cock cock, Player player)
+		private static string GooTransformStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooRestoreStr(Cock cock, Player player)
+		private static string GooRestoreStr(Cock cock, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -456,7 +456,7 @@ namespace CoC.Backend.BodyParts
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string BallsPlayerStr(Balls balls, Player player)
+		private static string BallsPlayerStr(Balls balls, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

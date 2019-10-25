@@ -45,6 +45,6 @@ namespace CoC.Frontend.Perks
 
 		protected override bool KeepOnAscension => false;
 
-		protected ExtraPerkModifiers extraModifiers => this.ExtraModifiers();
+		protected ExtendedPerkModifiers extraModifiers => this.ExtraModifiers();
 	}
 }

@@ -2,7 +2,8 @@
 //Description:
 //Author: JustSomeGuy
 //1/25/2019, 8:41 PM
-namespace CoC.Backend.Races
+
+namespace CoC.Frontend.Races
 {
 	public partial class Species
 	{

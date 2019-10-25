@@ -47,15 +47,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NonePlayerStr(Wings wings, Player player)
+		private static string NonePlayerStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoneTransformStr(Wings wings, Player player)
+		private static string NoneTransformStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoneRestoreStr(Wings wings, Player player)
+		private static string NoneRestoreStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -67,15 +67,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeLikePlayerStr(Wings wings, Player player)
+		private static string BeeLikePlayerStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeLikeTransformStr(Wings wings, Player player)
+		private static string BeeLikeTransformStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeLikeRestoreStr(Wings wings, Player player)
+		private static string BeeLikeRestoreStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -87,15 +87,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatheredPlayerStr(Wings wings, Player player)
+		private static string FeatheredPlayerStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatheredTransformStr(Wings wings, Player player)
+		private static string FeatheredTransformStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatheredRestoreStr(Wings wings, Player player)
+		private static string FeatheredRestoreStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -107,15 +107,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BatLikePlayerStr(Wings wings, Player player)
+		private static string BatLikePlayerStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BatLikeTransformStr(Wings wings, Player player)
+		private static string BatLikeTransformStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BatLikeRestoreStr(Wings wings, Player player)
+		private static string BatLikeRestoreStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -127,15 +127,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DraconicPlayerStr(Wings wings, Player player)
+		private static string DraconicPlayerStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DraconicTransformStr(Wings wings, Player player)
+		private static string DraconicTransformStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DraconicRestoreStr(Wings wings, Player player)
+		private static string DraconicRestoreStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -147,15 +147,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FaeriePlayerStr(Wings wings, Player player)
+		private static string FaeriePlayerStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FaerieTransformStr(Wings wings, Player player)
+		private static string FaerieTransformStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FaerieRestoreStr(Wings wings, Player player)
+		private static string FaerieRestoreStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -167,15 +167,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonflyPlayerStr(Wings wings, Player player)
+		private static string DragonflyPlayerStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonflyTransformStr(Wings wings, Player player)
+		private static string DragonflyTransformStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonflyRestoreStr(Wings wings, Player player)
+		private static string DragonflyRestoreStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -187,15 +187,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpPlayerStr(Wings wings, Player player)
+		private static string ImpPlayerStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpTransformStr(Wings wings, Player player)
+		private static string ImpTransformStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpRestoreStr(Wings wings, Player player)
+		private static string ImpRestoreStr(Wings wings, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

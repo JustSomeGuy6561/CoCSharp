@@ -17,7 +17,7 @@ namespace CoC.Frontend.Areas.Places
 		}
 		private static string OwcaUnlockText()
 		{
-			Player player = GameEngine.currentlyControlledCharacter;
+			PlayerBase player = GameEngine.currentlyControlledCharacter;
 			string corruptText = player.corruption >= 50 ? " You can't help but smile internally. Let her think that, if she wants." : "";
 			return "Using the vivid memory of your last encounter, you easily find Owca village; the first houses are in sight when you spot someone rushing to you. " +
 				"You recognize Rebecc, the girl you first met in the plains and who begged you for your help. She is smiling, her arms open for a welcoming embrace. " +

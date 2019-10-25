@@ -33,7 +33,7 @@ namespace CoC.Frontend.UI.ControllerData
 		}
 
 		//if a creature has some missing hp or higher lust due to plot reasons, call update enemy healthlustfatigue afterward. 
-		internal void SetEnemyInitialData(Monster creature)
+		internal void SetEnemyInitialData(MonsterBase creature)
 		{
 			Level.simpleValue = creature.level.ToString();
 			//Race = creature.

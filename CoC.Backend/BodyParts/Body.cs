@@ -7,9 +7,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
-using CoC.Backend.Races;
 using CoC.Backend.SaveData;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -1196,23 +1194,23 @@ namespace CoC.Backend.BodyParts
 		private static readonly FurBodyMember GENERIC_FUR_MEMBER = new FurBodyMember(EpidermisType.FUR, new FurColor(HairFurColors.BLACK), false, FurDesc);
 
 		public static readonly SimpleToneBodyType HUMANOID = new SimpleToneBodyType(
-			new ToneBodyMember(EpidermisType.SKIN, Species.HUMAN.defaultTone, false, SkinDesc, YourBodyDesc),
+			new ToneBodyMember(EpidermisType.SKIN, DefaultValueHelpers.defaultHumanTone, false, SkinDesc, YourBodyDesc),
 			SkinFullDesc, SkinPlayerStr, SkinTransformStr, SkinRestoreStr);
 
 		public static readonly CompoundToneBodyType REPTILIAN = new CompoundToneBodyType(
-			new ToneBodyMember(EpidermisType.SCALES, Species.LIZARD.defaultTone, false, ScalesDesc),
-			new ToneBodyMember(EpidermisType.SCALES, Species.LIZARD.defaultTailTone, false, ScalesUnderbodyDesc, YourUnderScalesDesc),
+			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, ScalesDesc),
+			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, ScalesUnderbodyDesc, YourUnderScalesDesc),
 			ScalesFullDesc, ScalesPlayerStr, ScalesTransformStr, ScalesRestoreStr);
 
 		public static readonly CompoundToneBodyType NAGA = new CompoundToneBodyType(
-			new ToneBodyMember(EpidermisType.SCALES, Species.NAGA.defaultTone, false, NagaDesc),
-			new ToneBodyMember(EpidermisType.SCALES, Species.NAGA.defaultUnderTone, false, NagaUnderbodyDesc, YourUnderNagaDesc),
+			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultNagaTone, false, NagaDesc),
+			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultNagaUnderTone, false, NagaUnderbodyDesc, YourUnderNagaDesc),
 			NagaFullDesc, NagaPlayerStr, NagaTransformStr, NagaRestoreStr);
 
 		public static readonly CockatriceBodyType COCKATRICE = new CockatriceBodyType();
 		public static readonly KitsuneBodyType KITSUNE = new KitsuneBodyType();
 		public static readonly SimpleToneBodyType WOODEN = new SimpleToneBodyType(
-			new ToneBodyMember(EpidermisType.BARK, Species.DRYAD.defaultBarkColor, true, BarkDesc),
+			new ToneBodyMember(EpidermisType.BARK, DefaultValueHelpers.defaultBarkColor, true, BarkDesc),
 			BarkFullDesc, BarkPlayerStr, BarkTransformStr, BarkRestoreStr);
 		////one color (or two in a pattern, like zebra stripes) over the entire body.
 		public static readonly SimpleFurBodyType SIMPLE_FUR = new SimpleFurBodyType(GENERIC_FUR_MEMBER, FurFullDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
@@ -1224,13 +1222,13 @@ namespace CoC.Backend.BodyParts
 			FurFullDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
 
 		public static readonly CompoundFurBodyType FEATHERED = new CompoundFurBodyType(
-			new FurBodyMember(EpidermisType.FEATHERS, Species.HARPY.defaultFeathers, false, FeatherDesc),
-			new FurBodyMember(EpidermisType.FEATHERS, Species.HARPY.defaultFeathers, false, UnderFeatherDesc, YourUnderFeatherDesc),
+			new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, false, FeatherDesc),
+			new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, false, UnderFeatherDesc, YourUnderFeatherDesc),
 			FeatherFullDesc, FeatherPlayerStr, FeatherTransformStr, FeatherRestoreStr);
 
 		public static readonly CompoundFurBodyType WOOL = new CompoundFurBodyType(
-			new FurBodyMember(EpidermisType.WOOL, Species.SHEEP.defaultColor, false, WoolDesc),
-			new FurBodyMember(EpidermisType.WOOL, Species.SHEEP.defaultColor, false, WoolUnderbodyDesc, YourUnderWoolDesc),
+			new FurBodyMember(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, false, WoolDesc),
+			new FurBodyMember(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, false, WoolUnderbodyDesc, YourUnderWoolDesc),
 			WoolFullDesc, WoolPlayerStr, WoolTransformStr, WoolRestoreStr);
 		////now, if you have gooey body, give the goo innards perk. simple.
 		////Also: Goo body is getting a rework/revamp. it was originally a spaghetti code of a mess of partially implemented checks on a perk. now it's its own type. 
@@ -1242,7 +1240,7 @@ namespace CoC.Backend.BodyParts
 		////a chimera-like monster could get text like: "it's arms|legs|whatever clash with the rest of its goo-like form, though it succeeds in making it more disturbing";
 
 		public static readonly SimpleToneBodyType GOO = new SimpleToneBodyType(
-			new ToneBodyMember(EpidermisType.GOO, Species.GOO.defaultTone, false, GooDesc),
+			new ToneBodyMember(EpidermisType.GOO, DefaultValueHelpers.defaultGooTone, false, GooDesc),
 			GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 		////cleaner - we don't need umpteen checks to see if it's "rubbery"
 		public static readonly SimpleToneBodyType RUBBER = new SimpleToneBodyType(
@@ -1490,8 +1488,8 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultTone => ((ToneBodyMember)primary).defaultTone;
 		public FurColor defaultFur => ((FurBodyMember)secondary).defaultFur;
 		internal KitsuneBodyType() : base(
-			new ToneBodyMember(EpidermisType.SKIN, Species.KITSUNE.defaultSkin, false, KitsuneDesc, YourDescriptor(EpidermisType.SKIN)),
-			new FurBodyMember(EpidermisType.FUR, Species.KITSUNE.defaultFur, false, KitsuneUnderbodyDesc, YourDescriptor(EpidermisType.FUR)),
+			new ToneBodyMember(EpidermisType.SKIN, DefaultValueHelpers.defaultKitsuneSkin, false, KitsuneDesc, YourDescriptor(EpidermisType.SKIN)),
+			new FurBodyMember(EpidermisType.FUR, DefaultValueHelpers.defaultKitsuneFur, false, KitsuneUnderbodyDesc, YourDescriptor(EpidermisType.FUR)),
 			KitsuneFullDesc, KitsunePlayerStr, KitsuneTransformStr, KitsuneRestoreStr)
 		{ }
 
@@ -1512,8 +1510,8 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultScales => ((ToneBodyMember)secondary).defaultTone;
 
 		internal CockatriceBodyType() : base(
-				new FurBodyMember(EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, false, CockatriceDesc, YourDescriptor(EpidermisType.FEATHERS)),
-				new ToneBodyMember(EpidermisType.SCALES, Species.COCKATRICE.defaultScaleTone, false, CockatriceUnderbodyDesc, YourDescriptor(EpidermisType.SCALES)),
+				new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatricePrimaryFeathers, false, CockatriceDesc, YourDescriptor(EpidermisType.FEATHERS)),
+				new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultCockatriceScaleTone, false, CockatriceUnderbodyDesc, YourDescriptor(EpidermisType.SCALES)),
 				CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 		{ }
 

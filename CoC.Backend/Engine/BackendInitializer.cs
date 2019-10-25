@@ -23,7 +23,7 @@ namespace CoC.Backend.Engine
 		public static void PreSaveInit(Func<DisplayBase> PageConstructor, Func<DisplayBase> GetCurrentPage, Action<DisplayBase> SetCurrentPage,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, 
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases, //AreaEngine
-			Func<Creature, BasePerkModifiers> perkModifiers, /*Perks*/ ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
+			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
 		{
 			//add the fetish/game settings.
 
@@ -42,7 +42,7 @@ namespace CoC.Backend.Engine
 #warning Add method to read file and load global backend game data. 
 
 			//initialize game engine.
-			GameEngine.InitializeEngine(PageConstructor, GetCurrentPage, SetCurrentPage, gamePlaces, gameLocations, gameDungeons, homeBases, perkModifiers, 
+			GameEngine.InitializeEngine(PageConstructor, GetCurrentPage, SetCurrentPage, gamePlaces, gameLocations, gameDungeons, homeBases, 
 				gameDifficulties, defaultDifficultyIndex);
 		}
 

@@ -1,13 +1,26 @@
 ﻿using CoC.Backend.Creatures;
 using CoC.Backend.Perks;
+using CoC.Frontend.Creatures;
 using CoC.Frontend.Perks.History;
+using System;
 
 namespace CoC.Frontend.Perks
 {
 	//any common variables for perks can go here. 
-	public sealed class ExtraPerkModifiers : BasePerkModifiers
+	public sealed class ExtendedPerkModifiers
 	{
+		private readonly Creature source;
+		private CombatCreature combatSource => source as CombatCreature;
+		private PlayerBase playerSource => source as PlayerBase;
+
+		public ExtendedPerkModifiers(Creature parent)
+		{
+			source = parent ?? throw new ArgumentNullException(nameof(parent));
+			parent.womb.onBirth += Womb_onBirth;
+		}
+
 		public sbyte numTransformsDelta;
+
 		public byte itemForgeCostReduction;
 
 		public float gemGainMultiplier = 1.0f;
@@ -23,11 +36,6 @@ namespace CoC.Frontend.Perks
 
 		public bool IsASlut = false;
 
-		public ExtraPerkModifiers(Creature parent) : base(parent)
-		{
-			parent.womb.onBirth += Womb_onBirth;
-		}
-
 		private void Womb_onBirth(object sender, Backend.Pregnancies.BirthEvent e)
 		{
 			if (e.totalBirthCount >= 10 && !source.perks.HasPerk<BroodMotherPerk>())
@@ -39,11 +47,6 @@ namespace CoC.Frontend.Perks
 
 	public static class ExtraPerkHelper
 	{
-		public static ExtraPerkModifiers ExtraModifiers(this PerkBase perkBase)
-		{
-			return (ExtraPerkModifiers)perkBase.baseModifiers;
-		}
-
 		//it's not uncommon (or unexpected, i suppose) to want to see if the player has slut perks.
 		//right now these are the main two in that, but i suppose others could be added. 
 		public static bool HasASlutPerk(this PerkCollection perkCollection)

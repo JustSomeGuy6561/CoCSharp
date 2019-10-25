@@ -178,7 +178,7 @@ namespace CoC.Frontend.Areas.HomeBases
 			campLoversMenu(true); //display Lovers
 			campSlavesMenu(true); //display Slaves
 			*/
-			Player player = GameEngine.currentlyControlledCharacter;
+			PlayerBase player = GameEngine.currentlyControlledCharacter;
 
 			if (BackendSessionSave.data.HungerEnabled && player.hunger < 25)
 			{ //hunger check!

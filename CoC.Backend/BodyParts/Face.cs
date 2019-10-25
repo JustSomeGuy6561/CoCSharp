@@ -8,10 +8,8 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
-using CoC.Backend.Races;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -494,28 +492,28 @@ namespace CoC.Backend.BodyParts
 
 
 		public static readonly FaceType HUMAN = new ToneFace(EpidermisType.SKIN, HumanShortDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly FaceType HORSE = new FurFace(EpidermisType.FUR, Species.HORSE.defaultFacialFur, HorseShortDesc, HorseFullDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
-		public static readonly FaceType DOG = new FurFace(EpidermisType.FUR, Species.DOG.defaultFacialFur, DogShortDesc, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
-		public static readonly FaceType COW_MINOTAUR = new FurFace(EpidermisType.FUR, Species.COW.defaultFacialFur, CowShortDesc, MinotaurShortDesc, CowMorphText, MinotaurFullDesc, MinotaurPlayerStr, MinotaurTransformStr, MinotaurRestoreStr);
+		public static readonly FaceType HORSE = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultHorseFur, HorseShortDesc, HorseFullDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
+		public static readonly FaceType DOG = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultDogFur, DogShortDesc, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
+		public static readonly FaceType COW_MINOTAUR = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultCowFur, CowShortDesc, MinotaurShortDesc, CowMorphText, MinotaurFullDesc, MinotaurPlayerStr, MinotaurTransformStr, MinotaurRestoreStr);
 		public static readonly FaceType SHARK = new SharkFace();
 		public static readonly FaceType SNAKE = new SnakeFace();
-		public static readonly FaceType CAT = new FurFace(EpidermisType.FUR, Species.CAT.defaultFacialFur, CatGirlShortDesc, CatMorphShortDesc, CatMorphText, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly FaceType CAT = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultCatFur, CatGirlShortDesc, CatMorphShortDesc, CatMorphText, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 		public static readonly FaceType LIZARD = new ToneFace(EpidermisType.SCALES, LizardShortDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly FaceType BUNNY = new FurFace(EpidermisType.FUR, Species.BUNNY.defaultFacialFur, BunnyFirstLevelShortDesc, BunnySecondLevelShortDesc, BunnyMorphText, BunnyFullDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
-		public static readonly FaceType KANGAROO = new FurFace(EpidermisType.FUR, Species.KANGAROO.defaultFacialFur, KangarooShortDesc, KangarooFullDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
+		public static readonly FaceType BUNNY = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultBunnyFur, BunnyFirstLevelShortDesc, BunnySecondLevelShortDesc, BunnyMorphText, BunnyFullDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
+		public static readonly FaceType KANGAROO = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultKangarooFacialFur, KangarooShortDesc, KangarooFullDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
 		public static readonly FaceType SPIDER = new SpiderFace();
 		public static readonly FaceType FOX = new FoxFace();
 		public static readonly FaceType DRAGON = new ToneFace(EpidermisType.SCALES, DragonShortDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly FaceType RACCOON = new FurFace(EpidermisType.FUR, Species.RACCOON.defaultFacialFur, RaccoonMaskShortDesc, RaccoonFaceShortDesc, RaccoonMorphText, RaccoonFullDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
-		public static readonly FaceType MOUSE = new FurFace(EpidermisType.FUR, Species.MOUSE.defaultFacialFur, MouseTeethShortDesc, MouseFaceShortDesc, MouseMorphText, MouseFullDesc, MousePlayerStr, MouseTransformStr, MouseRestoreStr);
-		public static readonly FaceType FERRET = new MultiFurFace(EpidermisType.FUR, Species.FERRET.defaultFacialFur, Species.FERRET.defaultSecondaryFacialFur, FerretMaskShortDesc, FerretFaceShortDesc, FerretMorphText, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
+		public static readonly FaceType RACCOON = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultRaccoonFur, RaccoonMaskShortDesc, RaccoonFaceShortDesc, RaccoonMorphText, RaccoonFullDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
+		public static readonly FaceType MOUSE = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultMouseFur, MouseTeethShortDesc, MouseFaceShortDesc, MouseMorphText, MouseFullDesc, MousePlayerStr, MouseTransformStr, MouseRestoreStr);
+		public static readonly FaceType FERRET = new MultiFurFace(EpidermisType.FUR, DefaultValueHelpers.defaultFerretFur, DefaultValueHelpers.defaultFerretSecondaryFacialFur, FerretMaskShortDesc, FerretFaceShortDesc, FerretMorphText, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
 		public static readonly FaceType PIG = new PigFace(); //both pig and boar are not humanoid.
 		public static readonly FaceType RHINO = new ToneFace(EpidermisType.SKIN, RhinoShortDesc, RhinoFullDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
-		public static readonly FaceType ECHIDNA = new FurFace(EpidermisType.FUR, Species.ECHIDNA.defaultFacialFur, EchidnaShortDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
-		public static readonly FaceType DEER = new FurFace(EpidermisType.FUR, Species.DEER.defaultFacialFur, DeerShortDesc, DeerFullDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
-		public static readonly FaceType WOLF = new FurFace(EpidermisType.FUR, Species.WOLF.defaultFacialFur, WolfShortDesc, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static readonly FaceType ECHIDNA = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultEchidnaFur, EchidnaShortDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
+		public static readonly FaceType DEER = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultDeerFur, DeerShortDesc, DeerFullDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
+		public static readonly FaceType WOLF = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultWolfFacialFur, WolfShortDesc, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
 		public static readonly FaceType COCKATRICE = new CockatriceFace();
-		public static readonly FaceType RED_PANDA = new MultiFurFace(EpidermisType.FUR, Species.RED_PANDA.defaultFur, Species.RED_PANDA.defaultFaceEarTailFur, PandaShortDesc, PandaFullDesc, PandaPlayerStr, PandaTransformStr, PandaRestoreStr);
+		public static readonly FaceType RED_PANDA = new MultiFurFace(EpidermisType.FUR, DefaultValueHelpers.defaultRedPandaFur, DefaultValueHelpers.defaultRedPandaFaceEarTailFur, PandaShortDesc, PandaFullDesc, PandaPlayerStr, PandaTransformStr, PandaRestoreStr);
 		//placeholder.
 		public static readonly FaceType BEAK = new FurFace(EpidermisType.FEATHERS, new FurColor(HairFurColors.WHITE), BeakShortDesc, BeakFullDesc, BeakPlayerStr, BeakTransformStr, BeakRestoreStr);
 
@@ -644,7 +642,7 @@ namespace CoC.Backend.BodyParts
 
 		private sealed class PigFace : FurFace
 		{
-			public PigFace() : base(EpidermisType.FUR, Species.PIG.defaultFacialFur, PigShortDesc, BoarShortDesc, PigMorphText, PigFullDesc, PigPlayerStr, PigTransformStr, PigRestoreStr) { }
+			public PigFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultPigFur, PigShortDesc, BoarShortDesc, PigMorphText, PigFullDesc, PigPlayerStr, PigTransformStr, PigRestoreStr) { }
 
 			internal override bool isHumanoid(bool isSecondLevel)
 			{
@@ -691,8 +689,8 @@ namespace CoC.Backend.BodyParts
 		private sealed class CockatriceFace : FurFace
 		{
 			private readonly ToneBasedEpidermisType secondaryEpidermis = EpidermisType.SCALES;
-			private readonly Tones defaultUnderTone = Species.COCKATRICE.defaultScaleTone;
-			public CockatriceFace() : base(EpidermisType.FEATHERS, Species.COCKATRICE.defaultPrimaryFeathers, CockatriceShortDesc,
+			private readonly Tones defaultUnderTone = DefaultValueHelpers.defaultCockatriceScaleTone;
+			public CockatriceFace() : base(EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatricePrimaryFeathers, CockatriceShortDesc,
 				CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 			{ }
 
@@ -708,8 +706,8 @@ namespace CoC.Backend.BodyParts
 
 		private sealed class FoxFace : FurFace
 		{
-			private FurColor defaultKitsuneFur => Species.KITSUNE.defaultFacialFur;
-			public FoxFace() : base(EpidermisType.FUR, Species.FOX.defaultFacialFur, KitsuneShortDesc, FoxShortDesc, FoxMorphText, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
+			private FurColor defaultKitsuneFur => DefaultValueHelpers.defaultKitsuneFacialFur;
+			public FoxFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultFoxFacialFur, KitsuneShortDesc, FoxShortDesc, FoxMorphText, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
 
 			internal override EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{

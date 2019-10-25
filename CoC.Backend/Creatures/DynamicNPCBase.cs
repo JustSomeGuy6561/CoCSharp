@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //6/28/2019, 8:30 PM
 using CoC.Backend.Items;
+using CoC.Backend.Perks;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,9 +19,10 @@ namespace CoC.Backend.Creatures
 	//Alternatively, you may add a character that is genuinely dynamic - they may completely change their appearance over time, possibly w/o the player causing it - that would likely require this.
 	//Note, you can derive this class and add stuff beyond the base creature class, like a custom womb, for example. 
 
-	public class DynamicNPC : Creature
+	public abstract class DynamicNPCBase : Creature
 	{
-		public DynamicNPC(DynamicNPC_Creator creator) : base(creator)
+
+		public DynamicNPCBase(DynamicNPC_Creator creator) : base(creator)
 		{
 			//now set up all the listeners.
 			//if any listeners are DynamicNPC specific, add them here.

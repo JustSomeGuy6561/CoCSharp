@@ -9,13 +9,14 @@ using CoC.Backend.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CoC.Backend.Perks;
 
 namespace CoC.Backend.Creatures
 {
-	public class Monster : CombatCreature
+	public class MonsterBase : CombatCreature
 	{
 		public readonly ushort bonusHP;
-		public Monster(MonsterCreator creator) : base(creator)
+		public MonsterBase(MonsterCreator creator) : base(creator)
 		{
 			bonusHP = creator.baseHealth;
 		}

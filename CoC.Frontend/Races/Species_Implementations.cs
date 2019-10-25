@@ -4,14 +4,16 @@
 //Author: JustSomeGuy
 //2/20/2019, 5:46 PM
 
+using CoC.Backend;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
-namespace CoC.Backend.Races
+namespace CoC.Frontend.Races
 {
 
 	public class Anemone : Species
@@ -28,10 +30,11 @@ namespace CoC.Backend.Races
 		public Tones defaultTone => Tones.GREEN;
 		public EyeColor defaultEyeColor => EyeColor.GRAY;
 
-		public HairFurColors ToNearestSpineColor(HairFurColors currentColor)
+		public HairFurColors ToNearestSpineColor(HairFurColors currentColor, Tones currentSkinTone)
 		{
-#warning Fix Me!
-			return currentColor;
+			Color color = Color.FromArgb((currentColor.rgbValue.R + currentSkinTone.rgbValue.R) / 2, (currentColor.rgbValue.G + currentSkinTone.rgbValue.G) / 2, 
+				(currentColor.rgbValue.B + currentSkinTone.rgbValue.B) / 2);
+			return HairFurColors.NearestHairFurColor(color);
 		}
 
 		internal Basilisk() : base(BasiliskStr) { }
@@ -424,6 +427,12 @@ namespace CoC.Backend.Races
 
 	public class Imp : Species
 	{
+		public HairFurColors[] availableHairColors => new HairFurColors[]
+		{
+			HairFurColors.RED,
+			HairFurColors.DARK_RED,
+		}
+
 		public Tones[] availableTones => new Tones[] { Tones.RED, Tones.ORANGE };
 		public Tones defaultTone => Tones.ORANGE;
 		public FurColor defaultTailFur => new FurColor(HairFurColors.BLACK);

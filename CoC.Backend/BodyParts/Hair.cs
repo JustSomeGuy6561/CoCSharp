@@ -8,8 +8,6 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
-using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -63,7 +61,7 @@ namespace CoC.Backend.BodyParts
 		public const float MIN_LENGTH = 0;
 
 		private BuildData buildData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.build.AsReadOnlyData() : new BuildData(creatureID);
-
+		private Tones skinTone => CreatureStore.GetCreatureClean(creatureID)?.body.primarySkin.tone ?? Tones.LIGHT;
 		#region Unique Members
 		//make sure to check this when deserializing - if you dont use the property is may cause errors.
 		public HairFurColors hairColor
@@ -180,7 +178,7 @@ namespace CoC.Backend.BodyParts
 				{
 					float len = length;
 					HairStyle sty = style;
-					value.changeTypeFrom(_type, ref len, ref _hairColor, ref _highlightColor, ref sty);
+					value.ChangeTypeFrom(_type, ref len, ref _hairColor, ref _highlightColor, ref sty, skinTone);
 					style = sty;
 					length = len;
 
@@ -259,7 +257,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		internal bool SetHairColor(HairFurColors newHairColor, bool clearHighlights = false)
+		public bool SetHairColor(HairFurColors newHairColor, bool clearHighlights = false)
 		{
 			return HandleHairChange(() => SetHairColorPrivate(newHairColor, clearHighlights));
 		}
@@ -274,7 +272,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal bool SetHighlightColor(HairFurColors newHighlightColor)
+		public bool SetHighlightColor(HairFurColors newHighlightColor)
 		{
 			return HandleHairChange(() => SetHighlightColorPrivate(newHighlightColor));
 		}
@@ -290,14 +288,14 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//returns false if either fail. returns true if both succeed. as of now, it's either both or none, though.
-		internal bool SetBothHairColors(HairFurColors hairColor, HairFurColors highlightColor)
+		public bool SetBothHairColors(HairFurColors hairColor, HairFurColors highlightColor)
 		{
 			//single &: force both to run. double &: don't run right if left is false. 99% of time && is ideal. not here.
 			return HandleHairChange(() => SetHairColorPrivate(hairColor, false) & SetHighlightColorPrivate(highlightColor));
 		}
 
 
-		internal bool SetHairStyle(HairStyle newStyle)
+		public bool SetHairStyle(HairStyle newStyle)
 		{
 			return HandleHairChange(() => SetHairStylePrivate(newStyle));
 		}
@@ -322,7 +320,7 @@ namespace CoC.Backend.BodyParts
 		//of course, if the type has a single, fixed size for hair length, this will not be possible, and therefore return false.
 		//otherwise, it will return true. 
 
-		internal bool SetHairLength(float newLength)
+		public bool SetHairLength(float newLength)
 		{
 			return HandleHairChange(() => SetHairLengthPrivate(newLength));
 		}
@@ -338,7 +336,7 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		internal bool SetTransparency(bool isTransparent)
+		public bool SetTransparency(bool isTransparent)
 		{
 			return HandleHairChange(() => SetTransparencyPrivate(isTransparent));
 		}
@@ -355,7 +353,7 @@ namespace CoC.Backend.BodyParts
 		//though you do have the option to ignore this variable. Note that even if you ignore this variable, types with a fixed hair Length
 		//will never change length.
 		//returns the amount the hair grew.
-		internal float GrowHair(float byAmount, bool ignoreCanLengthen = false)
+		public float GrowHair(float byAmount, bool ignoreCanLengthen = false)
 		{
 			var oldData = AsReadOnlyData();
 			float currLen = length;
@@ -378,7 +376,7 @@ namespace CoC.Backend.BodyParts
 		//will never change length.
 		//returns the amount the hair shortened.
 
-		internal float ShortenHair(float byAmount, bool ignoreCanCut = false)
+		public float ShortenHair(float byAmount, bool ignoreCanCut = false)
 		{
 			var oldData = AsReadOnlyData();
 			float currLen = length;
@@ -394,6 +392,33 @@ namespace CoC.Backend.BodyParts
 			return currLen - length;
 		}
 
+		public bool SetAll(float? newLength = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
+		{
+
+			return HandleHairChange(() => SetAllPrivate(newLength, mainColor, highlight, style));
+		}
+
+		private bool SetAllPrivate(float? newLength = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
+		{
+			bool retVal = false;
+			if (newLength is float length)
+			{
+				retVal |= SetHairLengthPrivate(length);
+			}
+			if (mainColor is HairFurColors validHair)
+			{
+				retVal |= SetHairColorPrivate(validHair, false);
+			}
+			if (highlight is HairFurColors validHighlight)
+			{
+				retVal |= SetHighlightColorPrivate(validHighlight);
+			}
+			if (style is HairStyle validStyle)
+			{
+				retVal |= SetHairStylePrivate(validStyle);
+			}
+			return retVal;
+		}
 		private T HandleHairChange<T>(Func<T> callback)
 		{
 			var oldData = AsReadOnlyData();
@@ -694,7 +719,7 @@ namespace CoC.Backend.BodyParts
 
 		private protected abstract bool ValidateData(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData);
 
-		internal abstract void changeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle);
+		internal abstract void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone);
 
 
 		//super complicated but a lot more flexible this way - basically, you can choose to set anything you want as time passes. Does having living hair mean your hair randomly gets tangled?
@@ -715,12 +740,12 @@ namespace CoC.Backend.BodyParts
 		public static readonly HairType NORMAL = new NormalHair();
 		public static readonly HairType FEATHER = new GenericHairType(HairFurColors.WHITE, 5.0f, KeepSize(), FeatherDesc, FeatherFullDesc, FeatherPlayerStr, FeatherGrowStr, FeatherCutStr, FeatherTransformStr, FeatherRestoreStr);
 		public static readonly HairType GOO = new GenericHairType(HairFurColors.CERULEAN, 5.0f, AtLeastThisBig(5.0f), GooDesc, GooFullDesc, GooPlayerStr, GooGrowStr, GooCutStr, GooTransformStr, GooRestoreStr); //5 is if bald. updating behavior to <5 or bald to 5 inch. just say your old type 
-		public static readonly HairType ANEMONE = new LivingHair(Species.ANEMONE.defaultHair, 8.0f, new AnemoneSting(), AnemoneDesc, AnemoneFullDesc, AnemonePlayerStr, AnemoneNoGrowStr, AnemoneNoCutStr, AnemoneTransformStr, AnemoneRestoreStr);
+		public static readonly HairType ANEMONE = new LivingHair(DefaultValueHelpers.defaultAnemoneHair, 8.0f, new AnemoneSting(), AnemoneDesc, AnemoneFullDesc, AnemonePlayerStr, AnemoneNoGrowStr, AnemoneNoCutStr, AnemoneTransformStr, AnemoneRestoreStr);
 		public static readonly HairType QUILL = new GenericHairType(HairFurColors.WHITE, 12.0f, SetTo(12.0f), QuillDesc, QuillFullDesc, QuillPlayerStr, QuillGrowStr, QuillCutStr, QuillTransformStr, QuillRestoreStr); //shoulder length. not set though. whoops.
 		public static readonly HairType BASILISK_SPINES = new BasiliskSpines();
-		public static readonly HairType BASILISK_PLUME = new GenericHairType(Species.BASILISK.defaultPlume, 2.0f, SetTo(2.0f), PlumeDesc, PlumeFullDesc, PlumePlayerStr, PlumeGrowStr, PlumeCutStr, PlumeTransformStr, PlumeRestoreStr); //2
+		public static readonly HairType BASILISK_PLUME = new GenericHairType(DefaultValueHelpers.defaultBasiliskPlume, 2.0f, SetTo(2.0f), PlumeDesc, PlumeFullDesc, PlumePlayerStr, PlumeGrowStr, PlumeCutStr, PlumeTransformStr, PlumeRestoreStr); //2
 		public static readonly HairType WOOL = new GenericHairType(HairFurColors.WHITE, 1.0f, KeepSizeUnlessBald(1.0f), WoolDesc, WoolFullDesc, WoolPlayerStr, WoolGrowStr, WoolCutStr, WoolTransformStr, WoolRestoreStr); //not defined. 
-		public static readonly HairType LEAF = new LivingHair(Species.DRYAD.defaultVineColor, 12.0f, AttackBase.NO_ATTACK, VineDesc, VineFullDesc, VinePlayerStr, VineNoGrowStr, VineNoCutStr, VineTransformStr, VineRestoreStr);
+		public static readonly HairType LEAF = new LivingHair(DefaultValueHelpers.defaultVineColor, 12.0f, AttackBase.NO_ATTACK, VineDesc, VineFullDesc, VinePlayerStr, VineNoGrowStr, VineNoCutStr, VineTransformStr, VineRestoreStr);
 
 		private class NoHair : HairType
 		{
@@ -736,7 +761,7 @@ namespace CoC.Backend.BodyParts
 
 			public override bool canStyle => false;
 
-			internal override void changeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle)
+			internal override void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
 			{
 				length = defaultHairLength;
 				//keep the main color. See top of this file for why i chose this, but feel free to override me.
@@ -841,7 +866,7 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 
-			internal override void changeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle)
+			internal override void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
 			{
 				length = SetHairLengthOnTransform(length);
 				if (HairFurColors.IsNullOrEmpty(primaryColor))
@@ -915,7 +940,7 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 
-			internal override void changeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle)
+			internal override void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
 			{
 				length = defaultHairLength;
 				if (HairFurColors.IsNullOrEmpty(primaryColor))
@@ -941,7 +966,7 @@ namespace CoC.Backend.BodyParts
 
 		private class BasiliskSpines : HairType
 		{
-			public BasiliskSpines() : base(Species.BASILISK.defaultSpines, 2.0f, SpineDesc, SpineFullDesc, SpinePlayerStr, SpineNoGrowStr, SpineNoCutStr, SpineTransformStr, SpineRestoreStr) { }
+			public BasiliskSpines() : base(DefaultValueHelpers.defaultBasiliskSpines, 2.0f, SpineDesc, SpineFullDesc, SpinePlayerStr, SpineNoGrowStr, SpineNoCutStr, SpineTransformStr, SpineRestoreStr) { }
 
 			public override bool growsOverTime => false;
 
@@ -994,7 +1019,7 @@ namespace CoC.Backend.BodyParts
 				return valid;
 			}
 
-			internal override void changeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle)
+			internal override void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
 			{
 				length = defaultHairLength;
 				if (HairFurColors.IsNullOrEmpty(primaryColor))
@@ -1003,11 +1028,11 @@ namespace CoC.Backend.BodyParts
 				}
 				else
 				{
-					primaryColor = Species.BASILISK.ToNearestSpineColor(primaryColor);
+					primaryColor = DefaultValueHelpers.ToNearestSpineColor(primaryColor, skinTone);
 				}
 				if (!HairFurColors.IsNullOrEmpty(highlightColor))
 				{
-					highlightColor = Species.BASILISK.ToNearestSpineColor(highlightColor);
+					highlightColor = DefaultValueHelpers.ToNearestSpineColor(highlightColor, skinTone);
 				}
 				hairStyle = HairStyle.NO_STYLE;
 

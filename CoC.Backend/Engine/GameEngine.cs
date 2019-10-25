@@ -23,9 +23,9 @@ namespace CoC.Backend.Engine
 		public static AreaBase currentArea => areaEngine.currentArea;
 
 		//NYI
-		public static Player currentlyControlledCharacter => CreatureStore.currentControlledCharacter;
+		public static PlayerBase currentlyControlledCharacter => CreatureStore.currentControlledCharacter;
 
-		public static Player playerCharacter
+		public static PlayerBase playerCharacter
 		{
 			get => CreatureStore.activePlayer;
 			private set => CreatureStore.SetActivePlayerCharacter(value);
@@ -42,9 +42,6 @@ namespace CoC.Backend.Engine
 		//internal static AreaEngine areaEngine;
 
 		private static AchievementCollection globalAchievements;
-
-		internal static Func<Creature, BasePerkModifiers> constructPerkModifier;
-
 		//internal static ReadOnlyDictionary<Type, Func<PerkBase>> perkList;
 
 #warning TODO: Fix this engine - see below:
@@ -177,7 +174,6 @@ namespace CoC.Backend.Engine
 		public static void InitializeEngine(Func<DisplayBase> pageDataConstructor, Func<DisplayBase> currentPageGetter, Action<DisplayBase> currentPageSetter,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> gameHomeBases, //Area Engine
-			Func<Creature, BasePerkModifiers> perkVariables, //perk data for creatures to use. 
 			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficulty) //Game Difficulty Collections.
 		{
 			areaEngine = new AreaEngine(pageDataConstructor, currentPageGetter, currentPageSetter, gamePlaces, gameLocations, gameDungeons, gameHomeBases);
@@ -185,7 +181,6 @@ namespace CoC.Backend.Engine
 
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
 			defaultDifficultyIndex = defaultDifficulty;
-			constructPerkModifier = perkVariables ?? throw new ArgumentNullException(nameof(perkVariables));
 
 			AreaBase.SetPageMaker(currentPageGetter);
 		}
@@ -206,7 +201,7 @@ namespace CoC.Backend.Engine
 		}
 
 
-		public static void InitializeGame(Player player, Action firstExplorationPage)
+		public static void InitializeGame(PlayerBase player, Action firstExplorationPage)
 		{
 			playerCharacter = player;
 			SaveData.SaveSystem.MarkGameLoaded();

@@ -25,15 +25,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHornsPlayerStr(Horns horns, Player player)
+		private static string NoHornsPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHornsTransformStr(Horns horns, Player player)
+		private static string NoHornsTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHornsRestoreStr(Horns horns, Player player)
+		private static string NoHornsRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -45,15 +45,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonPlayerStr(Horns horns, Player player)
+		private static string DemonPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonTransformStr(Horns horns, Player player)
+		private static string DemonTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonRestoreStr(Horns horns, Player player)
+		private static string DemonRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -65,15 +65,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BullPlayerStr(Horns horns, Player player)
+		private static string BullPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BullTransformStr(Horns horns, Player player)
+		private static string BullTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BullRestoreStr(Horns horns, Player player)
+		private static string BullRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -92,15 +92,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonPlayerStr(Horns horns, Player player)
+		private static string DragonPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonTransformStr(Horns horns, Player player)
+		private static string DragonTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(Horns horns, Player player)
+		private static string DragonRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -112,15 +112,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerPlayerStr(Horns horns, Player player)
+		private static string DeerPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerTransformStr(Horns horns, Player player)
+		private static string DeerTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerRestoreStr(Horns horns, Player player)
+		private static string DeerRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -132,15 +132,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ReindeerPlayerStr(Horns horns, Player player)
+		private static string ReindeerPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ReindeerTransformStr(Horns horns, Player player)
+		private static string ReindeerTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ReindeerRestoreStr(Horns horns, Player player)
+		private static string ReindeerRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -152,15 +152,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatPlayerStr(Horns horns, Player player)
+		private static string GoatPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatTransformStr(Horns horns, Player player)
+		private static string GoatTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatRestoreStr(Horns horns, Player player)
+		private static string GoatRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -172,15 +172,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string UniHornPlayerStr(Horns horns, Player player)
+		private static string UniHornPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string UniHornTransformStr(Horns horns, Player player)
+		private static string UniHornTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string UniHornRestoreStr(Horns horns, Player player)
+		private static string UniHornRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -192,15 +192,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoPlayerStr(Horns horns, Player player)
+		private static string RhinoPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoTransformStr(Horns horns, Player player)
+		private static string RhinoTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoRestoreStr(Horns horns, Player player)
+		private static string RhinoRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -212,15 +212,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepPlayerStr(Horns horns, Player player)
+		private static string SheepPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepTransformStr(Horns horns, Player player)
+		private static string SheepTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepRestoreStr(Horns horns, Player player)
+		private static string SheepRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -232,15 +232,15 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpPlayerStr(Horns horns, Player player)
+		private static string ImpPlayerStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpTransformStr(Horns horns, Player player)
+		private static string ImpTransformStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpRestoreStr(Horns horns, Player player)
+		private static string ImpRestoreStr(Horns horns, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

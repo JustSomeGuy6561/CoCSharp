@@ -6,7 +6,6 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Races;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -304,7 +303,7 @@ namespace CoC.Backend.BodyParts
 	}
 	public sealed class DragonBackMane : BackType
 	{
-		public HairFurColors defaultHair => Species.DRAGON.defaultManeColor;
+		public HairFurColors defaultHair => DefaultValueHelpers.defaultDragonManeColor;
 		internal override SimpleDescriptor dyeDesc => ManeDesc;
 		internal override SimpleDescriptor dyeText => YourManeDesc;
 

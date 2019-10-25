@@ -141,6 +141,15 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		//breasts
 
+		public void SetQuadNipples(bool active)
+		{
+			quadNipples = active;
+		}
+
+		public void SetBlackNipples(bool active)
+		{
+			blackNipples = active;
+		}
 
 		public ushort cumMultiplier { get; private set; } = 1; //0-65535 seems like a valid range imo. i don't think i need to cap it. 
 		public ushort additionalCum { get; private set; } = 0;//0-65535 seems like a valid range imo. i don't think i need to cap it. 
@@ -446,7 +455,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			RemoveVagina(numVaginas);
-			RemoveBreastRow(numBreastRows);
+			RemoveBreastRows(numBreastRows);
 			if (numCocks == 0)
 			{
 				AddCock(CockType.HUMAN);

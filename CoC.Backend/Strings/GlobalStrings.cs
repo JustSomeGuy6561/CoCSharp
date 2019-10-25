@@ -25,7 +25,7 @@ namespace CoC.Backend.Strings
 
 		
 
-		public static string RevertAsDefault<T>(T type, Player p)
+		public static string RevertAsDefault<T>(T type, PlayerBase p)
 		{
 #if DEBUG
 			return "Debug Warning: you've tried to change to the default " + type.GetType().Name + ", but you're already it!";
@@ -44,7 +44,7 @@ namespace CoC.Backend.Strings
 #endif
 		}
 
-		public static string CantAttackWith<T, U,V>(T type, Player player) where T : BehavioralSaveablePart<T, U,V> where U : SaveableBehavior<U, T, V> 
+		public static string CantAttackWith<T, U,V>(T type, PlayerBase player) where T : BehavioralSaveablePart<T, U,V> where U : SaveableBehavior<U, T, V> 
 			where V: BehavioralSaveablePartData<V, T, U>
 		{
 #if DEBUG

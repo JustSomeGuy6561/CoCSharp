@@ -10,7 +10,7 @@ using System.Text;
 
 namespace CoC.Frontend.Creatures.Monsters.Forest
 {
-	internal sealed partial class BeeGirl : Monster
+	internal sealed partial class BeeGirl : MonsterBase
 	{
 		public BeeGirl(MonsterCreator creator) : base(creator)
 		{

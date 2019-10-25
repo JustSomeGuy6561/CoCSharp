@@ -84,7 +84,7 @@ namespace CoC.Frontend.Engine
 			creator.SetGenderSpecial(useSpecial);
 		}
 
-		public static void NewGamePlus(Player currentPlayer)
+		public static void NewGamePlus(PlayerBase currentPlayer)
 		{
 			if (currentDisplay == null)
 			{
@@ -99,7 +99,7 @@ namespace CoC.Frontend.Engine
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		public static void ChooseSettings(Player player)
+		public static void ChooseSettings(PlayerBase player)
 		{
 			//ClearOutput();
 			//OutputText("Not Yet Implemented :)");
@@ -115,7 +115,7 @@ namespace CoC.Frontend.Engine
 			StartTheGame(player);
 		}
 
-		public static void StartTheGame(Player player)
+		public static void StartTheGame(PlayerBase player)
 		{
 			GameEngine.InitializeGame(player, FirstExplorationPage);
 			GameEngine.InitializeOrJumpTime(0, 11);

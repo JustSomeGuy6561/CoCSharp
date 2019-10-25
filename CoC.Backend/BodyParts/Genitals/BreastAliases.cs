@@ -89,7 +89,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public int RemoveBreastRow(int count = 1)
+		public int RemoveBreastRows(int count = 1)
 		{
 			if (count < 0 || numBreastRows == 1 && _breasts[0].isMale)
 			{
@@ -129,7 +129,7 @@ namespace CoC.Backend.BodyParts
 
 		public int RemoveExtraBreastRows()
 		{
-			return RemoveBreastRow(numBreastRows - 1);
+			return RemoveBreastRows(numBreastRows - 1);
 		}
 
 		/// <summary>
