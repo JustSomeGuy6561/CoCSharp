@@ -11,19 +11,34 @@ namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class Whore : HistoryPerkBase
 	{
+		bool? oldStatus = null;
 		public Whore() : base(WhoreStr, WhoreBtn, WhoreHint, WhoreDesc)
 		{
 		}
 
 		protected override void OnActivation()
 		{
-			extraModifiers.teaseStrengthMultiplier += 0.15f;
-			extraModifiers.IsASlut = true;
+			if (hasExtraModifiers)
+			{
+				oldStatus = extraModifiers.IsASlut;
+
+				extraModifiers.teaseStrengthMultiplier += 0.15f;
+				extraModifiers.IsASlut = true;
+			}
 		}
 
 		protected override void OnRemoval()
 		{
-			extraModifiers.teaseStrengthMultiplier -= 0.15f;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.teaseStrengthMultiplier -= 0.15f;
+
+				if (oldStatus is bool revert)
+				{
+					extraModifiers.IsASlut = revert;
+				}
+				oldStatus = null;
+			}
 		}
 	}
 }

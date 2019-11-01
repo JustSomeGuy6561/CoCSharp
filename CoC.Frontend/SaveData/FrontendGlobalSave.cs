@@ -13,6 +13,8 @@ namespace CoC.Frontend.SaveData
 	{
 		public static FrontendGlobalSave data => SaveSystem.GetGlobalSave<FrontendGlobalSave>();
 
+		public bool HyperHappyEnabledGlobal { get; internal set; }
+
 		internal bool UnlockedNewGameHerm = false;
 		//internal bool UnlockedNewGameHerm = true; //testing
 

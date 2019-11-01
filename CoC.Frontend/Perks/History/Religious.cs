@@ -14,8 +14,10 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			extraModifiers.replaceMasturbateWithMeditate = true;
-
+			if (hasExtraModifiers)
+			{
+				extraModifiers.replaceMasturbateWithMeditate = true;
+			}
 			sbyte oldMin = baseModifiers.minLibido;
 			baseModifiers.minLibido = baseModifiers.minLibido.subtract(2);
 			delta = oldMin.delta(baseModifiers.minLibido);
@@ -23,9 +25,12 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnRemoval()
 		{
-			extraModifiers.replaceMasturbateWithMeditate = false;
-
+			if (hasExtraModifiers)
+			{
+				extraModifiers.replaceMasturbateWithMeditate = false;
+			}
 			baseModifiers.minLibido = (sbyte)(baseModifiers.minLibido + delta);
+			delta = 0;
 		}
 	}
 }

@@ -26,7 +26,7 @@ namespace CoC.Backend.Engine.Time
 
 		public static GameDateTime Now => new GameDateTime(GameEngine.CurrentDay, GameEngine.CurrentHour);
 
-		public GameDateTime delta(int hours)
+		public GameDateTime Delta(int hours)
 		{
 			int deltaDays = (int)Math.Floor(1.0 * hours / 24); //for negative numbers, gets the correct div value.
 			int mod = hours % 24;
@@ -66,7 +66,7 @@ namespace CoC.Backend.Engine.Time
 
 		public static GameDateTime HoursFromNow(int hours)
 		{
-			return Now.delta(hours);
+			return Now.Delta(hours);
 		}
 
 		public int CompareTo(GameDateTime other)

@@ -142,6 +142,8 @@ namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 					SetStatus(false);
 				}
 				setter(status);
+
+				base.RaisePropertyChanged(nameof(currentDescription));
 			}
 		}
 	}

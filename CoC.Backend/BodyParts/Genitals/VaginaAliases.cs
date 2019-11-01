@@ -120,6 +120,16 @@ namespace CoC.Backend.BodyParts
 
 		}
 
+		public string cockMultDescript()
+		{
+			throw new NotImplementedException();
+		}
+
+		public string vaginasMultiDesc()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		public int RemoveExtraVaginas()
 		{
 			return RemoveVagina(numVaginas - 1);
@@ -305,6 +315,11 @@ namespace CoC.Backend.BodyParts
 			{
 				_vaginas[vaginaIndex].OrgasmGeneric(false);
 			}
+		}
+
+		public int CountVaginasOfType(VaginaType targetType)
+		{
+			return _vaginas.Sum(x => x.type == targetType ? 1 : 0);
 		}
 
 		#endregion

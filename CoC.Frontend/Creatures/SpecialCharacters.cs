@@ -19,6 +19,7 @@ using CoC.Frontend.Strings.Creatures;
 using CoC.Frontend.Strings.Items.Wearables.Piercings;
 using System;
 using System.Collections.Generic;
+using CoC.Frontend.Creatures.PlayerData;
 
 namespace CoC.Frontend.Creatures
 {

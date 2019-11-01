@@ -9,10 +9,14 @@ namespace CoC.Frontend.Creatures.Monsters
 {
 	public class Monster : MonsterBase, IExtendedCreature
 	{
-		public ExtraPerkCollection extendedPerks => perks as ExtraPerkCollection;
-
-		public Monster(MonsterCreator creator) : base(creator, (x) => new ExtraPerkCollection(x))
+		public Monster(MonsterCreator creator) : base(creator)
 		{
+			extendedPerkModifiers = new ExtendedPerkModifiers(this);
+			extendedData = new ExtendedCreatureData(this, extendedPerkModifiers);
 		}
+
+		public ExtendedCreatureData extendedData { get; }
+
+		public ExtendedPerkModifiers extendedPerkModifiers { get; }
 	}
 }

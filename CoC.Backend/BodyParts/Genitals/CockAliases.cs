@@ -182,6 +182,11 @@ namespace CoC.Backend.BodyParts
 			return cockCollection.MinItem(x => x.girth);
 		}
 
+		public int CountCocksOfType(CockType type)
+		{
+			return _cocks.Sum(x => x.type == type ? 1 : 0);
+		}
+
 		public void NormalizeDicks(bool untilEven = false)
 		{
 			if (numCocks == 1)
@@ -287,6 +292,31 @@ namespace CoC.Backend.BodyParts
 
 			CheckGenderChanged(oldGender);
 			return oldCount - numCocks;
+		}
+
+		public bool UpdateCock(int index, CockType newType)
+		{
+			return _cocks[index].UpdateType(newType);
+		}
+
+		public bool UpdateCockWithLength(int index, CockType newType, float newLength)
+		{
+			return _cocks[index].UpdateCockTypeWithLength(newType, newLength);
+		}
+
+		public bool UpdateCockWithLengthAndGirth(int index, CockType newType, float newLength, float newGirth)
+		{
+			return _cocks[index].UpdateCockTypeWithLengthAndGirth(newType, newLength, newGirth);
+		}
+
+		public bool UpdateCockWithKnot(int index, CockType newType, float newKnotMultiplier)
+		{
+			return _cocks[index].UpdateCockTypeWithKnotMultiplier(newType, newKnotMultiplier);
+		}
+
+		public bool UpdateCockWithAll(int index, CockType newType, float newLength, float newGirth, float newKnotMultiplier)
+		{
+			return _cocks[index].UpdateCockTypeWithAll(newType, newLength, newGirth, newKnotMultiplier);
 		}
 
 		public int RemoveExtraCocks()
@@ -401,6 +431,20 @@ namespace CoC.Backend.BodyParts
 		public bool RemoveAllBalls()
 		{
 			return balls.removeAllBalls();
+		}
+
+		public float IncreaseCumMultiplier(float additionalMultiplier)
+		{
+			var oldValue = cumMultiplierTrue;
+			cumMultiplierTrue += additionalMultiplier;
+			return cumMultiplierTrue - oldValue;
+		}
+
+		public float AddFlatCumAmount(float additionalCum)
+		{
+			var oldValue = additionalCumTrue;
+			additionalCumTrue += additionalCum;
+			return additionalCumTrue - oldValue;
 		}
 	}
 }

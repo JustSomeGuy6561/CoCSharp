@@ -10,10 +10,14 @@ namespace CoC.Frontend.Creatures.NPCs
 
 	public class DynamicNPC : DynamicNPCBase, IExtendedCreature
 	{
-		public ExtraPerkCollection extendedPerks => perks as ExtraPerkCollection;
-
-		public DynamicNPC(DynamicNPC_Creator creator) : base(creator, x=> new ExtraPerkCollection(x))
+		public DynamicNPC(DynamicNPC_Creator creator) : base(creator)
 		{
+			extendedPerkModifiers = new ExtendedPerkModifiers(this);
+			extendedData = new ExtendedCreatureData(this, extendedPerkModifiers);
 		}
+
+		public ExtendedCreatureData extendedData { get; }
+
+		public ExtendedPerkModifiers extendedPerkModifiers { get; }
 	}
 }

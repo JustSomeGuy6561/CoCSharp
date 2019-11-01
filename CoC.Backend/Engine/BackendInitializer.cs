@@ -32,7 +32,6 @@ namespace CoC.Backend.Engine
 			GameplaySettingsManager.IncludeGameplaySetting(new DifficultySetting(gameDifficulties));
 			GameplaySettingsManager.IncludeGameplaySetting(new HungerSettings());
 			GameplaySettingsManager.IncludeGameplaySetting(new HardcoreSettings());
-			GameplaySettingsManager.IncludeGameplaySetting(new RealismSettings());
 			GameplaySettingsManager.IncludeGameplaySetting(new SFW_Settings());
 			GameplaySettingsManager.IncludeGameplaySetting(new MeasurementSettings());
 			GameplaySettingsManager.IncludeGameplaySetting(new TimeDisplaySettings());

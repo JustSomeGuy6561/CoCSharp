@@ -151,8 +151,23 @@ namespace CoC.Backend.BodyParts
 			blackNipples = active;
 		}
 
-		public ushort cumMultiplier { get; private set; } = 1; //0-65535 seems like a valid range imo. i don't think i need to cap it. 
+		public ushort cumMultiplier => (ushort)Math.Round(cumMultiplierTrue); //0-65535 seems like a valid range imo. i don't think i need to cap it. 
+
+		public float cumMultiplierTrue
+		{
+			get => _cumMultiplierTrue;
+			private set => _cumMultiplierTrue = Utils.Clamp2(value, 1, ushort.MaxValue);
+		}
+		private float _cumMultiplierTrue = 1;
+
 		public ushort additionalCum { get; private set; } = 0;//0-65535 seems like a valid range imo. i don't think i need to cap it. 
+
+		public float additionalCumTrue
+		{
+			get => _additionalCumTrue;
+			private set => _additionalCumTrue = Utils.Clamp2(value, ushort.MinValue, ushort.MaxValue);
+		}
+		private float _additionalCumTrue = 0;
 
 		private GameDateTime timeLastCum { get; set; }
 		public int hoursSinceLastCum => timeLastCum.hoursToNow();

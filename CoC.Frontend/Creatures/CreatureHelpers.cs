@@ -5,6 +5,7 @@
 
 using CoC.Backend.Creatures;
 using CoC.Frontend.Perks;
+using CoC.Frontend.StatusEffect;
 
 namespace CoC.Frontend.Creatures
 {
@@ -39,7 +40,58 @@ namespace CoC.Frontend.Creatures
 				return targetLevel <= creature.corruption;
 			}
 		}
+
+		public static bool GoIntoHeat(this Creature creature, byte intensity = 1)
+		{
+			if (creature.statusEffects.HasStatusEffect<Heat>())
+			{
+				var heat = creature.statusEffects.GetStatusEffect<Heat>();
+				return heat.IncreaseHeat(intensity);
+			}
+			else if (creature.hasVagina && !creature.womb.isPregnant)
+			{
+				ushort timeout = (intensity * Heat.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Heat.TIMEOUT_STACK);
+				var heat = new Heat(timeout);
+				creature.statusEffects.AddStatusEffect(heat);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public static bool GoIntoHeat(this Creature creature, out string output, byte intensity = 1)
+		{
+			if (creature.statusEffects.HasStatusEffect<Heat>())
+			{
+				var heat = creature.statusEffects.GetStatusEffect<Heat>();
+				bool retVal = heat.IncreaseHeat(intensity);
+
+				output = null;
+				if (retVal)
+				{
+					output = heat.IncreasedHeatText();
+				}
+				return retVal;
+			}
+			else if (creature.hasVagina && !creature.womb.isPregnant)
+			{
+				ushort timeout = (intensity * Heat.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Heat.TIMEOUT_STACK);
+				var heat = new Heat(timeout);
+				creature.statusEffects.AddStatusEffect(heat);
+				output = heat.obtainText();
+				return true;
+			}
+			else
+			{
+				output = null;
+				return false;
+			}
+		}
 	}
+
+
 	//	public static void AddItem(this Creature creature, CapacityItem item, Action resumeCallback)
 	//	{
 	//		if (creature.TryAddItem(item, out string result))

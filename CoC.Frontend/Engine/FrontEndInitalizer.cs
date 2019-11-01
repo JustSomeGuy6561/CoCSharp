@@ -11,6 +11,7 @@ using CoC.Frontend.Perks;
 using CoC.Frontend.SaveData;
 using System;
 using System.IO;
+using CoC.Frontend.Settings.Gameplay;
 
 namespace CoC.Frontend.Engine
 {
@@ -25,10 +26,11 @@ namespace CoC.Frontend.Engine
 		/// </summary>
 		public static void PreSaveInit()
 		{
-			BasePerkModifiers getExtraData(Creature source) => new ExtendedPerkModifiers(source);
 
 			BackendInitializer.PreSaveInit(() => new StandardDisplay(), DisplayManager.GetCurrentDisplay, DisplayManager.LoadDisplay, AreaManager.placeCollection, AreaManager.locationCollection, 
-				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, getExtraData, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);
+				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);
+
+			GameplaySettingsManager.IncludeGameplaySetting(new HyperHappySettings());
 
 			CreditManager.AddCreditCategory(new FrontendCredits());
 			CreditManager.AddCreditCategory(new FrontendModCredits());

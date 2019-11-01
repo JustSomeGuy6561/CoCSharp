@@ -113,6 +113,6 @@ namespace CoC.Frontend.SaveData
 		internal byte wallProgress = 0;
 		internal ushort wallSkullCount = 0;
 		internal ushort wallStatueCount = 0;
-		internal bool HyperHappy;
+		internal bool HyperHappyLocal = false;
 	}
 }

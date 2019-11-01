@@ -28,5 +28,10 @@ namespace CoC.Backend.Pregnancies
 		{
 			return spawnType.NotifyVaginalBirthingProgressed(vaginaIndex, hoursTilBirth, oldHoursToBirth);
 		}
+
+		protected override string DiapauseText()
+		{
+			return GenericDiapauseText();
+		}
 	}
 }

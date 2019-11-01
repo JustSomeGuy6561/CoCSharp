@@ -47,7 +47,7 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse)
+		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
 			if (consumer is CombatCreature combat)
 			{
@@ -58,6 +58,7 @@ namespace CoC.Frontend.Items.Consumables
 			{
 				resultsOfUse = "";
 			}
+			isBadEnd = false;
 			return true;
 		}
 

@@ -13,6 +13,7 @@ using CoC.Frontend.Strings.Engine;
 using static CoC.Frontend.UI.ViewOptions;
 using CoC.Backend.UI;
 using System;
+using CoC.Frontend.Creatures.PlayerData;
 
 namespace CoC.Frontend.Engine
 {

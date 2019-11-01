@@ -17,12 +17,18 @@ namespace CoC.Frontend.Perks.History
 			{
 				combatCreature.addGems(250);
 			}
-			extraModifiers.gemGainMultiplier += 0.15f;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.gemGainMultiplier += 0.15f;
+			}
 		}
 
 		protected override void OnRemoval()
 		{
-			extraModifiers.gemGainMultiplier += 0.15f;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.gemGainMultiplier += 0.15f;
+			}
 		}
 	}
 }

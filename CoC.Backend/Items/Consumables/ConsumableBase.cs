@@ -4,6 +4,7 @@
 //6/27/2019, 6:32 PM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 
 namespace CoC.Backend.Items.Consumables
 {
@@ -31,12 +32,12 @@ namespace CoC.Backend.Items.Consumables
 		/// <param name="consumer"></param>
 		/// <param name="resultsOfUse"></param>
 		/// <returns></returns>
-		protected abstract bool OnConsumeAttempt(Creature consumer, out string resultsOfUse);
+		protected abstract bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd);
 
 		//note: consumables that require a menu will need to overwrite this. items that return another item will, as well. 
 		public override void AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
 		{
-			bool result = OnConsumeAttempt(target, out string consumeResults);
+			bool result = OnConsumeAttempt(target, out string consumeResults, out bool isBadEnd);
 			CapacityItem item = this;
 
 			if (result)
@@ -48,7 +49,21 @@ namespace CoC.Backend.Items.Consumables
 				item = null;
 			}
 
-			postItemUseCallback(result, consumeResults, item);
+			if (isBadEnd)
+			{
+				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+				//if we hit a bad end, don't resume whatever we were doing - we treat it as if it was a nightmare and nothing happened, except for the stuff that did happen, because continuity
+				//is hard to enforce in this shit. Just lampshade it - it was a nightmare, but you still suffer the effects of it as if it happened, but only up until the point you realized it
+				//was a bad end. so, you'll lose any items you were gonna get afterward, etc, but if your butt was stretched to gaping, it'll still be gaping after resuming from the bad end.
+				//same with piercings, tfs, etc. No time is lost, however, just resume from camp as soon as possible. 
+				//example of lampshading: "it was just a nightmare... but it felt so real - and your eyebrow has a piercing in it, just like in the dream. strange..."
+
+				//GameEngine.DoBadEnd();
+			}
+			else
+			{
+				postItemUseCallback(result, consumeResults, item);
+			}
 		}
 
 		public override byte maxCapacityPerSlot => 10;

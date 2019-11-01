@@ -36,11 +36,12 @@ namespace CoC.Frontend.StatusEffect
 		public void RepeatOverdose()
 		{
 			overdoseCount++;
-			timeWearsOff = timeWearsOff.delta(OVIMAX_DEFAULT_TIMEOUT);
+			timeWearsOff = timeWearsOff.Delta(OVIMAX_DEFAULT_TIMEOUT);
 		}
 
-		protected override string OnStatusEffectTimePassing(byte hoursPassedSinceLastUpdate)
+		protected override string OnStatusEffectTimePassing(byte hoursPassedSinceLastUpdate, out bool removeEffect)
 		{
+			removeEffect = false;
 			return null;
 		}
 

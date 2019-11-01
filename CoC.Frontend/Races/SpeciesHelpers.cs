@@ -11,5 +11,10 @@ namespace CoC.Frontend.Races
 		{
 			return Species.IMP.Score(creature);
 		}
+
+		public static byte DogScore(this Creature creature)
+		{
+			return Species.DOG.Score(creature);
+		}
 	}
 }

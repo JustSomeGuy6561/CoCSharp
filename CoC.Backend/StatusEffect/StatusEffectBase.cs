@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Creatures;
+using CoC.Backend.Perks;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +10,9 @@ namespace CoC.Backend.StatusEffect
 	{
 		public readonly SimpleDescriptor effectName;
 		protected Creature sourceCreature { get; private set; } = null;
+
+		protected StatusEffectCollection sourceCollection => sourceCreature?.statusEffects;
+		protected BasePerkModifiers perkModifiers => sourceCollection?.baseModifiers;
 
 		private protected StatusEffectBase(SimpleDescriptor name)
 		{

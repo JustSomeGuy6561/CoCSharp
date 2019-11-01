@@ -117,7 +117,7 @@ namespace CoC.Backend.Engine.Time
 		private byte currentHour;
 		private int currentDay;
 
-		internal GameDateTime currentTime => new GameDateTime(currentDay, currentHour).delta(totalHours);
+		internal GameDateTime currentTime => new GameDateTime(currentDay, currentHour).Delta(totalHours);
 
 		private GameDateTime engineTime => new GameDateTime(currentDay, currentHour);
 
@@ -207,7 +207,7 @@ namespace CoC.Backend.Engine.Time
 		internal void IdleHoursChangeLocation<T>(byte hours, ResumeTimeCallback onInterruptCallback, SimpleDescriptor defaultText = null) where T : AreaBase
 		{
 			IdleHoursPrivate(hours);
-			DoIdleChange(new IdleDestinationStorage(typeof(T), onInterruptCallback, defaultText, currentTime.delta(idleHours)));
+			DoIdleChange(new IdleDestinationStorage(typeof(T), onInterruptCallback, defaultText, currentTime.Delta(idleHours)));
 			RunEngine();
 
 		}
@@ -228,7 +228,7 @@ namespace CoC.Backend.Engine.Time
 		internal void IdleHoursChangeLocationToBase(byte hours, ResumeTimeCallback onInterruptCallback, SimpleDescriptor defaultText = null)
 		{
 			IdleHoursPrivate(hours);
-			DoIdleChange(new IdleDestinationStorage(areaEngine.currentHomeBase.GetType(), onInterruptCallback, defaultText, currentTime.delta(idleHours)));
+			DoIdleChange(new IdleDestinationStorage(areaEngine.currentHomeBase.GetType(), onInterruptCallback, defaultText, currentTime.Delta(idleHours)));
 			RunEngine();
 		}
 

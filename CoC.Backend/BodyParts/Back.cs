@@ -34,6 +34,7 @@ namespace CoC.Backend.BodyParts
 
 		public ushort maxCharges => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxResource : (ushort)0;
 		public ushort maxRegen => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxRechargeRate : (ushort)0;
+		public ushort minRegen => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).minRechargeRate : (ushort)0;
 
 		public override BackType type
 		{
@@ -179,6 +180,22 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region ICanAttackWith
+		public void UpdateResources(short resourceDelta = 0, short regenRateDelta = 0)
+		{
+			if (!(_attack is ResourceAttackBase) || (resourceDelta == 0 && regenRateDelta == 0))
+			{
+				return;
+			}
+
+			if (regenRateDelta != 0)
+			{
+				regenRate = (ushort)Utils.Clamp2(regenRateDelta + regenRate, minRegen, maxRegen);
+			}
+			if (resourceDelta != 0)
+			{
+				resources = (ushort)Utils.Clamp2(resourceDelta + resources, 0, maxCharges);
+			}
+		}
 
 		AttackBase ICanAttackWith.attack => _attack;
 
@@ -280,11 +297,11 @@ namespace CoC.Backend.BodyParts
 		public static readonly AttackableBackType SPIDER_ABDOMEN; //web
 		public static readonly AttackableBackType BEE_STINGER; //sting
 		public static readonly AttackableBackType TENDRILS; //tendril grab
+		public static readonly BehemothBack BEHEMOTH;
 
 		//these need to be functions or order of initialization can break. These are the things you learn
 		//when running unit tests. Testing OP!
-		private static ResourceAttackBase SPIDER_ATTACK(Func<ushort> x, Action<ushort> y) => new SpiderWeb(x, y);
-		private static ResourceAttackBase BEE_STING(Func<ushort> x, Action<ushort> y) => new BeeSting(x, y);
+		
 		private static ResourceAttackBase TENDRIL_GRAB(Func<ushort> x, Action<ushort> y) => new TentaGrab(x, y);
 
 		private static readonly EpidermalData CARAPACE = new EpidermalData(EpidermisType.CARAPACE, Tones.BLACK, SkinTexture.SHINY);
@@ -296,9 +313,8 @@ namespace CoC.Backend.BodyParts
 			DRACONIC_MANE = new DragonBackMane();
 			DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesFullDesc, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
 			SHARK_FIN = new BackType(SharkFinDesc, SharkFinFullDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
-			SPIDER_ABDOMEN = new AttackableBackType(SPIDER_ATTACK, CARAPACE, SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //web
-			BEE_STINGER = new AttackableBackType(BEE_STING, CARAPACE, BeeShortDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //sting
 			TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TenderilFullDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
+			BEHEMOTH = new BehemothBack();
 		}
 	}
 	public sealed class DragonBackMane : BackType
@@ -320,13 +336,33 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 	}
+
+	public sealed class BehemothBack : BackType
+	{
+		public HairFurColors defaultHair => DefaultValueHelpers.defaultDragonManeColor;
+		internal override SimpleDescriptor dyeDesc => ManeDesc;
+		internal override SimpleDescriptor dyeText => YourManeDesc;
+
+		public override bool hasSpecialEpidermis => true;
+
+		internal BehemothBack() : base(BehemothDesc, BehemothFullDesc, BehemothPlayerStr, BehemothTransformStr, BehemothRestoreStr)
+		{ }
+
+		internal override void ParseEpidermis(Epidermis epidermis)
+		{
+			if (!epidermis.usesFur)
+			{
+				epidermis.UpdateOrChange(EpidermisType.FUR, new FurColor(defaultHair));
+			}
+		}
+	}
 	public sealed class AttackableBackType : BackType
 	{
 		private readonly EpidermalData baseAppearance;
 		//callback madness! Lets us not make this virtual. basically, since we can't create the attack without knowing where we get the resources, we can't create it here.
 		//BUT, given a callback to the resources, we can generate the attack here, using another callback. Clarity dictates i not do this, but fuck it.
-		private readonly Func<Func<ushort>, Action<ushort>, ResourceAttackBase> getAttack; //a callback. takes another callback (that returns a ushort), and returns an attack that requires resources.
-		internal AttackableBackType(Func<Func<ushort>, Action<ushort>, ResourceAttackBase> attackGetter, EpidermalData appearance,
+		private readonly GenerateResourceAttack getAttack; //a callback. takes another callback (that returns a ushort), and returns an attack that requires resources.
+		internal AttackableBackType(GenerateResourceAttack attackGetter, EpidermalData appearance,
 			SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, TypeAndPlayerDelegate<Back> playerDesc, ChangeType<Back> transform, RestoreType<Back> restore)
 			: base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{

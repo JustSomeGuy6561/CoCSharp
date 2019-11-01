@@ -9,6 +9,7 @@ using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Backend.UI;
 using CoC.Frontend.Inventory;
+using CoC.Frontend.Items.Consumables;
 using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
@@ -39,8 +40,12 @@ namespace CoC.Frontend.Encounters.Common
 				"Suddenly another imp appears from nowhere and attacks the first. In the tussle one of them drops an item, which you handily catch, as the scrapping demons " +
 				"fight their way out of sight. ";
 			//unlockCodexImps();
-				throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
-			ConsumableBase item = null; //imp food, incubus draft, succubus milk. 
+
+#warning add remaining choices here. 
+			//imp food, incubus draft, succubus milk. 
+			Func<ConsumableBase>[] choices = new Func<ConsumableBase>[] { () => new ImpFood() };
+
+			ConsumableBase item = Utils.RandomChoice(choices).Invoke();
 			GainItemHelper.GainItemWithCallback(player, item, context, () => currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1)));
 		}
 	}

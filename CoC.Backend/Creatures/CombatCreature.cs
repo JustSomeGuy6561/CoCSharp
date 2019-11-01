@@ -615,7 +615,7 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public void DeltaCombatCreatureStats(short lus = 0, short lib = 0, short sens = 0, short corr = 0, short str = 0, short tou = 0, short spe = 0, short inte = 0, bool ignorePerks = false)
+		public void DeltaCombatCreatureStats(float lus = 0, float lib = 0, float sens = 0, float corr = 0, float str = 0, float tou = 0, float spe = 0, float inte = 0, bool ignorePerks = false)
 		{
 			DeltaCreatureStats(lust, lib, sens, corr);
 

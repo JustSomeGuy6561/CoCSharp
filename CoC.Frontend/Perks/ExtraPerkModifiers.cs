@@ -36,6 +36,8 @@ namespace CoC.Frontend.Perks
 
 		public bool IsASlut = false;
 
+		public bool resistsTFBadEnds = false;
+
 		private void Womb_onBirth(object sender, Backend.Pregnancies.BirthEvent e)
 		{
 			if (e.totalBirthCount >= 10 && !source.perks.HasPerk<BroodMotherPerk>())

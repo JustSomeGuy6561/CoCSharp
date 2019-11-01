@@ -13,10 +13,11 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 		const ushort MAX_RECHARGE = 2;
 		const ushort INITIAL_AMOUNT = 0;
 		const ushort INITIAL_RECHARGE = 1;
+		const ushort MIN_RECHARGE = INITIAL_RECHARGE;
 
 		const ushort MIN_ATTACK_AMOUNT = 3;
 
-		internal TentaGrab(Func<ushort> getResourceCount, Action<ushort> setResourceCount) : base(MAX_CHARGE, MAX_RECHARGE, INITIAL_AMOUNT, INITIAL_RECHARGE, getResourceCount, setResourceCount, Attack) { }
+		internal TentaGrab(Func<ushort> getResourceCount, Action<ushort> setResourceCount) : base(MAX_CHARGE, MIN_RECHARGE, MAX_RECHARGE, INITIAL_AMOUNT, INITIAL_RECHARGE, getResourceCount, setResourceCount, Attack) { }
 
 		protected override DescriptorWithArg<CombatCreature> AttackDescription()
 		{

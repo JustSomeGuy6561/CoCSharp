@@ -16,6 +16,7 @@ namespace CoC.Frontend.Creatures
 
 		private readonly ExtendedPerkModifiers extendedPerkData;
 		internal int TotalTransformCount;
+		internal bool hasDoggoWarning;
 
 		public ExtendedCreatureData(Creature creature, ExtendedPerkModifiers extraPerkData)
 		{
@@ -24,5 +25,8 @@ namespace CoC.Frontend.Creatures
 		}
 
 		public sbyte deltaTransforms => extendedPerkData.numTransformsDelta;
+
+		public bool resistsTFBadEnds => extendedPerkData.resistsTFBadEnds;
+
 	}
 }

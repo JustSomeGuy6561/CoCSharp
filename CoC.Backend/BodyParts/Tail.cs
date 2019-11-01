@@ -19,7 +19,7 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	public enum TailPiercings { SUCCUBUS_SPADE }
-	public sealed partial class Tail : BehavioralSaveablePart<Tail, TailType, TailData>, ICanAttackWith
+	public sealed partial class Tail : BehavioralSaveablePart<Tail, TailType, TailData>, ICanAttackWith, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
 
@@ -47,6 +47,18 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_type != value)
 				{
+					_attack = value.GetAttackOnTransform(() => resources, (x) => resources = x);
+					if (_attack is ResourceAttackBase resourceAttack)
+					{
+						resources = resourceAttack.initialResource;
+						regenRate = resourceAttack.initialRechargeRate;
+					}
+					else
+					{
+						resources = 0;
+						regenRate = 0;
+					}
+
 					_tailCount = value.initialTailCount;
 					if (!value.supportsTailPiercing && tailPiercings.isPierced)
 					{
@@ -96,6 +108,23 @@ namespace CoC.Backend.BodyParts
 			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldValue);
 			return true;
+		}
+
+		public void UpdateResources(short resourceDelta = 0, short regenRateDelta = 0)
+		{
+			if (!(_attack is ResourceAttackBase) || (resourceDelta == 0 && regenRateDelta == 0))
+			{
+				return;
+			}
+
+			if (regenRateDelta != 0)
+			{
+				regenRate = (ushort)Utils.Clamp2(regenRateDelta + regenRate, minRegen, maxRegen);
+			}
+			if (resourceDelta != 0)
+			{
+				resources = (ushort)Utils.Clamp2(resourceDelta + resources, 0, maxCharges);
+			}
 		}
 
 		internal bool GrowAdditionalTail()
@@ -164,9 +193,29 @@ namespace CoC.Backend.BodyParts
 
 		//public AttackBase attack => type.attack;
 
-		AttackBase ICanAttackWith.attack => type.attack;
-		bool ICanAttackWith.canAttackWith() => type.canAttackWith;
+		AttackBase ICanAttackWith.attack => _attack;
+		bool ICanAttackWith.canAttackWith() => _attack != AttackBase.NO_ATTACK && _attack != null;
 
+		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
+		{
+			if (_attack is ResourceAttackBase resourceAttack && resources < maxCharges) //slight optimization. make sure we aren't at max.
+			{
+				uint regen = regenRate.mult(hoursPassed);
+				ushort newCount = (ushort)Math.Min(regen + resources, maxCharges);
+				resources = newCount;
+			}
+			//no output.
+			return "";
+		}
+
+		public ushort resources { get; private set; } = 0;
+		public ushort regenRate { get; private set; } = 0;
+
+
+		private AttackBase _attack = AttackBase.NO_ATTACK;
+		public ushort maxCharges => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxResource : (ushort)0;
+		public ushort maxRegen => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxRechargeRate : (ushort)0;
+		public ushort minRegen => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).minRechargeRate : (ushort)0;
 	}
 
 	public abstract partial class TailType : SaveableBehavior<TailType, Tail, TailData>
@@ -190,8 +239,10 @@ namespace CoC.Backend.BodyParts
 
 		public static TailType defaultValue => TailType.NONE;
 
-		internal virtual AttackBase attack => AttackBase.NO_ATTACK;
-		internal virtual bool canAttackWith => attack != AttackBase.NO_ATTACK;
+		internal virtual AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+		{
+			return AttackBase.NO_ATTACK;
+		}
 
 		public bool hasMultipleTails => maxTailCount > 1;
 
@@ -238,13 +289,19 @@ namespace CoC.Backend.BodyParts
 
 		}
 
+		private static ResourceAttackBase SPIDER_ATTACK(Func<ushort> x, Action<ushort> y) => new SpiderWeb(x, y);
+		private static ResourceAttackBase BEE_STING(Func<ushort> x, Action<ushort> y) => new BeeSting(x, y);
+
+		private static ResourceAttackBase SCORPION_STING(Func<ushort> x, Action<ushort> y) => new ScorpionSting(x, y);
+
 		public static readonly TailType NONE = new NoTail();
 		public static readonly TailType HORSE = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultHorseTailFur, true, HorseShortDesc, HorseFullDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
 		public static readonly TailType DOG = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultDogFur, true, DogShortDesc, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
 		public static readonly TailType DEMONIC = new SuccubusTail();
+
 		public static readonly TailType COW = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultCowFur, true, CowShortDesc, CowFullDesc, CowPlayerStr, CowTransformStr, CowRestoreStr);
-		public static readonly TailType SPIDER_OVIPOSITOR = new ToneTail(EpidermisType.CARAPACE, DefaultValueHelpers.defaultSpiderTone, false, SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //none
-		public static readonly TailType BEE_OVIPOSITOR = new ToneTail(EpidermisType.CARAPACE, DefaultValueHelpers.defaultBeeTone, false, BeeShortDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //none)
+		public static readonly TailType SPIDER_SPINNERET = new ToneTailWithResourceAttack(SPIDER_ATTACK, EpidermisType.CARAPACE, DefaultValueHelpers.defaultSpiderTone, false, SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //webbing, resource-based
+		public static readonly TailType BEE_STINGER = new ToneTailWithResourceAttack(BEE_STING, EpidermisType.CARAPACE, DefaultValueHelpers.defaultBeeTone, false, BeeShortDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //sting, resource-based
 
 		public static readonly TailType SHARK = new ToneTailWithSlam(4, EpidermisType.SKIN, DefaultValueHelpers.defaultSharkTone, true, SharkShortDesc, SharkFullDesc, SharkPlayerStr, SharkTransformStr, SharkRestoreStr); //slam
 		public static readonly TailType CAT = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultCatFur, true, CatShortDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
@@ -259,8 +316,8 @@ namespace CoC.Backend.BodyParts
 		public static readonly TailType FERRET = new FurryTailWithWhip(EpidermisType.FUR, DefaultValueHelpers.defaultFerretFur, true, FerretShortDesc, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr); //whip
 		public static readonly TailType BEHEMOTH = new FurryTailWithSlam(5, EpidermisType.FUR, DefaultValueHelpers.defaultBehemothFur, true, BehemothShortDesc, BehemothFullDesc, BehemothPlayerStr, BehemothTransformStr, BehemothRestoreStr); //slam
 		public static readonly TailType PIG = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultPigFur, true, PigShortDesc, PigFullDesc, PigPlayerStr, PigTransformStr, PigRestoreStr);
-		//public static readonly TailType SCORPION = new ToneTail(EpidermisType.CARAPACE, DefaultValueHelpers.defaultSCORPIONTailTone, false, ScorpionShortDesc, ScorpionFullDesc, ScorpionPlayerStr, ScorpionTransformStr, ScorpionRestoreStr); //sting
-		public static readonly TailType GOAT = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultGoatWoolFur, true, GoatShortDesc, GoatFullDesc, GoatPlayerStr, GoatTransformStr, GoatRestoreStr);
+		public static readonly TailType SCORPION = new ToneTailWithResourceAttack(SCORPION_STING, EpidermisType.CARAPACE, DefaultValueHelpers.defaultScorpionTailTone, false, ScorpionShortDesc, ScorpionFullDesc, ScorpionPlayerStr, ScorpionTransformStr, ScorpionRestoreStr); //sting
+		public static readonly TailType SATYR = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultSatyrTailColor, true, GoatShortDesc, GoatFullDesc, GoatPlayerStr, GoatTransformStr, GoatRestoreStr);
 		public static readonly TailType RHINO = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultRhinoTailFur, true, RhinoShortDesc, RhinoFullDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
 		public static readonly TailType ECHIDNA = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultEchidnaTailFur, true, EchidnaShortDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
 		public static readonly TailType DEER = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultDeerTail, true, DeerShortDesc, DeerFullDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
@@ -283,7 +340,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private class FurryTail : TailType
+		public class FurryTail : TailType
 		{
 			public readonly FurColor defaultFur;
 			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
@@ -332,13 +389,36 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		private class ToneTailWithResourceAttack : ToneTail
+		{
+			private readonly GenerateResourceAttack resourceAttackGetter;
+
+			public ToneTailWithResourceAttack(GenerateResourceAttack attackGetter, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable,
+				SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
+				RestoreType<Tail> restore) : base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
+			{
+				resourceAttackGetter = attackGetter ?? throw new ArgumentNullException(nameof(attackGetter));
+			}
+
+			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+			{
+				return resourceAttackGetter(get, set);
+			}
+		}
+
+
+
+
 		private class FurryTailWithWhip : FurryTail
 		{
 			public FurryTailWithWhip(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc,
 				TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
 				: base(furType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
-			internal override AttackBase attack => TAIL_WHIP;
+			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+			{
+				return TAIL_WHIP;
+			}
 		}
 
 		private class ToneTailWithWhip : ToneTail
@@ -347,7 +427,10 @@ namespace CoC.Backend.BodyParts
 				TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
 				: base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
-			internal override AttackBase attack => TAIL_WHIP;
+			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+			{
+				return TAIL_WHIP;
+			}
 		}
 
 		private class SalamanderTail : ToneTail
@@ -355,13 +438,20 @@ namespace CoC.Backend.BodyParts
 			public SalamanderTail() : base(EpidermisType.SCALES, DefaultValueHelpers.defaultSalamanderTone, false, SalamanderShortDesc, SalamanderFullDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr)
 			{ }
 
-			internal override AttackBase attack => _attack;
+			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+			{
+				return _attack;
+			}
 			private static readonly AttackBase _attack = new TailSlap();
 		}
 
 		private class ToneTailWithSlam : ToneTail
 		{
-			internal override AttackBase attack => _attack;
+			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+			{
+				return _attack;
+			}
+
 			private readonly TailSlam _attack;
 			public ToneTailWithSlam(byte attackStrength, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, SimpleDescriptor shortDesc,
 				DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
@@ -373,7 +463,11 @@ namespace CoC.Backend.BodyParts
 
 		private class FurryTailWithSlam : FurryTail
 		{
-			internal override AttackBase attack => _attack;
+			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
+			{
+				return _attack;
+			}
+
 			private readonly TailSlam _attack;
 			public FurryTailWithSlam(byte attackStrength, FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, SimpleDescriptor shortDesc,
 				DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)

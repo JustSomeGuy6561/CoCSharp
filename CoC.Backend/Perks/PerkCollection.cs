@@ -28,10 +28,6 @@ namespace CoC.Backend.Perks
 		{
 			source = sourceCreature ?? throw new ArgumentNullException(nameof(sourceCreature));
 			baseModifiers = new BasePerkModifiers(sourceCreature);
-			if (baseModifiers is null)
-			{
-				throw new ArgumentException("BaseModifiers, set during the game Engine initialization, returned null. Ensure this is not null.");
-			}
 		}
 
 		internal void InitPerks(params PerkBase[] basePerks)

@@ -35,9 +35,9 @@ namespace CoC.Frontend.Races
 		{
 			return "cat";
 		}
-		protected static string CentaurStr()
+		protected static string SatyrStr()
 		{
-			return "centaur";
+			return "satyr";
 		}
 		protected static string CockatriceStr()
 		{
@@ -142,6 +142,10 @@ namespace CoC.Frontend.Races
 		{
 			return "mouse";
 		}
+		protected static string MutantStr()
+		{
+			return "mutant";
+		}
 		protected static string NagaStr()
 		{
 			return "naga";
@@ -186,9 +190,9 @@ namespace CoC.Frontend.Races
 		{
 			return "sand trap";
 		}
-		protected static string ScorpionStr()
+		protected static string ManticoreStr()
 		{
-			return "scorpion";
+			return "manticore";
 		}
 		protected static string SharkStr()
 		{
@@ -198,6 +202,12 @@ namespace CoC.Frontend.Races
 		{
 			return "sheep";
 		}
+
+		protected static string SirenStr()
+		{
+			return "siren";
+		}
+
 		protected static string SnakeStr()
 		{
 			return "snake";

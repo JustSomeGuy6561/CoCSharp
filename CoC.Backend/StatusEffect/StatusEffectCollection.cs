@@ -1,15 +1,20 @@
 ﻿using CoC.Backend.Creatures;
+using CoC.Backend.Engine.Time;
+using CoC.Backend.Perks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CoC.Backend.StatusEffect
 {
-	public sealed class StatusEffectCollection
+	public sealed class StatusEffectCollection : ITimeLazyListener
 	{
 		private readonly Creature source;
 
 		private readonly Dictionary<Type, StatusEffectBase> statusEffects = new Dictionary<Type, StatusEffectBase>();
+
+		internal BasePerkModifiers baseModifiers => source.perks.baseModifiers;
 
 		public StatusEffectCollection(Creature creature)
 		{
@@ -95,6 +100,32 @@ namespace CoC.Backend.StatusEffect
 			return false;
 		}
 
+		public bool RemoveStatusEffect(Type type)
+		{
+			if (type == typeof(StatusEffectBase))
+			{
+				return false;
+			}
+			if (statusEffects.ContainsKey(type))
+			{
+				StatusEffectBase removed = statusEffects[type];
+				removed.Deactivate();
+				return statusEffects.Remove(type);
+			}
+			return false;
+		}
+
+		public bool RemoveStatusEffect(StatusEffectBase effect)
+		{
+
+			if (statusEffects.ContainsKey(effect.GetType()) && ReferenceEquals(statusEffects[effect.GetType()], effect))
+			{
+				effect.Deactivate();
+				return statusEffects.Remove(effect.GetType());
+			}
+			return false;
+		}
+
 		//retrieves a statusEffect, so you can update it. 
 		public T GetStatusEffect<T>() where T : StatusEffectBase
 		{
@@ -108,6 +139,21 @@ namespace CoC.Backend.StatusEffect
 				return (T)statusEffects[type];
 			}
 			return null;
+		}
+
+		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach (var item in statusEffects.Values.Where(x => x is TimedStatusEffect))
+			{
+				sb.Append(((TimedStatusEffect)item).ReactToTimePassing(hoursPassed, out bool shouldRemove));
+				if (shouldRemove)
+				{
+					RemoveStatusEffect(item);
+				}
+			}
+
+			return sb.ToString();
 		}
 	}
 }

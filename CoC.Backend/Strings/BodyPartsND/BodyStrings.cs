@@ -5,6 +5,7 @@
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
+using System;
 using System.Collections.Generic;
 
 namespace CoC.Backend.BodyParts
@@ -37,6 +38,10 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
+		public bool IsFurry()
+		{
+			return type.epidermisType.usesFur;
+		}
 	}
 
 	public partial class BodyType

@@ -11,6 +11,7 @@ namespace CoC.Backend.Attacks
 	{
 		public readonly ushort maxResource;
 		public readonly ushort maxRechargeRate;
+		public readonly ushort minRechargeRate;
 		public readonly ushort initialResource;
 		public readonly ushort initialRechargeRate;
 
@@ -22,10 +23,11 @@ namespace CoC.Backend.Attacks
 		private readonly Func<ushort> getResources;
 		private readonly Action<ushort> setResources;
 
-		protected ResourceAttackBase(ushort maxResource, ushort maxRechargeRate, ushort initialResource, ushort initialRechargeRate, Func<ushort> getResourceCount, Action<ushort> setResourceCount,
+		protected ResourceAttackBase(ushort maxResource, ushort minRechargeRate, ushort maxRechargeRate, ushort initialResource, ushort initialRechargeRate, Func<ushort> getResourceCount, Action<ushort> setResourceCount,
 			SimpleDescriptor attackName) : base(attackName)
 		{
 			this.maxResource = maxResource;
+			this.minRechargeRate = minRechargeRate;
 			this.maxRechargeRate = maxRechargeRate;
 			this.initialResource = initialResource;
 			this.initialRechargeRate = initialRechargeRate;

@@ -118,46 +118,8 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string SpiderShortDesc()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string SpiderFullDesc(Back back)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string SpiderPlayerStr(Back back, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string SpiderTransformStr(Back back, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string SpiderRestoreStr(Back back, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string BeeShortDesc()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string BeeFullDesc(Back back)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string BeePlayerStr(Back back, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string BeeTransformStr(Back back, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string BeeRestoreStr(Back back, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
+		
+		
 		private static string TendrilShortDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -175,6 +137,27 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string TendrilRestoreStr(Back back, PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		protected static string BehemothDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		protected static string BehemothFullDesc(Back back)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		protected static string BehemothPlayerStr(Back back, PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		protected static string BehemothTransformStr(Back back, PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		protected static string BehemothRestoreStr(Back back, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

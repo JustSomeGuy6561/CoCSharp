@@ -13,9 +13,11 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 		const ushort MAX_RECHARGE = 25;
 		const ushort INITIAL_AMOUNT = 0;
 		const ushort INITIAL_RECHARGE = 5;
+		const ushort MIN_RECHARGE = INITIAL_RECHARGE;
+
 
 		const ushort ATTACK_COST = 33;
-		internal SpiderWeb(Func<ushort> getResourceCount, Action<ushort> setResourceCount) : base(MAX_CHARGE, MAX_RECHARGE, INITIAL_AMOUNT, INITIAL_RECHARGE, getResourceCount, setResourceCount, Attack) { }
+		internal SpiderWeb(Func<ushort> getResourceCount, Action<ushort> setResourceCount) : base(MAX_CHARGE, MIN_RECHARGE, MAX_RECHARGE, INITIAL_AMOUNT, INITIAL_RECHARGE, getResourceCount, setResourceCount, Attack) { }
 
 		protected override bool CanUseAttack(CombatCreature attacker, CombatCreature defender)
 		{

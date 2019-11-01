@@ -31,7 +31,7 @@ namespace CoC.Backend.BodyParts
 
 	//feel free to add more of these. i just did these because they were there, and i didn't want to use a string.
 	public enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED, SLIMY }
-	public enum FurTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, FLUFFY, MANGEY }
+	public enum FurTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, FLUFFY, MANGEY, THICK }
 
 	public sealed partial class Epidermis : BehavioralPartBase<EpidermisType, EpidermalData>
 	{

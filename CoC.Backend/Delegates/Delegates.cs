@@ -9,6 +9,8 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.UI;
 using CoC.Backend.Items;
+using CoC.Backend.Attacks;
+using System;
 
 namespace CoC.Backend
 {
@@ -53,4 +55,5 @@ namespace CoC.Backend
 
 	public delegate void HomeBaseReactionCallback(bool isReload);
 
+	public delegate ResourceAttackBase GenerateResourceAttack(Func<ushort> get, Action<ushort> set);
 }

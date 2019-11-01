@@ -12,8 +12,7 @@ using CoC.Backend.Reaction;
 
 namespace CoC.Backend.Pregnancies
 {
-	//need way of checking for eggs - if egg pregnancy, they can be fertalized. 
-	public abstract class PregnancyStore : SimpleSaveablePart<PregnancyStore, ReadOnlyPregnancyStore>, ITimeActiveListenerFull, ITimeLazyListener
+	public abstract partial class PregnancyStore : SimpleSaveablePart<PregnancyStore, ReadOnlyPregnancyStore>, ITimeActiveListenerFull, ITimeLazyListener
 	{
 		public override string BodyPartName()
 		{
@@ -21,6 +20,8 @@ namespace CoC.Backend.Pregnancies
 		}
 
 		private Womb source => CreatureStore.GetCreatureClean(creatureID)?.womb;
+
+		public bool hasDiapause => source?.hasDiapauseEnabled ?? false;
 
 		public float pregnancyMultiplier => source?.pregnancyMultiplier ?? 1.0f;
 
@@ -36,7 +37,7 @@ namespace CoC.Backend.Pregnancies
 
 		public override ReadOnlyPregnancyStore AsReadOnlyData()
 		{
-			return new ReadOnlyPregnancyStore(creatureID, spawnType, birthCountdown);
+			return new ReadOnlyPregnancyStore(creatureID, spawnType.AsReadOnlyData(), birthCountdown);
 		}
 
 
@@ -44,9 +45,21 @@ namespace CoC.Backend.Pregnancies
 		{
 		}
 
+		internal void onConsumeLiquid()
+		{
+			if (hasDiapause)
+			{
+				diapauseHours += (byte)(Utils.Rand(3) + 1);
+				doDiapauseText = true;
+			}
+		}
+
 		public ushort birthCountdown => hoursTilBirth <= 0 ? (ushort)0 : (ushort)Math.Ceiling(hoursTilBirth); //unless a pregnancy takes 7.50 years, a ushort is enough lol.
 
 		private float hoursTilBirth; //note that this is passed in as a ushort, but we use float for more accurate pregnancy speed multiplier math, though i suppose this opens us up to floating point rounding errors.
+
+		private ushort diapauseHours = 0;
+		private bool doDiapauseText = false;
 
 		public bool isPregnant => spawnType != null;
 
@@ -60,7 +73,11 @@ namespace CoC.Backend.Pregnancies
 			{
 				if (spawnType.HandleNewKnockupAttempt(type, out StandardSpawnType newType)) 
 				{
+					var oldData = spawnType.AsReadOnlyData();
 					spawnType = newType;
+
+					source?.RaiseKnockupEvent(spawnType, this, oldData);
+
 					return true;
 				}
 				return false;
@@ -69,6 +86,8 @@ namespace CoC.Backend.Pregnancies
 			{
 				spawnType = type;
 				hoursTilBirth = type.hoursToBirth;
+
+				source?.RaiseKnockupEvent(spawnType, this);
 				return true;
 			}
 			return false;
@@ -116,8 +135,19 @@ namespace CoC.Backend.Pregnancies
 			//set initial out values so we can return safely. 
 			TimeReactionBase output = null;
 
-			if (isPregnant)
+			//pregnant, does not have diapause, or pregnant, has diapause, and has some hours to progess due to ingesting liquids. 
+			if (isPregnant && (!hasDiapause || diapauseHours > 0))
 			{
+				if (hasDiapause)
+				{
+					diapauseHours --;
+
+					if (doDiapauseText)
+					{
+						output = new GenericSimpleReaction((_,__)=>DiapauseText());
+						doDiapauseText = false;
+					}
+				}
 				hoursTilBirth -= pregnancyMultiplier;
 				//override them if we are pregnant and giving birth.
 				if (hoursTilBirth <= 0)
@@ -129,12 +159,18 @@ namespace CoC.Backend.Pregnancies
 			return output;
 		}
 
-		//in the rare event time passing causes premature birthing, you can do it here. 
+		protected abstract string DiapauseText();
+
 		protected DynamicTimeReaction DoBirth()
 		{
 			var output = HandleBirthing();
 			spawnType = null; //clear pregnancy.
 			hoursTilBirth = 0;
+
+			diapauseHours = 0;
+			doDiapauseText = false;
+
+
 			birthCount++;
 			source?.RaiseBirthEvent(spawnType, this);
 			return output;
@@ -142,6 +178,7 @@ namespace CoC.Backend.Pregnancies
 
 		protected abstract DynamicTimeReaction HandleBirthing();
 
+		//in the rare event time passing causes premature birthing, you can do it here. 
 		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
 		{
 			if (isPregnant)
@@ -162,11 +199,11 @@ namespace CoC.Backend.Pregnancies
 
 	public sealed class ReadOnlyPregnancyStore : SimpleData
 	{
-		public readonly StandardSpawnType spawnType;
+		public readonly StandardSpawnData spawnType;
 		public readonly ushort hoursTilBirth;
 
 
-		public ReadOnlyPregnancyStore(Guid creatureID, StandardSpawnType spawnType, ushort hoursToBirth) : base(creatureID)
+		public ReadOnlyPregnancyStore(Guid creatureID, StandardSpawnData spawnType, ushort hoursToBirth) : base(creatureID)
 		{
 			this.spawnType = spawnType;
 			hoursTilBirth = hoursToBirth;

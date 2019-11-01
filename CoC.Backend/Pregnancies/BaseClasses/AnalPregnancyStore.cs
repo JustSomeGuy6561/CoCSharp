@@ -26,5 +26,10 @@ namespace CoC.Backend.Pregnancies
 		{
 			return ((SpawnTypeIncludeAnal)spawnType).NotifyAnalBirthingProgressed(creatureID, hoursTilBirth, oldHoursToBirth);
 		}
+
+		protected override string DiapauseText()
+		{
+			return GenericDiapauseText();
+		}
 	}
 }

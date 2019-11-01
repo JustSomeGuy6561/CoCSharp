@@ -448,13 +448,13 @@ namespace CoC.Backend.Perks
 			set => source.genitals.MinCockLength = value;
 		}
 
-		internal float perkBonusVirilityMultiplier
+		public float perkBonusVirilityMultiplier
 		{
 			get => source.genitals.perkBonusVirilityMultiplier;
 			set => source.genitals.perkBonusVirilityMultiplier = value;
 		}
 
-		internal sbyte perkBonusVirility
+		public sbyte perkBonusVirility
 		{
 			get => source.genitals.perkBonusVirility;
 			set => source.genitals.perkBonusVirility = value;

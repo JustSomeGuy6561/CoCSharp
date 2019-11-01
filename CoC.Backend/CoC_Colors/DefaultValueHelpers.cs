@@ -66,7 +66,7 @@ namespace CoC.Backend.CoC_Colors
 		public static FurColor defaultFoxFacialFur => new FurColor(HairFurColors.ORANGE, HairFurColors.WHITE, FurMulticolorPattern.NO_PATTERN);
 		public static FurColor defaultFoxTailFur => new FurColor(HairFurColors.ORANGE, HairFurColors.WHITE, FurMulticolorPattern.STRIPED);
 
-		public static FurColor defaultGoatWoolFur => new FurColor(HairFurColors.WHITE);
+		public static FurColor defaultSatyrTailColor => new FurColor(HairFurColors.WHITE);
 
 
 		public static Tones defaultGooTone => Tones.CERULEAN;

@@ -16,15 +16,21 @@ namespace CoC.Frontend.Perks.Endowment
 			
 			//baseModifiers.minCorruption += 5;
 			baseModifiers.CorruptionGainMultiplier += 0.25f;
-			extraModifiers.corruptionRequiredOffset -= 5;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.corruptionRequiredOffset -= 5;
+			}
 		}
 
 		protected override void OnRemoval()
 		{
 			//baseModifiers.minCorruption -= 5;
 			baseModifiers.CorruptionGainMultiplier -= 0.25f;
-			extraModifiers.corruptionRequiredOffset += 5;
 
+			if (hasExtraModifiers)
+			{
+				extraModifiers.corruptionRequiredOffset += 5;
+			}
 		}
 	}
 }

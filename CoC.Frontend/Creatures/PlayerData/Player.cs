@@ -18,5 +18,7 @@ namespace CoC.Frontend.Creatures.PlayerData
 		public ExtendedCreatureData extendedData { get; }
 
 		public ExtendedPerkModifiers extendedPerkModifiers { get; }
+
+		
 	}
 }

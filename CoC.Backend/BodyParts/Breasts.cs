@@ -28,6 +28,8 @@ namespace CoC.Backend.BodyParts
 		private Gender currGender => creature?.genitals.gender ?? Gender.MALE;
 		private int currentBreastRow => creature?.genitals.breastRows.IndexOf(this) ?? 0;
 
+		public int index => currentBreastRow;
+
 		public const CupSize DEFAULT_MALE_SIZE = CupSize.FLAT;
 		public const CupSize DEFAULT_FEMALE_SIZE = CupSize.C;
 

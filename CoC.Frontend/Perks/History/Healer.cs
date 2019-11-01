@@ -13,13 +13,18 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			extraModifiers.healingMultiplier += 0.2f;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.healingMultiplier += 0.2f;
+			}
 		}
 
 		protected override void OnRemoval()
 		{
-			extraModifiers.healingMultiplier -= 0.2f;
-
+			if (hasExtraModifiers)
+			{
+				extraModifiers.healingMultiplier -= 0.2f;
+			}
 		}
 	}
 }

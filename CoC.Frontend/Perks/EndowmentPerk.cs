@@ -1,6 +1,7 @@
 ﻿using CoC.Backend;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Perks;
+using CoC.Frontend.Creatures;
 using CoC.Frontend.Perks.Endowment;
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,8 @@ namespace CoC.Frontend.Perks
 
 		protected override bool KeepOnAscension => false;
 
-		protected ExtendedPerkModifiers extraModifiers => this.ExtraModifiers();
+		protected bool hasExtraModifiers => sourceCreature is IExtendedCreature;
+		protected ExtendedPerkModifiers extraModifiers => (sourceCreature as IExtendedCreature).extendedPerkModifiers;
 
 	}
 }

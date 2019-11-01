@@ -13,14 +13,18 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			var data = extraModifiers;
-			data.numTransformsDelta += 1;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.numTransformsDelta += 1;
+			}
 		}
 
 		protected override void OnRemoval()
 		{
-			var data = extraModifiers;
-			data.numTransformsDelta -= 1;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.numTransformsDelta -= 1;
+			}
 		}
 	}
 }

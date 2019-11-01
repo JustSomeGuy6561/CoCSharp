@@ -18,14 +18,20 @@ namespace CoC.Frontend.Perks.History
 		{
 			baseModifiers.PerkBasedBonusAnalCapacity += 20;
 			baseModifiers.PerkBasedBonusVaginalCapacity += 20;
-			extraModifiers.lustRequiredForSexOffset -= 5;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.lustRequiredForSexOffset -= 5;
+			}
 		}
 
 		protected override void OnRemoval()
 		{
 			baseModifiers.PerkBasedBonusAnalCapacity -= 20;
 			baseModifiers.PerkBasedBonusVaginalCapacity -= 20;
-			extraModifiers.lustRequiredForSexOffset += 5;
+			if (hasExtraModifiers)
+			{
+				extraModifiers.lustRequiredForSexOffset += 5;
+			}
 		}
 	}
 }

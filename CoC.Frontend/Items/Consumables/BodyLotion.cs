@@ -187,10 +187,11 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		//since we override the attempt to use, this is irrelevant. 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse)
+		//unused. needs to exist so the code compiles.
+		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
 			resultsOfUse = null;
+			isBadEnd = false;
 			return true;
 		}
 

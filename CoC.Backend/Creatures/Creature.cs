@@ -174,6 +174,15 @@ namespace CoC.Backend.Creatures
 		public readonly Tongue tongue;
 		public readonly Wings wings;
 
+		//body aliases and helpers
+		public bool hasAnyFur => body.furActive;
+
+		public bool hasPrimaryFur => body.mainEpidermis.usesFur;
+		public bool hasSupplementaryFur => body.supplementaryEpidermis.usesFur;
+
+		public bool hasPlainSkin => body.mainEpidermis.currentType == EpidermisType.SKIN;
+
+
 		//aliases for build.
 		public Butt butt => build.butt;
 		public Hips hips => build.hips;
@@ -195,9 +204,14 @@ namespace CoC.Backend.Creatures
 		public readonly PerkCollection perks;
 		public readonly StatusEffectCollection statusEffects;
 
+		public byte heightInInches => build.heightInInches;
+
+
 		public Womb womb => genitals.womb;
 
 		//other aliases that are nice.
+
+		
 
 		public bool hasBalls => genitals.hasBalls;
 
@@ -646,6 +660,8 @@ namespace CoC.Backend.Creatures
 			return libidoTrue - oldValue;
 		}
 
+		
+
 		public float IncreaseLibido(float amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
@@ -983,7 +999,7 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public void DeltaCreatureStats(short lus = 0, short lib = 0, short sens = 0, short corr = 0, bool ignorePerks = false)
+		public void DeltaCreatureStats(float lus = 0, float lib = 0, float sens = 0, float corr = 0, bool ignorePerks = false)
 		{
 			float amount;
 			if (lus < 0)

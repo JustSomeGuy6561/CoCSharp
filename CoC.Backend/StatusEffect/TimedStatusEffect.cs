@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CoC.Backend.StatusEffect
 {
-	public abstract class TimedStatusEffect : StatusEffectBase, ITimeLazyListener
+	public abstract class TimedStatusEffect : StatusEffectBase
 	{
 		protected readonly GameDateTime timeObtained;
 		protected GameDateTime timeWearsOff;
@@ -15,20 +15,23 @@ namespace CoC.Backend.StatusEffect
 			timeWearsOff = GameDateTime.HoursFromNow(initialTimeout);
 		}
 
-		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
+		internal string ReactToTimePassing(byte hoursPassed, out bool removeEffect)
 		{
+			string text = null;
 			if (GameDateTime.Now.CompareTo(timeWearsOff) >= 0)
 			{
-				return OnStatusEffectWoreOff();
+				text = OnStatusEffectWoreOff();
+				removeEffect = true;
 			}
 			else
 			{
-				return OnStatusEffectTimePassing(hoursPassed);
+				text = OnStatusEffectTimePassing(hoursPassed, out removeEffect);
 			}
+			return text;
 		}
 
 
-		protected abstract string OnStatusEffectTimePassing(byte hoursPassedSinceLastUpdate);
+		protected abstract string OnStatusEffectTimePassing(byte hoursPassedSinceLastUpdate, out bool removeEffect);
 
 		protected abstract string OnStatusEffectWoreOff();
 	}
