@@ -8,11 +8,11 @@ using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -22,7 +22,7 @@ namespace CoC.Backend.BodyParts
 	//This class is so much harder to implement than i thought it'd be.
 	//Edit so much later: This class is probably the most complicated i've implemented to date. I still need to add attack data.
 
-	public sealed partial class Horns : BehavioralSaveablePart<Horns, HornType, HornData>, IGrowable, IShrinkable, IFemininityListenerInternal, ICanAttackWith
+	public sealed partial class Horns : BehavioralSaveablePart<Horns, HornType, HornWrapper>, IGrowable, IShrinkable, IFemininityListenerInternal, ICanAttackWith
 	{
 
 		public override string BodyPartName() => Name();
@@ -32,7 +32,7 @@ namespace CoC.Backend.BodyParts
 		public byte numHorns => _numHorns;
 		private byte _numHorns = 0;
 
-		private FemininityData femininity => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.femininity.AsReadOnlyData() : new FemininityData(creatureID, 50);
+		private FemininityWrapper femininity => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.femininity.AsReadOnlyReference() : new FemininityWrapper(creatureID);
 
 		public override HornType type
 		{
@@ -78,18 +78,18 @@ namespace CoC.Backend.BodyParts
 
 		protected internal override void LateInit()
 		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature)) creature.genitals.femininity.dataChange += FemininityChangedEvent;
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature)) creature.genitals.femininity.dataChanged += FemininityChangedEvent;
 			type.onInit(type, ref _numHorns, ref _significantHornSize, femininity);
 		}
 
-		private void FemininityChangedEvent(object sender, SimpleDataChangeEvent<Femininity, FemininityData> e)
+		private void FemininityChangedEvent(object sender, SimpleDataChangedEvent<FemininityWrapper, FemininityData> e)
 		{
-			type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, e.oldValues.femininity, e.newValues);
+			type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, e.oldData.femininity, e.dataSource);
 		}
 
-		public override HornData AsReadOnlyData()
+		public override HornWrapper AsReadOnlyReference()
 		{
-			return new HornData(this);
+			return new HornWrapper(this);
 		}
 
 		#region Update
@@ -102,7 +102,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = newType;
 
 			CheckDataChanged(oldData);
@@ -117,7 +117,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = newType;
 			StrengthenTransformPrivate(byAmount, uniform);
 
@@ -135,11 +135,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Horn Specific Methods
-		public bool CanStrengthen => type.CanGrow(numHorns, significantHornSize, femininity);
+		public bool canStrengthen => type.CanGrow(numHorns, significantHornSize, femininity);
 
 		internal bool StrengthenTransform(byte numberOfTimes = 1, bool uniform = false)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			var retVal = StrengthenTransformPrivate(numberOfTimes, uniform);
 			CheckDataChanged(oldData);
 			return retVal;
@@ -153,11 +153,11 @@ namespace CoC.Backend.BodyParts
 			return type.StrengthenTransform(numberOfTimes, ref _numHorns, ref _significantHornSize, femininity, uniform);
 		}
 
-		public bool CanWeaken => type.CanShrink(numHorns, significantHornSize, femininity);
+		public bool canWeaken => type.CanShrink(numHorns, significantHornSize, femininity);
 
 		internal bool WeakenTransform(byte byAmount = 1)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			var retVal = WeakenTransformPrivate(byAmount);
 			CheckDataChanged(oldData);
 			return retVal;
@@ -191,6 +191,25 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public HornData AsData()
+		{
+			return new HornData(this);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<HornWrapper, HornData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<HornWrapper, HornData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<HornWrapper, HornData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(HornData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<HornWrapper, HornData>(AsReadOnlyReference(), oldData));
+		}
+
 		#region IFemininityListener
 		string IFemininityListenerInternal.reactToFemininityChangeFromTimePassing(bool isPlayer, byte hoursPassed, byte oldFemininity)
 		{
@@ -207,7 +226,7 @@ namespace CoC.Backend.BodyParts
 		#region IGrowShrinkable
 		bool IShrinkable.CanReducto()
 		{
-			return type.AllowsReducto && CanWeaken;
+			return type.AllowsReducto && canWeaken;
 		}
 
 		float IShrinkable.UseReducto()
@@ -223,7 +242,7 @@ namespace CoC.Backend.BodyParts
 
 		bool IGrowable.CanGroPlus()
 		{
-			return type.AllowsGroPlus && CanStrengthen;
+			return type.AllowsGroPlus && canStrengthen;
 		}
 
 		float IGrowable.UseGroPlus()
@@ -250,7 +269,7 @@ namespace CoC.Backend.BodyParts
 
 	//i could go with function pobyteers throughout this, but frankly it's complicated enough that it might as well just be abstract.
 
-	public abstract partial class HornType : SaveableBehavior<HornType, Horns, HornData>
+	public abstract partial class HornType : SaveableBehavior<HornType, Horns, HornWrapper>
 	{
 		#region HornType
 
@@ -319,7 +338,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static bool Validate(ref HornType hornType, ref byte hornCount, ref byte hornLength, in FemininityData masculinity, bool correctInvalidData)
+		internal static bool Validate(ref HornType hornType, ref byte hornCount, ref byte hornLength, in FemininityWrapper masculinity, bool correctInvalidData)
 		{
 			bool valid = true;
 			if (!horns.Contains(hornType))
@@ -331,11 +350,11 @@ namespace CoC.Backend.BodyParts
 				valid = false;
 				hornType = NONE;
 			}
-			valid &= hornType.ValidateData(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
+			valid &= hornType._ValidateWrapper_(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
 			return valid;
 		}
 
-		protected virtual bool ValidateData(ref byte hornCount, ref byte hornLength, in FemininityData masculinity, bool correctInvalidData)
+		protected virtual bool _ValidateWrapper_(ref byte hornCount, ref byte hornLength, in FemininityWrapper masculinity, bool correctInvalidData)
 		{
 			bool valid = true;
 			byte correctedValue = hornCount;
@@ -363,53 +382,53 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		internal virtual void onInit(HornType oldType, ref byte hornCount, ref byte hornLength, in FemininityData masculinity)
+		internal virtual void onInit(HornType oldType, ref byte hornCount, ref byte hornLength, in FemininityWrapper masculinity)
 		{
 			hornCount = defaultHorns;
 			hornLength = defaultLength;
 		}
 
-		internal virtual void onTypeChange(HornType oldType, ref byte hornCount, ref byte hornLength, in FemininityData masculinity)
+		internal virtual void onTypeChange(HornType oldType, ref byte hornCount, ref byte hornLength, in FemininityWrapper masculinity)
 		{
 			hornCount = defaultHorns;
 			hornLength = defaultLength;
 		}
 
-		internal virtual string reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, byte oldMasculinity, in FemininityData masculinity)
+		internal virtual string reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, byte oldMasculinity, in FemininityWrapper masculinity)
 		{
 			return "";
 		}
-		internal virtual bool CanGrow(byte numHorns, byte largestHornLength, in FemininityData masculinity)
+		internal virtual bool CanGrow(byte numHorns, byte largestHornLength, in FemininityWrapper masculinity)
 		{
 			return numHorns < maxHorns || largestHornLength < maxHornLength;
 		}
-		internal virtual bool CanShrink(byte numHorns, byte largestHornLength, in FemininityData masculinity)
+		internal virtual bool CanShrink(byte numHorns, byte largestHornLength, in FemininityWrapper masculinity)
 		{
 			return numHorns > minHorns || largestHornLength > minHornLength;
 		}
 
 		internal virtual bool AllowsReducto => false;
-		internal virtual float ReductoHorns(ref byte numHorns, ref byte maxHornLength, in FemininityData masculinity)
+		internal virtual float ReductoHorns(ref byte numHorns, ref byte maxHornLength, in FemininityWrapper masculinity)
 		{
 			return 0;
 		}
 		internal virtual bool AllowsGroPlus => false;
-		internal virtual float GroPlusHorns(ref byte numHorns, ref byte maxHornLength, in FemininityData masculinity)
+		internal virtual float GroPlusHorns(ref byte numHorns, ref byte maxHornLength, in FemininityWrapper masculinity)
 		{
 			return 0;
 		}
 
-		internal abstract bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity, bool uniform = false); //unknown
+		internal abstract bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityWrapper masculinity, bool uniform = false); //unknown
 
-		internal abstract bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity);
+		internal abstract bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityWrapper masculinity);
 
-		internal virtual void GrowToMax(ref byte numHorns, ref byte largestHorn, in FemininityData masculinity)
+		internal virtual void GrowToMax(ref byte numHorns, ref byte largestHorn, in FemininityWrapper masculinity)
 		{
 			numHorns = maxHorns;
 			largestHorn = maxHornLength;
 		}
 
-		internal virtual void ShrinkToMin(ref byte numHorns, ref byte largestHorn, in FemininityData masculinity)
+		internal virtual void ShrinkToMin(ref byte numHorns, ref byte largestHorn, in FemininityWrapper masculinity)
 		{
 			numHorns = minHorns;
 			largestHorn = minHornLength;
@@ -418,14 +437,14 @@ namespace CoC.Backend.BodyParts
 		internal abstract AttackBase GetAttack(Horns horns);
 		internal abstract bool CanAttackWith(Horns horns);
 
-		public static readonly HornType NONE = new SimpleOrNoHorns(0, 0, NoHornsShortDesc, NoHornsFullDesc, NoHornsPlayerStr, NoHornsTransformStr, NoHornsRestoreStr);
+		public static readonly HornType NONE = new SimpleOrNoHorns(0, 0, NoHornsShortDesc, NoHornsLongDesc, NoHornsPlayerStr, NoHornsTransformStr, NoHornsRestoreStr);
 		public static readonly HornType DEMON = new DemonHorns();
 		public static readonly HornType BULL_LIKE = new BullHorns(); //female aware. fuck me. //OLD COW_MINOTAUR
 		public static readonly HornType DRACONIC = new DragonHorns();
 		//Fun fact: female reindeer (aka caribou in North America) grow horns. no other species of deer do that. which leads to the weird distinction here.
 		//I've tried to remove clones, but i think this is the exception. On that note, water deer have long teeth, not horns. I'm, not adding them.
-		public static readonly HornType DEER_ANTLERS = new Antlers(false, 24, DeerShortDesc, DeerFullDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
-		public static readonly HornType REINDEER_ANTLERS = new Antlers(true, 36, ReindeerShortDesc, ReindeerFullDesc, ReindeerPlayerStr, ReindeerTransformStr, ReindeerRestoreStr);
+		public static readonly HornType DEER_ANTLERS = new Antlers(false, 24, DeerShortDesc, DeerLongDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
+		public static readonly HornType REINDEER_ANTLERS = new Antlers(true, 36, ReindeerShortDesc, ReindeerLongDesc, ReindeerPlayerStr, ReindeerTransformStr, ReindeerRestoreStr);
 
 		//Strangely enough, GOAT horns are used for satyrs (and only satyrs) though in-game enemy satyrs attack as if they have ram's horms. stranger still, the PC grows standard goat horns,
 		//But does not gain the ability to head-butt like satyrs do in game. IDK man.
@@ -434,7 +453,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly HornType RHINO = new RhinoHorn();
 		public static readonly HornType SHEEP = new SheepHorns(); //female aware. see above. //OLD SHEEP, RAM
 
-		public static readonly HornType IMP = new SimpleOrNoHorns(2, 3, ImpShortDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);//"a pair of short, imp-like horns");
+		public static readonly HornType IMP = new SimpleOrNoHorns(2, 3, ImpShortDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);//"a pair of short, imp-like horns");
 		#endregion
 		//these horns are immutable - if you have them, they do not grow or shrink, and you can't get any more of them.
 		private class SimpleOrNoHorns : HornType
@@ -443,12 +462,12 @@ namespace CoC.Backend.BodyParts
 				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc, ChangeType<Horns> transform,
 				RestoreType<Horns> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityWrapper masculinity, bool uniform = false)
 			{
 				return false;
 			}
 
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityWrapper masculinity)
 			{
 				numHorns = 0;
 				significantHornLength = 0;
@@ -462,9 +481,9 @@ namespace CoC.Backend.BodyParts
 
 		private class DemonHorns : HornType
 		{
-			public DemonHorns() : base(2, 12, 2, 10, DemonShortDesc, DemonFullDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr) { }
+			public DemonHorns() : base(2, 12, 2, 10, DemonShortDesc, DemonLongDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr) { }
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity, bool uniform = false)
 			{
 				Utils.Clamp<byte>(ref byAmount, 0, byte.MaxValue);
 				if (numHorns >= maxHorns || byAmount == 0)
@@ -476,7 +495,7 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 			//Lose 4-6 horns. if that makes it 0 horns, return true
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				if (byAmount == 0)
 				{
@@ -493,9 +512,9 @@ namespace CoC.Backend.BodyParts
 			internal override AttackBase GetAttack(Horns horns) => AttackBase.NO_ATTACK;
 			internal override bool CanAttackWith(Horns horns) => false;
 
-			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in FemininityData masculinity, bool correctInvalidData)
+			protected override bool _ValidateWrapper_(ref byte hornCount, ref byte hornLength, in FemininityWrapper masculinity, bool correctInvalidData)
 			{
-				bool valid = base.ValidateData(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
+				bool valid = base._ValidateWrapper_(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
 				if (!valid && !correctInvalidData)
 				{
 					return false;
@@ -524,7 +543,7 @@ namespace CoC.Backend.BodyParts
 		private class BullHorns : HornType
 		{
 			private static readonly byte maxFeminineLength = 5;
-			public BullHorns() : base(2, 2, 2, MAX_HORN_LENGTH, BullShortDesc, BullFullDesc, BullPlayerStr, BullTransformStr, BullRestoreStr)
+			public BullHorns() : base(2, 2, 2, MAX_HORN_LENGTH, BullShortDesc, BullLongDesc, BullPlayerStr, BullTransformStr, BullRestoreStr)
 			{
 				if (minHornLength > maxFeminineLength)
 				{
@@ -534,7 +553,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsReducto => true;
 
-			internal override string reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, byte oldMasculinity, in FemininityData femininity)
+			internal override string reactToChangesInMasculinity(ref byte hornCount, ref byte hornLength, byte oldMasculinity, in FemininityWrapper femininity)
 			{
 				byte oldLength = hornLength;
 
@@ -565,7 +584,7 @@ namespace CoC.Backend.BodyParts
 				return BullHornsReactToFemDeltaStr(oldLength, in hornLength, oldMasculinity, in femininity);
 			}
 
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				if (!CanShrink(numHorns, hornLength, masculinity))
 				{
@@ -606,13 +625,13 @@ namespace CoC.Backend.BodyParts
 				return reduceAmount;
 			}
 
-			internal override bool CanGrow(byte numHorns, byte largestHornLength, in FemininityData masculinity)
+			internal override bool CanGrow(byte numHorns, byte largestHornLength, in FemininityWrapper masculinity)
 			{
 				if (masculinity.isFemale) return largestHornLength < maxFeminineLength;
 				else return largestHornLength < maxHornLength;
 			}
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity, bool uniform = false)
 			{
 				if (byAmount == 0 || (!masculinity.isFemale && hornLength >= maxHornLength))
 				{
@@ -645,7 +664,7 @@ namespace CoC.Backend.BodyParts
 			}
 			//Lose half of the length, down to 5inches. at that pobyte, revert to nubs if female
 			//or lose the rest if male. after that, lose them regardless.
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				//early exit: no amount
 				if (byAmount == 0)
@@ -724,15 +743,15 @@ namespace CoC.Backend.BodyParts
 				return horns.significantHornSize > maxFeminineLength;
 			}
 
-			internal override void GrowToMax(ref byte numHorns, ref byte largestHorn, in FemininityData masculinity)
+			internal override void GrowToMax(ref byte numHorns, ref byte largestHorn, in FemininityWrapper masculinity)
 			{
 				numHorns = maxHorns;
 				largestHorn = masculinity.isFemale ? maxFeminineLength : maxHornLength;
 			}
 
-			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool correctInvalidData)
+			protected override bool _ValidateWrapper_(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity, bool correctInvalidData)
 			{
-				bool primary = base.ValidateData(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
+				bool primary = base._ValidateWrapper_(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
 				if (!primary && !correctInvalidData)
 				{
 					return false;
@@ -780,7 +799,7 @@ namespace CoC.Backend.BodyParts
 
 		private class DragonHorns : HornType
 		{
-			public DragonHorns() : base(2, 4, 4, 12, DragonShortDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr) { }
+			public DragonHorns() : base(2, 4, 4, 12, DragonShortDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr) { }
 
 			//video game logic, idk: horns can be shrunk via reducto, but since reducto cant remove horns (except antlers), you just keep 4 horns. 
 			//which means that it is technically valid to have four horns, with the first two tiny af. 
@@ -788,7 +807,7 @@ namespace CoC.Backend.BodyParts
 
 			//Executive decision: second pair of dragon horns can't be shrunk. 
 			internal override bool AllowsReducto => true;
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				byte reduced = hornLength.subtract(2);
 				byte oldHornLength = hornLength;
@@ -798,7 +817,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				byte grown = hornLength.add(2);
 				byte oldHornLength = hornLength;
@@ -806,7 +825,7 @@ namespace CoC.Backend.BodyParts
 				return oldHornLength - hornLength;
 			}
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity, bool uniform = false)
 			{
 				if ((hornLength >= maxHornLength && numHorns >= maxHorns) || byAmount == 0)
 				{
@@ -828,7 +847,7 @@ namespace CoC.Backend.BodyParts
 
 			}
 			//if 4 horns, become 2 horns. then shrink horns to 6in. then remove them completely.
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				while (byAmount-- > 0 && hornLength > 0)
 				{
@@ -863,19 +882,19 @@ namespace CoC.Backend.BodyParts
 				isReindeer = reindeer;
 			}
 
-			internal override bool CanGrow(byte numHorns, byte largestHornLength, in FemininityData masculinity)
+			internal override bool CanGrow(byte numHorns, byte largestHornLength, in FemininityWrapper masculinity)
 			{
 				return numHorns < maxHorns;
 			}
 
-			internal override bool CanShrink(byte numHorns, byte largestHornLength, in FemininityData masculinity)
+			internal override bool CanShrink(byte numHorns, byte largestHornLength, in FemininityWrapper masculinity)
 			{
 				return numHorns > minHorns;
 			}
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				byte reduced = numHorns.subtract(4);
 				byte oldHornCount = numHorns;
@@ -886,7 +905,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsGroPlus => isReindeer;
 
-			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinitiy)
+			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinitiy)
 			{
 				if (!isReindeer || numHorns >= maxHorns)
 				{
@@ -900,7 +919,7 @@ namespace CoC.Backend.BodyParts
 				return numHorns - oldHornCount;
 			}
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity, bool uniform = false)
 			{
 				if (numHorns >= maxHorns || byAmount == 0)
 				{
@@ -925,7 +944,7 @@ namespace CoC.Backend.BodyParts
 				return true;
 
 			}
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				//get value, then decrement. if you're not familiar with this, it's confusing, i know. but i always
 				//forget to decrement the loop at the end, and infinite loops are worse.
@@ -942,9 +961,9 @@ namespace CoC.Backend.BodyParts
 			internal override AttackBase GetAttack(Horns horns) => AttackBase.NO_ATTACK;
 			internal override bool CanAttackWith(Horns horns) => false;
 
-			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in FemininityData masculinity, bool correctInvalidData)
+			protected override bool _ValidateWrapper_(ref byte hornCount, ref byte hornLength, in FemininityWrapper masculinity, bool correctInvalidData)
 			{
-				bool valid = base.ValidateData(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
+				bool valid = base._ValidateWrapper_(ref hornCount, ref hornLength, in masculinity, correctInvalidData);
 				if (!valid && !correctInvalidData)
 				{
 					return false;
@@ -985,11 +1004,11 @@ namespace CoC.Backend.BodyParts
 
 		private class GoatHorns : HornType
 		{
-			public GoatHorns() : base(2, 2, 1, 6, GoatShortDesc, GoatFullDesc, GoatPlayerStr, GoatTransformStr, GoatRestoreStr) { }
+			public GoatHorns() : base(2, 2, 1, 6, GoatShortDesc, GoatLongDesc, GoatPlayerStr, GoatTransformStr, GoatRestoreStr) { }
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				byte changeAmount = 0;
 				if (hornLength <= minHornLength)
@@ -1008,7 +1027,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				byte changeAmount = 0;
 				if (hornLength >= maxHornLength)
@@ -1027,7 +1046,7 @@ namespace CoC.Backend.BodyParts
 				return changeAmount;
 			}
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool uniform = false)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity, bool uniform = false)
 			{
 				if (hornLength >= maxHornLength || byAmount == 0)
 				{
@@ -1054,7 +1073,7 @@ namespace CoC.Backend.BodyParts
 
 			}
 			//nope.avi. they're so small there's just no pobyte. you just lose them.
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				hornLength = 0;
 				return true;
@@ -1070,11 +1089,11 @@ namespace CoC.Backend.BodyParts
 		//Get it? That made me laugh way harder than it should have (which is not at all).
 		private class UniHorn : HornType
 		{
-			public UniHorn() : base(1, 1, 6, 12, UniHornShortDesc, UniHornFullDesc, UniHornPlayerStr, UniHornTransformStr, UniHornRestoreStr) { }
+			public UniHorn() : base(1, 1, 6, 12, UniHornShortDesc, UniHornLongDesc, UniHornPlayerStr, UniHornTransformStr, UniHornRestoreStr) { }
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				if (hornLength <= minHornLength)
 					return 0;
@@ -1087,7 +1106,7 @@ namespace CoC.Backend.BodyParts
 			}
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				if (hornLength >= maxHornLength)
 					return 0;
@@ -1099,7 +1118,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculine, bool uniform)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculine, bool uniform)
 			{
 				if (hornLength >= maxHornLength || byAmount == 0)
 				{
@@ -1112,7 +1131,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 			//Just lose it (ah aah aah)
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculine)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculine)
 			{
 				hornLength = minHornLength;
 				return true;
@@ -1133,9 +1152,9 @@ namespace CoC.Backend.BodyParts
 
 		private class RhinoHorn : HornType
 		{
-			public RhinoHorn() : base(1, 2, 6, 12, RhinoShortDesc, RhinoFullDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr) { }
+			public RhinoHorn() : base(1, 2, 6, 12, RhinoShortDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr) { }
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity, bool uniform)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityWrapper masculinity, bool uniform)
 			{
 				if (numHorns >= maxHorns || byAmount == 0)
 				{
@@ -1149,7 +1168,7 @@ namespace CoC.Backend.BodyParts
 				}
 
 			}
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				if (numHorns == maxHorns)
 				{
@@ -1165,7 +1184,7 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 
-			protected override bool ValidateData(ref byte hornCount, ref byte hornLength, in FemininityData masculinity, bool correctInvalidData)
+			protected override bool _ValidateWrapper_(ref byte hornCount, ref byte hornLength, in FemininityWrapper masculinity, bool correctInvalidData)
 			{
 				bool valid = true;
 				if (hornCount < minHorns)
@@ -1221,7 +1240,7 @@ namespace CoC.Backend.BodyParts
 		{
 			private static readonly byte maxFeminineLength = 7;
 
-			public SheepHorns() : base(2, 2, 2, 30, SheepShortDesc, SheepFullDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr)
+			public SheepHorns() : base(2, 2, 2, 30, SheepShortDesc, SheepLongDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr)
 			{
 				if (minHornLength > maxFeminineLength)
 				{
@@ -1230,7 +1249,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			internal override bool AllowsReducto => true;
-			internal override float ReductoHorns(ref byte numHorns, ref byte largestHornLength, in FemininityData masculinity)
+			internal override float ReductoHorns(ref byte numHorns, ref byte largestHornLength, in FemininityWrapper masculinity)
 			{
 
 				byte reduceAmount = 0;
@@ -1244,7 +1263,7 @@ namespace CoC.Backend.BodyParts
 				return reduceAmount;
 			}
 
-			internal override bool CanGrow(byte numHorns, byte largestHornLength, in FemininityData masculinity)
+			internal override bool CanGrow(byte numHorns, byte largestHornLength, in FemininityWrapper masculinity)
 			{
 				if (masculinity.isFemale)
 				{
@@ -1256,7 +1275,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 
-			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool uniform)
+			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity, bool uniform)
 			{
 				bool feminine = masculinity.isFemale;
 				if (byAmount == 0 || feminine && hornLength >= maxHornLength)
@@ -1300,7 +1319,7 @@ namespace CoC.Backend.BodyParts
 			//if masculine, Lose third of length, down to max feminine length. 
 			//if feminine, go to max feminine length immediately
 			//after that go to min, then lose horns entirely.
-			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity)
 			{
 				while (byAmount-- > 0 && hornLength > minHornLength)
 				{
@@ -1320,15 +1339,15 @@ namespace CoC.Backend.BodyParts
 				return byAmount > 0;
 			}
 
-			internal override void GrowToMax(ref byte numHorns, ref byte largestHorn, in FemininityData masculinity)
+			internal override void GrowToMax(ref byte numHorns, ref byte largestHorn, in FemininityWrapper masculinity)
 			{
 				numHorns = maxHorns;
 				largestHorn = masculinity.isFemale ? maxFeminineLength : maxHornLength;
 			}
 
-			protected override bool ValidateData(ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool correctInvalidData)
+			protected override bool _ValidateWrapper_(ref byte numHorns, ref byte hornLength, in FemininityWrapper masculinity, bool correctInvalidData)
 			{
-				bool primary = base.ValidateData(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
+				bool primary = base._ValidateWrapper_(ref numHorns, ref hornLength, in masculinity, correctInvalidData);
 				if (!primary && !correctInvalidData)
 				{
 					return false;
@@ -1420,12 +1439,27 @@ namespace CoC.Backend.BodyParts
 		*/
 	}
 
-	public sealed class HornData : BehavioralSaveablePartData<HornData, Horns, HornType>
+	public sealed class HornWrapper : BehavioralSaveablePartWrapper<HornWrapper, Horns, HornType>
+	{
+		public byte hornLength => sourceData.significantHornSize;
+		public byte hornCount => sourceData.numHorns;
+
+		public bool canStrengthen => sourceData.canStrengthen;
+
+		public bool canWeaken => sourceData.canWeaken;
+
+		public HornWrapper(Horns source) : base(source)
+		{
+			
+		}
+	}
+
+	public sealed class HornData
 	{
 		public readonly byte hornLength;
 		public readonly byte hornCount;
 
-		public HornData(Horns source) : base(GetID(source), GetBehavior(source))
+		public HornData(Horns source)
 		{
 			hornCount = source.numHorns;
 			hornLength = source.significantHornSize;

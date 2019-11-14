@@ -43,7 +43,7 @@ namespace CoC.Frontend.StatusEffect
 
 		public override SimpleDescriptor ShortDescription => throw new NotImplementedException();
 
-		public override SimpleDescriptor FullDescription => throw new NotImplementedException();
+		public override SimpleDescriptor LongDescription => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{
@@ -173,11 +173,11 @@ namespace CoC.Frontend.StatusEffect
 			string vagText;
 			if (sourceCreature.vaginas.Count > 1)
 			{
-				vagText = sourceCreature.genitals.vaginasMultiDesc();
+				vagText = sourceCreature.genitals.AllVaginasShortDescription();
 			}
 			else if (sourceCreature.vaginas.Count > 0)
 			{
-				vagText = sourceCreature.vaginas[0].fullDescription();
+				vagText = sourceCreature.vaginas[0].FullDescription();
 			}
 			else
 			{
@@ -194,11 +194,11 @@ namespace CoC.Frontend.StatusEffect
 			string vagText;
 			if (sourceCreature.vaginas.Count > 1)
 			{
-				vagText = sourceCreature.genitals.vaginasMultiDesc();
+				vagText = sourceCreature.genitals.AllVaginasShortDescription();
 			}
 			else if (sourceCreature.vaginas.Count > 0)
 			{
-				vagText = sourceCreature.vaginas[0].fullDescription();
+				vagText = sourceCreature.vaginas[0].FullDescription();
 			}
 			else
 			{

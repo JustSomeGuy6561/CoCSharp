@@ -31,7 +31,7 @@ namespace CoC.Backend.Tools
 		public static T ByteEnumDelta<T>(this T val, sbyte delta) where T : Enum
 		{
 			byte amt = Convert.ToByte(val);
-			amt.delta(delta);
+			amt.offset(delta);
 			return (T)Enum.Parse(typeof(T), amt.ToString());
 		}
 

@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:57 PM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -30,7 +31,7 @@ namespace CoC.Backend.BodyParts
 	//i have, however, renamed these. gaping-wide-> gaping. gaping-> roomy. could even rename clown car to gaping-wide if clown car is a little too bizarre, but i'm kinda fond of its bizarre-ness.
 	public enum VaginalLooseness : byte { TIGHT, NORMAL, LOOSE, ROOMY, GAPING, CLOWN_CAR_WIDE }
 
-	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType, VaginaData>, IBodyPartTimeLazy
+	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType, VaginaWrapper>, IBodyPartTimeLazy
 	{
 		public override string BodyPartName()
 		{
@@ -114,7 +115,7 @@ namespace CoC.Backend.BodyParts
 				Utils.ClampEnum(ref value, minWetness, maxWetness);
 				if (_wetness != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_wetness = value;
 					NotifyDataChanged(oldData);
 				}
@@ -130,7 +131,7 @@ namespace CoC.Backend.BodyParts
 				Utils.ClampEnum(ref value, minLooseness, maxLooseness);
 				if (_looseness != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_looseness = value;
 					NotifyDataChanged(oldData);
 				}
@@ -145,6 +146,8 @@ namespace CoC.Backend.BodyParts
 
 		public bool virgin { get; private set; } = true;
 
+		public bool everPracticedVaginal => totalPenetrationCount > 0;
+
 		public ushort bonusVaginalCapacity
 		{
 			get => _bonusVaginalCapacity;
@@ -152,7 +155,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_bonusVaginalCapacity != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_bonusVaginalCapacity = value;
 					NotifyDataChanged(oldData);
 				}
@@ -167,7 +170,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_perkBonusVaginalCapacity != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_perkBonusVaginalCapacity = value;
 					NotifyDataChanged(oldData);
 				}
@@ -202,58 +205,57 @@ namespace CoC.Backend.BodyParts
 		public override VaginaType defaultType => VaginaType.defaultValue;
 
 		#region Constructors
-		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData) : this(creatureID, initialPerkData, VaginaType.defaultValue, clitLength: initialPerkData.DefaultNewClitSize)
+		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkWrapper) : this(creatureID, initialPerkWrapper, VaginaType.defaultValue, clitLength: initialPerkWrapper.DefaultNewClitSize)
 		{ }
 
-		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType) : base(creatureID)
+		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkWrapper, VaginaType vaginaType) : base(creatureID)
 		{
-			clit = new Clit(creatureID, this, initialPerkData);
+			clit = new Clit(creatureID, this, initialPerkWrapper);
 			virgin = true;
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
-			_wetness = initialPerkData.defaultWetnessNew;
-			_looseness = initialPerkData.defaultLoosenessNew;
+			_wetness = initialPerkWrapper.defaultWetnessNew;
+			_looseness = initialPerkWrapper.defaultLoosenessNew;
 
 			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
 
-		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType, float clitLength,
+		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkWrapper, VaginaType vaginaType, float clitLength,
 			VaginalLooseness? vaginalLooseness = null, VaginalWetness? vaginalWetness = null, bool? isVirgin = null, bool omnibus = false) : base(creatureID)
 		{
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
 
-			clit = new Clit(creatureID, this, initialPerkData, clitLength, omnibus);
+			clit = new Clit(creatureID, this, initialPerkWrapper, clitLength, omnibus);
 			if (isVirgin is null)
 			{
 				isVirgin = vaginalLooseness == VaginalLooseness.TIGHT || vaginalLooseness is null;
 			}
 			virgin = (bool)isVirgin;
 
-			minLooseness = initialPerkData.minLooseness;
-			maxLooseness = initialPerkData.maxLooseness;
-			minWetness = initialPerkData.minWetness;
-			maxWetness = initialPerkData.maxWetness;
+			minLooseness = initialPerkWrapper.minLooseness;
+			maxLooseness = initialPerkWrapper.maxLooseness;
+			minWetness = initialPerkWrapper.minWetness;
+			maxWetness = initialPerkWrapper.maxWetness;
 
-			perkBonusVaginalCapacity = initialPerkData.perkBonusCapacity;
+			perkBonusVaginalCapacity = initialPerkWrapper.perkBonusCapacity;
 
 			//these are clamped by above set values.
-			_wetness = vaginalWetness ?? initialPerkData.defaultWetnessNew;
-			_looseness = vaginalLooseness ?? initialPerkData.defaultLoosenessNew;
+			_wetness = vaginalWetness ?? initialPerkWrapper.defaultWetnessNew;
+			_looseness = vaginalLooseness ?? initialPerkWrapper.defaultLoosenessNew;
 
 			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 		}
-
 		#endregion
 
 		#region Generate
-		internal static Vagina GenerateFromGender(Guid creatureID, VaginaPerkHelper initialPerkData, Gender gender)
+		internal static Vagina GenerateFromGender(Guid creatureID, VaginaPerkHelper initialPerkWrapper, Gender gender)
 		{
-			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(creatureID, initialPerkData);
+			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(creatureID, initialPerkWrapper);
 			else return null;
 		}
 		#endregion
-		public override VaginaData AsReadOnlyData()
+		public override VaginaWrapper AsReadOnlyReference()
 		{
-			return new VaginaData(this, vaginaIndex);
+			return new VaginaWrapper(this, vaginaIndex);
 		}
 
 		#region Update
@@ -407,7 +409,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (!clit.omnibusClit)
 			{
-				var oldData = AsReadOnlyData();
+				var oldData = AsData();
 				bool retVal = clit.ActivateOmnibusClit();
 				NotifyDataChanged(oldData);
 				return retVal;
@@ -419,7 +421,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (clit.omnibusClit)
 			{
-				var oldData = AsReadOnlyData();
+				var oldData = AsData();
 				var retVal = clit.DeactivateOmnibusClit();
 				NotifyDataChanged(oldData);
 				return retVal;
@@ -429,7 +431,7 @@ namespace CoC.Backend.BodyParts
 
 		public float growClit(float amount, bool ignorePerks = false)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			var retVal = clit.growClit(amount, ignorePerks);
 			if (retVal != 0)
 			{
@@ -440,7 +442,7 @@ namespace CoC.Backend.BodyParts
 
 		public float shrinkClit(float amount, bool ignorePerks = false)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			var retVal = clit.shrinkClit(amount, ignorePerks);
 			if (retVal != 0)
 			{
@@ -451,7 +453,7 @@ namespace CoC.Backend.BodyParts
 
 		public float SetClitSize(float newSize)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			var oldSize = clit.length;
 			var retVal = clit.SetClitSize(newSize);
 			if (clit.length != oldSize)
@@ -493,6 +495,26 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 		#endregion
+
+		public VaginaData AsData()
+		{
+			return new VaginaData(this, vaginaIndex);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<VaginaWrapper, VaginaData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<VaginaWrapper, VaginaData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<VaginaWrapper, VaginaData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(VaginaData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<VaginaWrapper, VaginaData>(AsReadOnlyReference(), oldData));
+		}
+
 		#region Piercing-Related
 		private bool PiercingLocationUnlocked(LabiaPiercings piercingLocation)
 		{
@@ -713,7 +735,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed partial class VaginaType : SaveableBehavior<VaginaType, Vagina, VaginaData>
+	public sealed partial class VaginaType : SaveableBehavior<VaginaType, Vagina, VaginaWrapper>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<VaginaType> types = new List<VaginaType>();
@@ -748,13 +770,62 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanFullDesc, VagHumanPlayerStr, (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
-		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineFullDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
-		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapFullDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
+		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanLongDesc, VagHumanPlayerStr, (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineLongDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
+		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapLongDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
 
 	}
 
-	public sealed partial class VaginaData : BehavioralSaveablePartData<VaginaData, Vagina, VaginaType>
+	public sealed partial class VaginaWrapper : BehavioralSaveablePartWrapper<VaginaWrapper, Vagina, VaginaType>
+	{
+
+		public ClitWrapper clit => sourceData.clit.AsReadOnlyReference();
+
+		 public bool virgin => sourceData.virgin;
+
+		 public VaginalLooseness minLooseness => sourceData.minLooseness;
+		 public VaginalLooseness maxLooseness => sourceData.maxLooseness;
+		 public VaginalWetness minWetness => sourceData.minWetness;
+		 public VaginalWetness maxWetness => sourceData.maxWetness;
+
+		 public ushort bonusVaginalCapacity => sourceData.bonusVaginalCapacity;
+		 public ushort perkBonusVaginalCapacity => sourceData.perkBonusVaginalCapacity;
+
+		 public VaginalWetness wetness => sourceData.wetness;
+		 public VaginalLooseness looseness => sourceData.looseness;
+
+		 public ushort orgasmCount => sourceData.orgasmCount;
+		 public ushort sexCount => sourceData.sexCount;
+		 public ushort totalPenetrationCount => sourceData.totalPenetrationCount;
+		 public ushort dryOrgasmCount => sourceData.dryOrgasmCount;
+
+		 //private ushort vaginaTightenTimer => sourceData.vaginaTightenTimer;
+
+		public bool everPracticedVaginal => totalPenetrationCount > 0;
+
+		public ushort Capacity() => sourceData.VaginalCapacity();
+
+		public string FullDescription() => sourceData.FullDescription();
+
+		public ReadOnlyPiercing<LabiaPiercings> labiaPiercings => sourceData.labiaPiercings.AsReadOnlyCopy();
+
+		public ReadOnlyPiercing<ClitPiercings> clitPiercings => sourceData.clit.clitPiercings.AsReadOnlyCopy();
+
+		public bool isPierced => clit.isPierced || labiaPiercings.isPierced;
+		public bool isClitPierced => clit.isPierced;
+		public bool isLabiaPierced => labiaPiercings.isPierced;
+
+		public bool wearingAnyJewelry => clit.wearingJewelry || labiaPiercings.wearingJewelry;
+		public bool clitWearingJewelry => clit.wearingJewelry;
+		public bool labiaWearingJewelry => labiaPiercings.wearingJewelry;
+
+		public VaginaWrapper(Vagina source, int currIndex) : base(source)
+		{
+
+		}
+	}
+
+	public sealed partial class VaginaData
 	{
 
 		public readonly ClitData clit;
@@ -765,9 +836,9 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ushort capacity;
 
-		public VaginaData(Vagina source, int currIndex) : base(GetID(source), GetBehavior(source))
+		public VaginaData(Vagina source, int currIndex)
 		{
-			clit = source.clit.AsReadOnlyData();
+			clit = source.clit.AsData();
 			looseness = source.looseness;
 			wetness = source.wetness;
 			isVirgin = source.virgin;

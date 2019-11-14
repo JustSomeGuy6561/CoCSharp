@@ -14,7 +14,7 @@ namespace CoC.Backend.BodyParts
 	//it's literally just a wrapper for an int.
 	//but now it has validation! woo!
 	//oh, and a descriptor.
-	public sealed partial class Butt : SimpleSaveablePart<Butt, ButtData>, IShrinkable //Gro+ doesnt work on butt.
+	public sealed partial class Butt : SimpleSaveablePart<Butt, ButtWrapper>, IShrinkable //Gro+ doesnt work on butt.
 	{
 		public const byte BUTTLESS = 0;
 		public const byte TIGHT = 2;
@@ -41,7 +41,7 @@ namespace CoC.Backend.BodyParts
 				Utils.Clamp(ref value, minVal, maxVal);
 				if (_buttSize != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_buttSize = value;
 					NotifyDataChanged(oldData);
 				}
@@ -70,14 +70,10 @@ namespace CoC.Backend.BodyParts
 
 		public override string BodyPartName() => Name();
 
-		public override ButtData AsReadOnlyData()
+		public override ButtWrapper AsReadOnlyReference()
 		{
-			return new ButtData(creatureID, size);
+			return new ButtWrapper(this);
 		}
-
-		public SimpleDescriptor AsText => AsStr;
-
-		public SimpleDescriptor ShortDescription => ShortDesc;
 
 		public byte GrowButt(byte amount = 1)
 		{
@@ -130,14 +126,48 @@ namespace CoC.Backend.BodyParts
 			}
 			return oldSize - size;
 		}
+
+		public ButtData AsData()
+		{
+			return new ButtData(size);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<ButtWrapper, ButtData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<ButtWrapper, ButtData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<ButtWrapper, ButtData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(ButtData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<ButtWrapper, ButtData>(AsReadOnlyReference(), oldData));
+		}
 	}
 
-	public sealed class ButtData : SimpleData
+	public sealed class ButtData
 	{
 		public readonly byte size;
-		internal ButtData(Guid creatureID, byte buttSize) : base(creatureID)
+
+		public ButtData(byte size)
 		{
-			size = buttSize;
+			this.size = size;
 		}
+	}
+
+	public sealed class ButtWrapper : SimpleWrapper<ButtWrapper, Butt>
+	{
+		public byte size => sourceData.size;
+
+		public bool hasButt => sourceData.hasButt;
+
+		public string AsText() => sourceData.AsText();
+
+		public string ShortDescription() => sourceData.ShortDescription();
+
+		internal ButtWrapper(Butt source) : base(source)
+		{ }
 	}
 }

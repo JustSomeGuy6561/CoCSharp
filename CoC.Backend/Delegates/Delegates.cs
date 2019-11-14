@@ -24,7 +24,7 @@ namespace CoC.Backend
 
 
 	public delegate string TypeAndPlayerDelegate<T>(T type, PlayerBase player);
-	public delegate string ChangeType<T>(T newType, PlayerBase player);
+	public delegate string ChangeType<T>(T otherType, PlayerBase player);
 	public delegate string RestoreType<T>(T originalType, PlayerBase player);
 
 	//these may be changed or removed.

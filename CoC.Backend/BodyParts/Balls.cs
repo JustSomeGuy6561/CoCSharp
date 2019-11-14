@@ -18,7 +18,7 @@ namespace CoC.Backend.BodyParts
 
 	//I'VE GOT BIG BALLS! OH, I'VE GOT BIG BALLS! THERE SUCH BIG BALLS! DIRTY BIG BALLS! HE'S GOT BIG BALLS! AND SHE'S GOT BIG BALLS! BUT WE'VE GOT THE BIGGEST BALLS OF THEM ALL!
 	//i'll see if i can hide this as an easter egg is some text somewhere. 
-	public sealed partial class Balls : SimpleSaveablePart<Balls, BallsData>, IGrowable, IShrinkable
+	public sealed partial class Balls : SimpleSaveablePart<Balls, BallsWrapper>, IGrowable, IShrinkable
 	{
 		//BasePerkModifiers modifiers => perkData();
 
@@ -40,7 +40,7 @@ namespace CoC.Backend.BodyParts
 		internal sbyte newSizeOffset = 0;
 
 		private byte getNewSize() => Utils.Clamp2(defaultNewSize, MIN_BALLS_SIZE, MAX_BALLS_SIZE);
-		private byte getNewSize(byte baseSize) => Utils.Clamp2(baseSize.delta(newSizeOffset), MIN_BALLS_SIZE, MAX_BALLS_SIZE);
+		private byte getNewSize(byte baseSize) => Utils.Clamp2(baseSize.offset(newSizeOffset), MIN_BALLS_SIZE, MAX_BALLS_SIZE);
 
 		internal float shrinkMultiplier = 1.0f;
 		internal float growthMultiplier = 1.0f;
@@ -98,19 +98,10 @@ namespace CoC.Backend.BodyParts
 
 		public override string BodyPartName() => Name();
 
-		public override BallsData AsReadOnlyData()
+		public override BallsWrapper AsReadOnlyReference()
 		{
-			return new BallsData(creatureID, count, size);
+			return new BallsWrapper(this);
 		}
-
-		public string ShortDescription()
-		{
-			if (hasBalls) return BallsDescript(count, size, uniBall);
-			else return GlobalStrings.None();
-		}
-
-		public DescriptorWithArg<Balls> FullDescription => BallsFullDesc;
-		public TypeAndPlayerDelegate<Balls> PlayerStr => BallsPlayerStr;
 
 		#region Unique Functions and Updating Properties
 		//Grows a pair of balls. returns false if it already has balls. 
@@ -181,7 +172,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal byte addBalls(byte addAmount)
+		internal byte AddBalls(byte addAmount)
 		{
 			Utils.Clamp(ref addAmount, (byte)0, MAX_BALLS_COUNT);
 
@@ -199,7 +190,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//
-		internal byte removeBalls(byte removeAmount)
+		internal byte RemoveBalls(byte removeAmount)
 		{
 			Utils.Clamp(ref removeAmount, (byte)0, MAX_BALLS_COUNT);
 			if (!hasBalls || removeAmount == 0)
@@ -220,6 +211,12 @@ namespace CoC.Backend.BodyParts
 				return oldCount.subtract(count);
 			}
 		}
+
+		internal byte RemoveExtraBalls()
+		{
+			return RemoveBalls(count.subtract(2));
+		}
+
 		internal bool removeAllBalls()
 		{
 			if (!hasBalls)
@@ -365,8 +362,7 @@ namespace CoC.Backend.BodyParts
 				{
 					ballSize = ballSize == 0 ? getNewSize() : getNewSize(ballSize);
 				}
-				if (numBalls == 0) numBalls = DEFAULT_BALLS_COUNT;
-				else Utils.Clamp(ref numBalls, DEFAULT_MIN_COUNT, MAX_BALLS_COUNT);
+				Utils.Clamp(ref numBalls, DEFAULT_MIN_COUNT, MAX_BALLS_COUNT);
 
 				if (numBalls % 2 == 1) numBalls--;
 
@@ -380,7 +376,7 @@ namespace CoC.Backend.BodyParts
 			BallsData oldData = null;
 			if (!silent && (count != numBalls || size != ballSize))
 			{
-				oldData = AsReadOnlyData();
+				oldData = AsData();
 			}
 
 			count = numBalls;
@@ -398,7 +394,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if ((count != 1 || size != 1) && !silent)
 				{
-					oldData = AsReadOnlyData();
+					oldData = AsData();
 				}
 				count = 1;
 				size = 1;
@@ -407,7 +403,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (hasBalls && !silent)
 				{
-					oldData = AsReadOnlyData();
+					oldData = AsData();
 				}
 				count = 0;
 				size = 0;
@@ -418,17 +414,55 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		#endregion
+
+		public BallsData AsData()
+		{
+			return new BallsData(count, size);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<BallsWrapper, BallsData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<BallsWrapper, BallsData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<BallsWrapper, BallsData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(BallsData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<BallsWrapper, BallsData>(AsReadOnlyReference(), oldData));
+		}
 	}
 
-	public sealed class BallsData : SimpleData
+	public sealed class BallsWrapper : SimpleWrapper<BallsWrapper, Balls>
 	{
-		public readonly byte numBalls;
-		public readonly byte ballSize;
+		public byte numBalls => sourceData.count;
+		public byte ballSize => sourceData.size;
 
-		internal BallsData(Guid id, byte numBalls, byte ballSize) : base(id)
+		public string SackDescription() => sourceData.SackDescription();
+
+		public string ShortDescription() => sourceData.ShortDescription();
+
+		public string LongDescription() => sourceData.LongDescription();
+
+		public string PlayerDescription() => sourceData.PlayerDescription();
+
+		internal BallsWrapper(Balls source) : base(source)
 		{
-			this.numBalls = numBalls;
-			this.ballSize = ballSize;
+
+		}
+	}
+
+	public sealed class BallsData
+	{
+		public readonly byte count;
+		public readonly byte size;
+
+		public BallsData(byte count, byte size)
+		{
+			this.count = count;
+			this.size = size;
 		}
 	}
 }

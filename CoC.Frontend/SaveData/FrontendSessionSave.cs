@@ -10,6 +10,8 @@ namespace CoC.Frontend.SaveData
 	{
 		public static FrontendSessionSave data => SaveSystem.GetSessionSave<FrontendSessionSave>();
 
+		public int CeruleanPotionUseCount { get; internal set; }
+
 		internal bool ForestUnlocked = false;
 		internal bool DeepwoodsUnlocked = false;
 		internal bool LakeUnlocked = false;
@@ -114,5 +116,7 @@ namespace CoC.Frontend.SaveData
 		internal ushort wallSkullCount = 0;
 		internal ushort wallStatueCount = 0;
 		internal bool HyperHappyLocal = false;
+		internal int CeruleanPotionNeuterCount;
+		internal int CeruleanPotionBadEndValue;
 	}
 }

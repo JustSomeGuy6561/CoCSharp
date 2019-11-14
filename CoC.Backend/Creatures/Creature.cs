@@ -90,38 +90,38 @@ namespace CoC.Backend.Creatures
 
 		protected internal virtual sbyte bonusMinLibido { get; set; }
 		protected virtual byte baseMinLibido => 0;
-		public byte minLibido => baseMinLibido.delta(bonusMinLibido);
+		public byte minLibido => baseMinLibido.offset(bonusMinLibido);
 
 
 		protected internal virtual sbyte bonusMinSensitivity { get; set; }
 		protected virtual byte baseMinSensitivity => 0;
-		public byte minSensitivity => baseMinSensitivity.delta(bonusMinSensitivity);
+		public byte minSensitivity => baseMinSensitivity.offset(bonusMinSensitivity);
 
 
 		protected internal virtual sbyte bonusMinCorruption { get; set; }
 		protected virtual byte baseMinCorruption => 0;
-		public byte minCorruption => baseMinCorruption.delta(bonusMinCorruption);
+		public byte minCorruption => baseMinCorruption.offset(bonusMinCorruption);
 
 
 		protected internal virtual sbyte bonusMinLust { get; set; }
 		protected virtual byte baseMinLust => 0;
-		public byte minLust => baseMinLust.delta(bonusMinLust);
+		public byte minLust => baseMinLust.offset(bonusMinLust);
 
 		protected internal virtual byte baseMaxLibido => BASE_MAX_LIBIDO;
 		protected internal virtual sbyte bonusMaxLibido { get; set; } = 0;
-		public byte maxLibido => HandleMaxStat(baseMaxLibido.delta(bonusMaxLibido), minLibido);
+		public byte maxLibido => HandleMaxStat(baseMaxLibido.offset(bonusMaxLibido), minLibido);
 
 		protected internal virtual byte baseMaxSensitivity => BASE_MAX_SENSITIVITY;
 		protected internal virtual sbyte bonusMaxSensitivity { get; set; } = 0;
-		public byte maxSensitivity => HandleMaxStat(baseMaxSensitivity.delta(bonusMaxSensitivity), minSensitivity);
+		public byte maxSensitivity => HandleMaxStat(baseMaxSensitivity.offset(bonusMaxSensitivity), minSensitivity);
 
 		protected internal virtual byte baseMaxCorruption => BASE_MAX_CORRUPTION;
 		protected internal virtual sbyte bonusMaxCorruption { get; set; } = 0;
-		public byte maxCorruption => HandleMaxStat(baseMaxCorruption.delta(bonusMaxCorruption), minCorruption);
+		public byte maxCorruption => HandleMaxStat(baseMaxCorruption.offset(bonusMaxCorruption), minCorruption);
 
 		protected internal virtual byte baseMaxLust => BASE_MAX_LUST;
 		protected internal virtual sbyte bonusMaxLust { get; set; } = 0;
-		public byte maxLust => HandleMaxStat(baseMaxLust.delta(bonusMaxLust), minLust);
+		public byte maxLust => HandleMaxStat(baseMaxLust.offset(bonusMaxLust), minLust);
 
 		protected byte HandleMaxStat(byte computedValue, byte minValue)
 		{
@@ -180,8 +180,9 @@ namespace CoC.Backend.Creatures
 		public bool hasPrimaryFur => body.mainEpidermis.usesFur;
 		public bool hasSupplementaryFur => body.supplementaryEpidermis.usesFur;
 
-		public bool hasPlainSkin => body.mainEpidermis.currentType == EpidermisType.SKIN;
+		public bool hasPlainSkin => body.mainEpidermis.type == EpidermisType.SKIN;
 
+		public FurColor ActiveHairOrFurColor() => body.ActiveHairOrFurColor();
 
 		//aliases for build.
 		public Butt butt => build.butt;
@@ -215,10 +216,12 @@ namespace CoC.Backend.Creatures
 
 		public bool hasBalls => genitals.hasBalls;
 
-		public bool hasMaleCock => cocks.Count > 0;
-		public bool hasCock => genitals.allCocks.Count > 0;
+		public bool hasCock => cocks.Count > 0;
+		public bool hasCockOrClitCock => hasCock || hasClitCock;
 
 		public bool hasClitCock => genitals.hasClitCock;
+
+		public bool clitCockActive => !hasCock && hasClitCock;
 
 		public bool hasVagina => vaginas.Count > 0;
 
@@ -640,7 +643,6 @@ namespace CoC.Backend.Creatures
 			lazyBodyListeners.Add(back);
 			lazyBodyListeners.Add(genitals);
 			lazyBodyListeners.Add(hair);
-			dailyBodyListeners.Add(genitals);
 			//back, femininity, genitals, hair - lazy.
 			//genitals - daily.
 		}
@@ -2153,7 +2155,7 @@ namespace CoC.Backend.Creatures
 
 		public void HaveGenericFootOrgasm(bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
-			feet.doGenericOrgasm(dryOrgasm);
+			feet.DoGenericOrgasm(dryOrgasm);
 			if (countTowardOrgasmTotal)
 			{
 				Orgasmed();

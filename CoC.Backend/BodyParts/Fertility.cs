@@ -3,8 +3,10 @@
 //Author: JustSomeGuy
 //4/15/2019, 9:13 PM
 
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.Tools;
 using System;
+using WeakEvent;
 
 //most of these are simply bytes, though a few do have extra behavior. An common software engineering practice is to never use primitives directly - this can be
 //confusing or arbitrary - 5 could mean 5 years, 5 decades, 5 score, 5 centuries, etc. While i don't agree with that assessment 100%, it sometimes has merit. 
@@ -16,7 +18,7 @@ namespace CoC.Backend.BodyParts
 {
 	//it wraps a byte. I dunno. 
 	//now capping max base fertility to 75. Perks could boost this past the base 75 value. 
-	public sealed partial class Fertility : SimpleSaveablePart<Fertility, FertilityData>
+	public sealed partial class Fertility : SimpleSaveablePart<Fertility, FertilityWrapper>
 	{
 		public override string BodyPartName() => Name();
 
@@ -32,7 +34,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_isInfertile != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_isInfertile = value;
 					NotifyDataChanged(oldData);
 				}
@@ -48,7 +50,7 @@ namespace CoC.Backend.BodyParts
 				Utils.Clamp<byte>(ref value, 0, MAX_BASE_FERTILITY);
 				if (_baseValue != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_baseValue = value;
 					NotifyDataChanged(oldData);
 				}
@@ -62,7 +64,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_perkBonusFertility != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_perkBonusFertility = value;
 					NotifyDataChanged(oldData);
 				}
@@ -71,12 +73,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _perkBonusFertility = 0;
 
-		public override FertilityData AsReadOnlyData()
-		{
-			return new FertilityData(this);
-		}
-
 		public byte bonusFertility { get; internal set; }
+
+		public override FertilityWrapper AsReadOnlyReference()
+		{
+			return new FertilityWrapper(this);
+		}
 
 		public byte totalFertility => Math.Min(MAX_TOTAL_FERTILITY, baseFertility.add(bonusFertility));
 		public byte currentFertility => isInfertile ? (byte)0 : totalFertility;
@@ -159,15 +161,51 @@ namespace CoC.Backend.BodyParts
 			baseFertility = baseFertility;
 			return true;
 		}
+
+		public FertilityData AsData()
+		{
+			return new FertilityData(this);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<FertilityWrapper, FertilityData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<FertilityWrapper, FertilityData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<FertilityWrapper, FertilityData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(FertilityData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<FertilityWrapper, FertilityData>(AsReadOnlyReference(), oldData));
+		}
 	}
 
-	public sealed class FertilityData : SimpleData
+	public sealed class FertilityWrapper : SimpleWrapper<FertilityWrapper, Fertility>
+	{
+		public bool isInfertile => sourceData.isInfertile;
+		public byte baseFertility => sourceData.baseFertility;
+		internal byte perkBonusFertility => sourceData.perkBonusFertility;
+		public byte bonusFertility => sourceData.bonusFertility;
+		public byte totalFertility => sourceData.totalFertility;
+		public byte currentFertility => sourceData.currentFertility;
+
+
+		public FertilityWrapper(Fertility source) : base(source)
+		{
+			
+		}
+
+	}
+
+	public sealed class FertilityData
 	{
 		public readonly byte currentFertilityValue;
 		public readonly bool artificiallyInfertile;
 		public byte fertility => artificiallyInfertile ? (byte)0 : currentFertilityValue;
 
-		public FertilityData(Fertility source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		public FertilityData(Fertility source)
 		{
 			currentFertilityValue = source.currentFertility;
 			artificiallyInfertile = source.isInfertile;

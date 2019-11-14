@@ -27,13 +27,13 @@ namespace CoC.Backend.BodyParts
 	 */
 
 	//Note: Never fires a data change event, as it has no data that can be changed. Note that technically claws could fire a change, but whatever. 
-	public sealed partial class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
+	public sealed partial class Arms : BehavioralSaveablePart<Arms, ArmType, ArmWrapper>
 	{
 		public override string BodyPartName() => Name();
 
 		public readonly Hands hands;
 
-		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
+		private BodyWrapper bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyReference() : new BodyWrapper(creatureID);
 
 		public EpidermalData epidermis => type.GetPrimaryEpidermis(bodyData);
 		public EpidermalData secondaryEpidermis => type.GetSecondaryEpidermis(bodyData);
@@ -52,9 +52,9 @@ namespace CoC.Backend.BodyParts
 
 		public override ArmType defaultType => ArmType.defaultValue;
 
-		public override ArmData AsReadOnlyData()
+		public override ArmWrapper AsReadOnlyReference()
 		{
-			return new ArmData(this);
+			return new ArmWrapper(new Arms(this));
 		}
 
 		protected internal override void PostPerkInit()
@@ -78,6 +78,12 @@ namespace CoC.Backend.BodyParts
 			hands = new Hands(creatureID, type.handType, (x) => x ? epidermis : secondaryEpidermis);
 		}
 
+		private Arms(Arms other) : base(other?.creatureID ?? throw new ArgumentNullException(nameof(other)))
+		{
+			_type = other.type;
+			hands = new Hands(other.creatureID, other.hands.type, (x) => x ? epidermis : secondaryEpidermis);
+		}
+
 		//default implementation of update and restore are fine
 
 		internal override bool Validate(bool correctInvalidData)
@@ -89,7 +95,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public abstract partial class ArmType : SaveableBehavior<ArmType, Arms, ArmData>
+	public abstract partial class ArmType : SaveableBehavior<ArmType, Arms, ArmWrapper>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<ArmType> arms = new List<ArmType>();
@@ -103,17 +109,17 @@ namespace CoC.Backend.BodyParts
 
 		//update the original and secondary original based on the current data. 
 
-		//internal abstract Epidermis GetEpidermis(bool primary, in BodyData bodyData);
-		internal abstract EpidermalData GetPrimaryEpidermis(in BodyData bodyData);
-		internal virtual EpidermalData GetSecondaryEpidermis(in BodyData bodyData)
+		//internal abstract Epidermis GetEpidermis(bool primary, in BodyWrapper bodyData);
+		internal abstract EpidermalData GetPrimaryEpidermis(in BodyWrapper bodyData);
+		internal virtual EpidermalData GetSecondaryEpidermis(in BodyWrapper bodyData)
 		{
 			return new EpidermalData();
 		}
 
-		internal abstract bool hasPrimaryFur { get; }
-		internal virtual bool hasSecondaryFur => false;
-		internal abstract bool hasPrimaryTone { get; }
-		internal virtual bool hasSecondaryTone => false;
+		public abstract bool hasPrimaryFur { get; }
+		public virtual bool hasSecondaryFur => false;
+		public abstract bool hasPrimaryTone { get; }
+		public virtual bool hasSecondaryTone => false;
 
 		public override int index => _index;
 		private readonly int _index;
@@ -162,35 +168,35 @@ namespace CoC.Backend.BodyParts
 
 
 		//DO NOT REORDER THESE (Under penalty of death lol)
-		public static readonly ToneArms HUMAN = new ToneArms(HandType.HUMAN, EpidermisType.SKIN, DefaultValueHelpers.defaultHumanTone, SkinTexture.NONDESCRIPT, true, HumanDescStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly FurArms HARPY = new FurArms(HandType.HUMAN, EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, FurTexture.NONDESCRIPT, true, HarpyDescStr, HarpyFullDesc, HarpyPlayerStr, HarpyTransformStr, HarpyRestoreStr);
-		public static readonly ToneArms SPIDER = new ToneArms(HandType.HUMAN, EpidermisType.CARAPACE, DefaultValueHelpers.defaultSpiderTone, SkinTexture.SHINY, false, SpiderDescStr, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr);
-		public static readonly ToneArms BEE = new ToneArms(HandType.HUMAN, EpidermisType.CARAPACE, DefaultValueHelpers.defaultBeeTone, SkinTexture.SHINY, false, BeeDescStr, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
+		public static readonly ToneArms HUMAN = new ToneArms(HandType.HUMAN, EpidermisType.SKIN, DefaultValueHelpers.defaultHumanTone, SkinTexture.NONDESCRIPT, true, HumanDescStr, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly FurArms HARPY = new FurArms(HandType.HUMAN, EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, FurTexture.NONDESCRIPT, true, HarpyDescStr, HarpyLongDesc, HarpyPlayerStr, HarpyTransformStr, HarpyRestoreStr);
+		public static readonly ToneArms SPIDER = new ToneArms(HandType.HUMAN, EpidermisType.CARAPACE, DefaultValueHelpers.defaultSpiderTone, SkinTexture.SHINY, false, SpiderDescStr, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr);
+		public static readonly ToneArms BEE = new ToneArms(HandType.HUMAN, EpidermisType.CARAPACE, DefaultValueHelpers.defaultBeeTone, SkinTexture.SHINY, false, BeeDescStr, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
 		//I broke up predator arms to make the logic here easier. now all arms have one hand/claw type.
 		//you still have the ability to check for predator arms via a function below. no functionality has been lost.
-		public static readonly ToneArms DRAGON = new ToneArms(HandType.DRAGON, EpidermisType.SCALES, DefaultValueHelpers.defaultDragonTone, SkinTexture.NONDESCRIPT, true, DragonDescStr, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly ToneArms IMP = new ToneArms(HandType.IMP, EpidermisType.SCALES, DefaultValueHelpers.defaultImpTone, SkinTexture.NONDESCRIPT, true, ImpDescStr, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
-		public static readonly ToneArms LIZARD = new ToneArms(HandType.LIZARD, EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, SkinTexture.NONDESCRIPT, true, LizardDescStr, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly ToneArms SALAMANDER = new ToneArms(HandType.SALAMANDER, EpidermisType.SCALES, DefaultValueHelpers.defaultSalamanderTone, SkinTexture.NONDESCRIPT, false, SalamanderDescStr, SalamanderFullDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
-		public static readonly FurArms WOLF = new FurArms(HandType.DOG, EpidermisType.FUR, DefaultValueHelpers.defaultDogFur, FurTexture.NONDESCRIPT, true, WolfDescStr, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static readonly ToneArms DRAGON = new ToneArms(HandType.DRAGON, EpidermisType.SCALES, DefaultValueHelpers.defaultDragonTone, SkinTexture.NONDESCRIPT, true, DragonDescStr, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static readonly ToneArms IMP = new ToneArms(HandType.IMP, EpidermisType.SCALES, DefaultValueHelpers.defaultImpTone, SkinTexture.NONDESCRIPT, true, ImpDescStr, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+		public static readonly ToneArms LIZARD = new ToneArms(HandType.LIZARD, EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, SkinTexture.NONDESCRIPT, true, LizardDescStr, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static readonly ToneArms SALAMANDER = new ToneArms(HandType.SALAMANDER, EpidermisType.SCALES, DefaultValueHelpers.defaultSalamanderTone, SkinTexture.NONDESCRIPT, false, SalamanderDescStr, SalamanderLongDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
+		public static readonly FurArms WOLF = new FurArms(HandType.DOG, EpidermisType.FUR, DefaultValueHelpers.defaultDogFur, FurTexture.NONDESCRIPT, true, WolfDescStr, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
 		public static readonly FurArms COCKATRICE = new CockatriceArms();
-		public static readonly FurArms RED_PANDA = new FurArms(HandType.RED_PANDA, EpidermisType.FUR, DefaultValueHelpers.defaultRedPandaUnderFur, FurTexture.SOFT, false, RedPandaDescStr, RedPandaFullDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr);
+		public static readonly FurArms RED_PANDA = new FurArms(HandType.RED_PANDA, EpidermisType.FUR, DefaultValueHelpers.defaultRedPandaUnderFur, FurTexture.SOFT, false, RedPandaDescStr, RedPandaLongDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr);
 		public static readonly FurArms FERRET = new FerretArms();
-		public static readonly FurArms CAT = new FurArms(HandType.CAT, EpidermisType.FUR, DefaultValueHelpers.defaultCatFur, FurTexture.NONDESCRIPT, true, CatDescStr, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
-		public static readonly FurArms DOG = new FurArms(HandType.DOG, EpidermisType.FUR, DefaultValueHelpers.defaultDogFur, FurTexture.NONDESCRIPT, true, DogDescStr, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
-		public static readonly FurArms FOX = new FurArms(HandType.FOX, EpidermisType.FUR, DefaultValueHelpers.defaultFoxFur, FurTexture.NONDESCRIPT, true, FoxDescStr, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
+		public static readonly FurArms CAT = new FurArms(HandType.CAT, EpidermisType.FUR, DefaultValueHelpers.defaultCatFur, FurTexture.NONDESCRIPT, true, CatDescStr, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly FurArms DOG = new FurArms(HandType.DOG, EpidermisType.FUR, DefaultValueHelpers.defaultDogFur, FurTexture.NONDESCRIPT, true, DogDescStr, DogLongDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
+		public static readonly FurArms FOX = new FurArms(HandType.FOX, EpidermisType.FUR, DefaultValueHelpers.defaultFoxFur, FurTexture.NONDESCRIPT, true, FoxDescStr, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
 		//added gooey arms - it was a weird case where claws could be goopy, and that complicates things.
-		public static readonly ToneArms GOO = new ToneArms(HandType.GOO, EpidermisType.GOO, DefaultValueHelpers.defaultGooTone, SkinTexture.SLIMY, true, GooDesc, GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+		public static readonly ToneArms GOO = new ToneArms(HandType.GOO, EpidermisType.GOO, DefaultValueHelpers.defaultGooTone, SkinTexture.SLIMY, true, GooDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 		//Add new Arm Types Here.
 
 		private sealed class FerretArms : FurArms
 		{
 			private readonly FurColor defaultSecondaryColor = DefaultValueHelpers.defaultFerretUnderFur;
 			public FerretArms() : base(HandType.FERRET, EpidermisType.FUR, DefaultValueHelpers.defaultFerretFur, FurTexture.NONDESCRIPT,
-				true, FerretDescStr, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr)
+				true, FerretDescStr, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr)
 			{ }
 
-			internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
+			internal override EpidermalData GetPrimaryEpidermis(in BodyWrapper bodyData)
 			{
 				FurColor color = defaultColor;
 				if (bodyData.main.usesFur && !bodyData.main.fur.isEmpty)
@@ -204,9 +210,9 @@ namespace CoC.Backend.BodyParts
 				return new EpidermalData(primaryEpidermis, color, defaultTexture);
 			}
 
-			internal override bool hasSecondaryFur => true;
+			public override bool hasSecondaryFur => true;
 
-			internal override EpidermalData GetSecondaryEpidermis(in BodyData bodyData)
+			internal override EpidermalData GetSecondaryEpidermis(in BodyWrapper bodyData)
 			{
 				FurColor color = defaultColor;
 				if (bodyData.supplementary.usesFur && !bodyData.supplementary.fur.isEmpty)
@@ -236,21 +242,21 @@ namespace CoC.Backend.BodyParts
 			private readonly SkinTexture defaultScaleTexture = SkinTexture.NONDESCRIPT;
 
 			public CockatriceArms() : base(HandType.COCKATRICE, EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatricePrimaryFeathers, FurTexture.NONDESCRIPT, true,
-				CockatriceDescStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
+				CockatriceDescStr, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 			{ }
 
-			internal override bool hasSecondaryTone => true;
+			public override bool hasSecondaryTone => true;
 
-			internal override EpidermalData GetSecondaryEpidermis(in BodyData bodyData)
+			internal override EpidermalData GetSecondaryEpidermis(in BodyWrapper bodyData)
 			{
 				Tones color = bodyData.supplementary.usesTone && !bodyData.supplementary.tone.isEmpty ? bodyData.supplementary.tone : defaultScales;
 				return new EpidermalData(secondaryType, color, defaultScaleTexture);
 			}
 
-			internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
+			internal override EpidermalData GetPrimaryEpidermis(in BodyWrapper bodyData)
 			{
 				FurColor color = defaultColor;
-				if (bodyData.currentType == BodyType.COCKATRICE && !bodyData.main.fur.isEmpty)
+				if (bodyData.type == BodyType.COCKATRICE && !bodyData.main.fur.isEmpty)
 				{
 					color = bodyData.main.fur;
 				}
@@ -284,10 +290,10 @@ namespace CoC.Backend.BodyParts
 			mutable = canChange;
 		}
 
-		internal override bool hasPrimaryFur => true;
-		internal override bool hasPrimaryTone => false;
+		public override bool hasPrimaryFur => true;
+		public override bool hasPrimaryTone => false;
 
-		internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
+		internal override EpidermalData GetPrimaryEpidermis(in BodyWrapper bodyData)
 		{
 			FurColor color = this.defaultColor;
 
@@ -327,28 +333,27 @@ namespace CoC.Backend.BodyParts
 			mutable = canChange;
 		}
 
-		internal override bool hasPrimaryFur => false;
-		internal override bool hasPrimaryTone => true;
+		public override bool hasPrimaryFur => false;
+		public override bool hasPrimaryTone => true;
 
-		internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
+		internal override EpidermalData GetPrimaryEpidermis(in BodyWrapper bodyData)
 		{
 			Tones color = mutable ? bodyData.mainSkin.tone : defaultTone;
 			return new EpidermalData(primaryEpidermis, color, defaultTexture);
 		}
 	}
 
-	public sealed class ArmData : BehavioralSaveablePartData<ArmData, Arms, ArmType>
+	public sealed class ArmWrapper : BehavioralSaveablePartWrapper<ArmWrapper, Arms, ArmType>
 	{
-		public readonly EpidermalData primaryEpidermis;
-		public readonly EpidermalData secondaryEpidermis;
-		public readonly HandData handData;
+		public EpidermalData primaryEpidermis => sourceData.epidermis;
+		public EpidermalData secondaryEpidermis => sourceData.secondaryEpidermis;
+		public HandWrapper handData => sourceData.hands.AsReadOnlyReference();
 
-		public ArmData(Arms source) : base(GetID(source), GetBehavior(source))
-		{
-			handData = source.hands.AsReadOnlyData();
-			primaryEpidermis = source.epidermis;
-			secondaryEpidermis = source.secondaryEpidermis;
-		}
+		public bool usesTone => type is ToneArms;
+		public bool usesFur => type is FurArms;
+
+		public ArmWrapper(Arms source) : base(source)
+		{ }
 	}
 
 }

@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //4/9/2019, 1:26 AM
 
+using CoC.Backend.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +23,12 @@ namespace CoC
 
 	public static class Operators
 	{
+		//add: a+b. result is the same type as the source. does not overflow.
+		//sub: a-b. result is the same type as the source. does not overflow.
+		//diff: abs(a-b). if a is signed, returns unsigned equivalent. otherwise, returns original type.
+		//delta a-b. result is a type ranging from type.MinValue - type.MaxValue to type.MaxValue - type.MinValue. i.e. byte.delta(byte) is short. 
+		//offset a+b. a is unsigned. b is signed. result is the same type as a. 
+
 		public static byte add(this byte first, byte second)
 		{
 			int result = first + second;
@@ -41,7 +48,7 @@ namespace CoC
 			return (byte)(first - second);
 		}
 
-		public static byte delta(this sbyte first, sbyte second)
+		public static byte difference(this sbyte first, sbyte second)
 		{
 			if (second >= first)
 			{
@@ -50,22 +57,24 @@ namespace CoC
 			return (byte)(first - second);
 		}
 
+		public static byte difference(this byte first, byte second)
+		{
+			if (second >= first)
+			{
+				return (byte)(second - first);
+			}
+			return (byte)(first - second);
+		}
+
+		public static byte offset(this byte first, sbyte second)
+		{
+			return (byte)Utils.Clamp2(first - second, byte.MinValue, byte.MaxValue);
+		}
+
 		//there's probably some unchecked magic i can do here. not gonna even try.
-		public static short diff(this byte first, byte second)
+		public static short delta(this byte first, byte second)
 		{
 			return (short)(first - second);
-		}
-		public static byte delta(this byte first, sbyte second)
-		{
-			if (second >= 0)
-			{
-				return first.add((byte)second);
-			}
-			else
-			{
-				second *= -1;
-				return first.subtract((byte)second);
-			}
 		}
 
 		public static ushort mult(this byte first, byte second)
@@ -121,7 +130,7 @@ namespace CoC
 			return (ushort)(first - second);
 		}
 
-		public static ushort delta(this ushort first, short second)
+		public static ushort offset(this ushort first, short second)
 		{
 			if (second >= 0)
 			{
@@ -189,7 +198,7 @@ namespace CoC
 			return first - second;
 		}
 
-		public static uint delta(this uint first, int second)
+		public static uint offset(this uint first, int second)
 		{
 			if (second >= 0)
 			{
@@ -227,7 +236,7 @@ namespace CoC
 			return first - second;
 		}
 
-		public static ulong delta(this ulong first, long second)
+		public static ulong offset(this ulong first, long second)
 		{
 			if (second >= 0)
 			{

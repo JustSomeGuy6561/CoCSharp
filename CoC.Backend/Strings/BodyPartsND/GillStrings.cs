@@ -22,7 +22,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneFullDesc(Gills gills)
+		private static string AnemoneLongDesc(Gills gills)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -43,7 +43,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FishFullDesc(Gills gills)
+		private static string FishLongDesc(Gills gills)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

@@ -17,6 +17,11 @@ namespace CoC.Backend.Pregnancies
 			this.vaginaIndex = vaginaIndex;
 		}
 
+		internal VaginalPregnancyStore(VaginalPregnancyStore other) : base(other?.creatureID ?? throw new ArgumentNullException(nameof(other)))
+		{
+			vaginaIndex = other.vaginaIndex;
+		}
+
 		protected override DynamicTimeReaction HandleBirthing()
 		{
 			DynamicTimeReaction retVal = spawnType.HandleVaginalBirth(vaginaIndex);

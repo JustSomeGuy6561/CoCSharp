@@ -32,7 +32,7 @@ namespace CoC.Frontend.StatusEffect
 
 		public override SimpleDescriptor ShortDescription => throw new NotImplementedException();
 
-		public override SimpleDescriptor FullDescription => throw new NotImplementedException();
+		public override SimpleDescriptor LongDescription => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{
@@ -79,7 +79,7 @@ namespace CoC.Frontend.StatusEffect
 
 		protected override string OnStatusEffectTimePassing(byte hoursPassedSinceLastUpdate, out bool removeEffect)
 		{
-			removeEffect = !sourceCreature.hasCock;
+			removeEffect = !sourceCreature.hasCockOrClitCock;
 
 			if (removeEffect)
 			{
@@ -144,11 +144,11 @@ namespace CoC.Frontend.StatusEffect
 			string cockText;
 			if (sourceCreature.cocks.Count > 1)
 			{
-				cockText = sourceCreature.genitals.cockMultDescript();
+				cockText = sourceCreature.genitals.AllCocksFullDescription();
 			}
 			else if (sourceCreature.cocks.Count > 0)
 			{
-				cockText = sourceCreature.cocks[0].fullDescription();
+				cockText = sourceCreature.cocks[0].LongDescription();
 			}
 			else
 			{
@@ -181,11 +181,11 @@ namespace CoC.Frontend.StatusEffect
 			string cockText;
 			if (sourceCreature.cocks.Count > 1)
 			{
-				cockText = sourceCreature.genitals.cockMultDescript();
+				cockText = sourceCreature.genitals.AllCocksFullDescription();
 			}
 			else if (sourceCreature.cocks.Count > 0)
 			{
-				cockText = sourceCreature.cocks[0].fullDescription();
+				cockText = sourceCreature.cocks[0].LongDescription();
 			}
 			else
 			{

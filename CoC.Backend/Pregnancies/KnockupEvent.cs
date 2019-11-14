@@ -10,8 +10,8 @@ namespace CoC.Backend.Pregnancies
 		public readonly ReadOnlyPregnancyStore birthSource;
 		//will be null if the creature was not already pregnant. 
 		//only null if the given spawn type can be updated when another knockup attempt is called (i.e. eggs).
-		public readonly StandardSpawnData originalSpawnSource;
-		public readonly StandardSpawnData currentSpawnSource;
+		public readonly StandardSpawnWrapper originalSpawnSource;
+		public readonly StandardSpawnWrapper currentSpawnSource;
 
 		public KnockupEvent(Guid creatureID, ReadOnlyPregnancyStore birthSource)
 		{
@@ -21,7 +21,7 @@ namespace CoC.Backend.Pregnancies
 			this.currentSpawnSource = birthSource.spawnType;
 		}
 
-		public KnockupEvent(Guid creatureID, ReadOnlyPregnancyStore birthSource, StandardSpawnData originalSpawnData)
+		public KnockupEvent(Guid creatureID, ReadOnlyPregnancyStore birthSource, StandardSpawnWrapper originalSpawnData)
 		{
 			this.creatureID = creatureID;
 			this.birthSource = birthSource ?? throw new ArgumentNullException(nameof(birthSource));

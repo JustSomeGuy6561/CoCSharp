@@ -28,9 +28,9 @@ namespace CoC.Backend.BodyParts
 	//internal class ArmType : BodyPartBehavior<ArmType, Arms>
 
 
-	public abstract class BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass> : PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass>
-		where ThisClass : BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass> where BehaviorClass : SaveableBehavior<BehaviorClass, ThisClass, DataClass>
-		where DataClass : BehavioralSaveablePartData<DataClass, ThisClass, BehaviorClass>
+	public abstract class BehavioralSaveablePart<ThisClass, BehaviorClass, WrapperClass> : PartWithBehavioralEventsBase<ThisClass, BehaviorClass, WrapperClass>
+		where ThisClass : BehavioralSaveablePart<ThisClass, BehaviorClass, WrapperClass> where BehaviorClass : SaveableBehavior<BehaviorClass, ThisClass, WrapperClass>
+		where WrapperClass : BehavioralSaveablePartWrapper<WrapperClass, ThisClass, BehaviorClass>
 	{
 		private protected BehavioralSaveablePart(Guid creatureID) : base(creatureID)
 		{
@@ -68,9 +68,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//Text output.
-		public virtual SimpleDescriptor fullDescription => () => type.fullDescription((ThisClass)this);
+		public string LongDescription() => type.longDescription((ThisClass)this);
 
-		public virtual string PlayerDescription()
+		public string PlayerDescription()
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
@@ -78,7 +78,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else return "";
 		}
-		public virtual string TransformIntoText(BehaviorClass newBehavior)
+		public string TransformIntoText(BehaviorClass newBehavior)
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
@@ -86,7 +86,8 @@ namespace CoC.Backend.BodyParts
 			}
 			else return "";
 		}
-		public virtual string RestoreText()
+
+		public string RestoreText()
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{

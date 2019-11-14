@@ -1,15 +1,13 @@
-﻿using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Creatures;
+﻿using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
-	public abstract partial class Womb : SimpleSaveablePart<Womb, WombData>
+	public abstract partial class Womb : SimpleSaveablePart<Womb, WombWrapper>
 	{
 		public override string BodyPartName()
 		{
@@ -71,10 +69,19 @@ namespace CoC.Backend.BodyParts
 			secondaryNormalPregnancy = secondaryVagina;
 		}
 
-		public override WombData AsReadOnlyData()
+		protected Womb(Womb other) : base(other?.creatureID ?? throw new ArgumentNullException(nameof(other)))
 		{
-			return new WombData(this);
+			normalPregnancy = other.normalPregnancy;
+			analPregnancy = other.analPregnancy;
+			secondaryNormalPregnancy = other.secondaryNormalPregnancy;
 		}
+
+		//protected abstract Womb Clone();
+		public override WombWrapper AsReadOnlyReference()
+		{
+			return new WombWrapper(this);
+		}
+
 
 		protected internal override void PostPerkInit()
 		{
@@ -88,19 +95,6 @@ namespace CoC.Backend.BodyParts
 			normalPregnancy?.LateInit();
 			analPregnancy?.LateInit();
 			secondaryNormalPregnancy?.LateInit();
-
-			if (normalPregnancy != null)
-			{
-				normalPregnancy.dataChange += Normal_dataChange;
-			}
-			if (analPregnancy != null)
-			{
-				analPregnancy.dataChange += Anal_dataChange;
-			}
-			if (secondaryNormalPregnancy != null)
-			{
-				secondaryNormalPregnancy.dataChange += Secondary_dataChange;
-			}
 		}
 
 		public bool hasDiapauseEnabled { get; private set; }
@@ -109,7 +103,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (hasDiapauseEnabled != true)
 			{
-				WombData oldData = AsReadOnlyData();
+				var oldData = AsData();
 
 				hasDiapauseEnabled = true;
 				NotifyDataChanged(oldData);
@@ -120,7 +114,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (hasDiapauseEnabled != false)
 			{
-				WombData oldData = AsReadOnlyData();
+				var oldData = AsData();
 
 				hasDiapauseEnabled = false;
 				NotifyDataChanged(oldData);
@@ -131,7 +125,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (hasDiapauseEnabled != state)
 			{
-				WombData oldData = AsReadOnlyData();
+				var oldData = AsData();
 
 				hasDiapauseEnabled = state;
 				NotifyDataChanged(oldData);
@@ -147,24 +141,6 @@ namespace CoC.Backend.BodyParts
 				secondaryNormalPregnancy?.onConsumeLiquid();
 				analPregnancy?.onConsumeLiquid();
 			}
-		}
-
-		private void Normal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
-		{
-			NotifyDataChanged(new WombData(creatureID, e.oldValues, canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
-				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, hasDiapauseEnabled));
-		}
-
-		private void Anal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
-		{
-			NotifyDataChanged(new WombData(creatureID, normalPregnancy?.AsReadOnlyData(), canGetPregnant, e.oldValues, canGetAnallyPregnant,
-				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, hasDiapauseEnabled));
-		}
-
-		private void Secondary_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
-		{
-			NotifyDataChanged(new WombData(creatureID, normalPregnancy?.AsReadOnlyData(), canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
-				e.oldValues, canGetSecondaryNormalPregnant, hasDiapauseEnabled));
 		}
 
 		protected internal bool AttemptNormalKnockUp(float knockupChance, StandardSpawnType type)
@@ -221,6 +197,26 @@ namespace CoC.Backend.BodyParts
 			analPregnancy.Reset(true);
 		}
 
+		public WombData AsData()
+		{
+			return new WombData(this);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<WombWrapper, WombData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<WombWrapper, WombData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<WombWrapper, WombData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(WombData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<WombWrapper, WombData>(AsReadOnlyReference(), oldData));
+		}
+
+
 		protected readonly WeakEventSource<KnockupEvent> knockupEventSource =
 			new WeakEventSource<KnockupEvent>();
 
@@ -239,19 +235,19 @@ namespace CoC.Backend.BodyParts
 			remove => birthEventSource.Unsubscribe(value);
 		}
 
-		internal void RaiseKnockupEvent(StandardSpawnType spawnType, PregnancyStore pregnancyStore)
+		internal void RaiseKnockupEvent(PregnancyStore pregnancyStore)
 		{
-			knockupEventSource.Raise(pregnancyStore, new KnockupEvent(creatureID, pregnancyStore.AsReadOnlyData()));
+			knockupEventSource.Raise(pregnancyStore, new KnockupEvent(creatureID, pregnancyStore.AsReadOnlyReference()));
 		}
 
-		internal void RaiseKnockupEvent(StandardSpawnType spawnType, PregnancyStore pregnancyStore, StandardSpawnData oldSpawnData)
+		internal void RaiseKnockupEvent(PregnancyStore pregnancyStore, StandardSpawnWrapper oldSpawnWrapper)
 		{
-			knockupEventSource.Raise(pregnancyStore, new KnockupEvent(creatureID, pregnancyStore.AsReadOnlyData(), oldSpawnData));
+			knockupEventSource.Raise(pregnancyStore, new KnockupEvent(creatureID, pregnancyStore.AsReadOnlyReference(), oldSpawnWrapper));
 		}
 
 		internal void RaiseBirthEvent(StandardSpawnType spawnType, PregnancyStore pregnancyStore)
 		{
-			birthEventSource.Raise(pregnancyStore, new BirthEvent(creatureID, pregnancyStore.AsReadOnlyData(), spawnType.AsReadOnlyData(), totalBirthCount));
+			birthEventSource.Raise(pregnancyStore, new BirthEvent(creatureID, pregnancyStore.AsReadOnlyReference(), spawnType.AsReadOnlyReference(), totalBirthCount));
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -345,23 +341,46 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public class WombData : SimpleData
+	public class WombWrapper : SimpleWrapper<WombWrapper, Womb>
+	{
+		public ReadOnlyPregnancyStore vaginalPregnancyStore => sourceData.normalPregnancy?.AsReadOnlyReference();
+
+		public bool canGetPrimaryVaginaPregnant(bool hasVagina) => sourceData.canGetPregnant(hasVagina);
+
+		public ReadOnlyPregnancyStore analPregnancyStore => sourceData.analPregnancy?.AsReadOnlyReference();
+
+		public bool canGetAnallyPregnant(bool hasAnus, bool sourceOverridesNoAnalPregnancies) => sourceData.canGetAnallyPregnant(hasAnus, sourceOverridesNoAnalPregnancies);
+
+		public ReadOnlyPregnancyStore secondaryVaginalPregnancyStore => sourceData.secondaryNormalPregnancy?.AsReadOnlyReference();
+
+		public bool canGetSecondaryVaginaPregnant(bool hasSecondVagina) => sourceData.canGetSecondaryNormalPregnant(hasSecondVagina);
+
+
+		public bool hasDiapause => sourceData.hasDiapauseEnabled;
+
+		protected internal WombWrapper(Womb source) : base(source)
+		{
+
+		}
+	}
+
+	public class WombData
 	{
 		//if null, cannot get pregnant via normal vagina.
-		public readonly ReadOnlyPregnancyStore vaginalPregnancyStore;
+		public readonly PregnancyStoreStaticData vaginalPregnancyStore;
 		public readonly Func<bool, bool> canGetPregnantIfHasVagina;
 
-		public readonly ReadOnlyPregnancyStore analPregnancyStore;
+		public readonly PregnancyStoreStaticData analPregnancyStore;
 		public readonly Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus;
 
-		public readonly ReadOnlyPregnancyStore secondVaginaPregnancyStore;
+		public readonly PregnancyStoreStaticData secondVaginaPregnancyStore;
 		public readonly Func<bool, bool> canGetPregnantIfHasSecondVagina;
 
 		public readonly bool hasDiapause;
 
-		public WombData(Guid creatureID, ReadOnlyPregnancyStore vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina, 
-			ReadOnlyPregnancyStore analPregnancyStore, Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus, 
-			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina, bool diapause) : base(creatureID)
+		public WombData(Guid creatureID, PregnancyStoreStaticData vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina,
+			PregnancyStoreStaticData analPregnancyStore, Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus,
+			PregnancyStoreStaticData secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina, bool diapause)
 		{
 			this.vaginalPregnancyStore = vaginalPregnancyStore;
 			this.canGetPregnantIfHasVagina = canGetPregnantIfHasVagina ?? throw new ArgumentNullException(nameof(canGetPregnantIfHasVagina));
@@ -373,11 +392,11 @@ namespace CoC.Backend.BodyParts
 			hasDiapause = diapause;
 		}
 
-		internal WombData(Womb source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		internal WombData(Womb source)
 		{
-			vaginalPregnancyStore = source.normalPregnancy?.AsReadOnlyData();
-			analPregnancyStore = source.analPregnancy?.AsReadOnlyData();
-			secondVaginaPregnancyStore = source.secondaryNormalPregnancy?.AsReadOnlyData();
+			vaginalPregnancyStore = source.normalPregnancy?.AsStaticData();
+			analPregnancyStore = source.analPregnancy?.AsStaticData();
+			secondVaginaPregnancyStore = source.secondaryNormalPregnancy?.AsStaticData();
 
 			canGetPregnantIfHasVagina = source.canGetPregnant;
 			canGetAnallyPregnantIfHasAnus = source.canGetAnallyPregnant;
@@ -385,7 +404,5 @@ namespace CoC.Backend.BodyParts
 
 			hasDiapause = source.hasDiapauseEnabled;
 		}
-
-
 	}
 }

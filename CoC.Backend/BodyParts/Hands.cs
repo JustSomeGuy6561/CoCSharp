@@ -9,27 +9,27 @@ using System;
 namespace CoC.Backend.BodyParts
 {
 	//technically claws do update, but we're not messing with them. it's possible to do, but i just dont feel it's necessary. The data change will never occur.
-	public sealed partial class Hands : PartWithBehaviorAndEventBase<Hands, HandType, HandData>
+	public sealed partial class Hands : PartWithBehavioralEventsBase<Hands, HandType, HandWrapper>
 	{
 		public override string BodyPartName() => Name();
 
 		public override HandType type { get; protected set; }
 
-		public Tones clawTone => type.getClawTone(getArmData(true).tone, getArmData(false).tone);
+		public Tones clawTone => type.getClawTone(getArmWrapper(true).tone, getArmWrapper(false).tone);
 
-		private readonly Func<bool, EpidermalData> getArmData;
-		internal Hands(Guid creatureID, HandType handType, Func<bool, EpidermalData> currentEpidermalData) : base(creatureID)
+		private readonly Func<bool, EpidermalData> getArmWrapper;
+		internal Hands(Guid creatureID, HandType handType, Func<bool, EpidermalData> currentReadOnlyEpidermis) : base(creatureID)
 		{
 			type = handType;
-			getArmData = currentEpidermalData;
+			getArmWrapper = currentReadOnlyEpidermis;
 		}
 
-		public override HandData AsReadOnlyData()
+		public override HandWrapper AsReadOnlyReference()
 		{
-			return new HandData(this);
+			return new HandWrapper(this);
 		}
 
-		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
+		public string FullDescription() => type.fullDescription(this);
 	}
 
 	public partial class HandType : BehaviorBase
@@ -70,24 +70,24 @@ namespace CoC.Backend.BodyParts
 			handStyle = style;
 		}
 
-		public static readonly HandType HUMAN = new HandType(HandStyle.HANDS, HumanShort, HumanFullDesc);
+		public static readonly HandType HUMAN = new HandType(HandStyle.HANDS, HumanShort, HumanLongDesc);
 		public static readonly HandType LIZARD = new LizardClaws();
-		public static readonly HandType DRAGON = new HandType(HandStyle.CLAWS, DragonShort, DragonFullDesc);
-		public static readonly HandType SALAMANDER = new HandType(HandStyle.CLAWS, SalamanderShort, SalamanderFullDesc);
-		public static readonly HandType CAT = new HandType(HandStyle.PAWS, CatShort, CatFullDesc);
-		public static readonly HandType DOG = new HandType(HandStyle.PAWS, DogShort, DogFullDesc);
-		public static readonly HandType FOX = new HandType(HandStyle.PAWS, FoxShort, FoxFullDesc);
+		public static readonly HandType DRAGON = new HandType(HandStyle.CLAWS, DragonShort, DragonLongDesc);
+		public static readonly HandType SALAMANDER = new HandType(HandStyle.CLAWS, SalamanderShort, SalamanderLongDesc);
+		public static readonly HandType CAT = new HandType(HandStyle.PAWS, CatShort, CatLongDesc);
+		public static readonly HandType DOG = new HandType(HandStyle.PAWS, DogShort, DogLongDesc);
+		public static readonly HandType FOX = new HandType(HandStyle.PAWS, FoxShort, FoxLongDesc);
 		public static readonly HandType IMP = new ImpClaws();
-		public static readonly HandType COCKATRICE = new HandType(HandStyle.CLAWS, CockatriceShort, CockatriceFullDesc);
-		public static readonly HandType RED_PANDA = new HandType(HandStyle.PAWS, RedPandaShort, RedPandaFullDesc);
-		public static readonly HandType FERRET = new HandType(HandStyle.PAWS, FerretShort, FerretFullDesc);
-		public static readonly HandType GOO = new HandType(HandStyle.OTHER, GooShort, GooFullDesc);
-		//public static readonly Hands MANTIS = new Hands(HandStyle.OTHER, MantisShort MantisFullDesc); //Not even remotely implemented.
+		public static readonly HandType COCKATRICE = new HandType(HandStyle.CLAWS, CockatriceShort, CockatriceLongDesc);
+		public static readonly HandType RED_PANDA = new HandType(HandStyle.PAWS, RedPandaShort, RedPandaLongDesc);
+		public static readonly HandType FERRET = new HandType(HandStyle.PAWS, FerretShort, FerretLongDesc);
+		public static readonly HandType GOO = new HandType(HandStyle.OTHER, GooShort, GooLongDesc);
+		//public static readonly Hands MANTIS = new Hands(HandStyle.OTHER, MantisShort MantisLongDesc); //Not even remotely implemented.
 
 		private class LizardClaws : HandType
 		{
 
-			public LizardClaws() : base(HandStyle.CLAWS, LizardShort, LizardFullDesc) { }
+			public LizardClaws() : base(HandStyle.CLAWS, LizardShort, LizardLongDesc) { }
 
 			public override bool canTone()
 			{
@@ -103,7 +103,7 @@ namespace CoC.Backend.BodyParts
 
 		private class ImpClaws : HandType
 		{
-			public ImpClaws() : base(HandStyle.CLAWS, ImpShort, ImpFullDesc) { }
+			public ImpClaws() : base(HandStyle.CLAWS, ImpShort, ImpLongDesc) { }
 
 			public override bool canTone()
 			{
@@ -118,25 +118,14 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class HandData : BehavioralPartDataBase<HandType>
+	public sealed class HandWrapper : PartWithBehavioralEventsWrapper<HandWrapper, Hands, HandType>
 	{
-		public readonly Tones clawTone;
+		public Tones clawTone => sourceData.clawTone;
 
-		public HandData(Hands source) : base(GetID(source), GetBehavior(source))
-		{
-			this.clawTone = source.clawTone;
-		}
+		public string fullDescription() => sourceData.FullDescription();
 
-		private static Guid GetID(Hands source)
+		public HandWrapper(Hands source) : base(source)
 		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-			return source.creatureID;
-		}
-
-		private static HandType GetBehavior(Hands source)
-		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-			return source.type;
 		}
 	}
 }

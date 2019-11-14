@@ -17,10 +17,10 @@ namespace CoC.Backend.BodyParts
 			return "Build";
 		}
 
-		private LowerBodyData lowerBodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature)? creature.lowerBody.AsReadOnlyData() : new LowerBodyData(creatureID);
-		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
+		private LowerBodyWrapper lowerBodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature)? creature.lowerBody.AsReadOnlyReference() : new LowerBodyWrapper(creatureID);
+		private BodyWrapper bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyReference() : new BodyWrapper(creatureID);
 
-		private string ButtFullDesc()
+		private string ButtLongDesc()
 		{
 			StringBuilder sb = new StringBuilder();
 			string[] options;
@@ -195,10 +195,10 @@ namespace CoC.Backend.BodyParts
 			return sb.ToString();
 		}
 
-		private string HipsFullDesc()
+		private string HipsLongDesc()
 		{
-			LowerBodyType lowerBody = lowerBodyData.currentType;
-			BodyType bodyType = bodyData.currentType;
+			LowerBodyType lowerBody = lowerBodyData.type;
+			BodyType bodyType = bodyData.type;
 
 			StringBuilder sb = new StringBuilder();
 			if (hips.size < Hips.SLENDER)
@@ -274,7 +274,7 @@ namespace CoC.Backend.BodyParts
 			return "Hips";
 		}
 
-		private string AsStr()
+		public string AsText()
 		{
 			if (size <= BOYISH)
 			{
@@ -314,15 +314,15 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private string ShortDesc()
+		public string ShortDescription()
 		{
-			return AsStr() + " hips";
+			return AsText() + " hips";
 		}
 	}
 
 	public partial class Butt
 	{
-		private string AsStr()
+		public string AsText()
 		{
 
 			if (size == BUTTLESS)
@@ -367,7 +367,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private string ShortDesc()
+		public string ShortDescription()
 		{
 			StringBuilder sb = new StringBuilder();
 			string[] options;

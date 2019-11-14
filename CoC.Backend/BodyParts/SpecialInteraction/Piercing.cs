@@ -42,6 +42,20 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			piercingUnlocked = piercingUnlockedFunction ?? throw new ArgumentNullException(nameof(piercingUnlockedFunction));
 		}
 
+		private Piercing(Piercing<Locations> other)
+		{
+			jewelryTypesAllowed = other.jewelryTypesAllowed;
+			piercingUnlocked = other.piercingUnlocked;
+
+			piercedAt = other.piercedAt;
+			jewelryEquipped = other.jewelryEquipped;
+		}
+
+		public ReadOnlyPiercing<Locations> AsReadOnlyCopy()
+		{
+			return new ReadOnlyPiercing<Locations>(new Piercing<Locations>(this));
+		}
+
 		public int piercingCount => piercedAt.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
 		public bool isPierced => piercedAt.Values.Any((x) => x);
 		public bool isPiercedAt(Locations location)
@@ -394,4 +408,32 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			newJewelryCount = 0;
 		}
 	}
+
+
+	public class ReadOnlyPiercing<Location> where Location : Enum
+	{
+		private readonly Piercing<Location> sourceData;
+		public bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
+
+		public int piercingCount => sourceData.piercingCount;
+		public bool isPierced  => sourceData.isPierced ;
+		public bool isPiercedAt(Location location) => sourceData.isPiercedAt(location);
+
+		public int jewelryCount  => sourceData.jewelryCount ;
+		public bool wearingJewelry  => sourceData.wearingJewelry ;
+		public bool WearingJewelryAt(Location location) => sourceData.WearingJewelryAt(location);
+
+		public bool CanPierce(Location piercingLocation) => sourceData.CanPierce(piercingLocation);
+
+		public bool CanWearThisJewelryType(Location piercingLocation, JewelryType jewelryType) => sourceData.CanWearThisJewelryType(piercingLocation, jewelryType);
+
+
+		public ReadOnlyPiercing(Piercing<Location> piercingSource)
+		{
+			sourceData = piercingSource ?? throw new ArgumentNullException(nameof(piercingSource));
+		}
+
+
+	}
+
 }

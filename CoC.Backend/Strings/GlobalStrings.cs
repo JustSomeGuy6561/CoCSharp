@@ -45,7 +45,7 @@ namespace CoC.Backend.Strings
 		}
 
 		public static string CantAttackWith<T, U,V>(T type, PlayerBase player) where T : BehavioralSaveablePart<T, U,V> where U : SaveableBehavior<U, T, V> 
-			where V: BehavioralSaveablePartData<V, T, U>
+			where V: BehavioralSaveablePartWrapper<V, T, U>
 		{
 #if DEBUG
 			return "Warning: you called an attack hint, but cannot attack with this body part! Type: " + type.GetType().Name;

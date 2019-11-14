@@ -25,9 +25,9 @@ namespace CoC.Backend.BodyParts
 			return "tongue";
 			//return "human tongue";
 		}
-		private static string HumanFullDesc(Tongue tongue)
+		private static string HumanLongDesc(Tongue tongue)
 		{
-			return GenericFullDesc(tongue, HumanDesc());
+			return GenericLongDesc(tongue, HumanDesc());
 		}
 		private static string HumanPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -35,7 +35,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanTransformStr(Tongue tongue, PlayerBase player)
 		{
-			return tongue.RestoreText();
+			return tongue.type.restoreString(tongue, player);
 		}
 		private static string HumanRestoreStr(Tongue tongue, PlayerBase player)
 		{
@@ -45,9 +45,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "serpentine tongue";
 		}
-		private static string SnakeFullDesc(Tongue tongue)
+		private static string SnakeLongDesc(Tongue tongue)
 		{
-			return GenericFullDesc(tongue, SnakeDesc());
+			return GenericLongDesc(tongue, SnakeDesc());
 		}
 		private static string SnakePlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -80,9 +80,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "demonic tongue";
 		}
-		private static string DemonicFullDesc(Tongue tongue)
+		private static string DemonicLongDesc(Tongue tongue)
 		{
-			return GenericFullDesc(tongue, DemonicDesc());
+			return GenericLongDesc(tongue, DemonicDesc());
 		}
 		private static string DemonicPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -120,9 +120,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "draconic tongue";
 		}
-		private static string DraconicFullDesc(Tongue tongue)
+		private static string DraconicLongDesc(Tongue tongue)
 		{
-			return GenericFullDesc(tongue, DraconicDesc());
+			return GenericLongDesc(tongue, DraconicDesc());
 		}
 		private static string DraconicPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -143,9 +143,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "echidna tongue";
 		}
-		private static string EchidnaFullDesc(Tongue tongue)
+		private static string EchidnaLongDesc(Tongue tongue)
 		{
-			return GenericFullDesc(tongue, EchidnaDesc());
+			return GenericLongDesc(tongue, EchidnaDesc());
 		}
 		private static string EchidnaPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -177,9 +177,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "lizard tongue";
 		}
-		private static string LizardFullDesc(Tongue tongue)
+		private static string LizardLongDesc(Tongue tongue)
 		{
-			return GenericFullDesc(tongue, LizardDesc());
+			return GenericLongDesc(tongue, LizardDesc());
 		}
 		private static string LizardPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -240,9 +240,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cat tongue";
 		}
-		private static string CatFullDesc(Tongue tongue)
+		private static string CatLongDesc(Tongue tongue)
 		{
-			return GenericFullDesc(tongue, CatDesc());
+			return GenericLongDesc(tongue, CatDesc());
 		}
 		private static string CatPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -268,15 +268,15 @@ namespace CoC.Backend.BodyParts
 			return GenericRestoreStr(tongue, player);
 		}
 
-		private static string GenericFullDesc(Tongue tongue, string partialDesc)
+		private static string GenericLongDesc(Tongue tongue, string partialDesc)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (Utils.Rand(10) <= 2)
 			{
-				if (tongue.tonguePiercings.jewelryCount > 0)
-				{
-					sb.Append("pierced ");
-				}
+				//if (tongue.tonguePiercings.jewelryCount > 0)
+				//{
+				//	sb.Append("pierced ");
+				//}
 			}
 			sb.Append(partialDesc);
 			return sb.ToString();

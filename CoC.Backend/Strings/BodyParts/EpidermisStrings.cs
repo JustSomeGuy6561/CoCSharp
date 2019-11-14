@@ -38,25 +38,29 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 	}
-	public partial class EpidermalData
+	public partial class Epidermis
 	{
-		private static string fullStr(string adj, Tones tone, SimpleDescriptor descriptor)
+		private static string fullStr(string adj, Tones tone, SimpleDescriptor descriptor, bool commaBeforeDescriptor = false)
 		{
-			return adj + (string.IsNullOrWhiteSpace(adj) ? "" : " ") + tone.AsString() + " " + descriptor();
+			string preDesc = commaBeforeDescriptor ? ", " : " ";
+			return adj + (string.IsNullOrWhiteSpace(adj) ? "" : " ") + tone.AsString() + preDesc + descriptor();
 		}
 
-		private static string fullStr(string adj, FurColor fur, SimpleDescriptor descriptor)
+		private static string fullStr(string adj, FurColor fur, SimpleDescriptor descriptor, bool commaBeforeDescriptor = false)
 		{
-			return adj + (string.IsNullOrWhiteSpace(adj) ? "" : " ") + fur.AsString() + " " + descriptor();
+			string preDesc = commaBeforeDescriptor ? ", " : " ";
+			return adj + (string.IsNullOrWhiteSpace(adj) ? "" : " ") + fur.AsString() + preDesc + descriptor();
 		}
 
 
-		private static string ColoredStr(FurColor color, SimpleDescriptor descriptor)
+		private static string ColoredStr(FurColor color, SimpleDescriptor descriptor, bool commaBeforeDescriptor = false)
 		{
+			string preDesc = commaBeforeDescriptor ? ", " : " ";
 			return color.AsString() + " " + descriptor();
 		}
-		private static string ColoredStr(Tones color, SimpleDescriptor descriptor)
+		private static string ColoredStr(Tones color, SimpleDescriptor descriptor, bool commaBeforeDescriptor = false)
 		{
+			string preDesc = commaBeforeDescriptor ? ", " : " ";
 			return color.AsString() + " " + descriptor();
 		}
 	}
@@ -68,20 +72,44 @@ namespace CoC.Backend.BodyParts
 			return "skin";
 		}
 
+		private static string SkinAdjectiveStr()
+		{
+			return "standard";
+		}
+
+
 		private static string ScalesStr()
 		{
 			return "scales";
 		}
+
+		private static string ScalesAdjectiveStr()
+		{
+			return "scaly";
+		}
+
 
 		private static string FeathersStr()
 		{
 			return "feathers";
 		}
 
+		private static string FeathersAdjectiveStr()
+		{
+			return "feathery";
+		}
+
+
 		private static string FurStr()
 		{
 			return "fur";
 		}
+
+		private static string FurAdjectiveStr()
+		{
+			return "furry";
+		}
+
 
 		//Hard exoskeleton for things like a turtle or spiders or whatever.
 		private static string CarapaceStr()
@@ -89,26 +117,61 @@ namespace CoC.Backend.BodyParts
 			return "carapace";
 		}
 
+		private static string CarapaceAdjectiveStr()
+		{
+			return "carapace-covered";
+		}
+
+
 		private static string GooStr()
 		{
-			return "gooey skin";
+			return "goo";
 		}
+
+		private static string GooAdjectiveStr()
+		{
+			return "gooey";
+		}
+
 		private static string WoolStr()
 		{
 			return "wool";
 		}
+
+		private static string WoolAdjectiveStr()
+		{
+			return "woolen";
+		}
+
 		private static string BarkStr()
 		{
 			return "bark";
 		}
+
+		private static string BarkAdjectiveStr()
+		{
+			return "bark-covered";
+		}
+
 		private static string ExoskeletonStr()
 		{
 			return "exoskeleton";
 		}
 
+		private static string ExoskeletonAdjectiveStr()
+		{
+			return "exoskeleton-covering";
+		}
+
+
 		private static string RubberStr()
 		{
-			return "rubbery skin";
+			return "rubber-skin";
+		}
+
+		private static string RubberAdjectiveStr()
+		{
+			return "rubbery";
 		}
 	}
 }

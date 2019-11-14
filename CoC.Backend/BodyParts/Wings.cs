@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:36 AM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
@@ -9,11 +10,12 @@ using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
 	//may once have been multidyeable, as we skip button location 4; location 3 is wings.
-	public sealed partial class Wings : BehavioralSaveablePart<Wings, WingType, WingData>, IDyeable, IMultiToneable //if combat grants a boost to running via wings, just add a hasWings check.
+	public sealed partial class Wings : BehavioralSaveablePart<Wings, WingType, WingWrapper>, IDyeable, IMultiToneable //if combat grants a boost to running via wings, just add a hasWings check.
 	{
 		public override string BodyPartName() => Name();
 
@@ -57,6 +59,9 @@ public HairFurColors featherColor
 		public bool hasWings => type != WingType.NONE;
 		public bool canFly => type != WingType.NONE && isLarge;
 
+		public bool usesTone => type.usesTone;
+		public bool usesHair => type.usesHair;
+
 		internal Wings(Guid creatureID) : this(creatureID, WingType.defaultValue)
 		{ }
 
@@ -77,9 +82,9 @@ public HairFurColors featherColor
 			featherColor = HairFurColors.IsNullOrEmpty(color) ? wingType.defaultFeatherColor : color;
 		}
 
-		public override WingData AsReadOnlyData()
+		public override WingWrapper AsReadOnlyReference()
 		{
-			return new WingData(this);
+			return new WingWrapper(this);
 		}
 
 		internal override bool UpdateType(WingType newType)
@@ -89,7 +94,7 @@ public HairFurColors featherColor
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = newType;
 
 			CheckDataChanged(oldData);
@@ -104,7 +109,7 @@ public HairFurColors featherColor
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = featheredWings;
 			if (featherColor != featherCol && !HairFurColors.IsNullOrEmpty(featherCol) && type.canChangeColor)
 			{
@@ -123,7 +128,7 @@ public HairFurColors featherColor
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = toneWings;
 
 			if (!Tones.IsNullOrEmpty(tone) && type.canChangeColor)
@@ -144,7 +149,7 @@ public HairFurColors featherColor
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = toneWings;
 
 			if (type.canChangeColor)
@@ -173,7 +178,7 @@ public HairFurColors featherColor
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = wingType;
 			if (type.canChangeSize) isLarge = large;
 
@@ -190,7 +195,7 @@ public HairFurColors featherColor
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = featheredWings;
 
 			if (type.canChangeSize) isLarge = large;
@@ -212,7 +217,7 @@ public HairFurColors featherColor
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = toneWings;
 
 			if (type.canChangeSize) isLarge = large;
@@ -235,7 +240,7 @@ public HairFurColors featherColor
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = toneWings;
 
 			if (type.canChangeColor)
@@ -261,7 +266,7 @@ public HairFurColors featherColor
 		private void CheckDataChanged(WingData oldData)
 		{
 			if (wingTone != oldData.wingTone || wingBoneTone != oldData.wingBoneTone || featherColor != oldData.featherColor ||
-				oldData.isLarge != isLarge || type.usesHair != oldData.currentType.usesHair || type.usesTone != oldData.currentType.usesTone)
+				oldData.isLarge != isLarge || type.usesHair != oldData.usesHair || type.usesTone != oldData.usesTone)
 			{
 				NotifyDataChanged(oldData);
 			}
@@ -273,7 +278,7 @@ public HairFurColors featherColor
 			{
 				return false;
 			}
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			isLarge = true;
 			NotifyDataChanged(oldData);
 			return true;
@@ -285,7 +290,7 @@ public HairFurColors featherColor
 			{
 				return false;
 			}
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			isLarge = false;
 			NotifyDataChanged(oldData);
 			return !isLarge;
@@ -303,6 +308,25 @@ public HairFurColors featherColor
 			wingTone = tone;
 			wingBoneTone = boneTone;
 			return valid;
+		}
+
+		public WingData AsData()
+		{
+			return new WingData(this);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<WingWrapper, WingData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<WingWrapper, WingData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<WingWrapper, WingData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(WingData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<WingWrapper, WingData>(AsReadOnlyReference(), oldData));
 		}
 
 		bool IDyeable.allowsDye()
@@ -422,7 +446,7 @@ public HairFurColors featherColor
 		private bool canTone(byte index) => multiToneable.canToneOil(index);
 	}
 
-	public partial class WingType : SaveableBehavior<WingType, Wings, WingData>
+	public partial class WingType : SaveableBehavior<WingType, Wings, WingWrapper>
 	{
 		public enum BehaviorOnTransform { CONVERT_TO_SMALL, KEEP_SIZE, CONVERT_TO_LARGE }
 
@@ -541,15 +565,15 @@ public HairFurColors featherColor
 			wingBoneTone = Tones.NOT_APPLICABLE;
 		}
 
-		public static readonly WingType NONE = new WingType(false, NoneDesc, NoneFullDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
-		public static readonly WingType BEE_LIKE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, BeeLikeDesc, BeeLikeFullDesc, BeeLikePlayerStr, BeeLikeTransformStr, BeeLikeRestoreStr);
+		public static readonly WingType NONE = new WingType(false, NoneDesc, NoneLongDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
+		public static readonly WingType BEE_LIKE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, BeeLikeDesc, BeeLikeLongDesc, BeeLikePlayerStr, BeeLikeTransformStr, BeeLikeRestoreStr);
 		//player always has larged feathered wings. small feathered wings are the new harpy wings. player can't get them naturally as of now.
-		public static readonly FeatheredWings FEATHERED = new FeatheredWings(DefaultValueHelpers.defaultHarpyFeatherHair, BehaviorOnTransform.CONVERT_TO_LARGE, FeatheredDesc, FeatheredFullDesc, FeatheredPlayerStr, FeatheredTransformStr, FeatheredRestoreStr);
-		public static readonly WingType BAT_LIKE = new WingType(BehaviorOnTransform.KEEP_SIZE, BatLikeDesc, BatLikeFullDesc, BatLikePlayerStr, BatLikeTransformStr, BatLikeRestoreStr);
-		public static readonly TonableWings DRACONIC = new TonableWings(DefaultValueHelpers.defaultDragonWingTone, DefaultValueHelpers.defaultDragonWingTone, BehaviorOnTransform.CONVERT_TO_SMALL, DraconicDesc, DraconicFullDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
-		public static readonly WingType FAERIE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, FaerieDesc, FaerieFullDesc, FaeriePlayerStr, FaerieTransformStr, FaerieRestoreStr);
-		public static readonly WingType DRAGONFLY = new WingType(true, DragonflyDesc, DragonflyFullDesc, DragonflyPlayerStr, DragonflyTransformStr, DragonflyRestoreStr);
-		public static readonly WingType IMP = new WingType(BehaviorOnTransform.KEEP_SIZE, ImpDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+		public static readonly FeatheredWings FEATHERED = new FeatheredWings(DefaultValueHelpers.defaultHarpyFeatherHair, BehaviorOnTransform.CONVERT_TO_LARGE, FeatheredDesc, FeatheredLongDesc, FeatheredPlayerStr, FeatheredTransformStr, FeatheredRestoreStr);
+		public static readonly WingType BAT_LIKE = new WingType(BehaviorOnTransform.KEEP_SIZE, BatLikeDesc, BatLikeLongDesc, BatLikePlayerStr, BatLikeTransformStr, BatLikeRestoreStr);
+		public static readonly TonableWings DRACONIC = new TonableWings(DefaultValueHelpers.defaultDragonWingTone, DefaultValueHelpers.defaultDragonWingTone, BehaviorOnTransform.CONVERT_TO_SMALL, DraconicDesc, DraconicLongDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
+		public static readonly WingType FAERIE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, FaerieDesc, FaerieLongDesc, FaeriePlayerStr, FaerieTransformStr, FaerieRestoreStr);
+		public static readonly WingType DRAGONFLY = new WingType(true, DragonflyDesc, DragonflyLongDesc, DragonflyPlayerStr, DragonflyTransformStr, DragonflyRestoreStr);
+		public static readonly WingType IMP = new WingType(BehaviorOnTransform.KEEP_SIZE, ImpDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
 
 
 	}
@@ -637,19 +661,43 @@ public HairFurColors featherColor
 		}
 	}
 
-	public sealed class WingData : BehavioralSaveablePartData<WingData, Wings, WingType>
+	public sealed class WingWrapper : BehavioralSaveablePartWrapper<WingWrapper, Wings, WingType>
+	{
+		public HairFurColors featherColor => sourceData.featherColor;
+		public Tones wingTone => sourceData.wingTone;
+		public Tones wingBoneTone => sourceData.wingBoneTone;
+		public bool isLarge => sourceData.isLarge;
+		public bool usesTone => sourceData.usesTone;
+		public bool usesHair => sourceData.usesHair;
+
+		public bool hasWings => sourceData.hasWings;
+		public bool canFly => sourceData.canFly;
+
+
+		internal WingWrapper(Wings source) : base(source)
+		{
+		}
+	}
+
+	public sealed class WingData
 	{
 		public readonly HairFurColors featherColor;
 		public readonly Tones wingTone;
 		public readonly Tones wingBoneTone;
 		public readonly bool isLarge;
 
-		internal WingData(Wings source) : base(GetID(source), GetBehavior(source))
+		public readonly bool usesHair;
+		public readonly bool usesTone;
+
+		internal WingData(Wings source)
 		{
 			featherColor = source.featherColor;
 			wingTone = source.wingTone;
 			wingBoneTone = source.wingBoneTone;
 			isLarge = source.isLarge;
+
+			usesHair = source.usesHair;
+			usesTone = source.usesTone;
 		}
 	}
 }

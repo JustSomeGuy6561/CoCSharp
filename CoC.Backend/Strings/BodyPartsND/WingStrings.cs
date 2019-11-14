@@ -43,7 +43,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoneFullDesc(Wings wings)
+		private static string NoneLongDesc(Wings wings)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -63,7 +63,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeLikeFullDesc(Wings wings)
+		private static string BeeLikeLongDesc(Wings wings)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -83,7 +83,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatheredFullDesc(Wings wings)
+		private static string FeatheredLongDesc(Wings wings)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -103,7 +103,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BatLikeFullDesc(Wings wings)
+		private static string BatLikeLongDesc(Wings wings)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -123,7 +123,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DraconicFullDesc(Wings wings)
+		private static string DraconicLongDesc(Wings wings)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -143,7 +143,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FaerieFullDesc(Wings wings)
+		private static string FaerieLongDesc(Wings wings)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -163,7 +163,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonflyFullDesc(Wings wings)
+		private static string DragonflyLongDesc(Wings wings)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -183,7 +183,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpFullDesc(Wings wings)
+		private static string ImpLongDesc(Wings wings)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

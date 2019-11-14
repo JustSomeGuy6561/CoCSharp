@@ -61,8 +61,8 @@ namespace CoC.Frontend.Items.Consumables
 			return () => "A small wooden flask filled with a " + fullDesc() + " . A label across the front says, \"" + texture.AsString() + " Lotion.\"";
 		}
 
-		//does this consumable count as liquid for slimes?
-		public override bool countsAsSlimeLiquid => true;
+		//does this consumable count as liquid for slimes and (kangaroo) diapause?
+		public override bool countsAsLiquid => true;
 		//does this consumable count as cum for succubi?
 		public override bool countsAsCum => false;
 		//how much hunger does consuming this sate?

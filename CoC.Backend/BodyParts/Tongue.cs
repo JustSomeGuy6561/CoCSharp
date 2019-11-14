@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/6/2019, 1:26 AM
 
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
@@ -10,6 +11,7 @@ using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -17,7 +19,7 @@ namespace CoC.Backend.BodyParts
 
 	//ugh. i guess this fires on tongue length/width change? idk why, but whatever - overruled. i guess if you want to unlock some achievement when your tongue can cosplay
 	//for KISS, you can now easily do that. 
-	public sealed partial class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
+	public sealed partial class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueWrapper> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
 	{
 		public override string BodyPartName() => Name();
 
@@ -48,9 +50,9 @@ namespace CoC.Backend.BodyParts
 			tonguePiercings = new Piercing<TonguePiercingLocation>(TonguePiercingUnlocked, TongueSupportedJewelry);
 		}
 
-		public override TongueData AsReadOnlyData()
+		public override TongueWrapper AsReadOnlyReference()
 		{
-			return new TongueData(this);
+			return new TongueWrapper(this);
 		}
 
 		internal override bool UpdateType(TongueType newType)
@@ -63,7 +65,7 @@ namespace CoC.Backend.BodyParts
 			TongueData oldData = null;
 			if (length != newType.length || width != newType.width)
 			{
-				oldData = AsReadOnlyData();
+				oldData = AsData();
 			}
 			type = newType;
 			NotifyDataChanged(oldData);
@@ -91,6 +93,25 @@ namespace CoC.Backend.BodyParts
 				valid &= tonguePiercings.Validate(correctInvalidData);
 			}
 			return valid;
+		}
+
+		public TongueData AsData()
+		{
+			return new TongueData(this);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<TongueWrapper, TongueData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<TongueWrapper, TongueData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<TongueWrapper, TongueData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(TongueData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<TongueWrapper, TongueData>(AsReadOnlyReference(), oldData));
 		}
 
 		//could be a one-liner. written this way because maybe people wanna change it, idk.
@@ -123,7 +144,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class TongueType : SaveableBehavior<TongueType, Tongue, TongueData>
+	public partial class TongueType : SaveableBehavior<TongueType, Tongue, TongueWrapper>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<TongueType> tongues = new List<TongueType>();
@@ -181,13 +202,13 @@ namespace CoC.Backend.BodyParts
 		//these widths are arbitrary af, so feel free to alter them. i figured the snake tongue should be really narrow, and available for cock sounding if you really want that. 
 		//though i suppose with a large enough cock any of these would be viable. also the length is the distance out of the mouth it can travel. add like 4 inches for full length if 
 		//you're deepthroating or some shit, idk. 
-		public static readonly TongueType HUMAN = new TongueType(4, 2.5f, HumanDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly TongueType SNAKE = new TongueType(6, 0.25f, SnakeDesc, SnakeFullDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr);
-		public static readonly TongueType DEMONIC = new TongueType(24, 2.5f, DemonicDesc, DemonicFullDesc, DemonicPlayerStr, DemonicTransformStr, DemonicRestoreStr);
-		public static readonly TongueType DRACONIC = new TongueType(48, 2.5f, DraconicDesc, DraconicFullDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
-		public static readonly TongueType ECHIDNA = new TongueType(12, 1f, EchidnaDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
-		public static readonly TongueType LIZARD = new TongueType(12, 1f, LizardDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly TongueType CAT = new TongueType(4, 2f, CatDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly TongueType HUMAN = new TongueType(4, 2.5f, HumanDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly TongueType SNAKE = new TongueType(6, 0.25f, SnakeDesc, SnakeLongDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr);
+		public static readonly TongueType DEMONIC = new TongueType(24, 2.5f, DemonicDesc, DemonicLongDesc, DemonicPlayerStr, DemonicTransformStr, DemonicRestoreStr);
+		public static readonly TongueType DRACONIC = new TongueType(48, 2.5f, DraconicDesc, DraconicLongDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
+		public static readonly TongueType ECHIDNA = new TongueType(12, 1f, EchidnaDesc, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
+		public static readonly TongueType LIZARD = new TongueType(12, 1f, LizardDesc, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static readonly TongueType CAT = new TongueType(4, 2f, CatDesc, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 	}
 
 	public static class TongueHelpers
@@ -198,14 +219,35 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class TongueData : BehavioralSaveablePartData<TongueData, Tongue, TongueType>
+	public sealed class TongueWrapper : BehavioralSaveablePartWrapper<TongueWrapper, Tongue, TongueType>
 	{
+		public float width => sourceData.width;
+		public ushort length => sourceData.length;
+		public bool isLongTongue => sourceData.isLongTongue;
+
+		public uint penetrateCount => sourceData.penetrateCount;
+		public uint cullingusCount => sourceData.cullingusCount;
+
+		public ReadOnlyPiercing<TonguePiercingLocation> tonguePiercings => sourceData.tonguePiercings.AsReadOnlyCopy();
+
+		public ReadOnlyPiercing<LipPiercingLocation> lipPiercings => sourceData.lipPiercings.AsReadOnlyCopy();
+
+		internal TongueWrapper(Tongue tongue) : base(tongue)
+		{
+
+		}
+	}
+
+	public sealed class TongueData
+	{
+		public readonly TongueType currentType;
 		public float width => currentType.width;
 		public ushort length => currentType.length;
 		public bool isLongTongue => currentType.longTongue;
-		internal TongueData(Tongue tongue) : base(GetID(tongue), GetBehavior(tongue))
-		{
 
+		internal TongueData(Tongue tongue)
+		{
+			currentType = tongue.type;
 		}
 	}
 }

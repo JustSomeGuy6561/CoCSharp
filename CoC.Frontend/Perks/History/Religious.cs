@@ -20,7 +20,7 @@ namespace CoC.Frontend.Perks.History
 			}
 			sbyte oldMin = baseModifiers.minLibido;
 			baseModifiers.minLibido = baseModifiers.minLibido.subtract(2);
-			delta = oldMin.delta(baseModifiers.minLibido);
+			delta = oldMin.difference(baseModifiers.minLibido);
 		}
 
 		protected override void OnRemoval()

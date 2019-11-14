@@ -36,7 +36,7 @@ namespace CoC.Frontend.Transformations
 			target.DeltaCreatureStats(lus: 3, corr: 1);
 
 			uint hpDelta;
-			if (target.hasMaleCock)
+			if (target.hasCock)
 			{
 				if (target.cocks[0].length < 12)
 				{
@@ -57,7 +57,7 @@ namespace CoC.Frontend.Transformations
 				sb.Append(GainVitalityText(target));
 				healthCheck.AddHP((uint)(hpDelta + healthCheck.toughness / 3));
 			}
-			if (remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+			if (remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 
 			//Red or orange skin!
 			if (Utils.Rand(30) == 0 && !Array.Exists(Species.IMP.availableTones, x => x == target.body.primarySkin.tone))
@@ -73,7 +73,7 @@ namespace CoC.Frontend.Transformations
 				//currentDisplay.OutputText(target, "begins to lose its color, fading until you're as white as an albino. Then, starting at the crown of your head, a reddish hue rolls down your body in a wave, turning you completely " + target.skin.tone + ".");
 				//kGAMECLASS.rathazul.addMixologyXP(20); //mixology the result of imbibing these, so move out to tf item level. abstract it out, too. 
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 
@@ -84,7 +84,7 @@ namespace CoC.Frontend.Transformations
 				var heightDelta = target.build.GetShorter((byte)(1 + Utils.Rand(3)));
 				sb.Append(GetShorterText(target, heightDelta));
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//Imp wings - I just kinda robbed this from demon changeCount ~Foxwells
 			if (Utils.Rand(3) == 0 && ((target.wings.type != WingType.IMP && target.IsCorruptEnough(25)) || (target.wings.type == WingType.IMP && target.IsCorruptEnough(50))))
@@ -106,7 +106,7 @@ namespace CoC.Frontend.Transformations
 					sb.Append(GrowOrChangeWingsText(target, oldType));
 				}
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 			//Imp tail, because that's a unique thing from what I see?
@@ -128,7 +128,7 @@ namespace CoC.Frontend.Transformations
 				target.IncreaseCorruption(2);
 				target.UpdateTail(TailType.IMP);
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 			//Feets, needs red/orange skin and tail
@@ -141,7 +141,7 @@ namespace CoC.Frontend.Transformations
 				target.UpdateLowerBody(LowerBodyType.IMP);
 				target.IncreaseCorruption(2);
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 			//Imp ears, needs red/orange skin and horns
@@ -153,7 +153,7 @@ namespace CoC.Frontend.Transformations
 
 				target.UpdateEar(EarType.IMP);
 				target.IncreaseCorruption(2);
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 			//Horns, because why not?
@@ -175,7 +175,7 @@ namespace CoC.Frontend.Transformations
 				target.UpdateHorns(HornType.IMP);
 
 				target.IncreaseCorruption(2);
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 			//Imp arms, needs orange/red skin. Also your hands turn human.
@@ -200,7 +200,7 @@ namespace CoC.Frontend.Transformations
 				target.UpdateArms(ArmType.IMP);
 
 				target.IncreaseCorruption(2);
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 			//Changes hair to red/dark red, shortens it, sets it normal
@@ -224,7 +224,7 @@ namespace CoC.Frontend.Transformations
 				//target.hair.type = Hair.NORMAL;
 				//target.hair.length = 1;
 
-				var oldHairData = target.hair.AsReadOnlyData();
+				var oldHairData = target.hair.AsReadOnlyReference();
 
 				var hairColor = Utils.RandomChoice(Species.IMP.availableHairColors);
 				var hairLength = 1f;
@@ -239,7 +239,7 @@ namespace CoC.Frontend.Transformations
 					target.hair.SetAll(hairLength, hairColor);
 				}
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 
 			}
 
@@ -248,7 +248,7 @@ namespace CoC.Frontend.Transformations
 			{
 				var removeCount = target.genitals.RemoveExtraBreastRows();
 				sb.Append(RemovedAdditionalBreasts(target, removeCount));
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//Shrink titties
 			if (target.genitals.BiggestCupSize() > CupSize.FLAT && Utils.Rand(3) == 0 && !hyperHappy)
@@ -292,7 +292,7 @@ namespace CoC.Frontend.Transformations
 					}
 				}
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 
@@ -304,7 +304,7 @@ namespace CoC.Frontend.Transformations
 				//currentDisplay.OutputText(target, "" + Environment.NewLine + "" + Environment.NewLine + "A strange burning sensation fills your breasts, and you look in your " + target.armorName + " to see your extra nipples are gone! <b>You've lost your extra nipples!</b>");
 				target.DecreaseSensitivity(3);
 				target.genitals.SetQuadNipples(false);
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 
 			}
 
@@ -316,7 +316,7 @@ namespace CoC.Frontend.Transformations
 				sb.Append(RestoredNeckText(target, oldType));
 				target.RestoreNeck();
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 
 			}
 			//Rear body restore
@@ -326,7 +326,7 @@ namespace CoC.Frontend.Transformations
 				sb.Append(RestoredBackText(target, oldType));
 				target.RestoreBack();
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//Ovi perk loss
 			if (target is Player && Utils.Rand(5) == 0)
@@ -334,7 +334,7 @@ namespace CoC.Frontend.Transformations
 				if (((PlayerWomb)target.womb).ClearOviposition())
 				{
 					sb.Append(RemovedOvipositionText(target));
-					if (--remainingChanges <= 0) return SafeReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0) return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
 
@@ -363,7 +363,7 @@ namespace CoC.Frontend.Transformations
 					vaginasRemoved = target.RemoveAllVaginas();
 
 				}
-				if (!target.hasCock)
+				if (!target.hasCockOrClitCock)
 				{
 					grewCock = true;
 					target.AddCock(CockType.HUMAN, 12, 2);
@@ -383,7 +383,7 @@ namespace CoC.Frontend.Transformations
 
 
 			}
-			return SafeReturn(target, sb, changeCount - remainingChanges);
+			return ApplyAndReturn(target, sb, changeCount - remainingChanges);
 		}
 
 		protected abstract string ImpifiedText(Creature target, int breastRowsRemoved, bool madeFinalBreastRowMale, bool grewCock, bool grewBalls);

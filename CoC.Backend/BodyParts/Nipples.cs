@@ -9,6 +9,8 @@ using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System;
+using WeakEvent;
+using CoC.Backend.BodyParts.EventHelpers;
 
 namespace CoC.Backend.BodyParts
 {
@@ -38,7 +40,7 @@ namespace CoC.Backend.BodyParts
 	public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
 
 
-	public sealed partial class Nipples : SimpleSaveablePart<Nipples, NippleData>, IGrowable, IShrinkable
+	public sealed partial class Nipples : SimpleSaveablePart<Nipples, NippleWrapper>, IGrowable, IShrinkable
 	{
 		public override string BodyPartName()
 		{
@@ -100,7 +102,7 @@ namespace CoC.Backend.BodyParts
 				Utils.Clamp(ref value, MIN_NIPPLE_LENGTH, MAX_NIPPLE_LENGTH);
 				if (_length != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_length = value;
 					NotifyDataChanged(oldData);
 				}
@@ -115,22 +117,22 @@ namespace CoC.Backend.BodyParts
 		public bool isPierced => nipplePiercing.isPierced;
 		public bool wearingJewelry => nipplePiercing.wearingJewelry;
 
-		internal Nipples(Guid creatureID, Breasts parent, BreastPerkHelper initialPerkData, Gender gender) : base(creatureID)
+		internal Nipples(Guid creatureID, Breasts parent, BreastPerkHelper initialPerkWrapper, Gender gender) : base(creatureID)
 		{
 			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
-			length = initialPerkData.NewNippleDefaultLength;
+			length = initialPerkWrapper.NewNippleDefaultLength;
 
 			nipplePiercing = new Piercing<NipplePiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
 
 			//SetupPiercingMagic();
 
-			growthMultiplier = initialPerkData.NippleGrowthMultiplier;
-			shrinkMultiplier = initialPerkData.NippleShrinkMultiplier;
-			defaultNippleLength = initialPerkData.NewNippleDefaultLength;
+			growthMultiplier = initialPerkWrapper.NippleGrowthMultiplier;
+			shrinkMultiplier = initialPerkWrapper.NippleShrinkMultiplier;
+			defaultNippleLength = initialPerkWrapper.NewNippleDefaultLength;
 		}
 
-		internal Nipples(Guid creatureID, Breasts parent, BreastPerkHelper initialPerkData, float nippleLength) : base(creatureID)
+		internal Nipples(Guid creatureID, Breasts parent, BreastPerkHelper initialPerkWrapper, float nippleLength) : base(creatureID)
 		{
 			this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
@@ -140,14 +142,14 @@ namespace CoC.Backend.BodyParts
 
 			//SetupPiercingMagic();
 
-			growthMultiplier = initialPerkData.NippleGrowthMultiplier;
-			shrinkMultiplier = initialPerkData.NippleShrinkMultiplier;
-			defaultNippleLength = initialPerkData.NewNippleDefaultLength;
+			growthMultiplier = initialPerkWrapper.NippleGrowthMultiplier;
+			shrinkMultiplier = initialPerkWrapper.NippleShrinkMultiplier;
+			defaultNippleLength = initialPerkWrapper.NewNippleDefaultLength;
 		}
 
-		public override NippleData AsReadOnlyData()
+		public override NippleWrapper AsReadOnlyReference()
 		{
-			return new NippleData(this, BreastRowIndex);
+			return new NippleWrapper(this, BreastRowIndex);
 		}
 
 		internal float GrowNipple(float growAmount, bool ignorePerk = false)
@@ -246,6 +248,25 @@ namespace CoC.Backend.BodyParts
 		//		invertedNippleCounter = null;
 		//	}
 		//}
+
+		public NippleData AsData()
+		{
+			return new NippleData(this, BreastRowIndex);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<NippleWrapper, NippleData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<NippleWrapper, NippleData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<NippleWrapper, NippleData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(NippleData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<NippleWrapper, NippleData>(AsReadOnlyReference(), oldData));
+		}
 
 		internal void Reset(bool resetPiercings = false)
 		{
@@ -389,7 +410,41 @@ namespace CoC.Backend.BodyParts
 		//	}
 	}
 
-	public sealed class NippleData : SimpleData
+	public sealed partial class NippleWrapper : SimpleWrapper<NippleWrapper, Nipples>
+	{
+		public bool quadNipples => sourceData.quadNipples;
+		public bool blackNipples => sourceData.blackNipples;
+		public NippleStatus status => sourceData.nippleStatus;
+		public float length => sourceData.length;
+
+		internal float growthMultiplier => sourceData.growthMultiplier;
+		internal float shrinkMultiplier => sourceData.shrinkMultiplier;
+		internal float minNippleLength => sourceData.minNippleLength;
+		internal float defaultNippleLength => sourceData.defaultNippleLength;
+
+		public uint dickNippleFuckCount => sourceData.dickNippleFuckCount;
+		public uint nippleFuckCount => sourceData.nippleFuckCount;
+		public uint orgasmCount => sourceData.orgasmCount;
+		public uint dryOrgasmCount => sourceData.dryOrgasmCount;
+		public float width => sourceData.width;
+		public ReadOnlyPiercing<NipplePiercings> nipplePiercing => sourceData.nipplePiercing.AsReadOnlyCopy();
+		public bool isPierced => sourceData.isPierced;
+		public bool wearingJewelry => sourceData.wearingJewelry;
+
+
+		public readonly int breastRowIndex;
+
+		public string ShortDescription() => sourceData.ShortDescription();
+
+		public string LongDescription() => sourceData.LongDescription();
+
+		internal NippleWrapper(Nipples source, int currbreastRowIndex) : base(source)
+		{
+			breastRowIndex = currbreastRowIndex;
+		}
+	}
+
+	public sealed class NippleData
 	{
 		public readonly bool quadNipples;
 		public readonly bool blackNipples;
@@ -397,7 +452,7 @@ namespace CoC.Backend.BodyParts
 		public readonly float length;
 		public readonly int breastRowIndex;
 
-		internal NippleData(Nipples source, int currbreastRowIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		internal NippleData(Nipples source, int currbreastRowIndex)
 		{
 			blackNipples = source.blackNipples;
 			quadNipples = source.quadNipples;

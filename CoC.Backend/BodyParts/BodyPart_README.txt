@@ -117,7 +117,7 @@ SimpleDescriptor shortDesc: SimpleDescriptor is a delegate. It takes nothing, an
 a short description of the body part, generally the name of the type and the part (so "cat-like ears" for CAT instance of EarType). It's meant to be used in a sentence, but only provide the barest of information.
 Using the above example of cat-like ears, and some made up text about wearing earrings: "... now has huge hoops dangling from her <ears.shortDesc>" => "now huge hoops dangling from her cat-like ears"
 ______________________________________
-DescriptorWithArg<BodyPart> fullDesc: A delegate. Takes the body part data class, and returns a string.
+DescriptorWithArg<BodyPartWrapper> fullDesc: A delegate. Takes the body part data class, and returns a string.
 A full description of the body part part. This includes a reference to the body part's data class, so you can provide more information. for example, a human body can have various skin tones or skin textures so a full 
 	description, might want to say "human body with <skin texture> <skin color> skin" => "human body with smooth, ebony skin" or "human body with freckled, pale skin". This is meant to be used in a sentence. 
 	For example: The Goblin Assassin has <body.fullDesc>" => "the Goblin Assassin has a pudgy human body, with smooth green skin". Exactly how this will be used in context should be described in a comment in that
@@ -249,12 +249,12 @@ I can grep and sed and vim and git and ssh and it all just works! Plus, you know
 
 your data class should be a child or behavioral saveable part and your behavior class saveable behavior. to do this, you'll have to 
 it'll look like this 
-public sealed [partial] class MyDataClass : BehavioralSaveablePart<MyDataClass, MyBehaviorClass>
+public sealed [partial] class MyWrapperClass : BehavioralSaveablePart<MyWrapperClass, MyBehaviorClass>
 {
 
 }
 
-public [abstract/sealed] partial class MyBehaviorClass : SaveableBehavior<MyBehaviorClass, MyDataClass>
+public [abstract/sealed] partial class MyBehaviorClass : SaveableBehavior<MyBehaviorClass, MyWrapperClass>
 {
 
 }
@@ -281,12 +281,12 @@ Restore() : boolean function. takes nothing
 this sets your type back to the default. if it already was default, return false.
 otherwise return true.
 _________________________________________
-GenerateDefault(<optional values = null>) : MyDataClass function.
+GenerateDefault(<optional values = null>) : MyWrapperClass function.
 returns a new instance of your data class. fill it with the default type and set any values to their defaults, using the default type. Note that generally, it's expected that a default type won't have any variables,
 	but it's possible for even a default type to be able to parse data. for example, the body class defaults to HUMANOID, which could use a skin tone and skin complexion, so we should allow the default generator to
 	allow us to pass those in. However, if we don't know those, we obviously can't pass them in, so this function needs to either provide default values or be overloaded with a version that takes no parameters.
 _________________________________________
-GenerateDefaultOfType(MyBehaviorClass type) MyDataClass function. takes a behavior class type.
+GenerateDefaultOfType(MyBehaviorClass type) MyWrapperClass function. takes a behavior class type.
 returns a new instance of your data class, but with the type set to whatever's passed in. values are set according to this passed in type.
 __________________________________________
 ***UpdateType[WithOptionalHints](MyBehaviorClass type[, other parameters]) *** : boolean function. takes a variable number of arguments. REQUIRED, but not in the base class.

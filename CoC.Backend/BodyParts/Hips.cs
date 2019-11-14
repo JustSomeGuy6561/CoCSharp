@@ -4,14 +4,13 @@
 //12/28/2018, 1:35 AM
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Hips : SimpleSaveablePart<Hips, HipData>, IShrinkable //Gro+ doesn't work on hips.
+	public sealed partial class Hips : SimpleSaveablePart<Hips, HipWrapper>, IShrinkable //Gro+ doesn't work on hips.
 	{
 		public override string BodyPartName() => Name();
 
@@ -32,15 +31,13 @@ namespace CoC.Backend.BodyParts
 				Utils.Clamp(ref value, BOYISH, INHUMANLY_WIDE);
 				if (_hipSize != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_hipSize = value;
 					NotifyDataChanged(oldData);
 				}
 			}
 		}
 		private byte _hipSize;
-		public SimpleDescriptor AsText => AsStr;
-		public SimpleDescriptor ShortDescription => ShortDesc;
 
 		internal Hips(Guid creatureID) : this(creatureID, AVERAGE)
 		{
@@ -49,11 +46,12 @@ namespace CoC.Backend.BodyParts
 		{
 			_hipSize = Utils.Clamp2(hipSize, BOYISH, INHUMANLY_WIDE);
 		}
+
 		public byte index => size;
 
-		public override HipData AsReadOnlyData()
+		public override HipWrapper AsReadOnlyReference()
 		{
-			return new HipData(creatureID, size);
+			return new HipWrapper(this);
 		}
 
 		public byte GrowHips(byte amount = 1)
@@ -105,15 +103,47 @@ namespace CoC.Backend.BodyParts
 			}
 			return oldSize - size;
 		}
+
+		public HipsData AsData()
+		{
+			return new HipsData(size);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<HipWrapper, HipsData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<HipWrapper, HipsData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<HipWrapper, HipsData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(HipsData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<HipWrapper, HipsData>(AsReadOnlyReference(), oldData));
+		}
 	}
 
-	public sealed class HipData : SimpleData
-	{
-		public readonly byte hipSize;
+	
 
-		internal HipData(Guid creatureID, byte size) : base(creatureID)
+	public sealed class HipWrapper : SimpleWrapper<HipWrapper, Hips>
+	{
+		public byte size => sourceData.size;
+		public string AsText() => sourceData.AsText();
+
+		public string ShortDescription() => sourceData.ShortDescription();
+
+		internal HipWrapper(Hips source) : base(source)
+		{ }
+	}
+
+	public sealed class HipsData
+	{
+		public readonly byte size;
+
+		public HipsData(byte size)
 		{
-			hipSize = size;
+			this.size = size;
 		}
 	}
 }

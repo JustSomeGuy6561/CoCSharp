@@ -4,12 +4,14 @@
 //12/29/2018, 1:58 AM
 using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -18,12 +20,11 @@ namespace CoC.Backend.BodyParts
 	//add an ovipositor type. for now i don't think i need to. the scorpion is still a tail, but i may move it here for ease of coding, though technically it's a tail. idk man.
 
 	//only way data changes is due to dye. i figure that's rare enough not to deal with it.
-	public sealed partial class Back : BehavioralSaveablePart<Back, BackType, BackData>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
+	public sealed partial class Back : BehavioralSaveablePart<Back, BackType, BackWrapper>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
 
-		public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
-		public EpidermalData backEpidermis => epidermis.AsReadOnlyData();
+		public EpidermalData epidermalData => epidermis.AsReadOnlyReference();
 
 		private Epidermis epidermis = new Epidermis();
 
@@ -66,8 +67,7 @@ namespace CoC.Backend.BodyParts
 
 		internal Back(Guid creatureID, BackType backType) : base(creatureID)
 		{
-			_type = backType ?? throw new ArgumentNullException();
-			_type.ParseEpidermis(epidermis);
+			type = backType ?? throw new ArgumentNullException();
 		}
 
 		internal Back(Guid creatureID) : this(creatureID, BackType.defaultValue) { }
@@ -80,14 +80,14 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public override BackData AsReadOnlyData()
+		public override BackWrapper AsReadOnlyReference()
 		{
-			return new BackData(this);
+			return new BackWrapper(this);
 		}
 
 		private void CheckDataChanged(BackData oldData)
 		{
-			if (!oldData.epidermis.Equals(backEpidermis))
+			if (!oldData.epidermalData.Equals(epidermalData))
 			{
 				NotifyDataChanged(oldData);
 			}
@@ -100,7 +100,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = newType;
 
 			CheckDataChanged(oldData);
@@ -117,7 +117,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			var oldType = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			type = dragonMane; //sets epidermis to use hair.
 
 			//overrides it if possible.
@@ -203,6 +203,27 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
+		#region Data Change Events
+		public BackData AsData()
+		{
+			return new BackData(epidermalData);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<BackData, BackWrapper>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<BackData, BackWrapper>>();
+
+		public event EventHandler<SimpleDataChangedEvent<BackData, BackWrapper>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(BackData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<BackData, BackWrapper>(oldData, AsReadOnlyReference()));
+		}
+		#endregion
+
 		#region ITimeListener
 		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
 		{
@@ -218,7 +239,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public partial class BackType : SaveableBehavior<BackType, Back, BackData>
+	public partial class BackType : SaveableBehavior<BackType, Back, BackWrapper>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<BackType> backs = new List<BackType>();
@@ -301,7 +322,7 @@ namespace CoC.Backend.BodyParts
 
 		//these need to be functions or order of initialization can break. These are the things you learn
 		//when running unit tests. Testing OP!
-		
+
 		private static ResourceAttackBase TENDRIL_GRAB(Func<ushort> x, Action<ushort> y) => new TentaGrab(x, y);
 
 		private static readonly EpidermalData CARAPACE = new EpidermalData(EpidermisType.CARAPACE, Tones.BLACK, SkinTexture.SHINY);
@@ -309,11 +330,11 @@ namespace CoC.Backend.BodyParts
 
 		static BackType()
 		{
-			NORMAL = new BackType(NormalDesc, NormalFullDesc, NormalPlayerStr, NormalTransformStr, NormalRestoreStr);
+			NORMAL = new BackType(NormalDesc, NormalLongDesc, NormalPlayerStr, NormalTransformStr, NormalRestoreStr);
 			DRACONIC_MANE = new DragonBackMane();
-			DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesFullDesc, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
-			SHARK_FIN = new BackType(SharkFinDesc, SharkFinFullDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
-			TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TenderilFullDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
+			DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesLongDesc, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
+			SHARK_FIN = new BackType(SharkFinDesc, SharkFinLongDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
+			TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TenderilLongDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
 			BEHEMOTH = new BehemothBack();
 		}
 	}
@@ -325,7 +346,7 @@ namespace CoC.Backend.BodyParts
 
 		public override bool hasSpecialEpidermis => true;
 
-		internal DragonBackMane() : base(DraconicManeDesc, DraconicManeFullDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr)
+		internal DragonBackMane() : base(DraconicManeDesc, DraconicManeLongDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr)
 		{ }
 
 		internal override void ParseEpidermis(Epidermis epidermis)
@@ -345,7 +366,7 @@ namespace CoC.Backend.BodyParts
 
 		public override bool hasSpecialEpidermis => true;
 
-		internal BehemothBack() : base(BehemothDesc, BehemothFullDesc, BehemothPlayerStr, BehemothTransformStr, BehemothRestoreStr)
+		internal BehemothBack() : base(BehemothDesc, BehemothLongDesc, BehemothPlayerStr, BehemothTransformStr, BehemothRestoreStr)
 		{ }
 
 		internal override void ParseEpidermis(Epidermis epidermis)
@@ -372,18 +393,18 @@ namespace CoC.Backend.BodyParts
 
 		internal override void ParseEpidermis(Epidermis epidermis)
 		{
-			//not really designed to EpidermalData => Epidermis, but unfortunately, it's the only way to make the data immutable. 
+			//not really designed to ReadOnlyEpidermis => Epidermis, but unfortunately, it's the only way to make the data immutable. 
 			if (baseAppearance.isEmpty)
 			{
 				epidermis.Reset();
 			}
 			else if (baseAppearance.usesFur)
 			{
-				epidermis.UpdateOrChange((FurBasedEpidermisType)baseAppearance.currentType, baseAppearance.fur, baseAppearance.furTexture);
+				epidermis.UpdateOrChange((FurBasedEpidermisType)baseAppearance.type, baseAppearance.fur, baseAppearance.furTexture);
 			}
 			else
 			{
-				epidermis.UpdateOrChange((ToneBasedEpidermisType)baseAppearance.currentType, baseAppearance.tone, baseAppearance.skinTexture);
+				epidermis.UpdateOrChange((ToneBasedEpidermisType)baseAppearance.type, baseAppearance.tone, baseAppearance.skinTexture);
 			}
 		}
 		public override bool hasSpecialEpidermis => !baseAppearance.isEmpty;
@@ -394,13 +415,24 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class BackData : BehavioralSaveablePartData<BackData, Back, BackType>
+	public sealed class BackWrapper : BehavioralSaveablePartWrapper<BackWrapper, Back, BackType>
 	{
-		public readonly EpidermalData epidermis;
+		public EpidermalData epidermis => sourceData.epidermalData;
+		public ushort resources => sourceData.resources;
+		public ushort regenRate => sourceData.regenRate;
 
-		internal BackData(Back back) : base(GetID(back), GetBehavior(back))
+		public ushort maxResources => sourceData.maxCharges;
+		internal BackWrapper(Back back) : base(back)
+		{ }
+	}
+
+	public sealed class BackData
+	{
+		public readonly EpidermalData epidermalData;
+
+		public BackData(EpidermalData epidermalData)
 		{
-			epidermis = back.backEpidermis;
+			this.epidermalData = epidermalData;
 		}
 	}
 }

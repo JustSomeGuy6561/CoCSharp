@@ -8,10 +8,10 @@ namespace CoC.Backend.Pregnancies
 	{
 		public readonly Guid creatureID;
 		public readonly ReadOnlyPregnancyStore birthSource;
-		public readonly StandardSpawnData spawnData;
+		public readonly StandardSpawnWrapper spawnData;
 		public readonly uint totalBirthCount;
 
-		public BirthEvent(Guid creatureID, ReadOnlyPregnancyStore source, StandardSpawnData spawn, uint totalBirthCount)
+		public BirthEvent(Guid creatureID, ReadOnlyPregnancyStore source, StandardSpawnWrapper spawn, uint totalBirthCount)
 		{
 			this.creatureID = creatureID;
 			birthSource = source;

@@ -14,7 +14,7 @@ namespace CoC.Backend.BodyParts
 {
 	//Note: Never fires a data change event, as it has no data that can be changed.
 
-	public sealed partial class Antennae : BehavioralSaveablePart<Antennae, AntennaeType, AntennaeData>
+	public sealed partial class Antennae : BehavioralSaveablePart<Antennae, AntennaeType, AntennaeWrapper>
 	{
 		public override string BodyPartName() => Name();
 
@@ -32,6 +32,11 @@ namespace CoC.Backend.BodyParts
 			type = antennaeType ?? throw new ArgumentNullException(nameof(antennaeType));
 		}
 
+		private Antennae(Antennae other) : base(other?.creatureID ?? throw new ArgumentNullException(nameof(other)))
+		{
+			type = other.type;
+		}
+
 		//default implementations of update and restore are valid. 
 
 		internal override bool Validate(bool correctInvalidData)
@@ -42,13 +47,13 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		public override AntennaeData AsReadOnlyData()
+		public override AntennaeWrapper AsReadOnlyReference()
 		{
-			return new AntennaeData(this);
+			return new AntennaeWrapper(new Antennae(this));
 		}
 	}
 
-	public sealed partial class AntennaeType : SaveableBehavior<AntennaeType, Antennae, AntennaeData>
+	public sealed partial class AntennaeType : SaveableBehavior<AntennaeType, Antennae, AntennaeWrapper>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<AntennaeType> antennaes = new List<AntennaeType>();
@@ -105,17 +110,17 @@ namespace CoC.Backend.BodyParts
 		//with doing that to everything in here. do use lambdas if you need something not there or you want to use the empty string. 
 		public static readonly AntennaeType NONE = new AntennaeType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
 
-		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeFullDesc,
-			(x, y) => BeePlayer(y), BeeTransform, BeeRestore);
+		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeLongDesc,
+			(x, y) => BeePlayerStr(y), BeeTransformStr, BeeRestoreStr);
 
-		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceFullDesc,
-			(x, y) => CockatricePlayer(y), CockatriceTransform, CockatriceRestore);
+		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceLongDesc,
+			(x, y) => CockatricePlayerStr(y), CockatriceTransformStr, CockatriceRestoreStr);
 	}
 
-	public sealed class AntennaeData : BehavioralSaveablePartData<AntennaeData, Antennae, AntennaeType>
+	public sealed class AntennaeWrapper : BehavioralSaveablePartWrapper<AntennaeWrapper, Antennae, AntennaeType>
 	{
 
-		internal AntennaeData(Antennae source) : base(GetID(source), GetBehavior(source))
+		internal AntennaeWrapper(Antennae source) : base(source)
 		{ }
 	}
 

@@ -42,6 +42,6 @@ namespace CoC.Backend.StatusEffect
 		public abstract SimpleDescriptor obtainText { get; }
 
 		public abstract SimpleDescriptor ShortDescription { get; }
-		public abstract SimpleDescriptor FullDescription { get; }
+		public abstract SimpleDescriptor LongDescription { get; }
 	}
 }

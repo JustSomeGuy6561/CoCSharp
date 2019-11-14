@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	//has no special data. its data change will never be called.
-	public sealed partial class Gills : BehavioralSaveablePart<Gills, GillType, GillData>
+	public sealed partial class Gills : BehavioralSaveablePart<Gills, GillType, GillWrapper>
 	{
 		public override string BodyPartName() => Name();
 
@@ -27,9 +27,9 @@ namespace CoC.Backend.BodyParts
 
 		public override GillType defaultType => GillType.defaultValue;
 
-		public override GillData AsReadOnlyData()
+		public override GillWrapper AsReadOnlyReference()
 		{
-			return new GillData(this);
+			return new GillWrapper(this);
 		}
 
 
@@ -44,7 +44,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class GillType : SaveableBehavior<GillType, Gills, GillData>
+	public partial class GillType : SaveableBehavior<GillType, Gills, GillWrapper>
 	{
 		private static int indexMaker = 0;
 		public static GillType defaultValue => NONE;
@@ -93,12 +93,12 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 
 		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
-		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneFullDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
-		public static readonly GillType FISH = new GillType(FishDescStr, FishFullDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
+		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneLongDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
+		public static readonly GillType FISH = new GillType(FishDescStr, FishLongDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
 	}
 
-	public sealed class GillData : BehavioralSaveablePartData<GillData, Gills, GillType>
+	public sealed class GillWrapper : BehavioralSaveablePartWrapper<GillWrapper, Gills, GillType>
 	{
-		internal GillData(Gills source) : base(GetID(source), GetBehavior(source)) { }
+		internal GillWrapper(Gills source) : base(source) { }
 	}
 }

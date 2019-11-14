@@ -21,7 +21,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHornsFullDesc(Horns horns)
+		private static string NoHornsLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -41,7 +41,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonFullDesc(Horns horns)
+		private static string DemonLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -61,7 +61,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BullFullDesc(Horns horns)
+		private static string BullLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -78,7 +78,7 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string BullHornsReactToFemDeltaStr(byte oldLength, in byte newLength, byte oldMasculinity, in FemininityData femininity)
+		private string BullHornsReactToFemDeltaStr(byte oldLength, in byte newLength, byte oldMasculinity, in FemininityWrapper femininity)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -88,7 +88,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonFullDesc(Horns horns)
+		private static string DragonLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -108,7 +108,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerFullDesc(Horns horns)
+		private static string DeerLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -128,7 +128,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ReindeerFullDesc(Horns horns)
+		private static string ReindeerLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -148,7 +148,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatFullDesc(Horns horns)
+		private static string GoatLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -168,7 +168,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string UniHornFullDesc(Horns horns)
+		private static string UniHornLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -188,7 +188,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoFullDesc(Horns horns)
+		private static string RhinoLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -208,7 +208,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepFullDesc(Horns horns)
+		private static string SheepLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -228,7 +228,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpFullDesc(Horns horns)
+		private static string ImpLongDesc(Horns horns)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

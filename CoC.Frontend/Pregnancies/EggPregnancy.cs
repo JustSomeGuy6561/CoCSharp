@@ -43,9 +43,9 @@ namespace CoC.Frontend.Pregnancies
 			return base.HandleNewKnockupAttempt(type, out newType);
 		}
 
-		public override StandardSpawnData AsReadOnlyData()
+		public override StandardSpawnWrapper AsReadOnlyReference()
 		{
-			return new EggSpawnData(this);
+			return new EggSpawnWrapper(this);
 		}
 
 		//currently only allows you to do this once.
@@ -76,17 +76,19 @@ namespace CoC.Frontend.Pregnancies
 		}
 	}
 
-	public class EggSpawnData : StandardSpawnData
+	public class EggSpawnWrapper : StandardSpawnWrapper
 	{
 		public readonly int currentEggCount;
 		public readonly EggBase currentEggColor;
 		public readonly bool eggsCurrentlyLarge;
 
-		internal EggSpawnData(EggPregnancy source) : base(source)
+		internal EggSpawnWrapper(EggPregnancy source) : base(source)
 		{
 			currentEggCount = source.eggCount;
 			eggsCurrentlyLarge = source.largeEggs;
 			currentEggColor = source.knownEggType?.Invoke(source.largeEggs);
 		}
 	}
+
+
 }

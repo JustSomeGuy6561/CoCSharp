@@ -4,20 +4,25 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Ovipositor : BehavioralSaveablePart<Ovipositor, OvipositorType, OvipositorData>
+	public sealed partial class Ovipositor : BehavioralSaveablePart<Ovipositor, OvipositorType, OvipositorWrapper>
 	{
 		//if you want to add resource to this, implement body part lazy, make sure it's attached to list of lazies in the creature. 
 		//increment resouce as needed. provide function for removing resources.
 
 		public Ovipositor(Guid creatureID) : base(creatureID) { }
 
+		public Ovipositor(Guid creatureID, OvipositorType ovipositorType) : base(creatureID)
+		{
+			type = ovipositorType ?? throw new ArgumentNullException(nameof(ovipositorType));
+		}
+
 		public override OvipositorType defaultType => OvipositorType.defaultValue;
 
 		public override OvipositorType type { get; protected set; }
 
-		public override OvipositorData AsReadOnlyData()
+		public override OvipositorWrapper AsReadOnlyReference()
 		{
-			return new OvipositorData(this);
+			return new OvipositorWrapper(this);
 		}
 
 		//default update, restore fine. nothing else really required.
@@ -36,7 +41,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed partial class OvipositorType : SaveableBehavior<OvipositorType, Ovipositor, OvipositorData>
+	public sealed partial class OvipositorType : SaveableBehavior<OvipositorType, Ovipositor, OvipositorWrapper>
 	{
 		public override int index => throw new NotImplementedException();
 
@@ -58,17 +63,17 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public static readonly OvipositorType NONE = new OvipositorType(NoneShortDesc, NoneFullDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
-		public static readonly OvipositorType SPIDER = new OvipositorType(SpiderShortDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //none
-		public static readonly OvipositorType BEE = new OvipositorType(BeeShortDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //none)
+		public static readonly OvipositorType NONE = new OvipositorType(NoneShortDesc, NoneLongDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
+		public static readonly OvipositorType SPIDER = new OvipositorType(SpiderShortDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //none
+		public static readonly OvipositorType BEE = new OvipositorType(BeeShortDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //none)
 
 		public OvipositorType(SimpleDescriptor shortDesc, DescriptorWithArg<Ovipositor> fullDesc, TypeAndPlayerDelegate<Ovipositor> playerDesc, 
 			ChangeType<Ovipositor> transform, RestoreType<Ovipositor> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore) { }
 	}
 
-	public sealed class OvipositorData : BehavioralSaveablePartData<OvipositorData, Ovipositor, OvipositorType>
+	public sealed class OvipositorWrapper : BehavioralSaveablePartWrapper<OvipositorWrapper, Ovipositor, OvipositorType>
 	{
-		public OvipositorData(Ovipositor source) : base(GetID(source), GetBehavior(source))
+		public OvipositorWrapper(Ovipositor source) : base(source)
 		{
 		}
 	}

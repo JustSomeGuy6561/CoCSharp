@@ -6,7 +6,7 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Feet : PartWithBehaviorAndEventBase<Feet, FootType, FootData>
+	public sealed partial class Feet : PartWithBehavioralEventsBase<Feet, FootType, FootWrapper>
 	{
 		public override string BodyPartName() => Name();
 
@@ -15,9 +15,9 @@ namespace CoC.Backend.BodyParts
 			type = value ?? throw new ArgumentNullException(nameof(value));
 		}
 
-		public override FootData AsReadOnlyData()
+		public override FootWrapper AsReadOnlyReference()
 		{
-			return new FootData(creatureID, type);
+			return new FootWrapper(this);
 		}
 
 		public uint orgasmCount { get; private set; } = 0;
@@ -59,7 +59,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal void doGenericOrgasm(bool dryOrgasm)
+		internal void DoGenericOrgasm(bool dryOrgasm)
 		{
 			orgasmCount++;
 			if (dryOrgasm)
@@ -95,33 +95,33 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public static FootType HUMAN = new FootType(FootStyle.FEET, HumanDesc, HumanFullDesc);
-		public static FootType HOOVES = new FootType(FootStyle.HOOVES, HoovesDesc, HoovesFullDesc);
-		public static FootType PAW = new FootType(FootStyle.PAWS, PawDesc, PawFullDesc);
-		public static FootType NONE = new FootType(FootStyle.OTHER, NoneDesc, NoneFullDesc);
-		public static FootType DEMON_HEEL = new FootType(FootStyle.OTHER, DemonHeelDesc, DemonHeelFullDesc);
-		public static FootType DEMON_CLAW = new FootType(FootStyle.CLAWS, DemonClawDesc, DemonClawFullDesc);
-		public static FootType INSECTOID = new FootType(FootStyle.INSECTOID, InsectoidDesc, InsectoidFullDesc);
-		public static FootType LIZARD_CLAW = new FootType(FootStyle.CLAWS, LizardClawDesc, LizardClawFullDesc);
-		public static FootType BRONY = new FootType(FootStyle.HOOVES, BronyDesc, BronyFullDesc);
-		public static FootType RABBIT = new FootType(FootStyle.FEET, RabbitDesc, RabbitFullDesc);
-		public static FootType HARPY_TALON = new FootType(FootStyle.CLAWS, HarpyTalonDesc, HarpyTalonFullDesc);
-		public static FootType KANGAROO = new FootType(FootStyle.FEET, KangarooDesc, KangarooFullDesc);
-		public static FootType DRAGON_CLAW = new FootType(FootStyle.CLAWS, DragonClawDesc, DragonClawFullDesc);
-		public static FootType MANDER_CLAW = new FootType(FootStyle.CLAWS, ManderClawDesc, ManderClawFullDesc);
-		public static FootType IMP_CLAW = new FootType(FootStyle.CLAWS, ImpClawDesc, ImpClawFullDesc);
+		public static FootType HUMAN = new FootType(FootStyle.FEET, HumanDesc, HumanLongDesc);
+		public static FootType HOOVES = new FootType(FootStyle.HOOVES, HoovesDesc, HoovesLongDesc);
+		public static FootType PAW = new FootType(FootStyle.PAWS, PawDesc, PawLongDesc);
+		public static FootType NONE = new FootType(FootStyle.OTHER, NoneDesc, NoneLongDesc);
+		public static FootType DEMON_HEEL = new FootType(FootStyle.OTHER, DemonHeelDesc, DemonHeelLongDesc);
+		public static FootType DEMON_CLAW = new FootType(FootStyle.CLAWS, DemonClawDesc, DemonClawLongDesc);
+		public static FootType INSECTOID = new FootType(FootStyle.INSECTOID, InsectoidDesc, InsectoidLongDesc);
+		public static FootType LIZARD_CLAW = new FootType(FootStyle.CLAWS, LizardClawDesc, LizardClawLongDesc);
+		public static FootType BRONY = new FootType(FootStyle.HOOVES, BronyDesc, BronyLongDesc);
+		public static FootType RABBIT = new FootType(FootStyle.FEET, RabbitDesc, RabbitLongDesc);
+		public static FootType HARPY_TALON = new FootType(FootStyle.CLAWS, HarpyTalonDesc, HarpyTalonLongDesc);
+		public static FootType KANGAROO = new FootType(FootStyle.FEET, KangarooDesc, KangarooLongDesc);
+		public static FootType DRAGON_CLAW = new FootType(FootStyle.CLAWS, DragonClawDesc, DragonClawLongDesc);
+		public static FootType MANDER_CLAW = new FootType(FootStyle.CLAWS, ManderClawDesc, ManderClawLongDesc);
+		public static FootType IMP_CLAW = new FootType(FootStyle.CLAWS, ImpClawDesc, ImpClawLongDesc);
 	}
 
-	public sealed class FootData : BehavioralPartDataBase<FootType>
+	public sealed class FootWrapper : PartWithBehavioralEventsWrapper<FootWrapper, Feet, FootType>
 	{
-		public bool isFeet => currentType.isFeet;
-		public bool isPaws => currentType.isPaws;
-		public bool isHooves => currentType.isHooves;
-		public bool isInsectoid => currentType.isInsectoid;
-		public bool isClaws => currentType.isClaws;
-		public bool isOther => currentType.isOther;
+		public bool isFeet => type.isFeet;
+		public bool isPaws => type.isPaws;
+		public bool isHooves => type.isHooves;
+		public bool isInsectoid => type.isInsectoid;
+		public bool isClaws => type.isClaws;
+		public bool isOther => type.isOther;
 
-		public FootData(Guid id, FootType currentType) : base(id, currentType)
+		public FootWrapper(Feet source) : base(source)
 		{
 
 		}

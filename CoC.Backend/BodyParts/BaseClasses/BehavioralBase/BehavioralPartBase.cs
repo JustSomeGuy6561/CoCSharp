@@ -32,18 +32,24 @@ namespace CoC.Backend.BodyParts
 	//so you can attach epidermis to any body part that needs it and not need to deal with anything past keeping it updated. 
 	//learned this the hard way after having to deal with it in arms. woo!
 	
-	public abstract class BehavioralPartBase<BehaviorClass, DataClass> where BehaviorClass : BehaviorBase
-		where DataClass : BehavioralPartDataBase<BehaviorClass>
+	public abstract class BehavioralPartBase<ThisClass, BehaviorClass, WrapperClass> 
+		where ThisClass:BehavioralPartBase<ThisClass, BehaviorClass, WrapperClass> 
+		where BehaviorClass : BehaviorBase
+		where WrapperClass : BehavioralWrapperBase<WrapperClass, ThisClass, BehaviorClass>
 	{
 
 		public abstract BehaviorClass type { get; protected set; }
 
-		public abstract DataClass AsReadOnlyData();
+		/// <summary>
+		/// Encapsulate the result in the data wrapper class. 
+		/// </summary>
+		/// <returns>A Read-Only variant of this class</returns>
+		public abstract WrapperClass AsReadOnlyReference();
 
 
 		public virtual int index => type.index;
 
-		public virtual SimpleDescriptor shortDescription => type.shortDescription;
+		public virtual string ShortDescription() => type.shortDescription();
 
 		protected internal virtual void PostPerkInit()
 		{ }

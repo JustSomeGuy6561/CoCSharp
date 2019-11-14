@@ -3,15 +3,16 @@
 //Author: JustSomeGuy
 //12/29/2018, 10:55 PM
 
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -29,11 +30,11 @@ namespace CoC.Backend.BodyParts
 	//whoever decided to use the AS3 equivalent hack for an enum, though, not so much. that was some ugly ass shit.
 
 	//Note: this class exists after perks have been created, so it's postperk init is not called. 
-public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockData>, IGrowable, IShrinkable
+	public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockWrapper>, IGrowable, IShrinkable
 	{
 
 		public override string BodyPartName() => Name();
-		
+
 		#region Consts
 
 		public const float MAX_COCK_LENGTH = 240f;
@@ -59,7 +60,21 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		#region Properties
 		public readonly bool isClitCock;
 
-		private int cockIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? isClitCock ? creature.genitals.cocks.IndexOf(this) : creature.genitals.allCocks.IndexOf(this) : 0;
+		private int cockIndex
+		{
+			get
+			{
+				if (isClitCock) return -1;
+				else if (CreatureStore.TryGetCreature(creatureID, out Creature creature))
+				{
+					return creature.genitals.cocks.IndexOf(this);
+				}
+				else
+				{
+					return 0;
+				}
+			}
+		}
 
 		private float cockGrowthMultiplier => creature?.genitals.CockGrowthMultiplier ?? 1;
 		private float cockShrinkMultiplier => creature?.genitals.CockShrinkMultiplier ?? 1;
@@ -71,9 +86,9 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 				_minCockLength = value;
 				if (length < _minCockLength)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_cockLength = _minCockLength;
-					NotifyDataChanged(oldData);
+					//NotifyDataChanged(oldData);
 				}
 			}
 		}
@@ -172,7 +187,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			float? initialKnotMultiplier = null) : this(creatureID, initialPerkValues, cockType, length, girth, initialKnotMultiplier, false)
 		{ }
 
-		private Cock(Guid creatureID, CockPerkHelper initialPerkValues, CockType cockType, float length, float girth,
+		internal Cock(Guid creatureID, CockPerkHelper initialPerkValues, CockType cockType, float length, float girth,
 			float? initialKnotMultiplier, bool clitCock) : base(creatureID)
 		{
 			type = cockType ?? throw new ArgumentNullException(nameof(cockType));
@@ -190,6 +205,24 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			isClitCock = clitCock;
 
 		}
+
+		//used for aggregates, so perk data is irrelevant. 
+		private Cock(Guid creatureID, CockType cockType, float length, float girth, float initialKnotMultiplier) : base(creatureID)
+		{
+			type = cockType ?? throw new ArgumentNullException(nameof(cockType));
+
+			updateLengthAndGirth(length, girth);
+
+			knotMultiplier = initialKnotMultiplier;
+
+			cockPiercings = new Piercing<CockPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+
+			newCockDefaultSize = DEFAULT_COCK_LENGTH;
+			minCockLength = MIN_COCK_LENGTH;
+
+			isClitCock = false;
+		}
+
 		#endregion
 
 		#region Generate
@@ -208,6 +241,11 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			return new Cock(creatureID, new CockPerkHelper(), CockType.defaultValue, clit.length + 5, DEFAULT_COCK_GIRTH, null, true);
 		}
 
+		internal static CockWrapper GenerateAggregate(Guid creatureID, CockType type, float averageKnot, float averageKnotSize, float averageLength, float averageGirth)
+		{
+			return new Cock(creatureID, type, averageLength, averageGirth, averageKnot).AsReadOnlyReference();
+		}
+
 		internal void InitializePiercings(Dictionary<CockPiercings, PiercingJewelry> piercings)
 		{
 #warning Implement Me!
@@ -217,16 +255,16 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 
 		#endregion
 
-		public override CockData AsReadOnlyData()
+		public override CockWrapper AsReadOnlyReference()
 		{
-			return new CockData(this, cockIndex);
+			return new CockWrapper(this, cockIndex);
 		}
 
 		private void CheckDataChanged(CockData oldData)
 		{
 			if (length != oldData.length || this.girth != oldData.girth || knotMultiplier != oldData.knotMultiplier || knotSize != oldData.knotSize)
 			{
-				NotifyDataChanged(oldData);
+				//NotifyDataChanged(oldData);
 			}
 		}
 
@@ -267,7 +305,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			{
 				return false;
 			}
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			var oldType = type;
 			type = newType;
 			callback?.Invoke();
@@ -307,7 +345,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			{
 				lengthenAmount *= cockGrowthMultiplier;
 			}
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			updateLength(length + lengthenAmount);
 			CheckDataChanged(oldData);
 			return length - oldLength;
@@ -321,7 +359,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			{
 				shortenAmount *= cockShrinkMultiplier;
 			}
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			updateLength(length - shortenAmount);
 			CheckDataChanged(oldData);
 			return oldLength - length;
@@ -329,7 +367,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 
 		public float SetLength(float newLength)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			updateLength(newLength);
 			CheckDataChanged(oldData);
 			return length;
@@ -338,7 +376,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		public float ThickenCock(float thickenAmount)
 		{
 			float oldGirth = girth;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			updateGirth(girth + thickenAmount);
 			CheckDataChanged(oldData);
 			return girth - oldGirth;
@@ -347,7 +385,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		public float ThinCock(float thinAmount)
 		{
 			float oldGirth = girth;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			updateGirth(girth - thinAmount);
 			CheckDataChanged(oldData);
 			return oldGirth - girth;
@@ -355,7 +393,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 
 		public float SetGirth(float newGirth)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			updateGirth(newGirth);
 			CheckDataChanged(oldData);
 			return girth;
@@ -363,7 +401,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 
 		public void SetLengthAndGirth(float newLength, float newGirth)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			updateLengthAndGirth(newLength, newGirth);
 			CheckDataChanged(oldData);
 		}
@@ -375,7 +413,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 				return 0;
 			}
 			float oldMultiplier = knotMultiplier;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			knotMultiplier += amount;
 			CheckDataChanged(oldData);
 			return knotMultiplier - oldMultiplier;
@@ -388,7 +426,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 				return 0;
 			}
 			float oldMultiplier = knotMultiplier;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			knotMultiplier -= amount;
 			CheckDataChanged(oldData);
 			return oldMultiplier - knotMultiplier;
@@ -399,7 +437,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			Utils.Clamp(ref multiplier, MIN_KNOT_MULTIPLIER, MAX_KNOT_MULTIPLIER);
 			if (type.hasKnot)
 			{
-				var oldData = AsReadOnlyData();
+				var oldData = AsData();
 				knotMultiplier = multiplier;
 				CheckDataChanged(oldData);
 			}
@@ -408,7 +446,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 
 		public void SetAll(float newLength, float newGirth, float newKnotMultiplier)
 		{
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 			updateLengthAndGirth(newLength, newGirth);
 			Utils.Clamp(ref newKnotMultiplier, MIN_KNOT_MULTIPLIER, MAX_KNOT_MULTIPLIER);
 			if (type.hasKnot)
@@ -462,6 +500,26 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			return valid;
 		}
 		#endregion
+
+		public CockData AsData()
+		{
+			return new CockData(this, cockIndex);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<CockWrapper, CockData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<CockWrapper, CockData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<CockWrapper, CockData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(CockData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<CockWrapper, CockData>(AsReadOnlyReference(), oldData));
+		}
+
 		#region Piercings
 		private bool PiercingLocationUnlocked(CockPiercings piercingLocation)
 		{
@@ -606,7 +664,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 
 
 
-	public partial class CockType : SaveableBehavior<CockType, Cock, CockData>
+	public partial class CockType : SaveableBehavior<CockType, Cock, CockWrapper>
 	{
 
 		private static int indexMaker = 0;
@@ -677,27 +735,27 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 			return girth / 8f;
 		}
 
-		public static readonly CockType HUMAN = new CockType(CockGroup.HUMAN, HumanDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly CockType HORSE = new CockType(CockGroup.MAMMALIAN, HorseDesc, HorseFullDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
-		public static readonly CockType DOG = new CockType(CockGroup.MAMMALIAN, 1.1f, DogDesc, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);// can range up to 2.1 depending on item.
-		public static readonly CockType DEMON = new CockType(CockGroup.CORRUPTED, DemonDesc, DemonFullDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr);
-		public static readonly CockType TENTACLE = new FlexiCock(CockGroup.CORRUPTED, 1.1f, TentacleDesc, TentacleFullDesc, TentaclePlayerStr, TentacleTransformStr, TentacleRestoreStr);
-		public static readonly CockType CAT = new CockType(CockGroup.MAMMALIAN, CatDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
-		public static readonly CockType LIZARD = new CockType(CockGroup.REPTILIAN, LizardDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly CockType ANEMONE = new CockType(CockGroup.AQUATIC, AnemoneDesc, AnemoneFullDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
-		public static readonly CockType KANGAROO = new CockType(CockGroup.MAMMALIAN, KangarooDesc, KangarooFullDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
-		public static readonly CockType DRAGON = new CockType(CockGroup.REPTILIAN, 1.3f, DragonDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly CockType DISPLACER = new CockType(CockGroup.OTHER, 1.5f, DisplacerDesc, DisplacerFullDesc, DisplacerPlayerStr, DisplacerTransformStr, DisplacerRestoreStr);
-		public static readonly CockType FOX = new CockType(CockGroup.MAMMALIAN, 1.25f, FoxDesc, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
-		public static readonly CockType BEE = new CockType(CockGroup.FLYING, BeeDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
-		public static readonly CockType PIG = new CockType(CockGroup.MAMMALIAN, PigDesc, PigFullDesc, PigPlayerStr, PigTransformStr, PigRestoreStr);
-		public static readonly CockType AVIAN = new CockType(CockGroup.FLYING, AvianDesc, AvianFullDesc, AvianPlayerStr, AvianTransformStr, AvianRestoreStr);
-		public static readonly CockType RHINO = new CockType(CockGroup.MAMMALIAN, RhinoDesc, RhinoFullDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
-		public static readonly CockType ECHIDNA = new CockType(CockGroup.MAMMALIAN, EchidnaDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
-		public static readonly CockType WOLF = new CockType(CockGroup.MAMMALIAN, 1.5f, WolfDesc, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static readonly CockType RED_PANDA = new CockType(CockGroup.MAMMALIAN, RedPandaDesc, RedPandaFullDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr);
-		public static readonly CockType FERRET = new CockType(CockGroup.MAMMALIAN, FerretDesc, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
-		public static readonly CockType GOO = new FlexiCock(CockGroup.AQUATIC, GooDesc, GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+		public static readonly CockType HUMAN = new CockType(CockGroup.HUMAN, HumanDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly CockType HORSE = new CockType(CockGroup.MAMMALIAN, HorseDesc, HorseLongDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
+		public static readonly CockType DOG = new CockType(CockGroup.MAMMALIAN, 1.1f, DogDesc, DogLongDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);// can range up to 2.1 depending on item.
+		public static readonly CockType DEMON = new CockType(CockGroup.CORRUPTED, DemonDesc, DemonLongDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr);
+		public static readonly CockType TENTACLE = new FlexiCock(CockGroup.CORRUPTED, 1.1f, TentacleDesc, TentacleLongDesc, TentaclePlayerStr, TentacleTransformStr, TentacleRestoreStr);
+		public static readonly CockType CAT = new CockType(CockGroup.MAMMALIAN, CatDesc, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly CockType LIZARD = new CockType(CockGroup.REPTILIAN, LizardDesc, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static readonly CockType ANEMONE = new CockType(CockGroup.AQUATIC, AnemoneDesc, AnemoneLongDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
+		public static readonly CockType KANGAROO = new CockType(CockGroup.MAMMALIAN, KangarooDesc, KangarooLongDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
+		public static readonly CockType DRAGON = new CockType(CockGroup.REPTILIAN, 1.3f, DragonDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static readonly CockType DISPLACER = new CockType(CockGroup.OTHER, 1.5f, DisplacerDesc, DisplacerLongDesc, DisplacerPlayerStr, DisplacerTransformStr, DisplacerRestoreStr);
+		public static readonly CockType FOX = new CockType(CockGroup.MAMMALIAN, 1.25f, FoxDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
+		public static readonly CockType BEE = new CockType(CockGroup.FLYING, BeeDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
+		public static readonly CockType PIG = new CockType(CockGroup.MAMMALIAN, PigDesc, PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr);
+		public static readonly CockType AVIAN = new CockType(CockGroup.FLYING, AvianDesc, AvianLongDesc, AvianPlayerStr, AvianTransformStr, AvianRestoreStr);
+		public static readonly CockType RHINO = new CockType(CockGroup.MAMMALIAN, RhinoDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
+		public static readonly CockType ECHIDNA = new CockType(CockGroup.MAMMALIAN, EchidnaDesc, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
+		public static readonly CockType WOLF = new CockType(CockGroup.MAMMALIAN, 1.5f, WolfDesc, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static readonly CockType RED_PANDA = new CockType(CockGroup.MAMMALIAN, RedPandaDesc, RedPandaLongDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr);
+		public static readonly CockType FERRET = new CockType(CockGroup.MAMMALIAN, FerretDesc, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
+		public static readonly CockType GOO = new FlexiCock(CockGroup.AQUATIC, GooDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 
 		private class FlexiCock : CockType
 		{
@@ -710,7 +768,53 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		}
 	}
 
-	public sealed class CockData : BehavioralSaveablePartData<CockData, Cock, CockType>
+	public sealed class CockWrapper : BehavioralSaveablePartWrapper<CockWrapper, Cock, CockType>
+	{
+		public readonly int cockIndex;
+		public float area => girth * length;
+		public ReadOnlyPiercing<CockPiercings> cockPiercings => sourceData.cockPiercings.AsReadOnlyCopy();
+
+		public bool isClitCock => sourceData.isClitCock;
+
+		internal float minCockLength => sourceData.minCockLength;
+
+		internal float newCockDefaultSize => sourceData.newCockDefaultSize; 
+
+
+		internal float perkBonusVirilityMultiplier => sourceData.perkBonusVirilityMultiplier;
+		internal sbyte perkBonusVirility => sourceData.perkBonusVirility;
+
+
+		public float urethraWidth => sourceData.urethraWidth;
+
+		public float minCumAmount => sourceData.minCumAmount;
+
+		public float knotMultiplier => sourceData.knotMultiplier;
+
+		public bool hasKnot => sourceData.hasKnot;
+		public float knotSize => sourceData.knotSize;
+
+		public float length => sourceData.length;
+
+		public float girth => sourceData.girth;
+
+
+		public uint soundCount => sourceData.soundCount;
+		public uint sexCount => sourceData.sexCount;
+		public uint orgasmCount => sourceData.orgasmCount;
+		public uint dryOrgasmCount => sourceData.dryOrgasmCount;
+
+		public float cumAmount => sourceData.cumAmount;
+
+		public CockWrapper(Cock source, int currIndex) : base(source)
+		{
+			cockIndex = currIndex;
+		}
+
+		public string AdjectiveText(bool multipleAdjectives) => sourceData.AdjectiveText(multipleAdjectives);
+	}
+
+	public sealed class CockData
 	{
 		public readonly float knotMultiplier;
 		public readonly float knotSize;
@@ -720,7 +824,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 
 		public float cockArea => length * girth;
 
-		public CockData(Cock source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)),  GetBehavior(source))
+		public CockData(Cock source, int currIndex)
 		{
 			knotMultiplier = source.knotMultiplier;
 			length = source.length;

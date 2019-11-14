@@ -18,7 +18,7 @@ namespace CoC.Backend.Pregnancies
 	//variables, but IMO each case seems so unique that it warrants its own class. Evidently if you find the opposite to be true and are copy-pasting between 3 classes virtually the same text,
 	//feel free to do them as one class with constructor paramters to determine the differences. Also, => denotes "impregnates" if that helps. 
 
-	public abstract partial class StandardSpawnType : SimpleSaveablePart<StandardSpawnType, StandardSpawnData>
+	public abstract partial class StandardSpawnType : SimpleSaveablePart<StandardSpawnType, StandardSpawnWrapper> 
 	{
 		private readonly SimpleDescriptor description; //what is it?
 
@@ -32,6 +32,15 @@ namespace CoC.Backend.Pregnancies
 			description = desc ?? throw new ArgumentNullException(nameof(desc));
 			hoursToBirth = birthTime;
 		}
+
+		protected StandardSpawnType(StandardSpawnType other) : base(other?.creatureID ?? throw new ArgumentNullException(nameof(other)))
+		{
+			father = other.father;
+			hoursToBirth = other.hoursToBirth;
+			description = other.description;
+		}
+
+		protected abstract StandardSpawnType Clone();
 
 		public override string BodyPartName()
 		{
@@ -87,11 +96,6 @@ namespace CoC.Backend.Pregnancies
 			return DefaultOviText(currTime - timeToBirth, strength);
 		}
 
-		public override StandardSpawnData AsReadOnlyData()
-		{
-			return new StandardSpawnData(this);
-		}
-
 		protected internal bool allowsAnalPregnancy => this is SpawnTypeIncludeAnal;
 
 		//eggs were originally in the backend. They're now in the frontend because dealing with that shit was not fun. This is here because it's easier to put it here. I could 
@@ -110,13 +114,12 @@ namespace CoC.Backend.Pregnancies
 
 	}
 
-	public class StandardSpawnData : SimpleData
+	public abstract class StandardSpawnWrapper : SimpleWrapper<StandardSpawnWrapper, StandardSpawnType>
 	{
-		public readonly SimpleDescriptor fatherName;
+		public SimpleDescriptor fatherName => sourceData.father;
 
-		protected internal StandardSpawnData(StandardSpawnType source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		protected internal StandardSpawnWrapper(StandardSpawnType source) : base(source)
 		{
-			fatherName = source.father;
 		}
 	}
 }

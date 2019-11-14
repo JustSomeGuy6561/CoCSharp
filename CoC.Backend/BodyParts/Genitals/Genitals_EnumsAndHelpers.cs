@@ -43,6 +43,8 @@ namespace CoC.Backend.BodyParts
 		HYPER_Y_LARGE, HYPER_YY, HYPER_YY_LARGE, HYPER_Z, HYPER_Z_LARGE, HYPER_ZZ, HYPER_ZZ_LARGE, HYPER_ZZZ, HYPER_ZZZ_LARGE, JACQUES00
 	}
 
+	public enum LactationStatus { NOT_LACTATING, LIGHT, MODERATE, STRONG, HEAVY, EPIC }
+
 	public static class GenitalHelpers
 	{
 		//Genderless can also be used if gender is unimportant.
@@ -107,7 +109,25 @@ namespace CoC.Backend.BodyParts
 			return cupText[(int)cupSize];
 		}
 
-		
+		public static float MinThreshold(this LactationStatus lactationStatus)
+		{
+			switch (lactationStatus)
+			{
+				case LactationStatus.EPIC:
+					return Genitals.EPIC_LACTATION_THRESHOLD;
+				case LactationStatus.HEAVY:
+					return Genitals.HEAVY_LACTATION_THRESHOLD;
+				case LactationStatus.STRONG:
+					return Genitals.STRONG_LACTATION_THRESHOLD;
+				case LactationStatus.MODERATE:
+					return Genitals.MODERATE_LACTATION_THRESHOLD;
+				case LactationStatus.LIGHT:
+					return Genitals.LACTATION_THRESHOLD;
+				case LactationStatus.NOT_LACTATING:
+				default:
+					return 0;
+			}
+		}
 
 		public static PiercingJewelry GenerateCockJewelry(this Cock cock, CockPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{

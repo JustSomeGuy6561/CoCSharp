@@ -37,7 +37,7 @@ namespace CoC.Frontend.Items.Consumables
 		}
 
 		//does this consumable count as liquid for slimes?
-		public override bool countsAsSlimeLiquid => false;
+		public override bool countsAsLiquid => false;
 		//does this consumable count as cum for succubi?
 		public override bool countsAsCum => false;
 		//how much hunger does consuming this sate?

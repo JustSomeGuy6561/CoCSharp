@@ -7,22 +7,55 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Genitals
 	{
+		#region Vagina Related Constants
+		//Not gonna lie, supporting double twats is a huge pain in the ass. (PHRASING! BOOM!)
+		public const int MAX_VAGINAS = 2;
+		#endregion
+
+		#region Public Clit Related Members
+		public bool hasClitCock
+		{
+			get => _hasClitCock;
+			private set
+			{
+
+				if (hasClitCock != value)
+				{
+					_vaginas.ForEach((x) => { if (value) x.ActivateOmnibusClit(); else x.DeactivateOmnibusClit(); });
+				}
+				_hasClitCock = value;
+			}
+
+		}
+		private bool _hasClitCock = false;
+		#endregion
+
+		#region Private Vagina Related Members
 		private uint missingVaginaSexCount;
 		private uint missingVaginaOrgasmCount;
 		private uint missingVaginaDryOrgasmCount;
 		private uint missingVaginaPenetratedCount;
+		#endregion
 
+		#region Private Clit Related Members
 		private uint missingClitPenetrateCount;
 		private uint missingClitCockSexCount;
 		private uint missingClitCockSoundCount;
 		private uint missingClitCockOrgasmCount;
 		private uint missingClitCockDryOrgasmCount;
+		#endregion
+
+		#region Public Vagina Related Computed Values
+		public int numVaginas => _vaginas.Count;
 
 		public uint vaginalSexCount => missingVaginaSexCount.add((uint)_vaginas.Sum(x => x.sexCount));
 		public uint vaginaPenetratedCount => missingVaginaPenetratedCount.add((uint)_vaginas.Sum(x => x.totalPenetrationCount));
 		public uint vaginalOrgasmCount => missingVaginaOrgasmCount.add((uint)_vaginas.Sum(x => x.orgasmCount));
 		public uint vaginalDryOrgasmCount => missingVaginaDryOrgasmCount.add((uint)_vaginas.Sum(x => x.dryOrgasmCount));
 
+		#endregion
+
+		#region Public Clit Related Computed Values
 		public uint clitCockSexCount => missingClitCockSexCount.add((uint)_vaginas.Sum(x => x.clit.asCockSexCount));
 		public uint clitCockSoundedCount => missingClitCockSoundCount.add((uint)_vaginas.Sum(x => x.clit.asCockSoundCount));
 		public bool clitCockVirgin => missingClitCockSexCount > 0 ? false : clitCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
@@ -30,6 +63,9 @@ namespace CoC.Backend.BodyParts
 		public uint clitCockDryOrgasmCount => missingClitCockDryOrgasmCount.add((uint)_vaginas.Sum(x => x.clit.asCockDryOrgasmCount));
 
 		public uint clitUsedAsPenetratorCount => missingClitPenetrateCount.add((uint)_vaginas.Sum(x => x.clit.penetrateCount));
+		#endregion
+
+		#region Add/Remove Vaginas
 
 		public bool AddVagina(VaginaType newVaginaType)
 		{
@@ -39,7 +75,7 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkData(), newVaginaType));
+			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkWrapper(), newVaginaType));
 			
 			CheckGenderChanged(oldGender);
 			return true;
@@ -53,7 +89,7 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkData(), newVaginaType, clitLength, omnibus: omnibus));
+			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkWrapper(), newVaginaType, clitLength, omnibus: omnibus));
 
 			CheckGenderChanged(oldGender);
 			return true;
@@ -67,7 +103,7 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkData(), newVaginaType, clitLength, looseness, wetness, true, omnibus));
+			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkWrapper(), newVaginaType, clitLength, looseness, wetness, true, omnibus));
 
 			CheckGenderChanged(oldGender);
 			return true;
@@ -120,16 +156,6 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		public string cockMultDescript()
-		{
-			throw new NotImplementedException();
-		}
-
-		public string vaginasMultiDesc()
-		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
 		public int RemoveExtraVaginas()
 		{
 			return RemoveVagina(numVaginas - 1);
@@ -139,6 +165,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return RemoveVagina(numVaginas);
 		}
+		#endregion
+
+		#region Vagina Related Aggregate Functions
 
 		public ushort LargestVaginalCapacity()
 		{
@@ -212,18 +241,64 @@ namespace CoC.Backend.BodyParts
 			return (VaginalLooseness)(byte)Math.Round(_vaginas.Average(x => (double)(byte)x.looseness));
 		}
 
-		#region Penetration
+		public Vagina LargestVaginaByClitSize()
+		{
+			return _vaginas.MaxItem(x => x.clit.length);
+		}
+
+		public Vagina SmallestVaginaByClitSize()
+		{
+			return _vaginas.MinItem(x => x.clit.length);
+		}
+
+		public int CountVaginasOfType(VaginaType vaginaType)
+		{
+			return _vaginas.Sum(x => x.type == vaginaType ? 1 : 0);
+		}
+
+		#endregion
+
+		#region Clit Aggregate Functions
+
+		public float LargestClitSize()
+		{
+			return _vaginas.Max(x => x.clit.length);
+		}
+
+		public float SmallestClitSize()
+		{
+			return _vaginas.Min(x => x.clit.length);
+		}
+
+		public float AverageClitSize()
+		{
+			return _vaginas.Average(x => x.clit.length);
+		}
+
+		public Clit LargestClit()
+		{
+			return _vaginas.MaxItem(x => x.clit.length).clit;
+		}
+
+		public Clit SmallestClit()
+		{
+			return _vaginas.MinItem(x => x.clit.length).clit;
+		}
+
+		#endregion
+
+		#region Vagina Sex-Related Functions
 		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool takeVirginity, bool reachOrgasm)
 		{
 			return HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, null, cumAmount, 0, takeVirginity, reachOrgasm);
 		}
-		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus,  bool takeVirginity,
+		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus, bool takeVirginity,
 			bool reachOrgasm)
 		{
 			_vaginas[vaginaIndex].PenetrateVagina((ushort)(length * girth), knotWidth, takeVirginity, reachOrgasm);
 
 			if (vaginaIndex == 0 && womb.canGetPregnant(true) && knockupType != null)
-			{ 
+			{
 				return womb.normalPregnancy.attemptKnockUp(knockupRate(virilityBonus), knockupType);
 			}
 			else if (vaginaIndex == 1 && womb.canGetSecondaryNormalPregnant(true) && knockupType != null)
@@ -275,7 +350,9 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
+		#endregion
 
+		#region Clit Sex-Related Functions
 		internal void HandleClitCockSounding(int vaginaIndex, Cock source, bool reachOrgasm)
 		{
 			HandleClitCockSounding(vaginaIndex, source.length, source.girth, source.knotSize, source.cumAmount, reachOrgasm);
@@ -285,11 +362,7 @@ namespace CoC.Backend.BodyParts
 		{
 			HandleClitCockSounding(vaginaIndex, source.length, source.girth, source.knotSize, cumAmountOverride, reachOrgasm);
 		}
-		//
 
-		#endregion
-
-		#region Penetrates
 
 		internal void HandleClitCockPenetrate(int vaginaIndex, bool reachOrgasm)
 		{
@@ -316,12 +389,6 @@ namespace CoC.Backend.BodyParts
 				_vaginas[vaginaIndex].OrgasmGeneric(false);
 			}
 		}
-
-		public int CountVaginasOfType(VaginaType targetType)
-		{
-			return _vaginas.Sum(x => x.type == targetType ? 1 : 0);
-		}
-
 		#endregion
 	}
 }

@@ -2,7 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 4:08 PM
+using System;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
@@ -12,6 +15,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Cock";
 		}
+
+		public string AdjectiveText(bool multipleAdjectives)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
 	}
 
 	public partial class CockType
@@ -20,7 +28,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanFullDesc(Cock cock)
+		private static string HumanLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -40,7 +48,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseFullDesc(Cock cock)
+		private static string HorseLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -60,7 +68,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogFullDesc(Cock cock)
+		private static string DogLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -80,7 +88,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonFullDesc(Cock cock)
+		private static string DemonLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -100,7 +108,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string TentacleFullDesc(Cock cock)
+		private static string TentacleLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -120,7 +128,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatFullDesc(Cock cock)
+		private static string CatLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -140,7 +148,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardFullDesc(Cock cock)
+		private static string LizardLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -160,7 +168,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneFullDesc(Cock cock)
+		private static string AnemoneLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -180,7 +188,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooFullDesc(Cock cock)
+		private static string KangarooLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -200,7 +208,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonFullDesc(Cock cock)
+		private static string DragonLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -220,7 +228,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DisplacerFullDesc(Cock cock)
+		private static string DisplacerLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -240,7 +248,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxFullDesc(Cock cock)
+		private static string FoxLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -260,7 +268,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeFullDesc(Cock cock)
+		private static string BeeLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -280,7 +288,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigFullDesc(Cock cock)
+		private static string PigLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -300,7 +308,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AvianFullDesc(Cock cock)
+		private static string AvianLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -320,7 +328,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoFullDesc(Cock cock)
+		private static string RhinoLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -340,7 +348,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaFullDesc(Cock cock)
+		private static string EchidnaLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -360,7 +368,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfFullDesc(Cock cock)
+		private static string WolfLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -380,7 +388,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaFullDesc(Cock cock)
+		private static string RedPandaLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -400,7 +408,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretFullDesc(Cock cock)
+		private static string FerretLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -421,7 +429,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooFullDesc(Cock cock)
+		private static string GooLongDesc(Cock cock)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -446,19 +454,30 @@ namespace CoC.Backend.BodyParts
 			return "Balls";
 		}
 
-		private static string BallsDescript(int ballcount, int size, bool uniball)
+		public string SackDescription()
+		{
+				if (!hasBalls) return "prostate";
+
+				return Utils.RandomChoice("scrotum", "sack", "nutsack", "ballsack", "beanbag", "pouch");
+		}
+
+		public string ShortDescription()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string BallsFullDesc(Balls balls)
+		public string LongDescription()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string BallsPlayerStr(Balls balls, PlayerBase player)
+		public string PlayerDescription()
 		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
+			{
+				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			}
+			else return "";
 		}
 	}
 }

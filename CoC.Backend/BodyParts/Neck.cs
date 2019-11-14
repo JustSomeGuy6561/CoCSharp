@@ -12,6 +12,8 @@ using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using CoC.Backend.BodyParts.EventHelpers;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -20,7 +22,7 @@ namespace CoC.Backend.BodyParts
 	//despite the fact that most lizards have their neck out the back of the their head (and most fish, for that matter)
 	//they were never implemented. it seemed like a half-baked idea, so it's no longer here. if it ever becomes full-baked,
 	//by all means, add it back.
-	public sealed partial class Neck : BehavioralSaveablePart<Neck, NeckType, NeckData>, IDyeable
+	public sealed partial class Neck : BehavioralSaveablePart<Neck, NeckType, NeckWrapper>, IDyeable
 	{
 		public override string BodyPartName() => Name();
 
@@ -49,9 +51,9 @@ namespace CoC.Backend.BodyParts
 
 		public override NeckType defaultType => NeckType.defaultValue;
 
-		public override NeckData AsReadOnlyData()
+		public override NeckWrapper AsReadOnlyReference()
 		{
-			return new NeckData(this);
+			return new NeckWrapper(this);
 		}
 
 		internal Neck(Guid creatureID) : this(creatureID, NeckType.defaultValue)
@@ -77,7 +79,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			var oldValue = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 
 			type = newType;
 
@@ -94,7 +96,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			var oldValue = type;
-			var oldData = AsReadOnlyData();
+			var oldData = AsData();
 
 			type = newType;
 
@@ -128,7 +130,7 @@ namespace CoC.Backend.BodyParts
 					NeckData oldData = null;
 					if (!silent)
 					{
-						oldData = AsReadOnlyData();
+						oldData = AsData();
 					}
 					length = neckLength;
 					if (oldData != null)
@@ -145,16 +147,34 @@ namespace CoC.Backend.BodyParts
 		public bool canGrowNeck => type.canGrowNeck(length);
 
 
-		internal override bool Validate(bool correctInvalidData)
+		internal override bool Validate(bool correctInvalidWrapper)
 		{
 			byte len = length;
 			HairFurColors col = neckColor;
-			bool valid = NeckType.Validate(ref _type, ref len, ref col, correctInvalidData);
+			bool valid = NeckType.Validate(ref _type, ref len, ref col, correctInvalidWrapper);
 			length = len;
 			neckColor = col;
 			return valid;
 		}
 
+		public NeckData AsData()
+		{
+			return new NeckData(this);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<NeckWrapper, NeckData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<NeckWrapper, NeckData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<NeckWrapper, NeckData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(NeckData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<NeckWrapper, NeckData>(AsReadOnlyReference(), oldData));
+		}
 
 		bool IDyeable.allowsDye()
 		{
@@ -189,7 +209,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class NeckType : SaveableBehavior<NeckType, Neck, NeckData>
+	public partial class NeckType : SaveableBehavior<NeckType, Neck, NeckWrapper>
 	{
 		public const byte MIN_NECK_LENGTH = 2;
 
@@ -291,11 +311,11 @@ namespace CoC.Backend.BodyParts
 			color = defaultColor;
 		}
 
-		internal static bool Validate(ref NeckType neckType, ref byte length, ref HairFurColors color, bool correctInvalidData)
+		internal static bool Validate(ref NeckType neckType, ref byte length, ref HairFurColors color, bool correctInvalidWrapper)
 		{
 			if (!necks.Contains(neckType))
 			{
-				if (correctInvalidData)
+				if (correctInvalidWrapper)
 				{
 					neckType = HUMANOID;
 					length = MIN_NECK_LENGTH;
@@ -303,27 +323,27 @@ namespace CoC.Backend.BodyParts
 				}
 				return false;
 			}
-			return neckType.ValidateData(ref length, ref color, correctInvalidData);
+			return neckType.ValidateWrapper(ref length, ref color, correctInvalidWrapper);
 		}
 
-		internal virtual bool ValidateData(ref byte length, ref HairFurColors color, bool correctInvalidData)
+		internal virtual bool ValidateWrapper(ref byte length, ref HairFurColors color, bool correctInvalidWrapper)
 		{
 			bool valid = true;
 			if (!usesHair && !color.isEmpty)
 			{
-				if (correctInvalidData)
+				if (correctInvalidWrapper)
 				{
 					color = HairFurColors.NO_HAIR_FUR;
 				}
 				valid = false;
 			}
-			if (valid || correctInvalidData)
+			if (valid || correctInvalidWrapper)
 			{
 				byte len = length;
 				Utils.Clamp(ref len, MIN_NECK_LENGTH, maxNeckLength);
 				if (length != len)
 				{
-					if (correctInvalidData)
+					if (correctInvalidWrapper)
 					{
 						length = len;
 					}
@@ -333,16 +353,29 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanFullDesc, HumanPlayerStr, (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
-		public static readonly NeckType DRACONIC = new NeckType(MAX_DRAGON_LENGTH, DragonDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly NeckType COCKATRICE = new NeckType(MAX_COCKATRICE_LENGTH, HairFurColors.GREEN, CockatriceDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanLongDesc, HumanPlayerStr, (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly NeckType DRACONIC = new NeckType(MAX_DRAGON_LENGTH, DragonDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static readonly NeckType COCKATRICE = new NeckType(MAX_COCKATRICE_LENGTH, HairFurColors.GREEN, CockatriceDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
 	}
 
-	public sealed class NeckData : BehavioralSaveablePartData<NeckData, Neck, NeckType>
+	public sealed class NeckWrapper : BehavioralSaveablePartWrapper<NeckWrapper, Neck, NeckType>
+	{
+		public byte neckLength => sourceData.length;
+		public HairFurColors neckColor => sourceData.neckColor; //if applicable
+
+		public bool canGrowNeck => sourceData.canGrowNeck;
+
+		internal NeckWrapper(Neck neck) : base(neck)
+		{
+			
+		}
+	}
+
+	public sealed class NeckData
 	{
 		public readonly byte neckLength;
 		public readonly HairFurColors neckHairColor; //if applicable
-		internal NeckData(Neck neck) : base(GetID(neck), GetBehavior(neck))
+		internal NeckData(Neck neck)
 		{
 			neckLength = neck.length;
 			neckHairColor = neck.neckColor;

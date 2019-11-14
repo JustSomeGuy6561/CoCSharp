@@ -2,16 +2,17 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 6:03 PM
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -19,7 +20,7 @@ namespace CoC.Backend.BodyParts
 	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
 	//note: perks are guarenteed to be valid by the time this is created, so it's post perk init won't be called. 
-	public sealed partial class Clit : SimpleSaveablePart<Clit, ClitData>, IGrowable, IShrinkable
+	public sealed partial class Clit : SimpleSaveablePart<Clit, ClitWrapper>, IGrowable, IShrinkable
 	{
 		public override string BodyPartName() => Name();
 
@@ -80,7 +81,7 @@ namespace CoC.Backend.BodyParts
 				Utils.Clamp(ref value, minSize, MAX_CLIT_SIZE);
 				if (_length != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_length = value;
 					NotifyDataChanged(oldData);
 				}
@@ -95,7 +96,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_omnibusClit != value)
 				{
-					ClitData oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_omnibusClit = value;
 					if (length < minSize)
 					{
@@ -108,18 +109,18 @@ namespace CoC.Backend.BodyParts
 		private bool _omnibusClit;
 		public readonly Piercing<ClitPiercings> clitPiercings;
 
-		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false)
-			: this(creatureID, source, initialPerkData, null, isOmnibusClit)
+		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkWrapper, bool isOmnibusClit = false)
+			: this(creatureID, source, initialPerkWrapper, null, isOmnibusClit)
 		{ }
 
-		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false)
-			: this(creatureID, source, initialPerkData, (float?)clitSize, isOmnibusClit)
+		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkWrapper, float clitSize, bool isOmnibusClit = false)
+			: this(creatureID, source, initialPerkWrapper, (float?)clitSize, isOmnibusClit)
 		{ }
 
-		private Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, float? clitSize, bool isOmnibusClit) : base(creatureID)
+		private Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkWrapper, float? clitSize, bool isOmnibusClit) : base(creatureID)
 		{
 			parent = source ?? throw new ArgumentNullException(nameof(source));
-			_length = initialPerkData.NewClitSize(clitSize);
+			_length = initialPerkWrapper.NewClitSize(clitSize);
 			if (isOmnibusClit && MIN_CLITCOCK_SIZE > length)
 			{
 				_length = MIN_CLITCOCK_SIZE;
@@ -128,15 +129,15 @@ namespace CoC.Backend.BodyParts
 			_omnibusClit = isOmnibusClit;
 			clitPiercings = new Piercing<ClitPiercings>(PiercingLocationUnlocked, JewelryTypeSupported);
 
-			_minClitSize = initialPerkData.MinClitSize;
-			minNewClitSize = initialPerkData.DefaultNewClitSize;
-			clitGrowthMultiplier = initialPerkData.ClitGrowthMultiplier;
-			clitShrinkMultiplier = initialPerkData.ClitShrinkMultiplier;
+			_minClitSize = initialPerkWrapper.MinClitSize;
+			minNewClitSize = initialPerkWrapper.DefaultNewClitSize;
+			clitGrowthMultiplier = initialPerkWrapper.ClitGrowthMultiplier;
+			clitShrinkMultiplier = initialPerkWrapper.ClitShrinkMultiplier;
 		}
 
-		public override ClitData AsReadOnlyData()
+		public override ClitWrapper AsReadOnlyReference()
 		{
-			return new ClitData(this, vaginaIndex);
+			return new ClitWrapper(this, vaginaIndex);
 		}
 
 		public Cock AsClitCock()
@@ -252,7 +253,24 @@ namespace CoC.Backend.BodyParts
 			return clitPiercings.Validate(correctInvalidData);
 		}
 
+		public ClitData AsData()
+		{
+			return new ClitData(length, omnibusClit);
+		}
 
+		private readonly WeakEventSource<SimpleDataChangedEvent<ClitWrapper, ClitData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<ClitWrapper, ClitData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<ClitWrapper, ClitData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(ClitData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<ClitWrapper, ClitData>(AsReadOnlyReference(), oldData));
+		}
 
 		#region Piercing Related
 		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
@@ -332,17 +350,44 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed class ClitData : SimpleData
+	public sealed partial class ClitWrapper : SimpleWrapper<ClitWrapper, Clit>
 	{
-		public readonly float length;
-		public readonly bool isClitCock;
+		public uint penetrateCount => sourceData.penetrateCount;
+
+		public uint orgasmCount => sourceData.orgasmCount;
+
+		public float length => sourceData.length;
+
+		public bool omnibusClit => sourceData.omnibusClit;
+
+		public ReadOnlyPiercing<ClitPiercings> clitPiercings => sourceData.clitPiercings.AsReadOnlyCopy();
+
 		public readonly int VaginaIndex;
 
-		internal ClitData(Clit source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		public string ShortDescription() => sourceData.ShortDescription();
+
+		public string LongDescription() => sourceData.LongDescription();
+
+		public bool isPierced => sourceData.isPierced;
+
+		public bool wearingJewelry => sourceData.wearingJewelry;
+
+		internal ClitWrapper(Clit source, int currIndex) : base(source)
 		{
-			length = source.length;
-			isClitCock = source.omnibusClit;
 			VaginaIndex = currIndex;
+		}
+	}
+
+	public sealed class ClitData
+	{
+		public readonly float length;
+
+		public readonly bool isClitCock;
+
+		public ClitData(float length, bool isClitCock)
+		{
+			this.length = length;
+			this.isClitCock = isClitCock;
 		}
 	}
 }

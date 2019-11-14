@@ -4,8 +4,9 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts.EventHelpers
 {
-	public sealed class BodyPartChangedEventArg<DataClass, BehaviorClass> : EventArgs 
-		where DataClass : BehavioralPartDataBase<BehaviorClass> 
+	public sealed class BodyPartChangedEventArg<SourceClass, BehaviorClass, DataClass> : EventArgs 
+		where SourceClass : BehavioralPartBase<SourceClass, BehaviorClass, DataClass>
+		where DataClass : BehavioralWrapperBase<DataClass, SourceClass, BehaviorClass> 
 		where BehaviorClass : BehaviorBase
 	{
 		public readonly DataClass data;

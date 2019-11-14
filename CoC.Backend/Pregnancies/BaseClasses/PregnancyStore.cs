@@ -35,19 +35,25 @@ namespace CoC.Backend.Pregnancies
 
 		public StandardSpawnType spawnType { get; private set; }
 
-		public override ReadOnlyPregnancyStore AsReadOnlyData()
-		{
-			return new ReadOnlyPregnancyStore(creatureID, spawnType.AsReadOnlyData(), birthCountdown);
-		}
-
-
 		private protected PregnancyStore(Guid creatureID) : base(creatureID)
 		{
 		}
 
+		//if necessary, override this to return a subclass of read only pregnancy store with extra data.
+		public override ReadOnlyPregnancyStore AsReadOnlyReference()
+		{
+			return new ReadOnlyPregnancyStore(this);
+		}
+
+		//if necessary, override this to return a subclass of pregnancy store static data with extra data.
+		public virtual PregnancyStoreStaticData AsStaticData()
+		{
+			return new PregnancyStoreStaticData(this);
+		}
+
 		internal void onConsumeLiquid()
 		{
-			if (hasDiapause)
+			if (hasDiapause && isPregnant)
 			{
 				diapauseHours += (byte)(Utils.Rand(3) + 1);
 				doDiapauseText = true;
@@ -73,10 +79,10 @@ namespace CoC.Backend.Pregnancies
 			{
 				if (spawnType.HandleNewKnockupAttempt(type, out StandardSpawnType newType)) 
 				{
-					var oldData = spawnType.AsReadOnlyData();
+					var oldData = spawnType.AsReadOnlyReference();
 					spawnType = newType;
 
-					source?.RaiseKnockupEvent(spawnType, this, oldData);
+					source?.RaiseKnockupEvent(this, oldData);
 
 					return true;
 				}
@@ -87,7 +93,7 @@ namespace CoC.Backend.Pregnancies
 				spawnType = type;
 				hoursTilBirth = type.hoursToBirth;
 
-				source?.RaiseKnockupEvent(spawnType, this);
+				source?.RaiseKnockupEvent(this);
 				return true;
 			}
 			return false;
@@ -127,6 +133,24 @@ namespace CoC.Backend.Pregnancies
 				hoursTilBirth = 0;
 			}
 			return false;
+		}
+
+		//clears the current pregnancy. 
+		protected internal bool AbortPregnancy()
+		{
+			if (!isPregnant)
+			{
+				return false;
+			}
+			else
+			{
+				spawnType = null;
+				hoursTilBirth = 0;
+				diapauseHours = 0;
+				doDiapauseText = false;
+				source.RaiseKnockupEvent(this);
+				return true;
+			}
 		}
 
 		#region ITimeListener
@@ -197,16 +221,55 @@ namespace CoC.Backend.Pregnancies
 		#endregion
 	}
 
-	public sealed class ReadOnlyPregnancyStore : SimpleData
+	public class ReadOnlyPregnancyStore : SimpleWrapper<ReadOnlyPregnancyStore, PregnancyStore>
 	{
-		public readonly StandardSpawnData spawnType;
+		public StandardSpawnWrapper spawnType => sourceData.spawnType.AsReadOnlyReference();
+		public ushort hoursTilBirth => sourceData.birthCountdown;
+
+		public bool hasDiapause => sourceData.hasDiapause;
+
+		public float pregnancyMultiplier => sourceData.pregnancyMultiplier;
+
+		public bool eggSizeKnown => sourceData.eggSizeKnown;
+
+		public bool eggSizeLarge => sourceData.eggsLarge;
+
+		public bool isPregnant => sourceData.isPregnant;
+
+		public uint totalBirthCount => sourceData.totalBirthCount;
+
+		public ReadOnlyPregnancyStore(PregnancyStore pregnancyStore) : base(pregnancyStore)
+		{
+		}
+	}
+
+	public class PregnancyStoreStaticData
+	{
+		public readonly StandardSpawnWrapper spawnType;
 		public readonly ushort hoursTilBirth;
 
+		public readonly bool hasDiapause;
 
-		public ReadOnlyPregnancyStore(Guid creatureID, StandardSpawnData spawnType, ushort hoursToBirth) : base(creatureID)
+		public readonly float pregnancyMultiplier;
+
+		public readonly bool eggSizeKnown;
+
+		public readonly bool eggSizeLarge;
+
+		public readonly bool isPregnant;
+
+		public readonly uint totalBirthCount;
+
+		public PregnancyStoreStaticData(PregnancyStore source)
 		{
-			this.spawnType = spawnType;
-			hoursTilBirth = hoursToBirth;
+			spawnType = source.spawnType.AsReadOnlyReference();
+			hoursTilBirth = source.birthCountdown;
+			hasDiapause = source.hasDiapause;
+			pregnancyMultiplier = source.pregnancyMultiplier;
+			eggSizeKnown = source.eggSizeKnown;
+			eggSizeLarge = source.eggsLarge;
+			isPregnant = source.isPregnant;
+			totalBirthCount = source.totalBirthCount;
 		}
 	}
 }

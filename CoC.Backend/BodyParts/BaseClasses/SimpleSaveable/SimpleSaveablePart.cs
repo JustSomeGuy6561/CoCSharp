@@ -13,7 +13,9 @@ using WeakEvent;
 namespace CoC.Backend.BodyParts
 {
 
-	public abstract class SimpleSaveablePart<ThisClass, DataClass> : IBodyPart where ThisClass : SimpleSaveablePart<ThisClass, DataClass> where DataClass : SimpleData
+	public abstract class SimpleSaveablePart<ThisClass, WrapperClass> : IBodyPart 
+		where ThisClass : SimpleSaveablePart<ThisClass, WrapperClass> 
+		where WrapperClass : SimpleWrapper<WrapperClass, ThisClass>
 	{
 		internal abstract bool Validate(bool correctInvalidData);
 
@@ -24,20 +26,7 @@ namespace CoC.Backend.BodyParts
 			creatureID = parentGuid;
 		}
 
-		public abstract DataClass AsReadOnlyData();
-
-		private protected readonly WeakEventSource<SimpleDataChangeEvent<ThisClass, DataClass>> dataChangeSource =
-			new WeakEventSource<SimpleDataChangeEvent<ThisClass, DataClass>>();
-		public event EventHandler<SimpleDataChangeEvent<ThisClass, DataClass>> dataChange
-		{
-			add => dataChangeSource.Subscribe(value);
-			remove => dataChangeSource.Unsubscribe(value);
-		}
-
-		private protected void NotifyDataChanged(DataClass oldData)
-		{
-			dataChangeSource.Raise(this, new SimpleDataChangeEvent<ThisClass, DataClass>(oldData, AsReadOnlyData()));
-		}
+		public abstract WrapperClass AsReadOnlyReference();
 
 		protected internal virtual void PostPerkInit()
 		{ }
@@ -55,7 +44,7 @@ namespace CoC.Backend.BodyParts
 
 		public Type DataType()
 		{
-			return typeof(DataClass);
+			return typeof(WrapperClass);
 		}
 	}
 }

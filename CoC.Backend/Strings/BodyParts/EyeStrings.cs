@@ -50,7 +50,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "human eyes";
 		}
-		private static string HumanFullDesc(Eyes eyes)
+		private static string HumanLongDesc(Eyes eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -71,7 +71,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanTransformStr(Eyes originalEyes, PlayerBase player)
 		{
-			return originalEyes.RestoreText();
+			return originalEyes.type.restoreString(originalEyes, player);
 		}
 		//these eyes / these eyes have seen a lot of loves...
 		//(holy shit i'm old.)
@@ -120,7 +120,7 @@ namespace CoC.Backend.BodyParts
 			return "spider eyes";
 		}
 		//i suppose technically i could have supported tetrachromia, but that seems excessive.
-		private static string SpiderFullDesc(Eyes eyes)
+		private static string SpiderLongDesc(Eyes eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -177,7 +177,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "sandtrap eyes";
 		}
-		private static string SandTrapFullDesc(Eyes eyes)
+		private static string SandTrapLongDesc(Eyes eyes)
 		{
 			return "a half dozen " + eyes.leftIrisColor.AsString() + " sandtrap eyes surrounded by an inky blackness";
 		}
@@ -385,7 +385,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "lizard eyes";
 		}
-		private static string LizardFullDesc(Eyes eyes)
+		private static string LizardLongDesc(Eyes eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -598,7 +598,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "dragon eyes";
 		}
-		private static string DragonFullDesc(Eyes eyes)
+		private static string DragonLongDesc(Eyes eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -789,7 +789,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "basilisk eyes";
 		}
-		private static string BasiliskFullDesc(Eyes eyes)
+		private static string BasiliskLongDesc(Eyes eyes)
 		{
 			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + " basilisk eyes";
 		}
@@ -887,7 +887,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolven eyes";
 		}
-		private static string WolfFullDesc(Eyes eyes)
+		private static string WolfLongDesc(Eyes eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -975,7 +975,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cockatrice eyes";
 		}
-		private static string CockatriceFullDesc(Eyes eyes)
+		private static string CockatriceLongDesc(Eyes eyes)
 		{
 			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + " cockatrice eyes";
 		}
@@ -1030,7 +1030,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cat eyes";
 		}
-		private static string CatFullDesc(Eyes eyes)
+		private static string CatLongDesc(Eyes eyes)
 		{
 			if (eyes.isHeterochromia)
 			{

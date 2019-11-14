@@ -12,6 +12,7 @@ using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WeakEvent;
 
 //most of these are simply bytes, though a few do have extra behavior. An common software engineering practice is to never use primitives directly - this can be
 //confusing or arbitrary - 5 could mean 5 years, 5 decades, 5 score, 5 centuries, etc. While i don't agree with that assessment 100%, it sometimes has merit. 
@@ -21,7 +22,7 @@ using System.Text;
 //Honestly, if this thing costs more than a few mbs (if that) i'll be very surprised. 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Femininity : SimpleSaveablePart<Femininity, FemininityData>, IBodyPartTimeLazy
+	public sealed partial class Femininity : SimpleSaveablePart<Femininity, FemininityWrapper>, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
 
@@ -80,7 +81,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return femininity.value;
 		}
-		
+
+		internal Femininity(Guid creatureID) : this(creatureID, Gender.GENDERLESS)
+		{ }
+
 		//by default, we don't know if we have androgyny. so we'll just allow all the data. This is corrected in lateInit.
 		internal Femininity(Guid creatureID, Gender initialGender) : this(creatureID, initialGender, null)
 		{ }
@@ -141,22 +145,9 @@ namespace CoC.Backend.BodyParts
 			return femininityListeners.Remove(listener);
 		}
 
-		//private Femininity(Gender initialGender, byte femininity)
-		//{
-		//	genderAccessor = () => initialGender;
-		//	_value = Utils.Clamp2(femininity, MOST_MASCULINE, MOST_FEMININE);
-		//}
-
-		//private Femininity(Femininity other)
-		//{
-		//	_value = other.value;
-		//	genderAccessor = other.genderAccessor;
-		//	femininityListeners = other.femininityListeners;
-		//}
-
-		public override FemininityData AsReadOnlyData()
+		public override FemininityWrapper AsReadOnlyReference()
 		{
-			return new FemininityData(this);
+			return new FemininityWrapper(this);
 		}
 
 		public bool isFemale => atLeastSlightlyFeminine;
@@ -174,22 +165,6 @@ namespace CoC.Backend.BodyParts
 		public bool isMasculine => value <= MASCULINE && value > HYPER_MASCULINE;
 		public bool atLeastMasculine => value <= MASCULINE;
 		public bool isHyperMasculine => value <= HYPER_MASCULINE;
-
-		public static bool valueIsFemale(byte fem) => valueAtLeastSlightlyFeminine(fem);
-		public static bool valueIsMale(byte fem) => valueAtLeastSlightlyMasculine(fem);
-
-		public static bool valueIsAndrogynous(byte fem) => fem >= MIN_ANDROGYNOUS && fem <= MAX_ANDROGYNOUS;
-
-		public static bool valueIsSlightlyFeminine(byte fem) => fem >= SLIGHTLY_FEMININE && fem < FEMININE;
-		public static bool valueAtLeastSlightlyFeminine(byte fem) => fem >= SLIGHTLY_FEMININE && fem < FEMININE;
-		public static bool valueIsFeminine(byte fem) => fem >= FEMININE && fem < HYPER_FEMININE;
-		public static bool valueAtLeastFeminine(byte fem) => fem >= FEMININE;
-		public static bool valueIsHyperFeminine(byte fem) => fem >= HYPER_FEMININE;
-		public static bool valueIsSlightlyMasculine(byte fem) => fem <= SLIGHTLY_MASCULINE && fem > MASCULINE;
-		public static bool valueAtLeastSlightlyMasculine(byte fem) => fem <= SLIGHTLY_MASCULINE;
-		public static bool valueIsMasculine(byte fem) => fem <= MASCULINE && fem > HYPER_MASCULINE;
-		public static bool valueAtLeastMasculine(byte fem) => fem <= MASCULINE;
-		public static bool valueIsHyperMasculine(byte fem) => fem <= HYPER_MASCULINE;
 
 		internal byte feminize(byte amount)
 		{
@@ -301,11 +276,11 @@ namespace CoC.Backend.BodyParts
 			Utils.Clamp(ref newValue, minVal, maxVal);
 			if (newValue != value)
 			{
-				var oldData = AsReadOnlyData();
+				var oldData = AsData();
 				value = newValue;
 				NotifyDataChanged(oldData);
 				StringBuilder sb = new StringBuilder();
-				sb.Append(FemininityChangedDueToGenderHormonesStr(oldData.femininity.diff(value)));
+				sb.Append(FemininityChangedDueToGenderHormonesStr(oldData.femininity.delta(value)));
 				foreach (var item in internalFemininityListeners)
 				{
 					sb.Append(item.reactToFemininityChange(oldData.femininity) ?? "");
@@ -315,52 +290,63 @@ namespace CoC.Backend.BodyParts
 
 			return "";
 		}
+
+		public FemininityData AsData()
+		{
+			return new FemininityData(this);
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<FemininityWrapper, FemininityData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<FemininityWrapper, FemininityData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<FemininityWrapper, FemininityData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(FemininityData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<FemininityWrapper, FemininityData>(AsReadOnlyReference(), oldData));
+		}
 	}
 
-	public sealed class FemininityData : SimpleData
+	public sealed class FemininityWrapper : SimpleWrapper<FemininityWrapper, Femininity>
 	{
-		public const byte MOST_FEMININE = Femininity.MOST_FEMININE;
-		public const byte MOST_MASCULINE = Femininity.MOST_MASCULINE;
+		public byte femininity => sourceData.value;
 
-		public const byte MIN_ANDROGYNOUS = Femininity.MIN_ANDROGYNOUS;
-		public const byte ANDROGYNOUS = Femininity.ANDROGYNOUS;
-		public const byte MAX_ANDROGYNOUS = Femininity.MAX_ANDROGYNOUS;
+		//enums are passed by value, so this should be fine.
+		internal FemininityWrapper(Femininity fem) : base(fem)
+		{}
 
-		public const byte SLIGHTLY_FEMININE = Femininity.SLIGHTLY_FEMININE;
-		public const byte FEMININE = Femininity.FEMININE;
-		public const byte HYPER_FEMININE = Femininity.HYPER_FEMININE;
+		internal FemininityWrapper(Guid id) : base(new Femininity(id))
+		{}
 
-		public const byte SLIGHTLY_MASCULINE = Femininity.SLIGHTLY_MASCULINE;
-		public const byte MASCULINE = Femininity.MASCULINE;
-		public const byte HYPER_MASCULINE = Femininity.HYPER_MASCULINE;
+		public bool isFemale => sourceData.isFemale;
+		public bool isMale => sourceData.isMale;
 
+		public bool isAndrogynous => sourceData.isAndrogynous;
+
+		public bool isSlightlyFeminine => sourceData.isSlightlyFeminine;
+		public bool atLeastSlightlyFeminine => sourceData.atLeastSlightlyFeminine;
+		public bool isFeminine => sourceData.isFeminine;
+		public bool atLeastFeminine => sourceData.atLeastFeminine;
+		public bool isHyperFeminine => sourceData.isHyperFeminine;
+		public bool isSlightlyMasculine => sourceData.isSlightlyMasculine;
+		public bool atLeastSlightlyMasculine => sourceData.atLeastSlightlyMasculine;
+		public bool isMasculine => sourceData.isMasculine;
+		public bool atLeastMasculine => sourceData.atLeastMasculine;
+		public bool isHyperMasculine => sourceData.isHyperMasculine;
+	}
+
+	public sealed class FemininityData
+	{
 		public readonly byte femininity;
 
 		//enums are passed by value, so this should be fine.
-		internal FemininityData(Femininity fem) : base(fem?.creatureID ?? throw new ArgumentNullException(nameof(fem)))
+		internal FemininityData(Femininity fem)
 		{
 			femininity = fem;
 		}
-
-		internal FemininityData(Guid id, byte fem) : base(id)
-		{
-			femininity = fem;
-		}
-
-		public bool isFemale => Femininity.valueIsFemale(femininity);
-		public bool isMale => Femininity.valueIsMale(femininity);
-
-		public bool isAndrogynous => Femininity.valueIsAndrogynous(femininity);
-
-		public bool isSlightlyFeminine => Femininity.valueIsSlightlyFeminine(femininity);
-		public bool atLeastSlightlyFeminine => Femininity.valueAtLeastSlightlyFeminine(femininity);
-		public bool isFeminine => Femininity.valueIsFeminine(femininity);
-		public bool atLeastFeminine => Femininity.valueAtLeastFeminine(femininity);
-		public bool isHyperFeminine => Femininity.valueIsHyperFeminine(femininity);
-		public bool isSlightlyMasculine => Femininity.valueIsSlightlyMasculine(femininity);
-		public bool atLeastSlightlyMasculine => Femininity.valueAtLeastSlightlyMasculine(femininity);
-		public bool isMasculine => Femininity.valueIsMasculine(femininity);
-		public bool atLeastMasculine => Femininity.valueAtLeastMasculine(femininity);
-		public bool isHyperMasculine => Femininity.valueIsHyperMasculine(femininity);
 	}
 }

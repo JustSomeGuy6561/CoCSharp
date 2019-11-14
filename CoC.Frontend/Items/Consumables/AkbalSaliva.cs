@@ -33,7 +33,7 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public override bool countsAsSlimeLiquid => true;
+		public override bool countsAsLiquid => true;
 
 		public override bool countsAsCum => false;
 

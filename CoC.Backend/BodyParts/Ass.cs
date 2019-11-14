@@ -4,7 +4,6 @@
 //1/5/2019, 5:21 PM
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
-using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 using System.Text;
@@ -22,7 +21,7 @@ namespace CoC.Backend.BodyParts
 	//Pretty sure normal for ass size is pretty tight. so
 
 	public enum AnalLooseness : byte { NORMAL, LOOSE, ROOMY, STRETCHED, GAPING } //if you want to add a clown car level here, may i suggest RENT_ASUNDER?
-	public sealed partial class Ass : SimpleSaveablePart<Ass, AssData>, IBodyPartTimeLazy
+	public sealed partial class Ass : SimpleSaveablePart<Ass, AssWrapper>, IBodyPartTimeLazy
 	{
 		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
 		public const ushort MAX_ANAL_CAPACITY = ushort.MaxValue;
@@ -87,7 +86,7 @@ namespace CoC.Backend.BodyParts
 					//if we shrink or grow the looseness, reset the timer. 
 					buttTightenTimer = 0;
 					//then do the standard event stuff.
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_analLooseness = value;
 					NotifyDataChanged(oldData);
 				}
@@ -144,13 +143,12 @@ namespace CoC.Backend.BodyParts
 				Utils.ClampEnum(ref value, minWetness, maxWetness);
 				if (_analWetness != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_analWetness = value;
 					NotifyDataChanged(oldData);
 				}
 			}
 		}
-
 		private AnalWetness _analWetness = AnalWetness.NORMAL;
 
 		public ushort bonusAnalCapacity
@@ -160,7 +158,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_bonusAnalCapacity != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_bonusAnalCapacity = value;
 					NotifyDataChanged(oldData);
 				}
@@ -176,7 +174,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_perkBonusAnalCapacity != value)
 				{
-					var oldData = AsReadOnlyData();
+					var oldData = AsData();
 					_perkBonusAnalCapacity = value;
 					NotifyDataChanged(oldData);
 				}
@@ -209,15 +207,36 @@ namespace CoC.Backend.BodyParts
 		public bool virgin { get; private set; } = true;
 		public bool everPracticedAnal { get; private set; } = false;
 
-		public SimpleDescriptor shortDescription => shortDesc;
-		public SimpleDescriptor fullDescription => fullDesc;
-
 		#region Constructor
 		internal Ass(Guid creatureID) : base(creatureID)
 		{
 			looseness = AnalLooseness.NORMAL;
 			wetness = AnalWetness.NORMAL;
 			virgin = true;
+		}
+
+		internal Ass(Ass other) : base(other?.creatureID ?? throw new ArgumentNullException(nameof(other)))
+		{
+			looseness = other.looseness;
+			wetness = other.wetness;
+			virgin = other.virgin;
+
+			everPracticedAnal = other.everPracticedAnal;
+			orgasmCount = other.orgasmCount;
+			dryOrgasmCount = other.dryOrgasmCount;
+			sexCount = other.sexCount;
+			penetrateCount = other.penetrateCount;
+
+			minLooseness = other.minLooseness;
+			maxLooseness = other.maxLooseness;
+
+			minWetness = other.minWetness;
+			maxWetness = other.maxWetness;
+
+			bonusAnalCapacity = other.bonusAnalCapacity;
+			perkBonusAnalCapacity = other.perkBonusAnalCapacity;
+
+			buttTightenTimer = other.buttTightenTimer;
 		}
 
 		//default behavior is to let the ass determine if it's still virgin.
@@ -242,10 +261,9 @@ namespace CoC.Backend.BodyParts
 
 		public override string BodyPartName() => Name();
 
-
-		public override AssData AsReadOnlyData()
+		public override AssWrapper AsReadOnlyReference()
 		{
-			return new AssData(this);
+			return new AssWrapper(new Ass(this));
 		}
 		#region Update Variables - Ass-Specific
 		internal byte StretchAnus(byte amount = 1)
@@ -324,7 +342,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		//Alias these in the creature class, adding the relevant features not in Ass itself (knockup, orgasm)
 		#region Unique Functions
-		
+
 		internal bool PenetrateAsshole(ushort penetratorArea, float knotArea, float cumAmount, bool takeAnalVirginity, bool reachOrgasm/*, byte analExperiencedGained = 1*/)
 		{
 			penetrateCount++;
@@ -338,7 +356,7 @@ namespace CoC.Backend.BodyParts
 			ushort capacity = analCapacity();
 
 			HandleStretching(penetratorArea, knotArea);
-			
+
 			if (!everPracticedAnal)
 			{
 				everPracticedAnal = true;
@@ -416,6 +434,31 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 		#endregion
+
+		#region Events
+
+		public AssData AsData()
+		{
+			return new AssData(looseness, wetness, analCapacity());
+		}
+
+		private readonly WeakEventSource<SimpleDataChangedEvent<AssWrapper, AssData>> dataChangeSource =
+			new WeakEventSource<SimpleDataChangedEvent<AssWrapper, AssData>>();
+
+		public event EventHandler<SimpleDataChangedEvent<AssWrapper, AssData>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		private void NotifyDataChanged(AssData oldData)
+		{
+			dataChangeSource.Raise(this, new SimpleDataChangedEvent<AssWrapper, AssData>(AsReadOnlyReference(), oldData));
+		}
+
+		#endregion
+
+
 		#region BodyPartTime
 		private byte timerAmount
 		{
@@ -481,7 +524,9 @@ namespace CoC.Backend.BodyParts
 			return outputBuilder.ToString();
 		}
 		#endregion
-		
+
+
+
 		#region Not Implemented - Ideas
 		//how "experienced" the character is with anal sex. not used atm. as of now, it just increases by 1 with each experience. 
 		//idk, maybe change this.
@@ -609,20 +654,55 @@ namespace CoC.Backend.BodyParts
 		//	maxWetness = newValue;
 		//}
 		#endregion
+
+
 	}
-
-	public sealed class AssData : SimpleData
+	public sealed class AssWrapper : SimpleWrapper<AssWrapper, Ass>
 	{
-		public readonly AnalWetness wetness;
-		public readonly AnalLooseness looseness;
+		public AnalLooseness minLooseness => sourceData.minLooseness;
 
-		public readonly ushort analCapacity;
+		public AnalLooseness maxLooseness => sourceData.maxLooseness;
 
-		internal AssData(Ass source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		public AnalLooseness looseness => sourceData.looseness;
+		public AnalWetness minWetness => sourceData.minWetness;
+		public AnalWetness maxWetness => sourceData.maxWetness;
+
+		public AnalWetness wetness => sourceData.wetness;
+		public ushort bonusAnalCapacity => sourceData.bonusAnalCapacity;
+
+		public ushort perkBonusAnalCapacity => sourceData.perkBonusAnalCapacity;
+
+		public uint sexCount => sourceData.sexCount;
+		public uint penetrateCount => sourceData.penetrateCount;
+		public uint orgasmCount => sourceData.orgasmCount;
+		public uint dryOrgasmCount => sourceData.dryOrgasmCount;
+
+		public bool virgin => sourceData.virgin;
+		public bool everPracticedAnal => sourceData.everPracticedAnal;
+
+		public string ShortDescription() => sourceData.ShortDescription();
+
+		public string LongDescription() => sourceData.LongDescription();
+
+		internal AssWrapper(Ass source) : base(source)
 		{
-			wetness = source.wetness;
-			looseness = source.looseness;
-			analCapacity = source.analCapacity();
+
 		}
 	}
+
+	public sealed class AssData
+	{
+		public readonly AnalLooseness looseness;
+		public readonly AnalWetness wetness;
+
+		public readonly ushort capacity;
+
+		public AssData(AnalLooseness looseness, AnalWetness wetness, ushort capacity)
+		{
+			this.looseness = looseness;
+			this.wetness = wetness;
+			this.capacity = capacity;
+		}
+	}
+
 }

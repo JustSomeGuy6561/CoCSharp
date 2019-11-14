@@ -26,7 +26,7 @@ namespace CoC.Backend.BodyParts
 	public abstract class SaveableBehavior<ThisClass, ContainerClass, DataClass> : BehaviorBase
 		where ThisClass : SaveableBehavior<ThisClass, ContainerClass, DataClass> 
 		where ContainerClass : BehavioralSaveablePart<ContainerClass, ThisClass, DataClass>
-		where DataClass: BehavioralSaveablePartData<DataClass, ContainerClass, ThisClass>
+		where DataClass: BehavioralSaveablePartWrapper<DataClass, ContainerClass, ThisClass>
 	{
 
 
@@ -36,7 +36,7 @@ namespace CoC.Backend.BodyParts
 
 		//a short description saying the race and type. ex: Hands.CAT: "cat paws"
 		//The full description of this part. 
-		public readonly DescriptorWithArg<ContainerClass> fullDescription;
+		public readonly DescriptorWithArg<ContainerClass> longDescription;
 		//a full description of this part, with flavor text. it will be called whenever the player asks for their description.
 		public readonly TypeAndPlayerDelegate<ContainerClass> playerDescription;
 
@@ -46,7 +46,7 @@ namespace CoC.Backend.BodyParts
 		private protected SaveableBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc,
 			TypeAndPlayerDelegate<ContainerClass> playerDesc, ChangeType<ContainerClass> transform, RestoreType<ContainerClass> restore) : base(shortDesc)
 		{
-			fullDescription = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
+			longDescription = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
 			playerDescription = playerDesc ?? throw new ArgumentNullException(nameof(playerDesc));
 			transformFrom = transform ?? throw new ArgumentNullException(nameof(transform));
 			restoreString = restore ?? throw new ArgumentNullException(nameof(restore));

@@ -18,61 +18,61 @@ namespace CoC.Backend.BodyParts
 	public partial class HandType
 	{
 		private static string HumanShort() { return "hands"; }
-		public static string HumanFullDesc(Hands hands)
+		public static string HumanLongDesc(Hands hands)
 		{
 			return "normal hands, fingers, and nails.";
 		}
 		private static string LizardShort() { return "lizard claws"; }
 
-		private static string LizardFullDesc(Hands hands)
+		private static string LizardLongDesc(Hands hands)
 		{
 			return hands.clawTone.AsString() + "ish " + LizardShort();
 		}
 
 		private static string DragonShort() { return "dragon claws"; }
-		private static string DragonFullDesc(Hands hands)
+		private static string DragonLongDesc(Hands hands)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string SalamanderShort() { return "salamander claws"; }
-		private static string SalamanderFullDesc(Hands hands)
+		private static string SalamanderLongDesc(Hands hands)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string CatShort() { return "cat paws"; }
-		private static string CatFullDesc(Hands hands)
+		private static string CatLongDesc(Hands hands)
 		{
-			return GenericPawFullDesc();
+			return GenericPawLongDesc();
 		}
 		private static string DogShort() { return "dog paws"; }
-		private static string DogFullDesc(Hands hands)
+		private static string DogLongDesc(Hands hands)
 		{
-			return GenericPawFullDesc();
+			return GenericPawLongDesc();
 		}
 		private static string FoxShort() { return "fox paws"; }
-		private static string FoxFullDesc(Hands hands)
+		private static string FoxLongDesc(Hands hands)
 		{
-			return GenericPawFullDesc();
+			return GenericPawLongDesc();
 		}
 		private static string ImpShort() { return "imp claws"; }
-		private static string ImpFullDesc(Hands hands)
+		private static string ImpLongDesc(Hands hands)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string CockatriceShort() { return "cockatrice claws"; }
-		private static string CockatriceFullDesc(Hands hands)
+		private static string CockatriceLongDesc(Hands hands)
 		{
 			return "deadly looking avian talons";
 		}
 		private static string RedPandaShort() { return "panda paws"; }
-		private static string RedPandaFullDesc(Hands hands)
+		private static string RedPandaLongDesc(Hands hands)
 		{
-			return GenericPawFullDesc();
+			return GenericPawLongDesc();
 		}
 		private static string FerretShort() { return "ferret paws"; }
-		private static string FerretFullDesc(Hands hands)
+		private static string FerretLongDesc(Hands hands)
 		{
-			return GenericPawFullDesc();
+			return GenericPawLongDesc();
 		}
 
 		private static string GooShort()
@@ -80,16 +80,16 @@ namespace CoC.Backend.BodyParts
 			return "gooey appendages";
 		}
 
-		private static string GooFullDesc(Hands hands)
+		private static string GooLongDesc(Hands hands)
 		{
 			return "gooey, vaguely hand-like appendages";
 		}
 
-		private static string GenericPawFullDesc()
+		private static string GenericPawLongDesc()
 		{
 			return "cute, pink paw pads and short claws";
 		}
 		//private static string MantisShort() { return "mantis scythes"};
-		//private static string MantisFullDesc(Hands hands) { return "mantis scythes"};
+		//private static string MantisLongDesc(Hands hands) { return "mantis scythes"};
 	}
 }
