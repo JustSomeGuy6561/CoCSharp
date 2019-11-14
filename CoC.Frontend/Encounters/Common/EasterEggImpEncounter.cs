@@ -36,17 +36,18 @@ namespace CoC.Frontend.Encounters.Common
 		protected override void RunEncounter()
 		{
 			currentDisplay.ClearOutput();
-			string context = "A small imp bursts from behind a rock and buzzes towards you. You prepare for a fight, but it stays high and simply flies above you. " +
+			currentDisplay.OutputText("A small imp bursts from behind a rock and buzzes towards you. You prepare for a fight, but it stays high and simply flies above you. " +
 				"Suddenly another imp appears from nowhere and attacks the first. In the tussle one of them drops an item, which you handily catch, as the scrapping demons " +
-				"fight their way out of sight. ";
+				"fight their way out of sight. ");
 			//unlockCodexImps();
 
 #warning add remaining choices here. 
+			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 			//imp food, incubus draft, succubus milk. 
-			Func<ConsumableBase>[] choices = new Func<ConsumableBase>[] { () => new ImpFood() };
+			//Func<ConsumableBase>[] choices = new Func<ConsumableBase>[] { () => new ImpFood() };
 
-			ConsumableBase item = Utils.RandomChoice(choices).Invoke();
-			GainItemHelper.GainItemWithCallback(player, item, context, () => currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1)));
+			//ConsumableBase item = Utils.RandomChoice(choices).Invoke();
+			//GkainItemHelper.GainItemWithCallback(player, item, context, () => currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1)));
 		}
 	}
 }

@@ -40,8 +40,6 @@ namespace CoC.Backend.Pregnancies
 			description = other.description;
 		}
 
-		protected abstract StandardSpawnType Clone();
-
 		public override string BodyPartName()
 		{
 			return description();
