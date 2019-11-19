@@ -122,6 +122,15 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly Tones clawTone;
 
+		public bool isClaws => type.isClaws;
+		public bool isPaws => type.isPaws;
+		public bool isHands => type.isHands;
+
+		//default case. never procs, though that may change in the future, idk.
+		public bool isOther => type.isOther;
+
+		public string ShortDescription() => type.shortDescription();
+
 		public HandData(Hands source) : base(GetID(source), GetBehavior(source))
 		{
 			this.clawTone = source.clawTone;

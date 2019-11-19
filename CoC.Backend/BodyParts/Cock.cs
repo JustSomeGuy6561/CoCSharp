@@ -640,8 +640,8 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		public virtual float knotSize(float girth, float multiplier) => girth * multiplier;
 
 		private protected CockType(CockGroup cockGroup,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,
-			ChangeType<Cock> transform, RestoreType<Cock> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			ChangeType<CockData> transform, RestoreType<CockData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			baseKnotMultiplier = 0;
@@ -650,8 +650,8 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		}
 
 		private protected CockType(CockGroup cockGroup, float initialKnotMultiplier, //any cocktype specific values.
-			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,
-			ChangeType<Cock> transform, RestoreType<Cock> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			ChangeType<CockData> transform, RestoreType<CockData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			Utils.Clamp(ref initialKnotMultiplier, Cock.MIN_KNOT_MULTIPLIER, MAX_INITIAL_MULTIPLIER);
@@ -702,11 +702,11 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		private class FlexiCock : CockType
 		{
 			public override bool flexibleOrStretchyCock => true;
-			public FlexiCock(CockGroup cockGroup, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,
-				ChangeType<Cock> transform, RestoreType<Cock> restore) : base(cockGroup, shortDesc, fullDesc, playerDesc, transform, restore) { }
+			public FlexiCock(CockGroup cockGroup, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+				ChangeType<CockData> transform, RestoreType<CockData> restore) : base(cockGroup, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
-			public FlexiCock(CockGroup cockGroup, float initialKnotMultiplier, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, TypeAndPlayerDelegate<Cock> playerDesc,
-				ChangeType<Cock> transform, RestoreType<Cock> restore) : base(cockGroup, initialKnotMultiplier, shortDesc, fullDesc, playerDesc, transform, restore) { }
+			public FlexiCock(CockGroup cockGroup, float initialKnotMultiplier, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> fullDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+				ChangeType<CockData> transform, RestoreType<CockData> restore) : base(cockGroup, initialKnotMultiplier, shortDesc, fullDesc, playerDesc, transform, restore) { }
 		}
 	}
 

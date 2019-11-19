@@ -58,8 +58,8 @@ namespace CoC.Backend.BodyParts
 
 
 		//C# 7.2 magic. basically, prevents it from being messed with except internally.
-		private AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, TypeAndPlayerDelegate<Antennae> playerDesc,
-			ChangeType<Antennae> transformMessage, RestoreType<Antennae> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
+		private AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, PlayerBodyPartDelegate<Antennae> playerDesc,
+			ChangeType<AntennaeData> transformMessage, RestoreType<AntennaeData> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
 		{
 			_index = indexMaker++;
 			antennaes.AddAt(this, _index);

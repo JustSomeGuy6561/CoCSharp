@@ -216,8 +216,8 @@ namespace CoC.Backend.BodyParts
 		internal virtual SimpleDescriptor locationDesc => GenericLocationText;
 
 		private protected NeckType(byte maxLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> fullDesc, TypeAndPlayerDelegate<Neck> playerDesc, ChangeType<Neck> transform,
-			RestoreType<Neck> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> fullDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
+			RestoreType<NeckData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			maxNeckLength = maxLength;
@@ -227,8 +227,8 @@ namespace CoC.Backend.BodyParts
 		}
 
 		private protected NeckType(byte maxLength, HairFurColors defaultHairFur,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> fullDesc, TypeAndPlayerDelegate<Neck> playerDesc, ChangeType<Neck> transform,
-			RestoreType<Neck> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> fullDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
+			RestoreType<NeckData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			maxNeckLength = maxLength;
@@ -333,7 +333,7 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanFullDesc, HumanPlayerStr, (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanFullDesc, HumanPlayerStr, (x, y) => x.type.restoredString(x, y), GlobalStrings.RevertAsDefault);
 		public static readonly NeckType DRACONIC = new NeckType(MAX_DRAGON_LENGTH, DragonDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
 		public static readonly NeckType COCKATRICE = new NeckType(MAX_COCKATRICE_LENGTH, HairFurColors.GREEN, CockatriceDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
 	}

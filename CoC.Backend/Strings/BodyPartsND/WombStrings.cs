@@ -26,11 +26,11 @@ namespace CoC.Backend.BodyParts
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string StandardTransformStr(Womb oldWomb, Player player)
+	//	private static string StandardTransformStr(WombData previousWombData, Player player)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string StandardRestoreStr(Womb oldWomb, Player player)
+	//	private static string StandardRestoreStr(WombData previousWombData, Player player)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
@@ -51,11 +51,11 @@ namespace CoC.Backend.BodyParts
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string EggTransformStr(Womb oldWomb, Player player)
+	//	private static string EggTransformStr(WombData previousWombData, Player player)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string EggRestoreStr(Womb oldWomb, Player player)
+	//	private static string EggRestoreStr(WombData previousWombData, Player player)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
@@ -76,11 +76,11 @@ namespace CoC.Backend.BodyParts
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string BunnyTransformStr(Womb oldWomb, Player player)
+	//	private static string BunnyTransformStr(WombData previousWombData, Player player)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string BunnyRestoreStr(Womb oldWomb, Player player)
+	//	private static string BunnyRestoreStr(WombData previousWombData, Player player)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
@@ -101,11 +101,11 @@ namespace CoC.Backend.BodyParts
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string BasiliskTransformStr(Womb oldWomb, Player player)
+	//	private static string BasiliskTransformStr(WombData previousWombData, Player player)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string BasiliskRestoreStr(Womb oldWomb, Player player)
+	//	private static string BasiliskRestoreStr(WombData previousWombData, Player player)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}

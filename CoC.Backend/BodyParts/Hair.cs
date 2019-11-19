@@ -672,9 +672,9 @@ namespace CoC.Backend.BodyParts
 		public abstract bool canStyle { get; } //lets you prevent styling. 
 
 		public abstract bool canDye { get; }
-		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, TypeAndPlayerDelegate<Hair> playerDesc,
+		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, PlayerBodyPartDelegate<Hair> playerDesc,
 			SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
-			ChangeType<Hair> transform, RestoreType<Hair> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			hairTypes.AddAt(this, _index);
@@ -839,8 +839,8 @@ namespace CoC.Backend.BodyParts
 			public override bool canStyle => true;
 
 			public GenericHairType(HairFurColors defaultHairColor, float defaultLength, Func<float, float> handleHairLengthOnTransform,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, TypeAndPlayerDelegate<Hair> playerDesc, SimpleDescriptor growStr,
-				SimpleDescriptor cutStr, ChangeType<Hair> transform, RestoreType<Hair> restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
+				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, fullDesc, playerDesc, growStr, cutStr, transform, restore)
 			{
 				SetHairLengthOnTransform = handleHairLengthOnTransform;
@@ -917,8 +917,8 @@ namespace CoC.Backend.BodyParts
 			private readonly AttackBase _attack;
 
 			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc,
-				DescriptorWithArg<Hair> fullDesc, TypeAndPlayerDelegate<Hair> playerDesc, SimpleDescriptor whyNoGrowingDesc,
-				SimpleDescriptor whyNoCuttingDesc, ChangeType<Hair> transform, RestoreType<Hair> restore)
+				DescriptorWithArg<Hair> fullDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor whyNoGrowingDesc,
+				SimpleDescriptor whyNoCuttingDesc, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, fullDesc, playerDesc, whyNoGrowingDesc, whyNoCuttingDesc, transform, restore)
 			{
 				_attack = attack;
@@ -1055,8 +1055,8 @@ namespace CoC.Backend.BodyParts
 		public readonly float hairLength;
 		public readonly bool isSemiTransparent;
 		public readonly bool isNotGrowing;
-		public bool isNoHair => currentType == HairType.NO_HAIR;
-		public bool hairDeactivated => currentType == HairType.NO_HAIR || (hairLength == 0 && isNotGrowing);
+		public bool isNoHair => type == HairType.NO_HAIR;
+		public bool hairDeactivated => type == HairType.NO_HAIR || (hairLength == 0 && isNotGrowing);
 		public bool isBald => isNoHair || hairLength == 0;
 
 		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;

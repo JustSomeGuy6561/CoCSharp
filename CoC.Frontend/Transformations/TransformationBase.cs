@@ -27,7 +27,7 @@ namespace CoC.Frontend.Transformations
 			return Math.Max(initialCount, minimumCount);
 		}
 
-		protected string SafeReturn(Creature target, StringBuilder builder, int transformCount)
+		protected string ApplyChangesAndReturn(Creature target, StringBuilder builder, int transformCount)
 		{
 			if (target is IExtendedCreature extendedCreature)
 			{

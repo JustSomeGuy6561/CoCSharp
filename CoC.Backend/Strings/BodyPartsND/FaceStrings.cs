@@ -40,11 +40,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return " Your face is human in shape and structure, with [skin].";
 		}
-		private static string HumanTransformStr(Face face, PlayerBase player)
+		private static string HumanTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanRestoreStr(Face face, PlayerBase player)
+		private static string HumanRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -60,11 +60,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseTransformStr(Face face, PlayerBase player)
+		private static string HorseTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseRestoreStr(Face face, PlayerBase player)
+		private static string HorseRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -80,11 +80,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogTransformStr(Face face, PlayerBase player)
+		private static string DogTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogRestoreStr(Face face, PlayerBase player)
+		private static string DogRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -117,11 +117,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MinotaurTransformStr(Face face, PlayerBase player)
+		private static string MinotaurTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MinotaurRestoreStr(Face face, PlayerBase player)
+		private static string MinotaurRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -137,11 +137,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkTransformStr(Face face, PlayerBase player)
+		private static string SharkTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkRestoreStr(Face face, PlayerBase player)
+		private static string SharkRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -157,11 +157,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SnakeTransformStr(Face face, PlayerBase player)
+		private static string SnakeTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SnakeRestoreStr(Face face, PlayerBase player)
+		private static string SnakeRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -195,11 +195,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatTransformStr(Face face, PlayerBase player)
+		private static string CatTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatRestoreStr(Face face, PlayerBase player)
+		private static string CatRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -215,11 +215,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardTransformStr(Face face, PlayerBase player)
+		private static string LizardTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardRestoreStr(Face face, PlayerBase player)
+		private static string LizardRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -253,11 +253,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyTransformStr(Face face, PlayerBase player)
+		private static string BunnyTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyRestoreStr(Face face, PlayerBase player)
+		private static string BunnyRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -273,11 +273,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooTransformStr(Face face, PlayerBase player)
+		private static string KangarooTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooRestoreStr(Face face, PlayerBase player)
+		private static string KangarooRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -293,11 +293,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderTransformStr(Face face, PlayerBase player)
+		private static string SpiderTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderRestoreStr(Face face, PlayerBase player)
+		private static string SpiderRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -328,11 +328,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxTransformStr(Face face, PlayerBase player)
+		private static string FoxTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxRestoreStr(Face face, PlayerBase player)
+		private static string FoxRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -348,11 +348,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonTransformStr(Face face, PlayerBase player)
+		private static string DragonTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(Face face, PlayerBase player)
+		private static string DragonRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -383,11 +383,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonTransformStr(Face face, PlayerBase player)
+		private static string RaccoonTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonRestoreStr(Face face, PlayerBase player)
+		private static string RaccoonRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -422,11 +422,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseTransformStr(Face face, PlayerBase player)
+		private static string MouseTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseRestoreStr(Face face, PlayerBase player)
+		private static string MouseRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -461,11 +461,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretTransformStr(Face face, PlayerBase player)
+		private static string FerretTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretRestoreStr(Face face, PlayerBase player)
+		private static string FerretRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -500,11 +500,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigTransformStr(Face face, PlayerBase player)
+		private static string PigTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigRestoreStr(Face face, PlayerBase player)
+		private static string PigRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -520,11 +520,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoTransformStr(Face face, PlayerBase player)
+		private static string RhinoTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoRestoreStr(Face face, PlayerBase player)
+		private static string RhinoRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -540,11 +540,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaTransformStr(Face face, PlayerBase player)
+		private static string EchidnaTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaRestoreStr(Face face, PlayerBase player)
+		private static string EchidnaRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -560,11 +560,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerTransformStr(Face face, PlayerBase player)
+		private static string DeerTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerRestoreStr(Face face, PlayerBase player)
+		private static string DeerRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -580,11 +580,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfTransformStr(Face face, PlayerBase player)
+		private static string WolfTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfRestoreStr(Face face, PlayerBase player)
+		private static string WolfRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -600,11 +600,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceTransformStr(Face face, PlayerBase player)
+		private static string CockatriceTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceRestoreStr(Face face, PlayerBase player)
+		private static string CockatriceRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -620,11 +620,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeakTransformStr(Face face, PlayerBase player)
+		private static string BeakTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeakRestoreStr(Face face, PlayerBase player)
+		private static string BeakRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -640,11 +640,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PandaTransformStr(Face face, PlayerBase player)
+		private static string PandaTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PandaRestoreStr(Face face, PlayerBase player)
+		private static string PandaRestoreStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

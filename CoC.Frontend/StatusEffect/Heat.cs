@@ -177,7 +177,7 @@ namespace CoC.Frontend.StatusEffect
 			}
 			else if (sourceCreature.vaginas.Count > 0)
 			{
-				vagText = sourceCreature.vaginas[0].fullDescription();
+				vagText = sourceCreature.vaginas[0].LongDescription();
 			}
 			else
 			{
@@ -198,7 +198,7 @@ namespace CoC.Frontend.StatusEffect
 			}
 			else if (sourceCreature.vaginas.Count > 0)
 			{
-				vagText = sourceCreature.vaginas[0].fullDescription();
+				vagText = sourceCreature.vaginas[0].LongDescription();
 			}
 			else
 			{

@@ -136,11 +136,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SkinTransformStr(Body body, PlayerBase player)
+		private static string SkinTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SkinRestoreStr(Body body, PlayerBase player)
+		private static string SkinRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -162,11 +162,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ScalesTransformStr(Body body, PlayerBase player)
+		private static string ScalesTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ScalesRestoreStr(Body body, PlayerBase player)
+		private static string ScalesRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -193,11 +193,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaTransformStr(Body body, PlayerBase player)
+		private static string NagaTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaRestoreStr(Body body, PlayerBase player)
+		private static string NagaRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -224,11 +224,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string CockatriceTransformStr(Body body, PlayerBase player)
+		protected static string CockatriceTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string CockatriceRestoreStr(Body body, PlayerBase player)
+		protected static string CockatriceRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -250,11 +250,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string KitsuneTransformStr(Body body, PlayerBase player)
+		protected static string KitsuneTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string KitsuneRestoreStr(Body body, PlayerBase player)
+		protected static string KitsuneRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -280,11 +280,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BarkTransformStr(Body body, PlayerBase player)
+		private static string BarkTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BarkRestoreStr(Body body, PlayerBase player)
+		private static string BarkRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -306,11 +306,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FurTransformStr(Body body, PlayerBase player)
+		private static string FurTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FurRestoreStr(Body body, PlayerBase player)
+		private static string FurRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -337,11 +337,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatherTransformStr(Body body, PlayerBase player)
+		private static string FeatherTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatherRestoreStr(Body body, PlayerBase player)
+		private static string FeatherRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -368,11 +368,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WoolTransformStr(Body body, PlayerBase player)
+		private static string WoolTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WoolRestoreStr(Body body, PlayerBase player)
+		private static string WoolRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -395,11 +395,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooTransformStr(Body body, PlayerBase player)
+		private static string GooTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooRestoreStr(Body body, PlayerBase player)
+		private static string GooRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -417,11 +417,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RubberTransformStr(Body body, PlayerBase player)
+		private static string RubberTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RubberRestoreStr(Body body, PlayerBase player)
+		private static string RubberRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -439,11 +439,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CarapaceTransformStr(Body body, PlayerBase player)
+		private static string CarapaceTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CarapaceRestoreStr(Body body, PlayerBase player)
+		private static string CarapaceRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -461,11 +461,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ExoskeletonTransformStr(Body body, PlayerBase player)
+		private static string ExoskeletonTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ExoskeletonRestoreStr(Body body, PlayerBase player)
+		private static string ExoskeletonRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

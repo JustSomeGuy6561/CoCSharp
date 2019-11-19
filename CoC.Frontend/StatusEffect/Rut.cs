@@ -148,7 +148,7 @@ namespace CoC.Frontend.StatusEffect
 			}
 			else if (sourceCreature.cocks.Count > 0)
 			{
-				cockText = sourceCreature.cocks[0].fullDescription();
+				cockText = sourceCreature.cocks[0].LongDescription();
 			}
 			else
 			{
@@ -185,7 +185,7 @@ namespace CoC.Frontend.StatusEffect
 			}
 			else if (sourceCreature.cocks.Count > 0)
 			{
-				cockText = sourceCreature.cocks[0].fullDescription();
+				cockText = sourceCreature.cocks[0].LongDescription();
 			}
 			else
 			{

@@ -29,11 +29,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanTransformStr(Ears ears, PlayerBase player)
+		private static string HumanTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanRestoreStr(Ears ears, PlayerBase player)
+		private static string HumanRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -49,11 +49,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseTransformStr(Ears ears, PlayerBase player)
+		private static string HorseTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseRestoreStr(Ears ears, PlayerBase player)
+		private static string HorseRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -69,11 +69,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogTransformStr(Ears ears, PlayerBase player)
+		private static string DogTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogRestoreStr(Ears ears, PlayerBase player)
+		private static string DogRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -89,11 +89,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CowTransformStr(Ears ears, PlayerBase player)
+		private static string CowTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CowRestoreStr(Ears ears, PlayerBase player)
+		private static string CowRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -109,11 +109,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ElfinTransformStr(Ears ears, PlayerBase player)
+		private static string ElfinTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ElfinRestoreStr(Ears ears, PlayerBase player)
+		private static string ElfinRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -129,11 +129,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatTransformStr(Ears ears, PlayerBase player)
+		private static string CatTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatRestoreStr(Ears ears, PlayerBase player)
+		private static string CatRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -149,11 +149,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardTransformStr(Ears ears, PlayerBase player)
+		private static string LizardTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardRestoreStr(Ears ears, PlayerBase player)
+		private static string LizardRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -169,11 +169,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyTransformStr(Ears ears, PlayerBase player)
+		private static string BunnyTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyRestoreStr(Ears ears, PlayerBase player)
+		private static string BunnyRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -189,11 +189,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooTransformStr(Ears ears, PlayerBase player)
+		private static string KangarooTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooRestoreStr(Ears ears, PlayerBase player)
+		private static string KangarooRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -209,11 +209,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxTransformStr(Ears ears, PlayerBase player)
+		private static string FoxTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxRestoreStr(Ears ears, PlayerBase player)
+		private static string FoxRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -229,11 +229,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonTransformStr(Ears ears, PlayerBase player)
+		private static string DragonTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(Ears ears, PlayerBase player)
+		private static string DragonRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -249,11 +249,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonTransformStr(Ears ears, PlayerBase player)
+		private static string RaccoonTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonRestoreStr(Ears ears, PlayerBase player)
+		private static string RaccoonRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -269,11 +269,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseTransformStr(Ears ears, PlayerBase player)
+		private static string MouseTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseRestoreStr(Ears ears, PlayerBase player)
+		private static string MouseRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -289,11 +289,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretTransformStr(Ears ears, PlayerBase player)
+		private static string FerretTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretRestoreStr(Ears ears, PlayerBase player)
+		private static string FerretRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -309,11 +309,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigTransformStr(Ears ears, PlayerBase player)
+		private static string PigTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigRestoreStr(Ears ears, PlayerBase player)
+		private static string PigRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -329,11 +329,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoTransformStr(Ears ears, PlayerBase player)
+		private static string RhinoTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoRestoreStr(Ears ears, PlayerBase player)
+		private static string RhinoRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -349,11 +349,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaTransformStr(Ears ears, PlayerBase player)
+		private static string EchidnaTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaRestoreStr(Ears ears, PlayerBase player)
+		private static string EchidnaRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -369,11 +369,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerTransformStr(Ears ears, PlayerBase player)
+		private static string DeerTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerRestoreStr(Ears ears, PlayerBase player)
+		private static string DeerRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -389,11 +389,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfTransformStr(Ears ears, PlayerBase player)
+		private static string WolfTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfRestoreStr(Ears ears, PlayerBase player)
+		private static string WolfRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -409,11 +409,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepTransformStr(Ears ears, PlayerBase player)
+		private static string SheepTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepRestoreStr(Ears ears, PlayerBase player)
+		private static string SheepRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -429,11 +429,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpTransformStr(Ears ears, PlayerBase player)
+		private static string ImpTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpRestoreStr(Ears ears, PlayerBase player)
+		private static string ImpRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -449,11 +449,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceTransformStr(Ears ears, PlayerBase player)
+		private static string CockatriceTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceRestoreStr(Ears ears, PlayerBase player)
+		private static string CockatriceRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -469,11 +469,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaTransformStr(Ears ears, PlayerBase player)
+		private static string RedPandaTransformStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaRestoreStr(Ears ears, PlayerBase player)
+		private static string RedPandaRestoreStr(EarData previousEarData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

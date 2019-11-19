@@ -30,11 +30,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneTransformStr(Gills gills, PlayerBase player)
+		private static string AnemoneTransformStr(GillData previousGillData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneRestoreStr(Gills gills, PlayerBase player)
+		private static string AnemoneRestoreStr(GillData previousGillData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -51,11 +51,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FishTransformStr(Gills gills, PlayerBase player)
+		private static string FishTransformStr(GillData previousGillData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FishRestoreStr(Gills gills, PlayerBase player)
+		private static string FishRestoreStr(GillData previousGillData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

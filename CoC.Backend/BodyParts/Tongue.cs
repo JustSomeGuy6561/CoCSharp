@@ -136,7 +136,7 @@ namespace CoC.Backend.BodyParts
 		public static TongueType defaultValue => HUMAN;
 
 
-		private protected TongueType(ushort tongueLength, float tongueWidth, SimpleDescriptor shortDesc, DescriptorWithArg<Tongue> fullDesc, TypeAndPlayerDelegate<Tongue> playerDesc, ChangeType<Tongue> transform, RestoreType<Tongue> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		private protected TongueType(ushort tongueLength, float tongueWidth, SimpleDescriptor shortDesc, DescriptorWithArg<Tongue> fullDesc, PlayerBodyPartDelegate<Tongue> playerDesc, ChangeType<TongueData> transform, RestoreType<TongueData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			tongues.AddAt(this, _index);
@@ -200,9 +200,9 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TongueData : BehavioralSaveablePartData<TongueData, Tongue, TongueType>
 	{
-		public float width => currentType.width;
-		public ushort length => currentType.length;
-		public bool isLongTongue => currentType.longTongue;
+		public float width => type.width;
+		public ushort length => type.length;
+		public bool isLongTongue => type.longTongue;
 		internal TongueData(Tongue tongue) : base(GetID(tongue), GetBehavior(tongue))
 		{
 

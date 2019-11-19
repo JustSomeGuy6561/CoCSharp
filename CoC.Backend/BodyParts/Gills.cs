@@ -51,8 +51,8 @@ namespace CoC.Backend.BodyParts
 
 		private static readonly List<GillType> gills = new List<GillType>();
 		public static readonly ReadOnlyCollection<GillType> availableTypes = new ReadOnlyCollection<GillType>(gills);
-		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<Gills> fullDesc, TypeAndPlayerDelegate<Gills> playerDesc,
-			ChangeType<Gills> transform, RestoreType<Gills> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<Gills> fullDesc, PlayerBodyPartDelegate<Gills> playerDesc,
+			ChangeType<GillData> transform, RestoreType<GillData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			gills.AddAt(this, _index);
@@ -92,7 +92,7 @@ namespace CoC.Backend.BodyParts
 		protected readonly int _index;
 		public override int index => _index;
 
-		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.restoreString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.restoredString(x, y), GlobalStrings.RevertAsDefault);
 		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneFullDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
 		public static readonly GillType FISH = new GillType(FishDescStr, FishFullDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
 	}

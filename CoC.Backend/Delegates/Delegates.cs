@@ -23,9 +23,9 @@ namespace CoC.Backend
 	public delegate string RestoreStr(PlayerBase player);
 
 
-	public delegate string TypeAndPlayerDelegate<T>(T type, PlayerBase player);
-	public delegate string ChangeType<T>(T newType, PlayerBase player);
-	public delegate string RestoreType<T>(T originalType, PlayerBase player);
+	public delegate string PlayerBodyPartDelegate<T>(T bodyPart, PlayerBase player);
+	public delegate string ChangeType<T>(T oldData, PlayerBase player);
+	public delegate string RestoreType<T>(T originalData, PlayerBase player);
 
 	//these may be changed or removed.
 	public delegate string AdjColorDescriptor(string adj, CoCColors color);

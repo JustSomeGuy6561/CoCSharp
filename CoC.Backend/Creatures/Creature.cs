@@ -180,7 +180,7 @@ namespace CoC.Backend.Creatures
 		public bool hasPrimaryFur => body.mainEpidermis.usesFur;
 		public bool hasSupplementaryFur => body.supplementaryEpidermis.usesFur;
 
-		public bool hasPlainSkin => body.mainEpidermis.currentType == EpidermisType.SKIN;
+		public bool hasPlainSkin => body.mainEpidermis.type == EpidermisType.SKIN;
 
 
 		//aliases for build.

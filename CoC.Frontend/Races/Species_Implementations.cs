@@ -287,7 +287,7 @@ namespace CoC.Frontend.Races
 				bunnyCounter--;
 			}
 			//Human skin on bunmorph adds
-			if (source.body.mainEpidermis.currentType == EpidermisType.SKIN && bunnyCounter > 1)
+			if (source.body.mainEpidermis.type == EpidermisType.SKIN && bunnyCounter > 1)
 			{
 				bunnyCounter++;
 			}
@@ -579,11 +579,11 @@ namespace CoC.Frontend.Races
 					}
 					else
 					{
-						if (source.body.mainEpidermis.currentType == EpidermisType.SCALES)
+						if (source.body.mainEpidermis.type == EpidermisType.SCALES)
 						{
 							cockatriceCounter++;
 						}
-						if (source.body.hasSecondaryEpidermis && source.body.supplementaryEpidermis.currentType == EpidermisType.FEATHERS)
+						if (source.body.hasSecondaryEpidermis && source.body.supplementaryEpidermis.type == EpidermisType.FEATHERS)
 						{
 							cockatriceCounter++;
 						}
@@ -1442,7 +1442,7 @@ namespace CoC.Frontend.Races
 			{
 				humanCounter++;
 			}
-			if (source.body.mainEpidermis.currentType == EpidermisType.SKIN)
+			if (source.body.mainEpidermis.type == EpidermisType.SKIN)
 			{
 				humanCounter++;
 			}
@@ -1466,7 +1466,7 @@ namespace CoC.Frontend.Races
 			{
 				humanCounter++;
 			}
-			if (source.breasts.Count == 1 && source.body.mainEpidermis.currentType == EpidermisType.SKIN)
+			if (source.breasts.Count == 1 && source.body.mainEpidermis.type == EpidermisType.SKIN)
 			{
 				humanCounter++;
 			}
@@ -1510,7 +1510,7 @@ namespace CoC.Frontend.Races
 			{
 				impCounter++;
 			}
-			if (source.body.mainEpidermis.currentType == EpidermisType.SKIN && availableTones.Contains(source.body.primarySkin.tone))
+			if (source.body.mainEpidermis.type == EpidermisType.SKIN && availableTones.Contains(source.body.primarySkin.tone))
 			{
 				impCounter++;
 			}
@@ -1710,7 +1710,7 @@ namespace CoC.Frontend.Races
 			{
 				kitsuneCounter++;
 			}
-			else if (source.body.mainEpidermis.currentType == EpidermisType.SKIN && (this.ElderKitsuneTones.Contains(source.body.mainEpidermis.tone) || KitsuneTones.Contains(source.body.mainEpidermis.tone)))
+			else if (source.body.mainEpidermis.type == EpidermisType.SKIN && (this.ElderKitsuneTones.Contains(source.body.mainEpidermis.tone) || KitsuneTones.Contains(source.body.mainEpidermis.tone)))
 			{
 				kitsuneCounter++;
 			}
@@ -1718,15 +1718,15 @@ namespace CoC.Frontend.Races
 			{
 				kitsuneCounter--;
 			}
-			else if (source.body.mainEpidermis.currentType == EpidermisType.SCALES)
+			else if (source.body.mainEpidermis.type == EpidermisType.SCALES)
 			{
 				kitsuneCounter -= 2;
 			}
-			else if (source.body.mainEpidermis.currentType == EpidermisType.GOO)
+			else if (source.body.mainEpidermis.type == EpidermisType.GOO)
 			{
 				kitsuneCounter -= 3;
 			}
-			else if (source.body.mainEpidermis.currentType != EpidermisType.SKIN)
+			else if (source.body.mainEpidermis.type != EpidermisType.SKIN)
 			{
 				kitsuneCounter--;
 			}
@@ -2534,11 +2534,11 @@ namespace CoC.Frontend.Races
 				score++;
 			}
 			//carapace =+1. Skin = +/-0. All else = -1
-			if (source.body.mainEpidermis.currentType == EpidermisType.CARAPACE)
+			if (source.body.mainEpidermis.type == EpidermisType.CARAPACE)
 			{
 				score++;
 			}
-			else if (source.body.mainEpidermis.currentType != EpidermisType.SKIN && score > 0)
+			else if (source.body.mainEpidermis.type != EpidermisType.SKIN && score > 0)
 			{
 				score--;
 			}

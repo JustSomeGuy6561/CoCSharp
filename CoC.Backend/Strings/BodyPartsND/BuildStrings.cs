@@ -197,8 +197,8 @@ namespace CoC.Backend.BodyParts
 
 		private string HipsFullDesc()
 		{
-			LowerBodyType lowerBody = lowerBodyData.currentType;
-			BodyType bodyType = bodyData.currentType;
+			LowerBodyType lowerBody = lowerBodyData.type;
+			BodyType bodyType = bodyData.type;
 
 			StringBuilder sb = new StringBuilder();
 			if (hips.size < Hips.SLENDER)

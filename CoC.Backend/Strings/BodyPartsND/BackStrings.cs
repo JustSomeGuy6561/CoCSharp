@@ -39,11 +39,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NormalTransformStr(Back back, PlayerBase player)
+		private static string NormalTransformStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NormalRestoreStr(Back back, PlayerBase player)
+		private static string NormalRestoreStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -69,11 +69,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string DraconicManeTransformStr(Back back, PlayerBase player)
+		protected static string DraconicManeTransformStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string DraconicManeRestoreStr(Back back, PlayerBase player)
+		protected static string DraconicManeRestoreStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -89,11 +89,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DraconicSpikesTransformStr(Back back, PlayerBase player)
+		private static string DraconicSpikesTransformStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DraconicSpikesRestoreStr(Back back, PlayerBase player)
+		private static string DraconicSpikesRestoreStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -109,11 +109,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkFinTransformStr(Back back, PlayerBase player)
+		private static string SharkFinTransformStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkFinRestoreStr(Back back, PlayerBase player)
+		private static string SharkFinRestoreStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -132,11 +132,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string TendrilTransformStr(Back back, PlayerBase player)
+		private static string TendrilTransformStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string TendrilRestoreStr(Back back, PlayerBase player)
+		private static string TendrilRestoreStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -153,11 +153,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string BehemothTransformStr(Back back, PlayerBase player)
+		protected static string BehemothTransformStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string BehemothRestoreStr(Back back, PlayerBase player)
+		protected static string BehemothRestoreStr(BackData previousBackData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

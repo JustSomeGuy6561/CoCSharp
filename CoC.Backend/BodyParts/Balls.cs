@@ -110,7 +110,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public DescriptorWithArg<Balls> FullDescription => BallsFullDesc;
-		public TypeAndPlayerDelegate<Balls> PlayerStr => BallsPlayerStr;
+		public PlayerBodyPartDelegate<Balls> PlayerStr => BallsPlayerStr;
 
 		#region Unique Functions and Updating Properties
 		//Grows a pair of balls. returns false if it already has balls. 

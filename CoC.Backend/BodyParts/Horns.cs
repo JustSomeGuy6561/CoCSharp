@@ -280,12 +280,12 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		//call the other constructor with defaults set to min.
 		private protected HornType(byte minHorns, byte maximumHorns, byte minLength, byte maxLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc, ChangeType<Horns> transform, RestoreType<Horns> restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform, RestoreType<HornData> restore)
 			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
 		private protected HornType(byte minimumHorns, byte maximumHorns, byte minLength, byte maxLength, byte defaultHornCount, byte defaultHornLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc,
-			ChangeType<Horns> transform, RestoreType<Horns> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, PlayerBodyPartDelegate<Horns> playerDesc,
+			ChangeType<HornData> transform, RestoreType<HornData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			//Woo data cleanup.
 			maxHorns = Utils.Clamp2(maximumHorns, (byte)0, byte.MaxValue);
@@ -440,8 +440,8 @@ namespace CoC.Backend.BodyParts
 		private class SimpleOrNoHorns : HornType
 		{
 			public SimpleOrNoHorns(byte hornCount, byte hornLength,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc, ChangeType<Horns> transform,
-				RestoreType<Horns> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
+				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform,
+				RestoreType<HornData> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
 			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity, bool uniform = false)
 			{
@@ -857,8 +857,8 @@ namespace CoC.Backend.BodyParts
 		{
 			private readonly bool isReindeer;
 			public Antlers(bool reindeer, byte maxLength,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, TypeAndPlayerDelegate<Horns> playerDesc,
-				ChangeType<Horns> transform, RestoreType<Horns> restore) : base(2, 20, 6, maxLength, shortDesc, fullDesc, playerDesc, transform, restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, PlayerBodyPartDelegate<Horns> playerDesc,
+				ChangeType<HornData> transform, RestoreType<HornData> restore) : base(2, 20, 6, maxLength, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				isReindeer = reindeer;
 			}

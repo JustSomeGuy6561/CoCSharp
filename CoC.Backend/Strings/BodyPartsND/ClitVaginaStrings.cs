@@ -69,11 +69,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagEquineTransformStr(Vagina vagina, PlayerBase player)
+		private static string VagEquineTransformStr(VaginaData previousVaginaData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagEquineRestoreStr(Vagina vagina, PlayerBase player)
+		private static string VagEquineRestoreStr(VaginaData previousVaginaData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -89,11 +89,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagSandTrapTransformStr(Vagina vagina, PlayerBase player)
+		private static string VagSandTrapTransformStr(VaginaData previousVaginaData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagSandTrapRestoreStr(Vagina vagina, PlayerBase player)
+		private static string VagSandTrapRestoreStr(VaginaData previousVaginaData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

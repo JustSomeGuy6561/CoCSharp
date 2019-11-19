@@ -151,11 +151,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string HumanTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string HumanRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -171,11 +171,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HoovedTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string HoovedTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HoovedRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string HoovedRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -191,11 +191,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string DogTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string DogRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -211,11 +211,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string NagaTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string NagaRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -234,11 +234,11 @@ public partial class LowerBodyType
 				"horn protruding straight down from the heel that forces you to walk with a sexy, swaying gait.";
 
 		}
-		private static string DemonHiHeelsTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string DemonHiHeelsTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonHiHeelsRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string DemonHiHeelsRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -254,11 +254,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonClawTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string DemonClawTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonClawRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string DemonClawRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -274,11 +274,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string BeeTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string BeeRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -294,11 +294,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string GooTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string GooRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -314,11 +314,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string CatTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string CatRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -334,11 +334,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string LizardTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string LizardRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -354,11 +354,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PonyTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string PonyTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PonyRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string PonyRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -374,11 +374,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string BunnyTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string BunnyRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -394,11 +394,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HarpyTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string HarpyTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HarpyRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string HarpyRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -414,11 +414,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string KangarooTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string KangarooRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -434,11 +434,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string SpiderTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string SpiderRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -454,11 +454,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DriderTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string DriderTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DriderRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string DriderRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -474,11 +474,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string FoxTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string FoxRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -494,11 +494,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string DragonTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string DragonRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -514,11 +514,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string RaccoonTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string RaccoonRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -534,11 +534,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string FerretTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string FerretRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -554,11 +554,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ClovenHoofTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string ClovenHoofTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ClovenHoofRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string ClovenHoofRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -574,11 +574,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string EchidnaTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string EchidnaRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -594,11 +594,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SalamanderTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string SalamanderTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SalamanderRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string SalamanderRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -614,11 +614,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string WolfTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string WolfRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -634,11 +634,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string ImpTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string ImpRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -654,11 +654,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string CockatriceTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string CockatriceRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -674,11 +674,11 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaTransformStr(LowerBody lowerBody, PlayerBase player)
+		private static string RedPandaTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaRestoreStr(LowerBody lowerBody, PlayerBase player)
+		private static string RedPandaRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

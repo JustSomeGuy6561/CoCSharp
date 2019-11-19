@@ -119,8 +119,8 @@ namespace CoC.Backend.BodyParts
 		public readonly FootType footType;
 		public readonly EpidermisType epidermisType;
 		protected LowerBodyType(FootType foot, EpidermisType epidermis, byte numLegs,
-			SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc,
-			ChangeType<LowerBody> transform, RestoreType<LowerBody> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, PlayerBodyPartDelegate<LowerBody> playerDesc,
+			ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			lowerBodyTypes.AddAt(this, _index);
@@ -224,8 +224,8 @@ namespace CoC.Backend.BodyParts
 			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 
 			public FurLowerBody(FootType foot, FurBasedEpidermisType epidermis, byte numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
-				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc, ChangeType<LowerBody> transform,
-				RestoreType<LowerBody> restore) : base(foot, epidermis, numLegs, shortDesc, fullDesc, playerDesc, transform, restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform,
+				RestoreType<LowerBodyData> restore) : base(foot, epidermis, numLegs, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				defaultColor = new FurColor(defaultFurColor);
 				defaultTexture = defaultFurTexture;
@@ -267,7 +267,7 @@ namespace CoC.Backend.BodyParts
 		private class FurLowerBodyWithKick : FurLowerBody
 		{
 			public FurLowerBodyWithKick(FootType foot, FurBasedEpidermisType epidermis, byte numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
-				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc, ChangeType<LowerBody> transform, RestoreType<LowerBody> restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore)
 				: base(foot, epidermis, numLegs, defaultFurColor, defaultFurTexture, canChange, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase attack => _attack;
@@ -282,8 +282,8 @@ namespace CoC.Backend.BodyParts
 
 			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 			public ToneLowerBody(FootType foot, ToneBasedEpidermisType epidermis, byte legCount, Tones defTone, SkinTexture defaultSkinTexture, bool canChange,
-				 SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, TypeAndPlayerDelegate<LowerBody> playerDesc, ChangeType<LowerBody> transform,
-				 RestoreType<LowerBody> restore) : base(foot, epidermis, legCount, shortDesc, fullDesc, playerDesc, transform, restore)
+				 SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> fullDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform,
+				 RestoreType<LowerBodyData> restore) : base(foot, epidermis, legCount, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				defaultTexture = defaultSkinTexture;
 				defaultTone = defTone;
@@ -309,14 +309,14 @@ namespace CoC.Backend.BodyParts
 
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				Tones color = bodyData.currentType == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone) ? bodyData.supplementary.tone : bodyData.mainSkin.tone;
+				Tones color = bodyData.type == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone) ? bodyData.supplementary.tone : bodyData.mainSkin.tone;
 				return new EpidermalData(primaryEpidermis, color, defaultTexture);
 			}
 
 			internal override EpidermalData ParseSecondaryEpidermis(in BodyData bodyData)
 			{
 				Tones color = bodyData.supplementary.tone;
-				if (bodyData.currentType == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone))
+				if (bodyData.type == BodyType.NAGA && !Tones.IsNullOrEmpty(bodyData.supplementary.tone))
 				{
 					color = DefaultValueHelpers.GetNageUnderToneFrom(color);
 				}
@@ -369,8 +369,8 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermalData primaryEpidermis;
 		public readonly EpidermalData secondaryEpidermis;
 
-		public byte legCount => currentType.legCount;
-		public FootType footType => currentType.footType;
+		public byte legCount => type.legCount;
+		public FootType footType => type.footType;
 
 		internal LowerBodyData(Guid id, LowerBodyType type, EpidermalData epidermis, EpidermalData secondary) : base(id, type)
 		{
@@ -380,7 +380,7 @@ namespace CoC.Backend.BodyParts
 
 		internal LowerBodyData(Guid id) : base(id, LowerBodyType.defaultValue)
 		{
-			primaryEpidermis = new Epidermis(currentType.epidermisType).AsReadOnlyData();
+			primaryEpidermis = new Epidermis(type.epidermisType).AsReadOnlyData();
 			secondaryEpidermis = new EpidermalData();
 		}
 	}

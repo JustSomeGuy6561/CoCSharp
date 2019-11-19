@@ -135,8 +135,8 @@ namespace CoC.Backend.BodyParts
 		public static EarType defaultValue => HUMAN;
 
 
-		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, TypeAndPlayerDelegate<Ears> playerDesc,
-			ChangeType<Ears> transform, RestoreType<Ears> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, PlayerBodyPartDelegate<Ears> playerDesc,
+			ChangeType<EarData> transform, RestoreType<EarData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			ears.AddAt(this, index);
@@ -212,8 +212,8 @@ namespace CoC.Backend.BodyParts
 	public class FurEarType : EarType
 	{
 		public readonly FurColor defaultFur;
-		public FurEarType(FurColor defaultColor, SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, TypeAndPlayerDelegate<Ears> playerDesc,
-			ChangeType<Ears> transform, RestoreType<Ears> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		public FurEarType(FurColor defaultColor, SimpleDescriptor shortDesc, DescriptorWithArg<Ears> fullDesc, PlayerBodyPartDelegate<Ears> playerDesc,
+			ChangeType<EarData> transform, RestoreType<EarData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			defaultFur = defaultColor;
 		}

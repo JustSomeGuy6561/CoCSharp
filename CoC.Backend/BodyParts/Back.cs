@@ -247,8 +247,8 @@ namespace CoC.Backend.BodyParts
 		internal virtual SimpleDescriptor dyeText => GenericLocDesc;
 		public virtual bool hasSpecialEpidermis => false; //replaces usesHair, as we now have types that can use tones. we've fixed this with a single epidermis here.
 
-		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, TypeAndPlayerDelegate<Back> playerDesc,
-			ChangeType<Back> transform, RestoreType<Back> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, PlayerBodyPartDelegate<Back> playerDesc,
+			ChangeType<BackData> transform, RestoreType<BackData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			backs.AddAt(this, _index);
@@ -363,7 +363,7 @@ namespace CoC.Backend.BodyParts
 		//BUT, given a callback to the resources, we can generate the attack here, using another callback. Clarity dictates i not do this, but fuck it.
 		private readonly GenerateResourceAttack getAttack; //a callback. takes another callback (that returns a ushort), and returns an attack that requires resources.
 		internal AttackableBackType(GenerateResourceAttack attackGetter, EpidermalData appearance,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, TypeAndPlayerDelegate<Back> playerDesc, ChangeType<Back> transform, RestoreType<Back> restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
 			: base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			getAttack = attackGetter ?? throw new ArgumentNullException(nameof(attackGetter));
@@ -379,11 +379,11 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (baseAppearance.usesFur)
 			{
-				epidermis.UpdateOrChange((FurBasedEpidermisType)baseAppearance.currentType, baseAppearance.fur, baseAppearance.furTexture);
+				epidermis.UpdateOrChange((FurBasedEpidermisType)baseAppearance.type, baseAppearance.fur, baseAppearance.furTexture);
 			}
 			else
 			{
-				epidermis.UpdateOrChange((ToneBasedEpidermisType)baseAppearance.currentType, baseAppearance.tone, baseAppearance.skinTexture);
+				epidermis.UpdateOrChange((ToneBasedEpidermisType)baseAppearance.type, baseAppearance.tone, baseAppearance.skinTexture);
 			}
 		}
 		public override bool hasSpecialEpidermis => !baseAppearance.isEmpty;

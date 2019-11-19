@@ -114,12 +114,12 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class FootData : BehavioralPartDataBase<FootType>
 	{
-		public bool isFeet => currentType.isFeet;
-		public bool isPaws => currentType.isPaws;
-		public bool isHooves => currentType.isHooves;
-		public bool isInsectoid => currentType.isInsectoid;
-		public bool isClaws => currentType.isClaws;
-		public bool isOther => currentType.isOther;
+		public bool isFeet => type.isFeet;
+		public bool isPaws => type.isPaws;
+		public bool isHooves => type.isHooves;
+		public bool isInsectoid => type.isInsectoid;
+		public bool isClaws => type.isClaws;
+		public bool isOther => type.isOther;
 
 		public FootData(Guid id, FootType currentType) : base(id, currentType)
 		{

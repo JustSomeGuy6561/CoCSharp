@@ -252,8 +252,8 @@ namespace CoC.Backend.BodyParts
 		public virtual byte maxTailCount => initialTailCount;
 
 		private protected TailType(EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
-			RestoreType<Tail> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform,
+			RestoreType<TailData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			epidermisType = epidermis;
 			mutable = toneFurMutable;
@@ -345,8 +345,8 @@ namespace CoC.Backend.BodyParts
 			public readonly FurColor defaultFur;
 			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 			public FurryTail(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
-				RestoreType<Tail> restore) : base(furType, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform,
+				RestoreType<TailData> restore) : base(furType, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				defaultFur = defaultColor;
 			}
@@ -376,8 +376,8 @@ namespace CoC.Backend.BodyParts
 			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 
 			public ToneTail(ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable,
-		SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
-		RestoreType<Tail> restore) : base(toneType, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
+		SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform,
+		RestoreType<TailData> restore) : base(toneType, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				defaultTone = defaultColor;
 			}
@@ -394,8 +394,8 @@ namespace CoC.Backend.BodyParts
 			private readonly GenerateResourceAttack resourceAttackGetter;
 
 			public ToneTailWithResourceAttack(GenerateResourceAttack attackGetter, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform,
-				RestoreType<Tail> restore) : base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform,
+				RestoreType<TailData> restore) : base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				resourceAttackGetter = attackGetter ?? throw new ArgumentNullException(nameof(attackGetter));
 			}
@@ -412,7 +412,7 @@ namespace CoC.Backend.BodyParts
 		private class FurryTailWithWhip : FurryTail
 		{
 			public FurryTailWithWhip(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc,
-				TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
+				PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
 				: base(furType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
@@ -424,7 +424,7 @@ namespace CoC.Backend.BodyParts
 		private class ToneTailWithWhip : ToneTail
 		{
 			public ToneTailWithWhip(ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, SimpleDescriptor shortDesc, DescriptorWithArg<Tail> fullDesc,
-				TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
+				PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
 				: base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
@@ -454,7 +454,7 @@ namespace CoC.Backend.BodyParts
 
 			private readonly TailSlam _attack;
 			public ToneTailWithSlam(byte attackStrength, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, SimpleDescriptor shortDesc,
-				DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
+				DescriptorWithArg<Tail> fullDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
 				: base(toneType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				_attack = new TailSlam(shortDesc, attackStrength);
@@ -470,7 +470,7 @@ namespace CoC.Backend.BodyParts
 
 			private readonly TailSlam _attack;
 			public FurryTailWithSlam(byte attackStrength, FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, SimpleDescriptor shortDesc,
-				DescriptorWithArg<Tail> fullDesc, TypeAndPlayerDelegate<Tail> playerDesc, ChangeType<Tail> transform, RestoreType<Tail> restore)
+				DescriptorWithArg<Tail> fullDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
 				: base(furType, defaultColor, mutable, shortDesc, fullDesc, playerDesc, transform, restore)
 			{
 				_attack = new TailSlam(shortDesc, attackStrength);

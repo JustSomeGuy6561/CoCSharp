@@ -42,13 +42,6 @@ namespace CoC.Backend.BodyParts
 		public bool isDefault => type == defaultType;
 		public abstract BehaviorClass defaultType { get; }
 
-		//statics cannot be created here, but they'll appear as follows
-
-		//internal static ThisClass GenerateDefault();
-		//internal static ThisClass GenerateDefaultOfType(BehaviorClass type);
-
-		//internal static ThisClass Generate[Special Name](BehaviorClass type, [additional parameters]);
-
 		//each class may have additional updates for more specific or varied cases, notably cases that use extra variables unique to that class. 
 		//if this is the case, functions that can change these variables without updating the type may need to be implemented.
 
@@ -68,7 +61,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//Text output.
-		public virtual SimpleDescriptor fullDescription => () => type.fullDescription((ThisClass)this);
+		public virtual string LongDescription() => type.longDescription((ThisClass)this);
 
 		public virtual string PlayerDescription()
 		{
@@ -78,24 +71,23 @@ namespace CoC.Backend.BodyParts
 			}
 			else return "";
 		}
-		public virtual string TransformIntoText(BehaviorClass newBehavior)
+		public virtual string TransformFromText(DataClass previousTypeData)
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
-				return newBehavior.transformFrom((ThisClass)this, player);
-			}
-			else return "";
-		}
-		public virtual string RestoreText()
-		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
-			{
-				return type.restoreString((ThisClass)this, player);
+				return type.transformFrom(previousTypeData, player);
 			}
 			else return "";
 		}
 
-
+		public virtual string RestoredText(DataClass oldData)
+		{
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
+			{
+				return oldData.type.restoredString(oldData, player);
+			}
+			else return "";
+		}
 
 		//Serialization
 		//Type ISaveableBase.currentSaveType => currentSaveVersion;

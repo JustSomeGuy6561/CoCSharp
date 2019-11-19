@@ -150,12 +150,12 @@ namespace CoC.Backend.BodyParts
 
 		private string NoLongerBaldStr()
 		{
-			return Environment.NewLine + Tools.SafelyFormattedString.FormattedText("You are no longer bald. You now have " + fullDescription() + " coating your head.", StringFormats.BOLD) + Environment.NewLine;
+			return Environment.NewLine + Tools.SafelyFormattedString.FormattedText("You are no longer bald. You now have " + LongDescription() + " coating your head.", StringFormats.BOLD) + Environment.NewLine;
 		}
 
 		private string HairLongerStr()
 		{
-			return Environment.NewLine + SafelyFormattedString.FormattedText("Your hair's growth has reached a new threshold, giving you " + fullDescription() + ".", StringFormats.BOLD) + Environment.NewLine;
+			return Environment.NewLine + SafelyFormattedString.FormattedText("Your hair's growth has reached a new threshold, giving you " + LongDescription() + ".", StringFormats.BOLD) + Environment.NewLine;
 		}
 	}
 	public partial class Hair
@@ -188,11 +188,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string NoHairTransformStr(Hair hair, PlayerBase player)
+		private static string NoHairTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHairRestoreStr(Hair hair, PlayerBase player)
+		private static string NoHairRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -219,11 +219,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string NormalTransformStr(Hair hair, PlayerBase player)
+		private static string NormalTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NormalRestoreStr(Hair hair, PlayerBase player)
+		private static string NormalRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -250,11 +250,11 @@ public partial class HairType
 		}
 
 
-		private static string FeatherTransformStr(Hair hair, PlayerBase player)
+		private static string FeatherTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatherRestoreStr(Hair hair, PlayerBase player)
+		private static string FeatherRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -282,11 +282,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string GooTransformStr(Hair hair, PlayerBase player)
+		private static string GooTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooRestoreStr(Hair hair, PlayerBase player)
+		private static string GooRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -312,11 +312,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string AnemoneTransformStr(Hair hair, PlayerBase player)
+		private static string AnemoneTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneRestoreStr(Hair hair, PlayerBase player)
+		private static string AnemoneRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -343,11 +343,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string QuillTransformStr(Hair hair, PlayerBase player)
+		private static string QuillTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string QuillRestoreStr(Hair hair, PlayerBase player)
+		private static string QuillRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -375,11 +375,11 @@ public partial class HairType
 		}
 
 
-		private static string SpineTransformStr(Hair hair, PlayerBase player)
+		private static string SpineTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpineRestoreStr(Hair hair, PlayerBase player)
+		private static string SpineRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -406,11 +406,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string PlumeTransformStr(Hair hair, PlayerBase player)
+		private static string PlumeTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PlumeRestoreStr(Hair hair, PlayerBase player)
+		private static string PlumeRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -436,11 +436,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string WoolTransformStr(Hair hair, PlayerBase player)
+		private static string WoolTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WoolRestoreStr(Hair hair, PlayerBase player)
+		private static string WoolRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -467,11 +467,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string VineTransformStr(Hair hair, PlayerBase player)
+		private static string VineTransformStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VineRestoreStr(Hair hair, PlayerBase player)
+		private static string VineRestoreStr(HairData previousHairData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

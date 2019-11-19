@@ -119,8 +119,8 @@ namespace CoC.Backend.BodyParts
 		private readonly int _index;
 
 		private protected ArmType(HandType hand, EpidermisType epidermis,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, TypeAndPlayerDelegate<Arms> playerDesc,
-			ChangeType<Arms> transform, RestoreType<Arms> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, PlayerBodyPartDelegate<Arms> playerDesc,
+			ChangeType<ArmData> transform, RestoreType<ArmData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			handType = hand;
@@ -250,7 +250,7 @@ namespace CoC.Backend.BodyParts
 			internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
 			{
 				FurColor color = defaultColor;
-				if (bodyData.currentType == BodyType.COCKATRICE && !bodyData.main.fur.isEmpty)
+				if (bodyData.type == BodyType.COCKATRICE && !bodyData.main.fur.isEmpty)
 				{
 					color = bodyData.main.fur;
 				}
@@ -276,7 +276,7 @@ namespace CoC.Backend.BodyParts
 
 
 		internal FurArms(HandType hand, FurBasedEpidermisType epidermis, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, TypeAndPlayerDelegate<Arms> playerDesc, ChangeType<Arms> transform, RestoreType<Arms> restore) :
+			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, PlayerBodyPartDelegate<Arms> playerDesc, ChangeType<ArmData> transform, RestoreType<ArmData> restore) :
 			base(hand, epidermis, shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			defaultColor = new FurColor(defaultFurColor);
@@ -319,7 +319,7 @@ namespace CoC.Backend.BodyParts
 		public readonly Tones defaultTone;
 		protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 		internal ToneArms(HandType hand, ToneBasedEpidermisType epidermis, Tones defTone, SkinTexture defaultSkinTexture, bool canChange,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, TypeAndPlayerDelegate<Arms> playerDesc, ChangeType<Arms> transform, RestoreType<Arms> restore) :
+			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> fullDesc, PlayerBodyPartDelegate<Arms> playerDesc, ChangeType<ArmData> transform, RestoreType<ArmData> restore) :
 			base(hand, epidermis, shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			defaultTexture = defaultSkinTexture;
@@ -342,6 +342,9 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermalData primaryEpidermis;
 		public readonly EpidermalData secondaryEpidermis;
 		public readonly HandData handData;
+
+		public bool usesTone => type is ToneArms;
+		public bool usesFur => type is FurArms;
 
 		public ArmData(Arms source) : base(GetID(source), GetBehavior(source))
 		{

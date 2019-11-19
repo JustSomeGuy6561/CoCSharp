@@ -29,13 +29,13 @@ namespace CoC.Backend.BodyParts
 		{
 			return "";
 		}
-		private static string NoneTransformStr(Ovipositor ovipositor, PlayerBase player)
+		private static string NoneTransformStr(OvipositorData previousOvipositorData, PlayerBase player)
 		{
-			return ovipositor.type.restoreString(ovipositor, player);
+			return previousOvipositorData.type.restoredString(previousOvipositorData, player);
 		}
-		private static string NoneRestoreStr(Ovipositor ovipositor, PlayerBase player)
+		private static string NoneRestoreStr(OvipositorData previousOvipositorData, PlayerBase player)
 		{
-			return GlobalStrings.RevertAsDefault(ovipositor, player);
+			return GlobalStrings.RevertAsDefault(previousOvipositorData, player);
 		}
 
 		private static string SpiderShortDesc()
@@ -50,11 +50,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderTransformStr(Ovipositor ovipositor, PlayerBase player)
+		private static string SpiderTransformStr(OvipositorData previousOvipositorData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderRestoreStr(Ovipositor ovipositor, PlayerBase player)
+		private static string SpiderRestoreStr(OvipositorData previousOvipositorData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -71,11 +71,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeTransformStr(Ovipositor ovipositor, PlayerBase player)
+		private static string BeeTransformStr(OvipositorData previousOvipositorData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeRestoreStr(Ovipositor ovipositor, PlayerBase player)
+		private static string BeeRestoreStr(OvipositorData previousOvipositorData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

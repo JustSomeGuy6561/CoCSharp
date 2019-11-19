@@ -196,8 +196,8 @@ namespace CoC.Backend.BodyParts
 		internal readonly EyeChangeDelegate EyeChangeSpecial;
 
 		private protected EyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc, ChangeType<Eyes> transform,
-			RestoreType<Eyes> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, PlayerBodyPartDelegate<Eyes> playerDesc, ChangeType<EyeData> transform,
+			RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
 		{
 			EyeChangeSpecial = eyeChange;
 			eyeCount = numEyes;
@@ -257,8 +257,8 @@ namespace CoC.Backend.BodyParts
 		{
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new BasiliskStare();
-			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, TypeAndPlayerDelegate<Eyes> playerDesc,
-				ChangeType<Eyes> transform, RestoreType<Eyes> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
+			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, PlayerBodyPartDelegate<Eyes> playerDesc,
+				ChangeType<EyeData> transform, RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
 				: base(defaultEyeColor, eyeChange, shortDesc, fullDesc, playerDesc, transform, restore, numEyes, color) { }
 		}
 	}
@@ -277,6 +277,8 @@ namespace CoC.Backend.BodyParts
 			eyeCount = source.eyeCount;
 			scleraColor = source.type.scleraColor;
 		}
+
+		public bool isHeterochromia => leftIrisColor != rightIrisColor;
 	}
 
 }

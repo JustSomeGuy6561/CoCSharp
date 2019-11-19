@@ -50,11 +50,11 @@ public partial class NeckType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonTransformStr(Neck neck, PlayerBase player)
+		private static string DragonTransformStr(NeckData previousNeckData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(Neck neck, PlayerBase player)
+		private static string DragonRestoreStr(NeckData previousNeckData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -70,11 +70,11 @@ public partial class NeckType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceTransformStr(Neck neck, PlayerBase player)
+		private static string CockatriceTransformStr(NeckData previousNeckData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceRestoreStr(Neck neck, PlayerBase player)
+		private static string CockatriceRestoreStr(NeckData previousNeckData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

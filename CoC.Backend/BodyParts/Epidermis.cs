@@ -596,53 +596,53 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		public bool usesFur => currentType.usesFur;
-		public bool usesTone => currentType.usesTone;
+		public bool usesFur => type.usesFur;
+		public bool usesTone => type.usesTone;
 
-		public bool isEmpty => currentType == EpidermisType.EMPTY;
+		public bool isEmpty => type == EpidermisType.EMPTY;
 
-		public FurColor fur => currentType.usesFur ? _fur : new FurColor();
-		public Tones tone => currentType.usesTone ? _tone : Tones.NOT_APPLICABLE;
+		public FurColor fur => type.usesFur ? _fur : new FurColor();
+		public Tones tone => type.usesTone ? _tone : Tones.NOT_APPLICABLE;
 
-		public FurTexture furTexture => currentType.usesFur ? _furTexture : FurTexture.NONDESCRIPT;
-		public SkinTexture skinTexture => currentType.usesTone ? _skinTexture : SkinTexture.NONDESCRIPT;
+		public FurTexture furTexture => type.usesFur ? _furTexture : FurTexture.NONDESCRIPT;
+		public SkinTexture skinTexture => type.usesTone ? _skinTexture : SkinTexture.NONDESCRIPT;
 
 		public string shortDescription()
 		{
-			return currentType.shortDescription();
+			return type.shortDescription();
 		}
 
 		public string fullDescription()
 		{
-			if (currentType == EpidermisType.EMPTY) return "";
-			else if (currentType.usesTone) return fullStr(skinTexture.AsString(), tone, currentType.shortDescription);
-			else return fullStr(furTexture.AsString(), fur, currentType.shortDescription);
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.shortDescription);
+			else return fullStr(furTexture.AsString(), fur, type.shortDescription);
 		}
 
 		public string descriptionWithColor()
 		{
-			if (currentType == EpidermisType.EMPTY) return "";
-			else if (currentType.usesTone) return ColoredStr(tone, currentType.shortDescription);
-			else return ColoredStr(fur, currentType.shortDescription);
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return ColoredStr(tone, type.shortDescription);
+			else return ColoredStr(fur, type.shortDescription);
 		}
 
 		public string justTexture()
 		{
-			if (currentType == EpidermisType.EMPTY) return "";
-			else if (currentType.usesTone) return skinTexture.AsString();
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return skinTexture.AsString();
 			else return furTexture.AsString();
 		}
 
 		public string justColor()
 		{
-			if (currentType == EpidermisType.EMPTY) return "";
-			else if (currentType.usesTone) return tone.AsString();
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return tone.AsString();
 			else return fur.AsString();
 		}
 
 		public bool Equals(EpidermalData other)
 		{
-			return ReferenceEquals(this, other) || (!(other is null) && currentType == other.currentType && fur.Equals(other.fur) && furTexture == other.furTexture &&
+			return ReferenceEquals(this, other) || (!(other is null) && type == other.type && fur.Equals(other.fur) && furTexture == other.furTexture &&
 				tone == other.tone && skinTexture == other.skinTexture);
 		}
 	}

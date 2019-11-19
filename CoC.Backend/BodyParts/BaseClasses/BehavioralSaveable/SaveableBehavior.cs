@@ -36,20 +36,26 @@ namespace CoC.Backend.BodyParts
 
 		//a short description saying the race and type. ex: Hands.CAT: "cat paws"
 		//The full description of this part. 
-		public readonly DescriptorWithArg<ContainerClass> fullDescription;
+		public readonly DescriptorWithArg<ContainerClass> longDescription;
 		//a full description of this part, with flavor text. it will be called whenever the player asks for their description.
-		public readonly TypeAndPlayerDelegate<ContainerClass> playerDescription;
+		public readonly PlayerBodyPartDelegate<ContainerClass> playerDescription;
 
-		public readonly ChangeType<ContainerClass> transformFrom;
-		public readonly RestoreType<ContainerClass> restoreString;
+		//transform from: take old data, which was the previous settings. new data can be obtained from player if needed.
+		//called on the behavior we transformed into.
+		public readonly ChangeType<DataClass> transformFrom;
+
+		//this is called on the behavior we transformed from. 
+		//requires any old data. it should know how it restores the old data based on what it does internally, but if needed it can just get 
+		//any new data from hte player passed in. 
+		public readonly RestoreType<DataClass> restoredString;
 
 		private protected SaveableBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc,
-			TypeAndPlayerDelegate<ContainerClass> playerDesc, ChangeType<ContainerClass> transform, RestoreType<ContainerClass> restore) : base(shortDesc)
+			PlayerBodyPartDelegate<ContainerClass> playerDesc, ChangeType<DataClass> transform, RestoreType<DataClass> restore) : base(shortDesc)
 		{
-			fullDescription = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
+			longDescription = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
 			playerDescription = playerDesc ?? throw new ArgumentNullException(nameof(playerDesc));
 			transformFrom = transform ?? throw new ArgumentNullException(nameof(transform));
-			restoreString = restore ?? throw new ArgumentNullException(nameof(restore));
+			restoredString = restore ?? throw new ArgumentNullException(nameof(restore));
 		}
 
 	}
