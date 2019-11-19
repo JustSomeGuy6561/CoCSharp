@@ -23,7 +23,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "non-existant tail";
 		}
-		protected static string NoTailFullDesc(Tail tail)
+		protected static string NoTailLongDesc(Tail tail)
 		{
 			return "non-existant tail";
 		}
@@ -43,7 +43,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "horse tail";
 		}
-		private static string HorseFullDesc(Tail tail)
+		private static string HorseLongDesc(Tail tail)
 		{
 			return tail.epidermis.shortDescription() + "horse tail";
 		}
@@ -81,7 +81,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "dog tail";
 		}
-		private static string DogFullDesc(Tail tail)
+		private static string DogLongDesc(Tail tail)
 		{
 
 			//return "dog tail";
@@ -124,7 +124,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "demonic tail";
 		}
-		private static string DemonFullDesc(Tail tail)
+		private static string DemonLongDesc(Tail tail)
 		{
 			if (tail.isPierced && Utils.Rand(10) <= 2)
 			{
@@ -171,7 +171,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cow tail";
 		}
-		private static string CowFullDesc(Tail tail)
+		private static string CowLongDesc(Tail tail)
 		{
 			return "cow tail";
 		}
@@ -204,7 +204,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "spider abdomen";
 		}
-		private static string SpiderFullDesc(Tail tail)
+		private static string SpiderLongDesc(Tail tail)
 		{
 			//maybe include venom count indication, idk.
 			return "spider abdomen";
@@ -253,7 +253,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "bee abdomen";
 		}
-		private static string BeeFullDesc(Tail tail)
+		private static string BeeLongDesc(Tail tail)
 		{
 			//maybe include venom count indication, idk.
 			return "bee abdomen";
@@ -296,7 +296,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "shark tail";
 		}
-		private static string SharkFullDesc(Tail tail)
+		private static string SharkLongDesc(Tail tail)
 		{
 			return "rough shark tail";
 		}
@@ -338,7 +338,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cat tail";
 		}
-		private static string CatFullDesc(Tail tail)
+		private static string CatLongDesc(Tail tail)
 		{
 			return "cat tail";
 		}
@@ -393,7 +393,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "lizard tail";
 		}
-		private static string LizardFullDesc(Tail tail)
+		private static string LizardLongDesc(Tail tail)
 		{
 			return "lizard tail";
 		}
@@ -424,7 +424,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "rabbit tail";
 		}
-		private static string RabbitFullDesc(Tail tail)
+		private static string RabbitLongDesc(Tail tail)
 		{
 			return "puffy rabbit tail";
 		}
@@ -446,7 +446,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "harpy tail";
 		}
-		private static string HarpyFullDesc(Tail tail)
+		private static string HarpyLongDesc(Tail tail)
 		{
 			return "feathery harpy tail";
 		}
@@ -468,7 +468,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "kangaroo tail";
 		}
-		private static string KangarooFullDesc(Tail tail)
+		private static string KangarooLongDesc(Tail tail)
 		{
 			return "kangaroo tail";
 		}
@@ -490,7 +490,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "fox tail";
 		}
-		protected static string FoxFullDesc(Tail tail)
+		protected static string FoxLongDesc(Tail tail)
 		{
 			byte count = tail.tailCount;
 			if (count > 5)
@@ -539,7 +539,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "draconic tail";
 		}
-		private static string DragonFullDesc(Tail tail)
+		private static string DragonLongDesc(Tail tail)
 		{
 			return "fierce draconic tail";
 		}
@@ -573,7 +573,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "raccoon tail";
 		}
-		private static string RaccoonFullDesc(Tail tail)
+		private static string RaccoonLongDesc(Tail tail)
 		{
 			return "raccoon tail";
 		}
@@ -594,7 +594,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "mouse tail";
 		}
-		private static string MouseFullDesc(Tail tail)
+		private static string MouseLongDesc(Tail tail)
 		{
 			return "bushy mouse tail";
 		}
@@ -614,7 +614,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "ferret tail";
 		}
-		private static string FerretFullDesc(Tail tail)
+		private static string FerretLongDesc(Tail tail)
 		{
 			return "ferret tail";
 		}
@@ -636,7 +636,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "behemoth tail";
 		}
-		private static string BehemothFullDesc(Tail tail)
+		private static string BehemothLongDesc(Tail tail)
 		{
 			return "behemoth tail";
 		}
@@ -656,7 +656,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "pig tail";
 		}
-		private static string PigFullDesc(Tail tail)
+		private static string PigLongDesc(Tail tail)
 		{
 			return "curly pig tail";
 		}
@@ -676,7 +676,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "scorpion tail";
 		}
-		private static string ScorpionFullDesc(Tail tail)
+		private static string ScorpionLongDesc(Tail tail)
 		{
 			//add venom count flavor text.
 			return "scorpion tail";
@@ -697,7 +697,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "goat tail";
 		}
-		private static string GoatFullDesc(Tail tail)
+		private static string GoatLongDesc(Tail tail)
 		{
 			return "goat tail";
 		}
@@ -717,7 +717,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "rhino tail";
 		}
-		private static string RhinoFullDesc(Tail tail)
+		private static string RhinoLongDesc(Tail tail)
 		{
 			return "rhino tail";
 		}
@@ -737,7 +737,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "echidna tail";
 		}
-		private static string EchidnaFullDesc(Tail tail)
+		private static string EchidnaLongDesc(Tail tail)
 		{
 			return "echidna tail";
 		}
@@ -758,7 +758,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "deer tail";
 		}
-		private static string DeerFullDesc(Tail tail)
+		private static string DeerLongDesc(Tail tail)
 		{
 			return "short deer tail";
 		}
@@ -778,7 +778,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "salamander tail";
 		}
-		private static string SalamanderFullDesc(Tail tail)
+		private static string SalamanderLongDesc(Tail tail)
 		{
 			return "flame-tipped salamander tail";
 		}
@@ -801,7 +801,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolf tail";
 		}
-		private static string WolfFullDesc(Tail tail)
+		private static string WolfLongDesc(Tail tail)
 		{
 			return "wolf tail";
 		}
@@ -822,7 +822,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "sheep tail";
 		}
-		private static string SheepFullDesc(Tail tail)
+		private static string SheepLongDesc(Tail tail)
 		{
 			return "short, fluffy sheep tail";
 		}
@@ -844,7 +844,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "imp tail";
 		}
-		private static string ImpFullDesc(Tail tail)
+		private static string ImpLongDesc(Tail tail)
 		{
 			return "imp tail";
 		}
@@ -867,7 +867,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cockatrice tail";
 		}
-		private static string CockatriceFullDesc(Tail tail)
+		private static string CockatriceLongDesc(Tail tail)
 		{
 			return "cockatrice tail";
 		}
@@ -889,7 +889,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "red-panda tail";
 		}
-		private static string RedPandaFullDesc(Tail tail)
+		private static string RedPandaLongDesc(Tail tail)
 		{
 			return "red-panda tail";
 		}

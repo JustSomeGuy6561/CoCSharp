@@ -235,7 +235,7 @@ namespace CoC.Backend.BodyParts
 			return cupSize - oldSize;
 		}
 
-		public void setCupSize(CupSize size)
+		public void SetCupSize(CupSize size)
 		{
 
 			Utils.ClampEnum(ref size, CupSize.FLAT, CupSize.JACQUES00);

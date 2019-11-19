@@ -322,8 +322,8 @@ Constructor:
 basically, copy-paste this.
 
 private protected BEHAVIOR CLASS(/*add extra variables here as you need them do define this behavior*/
-	SimpleDescriptor desc, DescriptorWithArg<DATA CLASS> fullDesc, TypeAndPlayerDelegate<DATA CLASS> playerDesc,
-	ChangeType<DATA CLASS> transformMessage, RestoreType<DATA CLASS> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
+	SimpleDescriptor desc, DescriptorWithArg<DATA CLASS> longDesc, TypeAndPlayerDelegate<DATA CLASS> playerDesc,
+	ChangeType<DATA CLASS> transformMessage, RestoreType<DATA CLASS> revertToDefault) : base(desc, longDesc, playerDesc, transformMessage, revertToDefault)
 {
 	
 	_index = indexMaker++;

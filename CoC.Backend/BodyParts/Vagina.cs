@@ -724,8 +724,8 @@ namespace CoC.Backend.BodyParts
 
 
 		private VaginaType(int capacityBonus,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Vagina> fullDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
-			ChangeType<VaginaData> transform, RestoreType<VaginaData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Vagina> longDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
+			ChangeType<VaginaData> transform, RestoreType<VaginaData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			typeCapacityBonus = capacityBonus;
@@ -748,9 +748,9 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanFullDesc, VagHumanPlayerStr, (x, y) => x.type.restoredString(x, y), GlobalStrings.RevertAsDefault);
-		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineFullDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
-		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapFullDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
+		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanLongDesc, VagHumanPlayerStr, (x, y) => x.type.restoredString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineLongDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
+		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapLongDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
 
 	}
 

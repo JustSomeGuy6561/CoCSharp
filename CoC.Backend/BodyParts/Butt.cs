@@ -75,10 +75,6 @@ namespace CoC.Backend.BodyParts
 			return new ButtData(creatureID, size);
 		}
 
-		public SimpleDescriptor AsText => AsStr;
-
-		public SimpleDescriptor ShortDescription => ShortDesc;
-
 		public byte GrowButt(byte amount = 1)
 		{
 			byte oldSize = size;
@@ -98,6 +94,8 @@ namespace CoC.Backend.BodyParts
 			size = newSize;
 			return size;
 		}
+
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			//auto-validates data.

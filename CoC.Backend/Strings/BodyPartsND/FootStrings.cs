@@ -19,7 +19,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string HumanFullDesc(Feet feet)
+		public static string HumanLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -28,7 +28,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string HoovesFullDesc(Feet feet)
+		public static string HoovesLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -37,7 +37,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string PawFullDesc(Feet feet)
+		public static string PawLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -46,7 +46,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string NoneFullDesc(Feet feet)
+		public static string NoneLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -55,7 +55,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string DemonHeelFullDesc(Feet feet)
+		public static string DemonHeelLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -64,7 +64,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string DemonClawFullDesc(Feet feet)
+		public static string DemonClawLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -73,7 +73,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string InsectoidFullDesc(Feet feet)
+		public static string InsectoidLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string LizardClawFullDesc(Feet feet)
+		public static string LizardClawLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -91,7 +91,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string BronyFullDesc(Feet feet)
+		public static string BronyLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -100,7 +100,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string RabbitFullDesc(Feet feet)
+		public static string RabbitLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -109,7 +109,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string HarpyTalonFullDesc(Feet feet)
+		public static string HarpyTalonLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -118,7 +118,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string KangarooFullDesc(Feet feet)
+		public static string KangarooLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -127,7 +127,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string DragonClawFullDesc(Feet feet)
+		public static string DragonClawLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -136,7 +136,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string ManderClawFullDesc(Feet feet)
+		public static string ManderClawLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -145,7 +145,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		public static string ImpClawFullDesc(Feet feet)
+		public static string ImpClawLongDesc(Feet feet)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

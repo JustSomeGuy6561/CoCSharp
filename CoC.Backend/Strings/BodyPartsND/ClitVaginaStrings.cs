@@ -49,7 +49,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagHumanFullDesc(Vagina vagina)
+		private static string VagHumanLongDesc(Vagina vagina)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -61,7 +61,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagEquineFullDesc(Vagina vagina)
+		private static string VagEquineLongDesc(Vagina vagina)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -81,7 +81,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagSandTrapFullDesc(Vagina vagina)
+		private static string VagSandTrapLongDesc(Vagina vagina)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

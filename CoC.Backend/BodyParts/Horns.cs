@@ -280,12 +280,12 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		//call the other constructor with defaults set to min.
 		private protected HornType(byte minHorns, byte maximumHorns, byte minLength, byte maxLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform, RestoreType<HornData> restore)
-			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
+			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> longDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform, RestoreType<HornData> restore)
+			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, longDesc, playerDesc, transform, restore) { }
 
 		private protected HornType(byte minimumHorns, byte maximumHorns, byte minLength, byte maxLength, byte defaultHornCount, byte defaultHornLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, PlayerBodyPartDelegate<Horns> playerDesc,
-			ChangeType<HornData> transform, RestoreType<HornData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Horns> longDesc, PlayerBodyPartDelegate<Horns> playerDesc,
+			ChangeType<HornData> transform, RestoreType<HornData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			//Woo data cleanup.
 			maxHorns = Utils.Clamp2(maximumHorns, (byte)0, byte.MaxValue);
@@ -418,14 +418,14 @@ namespace CoC.Backend.BodyParts
 		internal abstract AttackBase GetAttack(Horns horns);
 		internal abstract bool CanAttackWith(Horns horns);
 
-		public static readonly HornType NONE = new SimpleOrNoHorns(0, 0, NoHornsShortDesc, NoHornsFullDesc, NoHornsPlayerStr, NoHornsTransformStr, NoHornsRestoreStr);
+		public static readonly HornType NONE = new SimpleOrNoHorns(0, 0, NoHornsShortDesc, NoHornsLongDesc, NoHornsPlayerStr, NoHornsTransformStr, NoHornsRestoreStr);
 		public static readonly HornType DEMON = new DemonHorns();
 		public static readonly HornType BULL_LIKE = new BullHorns(); //female aware. fuck me. //OLD COW_MINOTAUR
 		public static readonly HornType DRACONIC = new DragonHorns();
 		//Fun fact: female reindeer (aka caribou in North America) grow horns. no other species of deer do that. which leads to the weird distinction here.
 		//I've tried to remove clones, but i think this is the exception. On that note, water deer have long teeth, not horns. I'm, not adding them.
-		public static readonly HornType DEER_ANTLERS = new Antlers(false, 24, DeerShortDesc, DeerFullDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
-		public static readonly HornType REINDEER_ANTLERS = new Antlers(true, 36, ReindeerShortDesc, ReindeerFullDesc, ReindeerPlayerStr, ReindeerTransformStr, ReindeerRestoreStr);
+		public static readonly HornType DEER_ANTLERS = new Antlers(false, 24, DeerShortDesc, DeerLongDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
+		public static readonly HornType REINDEER_ANTLERS = new Antlers(true, 36, ReindeerShortDesc, ReindeerLongDesc, ReindeerPlayerStr, ReindeerTransformStr, ReindeerRestoreStr);
 
 		//Strangely enough, GOAT horns are used for satyrs (and only satyrs) though in-game enemy satyrs attack as if they have ram's horms. stranger still, the PC grows standard goat horns,
 		//But does not gain the ability to head-butt like satyrs do in game. IDK man.
@@ -434,14 +434,14 @@ namespace CoC.Backend.BodyParts
 		public static readonly HornType RHINO = new RhinoHorn();
 		public static readonly HornType SHEEP = new SheepHorns(); //female aware. see above. //OLD SHEEP, RAM
 
-		public static readonly HornType IMP = new SimpleOrNoHorns(2, 3, ImpShortDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);//"a pair of short, imp-like horns");
+		public static readonly HornType IMP = new SimpleOrNoHorns(2, 3, ImpShortDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);//"a pair of short, imp-like horns");
 		#endregion
 		//these horns are immutable - if you have them, they do not grow or shrink, and you can't get any more of them.
 		private class SimpleOrNoHorns : HornType
 		{
 			public SimpleOrNoHorns(byte hornCount, byte hornLength,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform,
-				RestoreType<HornData> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, fullDesc, playerDesc, transform, restore) { }
+				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> longDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform,
+				RestoreType<HornData> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, longDesc, playerDesc, transform, restore) { }
 
 			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity, bool uniform = false)
 			{
@@ -462,7 +462,7 @@ namespace CoC.Backend.BodyParts
 
 		private class DemonHorns : HornType
 		{
-			public DemonHorns() : base(2, 12, 2, 10, DemonShortDesc, DemonFullDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr) { }
+			public DemonHorns() : base(2, 12, 2, 10, DemonShortDesc, DemonLongDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr) { }
 
 			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool uniform = false)
 			{
@@ -524,7 +524,7 @@ namespace CoC.Backend.BodyParts
 		private class BullHorns : HornType
 		{
 			private static readonly byte maxFeminineLength = 5;
-			public BullHorns() : base(2, 2, 2, MAX_HORN_LENGTH, BullShortDesc, BullFullDesc, BullPlayerStr, BullTransformStr, BullRestoreStr)
+			public BullHorns() : base(2, 2, 2, MAX_HORN_LENGTH, BullShortDesc, BullLongDesc, BullPlayerStr, BullTransformStr, BullRestoreStr)
 			{
 				if (minHornLength > maxFeminineLength)
 				{
@@ -780,7 +780,7 @@ namespace CoC.Backend.BodyParts
 
 		private class DragonHorns : HornType
 		{
-			public DragonHorns() : base(2, 4, 4, 12, DragonShortDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr) { }
+			public DragonHorns() : base(2, 4, 4, 12, DragonShortDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr) { }
 
 			//video game logic, idk: horns can be shrunk via reducto, but since reducto cant remove horns (except antlers), you just keep 4 horns. 
 			//which means that it is technically valid to have four horns, with the first two tiny af. 
@@ -857,8 +857,8 @@ namespace CoC.Backend.BodyParts
 		{
 			private readonly bool isReindeer;
 			public Antlers(bool reindeer, byte maxLength,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> fullDesc, PlayerBodyPartDelegate<Horns> playerDesc,
-				ChangeType<HornData> transform, RestoreType<HornData> restore) : base(2, 20, 6, maxLength, shortDesc, fullDesc, playerDesc, transform, restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<Horns> longDesc, PlayerBodyPartDelegate<Horns> playerDesc,
+				ChangeType<HornData> transform, RestoreType<HornData> restore) : base(2, 20, 6, maxLength, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				isReindeer = reindeer;
 			}
@@ -985,7 +985,7 @@ namespace CoC.Backend.BodyParts
 
 		private class GoatHorns : HornType
 		{
-			public GoatHorns() : base(2, 2, 1, 6, GoatShortDesc, GoatFullDesc, GoatPlayerStr, GoatTransformStr, GoatRestoreStr) { }
+			public GoatHorns() : base(2, 2, 1, 6, GoatShortDesc, GoatLongDesc, GoatPlayerStr, GoatTransformStr, GoatRestoreStr) { }
 
 			internal override bool AllowsReducto => true;
 
@@ -1070,7 +1070,7 @@ namespace CoC.Backend.BodyParts
 		//Get it? That made me laugh way harder than it should have (which is not at all).
 		private class UniHorn : HornType
 		{
-			public UniHorn() : base(1, 1, 6, 12, UniHornShortDesc, UniHornFullDesc, UniHornPlayerStr, UniHornTransformStr, UniHornRestoreStr) { }
+			public UniHorn() : base(1, 1, 6, 12, UniHornShortDesc, UniHornLongDesc, UniHornPlayerStr, UniHornTransformStr, UniHornRestoreStr) { }
 
 			internal override bool AllowsReducto => true;
 
@@ -1133,7 +1133,7 @@ namespace CoC.Backend.BodyParts
 
 		private class RhinoHorn : HornType
 		{
-			public RhinoHorn() : base(1, 2, 6, 12, RhinoShortDesc, RhinoFullDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr) { }
+			public RhinoHorn() : base(1, 2, 6, 12, RhinoShortDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr) { }
 
 			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity, bool uniform)
 			{
@@ -1221,7 +1221,7 @@ namespace CoC.Backend.BodyParts
 		{
 			private static readonly byte maxFeminineLength = 7;
 
-			public SheepHorns() : base(2, 2, 2, 30, SheepShortDesc, SheepFullDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr)
+			public SheepHorns() : base(2, 2, 2, 30, SheepShortDesc, SheepLongDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr)
 			{
 				if (minHornLength > maxFeminineLength)
 				{

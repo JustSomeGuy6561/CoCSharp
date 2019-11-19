@@ -209,9 +209,6 @@ namespace CoC.Backend.BodyParts
 		public bool virgin { get; private set; } = true;
 		public bool everPracticedAnal { get; private set; } = false;
 
-		public SimpleDescriptor shortDescription => shortDesc;
-		public SimpleDescriptor fullDescription => fullDesc;
-
 		#region Constructor
 		internal Ass(Guid creatureID) : base(creatureID)
 		{

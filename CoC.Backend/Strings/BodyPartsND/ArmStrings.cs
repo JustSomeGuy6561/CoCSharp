@@ -22,7 +22,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "human arms";
 		}
-		private static string HumanFullDesc(Arms arm)
+		private static string HumanLongDesc(Arms arm)
 		{
 			return HumanDescStr();
 		}
@@ -42,7 +42,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "feathered arms";
 		}
-		private static string HarpyFullDesc(Arms arm)
+		private static string HarpyLongDesc(Arms arm)
 		{
 			return arm.epidermis.justColor() + " feathered arms";
 		}
@@ -83,7 +83,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "spider arms";
 		}
-		private static string SpiderFullDesc(Arms arm)
+		private static string SpiderLongDesc(Arms arm)
 		{
 			return "chitinous " + arm.epidermis.justColor() + " spider arms";
 		}
@@ -120,7 +120,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "fuzzy bee arms";
 		}
-		private static string BeeFullDesc(Arms arm)
+		private static string BeeLongDesc(Arms arm)
 		{
 			return BeeDescStr();
 		}
@@ -166,7 +166,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "draconic arms";
 		}
-		private static string DragonFullDesc(Arms arm)
+		private static string DragonLongDesc(Arms arm)
 		{
 			return DragonDescStr();
 		}
@@ -194,7 +194,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "predator arms";
 		}
-		private static string ImpFullDesc(Arms arm)
+		private static string ImpLongDesc(Arms arm)
 		{
 			return arm.epidermis.justColor() + " predator arms ending in imp claws";
 		}
@@ -231,7 +231,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "predator arms";
 		}
-		private static string LizardFullDesc(Arms arm)
+		private static string LizardLongDesc(Arms arm)
 		{
 			return "predator arms with " + arm.hands.fullDescription();
 
@@ -260,7 +260,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "salamader arms";
 		}
-		private static string SalamanderFullDesc(Arms arm)
+		private static string SalamanderLongDesc(Arms arm)
 		{
 			return "salamander arms with " + arm.hands.fullDescription();
 		}
@@ -285,7 +285,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolfen arms";
 		}
-		private static string WolfFullDesc(Arms arm)
+		private static string WolfLongDesc(Arms arm)
 		{
 			return "wolf-like arms and " + arm.hands.shortDescription();
 		}
@@ -340,7 +340,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "feathery arms";
 		}
-		private static string CockatriceFullDesc(Arms arm)
+		private static string CockatriceLongDesc(Arms arm)
 		{
 			return arm.epidermis.fur.AsString() + ", feathered cockatrice arms with " + arm.hands.fullDescription();
 		}
@@ -371,7 +371,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "panda-arms";
 		}
-		private static string RedPandaFullDesc(Arms arm)
+		private static string RedPandaLongDesc(Arms arm)
 		{
 			return arm.epidermis.fullDescription() + "panda-arms";
 		}
@@ -391,7 +391,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretFullDesc(Arms arm)
+		private static string FerretLongDesc(Arms arm)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -413,7 +413,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatFullDesc(Arms arm)
+		private static string CatLongDesc(Arms arm)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -433,7 +433,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogFullDesc(Arms arm)
+		private static string DogLongDesc(Arms arm)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -486,7 +486,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxFullDesc(Arms arm)
+		private static string FoxLongDesc(Arms arm)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -507,7 +507,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooFullDesc(Arms arms)
+		private static string GooLongDesc(Arms arms)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

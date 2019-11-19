@@ -170,7 +170,7 @@ public partial class HairType
 		{
 			return "bald head";
 		}
-		private static string NoHairFullDesc(Hair hair)
+		private static string NoHairLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -200,9 +200,9 @@ public partial class HairType
 		{
 			return "hair";
 		}
-		private static string NormalFullDesc(Hair hair)
+		private static string NormalLongDesc(Hair hair)
 		{
-			return DefaultFullDesc(hair, NormalDesc());
+			return DefaultLongDesc(hair, NormalDesc());
 		}
 
 		private static string NormalPlayerStr(Hair hair, PlayerBase player)
@@ -231,7 +231,7 @@ public partial class HairType
 		{
 			return "hair-feathers";
 		}
-		private static string FeatherFullDesc(Hair hair)
+		private static string FeatherLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -264,7 +264,7 @@ public partial class HairType
 			return "gooey hair";
 		}
 
-		private static string GooFullDesc(Hair hair)
+		private static string GooLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -294,7 +294,7 @@ public partial class HairType
 		{
 			return "hair-like tendrils";
 		}
-		private static string AnemoneFullDesc(Hair hair)
+		private static string AnemoneLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -325,7 +325,7 @@ public partial class HairType
 			return "quill-hair";
 		}
 
-		private static string QuillFullDesc(Hair hair)
+		private static string QuillLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -356,7 +356,7 @@ public partial class HairType
 			return "basilisk spines";
 		}
 
-		private static string SpineFullDesc(Hair hair)
+		private static string SpineLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -388,7 +388,7 @@ public partial class HairType
 			return "basilisk plume";
 		}
 
-		private static string PlumeFullDesc(Hair hair)
+		private static string PlumeLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -418,7 +418,7 @@ public partial class HairType
 		{
 			return "woolen hair";
 		}
-		private static string WoolFullDesc(Hair hair)
+		private static string WoolLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -449,7 +449,7 @@ public partial class HairType
 			return "leafy vines";
 		}
 
-		private static string VineFullDesc(Hair hair)
+		private static string VineLongDesc(Hair hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -476,7 +476,7 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string DefaultFullDesc(Hair hair, string shortDesc)
+		private static string DefaultLongDesc(Hair hair, string shortDesc)
 		{
 			if (hair.length == 0) return Utils.RandomChoice("shaved", "bald", "smooth", "hairless", "glabrous") + " head";
 

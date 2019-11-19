@@ -196,8 +196,8 @@ namespace CoC.Backend.BodyParts
 		internal readonly EyeChangeDelegate EyeChangeSpecial;
 
 		private protected EyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, PlayerBodyPartDelegate<Eyes> playerDesc, ChangeType<EyeData> transform,
-			RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> longDesc, PlayerBodyPartDelegate<Eyes> playerDesc, ChangeType<EyeData> transform,
+			RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			EyeChangeSpecial = eyeChange;
 			eyeCount = numEyes;
@@ -243,23 +243,23 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		public static EyeType HUMAN = new EyeType(DefaultValueHelpers.defaultHumanEyeColor, HumanEyeChange, HumanShortStr, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: ScleraColor.WHITE);
-		public static EyeType SPIDER = new EyeType(DefaultValueHelpers.defaultSpiderEyeColor, SpiderEyeChange, SpiderShortStr, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
-		public static EyeType SAND_TRAP = new EyeType(DefaultValueHelpers.defaultSandTrapEyeColor, SandTrapEyeChange, SandTrapShortStr, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: ScleraColor.BLACK);
-		public static EyeType LIZARD = new EyeType(DefaultValueHelpers.defaultLizardEyeColor, LizardEyeChange, LizardShortStr, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static EyeType DRAGON = new EyeType(DefaultValueHelpers.defaultDragonEyeColor, DragonEyeChange, DragonShortStr, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static EyeType BASILISK = new StoneStareEyeType(DefaultValueHelpers.defaultBasiliskEyeColor, BasiliskEyeChange, BasiliskShortStr, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
-		public static EyeType WOLF = new EyeType(DefaultValueHelpers.defaultWolfEyeColor, WolfEyeChange, WolfShortStr, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static EyeType COCKATRICE = new StoneStareEyeType(DefaultValueHelpers.defaultCockatriceEyeColor, CockatriceEyeChange, CockatriceShortStr, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
-		public static EyeType CAT = new EyeType(DefaultValueHelpers.defaultCatEyeColor, CatEyeChange, CatShortStr, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static EyeType HUMAN = new EyeType(DefaultValueHelpers.defaultHumanEyeColor, HumanEyeChange, HumanShortStr, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: ScleraColor.WHITE);
+		public static EyeType SPIDER = new EyeType(DefaultValueHelpers.defaultSpiderEyeColor, SpiderEyeChange, SpiderShortStr, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
+		public static EyeType SAND_TRAP = new EyeType(DefaultValueHelpers.defaultSandTrapEyeColor, SandTrapEyeChange, SandTrapShortStr, SandTrapLongDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: ScleraColor.BLACK);
+		public static EyeType LIZARD = new EyeType(DefaultValueHelpers.defaultLizardEyeColor, LizardEyeChange, LizardShortStr, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static EyeType DRAGON = new EyeType(DefaultValueHelpers.defaultDragonEyeColor, DragonEyeChange, DragonShortStr, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static EyeType BASILISK = new StoneStareEyeType(DefaultValueHelpers.defaultBasiliskEyeColor, BasiliskEyeChange, BasiliskShortStr, BasiliskLongDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
+		public static EyeType WOLF = new EyeType(DefaultValueHelpers.defaultWolfEyeColor, WolfEyeChange, WolfShortStr, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static EyeType COCKATRICE = new StoneStareEyeType(DefaultValueHelpers.defaultCockatriceEyeColor, CockatriceEyeChange, CockatriceShortStr, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static EyeType CAT = new EyeType(DefaultValueHelpers.defaultCatEyeColor, CatEyeChange, CatShortStr, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 
 		private class StoneStareEyeType : EyeType
 		{
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new BasiliskStare();
-			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> fullDesc, PlayerBodyPartDelegate<Eyes> playerDesc,
+			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> longDesc, PlayerBodyPartDelegate<Eyes> playerDesc,
 				ChangeType<EyeData> transform, RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
-				: base(defaultEyeColor, eyeChange, shortDesc, fullDesc, playerDesc, transform, restore, numEyes, color) { }
+				: base(defaultEyeColor, eyeChange, shortDesc, longDesc, playerDesc, transform, restore, numEyes, color) { }
 		}
 	}
 

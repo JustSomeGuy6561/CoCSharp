@@ -58,8 +58,8 @@ namespace CoC.Backend.BodyParts
 
 
 		//C# 7.2 magic. basically, prevents it from being messed with except internally.
-		private AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> fullDesc, PlayerBodyPartDelegate<Antennae> playerDesc,
-			ChangeType<AntennaeData> transformMessage, RestoreType<AntennaeData> revertToDefault) : base(desc, fullDesc, playerDesc, transformMessage, revertToDefault)
+		private AntennaeType(SimpleDescriptor desc, DescriptorWithArg<Antennae> longDesc, PlayerBodyPartDelegate<Antennae> playerDesc,
+			ChangeType<AntennaeData> transformMessage, RestoreType<AntennaeData> revertToDefault) : base(desc, longDesc, playerDesc, transformMessage, revertToDefault)
 		{
 			_index = indexMaker++;
 			antennaes.AddAt(this, _index);
@@ -105,10 +105,10 @@ namespace CoC.Backend.BodyParts
 		//with doing that to everything in here. do use lambdas if you need something not there or you want to use the empty string. 
 		public static readonly AntennaeType NONE = new AntennaeType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
 
-		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeFullDesc,
+		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeLongDesc,
 			(x, y) => BeePlayer(y), BeeTransform, BeeRestore);
 
-		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceFullDesc,
+		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceLongDesc,
 			(x, y) => CockatricePlayer(y), CockatriceTransform, CockatriceRestore);
 	}
 

@@ -39,8 +39,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private byte _hipSize;
-		public SimpleDescriptor AsText => AsStr;
-		public SimpleDescriptor ShortDescription => ShortDesc;
+		public SimpleDescriptor AsText => HipAdjective;
 
 		internal Hips(Guid creatureID) : this(creatureID, AVERAGE)
 		{

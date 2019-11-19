@@ -247,8 +247,8 @@ namespace CoC.Backend.BodyParts
 		internal virtual SimpleDescriptor dyeText => GenericLocDesc;
 		public virtual bool hasSpecialEpidermis => false; //replaces usesHair, as we now have types that can use tones. we've fixed this with a single epidermis here.
 
-		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, PlayerBodyPartDelegate<Back> playerDesc,
-			ChangeType<BackData> transform, RestoreType<BackData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<Back> longDesc, PlayerBodyPartDelegate<Back> playerDesc,
+			ChangeType<BackData> transform, RestoreType<BackData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			backs.AddAt(this, _index);
@@ -309,11 +309,11 @@ namespace CoC.Backend.BodyParts
 
 		static BackType()
 		{
-			NORMAL = new BackType(NormalDesc, NormalFullDesc, NormalPlayerStr, NormalTransformStr, NormalRestoreStr);
+			NORMAL = new BackType(NormalDesc, NormalLongDesc, NormalPlayerStr, NormalTransformStr, NormalRestoreStr);
 			DRACONIC_MANE = new DragonBackMane();
-			DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesFullDesc, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
-			SHARK_FIN = new BackType(SharkFinDesc, SharkFinFullDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
-			TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TenderilFullDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
+			DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesLongDesc, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
+			SHARK_FIN = new BackType(SharkFinDesc, SharkFinLongDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
+			TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TenderilLongDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
 			BEHEMOTH = new BehemothBack();
 		}
 	}
@@ -325,7 +325,7 @@ namespace CoC.Backend.BodyParts
 
 		public override bool hasSpecialEpidermis => true;
 
-		internal DragonBackMane() : base(DraconicManeDesc, DraconicManeFullDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr)
+		internal DragonBackMane() : base(DraconicManeDesc, DraconicManeLongDesc, DraconicManePlayerStr, DraconicManeTransformStr, DraconicManeRestoreStr)
 		{ }
 
 		internal override void ParseEpidermis(Epidermis epidermis)
@@ -345,7 +345,7 @@ namespace CoC.Backend.BodyParts
 
 		public override bool hasSpecialEpidermis => true;
 
-		internal BehemothBack() : base(BehemothDesc, BehemothFullDesc, BehemothPlayerStr, BehemothTransformStr, BehemothRestoreStr)
+		internal BehemothBack() : base(BehemothDesc, BehemothLongDesc, BehemothPlayerStr, BehemothTransformStr, BehemothRestoreStr)
 		{ }
 
 		internal override void ParseEpidermis(Epidermis epidermis)
@@ -363,8 +363,8 @@ namespace CoC.Backend.BodyParts
 		//BUT, given a callback to the resources, we can generate the attack here, using another callback. Clarity dictates i not do this, but fuck it.
 		private readonly GenerateResourceAttack getAttack; //a callback. takes another callback (that returns a ushort), and returns an attack that requires resources.
 		internal AttackableBackType(GenerateResourceAttack attackGetter, EpidermalData appearance,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Back> fullDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
-			: base(shortDesc, fullDesc, playerDesc, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<Back> longDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
+			: base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			getAttack = attackGetter ?? throw new ArgumentNullException(nameof(attackGetter));
 			baseAppearance = appearance ?? throw new ArgumentNullException(nameof(baseAppearance));

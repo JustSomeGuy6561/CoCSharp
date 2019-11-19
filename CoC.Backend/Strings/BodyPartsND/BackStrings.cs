@@ -31,7 +31,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NormalFullDesc(Back back)
+		private static string NormalLongDesc(Back back)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -61,7 +61,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string DraconicManeFullDesc(Back back)
+		protected static string DraconicManeLongDesc(Back back)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -81,7 +81,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DraconicSpikesFullDesc(Back back)
+		private static string DraconicSpikesLongDesc(Back back)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -101,7 +101,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkFinFullDesc(Back back)
+		private static string SharkFinLongDesc(Back back)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -124,7 +124,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string TenderilFullDesc(Back back)
+		private static string TenderilLongDesc(Back back)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -145,7 +145,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string BehemothFullDesc(Back back)
+		protected static string BehemothLongDesc(Back back)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

@@ -4,13 +4,14 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Genitals
 	{
+		#region Common
 		internal bool TreatAllFluidsAsIfAtMaxLust
 		{
 			get => _treatAllFluidsAsIfAtMaxLust;
 			set => _treatAllFluidsAsIfAtMaxLust = value;
 		}
 		private bool _treatAllFluidsAsIfAtMaxLust;
-
+		#endregion
 
 		#region Cocks
 		internal float NewCockSizeDelta
@@ -58,7 +59,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private sbyte _perkBonusVirility;
 
-		private CockPerkHelper GetCockPerkData()
+		private CockPerkHelper GetCockPerkWrapper()
 		{
 			return new CockPerkHelper(NewCockDefaultSize, NewCockSizeDelta, MinCockLength);
 		}
@@ -142,7 +143,7 @@ namespace CoC.Backend.BodyParts
 		private float _MinClitSize = Clit.MIN_CLIT_SIZE;
 		#endregion
 
-		private VaginaPerkHelper GetVaginaPerkData()
+		private VaginaPerkHelper GetVaginaPerkWrapper()
 		{
 			return new VaginaPerkHelper(NewClitSizeDelta, ClitGrowthMultiplier, ClitShrinkMultiplier, MinNewClitSize, MinClitSize, defaultNewVaginaWetness,
 				defaultNewVaginaLooseness, perkBonusVaginalCapacity, minVaginalLooseness, maxVaginalLooseness, minVaginalWetness, maxVaginalWetness);
@@ -224,7 +225,7 @@ namespace CoC.Backend.BodyParts
 		private float _NewNippleDefaultLength = Nipples.MIN_NIPPLE_LENGTH;
 		#endregion
 
-		private BreastPerkHelper GetBreastPerkData()
+		private BreastPerkHelper GetBreastPerkWrapper()
 		{
 			return new BreastPerkHelper(FemaleNewCupDelta, FemaleNewDefaultCup, MaleNewCupDelta, MaleNewDefaultCup, FemaleMinCup, MaleMinCup, TitsGrowthMultiplier,
 				TitsShrinkMultiplier, NewNippleSizeDelta, NippleGrowthMultiplier, NippleShrinkMultiplier, NewNippleDefaultLength, unlockedDickNipples);

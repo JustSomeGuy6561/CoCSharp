@@ -136,7 +136,7 @@ namespace CoC.Backend.BodyParts
 		public static TongueType defaultValue => HUMAN;
 
 
-		private protected TongueType(ushort tongueLength, float tongueWidth, SimpleDescriptor shortDesc, DescriptorWithArg<Tongue> fullDesc, PlayerBodyPartDelegate<Tongue> playerDesc, ChangeType<TongueData> transform, RestoreType<TongueData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+		private protected TongueType(ushort tongueLength, float tongueWidth, SimpleDescriptor shortDesc, DescriptorWithArg<Tongue> longDesc, PlayerBodyPartDelegate<Tongue> playerDesc, ChangeType<TongueData> transform, RestoreType<TongueData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			tongues.AddAt(this, _index);
@@ -181,13 +181,13 @@ namespace CoC.Backend.BodyParts
 		//these widths are arbitrary af, so feel free to alter them. i figured the snake tongue should be really narrow, and available for cock sounding if you really want that. 
 		//though i suppose with a large enough cock any of these would be viable. also the length is the distance out of the mouth it can travel. add like 4 inches for full length if 
 		//you're deepthroating or some shit, idk. 
-		public static readonly TongueType HUMAN = new TongueType(4, 2.5f, HumanDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly TongueType SNAKE = new TongueType(6, 0.25f, SnakeDesc, SnakeFullDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr);
-		public static readonly TongueType DEMONIC = new TongueType(24, 2.5f, DemonicDesc, DemonicFullDesc, DemonicPlayerStr, DemonicTransformStr, DemonicRestoreStr);
-		public static readonly TongueType DRACONIC = new TongueType(48, 2.5f, DraconicDesc, DraconicFullDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
-		public static readonly TongueType ECHIDNA = new TongueType(12, 1f, EchidnaDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
-		public static readonly TongueType LIZARD = new TongueType(12, 1f, LizardDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly TongueType CAT = new TongueType(4, 2f, CatDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly TongueType HUMAN = new TongueType(4, 2.5f, HumanDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly TongueType SNAKE = new TongueType(6, 0.25f, SnakeDesc, SnakeLongDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr);
+		public static readonly TongueType DEMONIC = new TongueType(24, 2.5f, DemonicDesc, DemonicLongDesc, DemonicPlayerStr, DemonicTransformStr, DemonicRestoreStr);
+		public static readonly TongueType DRACONIC = new TongueType(48, 2.5f, DraconicDesc, DraconicLongDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
+		public static readonly TongueType ECHIDNA = new TongueType(12, 1f, EchidnaDesc, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
+		public static readonly TongueType LIZARD = new TongueType(12, 1f, LizardDesc, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static readonly TongueType CAT = new TongueType(4, 2f, CatDesc, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 	}
 
 	public static class TongueHelpers

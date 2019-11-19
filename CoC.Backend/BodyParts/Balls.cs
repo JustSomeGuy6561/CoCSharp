@@ -109,7 +109,7 @@ namespace CoC.Backend.BodyParts
 			else return GlobalStrings.None();
 		}
 
-		public DescriptorWithArg<Balls> FullDescription => BallsFullDesc;
+		public DescriptorWithArg<Balls> FullDescription => BallsLongDesc;
 		public PlayerBodyPartDelegate<Balls> PlayerStr => BallsPlayerStr;
 
 		#region Unique Functions and Updating Properties
@@ -181,7 +181,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal byte addBalls(byte addAmount)
+		internal byte AddBalls(byte addAmount)
 		{
 			Utils.Clamp(ref addAmount, (byte)0, MAX_BALLS_COUNT);
 
@@ -199,7 +199,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//
-		internal byte removeBalls(byte removeAmount)
+		internal byte RemoveBalls(byte removeAmount)
 		{
 			Utils.Clamp(ref removeAmount, (byte)0, MAX_BALLS_COUNT);
 			if (!hasBalls || removeAmount == 0)
@@ -220,6 +220,12 @@ namespace CoC.Backend.BodyParts
 				return oldCount.subtract(count);
 			}
 		}
+
+		internal byte RemoveExtraBalls()
+		{
+			return RemoveBalls(count.subtract(2));
+		}
+
 		internal bool removeAllBalls()
 		{
 			if (!hasBalls)

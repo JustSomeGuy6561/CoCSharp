@@ -4,6 +4,7 @@
 //1/5/2019, 3:05 AM
 
 
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 using System.Text;
@@ -67,6 +68,26 @@ namespace CoC.Backend.BodyParts
 					return "dry";
 			}
 		}
+
+		public static string AsDescriptor(this AnalWetness analWetness)
+		{
+			switch (analWetness)
+			{
+				case AnalWetness.SLIME_DROOLING:
+					return "slime-drooling";
+				case AnalWetness.DROOLING:
+					return "drooling";
+				case AnalWetness.SLIMY:
+					return "slimy";
+				case AnalWetness.MOIST:
+					return "moist";
+				case AnalWetness.DAMP:
+					return "damp";
+				case AnalWetness.NORMAL:
+				default:
+					return "dry";
+			}
+		}
 	}
 
 	public sealed partial class Ass
@@ -76,12 +97,12 @@ namespace CoC.Backend.BodyParts
 			return "Ass";
 		}
 
-		private string shortDesc()
+		public string ShortDescription()
 		{
 			return AssDesc(false);
 		}
 
-		private string fullDesc()
+		public string LongDescription()
 		{
 			return AssDesc(true);
 		}
@@ -91,17 +112,17 @@ namespace CoC.Backend.BodyParts
 			StringBuilder sb = new StringBuilder();
 			//virgin looseness: 100%
 
-			if (full || Utils.Rand(4) == 0)
+			if (full || virgin || Utils.Rand(4) == 0)
 			{
 				sb.Append(looseness.AsDescriptor());
 			}
-			if (wetness > AnalWetness.DAMP && (full || Utils.Rand(3) != 0))
+			if (wetness > AnalWetness.DAMP && (full || virgin || Utils.Rand(3) != 0))
 			{
 				if (sb.Length != 0)
 				{
 					sb.Append(", ");
 				}
-				sb.Append(wetness.AsText());
+				sb.Append(wetness.AsDescriptor());
 			}
 			if (!everPracticedAnal)
 			{
@@ -109,7 +130,7 @@ namespace CoC.Backend.BodyParts
 				{
 					sb.Append(" ");
 				}
-				sb.Append("untounched");
+				sb.Append("true virgin");
 			}
 			else if (virgin)
 			{
@@ -135,14 +156,10 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		//private string assFullDescription()
-		//{
-
-		//}
-		//private string assPlayerStr(Player player)
-		//{
-
-		//}
+		public string PlayerString(PlayerBase player)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
 
 		private string AssTightenedUpDueToInactivity(AnalLooseness currentLooseness)
 		{
@@ -159,7 +176,7 @@ namespace CoC.Backend.BodyParts
 			{
 				recoverText = " recovers from the brutal stretching it has received and tightens up.";
 			}
-			return Environment.NewLine + SafelyFormattedString.FormattedText("Your " + shortDesc() + recoverText, StringFormats.BOLD) + Environment.NewLine;
+			return Environment.NewLine + SafelyFormattedString.FormattedText("Your " + ShortDescription() + recoverText, StringFormats.BOLD) + Environment.NewLine;
 		}
 	}
 

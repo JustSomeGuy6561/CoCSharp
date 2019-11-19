@@ -672,9 +672,9 @@ namespace CoC.Backend.BodyParts
 		public abstract bool canStyle { get; } //lets you prevent styling. 
 
 		public abstract bool canDye { get; }
-		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, PlayerBodyPartDelegate<Hair> playerDesc,
+		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<Hair> longDesc, PlayerBodyPartDelegate<Hair> playerDesc,
 			SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
-			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, fullDesc, playerDesc, transform, restore)
+			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			hairTypes.AddAt(this, _index);
@@ -738,18 +738,18 @@ namespace CoC.Backend.BodyParts
 
 		public static readonly HairType NO_HAIR = new NoHair(); //0.0
 		public static readonly HairType NORMAL = new NormalHair();
-		public static readonly HairType FEATHER = new GenericHairType(HairFurColors.WHITE, 5.0f, KeepSize(), FeatherDesc, FeatherFullDesc, FeatherPlayerStr, FeatherGrowStr, FeatherCutStr, FeatherTransformStr, FeatherRestoreStr);
-		public static readonly HairType GOO = new GenericHairType(HairFurColors.CERULEAN, 5.0f, AtLeastThisBig(5.0f), GooDesc, GooFullDesc, GooPlayerStr, GooGrowStr, GooCutStr, GooTransformStr, GooRestoreStr); //5 is if bald. updating behavior to <5 or bald to 5 inch. just say your old type 
-		public static readonly HairType ANEMONE = new LivingHair(DefaultValueHelpers.defaultAnemoneHair, 8.0f, new AnemoneSting(), AnemoneDesc, AnemoneFullDesc, AnemonePlayerStr, AnemoneNoGrowStr, AnemoneNoCutStr, AnemoneTransformStr, AnemoneRestoreStr);
-		public static readonly HairType QUILL = new GenericHairType(HairFurColors.WHITE, 12.0f, SetTo(12.0f), QuillDesc, QuillFullDesc, QuillPlayerStr, QuillGrowStr, QuillCutStr, QuillTransformStr, QuillRestoreStr); //shoulder length. not set though. whoops.
+		public static readonly HairType FEATHER = new GenericHairType(HairFurColors.WHITE, 5.0f, KeepSize(), FeatherDesc, FeatherLongDesc, FeatherPlayerStr, FeatherGrowStr, FeatherCutStr, FeatherTransformStr, FeatherRestoreStr);
+		public static readonly HairType GOO = new GenericHairType(HairFurColors.CERULEAN, 5.0f, AtLeastThisBig(5.0f), GooDesc, GooLongDesc, GooPlayerStr, GooGrowStr, GooCutStr, GooTransformStr, GooRestoreStr); //5 is if bald. updating behavior to <5 or bald to 5 inch. just say your old type 
+		public static readonly HairType ANEMONE = new LivingHair(DefaultValueHelpers.defaultAnemoneHair, 8.0f, new AnemoneSting(), AnemoneDesc, AnemoneLongDesc, AnemonePlayerStr, AnemoneNoGrowStr, AnemoneNoCutStr, AnemoneTransformStr, AnemoneRestoreStr);
+		public static readonly HairType QUILL = new GenericHairType(HairFurColors.WHITE, 12.0f, SetTo(12.0f), QuillDesc, QuillLongDesc, QuillPlayerStr, QuillGrowStr, QuillCutStr, QuillTransformStr, QuillRestoreStr); //shoulder length. not set though. whoops.
 		public static readonly HairType BASILISK_SPINES = new BasiliskSpines();
-		public static readonly HairType BASILISK_PLUME = new GenericHairType(DefaultValueHelpers.defaultBasiliskPlume, 2.0f, SetTo(2.0f), PlumeDesc, PlumeFullDesc, PlumePlayerStr, PlumeGrowStr, PlumeCutStr, PlumeTransformStr, PlumeRestoreStr); //2
-		public static readonly HairType WOOL = new GenericHairType(HairFurColors.WHITE, 1.0f, KeepSizeUnlessBald(1.0f), WoolDesc, WoolFullDesc, WoolPlayerStr, WoolGrowStr, WoolCutStr, WoolTransformStr, WoolRestoreStr); //not defined. 
-		public static readonly HairType LEAF = new LivingHair(DefaultValueHelpers.defaultVineColor, 12.0f, AttackBase.NO_ATTACK, VineDesc, VineFullDesc, VinePlayerStr, VineNoGrowStr, VineNoCutStr, VineTransformStr, VineRestoreStr);
+		public static readonly HairType BASILISK_PLUME = new GenericHairType(DefaultValueHelpers.defaultBasiliskPlume, 2.0f, SetTo(2.0f), PlumeDesc, PlumeLongDesc, PlumePlayerStr, PlumeGrowStr, PlumeCutStr, PlumeTransformStr, PlumeRestoreStr); //2
+		public static readonly HairType WOOL = new GenericHairType(HairFurColors.WHITE, 1.0f, KeepSizeUnlessBald(1.0f), WoolDesc, WoolLongDesc, WoolPlayerStr, WoolGrowStr, WoolCutStr, WoolTransformStr, WoolRestoreStr); //not defined. 
+		public static readonly HairType LEAF = new LivingHair(DefaultValueHelpers.defaultVineColor, 12.0f, AttackBase.NO_ATTACK, VineDesc, VineLongDesc, VinePlayerStr, VineNoGrowStr, VineNoCutStr, VineTransformStr, VineRestoreStr);
 
 		private class NoHair : HairType
 		{
-			public NoHair() : base(HairFurColors.BLACK, 0.0f, NoHairDesc, NoHairFullDesc, NoHairPlayerStr, NoHairToGrow, NoHairToCut, NoHairTransformStr, NoHairRestoreStr) { }
+			public NoHair() : base(HairFurColors.BLACK, 0.0f, NoHairDesc, NoHairLongDesc, NoHairPlayerStr, NoHairToGrow, NoHairToCut, NoHairTransformStr, NoHairRestoreStr) { }
 
 			public override bool growsOverTime => false;
 
@@ -839,9 +839,9 @@ namespace CoC.Backend.BodyParts
 			public override bool canStyle => true;
 
 			public GenericHairType(HairFurColors defaultHairColor, float defaultLength, Func<float, float> handleHairLengthOnTransform,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Hair> fullDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
+				SimpleDescriptor shortDesc, DescriptorWithArg<Hair> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
 				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
-				: base(defaultHairColor, defaultLength, shortDesc, fullDesc, playerDesc, growStr, cutStr, transform, restore)
+				: base(defaultHairColor, defaultLength, shortDesc, longDesc, playerDesc, growStr, cutStr, transform, restore)
 			{
 				SetHairLengthOnTransform = handleHairLengthOnTransform;
 			}
@@ -888,7 +888,7 @@ namespace CoC.Backend.BodyParts
 
 		private class NormalHair : GenericHairType
 		{
-			public NormalHair() : base(HairFurColors.BLACK, 0.0f, KeepSize(), NormalDesc, NormalFullDesc, NormalPlayerStr, NormalGrowStr, NormalCutStr, NormalTransformStr, NormalRestoreStr) { }
+			public NormalHair() : base(HairFurColors.BLACK, 0.0f, KeepSize(), NormalDesc, NormalLongDesc, NormalPlayerStr, NormalGrowStr, NormalCutStr, NormalTransformStr, NormalRestoreStr) { }
 
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new HairWhip();
@@ -917,9 +917,9 @@ namespace CoC.Backend.BodyParts
 			private readonly AttackBase _attack;
 
 			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc,
-				DescriptorWithArg<Hair> fullDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor whyNoGrowingDesc,
+				DescriptorWithArg<Hair> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor whyNoGrowingDesc,
 				SimpleDescriptor whyNoCuttingDesc, ChangeType<HairData> transform, RestoreType<HairData> restore)
-				: base(defaultHairColor, defaultLength, shortDesc, fullDesc, playerDesc, whyNoGrowingDesc, whyNoCuttingDesc, transform, restore)
+				: base(defaultHairColor, defaultLength, shortDesc, longDesc, playerDesc, whyNoGrowingDesc, whyNoCuttingDesc, transform, restore)
 			{
 				_attack = attack;
 			}
@@ -966,7 +966,7 @@ namespace CoC.Backend.BodyParts
 
 		private class BasiliskSpines : HairType
 		{
-			public BasiliskSpines() : base(DefaultValueHelpers.defaultBasiliskSpines, 2.0f, SpineDesc, SpineFullDesc, SpinePlayerStr, SpineNoGrowStr, SpineNoCutStr, SpineTransformStr, SpineRestoreStr) { }
+			public BasiliskSpines() : base(DefaultValueHelpers.defaultBasiliskSpines, 2.0f, SpineDesc, SpineLongDesc, SpinePlayerStr, SpineNoGrowStr, SpineNoCutStr, SpineTransformStr, SpineRestoreStr) { }
 
 			public override bool growsOverTime => false;
 

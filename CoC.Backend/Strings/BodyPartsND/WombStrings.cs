@@ -18,7 +18,7 @@ namespace CoC.Backend.BodyParts
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string StandardFullDesc(Womb womb)
+	//	private static string StandardLongDesc(Womb womb)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
@@ -43,7 +43,7 @@ namespace CoC.Backend.BodyParts
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string EggFullDesc(Womb womb)
+	//	private static string EggLongDesc(Womb womb)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
@@ -68,7 +68,7 @@ namespace CoC.Backend.BodyParts
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string BunnyFullDesc(Womb womb)
+	//	private static string BunnyLongDesc(Womb womb)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
@@ -93,7 +93,7 @@ namespace CoC.Backend.BodyParts
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}
-	//	private static string BasiliskFullDesc(Womb womb)
+	//	private static string BasiliskLongDesc(Womb womb)
 	//	{
 	//		throw new InDevelopmentExceptionThatBreaksOnRelease();
 	//	}

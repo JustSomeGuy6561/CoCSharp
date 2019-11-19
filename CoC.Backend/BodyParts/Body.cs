@@ -1064,11 +1064,11 @@ namespace CoC.Backend.BodyParts
 
 		//allows you to rename the buttons for dyeing and toning. by default, they are "body" and "underbody". For example, Cockatrice uses this to say "feathers"
 		//when dyeing primary, and "scales" when toning secondary. Also, furry types override "body" with "skin" when lotioning/oiling, as it affects the skin under the fur/feathers.
-		private protected BodyType(BodyMember primaryMember, DescriptorWithArg<Body> fullDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : this(primaryMember, new EmptyBodyMember(), fullDesc, playerDesc, transform, restore) { }
+		private protected BodyType(BodyMember primaryMember, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : this(primaryMember, new EmptyBodyMember(), longDesc, playerDesc, transform, restore) { }
 
-		private protected BodyType(BodyMember primaryMember, BodyMember secondaryMember, DescriptorWithArg<Body> fullDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(primaryMember.shortDescription, fullDesc, playerDesc, transform, restore)
+		private protected BodyType(BodyMember primaryMember, BodyMember secondaryMember, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(primaryMember.shortDescription, longDesc, playerDesc, transform, restore)
 		{
 			primary = primaryMember ?? throw new ArgumentNullException();
 
@@ -1195,41 +1195,41 @@ namespace CoC.Backend.BodyParts
 
 		public static readonly SimpleToneBodyType HUMANOID = new SimpleToneBodyType(
 			new ToneBodyMember(EpidermisType.SKIN, DefaultValueHelpers.defaultHumanTone, false, SkinDesc, YourBodyDesc),
-			SkinFullDesc, SkinPlayerStr, SkinTransformStr, SkinRestoreStr);
+			SkinLongDesc, SkinPlayerStr, SkinTransformStr, SkinRestoreStr);
 
 		public static readonly CompoundToneBodyType REPTILIAN = new CompoundToneBodyType(
 			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, ScalesDesc),
 			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, ScalesUnderbodyDesc, YourUnderScalesDesc),
-			ScalesFullDesc, ScalesPlayerStr, ScalesTransformStr, ScalesRestoreStr);
+			ScalesLongDesc, ScalesPlayerStr, ScalesTransformStr, ScalesRestoreStr);
 
 		public static readonly CompoundToneBodyType NAGA = new CompoundToneBodyType(
 			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultNagaTone, false, NagaDesc),
 			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultNagaUnderTone, false, NagaUnderbodyDesc, YourUnderNagaDesc),
-			NagaFullDesc, NagaPlayerStr, NagaTransformStr, NagaRestoreStr);
+			NagaLongDesc, NagaPlayerStr, NagaTransformStr, NagaRestoreStr);
 
 		public static readonly CockatriceBodyType COCKATRICE = new CockatriceBodyType();
 		public static readonly KitsuneBodyType KITSUNE = new KitsuneBodyType();
 		public static readonly SimpleToneBodyType WOODEN = new SimpleToneBodyType(
 			new ToneBodyMember(EpidermisType.BARK, DefaultValueHelpers.defaultBarkColor, true, BarkDesc),
-			BarkFullDesc, BarkPlayerStr, BarkTransformStr, BarkRestoreStr);
+			BarkLongDesc, BarkPlayerStr, BarkTransformStr, BarkRestoreStr);
 		////one color (or two in a pattern, like zebra stripes) over the entire body.
-		public static readonly SimpleFurBodyType SIMPLE_FUR = new SimpleFurBodyType(GENERIC_FUR_MEMBER, FurFullDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
+		public static readonly SimpleFurBodyType SIMPLE_FUR = new SimpleFurBodyType(GENERIC_FUR_MEMBER, FurLongDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
 
 		//the anthropomorphic equivalent of underbody, at least. this means that most of the body is the first color (or pattern), while the chest is the other. note that this may also
 		//effect the arms, legs, and face (and possibly others if implemented), as they may utilize both or just one of these colors, depending on the type. 
 		public static readonly CompoundFurBodyType UNDERBODY_FUR = new CompoundFurBodyType(GENERIC_FUR_MEMBER,
 			new FurBodyMember(EpidermisType.FUR, new FurColor(HairFurColors.BLACK), false, FurUnderbodyDesc, YourUnderFurDesc),
-			FurFullDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
+			FurLongDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
 
 		public static readonly CompoundFurBodyType FEATHERED = new CompoundFurBodyType(
 			new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, false, FeatherDesc),
 			new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, false, UnderFeatherDesc, YourUnderFeatherDesc),
-			FeatherFullDesc, FeatherPlayerStr, FeatherTransformStr, FeatherRestoreStr);
+			FeatherLongDesc, FeatherPlayerStr, FeatherTransformStr, FeatherRestoreStr);
 
 		public static readonly CompoundFurBodyType WOOL = new CompoundFurBodyType(
 			new FurBodyMember(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, false, WoolDesc),
 			new FurBodyMember(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, false, WoolUnderbodyDesc, YourUnderWoolDesc),
-			WoolFullDesc, WoolPlayerStr, WoolTransformStr, WoolRestoreStr);
+			WoolLongDesc, WoolPlayerStr, WoolTransformStr, WoolRestoreStr);
 		////now, if you have gooey body, give the goo innards perk. simple.
 		////Also: Goo body is getting a rework/revamp. it was originally a spaghetti code of a mess of partially implemented checks on a perk. now it's its own type. 
 		////any body part not "Goo" will act like it should, regardless of the gooey body. It never really made sense before; it still doesn't.
@@ -1241,15 +1241,15 @@ namespace CoC.Backend.BodyParts
 
 		public static readonly SimpleToneBodyType GOO = new SimpleToneBodyType(
 			new ToneBodyMember(EpidermisType.GOO, DefaultValueHelpers.defaultGooTone, false, GooDesc),
-			GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+			GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 		////cleaner - we don't need umpteen checks to see if it's "rubbery"
 		public static readonly SimpleToneBodyType RUBBER = new SimpleToneBodyType(
 			new ToneBodyMember(EpidermisType.RUBBER, Tones.GRAY, true, RubberDesc),
-			RubberFullDesc, RubberPlayerStr, RubberTransformStr, RubberRestoreStr);
+			RubberLongDesc, RubberPlayerStr, RubberTransformStr, RubberRestoreStr);
 		////like a turtle shell or bee exoskeleton.
 		public static readonly SimpleToneBodyType CARAPACE = new SimpleToneBodyType(
 			new ToneBodyMember(EpidermisType.CARAPACE, Tones.BLACK, true, CarapaceStr),
-			CarapaceFullDesc, CarapacePlayerStr, CarapaceTransformStr, CarapaceRestoreStr);
+			CarapaceLongDesc, CarapacePlayerStr, CarapaceTransformStr, CarapaceRestoreStr);
 		#endregion
 
 		internal abstract class BodyMember
@@ -1342,15 +1342,15 @@ namespace CoC.Backend.BodyParts
 
 	public abstract class SimpleBodyType : BodyType
 	{
-		private protected SimpleBodyType(BodyMember builder, DescriptorWithArg<Body> fullDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, fullDesc, playerDesc, transform, restore) { }
+		private protected SimpleBodyType(BodyMember builder, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, longDesc, playerDesc, transform, restore) { }
 	}
 
 	public abstract class CompoundBodyType : BodyType
 	{
-		private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder, DescriptorWithArg<Body> fullDesc,
+		private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder, DescriptorWithArg<Body> longDesc,
 			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-			: base(primaryBuilder, secondaryBuilder, fullDesc, playerDesc, transform, restore) { }
+			: base(primaryBuilder, secondaryBuilder, longDesc, playerDesc, transform, restore) { }
 	}
 
 	public class SimpleFurBodyType : SimpleBodyType
@@ -1360,8 +1360,8 @@ namespace CoC.Backend.BodyParts
 		public FurColor defaultFur => furMember.defaultFur;
 		public bool overrideFur => furMember.overrideFur;
 
-		internal SimpleFurBodyType(FurBodyMember builder, DescriptorWithArg<Body> fullDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, fullDesc, playerDesc, transform, restore) { }
+		internal SimpleFurBodyType(FurBodyMember builder, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, longDesc, playerDesc, transform, restore) { }
 
 		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
@@ -1393,9 +1393,9 @@ namespace CoC.Backend.BodyParts
 		public bool overrideSupplementaryFur => secondaryFurMember.overrideFur;
 		public FurBasedEpidermisType secondaryFurType => (FurBasedEpidermisType)secondaryFurMember.epidermisType;
 
-		internal CompoundFurBodyType(FurBodyMember primaryBuilder, FurBodyMember secondaryBuilder, DescriptorWithArg<Body> fullDesc,
+		internal CompoundFurBodyType(FurBodyMember primaryBuilder, FurBodyMember secondaryBuilder, DescriptorWithArg<Body> longDesc,
 			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-			: base(primaryBuilder, secondaryBuilder, fullDesc, playerDesc, transform, restore) { }
+			: base(primaryBuilder, secondaryBuilder, longDesc, playerDesc, transform, restore) { }
 
 		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
@@ -1420,8 +1420,8 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultTone => toneMember.defaultTone;
 		public bool overrideTone => toneMember.overrideTone;
 
-		internal SimpleToneBodyType(ToneBodyMember builder, DescriptorWithArg<Body> fullDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, fullDesc, playerDesc, transform, restore) { }
+		internal SimpleToneBodyType(ToneBodyMember builder, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, longDesc, playerDesc, transform, restore) { }
 
 		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
@@ -1450,9 +1450,9 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultSupplementaryTone => secondaryMember.defaultTone;
 		public bool overrideSupplementaryTone => secondaryMember.overrideTone;
 
-		internal CompoundToneBodyType(ToneBodyMember primaryBuilder, ToneBodyMember secondaryBuilder, DescriptorWithArg<Body> fullDesc,
+		internal CompoundToneBodyType(ToneBodyMember primaryBuilder, ToneBodyMember secondaryBuilder, DescriptorWithArg<Body> longDesc,
 			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-			: base(primaryBuilder, secondaryBuilder, fullDesc, playerDesc, transform, restore) { }
+			: base(primaryBuilder, secondaryBuilder, longDesc, playerDesc, transform, restore) { }
 
 		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
@@ -1490,7 +1490,7 @@ namespace CoC.Backend.BodyParts
 		internal KitsuneBodyType() : base(
 			new ToneBodyMember(EpidermisType.SKIN, DefaultValueHelpers.defaultKitsuneSkin, false, KitsuneDesc, YourDescriptor(EpidermisType.SKIN)),
 			new FurBodyMember(EpidermisType.FUR, DefaultValueHelpers.defaultKitsuneFur, false, KitsuneUnderbodyDesc, YourDescriptor(EpidermisType.FUR)),
-			KitsuneFullDesc, KitsunePlayerStr, KitsuneTransformStr, KitsuneRestoreStr)
+			KitsuneLongDesc, KitsunePlayerStr, KitsuneTransformStr, KitsuneRestoreStr)
 		{ }
 
 		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
@@ -1512,7 +1512,7 @@ namespace CoC.Backend.BodyParts
 		internal CockatriceBodyType() : base(
 				new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatricePrimaryFeathers, false, CockatriceDesc, YourDescriptor(EpidermisType.FEATHERS)),
 				new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultCockatriceScaleTone, false, CockatriceUnderbodyDesc, YourDescriptor(EpidermisType.SCALES)),
-				CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
+				CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 		{ }
 
 		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)

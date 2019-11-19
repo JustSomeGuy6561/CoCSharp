@@ -21,7 +21,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanFullDesc(Ears ears)
+		private static string HumanLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -41,7 +41,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseFullDesc(Ears ears)
+		private static string HorseLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -61,7 +61,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogFullDesc(Ears ears)
+		private static string DogLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -81,7 +81,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CowFullDesc(Ears ears)
+		private static string CowLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -101,7 +101,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ElfinFullDesc(Ears ears)
+		private static string ElfinLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -121,7 +121,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatFullDesc(Ears ears)
+		private static string CatLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -141,7 +141,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardFullDesc(Ears ears)
+		private static string LizardLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -161,7 +161,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyFullDesc(Ears ears)
+		private static string BunnyLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -181,7 +181,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooFullDesc(Ears ears)
+		private static string KangarooLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -201,7 +201,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxFullDesc(Ears ears)
+		private static string FoxLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -221,7 +221,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonFullDesc(Ears ears)
+		private static string DragonLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -241,7 +241,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonFullDesc(Ears ears)
+		private static string RaccoonLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -261,7 +261,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseFullDesc(Ears ears)
+		private static string MouseLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -281,7 +281,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretFullDesc(Ears ears)
+		private static string FerretLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -301,7 +301,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigFullDesc(Ears ears)
+		private static string PigLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -321,7 +321,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoFullDesc(Ears ears)
+		private static string RhinoLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -341,7 +341,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaFullDesc(Ears ears)
+		private static string EchidnaLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -361,7 +361,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerFullDesc(Ears ears)
+		private static string DeerLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -381,7 +381,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfFullDesc(Ears ears)
+		private static string WolfLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -401,7 +401,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepFullDesc(Ears ears)
+		private static string SheepLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -421,7 +421,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpFullDesc(Ears ears)
+		private static string ImpLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -441,7 +441,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceFullDesc(Ears ears)
+		private static string CockatriceLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -461,7 +461,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaFullDesc(Ears ears)
+		private static string RedPandaLongDesc(Ears ears)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

@@ -101,15 +101,14 @@ namespace CoC.Backend.BodyParts
 		//public SimpleDescriptor thicknessAsText => ThicknessText;
 		//public SimpleDescriptor toneAsText => ToneText;
 
-		public SimpleDescriptor buttSizeAsText => butt.AsText;
-		public SimpleDescriptor hipSizeAsText => hips.AsText;
+		public string ButtSizeAsAdjective() => butt.ButtAdjective();
+		public string HipSizeAsAdjective() => hips.HipAdjective();
 
-		public SimpleDescriptor buttShortDescription => butt.ShortDescription;
-		public SimpleDescriptor hipsShortDescription => hips.ShortDescription;
+		public string ButtShortDescription() => butt.ShortDescription();
+		public string HipsShortDescription() => hips.ShortDescription();
 
-		public SimpleDescriptor buttFullDescription => ButtFullDesc;
-		public SimpleDescriptor hipsFullDescription => HipsFullDesc;
-
+		public string ButtLongDescription() => butt.LongDescription(muscleTone);
+		public string HipsLongDescription() => hips.LongDescription(thickness);
 
 		internal Build(Guid creatureID, byte heightInches, byte? characterThickness, byte? characterTone, byte? characterHipSize, byte? characterButtSize) : base(creatureID)
 		{

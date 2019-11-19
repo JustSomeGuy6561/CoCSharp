@@ -27,7 +27,7 @@ namespace  CoC.Backend.BodyParts
 		{
 			return "bee antennae";
 		}
-		private static string BeeFullDesc(Antennae antennae)
+		private static string BeeLongDesc(Antennae antennae)
 		{
 			return "a pair of cute bee antennae";
 		}
@@ -47,7 +47,7 @@ namespace  CoC.Backend.BodyParts
 		{
 			return "cockatrice antennae";
 		}
-		private static string CockatriceFullDesc(Antennae antennae)
+		private static string CockatriceLongDesc(Antennae antennae)
 		{
 			return "a pair of quill-like feathers atop the eyes";
 		}

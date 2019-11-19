@@ -28,7 +28,7 @@ namespace   CoC.Backend.BodyParts
 		//{
 		//	return "nipples";
 		//}
-		private string shortDesc()
+		public string ShortDescription()
 		{
 			string retVal = "";
 			retVal += Measurement.ToNearestQuarterInchOrMillimeter(length, false);
@@ -57,7 +57,7 @@ namespace   CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		private string fullDesc(Creature creature)
+		public string LongDescription(Creature creature)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -69,7 +69,7 @@ namespace   CoC.Backend.BodyParts
 			{
 				otherStr = " A quick check tells you your remaining nipples seem to have followed suit. That's curious.";
 			}
-			return "You notice the tug from the jewelry in your " + shortDesc() + " has lessened slightly, and after close inspection you can confirm your nipples are less inverted." + otherStr;
+			return "You notice the tug from the jewelry in your " + ShortDescription() + " has lessened slightly, and after close inspection you can confirm your nipples are less inverted." + otherStr;
 		}
 
 		private string NipplesNoLongerInvertedDueToPiercingInThem(bool hasOtherBreastRows)
@@ -82,16 +82,6 @@ namespace   CoC.Backend.BodyParts
 			return "You pause for a moment as your nipples seem a bit more sensitive than normal. You quickly locate the cause - it seems your piercings have done their work, " +
 				"as your nipples are no longer inverted!" + otherStr;
 			
-		}
-
-		internal string ShortDescription()
-		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		internal string FullDescription()
-		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		//	private string fullDesc(Creature creature)

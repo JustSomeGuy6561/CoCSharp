@@ -49,10 +49,10 @@ namespace CoC.Backend.BodyParts
 		//any new data from hte player passed in. 
 		public readonly RestoreType<DataClass> restoredString;
 
-		private protected SaveableBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> fullDesc,
+		private protected SaveableBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> longDesc,
 			PlayerBodyPartDelegate<ContainerClass> playerDesc, ChangeType<DataClass> transform, RestoreType<DataClass> restore) : base(shortDesc)
 		{
-			longDescription = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
+			longDescription = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
 			playerDescription = playerDesc ?? throw new ArgumentNullException(nameof(playerDesc));
 			transformFrom = transform ?? throw new ArgumentNullException(nameof(transform));
 			restoredString = restore ?? throw new ArgumentNullException(nameof(restore));

@@ -143,7 +143,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanFullDesc(LowerBody lowerBody)
+		private static string HumanLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -163,7 +163,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HoovedFullDesc(LowerBody lowerBody)
+		private static string HoovedLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -183,7 +183,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogFullDesc(LowerBody lowerBody)
+		private static string DogLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -203,7 +203,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaFullDesc(LowerBody lowerBody)
+		private static string NagaLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -224,7 +224,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonHiHeelsFullDesc(LowerBody lowerBody)
+		private static string DemonHiHeelsLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -246,7 +246,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonClawFullDesc(LowerBody lowerBody)
+		private static string DemonClawLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -266,7 +266,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeFullDesc(LowerBody lowerBody)
+		private static string BeeLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -286,7 +286,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooFullDesc(LowerBody lowerBody)
+		private static string GooLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -306,7 +306,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatFullDesc(LowerBody lowerBody)
+		private static string CatLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -326,7 +326,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardFullDesc(LowerBody lowerBody)
+		private static string LizardLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -346,7 +346,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PonyFullDesc(LowerBody lowerBody)
+		private static string PonyLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -366,7 +366,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyFullDesc(LowerBody lowerBody)
+		private static string BunnyLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -386,7 +386,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HarpyFullDesc(LowerBody lowerBody)
+		private static string HarpyLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -406,7 +406,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooFullDesc(LowerBody lowerBody)
+		private static string KangarooLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -426,7 +426,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderFullDesc(LowerBody lowerBody)
+		private static string SpiderLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -446,7 +446,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DriderFullDesc(LowerBody lowerBody)
+		private static string DriderLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -466,7 +466,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxFullDesc(LowerBody lowerBody)
+		private static string FoxLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -486,7 +486,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonFullDesc(LowerBody lowerBody)
+		private static string DragonLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -506,7 +506,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonFullDesc(LowerBody lowerBody)
+		private static string RaccoonLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -526,7 +526,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretFullDesc(LowerBody lowerBody)
+		private static string FerretLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -546,7 +546,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ClovenHoofFullDesc(LowerBody lowerBody)
+		private static string ClovenHoofLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -566,7 +566,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaFullDesc(LowerBody lowerBody)
+		private static string EchidnaLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -586,7 +586,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SalamanderFullDesc(LowerBody lowerBody)
+		private static string SalamanderLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -606,7 +606,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfFullDesc(LowerBody lowerBody)
+		private static string WolfLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -626,7 +626,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpFullDesc(LowerBody lowerBody)
+		private static string ImpLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -646,7 +646,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceFullDesc(LowerBody lowerBody)
+		private static string CockatriceLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -666,7 +666,7 @@ public partial class LowerBodyType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaFullDesc(LowerBody lowerBody)
+		private static string RedPandaLongDesc(LowerBody lowerBody)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
