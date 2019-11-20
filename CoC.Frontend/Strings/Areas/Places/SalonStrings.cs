@@ -38,7 +38,7 @@ namespace CoC.Frontend.Areas.Places
 			}
 			else
 			{
-				string genderStr = player.genitals.trappyGenderToMaleFemaleIsMale() ? "kinky boi" : "naughty girl";
+				string genderStr = player.genitals.AppearsMoreMaleThanFemale() ? "kinky boi" : "naughty girl";
 				sb.Append(SafelyFormattedString.FormattedText(" I'll even do you the favor of letting you blow it in my mouth, I've already got a bun in the oven. " +
 					"So what do you say? Want a spooge and a haircut? Or would you rather go get your payment from one of the gloryholes in the back, you " + genderStr,
 					StringFormats.ITALIC) + Environment.NewLine + Environment.NewLine + 

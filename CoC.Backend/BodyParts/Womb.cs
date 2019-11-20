@@ -239,12 +239,12 @@ namespace CoC.Backend.BodyParts
 			remove => birthEventSource.Unsubscribe(value);
 		}
 
-		internal void RaiseKnockupEvent(StandardSpawnType spawnType, PregnancyStore pregnancyStore)
+		internal void RaiseKnockupEvent(PregnancyStore pregnancyStore)
 		{
 			knockupEventSource.Raise(pregnancyStore, new KnockupEvent(creatureID, pregnancyStore.AsReadOnlyData()));
 		}
 
-		internal void RaiseKnockupEvent(StandardSpawnType spawnType, PregnancyStore pregnancyStore, StandardSpawnData oldSpawnData)
+		internal void RaiseKnockupEvent(PregnancyStore pregnancyStore, StandardSpawnData oldSpawnData)
 		{
 			knockupEventSource.Raise(pregnancyStore, new KnockupEvent(creatureID, pregnancyStore.AsReadOnlyData(), oldSpawnData));
 		}

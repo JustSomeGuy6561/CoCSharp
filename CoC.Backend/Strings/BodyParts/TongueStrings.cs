@@ -25,7 +25,7 @@ namespace CoC.Backend.BodyParts
 			return "tongue";
 			//return "human tongue";
 		}
-		private static string HumanLongDesc(Tongue tongue)
+		private static string HumanLongDesc(TongueData tongue)
 		{
 			return GenericLongDesc(tongue, HumanDesc());
 		}
@@ -45,7 +45,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "serpentine tongue";
 		}
-		private static string SnakeLongDesc(Tongue tongue)
+		private static string SnakeLongDesc(TongueData tongue)
 		{
 			return GenericLongDesc(tongue, SnakeDesc());
 		}
@@ -80,7 +80,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "demonic tongue";
 		}
-		private static string DemonicLongDesc(Tongue tongue)
+		private static string DemonicLongDesc(TongueData tongue)
 		{
 			return GenericLongDesc(tongue, DemonicDesc());
 		}
@@ -120,7 +120,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "draconic tongue";
 		}
-		private static string DraconicLongDesc(Tongue tongue)
+		private static string DraconicLongDesc(TongueData tongue)
 		{
 			return GenericLongDesc(tongue, DraconicDesc());
 		}
@@ -143,7 +143,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "echidna tongue";
 		}
-		private static string EchidnaLongDesc(Tongue tongue)
+		private static string EchidnaLongDesc(TongueData tongue)
 		{
 			return GenericLongDesc(tongue, EchidnaDesc());
 		}
@@ -177,7 +177,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "lizard tongue";
 		}
-		private static string LizardLongDesc(Tongue tongue)
+		private static string LizardLongDesc(TongueData tongue)
 		{
 			return GenericLongDesc(tongue, LizardDesc());
 		}
@@ -240,7 +240,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cat tongue";
 		}
-		private static string CatLongDesc(Tongue tongue)
+		private static string CatLongDesc(TongueData tongue)
 		{
 			return GenericLongDesc(tongue, CatDesc());
 		}
@@ -268,12 +268,12 @@ namespace CoC.Backend.BodyParts
 			return GenericRestoreStr(previousTongueData, player);
 		}
 
-		private static string GenericLongDesc(Tongue tongue, string partialDesc)
+		private static string GenericLongDesc(TongueData tongue, string partialDesc)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (Utils.Rand(10) <= 2)
 			{
-				if (tongue.tonguePiercings.jewelryCount > 0)
+				if (tongue.tonguePiercings.wearingJewelry)
 				{
 					sb.Append("pierced ");
 				}

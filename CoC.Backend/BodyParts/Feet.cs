@@ -30,7 +30,7 @@ namespace CoC.Backend.BodyParts
 
 		public override FootType type { get; protected set; }
 
-		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
+		public SimpleDescriptor longDescription => () => type.longDescription(this);
 
 		internal void GetLicked(bool reachOrgasm)
 		{
@@ -59,7 +59,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal void doGenericOrgasm(bool dryOrgasm)
+		internal void DoGenericOrgasm(bool dryOrgasm)
 		{
 			orgasmCount++;
 			if (dryOrgasm)
@@ -77,7 +77,7 @@ namespace CoC.Backend.BodyParts
 
 		private readonly FootStyle footStyle;
 
-		public readonly DescriptorWithArg<Feet> fullDescription;
+		public readonly DescriptorWithArg<Feet> longDescription;
 
 		public bool isFeet => footStyle == FootStyle.FEET;
 		public bool isPaws => footStyle == FootStyle.PAWS;
@@ -85,11 +85,11 @@ namespace CoC.Backend.BodyParts
 		public bool isInsectoid => footStyle == FootStyle.INSECTOID;
 		public bool isClaws => footStyle == FootStyle.CLAWS;
 		public bool isOther => !(isFeet || isClaws || isHooves || isInsectoid || isPaws);
-		private FootType(FootStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<Feet> fullDesc) : base(shortDesc)
+		private FootType(FootStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<Feet> longDesc) : base(shortDesc)
 		{
 			_index = indexMaker++;
 			footStyle = style;
-			fullDescription = fullDesc;
+			longDescription = longDesc;
 		}
 
 		public override int index => _index;

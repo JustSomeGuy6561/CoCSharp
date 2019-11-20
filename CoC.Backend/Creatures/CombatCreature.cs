@@ -2,7 +2,6 @@
 //Description:
 //Author: JustSomeGuy
 //2/20/2019, 4:14 PM
-using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 
@@ -25,7 +24,12 @@ namespace CoC.Backend.Creatures
 		internal const byte BASE_MAX_INTELLIGENCE = 100;
 		internal const byte BASE_MAX_FATIGUE = 100;
 
-		public void AddHP(uint v)
+		public void AddHP(uint flatAmount)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void AddHPPercent(float percent)
 		{
 			throw new NotImplementedException();
 		}
@@ -118,28 +122,28 @@ namespace CoC.Backend.Creatures
 
 		protected internal virtual sbyte bonusMinStrength { get; set; }
 		protected virtual byte baseMinStrength => 0;
-		public byte minStrength => baseMinStrength.delta(bonusMinStrength);
+		public byte minStrength => baseMinStrength.offset(bonusMinStrength);
 
 
 
 		protected internal virtual sbyte bonusMinToughness { get; set; }
 		protected virtual byte baseMinToughness => 0;
-		public byte minToughness => baseMinToughness.delta(bonusMinToughness);
+		public byte minToughness => baseMinToughness.offset(bonusMinToughness);
 
 
 
 		protected internal virtual sbyte bonusMinSpeed { get; set; }
 		protected virtual byte baseMinSpeed => 0;
-		public byte minSpeed => baseMinSpeed.delta(bonusMinSpeed);
+		public byte minSpeed => baseMinSpeed.offset(bonusMinSpeed);
 
 
 		protected internal virtual sbyte bonusMinIntelligence { get; set; }
 		protected virtual byte baseMinIntelligence => 0;
-		public byte minIntelligence => baseMinIntelligence.delta(bonusMinIntelligence);
+		public byte minIntelligence => baseMinIntelligence.offset(bonusMinIntelligence);
 
 		protected internal virtual sbyte bonusMinFatigue { get; set; }
 		protected virtual byte baseMinFatigue => 0;
-		public byte minFatigue => baseMinFatigue.delta(bonusMinFatigue);
+		public byte minFatigue => baseMinFatigue.offset(bonusMinFatigue);
 
 
 
@@ -152,23 +156,23 @@ namespace CoC.Backend.Creatures
 
 		protected internal virtual byte baseMaxStrength => BASE_MAX_STRENGTH;
 		protected internal virtual sbyte bonusMaxStrength { get; set; } = 0;
-		public byte maxStrength => HandleMaxStat(baseMaxStrength.delta(bonusMaxStrength), minStrength);
+		public byte maxStrength => HandleMaxStat(baseMaxStrength.offset(bonusMaxStrength), minStrength);
 
 		protected internal virtual byte baseMaxToughness => BASE_MAX_TOUGHNESS;
 		protected internal virtual sbyte bonusMaxToughness { get; set; } = 0;
-		public byte maxToughness => HandleMaxStat(baseMaxToughness.delta(bonusMaxToughness), minToughness);
+		public byte maxToughness => HandleMaxStat(baseMaxToughness.offset(bonusMaxToughness), minToughness);
 
 		protected internal virtual byte baseMaxSpeed => BASE_MAX_SPEED;
 		protected internal virtual sbyte bonusMaxSpeed { get; set; } = 0;
-		public byte maxSpeed => HandleMaxStat(baseMaxSpeed.delta(bonusMaxSpeed), minSpeed);
+		public byte maxSpeed => HandleMaxStat(baseMaxSpeed.offset(bonusMaxSpeed), minSpeed);
 
 		protected internal virtual byte baseMaxIntelligence => BASE_MAX_INTELLIGENCE;
 		protected internal virtual sbyte bonusMaxIntelligence { get; set; } = 0;
-		public byte maxIntelligence => HandleMaxStat(baseMaxIntelligence.delta(bonusMaxIntelligence), minIntelligence);
+		public byte maxIntelligence => HandleMaxStat(baseMaxIntelligence.offset(bonusMaxIntelligence), minIntelligence);
 
 		protected internal virtual byte baseMaxFatigue => BASE_MAX_FATIGUE;
 		protected internal virtual sbyte bonusMaxFatigue { get; set; } = 0;
-		public byte maxFatigue => HandleMaxStat(baseMaxFatigue.delta(bonusMaxFatigue), minFatigue);
+		public byte maxFatigue => HandleMaxStat(baseMaxFatigue.offset(bonusMaxFatigue), minFatigue);
 
 		protected internal float StrengthGainMultiplier = 1.0f;
 		protected internal float StrengthLossMultiplier = 1.0f;
@@ -184,7 +188,7 @@ namespace CoC.Backend.Creatures
 
 		protected internal float FatigueRegenRate = 1.0f;
 
-		//public virtual byte maxHunger => BASE_MAX_HUNGER.delta(modifiers.bonusMaxHunger);
+		//public virtual byte maxHunger => BASE_MAX_HUNGER.offset(modifiers.bonusMaxHunger);
 
 		//will, etc are player-specific. 
 
@@ -220,14 +224,14 @@ namespace CoC.Backend.Creatures
 
 		//public void dynStats(sbyte str = 0, sbyte tou = 0, sbyte spd = 0, sbyte inte = 0, sbyte lib = 0, sbyte sens = 0, sbyte corr = 0, sbyte lus = 0)
 		//{
-		//	strength = strength.delta(str);
-		//	toughness = toughness.delta(tou);
-		//	speed = speed.delta(spd);
-		//	intelligence = intelligence.delta(inte);
-		//	libido = libido.delta(lib);
-		//	sensitivity = sensitivity.delta(sens);
-		//	corruption = corruption.delta(corr);
-		//	lust = lust.delta(lus);
+		//	strength = strength.offset(str);
+		//	toughness = toughness.offset(tou);
+		//	speed = speed.offset(spd);
+		//	intelligence = intelligence.offset(inte);
+		//	libido = libido.offset(lib);
+		//	sensitivity = sensitivity.offset(sens);
+		//	corruption = corruption.offset(corr);
+		//	lust = lust.offset(lus);
 		//}
 
 		public CombatCreature(CombatCreatureCreator creator) : base(creator)

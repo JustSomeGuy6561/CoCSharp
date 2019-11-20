@@ -36,7 +36,7 @@ namespace CoC.Backend.BodyParts
 
 		//a short description saying the race and type. ex: Hands.CAT: "cat paws"
 		//The full description of this part. 
-		public readonly DescriptorWithArg<ContainerClass> longDescription;
+		public readonly DescriptorWithArg<DataClass> longDescription;
 		//a full description of this part, with flavor text. it will be called whenever the player asks for their description.
 		public readonly PlayerBodyPartDelegate<ContainerClass> playerDescription;
 
@@ -49,7 +49,7 @@ namespace CoC.Backend.BodyParts
 		//any new data from hte player passed in. 
 		public readonly RestoreType<DataClass> restoredString;
 
-		private protected SaveableBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<ContainerClass> longDesc,
+		private protected SaveableBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<DataClass> longDesc,
 			PlayerBodyPartDelegate<ContainerClass> playerDesc, ChangeType<DataClass> transform, RestoreType<DataClass> restore) : base(shortDesc)
 		{
 			longDescription = longDesc ?? throw new ArgumentNullException(nameof(longDesc));

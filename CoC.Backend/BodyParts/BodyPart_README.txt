@@ -117,10 +117,10 @@ SimpleDescriptor shortDesc: SimpleDescriptor is a delegate. It takes nothing, an
 a short description of the body part, generally the name of the type and the part (so "cat-like ears" for CAT instance of EarType). It's meant to be used in a sentence, but only provide the barest of information.
 Using the above example of cat-like ears, and some made up text about wearing earrings: "... now has huge hoops dangling from her <ears.shortDesc>" => "now huge hoops dangling from her cat-like ears"
 ______________________________________
-DescriptorWithArg<BodyPart> fullDesc: A delegate. Takes the body part data class, and returns a string.
+DescriptorWithArg<BodyPart> longDesc: A delegate. Takes the body part data class, and returns a string.
 A full description of the body part part. This includes a reference to the body part's data class, so you can provide more information. for example, a human body can have various skin tones or skin textures so a full 
 	description, might want to say "human body with <skin texture> <skin color> skin" => "human body with smooth, ebony skin" or "human body with freckled, pale skin". This is meant to be used in a sentence. 
-	For example: The Goblin Assassin has <body.fullDesc>" => "the Goblin Assassin has a pudgy human body, with smooth green skin". Exactly how this will be used in context should be described in a comment in that
+	For example: The Goblin Assassin has <body.longDesc>" => "the Goblin Assassin has a pudgy human body, with smooth green skin". Exactly how this will be used in context should be described in a comment in that
 	body part's strings partial class.
 ________________________________
 PlayerAndTypeDelegate<BodyPart> playerDesc: A delegate: takes the player this body part is part of, and the body part data. returns a string.

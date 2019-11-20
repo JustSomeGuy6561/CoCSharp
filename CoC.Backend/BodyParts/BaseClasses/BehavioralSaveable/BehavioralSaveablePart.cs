@@ -61,9 +61,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//Text output.
-		public virtual string LongDescription() => type.longDescription((ThisClass)this);
+		public string LongDescription() => type.longDescription(AsReadOnlyData());
 
-		public virtual string PlayerDescription()
+		public string PlayerDescription()
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
@@ -71,7 +71,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else return "";
 		}
-		public virtual string TransformFromText(DataClass previousTypeData)
+		public string TransformFromText(DataClass previousTypeData)
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
@@ -80,7 +80,7 @@ namespace CoC.Backend.BodyParts
 			else return "";
 		}
 
-		public virtual string RestoredText(DataClass oldData)
+		public string RestoredText(DataClass oldData)
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{

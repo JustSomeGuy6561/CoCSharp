@@ -75,6 +75,9 @@ namespace CoC.Backend.BodyParts
 				return data.hairDeactivated ? HairFurColors.NO_HAIR_FUR : data.hairColor;
 			}
 		}
+		public HairFurColors hairColor => hairData.hairColor;
+
+		public bool hairActive => !hairData.hairDeactivated;
 
 		public EpidermalData mainEpidermis => primary.AsReadOnlyData();
 		public EpidermalData supplementaryEpidermis => secondary.AsReadOnlyData();
@@ -93,12 +96,29 @@ namespace CoC.Backend.BodyParts
 		public bool furActive => ReferenceEquals(mainFur, primary) || ReferenceEquals(mainFur, secondary);
 		private readonly Epidermis mainSkin; //stores the current skin that is primarily used. if it's multi-tone, the secondary tone is stored in the supplementary epidermis.
 		public EpidermalData primarySkin => mainSkin.AsReadOnlyData();
+		public EpidermalData activeFur => furActive ? mainFur.AsReadOnlyData() : new EpidermalData();
+
 		private bool skinActive => ReferenceEquals(mainSkin, primary) || ReferenceEquals(mainSkin, secondary);
 
 		private Epidermis primary => type.primaryIsFur ? mainFur : mainSkin;
 		//secondary is completely determined by the body type itself. Note that there's nothing stopping primary and secondary pointing to the same object, though this should never happen.
 		private Epidermis secondary;
 
+		public FurColor ActiveHairOrFurColor()
+		{
+			if (furActive)
+			{
+				return mainFur.fur;
+			}
+			else if (!hairData.hairDeactivated)
+			{
+				return new FurColor(hairData.activeHairColor);
+			}
+			else
+			{
+				return new FurColor(Hair.DEFAULT_COLOR);
+			}
+		}
 
 		public override BodyType type { get; protected set; }
 
@@ -347,7 +367,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (!oldSkin.Equals(mainSkin.AsReadOnlyData()) || !oldPrimary.Equals(mainEpidermis) || !oldSecondary.Equals(supplementaryEpidermis))
 			{
-				var oldData = new BodyData(creatureID, oldPrimary, oldSecondary, oldFur, oldSkin, hairData, type);
+				var oldData = new BodyData(this, oldSkin, oldFur, oldPrimary, oldSecondary);
 				NotifyDataChanged(oldData);
 			}
 		}
@@ -601,7 +621,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		public override BodyData AsReadOnlyData()
 		{
-			return new BodyData(creatureID, primary, secondary, mainFur, mainSkin, hairData, type);
+			return new BodyData(this);
 		}
 
 
@@ -1064,10 +1084,10 @@ namespace CoC.Backend.BodyParts
 
 		//allows you to rename the buttons for dyeing and toning. by default, they are "body" and "underbody". For example, Cockatrice uses this to say "feathers"
 		//when dyeing primary, and "scales" when toning secondary. Also, furry types override "body" with "skin" when lotioning/oiling, as it affects the skin under the fur/feathers.
-		private protected BodyType(BodyMember primaryMember, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+		private protected BodyType(BodyMember primaryMember, DescriptorWithArg<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
 			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : this(primaryMember, new EmptyBodyMember(), longDesc, playerDesc, transform, restore) { }
 
-		private protected BodyType(BodyMember primaryMember, BodyMember secondaryMember, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+		private protected BodyType(BodyMember primaryMember, BodyMember secondaryMember, DescriptorWithArg<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
 			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(primaryMember.shortDescription, longDesc, playerDesc, transform, restore)
 		{
 			primary = primaryMember ?? throw new ArgumentNullException();
@@ -1342,13 +1362,13 @@ namespace CoC.Backend.BodyParts
 
 	public abstract class SimpleBodyType : BodyType
 	{
-		private protected SimpleBodyType(BodyMember builder, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+		private protected SimpleBodyType(BodyMember builder, DescriptorWithArg<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
 			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, longDesc, playerDesc, transform, restore) { }
 	}
 
 	public abstract class CompoundBodyType : BodyType
 	{
-		private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder, DescriptorWithArg<Body> longDesc,
+		private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder, DescriptorWithArg<BodyData> longDesc,
 			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
 			: base(primaryBuilder, secondaryBuilder, longDesc, playerDesc, transform, restore) { }
 	}
@@ -1360,7 +1380,7 @@ namespace CoC.Backend.BodyParts
 		public FurColor defaultFur => furMember.defaultFur;
 		public bool overrideFur => furMember.overrideFur;
 
-		internal SimpleFurBodyType(FurBodyMember builder, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+		internal SimpleFurBodyType(FurBodyMember builder, DescriptorWithArg<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
 			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, longDesc, playerDesc, transform, restore) { }
 
 		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
@@ -1393,7 +1413,7 @@ namespace CoC.Backend.BodyParts
 		public bool overrideSupplementaryFur => secondaryFurMember.overrideFur;
 		public FurBasedEpidermisType secondaryFurType => (FurBasedEpidermisType)secondaryFurMember.epidermisType;
 
-		internal CompoundFurBodyType(FurBodyMember primaryBuilder, FurBodyMember secondaryBuilder, DescriptorWithArg<Body> longDesc,
+		internal CompoundFurBodyType(FurBodyMember primaryBuilder, FurBodyMember secondaryBuilder, DescriptorWithArg<BodyData> longDesc,
 			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
 			: base(primaryBuilder, secondaryBuilder, longDesc, playerDesc, transform, restore) { }
 
@@ -1420,7 +1440,7 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultTone => toneMember.defaultTone;
 		public bool overrideTone => toneMember.overrideTone;
 
-		internal SimpleToneBodyType(ToneBodyMember builder, DescriptorWithArg<Body> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
+		internal SimpleToneBodyType(ToneBodyMember builder, DescriptorWithArg<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
 			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, longDesc, playerDesc, transform, restore) { }
 
 		internal override void ParseEpidermisDataOnTransform(Epidermis mainFur, Epidermis mainSkin, Epidermis currSecondary, in HairData hairData, out Epidermis secondaryEpidermis)
@@ -1450,7 +1470,7 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultSupplementaryTone => secondaryMember.defaultTone;
 		public bool overrideSupplementaryTone => secondaryMember.overrideTone;
 
-		internal CompoundToneBodyType(ToneBodyMember primaryBuilder, ToneBodyMember secondaryBuilder, DescriptorWithArg<Body> longDesc,
+		internal CompoundToneBodyType(ToneBodyMember primaryBuilder, ToneBodyMember secondaryBuilder, DescriptorWithArg<BodyData> longDesc,
 			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
 			: base(primaryBuilder, secondaryBuilder, longDesc, playerDesc, transform, restore) { }
 
@@ -1541,28 +1561,43 @@ namespace CoC.Backend.BodyParts
 		public HairFurColors activeHairColor => hasHair ? hairColor : HairFurColors.NO_HAIR_FUR; //this is the same as hairColor, but will be empty if the character is bald. 
 		public readonly bool hasHair; //boolean determining if the character has any hair. this will be false if the character is bald or cannot grow hair.
 
-		internal BodyData(Guid id, Epidermis primary, Epidermis secondary, Epidermis fur, Epidermis skin, in HairData hairData, BodyType bodyType) : base(id, bodyType)
+		public readonly ReadOnlyPiercing<NavelPiercingLocation> navelPiercings;
+		public readonly ReadOnlyPiercing<HipPiercingLocation> hipPiercings;
+
+		public override BodyData AsCurrentData()
 		{
-			main = primary.AsReadOnlyData();
-			supplementary = secondary.AsReadOnlyData();
-
-			hairColor = hairData.hairColor;
-			hasHair = !hairData.hairDeactivated;
-
-			activeFur = fur.AsReadOnlyData();
-			mainSkin = skin.AsReadOnlyData();
+			return this;
 		}
 
-		internal BodyData(Guid id, EpidermalData primary, EpidermalData secondary, EpidermalData fur, EpidermalData skin, in HairData hairData, BodyType bodyType) : base(id, bodyType)
+		internal BodyData(Body source) : base(GetID(source), GetBehavior(source))
 		{
-			main = primary ?? throw new ArgumentNullException(nameof(primary));
-			supplementary = secondary ?? throw new ArgumentNullException(nameof(secondary));
+			main = source.mainEpidermis;
+			supplementary = source.supplementaryEpidermis;
 
-			hairColor = hairData.hairColor;
-			hasHair = !hairData.hairDeactivated;
+			hairColor = source.hairColor;
+			hasHair = source.hairActive;
 
-			activeFur = fur ?? throw new ArgumentNullException(nameof(fur));
-			mainSkin = skin ?? throw new ArgumentNullException(nameof(skin));
+			activeFur = source.activeFur;
+			mainSkin = source.primarySkin;
+
+			navelPiercings = source.navelPiercings.AsReadOnlyData();
+			hipPiercings = source.hipPiercings.AsReadOnlyData();
+		}
+
+		internal BodyData(Body source, EpidermalData mainSkinOverride, EpidermalData mainFurOverride, EpidermalData primaryOverride, EpidermalData secondaryOverride) 
+			: base(GetID(source), GetBehavior(source))
+		{
+			main = primaryOverride ?? source.mainEpidermis;
+			supplementary = secondaryOverride ?? source.supplementaryEpidermis;
+
+			hairColor = source.hairColor;
+			hasHair = source.hairActive;
+
+			activeFur = mainFurOverride ?? source.activeFur;
+			mainSkin = mainSkinOverride ?? source.primarySkin;
+
+			navelPiercings = source.navelPiercings.AsReadOnlyData();
+			hipPiercings = source.hipPiercings.AsReadOnlyData();
 		}
 
 		internal BodyData(Guid id) : base(id, BodyType.defaultValue)
@@ -1575,6 +1610,9 @@ namespace CoC.Backend.BodyParts
 
 			activeFur = new EpidermalData();
 			mainSkin = main;
+
+			navelPiercings = new ReadOnlyPiercing<NavelPiercingLocation>();
+			hipPiercings = new ReadOnlyPiercing<HipPiercingLocation>();
 		}
 	}
 }

@@ -23,7 +23,7 @@ namespace CoC.Frontend.StatusEffect
 
 		public override SimpleDescriptor ShortDescription => ODShort;
 
-		public override SimpleDescriptor FullDescription => ODFull;
+		public override SimpleDescriptor LongDescription => ODFull;
 
 		
 

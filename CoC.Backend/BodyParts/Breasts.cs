@@ -5,7 +5,6 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Tools;
 using System;
 
@@ -391,18 +390,25 @@ namespace CoC.Backend.BodyParts
 		public readonly CupSize cupSize;
 		public readonly int currBreastRowIndex;
 
+		public readonly byte numberOfBreasts;
+
+
+
 		internal BreastData(Breasts breasts, int currentBreastRow) : base(breasts?.creatureID ?? throw new ArgumentNullException(nameof(breasts)))
 		{
 			cupSize = breasts.cupSize;
 			nipples = breasts.nipples.AsReadOnlyData();
 
 			currBreastRowIndex = currentBreastRow;
+			numberOfBreasts = breasts.numBreasts;
 		}
 
 		internal BreastData(Breasts breasts, NippleData overrideNippleData, int currentBreastRow) : base(breasts?.creatureID ?? throw new ArgumentNullException(nameof(breasts)))
 		{
 			cupSize = breasts.cupSize;
 			nipples = overrideNippleData ?? throw new ArgumentNullException(nameof(overrideNippleData));
+
+			numberOfBreasts = breasts.numBreasts;
 
 			currBreastRowIndex = currentBreastRow;
 		}

@@ -5,7 +5,6 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
@@ -338,11 +337,15 @@ namespace CoC.Backend.BodyParts
 		public readonly bool isClitCock;
 		public readonly int VaginaIndex;
 
+		public readonly ReadOnlyPiercing<ClitPiercings> clitPiercings;
+
 		internal ClitData(Clit source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			length = source.length;
 			isClitCock = source.omnibusClit;
 			VaginaIndex = currIndex;
+
+			clitPiercings = source.clitPiercings.AsReadOnlyData();
 		}
 	}
 }

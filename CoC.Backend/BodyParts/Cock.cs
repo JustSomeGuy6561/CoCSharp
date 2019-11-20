@@ -6,7 +6,6 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System;
@@ -29,11 +28,11 @@ namespace CoC.Backend.BodyParts
 	//whoever decided to use the AS3 equivalent hack for an enum, though, not so much. that was some ugly ass shit.
 
 	//Note: this class exists after perks have been created, so it's postperk init is not called. 
-public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockData>, IGrowable, IShrinkable
+	public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockData>, IGrowable, IShrinkable
 	{
 
 		public override string BodyPartName() => Name();
-		
+
 		#region Consts
 
 		public const float MAX_COCK_LENGTH = 240f;
@@ -59,9 +58,21 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		#region Properties
 		public readonly bool isClitCock;
 
-		//if creature exists: if clitcock: -1. else index of cock in genitals collection.
-		//else: 0.
-		private int cockIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? isClitCock ? -1 : creature.genitals.cocks.IndexOf(this) : 0;
+		private int cockIndex
+		{
+			get
+			{
+				if (isClitCock) return -1;
+				else if (CreatureStore.TryGetCreature(creatureID, out Creature creature))
+				{
+					return creature.genitals.cocks.IndexOf(this);
+				}
+				else
+				{
+					return 0;
+				}
+			}
+		}
 
 		private float cockGrowthMultiplier => creature?.genitals.CockGrowthMultiplier ?? 1;
 		private float cockShrinkMultiplier => creature?.genitals.CockShrinkMultiplier ?? 1;
@@ -242,7 +253,10 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 
 		#endregion
 
-
+		public string AdjectiveText(bool multipleAdjectives)
+		{
+			return CockType.CockAdjectiveText(this, multipleAdjectives);
+		}
 
 		public override CockData AsReadOnlyData()
 		{
@@ -667,7 +681,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		public virtual float knotSize(float girth, float multiplier) => girth * multiplier;
 
 		private protected CockType(CockGroup cockGroup,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
 			ChangeType<CockData> transform, RestoreType<CockData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -677,7 +691,7 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		}
 
 		private protected CockType(CockGroup cockGroup, float initialKnotMultiplier, //any cocktype specific values.
-			SimpleDescriptor shortDesc, DescriptorWithArg<Cock> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
 			ChangeType<CockData> transform, RestoreType<CockData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -729,10 +743,10 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		private class FlexiCock : CockType
 		{
 			public override bool flexibleOrStretchyCock => true;
-			public FlexiCock(CockGroup cockGroup, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			public FlexiCock(CockGroup cockGroup, SimpleDescriptor shortDesc, DescriptorWithArg<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
 				ChangeType<CockData> transform, RestoreType<CockData> restore) : base(cockGroup, shortDesc, longDesc, playerDesc, transform, restore) { }
 
-			public FlexiCock(CockGroup cockGroup, float initialKnotMultiplier, SimpleDescriptor shortDesc, DescriptorWithArg<Cock> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			public FlexiCock(CockGroup cockGroup, float initialKnotMultiplier, SimpleDescriptor shortDesc, DescriptorWithArg<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
 				ChangeType<CockData> transform, RestoreType<CockData> restore) : base(cockGroup, initialKnotMultiplier, shortDesc, longDesc, playerDesc, transform, restore) { }
 		}
 	}
@@ -745,15 +759,29 @@ public sealed partial class Cock : BehavioralSaveablePart<Cock, CockType, CockDa
 		public readonly float girth;
 		public readonly int cockIndex;
 
+		public readonly ReadOnlyPiercing<CockPiercings> cockPiercings;
+
 		public float cockArea => length * girth;
 
-		public CockData(Cock source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)),  GetBehavior(source))
+		public string AdjectiveText(bool multipleAdjectives)
+		{
+			return CockType.CockAdjectiveText(this, multipleAdjectives);
+		}
+
+		public override CockData AsCurrentData()
+		{
+			return this;
+		}
+
+		public CockData(Cock source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)), GetBehavior(source))
 		{
 			knotMultiplier = source.knotMultiplier;
 			length = source.length;
 			girth = source.girth;
 			knotSize = source.knotSize;
 			cockIndex = currIndex;
+
+			cockPiercings = source.cockPiercings.AsReadOnlyData();
 		}
 	}
 }

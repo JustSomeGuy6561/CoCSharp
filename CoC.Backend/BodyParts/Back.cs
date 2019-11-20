@@ -22,8 +22,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public override string BodyPartName() => Name();
 
-		public HairFurColors hairFur { get; private set; } = HairFurColors.NO_HAIR_FUR; //set automatically via type property. can be manually set via dyeing.
-		public EpidermalData backEpidermis => epidermis.AsReadOnlyData();
+		public EpidermalData epidermalData => epidermis.AsReadOnlyData();
 
 		private Epidermis epidermis = new Epidermis();
 
@@ -66,8 +65,7 @@ namespace CoC.Backend.BodyParts
 
 		internal Back(Guid creatureID, BackType backType) : base(creatureID)
 		{
-			_type = backType ?? throw new ArgumentNullException();
-			_type.ParseEpidermis(epidermis);
+			type = backType ?? throw new ArgumentNullException();
 		}
 
 		internal Back(Guid creatureID) : this(creatureID, BackType.defaultValue) { }
@@ -87,7 +85,7 @@ namespace CoC.Backend.BodyParts
 
 		private void CheckDataChanged(BackData oldData)
 		{
-			if (!oldData.epidermis.Equals(backEpidermis))
+			if (!oldData.epidermis.Equals(epidermalData))
 			{
 				NotifyDataChanged(oldData);
 			}
@@ -247,7 +245,7 @@ namespace CoC.Backend.BodyParts
 		internal virtual SimpleDescriptor dyeText => GenericLocDesc;
 		public virtual bool hasSpecialEpidermis => false; //replaces usesHair, as we now have types that can use tones. we've fixed this with a single epidermis here.
 
-		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<Back> longDesc, PlayerBodyPartDelegate<Back> playerDesc,
+		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc,
 			ChangeType<BackData> transform, RestoreType<BackData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -313,7 +311,7 @@ namespace CoC.Backend.BodyParts
 			DRACONIC_MANE = new DragonBackMane();
 			DRACONIC_SPIKES = new BackType(DraconicSpikesDesc, DraconicSpikesLongDesc, DraconicSpikesPlayerStr, DraconicSpikesTransformStr, DraconicSpikesRestoreStr);
 			SHARK_FIN = new BackType(SharkFinDesc, SharkFinLongDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
-			TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TenderilLongDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
+			TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TendrilLongDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
 			BEHEMOTH = new BehemothBack();
 		}
 	}
@@ -363,7 +361,7 @@ namespace CoC.Backend.BodyParts
 		//BUT, given a callback to the resources, we can generate the attack here, using another callback. Clarity dictates i not do this, but fuck it.
 		private readonly GenerateResourceAttack getAttack; //a callback. takes another callback (that returns a ushort), and returns an attack that requires resources.
 		internal AttackableBackType(GenerateResourceAttack attackGetter, EpidermalData appearance,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Back> longDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
 			: base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			getAttack = attackGetter ?? throw new ArgumentNullException(nameof(attackGetter));
@@ -398,9 +396,14 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly EpidermalData epidermis;
 
+		public override BackData AsCurrentData()
+		{
+			return this;
+		}
+
 		internal BackData(Back back) : base(GetID(back), GetBehavior(back))
 		{
-			epidermis = back.backEpidermis;
+			epidermis = back.epidermalData;
 		}
 	}
 }

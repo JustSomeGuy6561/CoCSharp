@@ -35,10 +35,10 @@ namespace CoC.Backend.Creatures
 		
 
 		private sbyte bonusMinHunger { get; set; }
-		public byte minHunger => DEFAULT_HUNGER.delta(bonusMinHunger);
+		public byte minHunger => DEFAULT_HUNGER.offset(bonusMinHunger);
 
 		internal sbyte bonusMaxHunger { get; set; }
-		public byte maxHunger => HandleMaxStat(MAX_HUNGER.delta(bonusMaxHunger), minHunger);
+		public byte maxHunger => HandleMaxStat(MAX_HUNGER.offset(bonusMaxHunger), minHunger);
 
 
 		public PlayerBase(PlayerCreatorBase creator) : base(creator)

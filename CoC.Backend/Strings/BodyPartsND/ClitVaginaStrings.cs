@@ -13,14 +13,30 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Clit";
 		}
+
+		public string ShortDescription()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		public string LongDescription()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
 	}
 
-		public partial class Vagina
+	public partial class Vagina
 	{
 		public static string Name()
 		{
 			return "Vagina";
 		}
+
+		public string FullDescription()
+		{
+			return LongDescription() + " with a " + clit.LongDescription() + (virgin ? " and an intact hymen" : "") + ".";
+		}
+
 
 		private string VaginaTightenedUpDueToInactivity(VaginalLooseness currentLooseness)
 		{
@@ -38,8 +54,7 @@ namespace CoC.Backend.BodyParts
 			{
 				recoverText = " recovers from the brutal stretching it has received and tightens up a little bit, but not much.";
 			}
-			return Environment.NewLine + "Your " + shortDescription() + recoverText + Environment.NewLine;
-
+			return Environment.NewLine + "Your " + ShortDescription() + recoverText + Environment.NewLine;
 		}
 	}
 
@@ -49,7 +64,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagHumanLongDesc(Vagina vagina)
+		private static string VagHumanLongDesc(VaginaData vagina)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -61,7 +76,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagEquineLongDesc(Vagina vagina)
+		private static string VagEquineLongDesc(VaginaData vagina)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -81,7 +96,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VagSandTrapLongDesc(Vagina vagina)
+		private static string VagSandTrapLongDesc(VaginaData vagina)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

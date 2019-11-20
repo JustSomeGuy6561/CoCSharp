@@ -29,7 +29,7 @@ namespace CoC.Backend.BodyParts
 			return new HandData(this);
 		}
 
-		public SimpleDescriptor fullDescription => () => type.fullDescription(this);
+		public SimpleDescriptor LongDescription => () => type.LongDescription(AsReadOnlyData());
 	}
 
 	public partial class HandType : BehaviorBase
@@ -38,7 +38,7 @@ namespace CoC.Backend.BodyParts
 
 		protected enum HandStyle { HANDS, CLAWS, PAWS, OTHER }
 
-		public DescriptorWithArg<Hands> fullDescription;
+		public readonly DescriptorWithArg<HandData> LongDescription;
 		public override int index => _index;
 		protected readonly int _index;
 
@@ -63,10 +63,10 @@ namespace CoC.Backend.BodyParts
 			return Tones.NOT_APPLICABLE;
 		}
 
-		private protected HandType(HandStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<Hands> fullDesc) : base(shortDesc)
+		private protected HandType(HandStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<HandData> longDesc) : base(shortDesc)
 		{
 			_index = indexMaker++;
-			fullDescription = fullDesc;
+			LongDescription = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
 			handStyle = style;
 		}
 
@@ -129,7 +129,7 @@ namespace CoC.Backend.BodyParts
 		//default case. never procs, though that may change in the future, idk.
 		public bool isOther => type.isOther;
 
-		public string ShortDescription() => type.shortDescription();
+		public string LongDescription() => type.LongDescription(this);
 
 		public HandData(Hands source) : base(GetID(source), GetBehavior(source))
 		{
@@ -147,5 +147,7 @@ namespace CoC.Backend.BodyParts
 			if (source is null) throw new ArgumentNullException(nameof(source));
 			return source.type;
 		}
+
+		
 	}
 }

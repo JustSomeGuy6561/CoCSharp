@@ -67,8 +67,13 @@ namespace CoC.Backend.BodyParts
 			hands.LateInit();
 		}
 
-		public bool usesTone => type is ToneArms;
-		public bool usesFur => type is FurArms;
+		public bool usesPrimaryTone => type.hasPrimaryTone;
+		public bool usesPrimaryFur => type.hasPrimaryFur;
+		public bool usesSecondaryTone => type.hasSecondaryTone;
+		public bool usesSecondaryFur => type.hasSecondaryFur;
+
+		public bool usesAnyTone => usesPrimaryTone || usesSecondaryTone;
+		public bool usesAnyFur => usesPrimaryFur || usesSecondaryFur;
 
 		internal Arms(Guid creatureID) : this(creatureID, ArmType.defaultValue) { }
 
@@ -86,6 +91,11 @@ namespace CoC.Backend.BodyParts
 			bool retVal = ArmType.Validate(ref armType, correctInvalidData);
 			type = armType; //automatically sets hand.
 			return retVal;
+		}
+
+		public string EpidermisDescription()
+		{
+			return ArmType.ArmEpidermisDescription(epidermis, secondaryEpidermis);
 		}
 	}
 
@@ -119,7 +129,7 @@ namespace CoC.Backend.BodyParts
 		private readonly int _index;
 
 		private protected ArmType(HandType hand, EpidermisType epidermis,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> longDesc, PlayerBodyPartDelegate<Arms> playerDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<ArmData> longDesc, PlayerBodyPartDelegate<Arms> playerDesc,
 			ChangeType<ArmData> transform, RestoreType<ArmData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -162,10 +172,10 @@ namespace CoC.Backend.BodyParts
 
 
 		//DO NOT REORDER THESE (Under penalty of death lol)
-		public static readonly ToneArms HUMAN = new ToneArms(HandType.HUMAN, EpidermisType.SKIN, DefaultValueHelpers.defaultHumanTone, SkinTexture.NONDESCRIPT, true, HumanDescStr, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly ToneArms HUMAN = new ToneArms(HandType.HUMAN, EpidermisType.SKIN, DefaultValueHelpers.defaultHumanTone, SkinTexture.NONDESCRIPT, true, HumanDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
 		public static readonly FurArms HARPY = new FurArms(HandType.HUMAN, EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, FurTexture.NONDESCRIPT, true, HarpyDescStr, HarpyLongDesc, HarpyPlayerStr, HarpyTransformStr, HarpyRestoreStr);
 		public static readonly ToneArms SPIDER = new ToneArms(HandType.HUMAN, EpidermisType.CARAPACE, DefaultValueHelpers.defaultSpiderTone, SkinTexture.SHINY, false, SpiderDescStr, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr);
-		public static readonly ToneArms BEE = new ToneArms(HandType.HUMAN, EpidermisType.CARAPACE, DefaultValueHelpers.defaultBeeTone, SkinTexture.SHINY, false, BeeDescStr, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
+		public static readonly ToneArms BEE = new ToneArms(HandType.HUMAN, EpidermisType.CARAPACE, DefaultValueHelpers.defaultBeeTone, SkinTexture.SHINY, false, BeeDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
 		//I broke up predator arms to make the logic here easier. now all arms have one hand/claw type.
 		//you still have the ability to check for predator arms via a function below. no functionality has been lost.
 		public static readonly ToneArms DRAGON = new ToneArms(HandType.DRAGON, EpidermisType.SCALES, DefaultValueHelpers.defaultDragonTone, SkinTexture.NONDESCRIPT, true, DragonDescStr, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
@@ -276,7 +286,7 @@ namespace CoC.Backend.BodyParts
 
 
 		internal FurArms(HandType hand, FurBasedEpidermisType epidermis, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> longDesc, PlayerBodyPartDelegate<Arms> playerDesc, ChangeType<ArmData> transform, RestoreType<ArmData> restore) :
+			SimpleDescriptor shortDesc, DescriptorWithArg<ArmData> longDesc, PlayerBodyPartDelegate<Arms> playerDesc, ChangeType<ArmData> transform, RestoreType<ArmData> restore) :
 			base(hand, epidermis, shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultColor = new FurColor(defaultFurColor);
@@ -319,7 +329,7 @@ namespace CoC.Backend.BodyParts
 		public readonly Tones defaultTone;
 		protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 		internal ToneArms(HandType hand, ToneBasedEpidermisType epidermis, Tones defTone, SkinTexture defaultSkinTexture, bool canChange,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Arms> longDesc, PlayerBodyPartDelegate<Arms> playerDesc, ChangeType<ArmData> transform, RestoreType<ArmData> restore) :
+			SimpleDescriptor shortDesc, DescriptorWithArg<ArmData> longDesc, PlayerBodyPartDelegate<Arms> playerDesc, ChangeType<ArmData> transform, RestoreType<ArmData> restore) :
 			base(hand, epidermis, shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultTexture = defaultSkinTexture;
@@ -339,17 +349,33 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class ArmData : BehavioralSaveablePartData<ArmData, Arms, ArmType>
 	{
-		public readonly EpidermalData primaryEpidermis;
+		public readonly EpidermalData epidermis;
 		public readonly EpidermalData secondaryEpidermis;
-		public readonly HandData handData;
+		public readonly HandData hands;
 
-		public bool usesTone => type is ToneArms;
-		public bool usesFur => type is FurArms;
+		public bool usesPrimaryTone => type.hasPrimaryTone;
+		public bool usesPrimaryFur => type.hasPrimaryFur;
+		public bool usesSecondaryTone => type.hasSecondaryTone;
+		public bool usesSecondaryFur => type.hasSecondaryFur;
+
+		public bool usesAnyTone => usesPrimaryTone || usesSecondaryTone;
+		public bool usesAnyFur => usesPrimaryFur || usesSecondaryFur;
+
+		public string EpidermisDescription()
+		{
+			return ArmType.ArmEpidermisDescription(epidermis, secondaryEpidermis);
+		}
+
+		public override ArmData AsCurrentData()
+		{
+			return this;
+		}
+
 
 		public ArmData(Arms source) : base(GetID(source), GetBehavior(source))
 		{
-			handData = source.hands.AsReadOnlyData();
-			primaryEpidermis = source.epidermis;
+			hands = source.hands.AsReadOnlyData();
+			epidermis = source.epidermis;
 			secondaryEpidermis = source.secondaryEpidermis;
 		}
 	}

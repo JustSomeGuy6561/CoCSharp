@@ -135,7 +135,7 @@ namespace CoC.Backend.BodyParts
 		public static EarType defaultValue => HUMAN;
 
 
-		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<Ears> longDesc, PlayerBodyPartDelegate<Ears> playerDesc,
+		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<EarData> longDesc, PlayerBodyPartDelegate<Ears> playerDesc,
 			ChangeType<EarData> transform, RestoreType<EarData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -212,7 +212,7 @@ namespace CoC.Backend.BodyParts
 	public class FurEarType : EarType
 	{
 		public readonly FurColor defaultFur;
-		public FurEarType(FurColor defaultColor, SimpleDescriptor shortDesc, DescriptorWithArg<Ears> longDesc, PlayerBodyPartDelegate<Ears> playerDesc,
+		public FurEarType(FurColor defaultColor, SimpleDescriptor shortDesc, DescriptorWithArg<EarData> longDesc, PlayerBodyPartDelegate<Ears> playerDesc,
 			ChangeType<EarData> transform, RestoreType<EarData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultFur = defaultColor;
@@ -234,9 +234,18 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly ReadOnlyFurColor earFurColor;
 
+		public readonly ReadOnlyPiercing<EarPiercings> earPiercings;
+
+		public override EarData AsCurrentData()
+		{
+			return this;
+		}
+
 		internal EarData(Ears source) : base(GetID(source), GetBehavior(source))
 		{
 			earFurColor = source.earFurColor;
+
+			earPiercings = source.earPiercings.AsReadOnlyData();
 		}
 	}
 

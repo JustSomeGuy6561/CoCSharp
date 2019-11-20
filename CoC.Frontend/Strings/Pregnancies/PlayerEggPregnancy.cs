@@ -70,7 +70,7 @@ namespace CoC.Frontend.Pregnancies
 				{
 					sb.Append("A strange desire overwhelms your sensibilities, forcing you to shed your " /*+ mother.armorName */ + " and drop to your hands and knees. " +
 						"You manage to roll over and prop yourself up against a smooth rock, looking down over your pregnant-looking belly as green fluids leak from you, soaking into the ground. " +
-						"A powerful contraction rips through you and your legs spread instinctively, opening your " + player.vaginas[0].shortDescription() + " to better deposit your precious cargo. " +
+						"A powerful contraction rips through you and your legs spread instinctively, opening your " + player.vaginas[0].ShortDescription() + " to better deposit your precious cargo. " +
 						"You see the rounded surface of an egg peek through your lips, mottled with strange colors. You push hard and it drops free with an abrupt violent motion. " +
 						"The friction and slimy fluids begin to arouse you, flooding your groin with heat as you feel the second egg pushing down. It slips free with greater ease than the first, " +
 						 "arousing you further as you bleat out a moan from the unexpected pleasure. Before it stops rolling on the ground, you feel the next egg sliding down your slime-slicked passage, " +
@@ -133,7 +133,7 @@ namespace CoC.Frontend.Pregnancies
 
 				else //if (mother.vaginas[0].clit.length <= 2)
 				{
-					sb.Append("your " + player.vaginas[0].shortDescription() + " by pulling your folds wide and playing with your clit. Another egg pops free from your diminishing belly, accompanied by an audible burst of relief. You make wet 'schlick'ing sounds as you spread the slime around, vigorously frigging yourself. ");
+					sb.Append("your " + player.vaginas[0].ShortDescription() + " by pulling your folds wide and playing with your clit. Another egg pops free from your diminishing belly, accompanied by an audible burst of relief. You make wet 'schlick'ing sounds as you spread the slime around, vigorously frigging yourself. ");
 				}
 
 				sb.Append("You cum hard, the big eggs each making your cunt gape wide just before popping free. You slump down, exhausted and barely conscious from the force of the orgasm. ");
@@ -141,7 +141,7 @@ namespace CoC.Frontend.Pregnancies
 				if (eggCount >= 11)
 				{
 					sb.Append("Your swollen belly doesn't seem to be done with you, as yet another egg pushes its way to freedom. The stimulation so soon after orgasm pushes you into a pleasure-stupor. " +
-						"If anyone or anything discovered you now, they would see you collapsed next to a pile of eggs, your fingers tracing the outline of your " + player.vaginas[0].shortDescription() + " as more and more eggs pop free. " +
+						"If anyone or anything discovered you now, they would see you collapsed next to a pile of eggs, your fingers tracing the outline of your " + player.vaginas[0].ShortDescription() + " as more and more eggs pop free. " +
 						"In time your wits return, leaving you with the realization that you are no longer pregnant. ");
 				}
 

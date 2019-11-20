@@ -16,7 +16,7 @@ namespace CoC.Frontend.StatusEffect
 
 		public override SimpleDescriptor ShortDescription => throw new NotImplementedException();
 
-		public override SimpleDescriptor FullDescription => throw new NotImplementedException();
+		public override SimpleDescriptor LongDescription => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{

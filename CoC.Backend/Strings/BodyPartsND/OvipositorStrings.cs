@@ -21,7 +21,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "";
 		}
-		private static string NoneLongDesc(Ovipositor ovipositor)
+		private static string NoneLongDesc(OvipositorData ovipositor)
 		{
 			return "";
 		}
@@ -42,7 +42,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderLongDesc(Ovipositor ovipositor)
+		private static string SpiderLongDesc(OvipositorData ovipositor)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -63,7 +63,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeLongDesc(Ovipositor ovipositor)
+		private static string BeeLongDesc(OvipositorData ovipositor)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

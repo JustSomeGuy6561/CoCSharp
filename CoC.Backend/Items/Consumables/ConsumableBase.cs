@@ -19,7 +19,7 @@ namespace CoC.Backend.Items.Consumables
 		}
 
 		//does this consumable count as liquid for slimes?
-		public abstract bool countsAsSlimeLiquid { get; }
+		public abstract bool countsAsLiquid { get; }
 		//does this consumable count as cum for succubi?
 		public abstract bool countsAsCum { get; }
 		//how much hunger does consuming this sate? hunger is weird in that it counts down the hungrier you get. this is the amount less hungry you are after consuming it.

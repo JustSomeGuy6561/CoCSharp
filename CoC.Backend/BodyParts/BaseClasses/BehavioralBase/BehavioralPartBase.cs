@@ -43,7 +43,7 @@ namespace CoC.Backend.BodyParts
 
 		public virtual int index => type.index;
 
-		public virtual SimpleDescriptor shortDescription => type.shortDescription;
+		public virtual string ShortDescription() => type.shortDescription();
 
 		protected internal virtual void PostPerkInit()
 		{ }

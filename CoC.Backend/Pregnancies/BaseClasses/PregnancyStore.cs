@@ -3,12 +3,11 @@
 //Author: JustSomeGuy
 //4/7/2019, 7:57 PM
 using CoC.Backend.BodyParts;
-using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
+using CoC.Backend.Reaction;
 using CoC.Backend.Tools;
 using System;
-using CoC.Backend.Reaction;
 
 namespace CoC.Backend.Pregnancies
 {
@@ -37,7 +36,7 @@ namespace CoC.Backend.Pregnancies
 
 		public override ReadOnlyPregnancyStore AsReadOnlyData()
 		{
-			return new ReadOnlyPregnancyStore(creatureID, spawnType.AsReadOnlyData(), birthCountdown);
+			return new ReadOnlyPregnancyStore(this);
 		}
 
 
@@ -47,7 +46,7 @@ namespace CoC.Backend.Pregnancies
 
 		internal void onConsumeLiquid()
 		{
-			if (hasDiapause)
+			if (hasDiapause && isPregnant)
 			{
 				diapauseHours += (byte)(Utils.Rand(3) + 1);
 				doDiapauseText = true;
@@ -71,12 +70,12 @@ namespace CoC.Backend.Pregnancies
 			}
 			else if (this.spawnType != null)
 			{
-				if (spawnType.HandleNewKnockupAttempt(type, out StandardSpawnType newType)) 
+				if (spawnType.HandleNewKnockupAttempt(type, out StandardSpawnType newType))
 				{
 					var oldData = spawnType.AsReadOnlyData();
 					spawnType = newType;
 
-					source?.RaiseKnockupEvent(spawnType, this, oldData);
+					source?.RaiseKnockupEvent(this, oldData);
 
 					return true;
 				}
@@ -87,7 +86,7 @@ namespace CoC.Backend.Pregnancies
 				spawnType = type;
 				hoursTilBirth = type.hoursToBirth;
 
-				source?.RaiseKnockupEvent(spawnType, this);
+				source?.RaiseKnockupEvent(this);
 				return true;
 			}
 			return false;
@@ -129,6 +128,24 @@ namespace CoC.Backend.Pregnancies
 			return false;
 		}
 
+		//clears the current pregnancy.
+		protected internal bool AbortPregnancy()
+		{
+			if (!isPregnant)
+			{
+				return false;
+			}
+			else
+			{
+				spawnType = null;
+				hoursTilBirth = 0;
+				diapauseHours = 0;
+				doDiapauseText = false;
+				source.RaiseKnockupEvent(this);
+				return true;
+			}
+		}
+
 		#region ITimeListener
 		TimeReactionBase ITimeActiveListenerFull.reactToHourPassing()
 		{
@@ -140,11 +157,11 @@ namespace CoC.Backend.Pregnancies
 			{
 				if (hasDiapause)
 				{
-					diapauseHours --;
+					diapauseHours--;
 
 					if (doDiapauseText)
 					{
-						output = new GenericSimpleReaction((_,__)=>DiapauseText());
+						output = new GenericSimpleReaction((_, __) => DiapauseText());
 						doDiapauseText = false;
 					}
 				}
@@ -202,11 +219,28 @@ namespace CoC.Backend.Pregnancies
 		public readonly StandardSpawnData spawnType;
 		public readonly ushort hoursTilBirth;
 
+		public readonly bool hasDiapause;
 
-		public ReadOnlyPregnancyStore(Guid creatureID, StandardSpawnData spawnType, ushort hoursToBirth) : base(creatureID)
+		public readonly float pregnancyMultiplier;
+		
+		public readonly bool eggSizeKnown;
+		
+		public readonly bool eggSizeLarge;
+		
+		public readonly bool isPregnant;
+		
+		public readonly uint totalBirthCount;
+
+		public ReadOnlyPregnancyStore(PregnancyStore source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			this.spawnType = spawnType;
-			hoursTilBirth = hoursToBirth;
+			spawnType = source.spawnType.AsReadOnlyData();
+			hoursTilBirth = source.birthCountdown;
+			hasDiapause = source.hasDiapause;
+			pregnancyMultiplier = source.pregnancyMultiplier;
+			eggSizeKnown = source.eggSizeKnown;
+			eggSizeLarge = source.eggsLarge;
+			isPregnant = source.isPregnant;
+			totalBirthCount = source.totalBirthCount;
 		}
 	}
 }

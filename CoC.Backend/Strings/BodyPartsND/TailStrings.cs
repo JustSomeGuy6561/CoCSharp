@@ -23,7 +23,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "non-existant tail";
 		}
-		protected static string NoTailLongDesc(Tail tail)
+		protected static string NoTailLongDesc(TailData tail)
 		{
 			return "non-existant tail";
 		}
@@ -43,13 +43,13 @@ namespace CoC.Backend.BodyParts
 		{
 			return "horse tail";
 		}
-		private static string HorseLongDesc(Tail tail)
+		private static string HorseLongDesc(TailData tail)
 		{
-			return tail.epidermis.shortDescription() + "horse tail";
+			return tail.primaryEpidermis.ShortDescription() + "horse tail";
 		}
 		private static string HorsePlayerStr(Tail tail, PlayerBase player)
 		{
-			return "A long " + tail.epidermis.justColor() + " horsetail hangs from your butt, smooth and shiny.";
+			return "A long " + tail.epidermis.JustColor() + " horsetail hangs from your butt, smooth and shiny.";
 		}
 		private static string HorseTransformStr(TailData previousTailData, PlayerBase player)
 		{
@@ -81,10 +81,8 @@ namespace CoC.Backend.BodyParts
 		{
 			return "dog tail";
 		}
-		private static string DogLongDesc(Tail tail)
+		private static string DogLongDesc(TailData tail)
 		{
-
-			//return "dog tail";
 			return "fluffy dog tail";
 		}
 		private static string DogPlayerStr(Tail tail, PlayerBase player)
@@ -124,14 +122,16 @@ namespace CoC.Backend.BodyParts
 		{
 			return "demonic tail";
 		}
-		private static string DemonLongDesc(Tail tail)
+		private static string DemonLongDesc(TailData tail)
 		{
-			if (tail.isPierced && Utils.Rand(10) <= 2)
+			if (tail.tailPiercings.wearingJewelry && Utils.Rand(10) <= 2)
 			{
 				return "pierced, demonic tail";
 			}
 			return "demonic tail";
 		}
+
+
 		private static string DemonPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -171,7 +171,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cow tail";
 		}
-		private static string CowLongDesc(Tail tail)
+		private static string CowLongDesc(TailData tail)
 		{
 			return "cow tail";
 		}
@@ -204,7 +204,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "spider abdomen";
 		}
-		private static string SpiderLongDesc(Tail tail)
+		private static string SpiderLongDesc(TailData tail)
 		{
 			//maybe include venom count indication, idk.
 			return "spider abdomen";
@@ -253,7 +253,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "bee abdomen";
 		}
-		private static string BeeLongDesc(Tail tail)
+		private static string BeeLongDesc(TailData tail)
 		{
 			//maybe include venom count indication, idk.
 			return "bee abdomen";
@@ -296,10 +296,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "shark tail";
 		}
-		private static string SharkLongDesc(Tail tail)
+		private static string SharkLongDesc(TailData tail)
 		{
 			return "rough shark tail";
 		}
+
 		private static string SharkPlayerStr(Tail tail, PlayerBase player)
 		{
 			return "A long shark-tail trails down from your backside, swaying to and fro while giving you a dangerous air.";
@@ -338,10 +339,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cat tail";
 		}
-		private static string CatLongDesc(Tail tail)
+		private static string CatLongDesc(TailData tail)
 		{
 			return "cat tail";
 		}
+
 		private static string CatPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -393,10 +395,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "lizard tail";
 		}
-		private static string LizardLongDesc(Tail tail)
+		private static string LizardLongDesc(TailData tail)
 		{
 			return "lizard tail";
 		}
+
 		private static string LizardPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -424,10 +427,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "rabbit tail";
 		}
-		private static string RabbitLongDesc(Tail tail)
+		private static string RabbitLongDesc(TailData tail)
 		{
 			return "puffy rabbit tail";
 		}
+
 		private static string RabbitPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -446,10 +450,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "harpy tail";
 		}
-		private static string HarpyLongDesc(Tail tail)
+		private static string HarpyLongDesc(TailData tail)
 		{
 			return "feathery harpy tail";
 		}
+
 		private static string HarpyPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -468,10 +473,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "kangaroo tail";
 		}
-		private static string KangarooLongDesc(Tail tail)
+		private static string KangarooLongDesc(TailData tail)
 		{
 			return "kangaroo tail";
 		}
+
 		private static string KangarooPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -490,7 +496,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "fox tail";
 		}
-		protected static string FoxLongDesc(Tail tail)
+		protected static string FoxLongDesc(TailData tail)
 		{
 			byte count = tail.tailCount;
 			if (count > 5)
@@ -518,6 +524,7 @@ namespace CoC.Backend.BodyParts
 				return "fox tail";
 			}
 		}
+
 		protected static string FoxPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -539,18 +546,19 @@ namespace CoC.Backend.BodyParts
 		{
 			return "draconic tail";
 		}
-		private static string DragonLongDesc(Tail tail)
+		private static string DragonLongDesc(TailData tail)
 		{
 			return "fierce draconic tail";
 		}
+
 		private static string DragonPlayerStr(Tail tail, PlayerBase player)
 		{
 			if (tail.epidermis.type != tail.secondaryEpidermis.type
 				|| (tail.epidermis.usesFur && !tail.epidermis.fur.Equals(tail.secondaryEpidermis.fur))
 				|| (tail.epidermis.usesTone && tail.epidermis.tone != tail.secondaryEpidermis.tone))
 			{
-				return "A thick, muscular, reptilian tail covered in " + tail.epidermis.fullDescription() + " with "
-					+ tail.secondaryEpidermis.fullDescription() + " along its underside, almost as long as you are tall,"
+				return "A thick, muscular, reptilian tail covered in " + tail.epidermis.LongDescription() + " with "
+					+ tail.secondaryEpidermis.LongDescription() + " along its underside, almost as long as you are tall,"
 					+ " swishes slowly from side to side behind you. Its tip menaces with sharp spikes of bone, "
 					+ "and could easily cause serious harm with a good sweep.";
 			}
@@ -573,14 +581,15 @@ namespace CoC.Backend.BodyParts
 		{
 			return "raccoon tail";
 		}
-		private static string RaccoonLongDesc(Tail tail)
+		private static string RaccoonLongDesc(TailData tail)
 		{
 			return "raccoon tail";
 		}
+
 		private static string RaccoonPlayerStr(Tail tail, PlayerBase player)
 		{
 			//may want to check for black.
-			return "A black-and-" + tail.epidermis.justColor() + "-ringed raccoon tail waves behind you.";
+			return "A black-and-" + tail.epidermis.JustColor() + "-ringed raccoon tail waves behind you.";
 		}
 		private static string RaccoonTransformStr(TailData previousTailData, PlayerBase player)
 		{
@@ -594,13 +603,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return "mouse tail";
 		}
-		private static string MouseLongDesc(Tail tail)
+		private static string MouseLongDesc(TailData tail)
 		{
 			return "bushy mouse tail";
 		}
+
 		private static string MousePlayerStr(Tail tail, PlayerBase player)
 		{
-			return "A naked, " + tail.epidermis.justColor() + " mouse tail pokes from your butt, dragging on the ground and twitching occasionally.";
+			return "A naked, " + tail.epidermis.JustColor() + " mouse tail pokes from your butt, dragging on the ground and twitching occasionally.";
 		}
 		private static string MouseTransformStr(TailData previousTailData, PlayerBase player)
 		{
@@ -614,13 +624,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return "ferret tail";
 		}
-		private static string FerretLongDesc(Tail tail)
+		private static string FerretLongDesc(TailData tail)
 		{
 			return "ferret tail";
 		}
+
 		private static string FerretPlayerStr(Tail tail, PlayerBase player)
 		{
-			return "Sprouting from your backside, you have a long, bushy tail. It’s covered in a fluffy layer of " + tail.epidermis.descriptionWithColor()
+			return "Sprouting from your backside, you have a long, bushy tail. It’s covered in a fluffy layer of " + tail.epidermis.DescriptionWithColor()
 				+ " It twitches and moves happily with your body when you are excited.";
 		}
 		private static string FerretTransformStr(TailData previousTailData, PlayerBase player)
@@ -636,10 +647,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "behemoth tail";
 		}
-		private static string BehemothLongDesc(Tail tail)
+		private static string BehemothLongDesc(TailData tail)
 		{
 			return "behemoth tail";
 		}
+
 		private static string BehemothPlayerStr(Tail tail, PlayerBase player)
 		{
 			return "A long seemingly-tapering tail pokes from your butt, ending in spikes just like behemoth's.";
@@ -656,10 +668,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "pig tail";
 		}
-		private static string PigLongDesc(Tail tail)
+		private static string PigLongDesc(TailData tail)
 		{
 			return "curly pig tail";
 		}
+
 		private static string PigPlayerStr(Tail tail, PlayerBase player)
 		{
 			return "A short, curly pig tail sprouts from just above your butt.";
@@ -676,11 +689,12 @@ namespace CoC.Backend.BodyParts
 		{
 			return "scorpion tail";
 		}
-		private static string ScorpionLongDesc(Tail tail)
+		private static string ScorpionLongDesc(TailData tail)
 		{
 			//add venom count flavor text.
 			return "scorpion tail";
 		}
+
 		private static string ScorpionPlayerStr(Tail tail, PlayerBase player)
 		{
 			return "A chitinous scorpion tail sprouts from just above your butt, ready to dispense venom.";
@@ -697,10 +711,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "goat tail";
 		}
-		private static string GoatLongDesc(Tail tail)
+		private static string GoatLongDesc(TailData tail)
 		{
 			return "goat tail";
 		}
+
 		private static string GoatPlayerStr(Tail tail, PlayerBase player)
 		{
 			return "A very short, stubby goat tail sprouts from just above your butt.";
@@ -717,10 +732,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "rhino tail";
 		}
-		private static string RhinoLongDesc(Tail tail)
+		private static string RhinoLongDesc(TailData tail)
 		{
 			return "rhino tail";
 		}
+
 		private static string RhinoPlayerStr(Tail tail, PlayerBase player)
 		{
 			return "A ropey rhino tail sprouts from just above your butt, swishing from time to time.";
@@ -737,10 +753,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "echidna tail";
 		}
-		private static string EchidnaLongDesc(Tail tail)
+		private static string EchidnaLongDesc(TailData tail)
 		{
 			return "echidna tail";
 		}
+
 		private static string EchidnaPlayerStr(Tail tail, PlayerBase player)
 		{
 			//return "A stumpy echidna tail forms just about your " + player.butt.shortDescription() + ".";
@@ -758,10 +775,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "deer tail";
 		}
-		private static string DeerLongDesc(Tail tail)
+		private static string DeerLongDesc(TailData tail)
 		{
 			return "short deer tail";
 		}
+
 		private static string DeerPlayerStr(Tail tail, PlayerBase player)
 		{
 			return "A very short, stubby deer tail sprouts from just above your butt.";
@@ -778,10 +796,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "salamander tail";
 		}
-		private static string SalamanderLongDesc(Tail tail)
+		private static string SalamanderLongDesc(TailData tail)
 		{
 			return "flame-tipped salamander tail";
 		}
+
 		private static string SalamanderPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -801,10 +820,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolf tail";
 		}
-		private static string WolfLongDesc(Tail tail)
+		private static string WolfLongDesc(TailData tail)
 		{
 			return "wolf tail";
 		}
+
 		private static string WolfPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -822,10 +842,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "sheep tail";
 		}
-		private static string SheepLongDesc(Tail tail)
+		private static string SheepLongDesc(TailData tail)
 		{
 			return "short, fluffy sheep tail";
 		}
+
 		private static string SheepPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -844,10 +865,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "imp tail";
 		}
-		private static string ImpLongDesc(Tail tail)
+		private static string ImpLongDesc(TailData tail)
 		{
 			return "imp tail";
 		}
+
 		private static string ImpPlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -867,10 +889,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cockatrice tail";
 		}
-		private static string CockatriceLongDesc(Tail tail)
+		private static string CockatriceLongDesc(TailData tail)
 		{
 			return "cockatrice tail";
 		}
+
 		private static string CockatricePlayerStr(Tail tail, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -889,14 +912,15 @@ namespace CoC.Backend.BodyParts
 		{
 			return "red-panda tail";
 		}
-		private static string RedPandaLongDesc(Tail tail)
+		private static string RedPandaLongDesc(TailData tail)
 		{
 			return "red-panda tail";
 		}
+
 		private static string RedPandaPlayerStr(Tail tail, PlayerBase player)
 		{
 			return "Sprouting from your backside, you have a long, bushy tail. It has a beautiful pattern of rings in "
-				+ tail.epidermis.justColor() + " and " + tail.secondaryEpidermis.justColor() + "fluffy fur. "
+				+ tail.epidermis.JustColor() + " and " + tail.secondaryEpidermis.JustColor() + "fluffy fur. "
 				+ "It waves playfully as you walk giving to your step a mesmerizing touch.";
 		}
 		private static string RedPandaTransformStr(TailData previousTailData, PlayerBase player)

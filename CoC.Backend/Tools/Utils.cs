@@ -247,6 +247,11 @@ namespace CoC.Backend.Tools
 				return x + "th";
 			}
 		}
+
+		public static string NewParagraph()
+		{
+			return Environment.NewLine + Environment.NewLine;
+		}
 	}
 
 	[Serializable]

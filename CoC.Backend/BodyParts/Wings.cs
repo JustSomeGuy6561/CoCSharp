@@ -56,6 +56,8 @@ public HairFurColors featherColor
 
 		public bool hasWings => type != WingType.NONE;
 		public bool canFly => type != WingType.NONE && isLarge;
+		public bool usesTone => type.usesTone;
+		public bool usesHair => type.usesHair;
 
 		internal Wings(Guid creatureID) : this(creatureID, WingType.defaultValue)
 		{ }
@@ -455,7 +457,7 @@ public HairFurColors featherColor
 		public bool defaultIsLarge => UpdateSizeOnTransform(false);
 
 		protected WingType(bool canFly,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Wings> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
 			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -465,7 +467,7 @@ public HairFurColors featherColor
 		}
 		//wings that support large wings need to define a behavior on transform - do they keep the large wings?
 		protected WingType(BehaviorOnTransform behaviorOnTransform,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Wings> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
 			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -557,13 +559,13 @@ public HairFurColors featherColor
 	public class FeatheredWings : WingType
 	{
 		public readonly HairFurColors defaultFeatherColor;
-		public FeatheredWings(HairFurColors defaultHair, bool canFly, SimpleDescriptor shortDesc, DescriptorWithArg<Wings> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
+		public FeatheredWings(HairFurColors defaultHair, bool canFly, SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
 			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(canFly, shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultFeatherColor = defaultHair;
 		}
 
-		public FeatheredWings(HairFurColors defaultHair, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<Wings> longDesc,
+		public FeatheredWings(HairFurColors defaultHair, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc,
 			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore) : base(behaviorOnTransform, shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultFeatherColor = defaultHair;
@@ -596,14 +598,14 @@ public HairFurColors featherColor
 	{
 		public readonly Tones defaultWingTone;
 		public readonly Tones defaultWingBoneTone;
-		public TonableWings(Tones defaultTone, Tones defaultBoneTone, bool canFly, SimpleDescriptor shortDesc, DescriptorWithArg<Wings> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
+		public TonableWings(Tones defaultTone, Tones defaultBoneTone, bool canFly, SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
 			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(canFly, shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultWingTone = defaultTone;
 			defaultWingBoneTone = defaultBoneTone;
 		}
 
-		public TonableWings(Tones defaultTone, Tones defaultBoneTone, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<Wings> longDesc,
+		public TonableWings(Tones defaultTone, Tones defaultBoneTone, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc,
 			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore) : base(behaviorOnTransform, shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultWingTone = defaultTone;
@@ -644,12 +646,23 @@ public HairFurColors featherColor
 		public readonly Tones wingBoneTone;
 		public readonly bool isLarge;
 
+		public readonly bool usesHair;
+		public readonly bool usesTone;
+
+		public override WingData AsCurrentData()
+		{
+			return this;
+		}
+
 		internal WingData(Wings source) : base(GetID(source), GetBehavior(source))
 		{
 			featherColor = source.featherColor;
 			wingTone = source.wingTone;
 			wingBoneTone = source.wingBoneTone;
 			isLarge = source.isLarge;
+
+			usesHair = source.usesHair;
+			usesTone = source.usesTone;
 		}
 	}
 }

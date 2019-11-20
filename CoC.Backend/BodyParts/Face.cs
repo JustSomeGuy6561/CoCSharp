@@ -112,6 +112,12 @@ namespace CoC.Backend.BodyParts
 			return new FaceData(this);
 		}
 
+		public override string ShortDescription()
+		{
+			if (isFullMorph) return type.secondLevelShortDescription();
+			else return type.shortDescription();
+		}
+
 		internal override bool UpdateType(FaceType newType)
 		{
 			if (newType == null || type == newType)
@@ -398,6 +404,9 @@ namespace CoC.Backend.BodyParts
 		AttackBase ICanAttackWith.attack => type.attack;
 	}
 
+	//facial features are occasionally described differently if they classify as "muzzle". IDK - maybe in the future more types will be added. for now it's just a boolean -
+	//is it a muzzle or is it not?. If you want more types, switch it to an enum. 
+	//public enum FacialStructure { HUMANOID, MUZZLE, }
 
 	public abstract partial class FaceType : SaveableBehavior<FaceType, Face, FaceData>
 	{
@@ -427,8 +436,8 @@ namespace CoC.Backend.BodyParts
 
 		private protected FaceType(EpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc,
 			bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText,
-			DescriptorWithArg<Face> fullDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform,
-			RestoreType<FaceData> restore) : base(firstLevelShortDesc, fullDesc, playerStr, transform, restore)
+			DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform,
+			RestoreType<FaceData> restore) : base(firstLevelShortDesc, longDesc, playerStr, transform, restore)
 		{
 			_index = indexMaker++;
 			secondLevelShortDescription = secondLevelShortDesc;
@@ -442,8 +451,8 @@ namespace CoC.Backend.BodyParts
 		}
 
 		private protected FaceType(EpidermisType epidermisType, bool isMuzzle,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, PlayerBodyPartDelegate<Face> playerStr,
-			ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(shortDesc, fullDesc, playerStr, transform, restore)
+			SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr,
+			ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(shortDesc, longDesc, playerStr, transform, restore)
 		{
 			_index = indexMaker++;
 			secondLevelShortDescription = GlobalStrings.None;
@@ -560,15 +569,15 @@ namespace CoC.Backend.BodyParts
 
 		private class ToneFace : FaceType
 		{
-			public ToneFace(ToneBasedEpidermisType epidermisType, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc, PlayerBodyPartDelegate<Face> playerStr,
-				ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, isMuzzle, shortDesc, fullDesc, playerStr, transform, restore)
+			public ToneFace(ToneBasedEpidermisType epidermisType, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr,
+				ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, isMuzzle, shortDesc, longDesc, playerStr, transform, restore)
 			{
 			}
 
 			public ToneFace(ToneBasedEpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, bool firstLevelMuzzle,
-				bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<Face> fullDesc, PlayerBodyPartDelegate<Face> playerStr,
+				bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr,
 				ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle,
-					secondLevelMuzzle, strengthenWeakenMorphText, fullDesc, playerStr, transform, restore)
+					secondLevelMuzzle, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
 			{
 			}
 
@@ -584,18 +593,18 @@ namespace CoC.Backend.BodyParts
 		{
 			private readonly Tones defaultSecondaryTone;
 
-			public MultiToneFace(ToneBasedEpidermisType epidermisType, Tones secondaryToneFallback, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc,
+			public MultiToneFace(ToneBasedEpidermisType epidermisType, Tones secondaryToneFallback, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc,
 				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, isMuzzle, shortDesc, fullDesc, playerStr, transform, restore)
+				: base(epidermisType, isMuzzle, shortDesc, longDesc, playerStr, transform, restore)
 			{
 				defaultSecondaryTone = secondaryToneFallback;
 			}
 
 
 			public MultiToneFace(ToneBasedEpidermisType epidermisType, Tones secondaryToneFallback, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc,
-				bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<Face> fullDesc,
+				bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc,
 				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, fullDesc, playerStr, transform, restore)
+				: base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
 			{
 				defaultSecondaryTone = secondaryToneFallback;
 			}
@@ -614,17 +623,17 @@ namespace CoC.Backend.BodyParts
 
 			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 
-			public FurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<Face> fullDesc,
+			public FurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc,
 				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, isMuzzle, shortDesc, fullDesc, playerStr, transform, restore)
+				: base(epidermisType, isMuzzle, shortDesc, longDesc, playerStr, transform, restore)
 			{
 				defaultColor = fallbackColor;
 			}
 
 			public FurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc,
-				bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<Face> fullDesc,
+				bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc,
 				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, fullDesc, playerStr, transform, restore)
+				: base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
 			{
 				defaultColor = fallbackColor;
 			}
@@ -653,16 +662,16 @@ namespace CoC.Backend.BodyParts
 			private readonly FurColor secondaryDefaultColor;
 
 			public MultiFurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, FurColor secondaryFallbackColor, bool isMuzzle, SimpleDescriptor shortDesc,
-				DescriptorWithArg<Face> fullDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, fallbackColor, isMuzzle, shortDesc, fullDesc, playerStr, transform, restore)
+				DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
+				: base(epidermisType, fallbackColor, isMuzzle, shortDesc, longDesc, playerStr, transform, restore)
 			{
 				secondaryDefaultColor = secondaryFallbackColor;
 			}
 
 			public MultiFurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, FurColor secondaryFallbackColor, SimpleDescriptor firstLevelShortDesc,
 				SimpleDescriptor secondLevelShortDesc, bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText,
-				DescriptorWithArg<Face> fullDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, fallbackColor, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, fullDesc, playerStr, transform, restore)
+				DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
+				: base(epidermisType, fallbackColor, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
 			{
 				secondaryDefaultColor = secondaryFallbackColor;
 			}
@@ -812,12 +821,25 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermalData secondaryEpidermis;
 		public readonly SkinTexture skinTexture;
 
+		public readonly ReadOnlyPiercing<LipPiercingLocation> lipPiercings;
+		public readonly ReadOnlyPiercing<NosePiercingLocation> nosePiercings;
+		public readonly ReadOnlyPiercing<EyebrowPiercingLocation> eyebrowPiercings;
+
+		public override FaceData AsCurrentData()
+		{
+			return this;
+		}
+
 		public FaceData(Face source) : base(GetID(source), GetBehavior(source))
 		{
 			isFullMorph = source.isFullMorph;
 			primaryEpidermis = source.primary;
 			secondaryEpidermis = source.secondary;
 			skinTexture = source.skinTexture;
+
+			lipPiercings = source.lipPiercings.AsReadOnlyData();
+			nosePiercings = source.nosePiercings.AsReadOnlyData();
+			eyebrowPiercings = source.eyebrowPiercings.AsReadOnlyData();
 		}
 	}
 }

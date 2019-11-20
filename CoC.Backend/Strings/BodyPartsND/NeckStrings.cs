@@ -30,7 +30,7 @@ public partial class NeckType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanLongDesc(Neck neck)
+		private static string HumanLongDesc(NeckData neck)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -42,7 +42,7 @@ public partial class NeckType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonLongDesc(Neck neck)
+		private static string DragonLongDesc(NeckData neck)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -62,7 +62,7 @@ public partial class NeckType
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceLongDesc(Neck neck)
+		private static string CockatriceLongDesc(NeckData neck)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

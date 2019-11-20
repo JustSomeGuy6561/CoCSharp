@@ -5,7 +5,6 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -144,6 +143,8 @@ namespace CoC.Backend.BodyParts
 		public ushort dryOrgasmCount { get; private set; } = 0;
 
 		public bool virgin { get; private set; } = true;
+
+		public bool everPracticedVaginal => totalPenetrationCount > 0;
 
 		public ushort bonusVaginalCapacity
 		{
@@ -724,7 +725,7 @@ namespace CoC.Backend.BodyParts
 
 
 		private VaginaType(int capacityBonus,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Vagina> longDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<VaginaData> longDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
 			ChangeType<VaginaData> transform, RestoreType<VaginaData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -761,9 +762,17 @@ namespace CoC.Backend.BodyParts
 		public readonly VaginalLooseness looseness;
 		public readonly VaginalWetness wetness;
 		public readonly bool isVirgin;
+		public readonly bool everPracticedVaginal;
 		public readonly int vaginaIndex;
 
 		public readonly ushort capacity;
+
+		public readonly ReadOnlyPiercing<LabiaPiercings> labiaPiercings;
+
+		public override VaginaData AsCurrentData()
+		{
+			return this;
+		}
 
 		public VaginaData(Vagina source, int currIndex) : base(GetID(source), GetBehavior(source))
 		{
@@ -771,9 +780,12 @@ namespace CoC.Backend.BodyParts
 			looseness = source.looseness;
 			wetness = source.wetness;
 			isVirgin = source.virgin;
+			everPracticedVaginal = source.everPracticedVaginal;
 
 			capacity = source.VaginalCapacity();
 			vaginaIndex = currIndex;
+
+			labiaPiercings = source.labiaPiercings.AsReadOnlyData();
 		}
 	}
 }

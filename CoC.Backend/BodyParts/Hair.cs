@@ -143,6 +143,11 @@ namespace CoC.Backend.BodyParts
 		public HairStyle style { get; private set; }
 		#endregion
 
+		public bool isBald => length == 0 || type == HairType.NO_HAIR;
+
+		public bool hairDeactivated => type == HairType.NO_HAIR || (length == 0 && !isGrowing);
+		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
+
 		#region Constructors
 
 		internal Hair(Guid creatureID) : this(creatureID, HairType.defaultValue)
@@ -429,7 +434,7 @@ namespace CoC.Backend.BodyParts
 
 		private void CheckDataChanged(HairData oldData)
 		{
-			if (style != oldData.hairStyle || length != oldData.hairLength || hairColor != oldData.hairColor || highlightColor != oldData.highlightColor
+			if (style != oldData.style || length != oldData.length || hairColor != oldData.hairColor || highlightColor != oldData.highlightColor
 				|| isSemiTransparent != oldData.isSemiTransparent)
 			{
 				NotifyDataChanged(oldData);
@@ -462,6 +467,19 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 		#endregion
+
+		public string ShortDescriptionWithTransparency() => type.ShortDescriptionWithTransparency(isSemiTransparent);
+
+		public string DescriptionWithColor() => type.DescriptionWithColor(AsReadOnlyData());
+
+		public string DescriptionWithColorAndStyle() => type.DescriptionWithColorAndStyle(AsReadOnlyData());
+
+		public string DescriptionWithColorLengthAndStyle() => type.DescriptionWithColorLengthAndStyle(AsReadOnlyData());
+
+		public string FullDescription() => type.FullDescription(AsReadOnlyData());
+
+		public string SemiTransparentString() => HairType.SemiTransparentString(isSemiTransparent);
+
 		#region HairAwareHelper
 		public override HairData AsReadOnlyData()
 		{
@@ -672,7 +690,7 @@ namespace CoC.Backend.BodyParts
 		public abstract bool canStyle { get; } //lets you prevent styling. 
 
 		public abstract bool canDye { get; }
-		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<Hair> longDesc, PlayerBodyPartDelegate<Hair> playerDesc,
+		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc, PlayerBodyPartDelegate<Hair> playerDesc,
 			SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
 			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
@@ -839,7 +857,7 @@ namespace CoC.Backend.BodyParts
 			public override bool canStyle => true;
 
 			public GenericHairType(HairFurColors defaultHairColor, float defaultLength, Func<float, float> handleHairLengthOnTransform,
-				SimpleDescriptor shortDesc, DescriptorWithArg<Hair> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
+				SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
 				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, longDesc, playerDesc, growStr, cutStr, transform, restore)
 			{
@@ -917,7 +935,7 @@ namespace CoC.Backend.BodyParts
 			private readonly AttackBase _attack;
 
 			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc,
-				DescriptorWithArg<Hair> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor whyNoGrowingDesc,
+				DescriptorWithArg<HairData> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor whyNoGrowingDesc,
 				SimpleDescriptor whyNoCuttingDesc, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, longDesc, playerDesc, whyNoGrowingDesc, whyNoCuttingDesc, transform, restore)
 			{
@@ -1051,22 +1069,38 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly HairFurColors hairColor;
 		public readonly HairFurColors highlightColor;
-		public readonly HairStyle hairStyle;
-		public readonly float hairLength;
+		public readonly HairStyle style;
+		public readonly float length;
 		public readonly bool isSemiTransparent;
 		public readonly bool isNotGrowing;
 		public bool isNoHair => type == HairType.NO_HAIR;
-		public bool hairDeactivated => type == HairType.NO_HAIR || (hairLength == 0 && isNotGrowing);
-		public bool isBald => isNoHair || hairLength == 0;
+		public bool hairDeactivated => type == HairType.NO_HAIR || (length == 0 && isNotGrowing);
+		public bool isBald => isNoHair || length == 0;
 
 		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
+
+		public string ShortDescriptionWithTransparency() => type.ShortDescriptionWithTransparency(isSemiTransparent);
+
+		public string DescriptionWithColor() => type.DescriptionWithColor(this);
+
+		public string DescriptionWithColorAndStyle() => type.DescriptionWithColorAndStyle(this);
+
+		public string DescriptionWithColorLengthAndStyle() => type.DescriptionWithColorLengthAndStyle(this);
+
+		public string FullDescription() => type.FullDescription(this);
+
+
+		public override HairData AsCurrentData()
+		{
+			return this;
+		}
 
 		internal HairData(Guid id, HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool notGrowing) : base(id, type)
 		{
 			hairColor = color;
 			highlightColor = highlight;
-			hairStyle = style;
-			hairLength = hairLen;
+			this.style = style;
+			length = hairLen;
 			isSemiTransparent = semiTransparent;
 			isNotGrowing = notGrowing;
 		}
@@ -1075,8 +1109,8 @@ namespace CoC.Backend.BodyParts
 		{
 			hairColor = HairFurColors.NO_HAIR_FUR;
 			highlightColor = HairFurColors.NO_HAIR_FUR;
-			hairStyle = HairStyle.NO_STYLE;
-			hairLength = 0;
+			style = HairStyle.NO_STYLE;
+			length = 0;
 			isSemiTransparent = false;
 			isNotGrowing = true;
 		}

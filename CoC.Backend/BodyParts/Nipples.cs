@@ -5,7 +5,6 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System;
@@ -397,6 +396,8 @@ namespace CoC.Backend.BodyParts
 		public readonly float length;
 		public readonly int breastRowIndex;
 
+		public readonly ReadOnlyPiercing<NipplePiercings> nipplePiercings;
+
 		internal NippleData(Nipples source, int currbreastRowIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			blackNipples = source.blackNipples;
@@ -405,6 +406,8 @@ namespace CoC.Backend.BodyParts
 			length = source.length;
 
 			breastRowIndex = currbreastRowIndex;
+
+			nipplePiercings = source.nipplePiercing.AsReadOnlyData();
 		}
 	}
 }

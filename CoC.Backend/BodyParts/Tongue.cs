@@ -136,7 +136,7 @@ namespace CoC.Backend.BodyParts
 		public static TongueType defaultValue => HUMAN;
 
 
-		private protected TongueType(ushort tongueLength, float tongueWidth, SimpleDescriptor shortDesc, DescriptorWithArg<Tongue> longDesc, PlayerBodyPartDelegate<Tongue> playerDesc, ChangeType<TongueData> transform, RestoreType<TongueData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+		private protected TongueType(ushort tongueLength, float tongueWidth, SimpleDescriptor shortDesc, DescriptorWithArg<TongueData> longDesc, PlayerBodyPartDelegate<Tongue> playerDesc, ChangeType<TongueData> transform, RestoreType<TongueData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			tongues.AddAt(this, _index);
@@ -203,9 +203,19 @@ namespace CoC.Backend.BodyParts
 		public float width => type.width;
 		public ushort length => type.length;
 		public bool isLongTongue => type.longTongue;
+
+		public readonly ReadOnlyPiercing<TonguePiercingLocation> tonguePiercings;
+		public readonly ReadOnlyPiercing<LipPiercingLocation> lipPiercings;
+
+		public override TongueData AsCurrentData()
+		{
+			return this;
+		}
+
 		internal TongueData(Tongue tongue) : base(GetID(tongue), GetBehavior(tongue))
 		{
-
+			tonguePiercings = tongue.tonguePiercings.AsReadOnlyData();
+			lipPiercings = tongue.lipPiercings.AsReadOnlyData();
 		}
 	}
 }

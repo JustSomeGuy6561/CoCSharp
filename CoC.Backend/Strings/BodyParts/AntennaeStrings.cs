@@ -27,38 +27,46 @@ namespace  CoC.Backend.BodyParts
 		{
 			return "bee antennae";
 		}
-		private static string BeeLongDesc(Antennae antennae)
+
+		private static string BeeLongDesc(AntennaeData antennae)
 		{
 			return "a pair of cute bee antennae";
 		}
 
-		private static string BeePlayer(PlayerBase player)
+		private static string BeePlayerStr(PlayerBase player)
 		{
 			return "Floppy antennae also appear on your skull, bouncing and swaying in the breeze.";
 		}
 
-		private static string BeeTransform(AntennaeData oldAntennaeData, PlayerBase player)
+		private static string BeeTransformStr(AntennaeData oldAntennaeData, PlayerBase player)
 		{
-			return "Your head itches momentarily as two floppy antennae sprout from your " + player.hair.shortDescription() + ". " +
+			return "Your head itches momentarily as two floppy antennae sprout from your " + player.hair.ShortDescription() + ". " +
 				SafelyFormattedString.FormattedText("You now have bee antennae!", StringFormats.BOLD);
+		}
+
+		private static string BeeRestoreStr(AntennaeData oldAntennaeData, PlayerBase player)
+		{
+			return "Your " + player.hair.LongDescription() + " itches so you give it a scratch, only to have your antennae fall to the ground. What a relief."
+				+ Environment.NewLine + SafelyFormattedString.FormattedText("You've lost your antennae", StringFormats.BOLD) + "!";
 		}
 
 		private static string CockatriceDesc()
 		{
 			return "cockatrice antennae";
 		}
-		private static string CockatriceLongDesc(Antennae antennae)
+
+		private static string CockatriceLongDesc(AntennaeData antennae)
 		{
 			return "a pair of quill-like feathers atop the eyes";
 		}
 
-		private static string CockatricePlayer(PlayerBase player)
+		private static string CockatricePlayerStr(PlayerBase player)
 		{
 			return "Two long antennae like feathers sit on your hairline, curling over the shape of your head. " +
 				   "They move with every expression, making even the most mundane action seem dramatic.";
 		}
 
-		private static string CockatriceTransform(AntennaeData oldAntennaeData, PlayerBase player)
+		private static string CockatriceTransformStr(AntennaeData oldAntennaeData, PlayerBase player)
 		{
 			string retVal = "Your forehead suddenly itches, your fingers instantly there to relieve the stress.";
 			if (oldAntennaeData.type != AntennaeType.NONE)
@@ -75,16 +83,10 @@ namespace  CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		private static string CockatriceRestore(AntennaeData oldData, PlayerBase player)
+		private static string CockatriceRestoreStr(AntennaeData oldData, PlayerBase player)
 		{
 			return "You feel your antennae like feathers shrivel at the root, the pair of soft quills falling softly to the"
 				+ " ground as your pores close." + Environment.NewLine + SafelyFormattedString.FormattedText("You’ve lost your antennae like feathers!", StringFormats.BOLD);
-		}
-
-		private static string BeeRestore(AntennaeData oldAntennaeData, PlayerBase player)
-		{
-			return "Your " + player.hair.LongDescription() + " itches so you give it a scratch, only to have your antennae fall to the ground. What a relief."
-				+ Environment.NewLine + SafelyFormattedString.FormattedText("You've lost your antennae", StringFormats.BOLD) + "!";
 		}
 
 		//unused right now. was defined in vanilla as a fallback, which was never used.

@@ -6,13 +6,28 @@ using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 
-namespace   CoC.Backend.BodyParts
+namespace CoC.Backend.BodyParts
 {
 	public partial class Breasts
 	{
 		public static string Name()
 		{
 			return "Breasts";
+		}
+
+		public string ShortDescription()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		public string LongDescription()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		public string LongDescriptionWithSize()
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 	}
 
@@ -57,7 +72,7 @@ namespace   CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		public string LongDescription(Creature creature)
+		public string LongDescription()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -81,10 +96,12 @@ namespace   CoC.Backend.BodyParts
 			}
 			return "You pause for a moment as your nipples seem a bit more sensitive than normal. You quickly locate the cause - it seems your piercings have done their work, " +
 				"as your nipples are no longer inverted!" + otherStr;
-			
+
 		}
 
-		//	private string fullDesc(Creature creature)
+
+
+		//	private string longDesc(Creature creature)
 		//	{
 		//		var description:String = "";
 		//		var options:Array;

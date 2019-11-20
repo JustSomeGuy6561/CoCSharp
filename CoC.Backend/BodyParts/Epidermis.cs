@@ -162,6 +162,65 @@ namespace CoC.Backend.BodyParts
 			skinTexture = other.skinTexture;
 		}
 
+		public static bool IsNullOrEmpty(Epidermis epidermis)
+		{
+			return epidermis is null || epidermis.type == EpidermisType.EMPTY;
+		}
+
+		public static bool CheckMixedTypes(Epidermis first, Epidermis second, bool ignoreEmpty = true)
+		{
+			if (IsNullOrEmpty(first) && IsNullOrEmpty(second))
+			{
+				return false;
+			}
+			else if (!ignoreEmpty && (IsNullOrEmpty(first) || IsNullOrEmpty(second)))
+			{
+				return false;
+			}
+
+			return first.type != second.type;
+		}
+
+		public static bool MixedFurColors(Epidermis first, Epidermis second)
+		{
+			if (CheckMixedTypes(first, second))
+			{
+				return false;
+			}
+			else if (IsNullOrEmpty(first) || IsNullOrEmpty(second))
+			{
+				return false;
+			}
+			else if (first.type.usesTone)
+			{
+				return false;
+			}
+			else
+			{
+				return !first.fur.Equals(second.fur);
+			}
+		}
+
+		public static bool MixedTones(Epidermis first, Epidermis second)
+		{
+			if (CheckMixedTypes(first, second))
+			{
+				return false;
+			}
+			else if (IsNullOrEmpty(first) || IsNullOrEmpty(second))
+			{
+				return false;
+			}
+			else if (first.type.usesFur)
+			{
+				return false;
+			}
+			else
+			{
+				return first.tone != second.tone;
+			}
+		}
+
 
 		#region Updates
 		public bool UpdateEpidermis(EpidermisType epidermisType)
@@ -385,6 +444,53 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public string LongDescription()
+		{
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.shortDescription);
+			else return fullStr(furTexture.AsString(), fur, type.shortDescription);
+		}
+
+		public string DescriptionWithColor()
+		{
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return ColoredStr(tone, type.shortDescription);
+			else return ColoredStr(fur, type.shortDescription);
+		}
+
+		public string JustTexture()
+		{
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return skinTexture.AsString();
+			else return furTexture.AsString();
+		}
+
+		public string JustColor()
+		{
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return tone.AsString();
+			else return fur.AsString();
+		}
+
+		public string ShortAdjectiveDescription()
+		{
+			return type.adjectiveStr();
+		}
+
+		public string LongAdjectiveDescription()
+		{
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.adjectiveStr, true);
+			else return fullStr(furTexture.AsString(), fur, type.adjectiveStr, true);
+		}
+
+		public string AdjectiveWithColor()
+		{
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return ColoredStr(tone, type.adjectiveStr, true);
+			else return ColoredStr(fur, type.adjectiveStr, true);
+		}
+
 		public override EpidermalData AsReadOnlyData()
 		{
 			if (type.usesFur) return new EpidermalData((FurBasedEpidermisType)type, fur, furTexture);
@@ -404,14 +510,17 @@ namespace CoC.Backend.BodyParts
 		public abstract bool usesTone { get; }
 		public virtual bool usesFur => !usesTone;
 
+		public readonly SimpleDescriptor adjectiveStr;
+
 		public readonly bool updateable;
 		protected readonly int _index;
+
 
 		//we can change fur if it's a tone type (just for storage when changing classes mind you)
 		//public bool furMutable => usesFur && updateable;
 		//public bool toneMutable => usesTone && updateable;
 
-		private protected EpidermisType(SimpleDescriptor desc, bool canChange) : base(desc)
+		private protected EpidermisType(SimpleDescriptor nounDescription, SimpleDescriptor adjectiveDescription, bool canChange) : base(nounDescription)
 		{
 			_index = indexMaker++;
 			epidermi.AddAt(this, _index);
@@ -465,16 +574,16 @@ namespace CoC.Backend.BodyParts
 
 		public override int index => _index;
 
-		public static readonly ToneBasedEpidermisType SKIN = new ToneBasedEpidermisType(SkinStr, true, Tones.LIGHT);
-		public static readonly FurBasedEpidermisType FUR = new FurBasedEpidermisType(FurStr, true, new FurColor(HairFurColors.BLACK));
-		public static readonly ToneBasedEpidermisType SCALES = new ToneBasedEpidermisType(ScalesStr, true, Tones.GREEN);
-		public static readonly ToneBasedEpidermisType GOO = new ToneBasedEpidermisType(GooStr, true, Tones.DEEP_BLUE);
-		public static readonly FurBasedEpidermisType WOOL = new FurBasedEpidermisType(WoolStr, true, new FurColor(HairFurColors.WHITE)); //i'd like to merge this with fur but it's more trouble than it's worth
-		public static readonly FurBasedEpidermisType FEATHERS = new FurBasedEpidermisType(FeathersStr, true, new FurColor(HairFurColors.WHITE));
-		public static readonly ToneBasedEpidermisType BARK = new ToneBasedEpidermisType(BarkStr, true, Tones.WOODLY_BROWN); //do you want the bark to change colors? idk? maybe make that false.
-		public static readonly ToneBasedEpidermisType CARAPACE = new ToneBasedEpidermisType(CarapaceStr, true, Tones.BLACK);
+		public static readonly ToneBasedEpidermisType SKIN = new ToneBasedEpidermisType(SkinStr, SkinAdjectiveStr, true, Tones.LIGHT);
+		public static readonly FurBasedEpidermisType FUR = new FurBasedEpidermisType(FurStr, FurAdjectiveStr, true, new FurColor(HairFurColors.BLACK));
+		public static readonly ToneBasedEpidermisType SCALES = new ToneBasedEpidermisType(ScalesStr, ScalesAdjectiveStr, true, Tones.GREEN);
+		public static readonly ToneBasedEpidermisType GOO = new ToneBasedEpidermisType(GooStr, GooAdjectiveStr, true, Tones.DEEP_BLUE);
+		public static readonly FurBasedEpidermisType WOOL = new FurBasedEpidermisType(WoolStr, WoolAdjectiveStr, true, new FurColor(HairFurColors.WHITE)); //i'd like to merge this with fur but it's more trouble than it's worth
+		public static readonly FurBasedEpidermisType FEATHERS = new FurBasedEpidermisType(FeathersStr, FeathersAdjectiveStr, true, new FurColor(HairFurColors.WHITE));
+		public static readonly ToneBasedEpidermisType BARK = new ToneBasedEpidermisType(BarkStr, BarkAdjectiveStr, true, Tones.WOODLY_BROWN); //do you want the bark to change colors? idk? maybe make that false.
+		public static readonly ToneBasedEpidermisType CARAPACE = new ToneBasedEpidermisType(CarapaceStr, CarapaceAdjectiveStr, true, Tones.BLACK);
 		//cannot be changed by lotion. May convert this to a perk, which affects everything.
-		public static readonly ToneBasedEpidermisType RUBBER = new ToneBasedEpidermisType(RubberStr, false, Tones.GRAY); //now its own type. it's simpler this way imo - for now. may become a perk. 
+		public static readonly ToneBasedEpidermisType RUBBER = new ToneBasedEpidermisType(RubberStr, RubberAdjectiveStr, false, Tones.GRAY); //now its own type. it's simpler this way imo - for now. may become a perk.
 		public static readonly EmptyEpidermisType EMPTY = new EmptyEpidermisType();
 	}
 
@@ -482,7 +591,8 @@ namespace CoC.Backend.BodyParts
 	{
 		public FurColor defaultFur => new FurColor(_defaultFur);
 		private readonly FurColor _defaultFur;
-		internal FurBasedEpidermisType(SimpleDescriptor desc, bool canChange, FurColor defaultColor) : base(desc, canChange)
+		internal FurBasedEpidermisType(SimpleDescriptor nounDescription, SimpleDescriptor adjectiveDescription, bool canChange, FurColor defaultColor) :
+			base(nounDescription, adjectiveDescription, canChange)
 		{
 			_defaultFur = new FurColor(defaultColor);
 		}
@@ -506,7 +616,8 @@ namespace CoC.Backend.BodyParts
 	public class ToneBasedEpidermisType : EpidermisType
 	{
 		public readonly Tones defaultTone;
-		internal ToneBasedEpidermisType(SimpleDescriptor desc, bool canChange, Tones defaultColor) : base(desc, canChange)
+		internal ToneBasedEpidermisType(SimpleDescriptor nounDescription, SimpleDescriptor adjectiveDescription, bool canChange, Tones defaultColor) :
+			base(nounDescription, adjectiveDescription, canChange)
 		{
 			defaultTone = defaultColor;
 		}
@@ -529,7 +640,7 @@ namespace CoC.Backend.BodyParts
 
 	public class EmptyEpidermisType : EpidermisType
 	{
-		internal EmptyEpidermisType() : base(GlobalStrings.None, false) { }
+		internal EmptyEpidermisType() : base(GlobalStrings.None, GlobalStrings.None, false) { }
 
 		public override bool usesTone => false;
 		public override bool usesFur => false;
@@ -607,37 +718,110 @@ namespace CoC.Backend.BodyParts
 		public FurTexture furTexture => type.usesFur ? _furTexture : FurTexture.NONDESCRIPT;
 		public SkinTexture skinTexture => type.usesTone ? _skinTexture : SkinTexture.NONDESCRIPT;
 
-		public string shortDescription()
+		public static bool IsNullOrEmpty(EpidermalData epidermis)
 		{
-			return type.shortDescription();
+			return epidermis is null || epidermis.type == EpidermisType.EMPTY;
 		}
 
-		public string fullDescription()
+		public static bool CheckMixedTypes(EpidermalData first, EpidermalData second, bool ignoreEmpty = true)
+		{
+			if (IsNullOrEmpty(first) && IsNullOrEmpty(second))
+			{
+				return false;
+			}
+			else if (!ignoreEmpty && (IsNullOrEmpty(first) || IsNullOrEmpty(second)))
+			{
+				return false;
+			}
+
+			return first.type != second.type;
+		}
+
+		public static bool MixedFurColors(EpidermalData first, EpidermalData second)
+		{
+			if (CheckMixedTypes(first, second))
+			{
+				return false;
+			}
+			else if (IsNullOrEmpty(first) || IsNullOrEmpty(second))
+			{
+				return false;
+			}
+			else if (first.type.usesTone)
+			{
+				return false;
+			}
+			else
+			{
+				return !first.fur.Equals(second.fur);
+			}
+		}
+
+		public static bool MixedTones(EpidermalData first, EpidermalData second)
+		{
+			if (CheckMixedTypes(first, second))
+			{
+				return false;
+			}
+			else if (IsNullOrEmpty(first) || IsNullOrEmpty(second))
+			{
+				return false;
+			}
+			else if (first.type.usesFur)
+			{
+				return false;
+			}
+			else
+			{
+				return first.tone != second.tone;
+			}
+		}
+
+		public string LongDescription()
 		{
 			if (type == EpidermisType.EMPTY) return "";
 			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.shortDescription);
 			else return fullStr(furTexture.AsString(), fur, type.shortDescription);
 		}
 
-		public string descriptionWithColor()
+		public string DescriptionWithColor()
 		{
 			if (type == EpidermisType.EMPTY) return "";
 			else if (type.usesTone) return ColoredStr(tone, type.shortDescription);
 			else return ColoredStr(fur, type.shortDescription);
 		}
 
-		public string justTexture()
+		public string JustTexture()
 		{
 			if (type == EpidermisType.EMPTY) return "";
 			else if (type.usesTone) return skinTexture.AsString();
 			else return furTexture.AsString();
 		}
 
-		public string justColor()
+		public string JustColor()
 		{
 			if (type == EpidermisType.EMPTY) return "";
 			else if (type.usesTone) return tone.AsString();
 			else return fur.AsString();
+		}
+
+		public string ShortAdjectiveDescription()
+		{
+			return type.adjectiveStr();
+		}
+
+		public string LongAdjectiveDescription()
+		{
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.adjectiveStr, true);
+			else return fullStr(furTexture.AsString(), fur, type.adjectiveStr, true);
+		}
+
+		public string AdjectiveWithColor()
+		{
+			if (type == EpidermisType.EMPTY) return "";
+			else if (type.usesTone) return ColoredStr(tone, type.adjectiveStr, true);
+			else return ColoredStr(fur, type.adjectiveStr, true);
 		}
 
 		public bool Equals(EpidermalData other)

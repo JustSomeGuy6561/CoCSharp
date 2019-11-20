@@ -28,10 +28,10 @@ namespace CoC.Backend.Tools
 			return (T)Enum.Parse(typeof(T), amt.ToString());
 		}
 
-		public static T ByteEnumDelta<T>(this T val, sbyte delta) where T : Enum
+		public static T ByteEnumOffset<T>(this T val, sbyte offset) where T : Enum
 		{
 			byte amt = Convert.ToByte(val);
-			amt.delta(delta);
+			amt.offset(offset);
 			return (T)Enum.Parse(typeof(T), amt.ToString());
 		}
 

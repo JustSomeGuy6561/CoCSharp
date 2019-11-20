@@ -128,7 +128,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SkinLongDesc(Body body)
+		private static string SkinLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -154,7 +154,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ScalesLongDesc(Body body)
+		private static string ScalesLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -185,7 +185,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaLongDesc(Body body)
+		private static string NagaLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -216,7 +216,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string CockatriceLongDesc(Body body)
+		protected static string CockatriceLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -242,7 +242,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string KitsuneLongDesc(Body body)
+		protected static string KitsuneLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -272,7 +272,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BarkLongDesc(Body body)
+		private static string BarkLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -298,7 +298,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FurLongDesc(Body body)
+		private static string FurLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -329,7 +329,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatherLongDesc(Body body)
+		private static string FeatherLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -360,7 +360,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WoolLongDesc(Body body)
+		private static string WoolLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -387,7 +387,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooLongDesc(Body body)
+		private static string GooLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -409,7 +409,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RubberLongDesc(Body body)
+		private static string RubberLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -431,7 +431,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CarapaceLongDesc(Body body)
+		private static string CarapaceLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -453,7 +453,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ExoskeletonLongDesc(Body body)
+		private static string ExoskeletonLongDesc(BodyData body)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

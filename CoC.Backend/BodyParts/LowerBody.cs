@@ -119,7 +119,7 @@ namespace CoC.Backend.BodyParts
 		public readonly FootType footType;
 		public readonly EpidermisType epidermisType;
 		protected LowerBodyType(FootType foot, EpidermisType epidermis, byte numLegs,
-			SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<LowerBodyData> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc,
 			ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -224,7 +224,7 @@ namespace CoC.Backend.BodyParts
 			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 
 			public FurLowerBody(FootType foot, FurBasedEpidermisType epidermis, byte numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
-				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform,
+				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBodyData> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform,
 				RestoreType<LowerBodyData> restore) : base(foot, epidermis, numLegs, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				defaultColor = new FurColor(defaultFurColor);
@@ -267,7 +267,7 @@ namespace CoC.Backend.BodyParts
 		private class FurLowerBodyWithKick : FurLowerBody
 		{
 			public FurLowerBodyWithKick(FootType foot, FurBasedEpidermisType epidermis, byte numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
-				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore)
+				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBodyData> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore)
 				: base(foot, epidermis, numLegs, defaultFurColor, defaultFurTexture, canChange, shortDesc, longDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase attack => _attack;
@@ -282,7 +282,7 @@ namespace CoC.Backend.BodyParts
 
 			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 			public ToneLowerBody(FootType foot, ToneBasedEpidermisType epidermis, byte legCount, Tones defTone, SkinTexture defaultSkinTexture, bool canChange,
-				 SimpleDescriptor shortDesc, DescriptorWithArg<LowerBody> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform,
+				 SimpleDescriptor shortDesc, DescriptorWithArg<LowerBodyData> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform,
 				 RestoreType<LowerBodyData> restore) : base(foot, epidermis, legCount, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				defaultTexture = defaultSkinTexture;
@@ -371,6 +371,17 @@ namespace CoC.Backend.BodyParts
 
 		public byte legCount => type.legCount;
 		public FootType footType => type.footType;
+
+		public bool isMonoped => legCount == LowerBody.MONOPED_LEG_COUNT;
+		public bool isBiped => legCount == LowerBody.BIPED_LEG_COUNT;
+		public bool isQuadruped => legCount == LowerBody.QUADRUPED_LEG_COUNT;
+		public bool isSextoped => legCount == LowerBody.SEXTOPED_LEG_COUNT;
+		public bool isOctoped => legCount == LowerBody.OCTOPED_LEG_COUNT;
+
+		public override LowerBodyData AsCurrentData()
+		{
+			return this;
+		}
 
 		internal LowerBodyData(Guid id, LowerBodyType type, EpidermalData epidermis, EpidermalData secondary) : base(id, type)
 		{

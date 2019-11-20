@@ -40,7 +40,7 @@ namespace CoC.Backend.BodyParts
 		internal sbyte newSizeOffset = 0;
 
 		private byte getNewSize() => Utils.Clamp2(defaultNewSize, MIN_BALLS_SIZE, MAX_BALLS_SIZE);
-		private byte getNewSize(byte baseSize) => Utils.Clamp2(baseSize.delta(newSizeOffset), MIN_BALLS_SIZE, MAX_BALLS_SIZE);
+		private byte getNewSize(byte baseSize) => Utils.Clamp2(baseSize.offset(newSizeOffset), MIN_BALLS_SIZE, MAX_BALLS_SIZE);
 
 		internal float shrinkMultiplier = 1.0f;
 		internal float growthMultiplier = 1.0f;
@@ -102,15 +102,6 @@ namespace CoC.Backend.BodyParts
 		{
 			return new BallsData(creatureID, count, size);
 		}
-
-		public string ShortDescription()
-		{
-			if (hasBalls) return BallsDescript(count, size, uniBall);
-			else return GlobalStrings.None();
-		}
-
-		public DescriptorWithArg<Balls> FullDescription => BallsLongDesc;
-		public PlayerBodyPartDelegate<Balls> PlayerStr => BallsPlayerStr;
 
 		#region Unique Functions and Updating Properties
 		//Grows a pair of balls. returns false if it already has balls. 
@@ -371,8 +362,8 @@ namespace CoC.Backend.BodyParts
 				{
 					ballSize = ballSize == 0 ? getNewSize() : getNewSize(ballSize);
 				}
-				if (numBalls == 0) numBalls = DEFAULT_BALLS_COUNT;
-				else Utils.Clamp(ref numBalls, DEFAULT_MIN_COUNT, MAX_BALLS_COUNT);
+
+				Utils.Clamp(ref numBalls, DEFAULT_MIN_COUNT, MAX_BALLS_COUNT);
 
 				if (numBalls % 2 == 1) numBalls--;
 

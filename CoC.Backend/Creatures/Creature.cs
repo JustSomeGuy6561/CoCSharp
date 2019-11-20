@@ -90,38 +90,38 @@ namespace CoC.Backend.Creatures
 
 		protected internal virtual sbyte bonusMinLibido { get; set; }
 		protected virtual byte baseMinLibido => 0;
-		public byte minLibido => baseMinLibido.delta(bonusMinLibido);
+		public byte minLibido => baseMinLibido.offset(bonusMinLibido);
 
 
 		protected internal virtual sbyte bonusMinSensitivity { get; set; }
 		protected virtual byte baseMinSensitivity => 0;
-		public byte minSensitivity => baseMinSensitivity.delta(bonusMinSensitivity);
+		public byte minSensitivity => baseMinSensitivity.offset(bonusMinSensitivity);
 
 
 		protected internal virtual sbyte bonusMinCorruption { get; set; }
 		protected virtual byte baseMinCorruption => 0;
-		public byte minCorruption => baseMinCorruption.delta(bonusMinCorruption);
+		public byte minCorruption => baseMinCorruption.offset(bonusMinCorruption);
 
 
 		protected internal virtual sbyte bonusMinLust { get; set; }
 		protected virtual byte baseMinLust => 0;
-		public byte minLust => baseMinLust.delta(bonusMinLust);
+		public byte minLust => baseMinLust.offset(bonusMinLust);
 
 		protected internal virtual byte baseMaxLibido => BASE_MAX_LIBIDO;
 		protected internal virtual sbyte bonusMaxLibido { get; set; } = 0;
-		public byte maxLibido => HandleMaxStat(baseMaxLibido.delta(bonusMaxLibido), minLibido);
+		public byte maxLibido => HandleMaxStat(baseMaxLibido.offset(bonusMaxLibido), minLibido);
 
 		protected internal virtual byte baseMaxSensitivity => BASE_MAX_SENSITIVITY;
 		protected internal virtual sbyte bonusMaxSensitivity { get; set; } = 0;
-		public byte maxSensitivity => HandleMaxStat(baseMaxSensitivity.delta(bonusMaxSensitivity), minSensitivity);
+		public byte maxSensitivity => HandleMaxStat(baseMaxSensitivity.offset(bonusMaxSensitivity), minSensitivity);
 
 		protected internal virtual byte baseMaxCorruption => BASE_MAX_CORRUPTION;
 		protected internal virtual sbyte bonusMaxCorruption { get; set; } = 0;
-		public byte maxCorruption => HandleMaxStat(baseMaxCorruption.delta(bonusMaxCorruption), minCorruption);
+		public byte maxCorruption => HandleMaxStat(baseMaxCorruption.offset(bonusMaxCorruption), minCorruption);
 
 		protected internal virtual byte baseMaxLust => BASE_MAX_LUST;
 		protected internal virtual sbyte bonusMaxLust { get; set; } = 0;
-		public byte maxLust => HandleMaxStat(baseMaxLust.delta(bonusMaxLust), minLust);
+		public byte maxLust => HandleMaxStat(baseMaxLust.offset(bonusMaxLust), minLust);
 
 		protected byte HandleMaxStat(byte computedValue, byte minValue)
 		{
@@ -181,7 +181,7 @@ namespace CoC.Backend.Creatures
 		public bool hasSupplementaryFur => body.supplementaryEpidermis.usesFur;
 
 		public bool hasPlainSkin => body.mainEpidermis.type == EpidermisType.SKIN;
-
+		public FurColor ActiveHairOrFurColor() => body.ActiveHairOrFurColor();
 
 		//aliases for build.
 		public Butt butt => build.butt;
@@ -215,10 +215,12 @@ namespace CoC.Backend.Creatures
 
 		public bool hasBalls => genitals.hasBalls;
 
-		public bool hasMaleCock => cocks.Count > 0;
-		public bool hasCock => genitals.allCocks.Count > 0;
+		public bool hasCock => cocks.Count > 0;
+		public bool hasCockOrClitCock => hasCock || hasClitCock;
 
 		public bool hasClitCock => genitals.hasClitCock;
+
+		public bool clitCockActive => !hasCock && hasClitCock;
 
 		public bool hasVagina => vaginas.Count > 0;
 
@@ -640,7 +642,6 @@ namespace CoC.Backend.Creatures
 			lazyBodyListeners.Add(back);
 			lazyBodyListeners.Add(genitals);
 			lazyBodyListeners.Add(hair);
-			dailyBodyListeners.Add(genitals);
 			//back, femininity, genitals, hair - lazy.
 			//genitals - daily.
 		}
@@ -651,12 +652,12 @@ namespace CoC.Backend.Creatures
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = libidoTrue;
-			float delta = percent * maxLibido;
+			float offset = percent * maxLibido;
 			if (!ignorePerks)
 			{
-				delta *= LibidoGainMultiplier;
+				offset *= LibidoGainMultiplier;
 			}
-			libidoTrue += delta;
+			libidoTrue += offset;
 			return libidoTrue - oldValue;
 		}
 
@@ -680,12 +681,12 @@ namespace CoC.Backend.Creatures
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = libidoTrue;
-			float delta = percent * maxLibido;
+			float offset = percent * maxLibido;
 			if (!ignorePerks)
 			{
-				delta *= LibidoLossMultiplier;
+				offset *= LibidoLossMultiplier;
 			}
-			libidoTrue -= delta;
+			libidoTrue -= offset;
 			return oldValue - libidoTrue;
 		}
 
@@ -721,12 +722,12 @@ namespace CoC.Backend.Creatures
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = sensitivityTrue;
-			float delta = percent * maxSensitivity;
+			float offset = percent * maxSensitivity;
 			if (!ignorePerks)
 			{
-				delta *= SensitivityGainMultiplier;
+				offset *= SensitivityGainMultiplier;
 			}
-			sensitivityTrue += delta;
+			sensitivityTrue += offset;
 			return sensitivityTrue - oldValue;
 		}
 
@@ -748,12 +749,12 @@ namespace CoC.Backend.Creatures
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = sensitivityTrue;
-			float delta = percent * maxSensitivity;
+			float offset = percent * maxSensitivity;
 			if (!ignorePerks)
 			{
-				delta *= SensitivityLossMultiplier;
+				offset *= SensitivityLossMultiplier;
 			}
-			sensitivityTrue -= delta;
+			sensitivityTrue -= offset;
 			return oldValue - sensitivityTrue;
 		}
 
@@ -789,12 +790,12 @@ namespace CoC.Backend.Creatures
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = corruptionTrue;
-			float delta = percent * maxCorruption;
+			float offset = percent * maxCorruption;
 			if (!ignorePerks)
 			{
-				delta *= CorruptionGainMultiplier;
+				offset *= CorruptionGainMultiplier;
 			}
-			corruptionTrue += delta;
+			corruptionTrue += offset;
 			return corruptionTrue - oldValue;
 		}
 
@@ -816,12 +817,12 @@ namespace CoC.Backend.Creatures
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = corruptionTrue;
-			float delta = percent * maxCorruption;
+			float offset = percent * maxCorruption;
 			if (!ignorePerks)
 			{
-				delta *= CorruptionLossMultiplier;
+				offset *= CorruptionLossMultiplier;
 			}
-			corruptionTrue -= delta;
+			corruptionTrue -= offset;
 			return oldValue - corruptionTrue;
 		}
 
@@ -857,12 +858,12 @@ namespace CoC.Backend.Creatures
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = lustTrue;
-			float delta = percent * maxLust;
+			float offset = percent * maxLust;
 			if (!ignorePerks)
 			{
-				delta *= LustGainMultiplier;
+				offset *= LustGainMultiplier;
 			}
-			lustTrue += delta;
+			lustTrue += offset;
 			return lustTrue - oldValue;
 		}
 
@@ -884,12 +885,12 @@ namespace CoC.Backend.Creatures
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = lustTrue;
-			float delta = percent * maxLust;
+			float offset = percent * maxLust;
 			if (!ignorePerks)
 			{
-				delta *= LustLossMultiplier;
+				offset *= LustLossMultiplier;
 			}
-			lustTrue -= delta;
+			lustTrue -= offset;
 			return oldValue - lustTrue;
 		}
 
@@ -2153,7 +2154,7 @@ namespace CoC.Backend.Creatures
 
 		public void HaveGenericFootOrgasm(bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
-			feet.doGenericOrgasm(dryOrgasm);
+			feet.DoGenericOrgasm(dryOrgasm);
 			if (countTowardOrgasmTotal)
 			{
 				Orgasmed();

@@ -62,13 +62,18 @@ namespace CoC.Backend.BodyParts
 		public static readonly OvipositorType SPIDER = new OvipositorType(SpiderShortDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //none
 		public static readonly OvipositorType BEE = new OvipositorType(BeeShortDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //none)
 
-		public OvipositorType(SimpleDescriptor shortDesc, DescriptorWithArg<Ovipositor> longDesc, PlayerBodyPartDelegate<Ovipositor> playerDesc, 
+		public OvipositorType(SimpleDescriptor shortDesc, DescriptorWithArg<OvipositorData> longDesc, PlayerBodyPartDelegate<Ovipositor> playerDesc, 
 			ChangeType<OvipositorData> transform, RestoreType<OvipositorData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore) { }
 	}
 
 	public sealed class OvipositorData : BehavioralSaveablePartData<OvipositorData, Ovipositor, OvipositorType>
 	{
-		public OvipositorData(Ovipositor source) : base(GetID(source), GetBehavior(source))
+		public override OvipositorData AsCurrentData()
+		{
+			return this;
+		}
+
+	public OvipositorData(Ovipositor source) : base(GetID(source), GetBehavior(source))
 		{
 		}
 	}

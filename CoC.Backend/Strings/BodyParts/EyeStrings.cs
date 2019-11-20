@@ -34,11 +34,11 @@ namespace CoC.Backend.BodyParts
 
 	public partial class Eyes
 	{
-			public static string Name()
-			{
-				return "Eyes";
-			}
+		public static string Name()
+		{
+			return "Eyes";
 		}
+	}
 
 	public partial class EyeType
 	{
@@ -50,7 +50,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "human eyes";
 		}
-		private static string HumanLongDesc(Eyes eyes)
+		private static string HumanLongDesc(EyeData eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -61,6 +61,8 @@ namespace CoC.Backend.BodyParts
 				return "a pair of " + eyes.leftIrisColor.AsString() + " human eyes";
 			}
 		}
+
+
 		private static string HumanPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			if (eyes.isHeterochromia)
@@ -120,7 +122,7 @@ namespace CoC.Backend.BodyParts
 			return "spider eyes";
 		}
 		//i suppose technically i could have supported tetrachromia, but that seems excessive.
-		private static string SpiderLongDesc(Eyes eyes)
+		private static string SpiderLongDesc(EyeData eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -128,9 +130,10 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return "two pairs of " + eyes.leftIrisColor + " spider eyes";
+				return "two pairs of " + eyes.leftIrisColor.AsString() + " spider eyes";
 			}
 		}
+
 		private static string SpiderPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your eyes appear human - if your pupils were fully dialated all the time, and partially reflected the light. A faint ring of ");
@@ -177,10 +180,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "sandtrap eyes";
 		}
-		private static string SandTrapLongDesc(Eyes eyes)
+		private static string SandTrapLongDesc(EyeData eyes)
 		{
-			return "a half dozen " + eyes.leftIrisColor.AsString() + " sandtrap eyes surrounded by an inky blackness";
+			return "a half dozen " + eyes.leftIrisColor.AsString() + (eyes.isHeterochromia ? " and " + eyes.rightIrisColor.AsString() : "") + " sandtrap eyes surrounded by an inky blackness";
 		}
+
 		private static string SandTrapPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			return " Your eyes are solid spheres of inky, alien darkness.";
@@ -385,7 +389,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "lizard eyes";
 		}
-		private static string LizardLongDesc(Eyes eyes)
+		private static string LizardLongDesc(EyeData eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -598,7 +602,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "dragon eyes";
 		}
-		private static string DragonLongDesc(Eyes eyes)
+		private static string DragonLongDesc(EyeData eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -789,9 +793,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "basilisk eyes";
 		}
-		private static string BasiliskLongDesc(Eyes eyes)
+		private static string BasiliskLongDesc(EyeData eyes)
 		{
-			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + " basilisk eyes";
+			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + (eyes.isHeterochromia ? " and " + eyes.rightIrisColor.AsString() : "") + " basilisk eyes";
 		}
 		private static string BasiliskPlayerStr(Eyes eyes, PlayerBase player)
 		{
@@ -887,7 +891,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolven eyes";
 		}
-		private static string WolfLongDesc(Eyes eyes)
+		private static string WolfLongDesc(EyeData eyes)
 		{
 			if (eyes.isHeterochromia)
 			{
@@ -975,10 +979,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cockatrice eyes";
 		}
-		private static string CockatriceLongDesc(Eyes eyes)
+		private static string CockatriceLongDesc(EyeData eyes)
 		{
-			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + " cockatrice eyes";
+			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + (eyes.isHeterochromia ? " and " + eyes.rightIrisColor.AsString() : "") + " cockatrice eyes";
 		}
+
 		private static string CockatricePlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("Your eyes have the slit-shaped pupils of a reptile, but your irises are an electric blue. Lightning-like streaks");
@@ -1030,7 +1035,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cat eyes";
 		}
-		private static string CatLongDesc(Eyes eyes)
+		private static string CatLongDesc(EyeData eyes)
 		{
 			if (eyes.isHeterochromia)
 			{

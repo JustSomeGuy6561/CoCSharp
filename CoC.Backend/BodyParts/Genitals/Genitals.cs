@@ -7,7 +7,6 @@ using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.Engine.Time;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -289,7 +288,7 @@ namespace CoC.Backend.BodyParts
 
 		//Thought: Require the perk data class in the copy constructor, or pull it from the other. when the data is copied, simply pull the values from the perk data. 
 		//ALSO: convert everything to just store the data. wire up the perks so that each item gets its own update callback. when the perk value is updated, 
-		
+
 		protected internal override void PostPerkInit()
 		{
 			ass.PostPerkInit();
@@ -472,15 +471,63 @@ namespace CoC.Backend.BodyParts
 		public readonly ReadOnlyCollection<VaginaData> vaginas;
 		public readonly ReadOnlyCollection<BreastData> breasts;
 
+		public readonly Gender gender;
+
+		public IEnumerable<NippleData> nipples => breasts.Select(x => x.nipples);
+		public IEnumerable<ClitData> clits => vaginas.Select(x => x.clit);
+
 		public readonly FemininityData femininity;
 		public readonly FertilityData fertility;
 
 		public readonly AssData ass;
 		public readonly BallsData balls;
 
-		//cum amount
-		//lactation amount
+		public byte numberOfBalls => balls.numBalls;
+		public byte ballSize => balls.ballSize;
 
+		public int numCocks => cocks.Count;
+
+		public int numBreastRows => breasts.Count;
+		public int numVaginas => vaginas.Count;
+
+		public int breastCount => breasts.Sum(x => x.numberOfBreasts);
+
+		public int nippleCount => breastCount * (quadNipples ? 4 : 1);
+
+		public readonly bool blackNipples;
+		public readonly bool quadNipples;
+		public readonly NippleStatus nippleType;
+
+		public readonly bool unlockedDickNipples;
+
+		public readonly bool hasClitCockAvailable;
+
+		public bool hasCock => numCocks != 0;
+		public bool hasVagina => numVaginas != 0;
+
+		public bool hasClitCock => hasClitCockAvailable && !hasCock && hasVagina;
+
+		public bool hasCockOrClitCock => hasCock || hasClitCock;
+
+		//cum amount
+
+		public readonly int totalCum;
+
+		public readonly int hoursSinceLastCum;
+
+		//lactation amount
+		public readonly float lactationRate;
+		public readonly bool isOverfull;
+
+		public readonly int hoursOverfull;
+
+		public readonly float maximumLactationCapacity;
+		public readonly float currentLactationCapacity;
+
+		public readonly LactationStatus lactationStatus;
+		public readonly float currentLactationAmount;
+		public readonly bool isLactating;
+		public readonly int hoursSinceLastMilked;
 
 		internal GenitalsData(Genitals source, CockPerkHelper cockData, VaginaPerkHelper vaginaData, BreastPerkHelper breastData)
 			: base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
@@ -488,6 +535,8 @@ namespace CoC.Backend.BodyParts
 			cockPerks = cockData ?? throw new ArgumentNullException(nameof(cockData));
 			vaginaPerks = vaginaData ?? throw new ArgumentNullException(nameof(vaginaData));
 			breastPerks = breastData ?? throw new ArgumentNullException(nameof(breastData));
+
+			gender = source.gender;
 
 			cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x => x.AsReadOnlyData()).ToList());
 			vaginas = new ReadOnlyCollection<VaginaData>(source.vaginas.Select(x => x.AsReadOnlyData()).ToList());
@@ -498,6 +547,27 @@ namespace CoC.Backend.BodyParts
 
 			femininity = source.femininity.AsReadOnlyData();
 			fertility = source.fertility.AsReadOnlyData();
+
+			blackNipples = source.blackNipples;
+			quadNipples = source.quadNipples;
+			nippleType = source.nippleType;
+
+			unlockedDickNipples = source.unlockedDickNipples;
+			hasClitCockAvailable = source.hasClitCock;
+
+			totalCum = source.totalCum;
+
+			hoursSinceLastCum = source.hoursSinceLastCum;
+
+			lactationRate = source.lactationRate;
+			isOverfull = source.isOverfull;
+			hoursOverfull = source.hoursOverfull;
+			maximumLactationCapacity = source.maximumLactationCapacity;
+			currentLactationCapacity = source.currentLactationCapacity;
+			lactationStatus = source.lactationStatus;
+			currentLactationAmount = source.currentLactationAmount;
+			isLactating = source.isLactating;
+			hoursSinceLastMilked = source.hoursSinceLastMilked;
 		}
 	}
 }

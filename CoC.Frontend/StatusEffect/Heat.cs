@@ -43,7 +43,7 @@ namespace CoC.Frontend.StatusEffect
 
 		public override SimpleDescriptor ShortDescription => throw new NotImplementedException();
 
-		public override SimpleDescriptor FullDescription => throw new NotImplementedException();
+		public override SimpleDescriptor LongDescription => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{
@@ -173,17 +173,17 @@ namespace CoC.Frontend.StatusEffect
 			string vagText;
 			if (sourceCreature.vaginas.Count > 1)
 			{
-				vagText = sourceCreature.genitals.vaginasMultiDesc();
+				vagText = sourceCreature.genitals.AllVaginasShortDescription() + " moisten";
 			}
 			else if (sourceCreature.vaginas.Count > 0)
 			{
-				vagText = sourceCreature.vaginas[0].LongDescription();
+				vagText = sourceCreature.vaginas[0].LongDescription() + " moistens";
 			}
 			else
 			{
 				return null;
 			}
-			return Environment.NewLine + Environment.NewLine + "Your mind clouds as your " + vagText + " moistens.  Your hands begin stroking your body from top to bottom, " +
+			return Environment.NewLine + Environment.NewLine + "Your mind clouds as your " + vagText + " . Your hands begin stroking your body from top to bottom, " +
 				"your sensitive skin burning with desire. Fantasies about bending over and presenting your needy pussy to a male overwhelm you as " +
 				SafelyFormattedString.FormattedText("you realize you have gone into heat!", StringFormats.BOLD);
 
@@ -194,7 +194,7 @@ namespace CoC.Frontend.StatusEffect
 			string vagText;
 			if (sourceCreature.vaginas.Count > 1)
 			{
-				vagText = sourceCreature.genitals.vaginasMultiDesc();
+				vagText = sourceCreature.genitals.AllVaginasShortDescription();
 			}
 			else if (sourceCreature.vaginas.Count > 0)
 			{

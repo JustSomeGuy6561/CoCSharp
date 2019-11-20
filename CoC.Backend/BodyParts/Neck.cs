@@ -6,7 +6,6 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -216,7 +215,7 @@ namespace CoC.Backend.BodyParts
 		internal virtual SimpleDescriptor locationDesc => GenericLocationText;
 
 		private protected NeckType(byte maxLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
+			SimpleDescriptor shortDesc, DescriptorWithArg<NeckData> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
 			RestoreType<NeckData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -227,7 +226,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		private protected NeckType(byte maxLength, HairFurColors defaultHairFur,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Neck> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
+			SimpleDescriptor shortDesc, DescriptorWithArg<NeckData> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
 			RestoreType<NeckData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -342,7 +341,13 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly byte neckLength;
 		public readonly HairFurColors neckHairColor; //if applicable
-		internal NeckData(Neck neck) : base(GetID(neck), GetBehavior(neck))
+
+		public override NeckData AsCurrentData()
+		{
+			return this;
+		}
+
+	internal NeckData(Neck neck) : base(GetID(neck), GetBehavior(neck))
 		{
 			neckLength = neck.length;
 			neckHairColor = neck.neckColor;

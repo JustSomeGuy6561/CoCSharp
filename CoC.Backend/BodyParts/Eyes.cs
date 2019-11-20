@@ -6,7 +6,6 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -48,6 +47,9 @@ namespace CoC.Backend.BodyParts
 		public bool isHeterochromia => leftIrisColor != rightIrisColor;
 		public byte eyeCount => type.eyeCount;
 		public bool isReptilian => type.isReptilianEyes;
+
+		public ScleraColor scleraColor => type.scleraColor;
+
 		public override EyeType type { get; protected set; }
 
 		public override EyeData AsReadOnlyData()
@@ -74,7 +76,7 @@ namespace CoC.Backend.BodyParts
 		public override EyeType defaultType => EyeType.defaultValue;
 
 		internal Eyes(Guid creatureID) : this(creatureID, EyeType.defaultValue) { }
-		
+
 		//by design, there is no way to update eye color while changing types. Eye types are supposed to respect the current eye color.
 		//if you REALLY want to change this, just call update, then call change. You'll probably want some unique flavor text, though, as
 		//the calls to change color str and update str are not really designed with being called back to back in mind and may sound weird, idk.
@@ -196,7 +198,7 @@ namespace CoC.Backend.BodyParts
 		internal readonly EyeChangeDelegate EyeChangeSpecial;
 
 		private protected EyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange,
-			SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> longDesc, PlayerBodyPartDelegate<Eyes> playerDesc, ChangeType<EyeData> transform,
+			SimpleDescriptor shortDesc, DescriptorWithArg<EyeData> longDesc, PlayerBodyPartDelegate<Eyes> playerDesc, ChangeType<EyeData> transform,
 			RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			EyeChangeSpecial = eyeChange;
@@ -257,7 +259,7 @@ namespace CoC.Backend.BodyParts
 		{
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new BasiliskStare();
-			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<Eyes> longDesc, PlayerBodyPartDelegate<Eyes> playerDesc,
+			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimpleDescriptor shortDesc, DescriptorWithArg<EyeData> longDesc, PlayerBodyPartDelegate<Eyes> playerDesc,
 				ChangeType<EyeData> transform, RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
 				: base(defaultEyeColor, eyeChange, shortDesc, longDesc, playerDesc, transform, restore, numEyes, color) { }
 		}
@@ -270,6 +272,12 @@ namespace CoC.Backend.BodyParts
 
 		public readonly byte eyeCount;
 		public readonly ScleraColor scleraColor;
+
+		public override EyeData AsCurrentData()
+		{
+			return this;
+		}
+
 		internal EyeData(Eyes source) : base(GetID(source), GetBehavior(source))
 		{
 			leftIrisColor = source.leftIrisColor;
@@ -279,6 +287,8 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public bool isHeterochromia => leftIrisColor != rightIrisColor;
+
+		public bool isReptilian => type.isReptilianEyes;
 	}
 
 }

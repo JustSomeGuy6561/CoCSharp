@@ -32,7 +32,7 @@ namespace CoC.Frontend.StatusEffect
 
 		public override SimpleDescriptor ShortDescription => throw new NotImplementedException();
 
-		public override SimpleDescriptor FullDescription => throw new NotImplementedException();
+		public override SimpleDescriptor LongDescription => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{
@@ -144,7 +144,7 @@ namespace CoC.Frontend.StatusEffect
 			string cockText;
 			if (sourceCreature.cocks.Count > 1)
 			{
-				cockText = sourceCreature.genitals.cockMultDescript();
+				cockText = sourceCreature.genitals.AllCocksFullDescription();
 			}
 			else if (sourceCreature.cocks.Count > 0)
 			{
@@ -181,7 +181,7 @@ namespace CoC.Frontend.StatusEffect
 			string cockText;
 			if (sourceCreature.cocks.Count > 1)
 			{
-				cockText = sourceCreature.genitals.cockMultDescript();
+				cockText = sourceCreature.genitals.AllCocksFullDescription();
 			}
 			else if (sourceCreature.cocks.Count > 0)
 			{

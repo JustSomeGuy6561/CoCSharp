@@ -42,6 +42,11 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			piercingUnlocked = piercingUnlockedFunction ?? throw new ArgumentNullException(nameof(piercingUnlockedFunction));
 		}
 
+		public ReadOnlyPiercing<Locations> AsReadOnlyData()
+		{
+			return new ReadOnlyPiercing<Locations>(piercedAt, jewelryEquipped);
+		}
+
 		public int piercingCount => piercedAt.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
 		public bool isPierced => piercedAt.Values.Any((x) => x);
 		public bool isPiercedAt(Locations location)
@@ -392,6 +397,56 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			jewelryDiffs = new ReadOnlyDictionary<T, ValueDifference<PiercingJewelry>>(jDiffs);
 			oldJewelryCount = unclearedJewelryDict.Count;
 			newJewelryCount = 0;
+		}
+	}
+
+	public sealed class ReadOnlyPiercing<Location> where Location : Enum
+	{
+		private readonly Dictionary<Location, bool> piercedAt = new Dictionary<Location, bool>();
+		private readonly Dictionary<Location, PiercingJewelry> jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
+
+		public readonly int piercingCount;
+		public bool isPierced => piercingCount != 0;
+
+		public bool isPiercedAt(Location location)
+		{
+			if (location == null)
+			{
+				return false;
+			}
+			piercedAt.TryGetValue(location, out bool isPierced);
+			return isPierced;
+		}
+
+		public readonly int jewelryCount;
+		public bool wearingJewelry => jewelryCount > 0;
+		public bool WearingJewelryAt(Location location)
+		{
+			if (location == null)
+			{
+				return false;
+			}
+			piercedAt.TryGetValue(location, out bool jewelryAt);
+			return jewelryAt;
+		}
+
+		public ReadOnlyPiercing(Dictionary<Location, bool> piercedAt, Dictionary<Location, PiercingJewelry> jewelryEquipped)
+		{
+			this.piercedAt = new Dictionary<Location, bool>(piercedAt);
+			this.jewelryEquipped = new Dictionary<Location, PiercingJewelry>(jewelryEquipped);
+
+			piercingCount = piercedAt.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
+
+			jewelryCount = jewelryEquipped.Values.Aggregate(0, (x, y) => { if (y != null) x++; return x; });
+		}
+
+		public ReadOnlyPiercing()
+		{
+			piercedAt = new Dictionary<Location, bool>();
+			jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
+
+			piercingCount = 0;
+			jewelryCount = 0;
 		}
 	}
 }

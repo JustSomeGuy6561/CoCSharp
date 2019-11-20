@@ -51,7 +51,7 @@ namespace CoC.Backend.BodyParts
 
 		private static readonly List<GillType> gills = new List<GillType>();
 		public static readonly ReadOnlyCollection<GillType> availableTypes = new ReadOnlyCollection<GillType>(gills);
-		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<Gills> longDesc, PlayerBodyPartDelegate<Gills> playerDesc,
+		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<GillData> longDesc, PlayerBodyPartDelegate<Gills> playerDesc,
 			ChangeType<GillData> transform, RestoreType<GillData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -99,6 +99,11 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class GillData : BehavioralSaveablePartData<GillData, Gills, GillType>
 	{
+		public override GillData AsCurrentData()
+		{
+			return this;
+		}
+
 		internal GillData(Gills source) : base(GetID(source), GetBehavior(source)) { }
 	}
 }

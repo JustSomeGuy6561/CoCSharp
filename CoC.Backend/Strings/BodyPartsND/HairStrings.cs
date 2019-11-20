@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/1/2019private static string 12:21 PM
 
+using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Tools;
@@ -44,84 +45,6 @@ namespace CoC.Backend.BodyParts
 
 	public partial class Hair
 	{
-		//These are all available separately, so if you want a custom string like: 
-		//your head is adorned with [length] of flowing [type]private static string its [color] color glowing [if semitransparent : semi-transparently] in the sun.
-		// you can do that. 
-
-		//Ex: goo, transparent: semi-transparent gooey hair.
-		private static string HairDesc(Hair hair)
-		{
-			//functionally identical to string builder. i'm just gonna leave it.
-			return SemiTransparentStr(hair.isSemiTransparent) + hair.type.shortDescription();
-		}
-
-		//Ex: fur, not transparent, black: black fur.
-		private static string ColoredHairDesc(Hair hair)
-		{
-			StringBuilder retVal = new StringBuilder(SemiTransparentStr(hair.isSemiTransparent));
-			retVal.Append(hair.hairColor.AsString());
-			retVal.Append(" ");
-			retVal.Append(hair.shortDescription());
-			return retVal.ToString();
-		}
-
-		//Ex: wavy style, not transparent:
-		private static string ColoredStyledHairDescript(Hair hair)
-		{
-			StringBuilder retVal = new StringBuilder();
-			if (hair.style != HairStyle.NO_STYLE)
-			{
-				retVal.Append(hair.style.AsString());
-				if (hair.isSemiTransparent)
-				{
-					retVal.Append("private static string ");
-				}
-				else
-				{
-					retVal.Append(" ");
-				}
-			}
-			retVal.Append(SemiTransparentStr(hair.isSemiTransparent));
-			retVal.Append(hair.hairColor.AsString());
-			retVal.Append(" ");
-			retVal.Append(hair.shortDescription());
-			return retVal.ToString();
-		}
-
-		//Who gives a Fuck about an Oxford Comma?
-		//Ex: human, curly, transparent, red: 11 inch curly, semi-transparent red hair.
-		private static string FullDesc(Hair hair)
-		{
-			if (hair.type == HairType.NO_HAIR)
-			{
-				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-			}
-			else
-			{
-				StringBuilder retVal = new StringBuilder(Measurement.ToNearestHalfSmallUnit(hair.length, false, false));
-				if (hair.style != HairStyle.NO_STYLE)
-				{
-					//	retVal.Append(hair.style.AsString());
-					//	if (hair.isSemiTransparent)
-					//	{
-					//		retVal.Append("semi-transparent");
-					//	}
-					//	else
-					//	{
-					//		retVal.Append(" ");
-					//	}
-				}
-				retVal.Append(SemiTransparentStr(hair.isSemiTransparent));
-				retVal.Append(" ");
-				retVal.Append(hair.hairColor.AsString());
-				retVal.Append(" ");
-				retVal.Append(hair.shortDescription());
-				return retVal.ToString();
-			}
-		}
-
-		private static string SemiTransparentStr(bool isSemiTransparent) { return isSemiTransparent ? " semi-transparent" : ""; }
-
 		public static string Name()
 		{
 			return "Hair";
@@ -158,19 +81,15 @@ namespace CoC.Backend.BodyParts
 			return Environment.NewLine + SafelyFormattedString.FormattedText("Your hair's growth has reached a new threshold, giving you " + LongDescription() + ".", StringFormats.BOLD) + Environment.NewLine;
 		}
 	}
-	public partial class Hair
-{
 
-}
-
-public partial class HairType
+	public partial class HairType
 	{
 
 		private static string NoHairDesc()
 		{
 			return "bald head";
 		}
-		private static string NoHairLongDesc(Hair hair)
+		private static string NoHairLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -188,11 +107,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string NoHairTransformStr(HairData previousHairData, PlayerBase player)
+		private static string NoHairTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHairRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string NoHairRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -200,9 +119,9 @@ public partial class HairType
 		{
 			return "hair";
 		}
-		private static string NormalLongDesc(Hair hair)
+		private static string NormalLongDesc(HairData hair)
 		{
-			return DefaultLongDesc(hair, NormalDesc());
+			return DefaultLongDesc(hair);
 		}
 
 		private static string NormalPlayerStr(Hair hair, PlayerBase player)
@@ -219,11 +138,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string NormalTransformStr(HairData previousHairData, PlayerBase player)
+		private static string NormalTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NormalRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string NormalRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -231,7 +150,7 @@ public partial class HairType
 		{
 			return "hair-feathers";
 		}
-		private static string FeatherLongDesc(Hair hair)
+		private static string FeatherLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -250,11 +169,11 @@ public partial class HairType
 		}
 
 
-		private static string FeatherTransformStr(HairData previousHairData, PlayerBase player)
+		private static string FeatherTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatherRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string FeatherRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -264,7 +183,7 @@ public partial class HairType
 			return "gooey hair";
 		}
 
-		private static string GooLongDesc(Hair hair)
+		private static string GooLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -282,11 +201,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string GooTransformStr(HairData previousHairData, PlayerBase player)
+		private static string GooTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string GooRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -294,7 +213,7 @@ public partial class HairType
 		{
 			return "hair-like tendrils";
 		}
-		private static string AnemoneLongDesc(Hair hair)
+		private static string AnemoneLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -312,11 +231,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string AnemoneTransformStr(HairData previousHairData, PlayerBase player)
+		private static string AnemoneTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string AnemoneRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string AnemoneRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -325,7 +244,7 @@ public partial class HairType
 			return "quill-hair";
 		}
 
-		private static string QuillLongDesc(Hair hair)
+		private static string QuillLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -343,11 +262,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string QuillTransformStr(HairData previousHairData, PlayerBase player)
+		private static string QuillTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string QuillRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string QuillRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -356,7 +275,7 @@ public partial class HairType
 			return "basilisk spines";
 		}
 
-		private static string SpineLongDesc(Hair hair)
+		private static string SpineLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -375,11 +294,11 @@ public partial class HairType
 		}
 
 
-		private static string SpineTransformStr(HairData previousHairData, PlayerBase player)
+		private static string SpineTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpineRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string SpineRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -388,7 +307,7 @@ public partial class HairType
 			return "basilisk plume";
 		}
 
-		private static string PlumeLongDesc(Hair hair)
+		private static string PlumeLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -406,11 +325,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string PlumeTransformStr(HairData previousHairData, PlayerBase player)
+		private static string PlumeTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PlumeRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string PlumeRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -418,7 +337,7 @@ public partial class HairType
 		{
 			return "woolen hair";
 		}
-		private static string WoolLongDesc(Hair hair)
+		private static string WoolLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -436,11 +355,11 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string WoolTransformStr(HairData previousHairData, PlayerBase player)
+		private static string WoolTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WoolRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string WoolRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -449,7 +368,7 @@ public partial class HairType
 			return "leafy vines";
 		}
 
-		private static string VineLongDesc(Hair hair)
+		private static string VineLongDesc(HairData hair)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -467,37 +386,112 @@ public partial class HairType
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string VineTransformStr(HairData previousHairData, PlayerBase player)
+		private static string VineTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string VineRestoreStr(HairData previousHairData, PlayerBase player)
+		private static string VineRestoreStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string DefaultLongDesc(Hair hair, string shortDesc)
+		public string ShortDescriptionWithTransparency(bool isSemiTransparent)
 		{
-			if (hair.length == 0) return Utils.RandomChoice("shaved", "bald", "smooth", "hairless", "glabrous") + " head";
+			//functionally identical to string builder. i'm just gonna leave it.
+			return SemiTransparentString(isSemiTransparent) + shortDescription();
+		}
 
-			StringBuilder sb = new StringBuilder();
+		public string DescriptionWithColor(HairData hair)
+		{
+			return SemiTransparentString(hair.isSemiTransparent) + hair.hairColor.AsString() + " " + hair.ShortDescription();
+		}
 
+		public string DescriptionWithColorAndStyle(HairData hair)
+		{
+			StringBuilder retVal = new StringBuilder();
+			return StyleStr(hair.style) + SemiTransparentString(hair.isSemiTransparent) + hair.hairColor.AsString() + " " + hair.ShortDescription();
+		}
+
+		public string DescriptionWithColorLengthAndStyle(HairData hair)
+		{
 			byte creatureHeight = CreatureStore.GetCreatureClean(hair.creatureID)?.build.heightInInches ?? Build.DEFAULT_HEIGHT;
 
-			if (hair.length < 1) sb.Append(Utils.RandomChoice("close-cropped, ", "trim, ", "very short, "));
-			else if (hair.length < 3) sb.Append("short, ");
-			else if (hair.length < 6) sb.Append("shaggy, ");
-			else if (hair.length < 10) sb.Append("moderately long, ");
-			else if (hair.length < 16) sb.Append(Utils.RandomChoice("long, ", "shoulder-length, "));
-			else if (hair.length < 26) sb.Append(Utils.RandomChoice("very long, ", "flowing locks of "));
-
-			else if (hair.length < 40) sb.Append("ass-length, ");
-			else if (hair.length < creatureHeight) sb.Append("obscenely long, ");
-			else // if (hair.length >= tallness)
-				sb.Append(Utils.RandomChoice("floor-length, ", "floor-dragging, "));
-
-			sb.Append(shortDesc);
+			StringBuilder sb = new StringBuilder(LengthText(hair.length, creatureHeight));
+			if (hair.length == 0)
+			{
+				return sb.ToString() + " head";
+			}
+			sb.Append(hair.hairColor.AsString());
+			sb.Append(hair.ShortDescription());
 			return sb.ToString();
+		}
+
+		//long has length, color, and highlights.
+		private static string DefaultLongDesc(HairData hair)
+		{
+			byte creatureHeight = CreatureStore.GetCreatureClean(hair.creatureID)?.build.heightInInches ?? Build.DEFAULT_HEIGHT;
+
+			StringBuilder sb = new StringBuilder(LengthText(hair.length, creatureHeight));
+			if (hair.length == 0)
+			{
+				return sb.ToString() + " head";
+			}
+			sb.Append(hair.hairColor.AsString());
+			sb.Append(hair.ShortDescription());
+			sb.Append(HighlightStr(hair.highlightColor));
+			return sb.ToString();
+		}
+
+		public string FullDescription(HairData hair)
+		{
+			byte creatureHeight = CreatureStore.GetCreatureClean(hair.creatureID)?.build.heightInInches ?? Build.DEFAULT_HEIGHT;
+
+			StringBuilder sb = new StringBuilder(LengthText(hair.length, creatureHeight));
+			if (hair.length == 0)
+			{
+				return sb.ToString() + " head";
+			}
+			sb.Append(hair.hairColor.AsString());
+			if (hair.style != HairStyle.NO_STYLE)
+			{
+				sb.Append(", ");
+			}
+			sb.Append(StyleStr(hair.style));
+			sb.Append(shortDescription());
+			sb.Append(HighlightStr(hair.highlightColor));
+			return sb.ToString();
+		}
+
+
+		public static string SemiTransparentString(bool isSemiTransparent) { return isSemiTransparent ? " semi-transparent " : ""; }
+		private static string StyleStr(HairStyle style) { return style != HairStyle.NO_STYLE ? style.AsString() + " " : ""; }
+		private static string HighlightStr(HairFurColors highlight)
+		{
+			if (HairFurColors.IsNullOrEmpty(highlight))
+			{
+				return "";
+			}
+			else
+			{
+				return " with " + highlight.AsString() + " highlights";
+			}
+		}
+
+		public static string LengthText(float length, float creatureHeight)
+		{
+			if (length == 0) return Utils.RandomChoice("shaved", "bald", "smooth", "hairless", "glabrous");
+
+			else if (length < 1) return Utils.RandomChoice("close-cropped, ", "trim, ", "very short, ");
+			else if (length < 3) return "short, ";
+			else if (length < 6) return "shaggy, ";
+			else if (length < 10) return "moderately long, ";
+			else if (length < 16) return Utils.RandomChoice("long, ", "shoulder-length, ");
+			else if (length < 26) return Utils.RandomChoice("very long, ", "flowing locks of ");
+
+			else if (length < 40) return "ass-length, ";
+			else if (length < creatureHeight) return "obscenely long, ";
+			else // if (hair.length >= tallness)
+				return Utils.RandomChoice("floor-length, ", "floor-dragging, ");
 		}
 	}
 }

@@ -30,29 +30,29 @@ namespace CoC.Backend.BodyParts
 
 		private static string HumanShortDesc()
 		{
-			return " human face";
+			return " face";
 		}
-		private static string HumanLongDesc(Face face)
+		private static string HumanLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string HumanPlayerStr(Face face, PlayerBase player)
 		{
-			return " Your face is human in shape and structure, with [skin].";
+			return " Your face is human in shape and structure, covered in  .";
 		}
-		private static string HumanTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string HumanTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string HumanRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string HorseShortDesc()
 		{
-			return "horse face";
+			return "longe, equine muzzle";
 		}
-		private static string HorseLongDesc(Face face)
+		private static string HorseLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -60,19 +60,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string HorseTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string HorseRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string DogShortDesc()
 		{
-			return "dog face";
+			return "canine muzzle";
 		}
-		private static string DogLongDesc(Face face)
+		private static string DogLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -80,11 +80,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string DogTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string DogRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -94,7 +94,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string MinotaurShortDesc()
 		{
-			return "bull face";
+			return "bovine snout";
 		}
 
 		private static string CowMorphText(bool isStrengthening)
@@ -109,7 +109,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private static string Cow_MinotaurLongDesc(Face face)
+		private static string Cow_MinotaurLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -117,11 +117,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string Cow_MinotaurTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string Cow_MinotaurTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string Cow_MinotaurRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string Cow_MinotaurRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -129,7 +129,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "shark teeth";
 		}
-		private static string SharkLongDesc(Face face)
+		private static string SharkLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -137,11 +137,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string SharkTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string SharkRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -149,7 +149,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "snake fangs";
 		}
-		private static string SnakeLongDesc(Face face)
+		private static string SnakeLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -157,11 +157,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SnakeTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string SnakeTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SnakeRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string SnakeRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -187,7 +187,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 		}
-		private static string CatLongDesc(Face face)
+		private static string CatLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -195,19 +195,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string CatTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string CatRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string LizardShortDesc()
 		{
-			return "lizard face";
+			return "reptilian face";
 		}
-		private static string LizardLongDesc(Face face)
+		private static string LizardLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -215,11 +215,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string LizardTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string LizardRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -245,7 +245,7 @@ namespace CoC.Backend.BodyParts
 					" Unfortunately, you still have your bunny-like teeth. Bummer. ";
 			}
 		}
-		private static string BunnyLongDesc(Face face)
+		private static string BunnyLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -253,11 +253,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string BunnyTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string BunnyRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -265,7 +265,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "kangaroo face";
 		}
-		private static string KangarooLongDesc(Face face)
+		private static string KangarooLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -273,11 +273,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string KangarooTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string KangarooRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -285,7 +285,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "spider fangs";
 		}
-		private static string SpiderLongDesc(Face face)
+		private static string SpiderLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -293,11 +293,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string SpiderTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string SpiderRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -320,7 +320,7 @@ namespace CoC.Backend.BodyParts
 				return "Your face starts to soften, and soon the telltale facial features of a kitsune poke free from your fox-like visage. ";
 			}
 		}
-		private static string FoxLongDesc(Face face)
+		private static string FoxLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -328,19 +328,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string FoxTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string FoxRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string DragonShortDesc()
 		{
-			return "dragon face";
+			return "reptilian face";
 		}
-		private static string DragonLongDesc(Face face)
+		private static string DragonLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -348,11 +348,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string DragonTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string DragonRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -375,7 +375,7 @@ namespace CoC.Backend.BodyParts
 				return "The raccoon-like features covering your face start to fall away, leaving a mostly-human face, however, a layer around your eyes remains. ";
 			}
 		}
-		private static string RaccoonLongDesc(Face face)
+		private static string RaccoonLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -383,11 +383,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string RaccoonTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string RaccoonRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -414,7 +414,7 @@ namespace CoC.Backend.BodyParts
 					" Unfortunately, you still have your mouse-like teeth. Bummer. ";
 			}
 		}
-		private static string MouseLongDesc(Face face)
+		private static string MouseLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -422,11 +422,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string MouseTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string MouseRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -453,7 +453,7 @@ namespace CoC.Backend.BodyParts
 					+ "A thin layer remains here and there, notably around your eyes, giving the appearance of you wearing a ferret mask. ";
 			}
 		}
-		private static string FerretLongDesc(Face face)
+		private static string FerretLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -461,22 +461,22 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string FerretTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string FerretRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		private static string PigShortDesc()
 		{
-			return "pig face";
+			return "pig-like face";
 		}
 		private static string BoarShortDesc()
 		{
-			return "boar face";
+			return "boar snout";
 		}
 		private static string PigMorphText(bool isStrengthening)
 		{
@@ -492,7 +492,7 @@ namespace CoC.Backend.BodyParts
 					+ "After it ends, you note that while your snout isn't completely gone, it's far more humanoid, now resembling that of a pig-morph. You've also lost your boar-like tusks. ";
 			}
 		}
-		private static string PigLongDesc(Face face)
+		private static string PigLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -500,11 +500,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string PigTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string PigRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -512,7 +512,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "rhino face";
 		}
-		private static string RhinoLongDesc(Face face)
+		private static string RhinoLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -520,11 +520,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string RhinoTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string RhinoRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -532,7 +532,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "echidna face";
 		}
-		private static string EchidnaLongDesc(Face face)
+		private static string EchidnaLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -540,11 +540,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string EchidnaTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string EchidnaRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -552,7 +552,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "deer face";
 		}
-		private static string DeerLongDesc(Face face)
+		private static string DeerLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -560,11 +560,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string DeerTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string DeerRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -572,7 +572,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolf face";
 		}
-		private static string WolfLongDesc(Face face)
+		private static string WolfLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -580,11 +580,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string WolfTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string WolfRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -592,7 +592,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cockatrice face";
 		}
-		private static string CockatriceLongDesc(Face face)
+		private static string CockatriceLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -600,11 +600,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string CockatriceTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string CockatriceRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -612,7 +612,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "placeholder beak face"; // This is a placeholder for the next beaked face type, so feel free to refactor (rename)
 		}
-		private static string BeakLongDesc(Face face)
+		private static string BeakLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -620,11 +620,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeakTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string BeakTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeakRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string BeakRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -632,7 +632,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "red panda face";
 		}
-		private static string PandaLongDesc(Face face)
+		private static string PandaLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -640,32 +640,37 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PandaTransformStr(FaceData previousFaceData, PlayerBase player)
+		private static string PandaTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PandaRestoreStr(FaceData previousFaceData, PlayerBase player)
+		private static string PandaRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		private static string GooShortDesc()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "gooey, humanoid face";
 		}
-		private static string GooLongDesc(Face face)
+
+		private static string GooLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
 		private static string GooPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return " Your face is human in shape and structure, but with one critical difference - it's made entirely out of goo. It's fully transparent, seemingly lacking any sort of " +
+				"brain or skeleton, yet it retains its shape and you can still think and talk, though your voice warbles slightly, as if underwater.";
 		}
-		private static string GooTransformStr(FaceData previousFaceData, PlayerBase player)
+
+		private static string GooTransformStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooRestoreStr(FaceData previousFaceData, PlayerBase player)
+
+		private static string GooRestoreStr(FaceData face, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
