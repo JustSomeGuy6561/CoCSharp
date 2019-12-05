@@ -62,7 +62,7 @@ namespace CoC.Backend.Pregnancies
 
 		public bool isPregnant => spawnType != null;
 
-		internal bool attemptKnockUp(float knockupChance, StandardSpawnType type)
+		internal virtual bool attemptKnockUp(float knockupChance, StandardSpawnType type)
 		{
 			if (knockupChance < 0 || type is null)
 			{

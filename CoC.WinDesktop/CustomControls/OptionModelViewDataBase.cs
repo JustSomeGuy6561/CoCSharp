@@ -6,7 +6,7 @@ using System;
 namespace CoC.WinDesktop.CustomControls
 {
 	/// <summary>
-	/// Provides a base class for the model view desribing the content section of the options page. 
+	/// Provides a base class for the model view desribing the content section of the options page.
 	/// </summary>
 	public abstract class OptionModelViewDataBase : NotifierBase
 	{

@@ -16,28 +16,28 @@ using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
-	// this is a fucking mess. 
+	// this is a fucking mess.
 	// need to: handle a late init to use correct minDefault values for cock, vagina, breasts, nipples.
-	// alias every fucking function to make values here there and everywhere increase. 
+	// alias every fucking function to make values here there and everywhere increase.
 	// every time we get a new cock, set it to default length if one not provided. increase length by delta, regardless.
-	// every time we get a vagina set its default wetness, looseness, and clitSize to defaults, unless provided. 
-	// breasts - figure out how the fuck we're gonna add new breast rows. 
+	// every time we get a vagina set its default wetness, looseness, and clitSize to defaults, unless provided.
+	// breasts - figure out how the fuck we're gonna add new breast rows.
 
 	//I had the relatively brilliant idea of storing the GameTime for when something happened - last milking, etc. it means we don't need to update it every hour - we just need to update it when it happens.
 	//it's a relatively simple calculation to get the current hours since - we just diff GameTime now and stored time. Granted, it's now a byte and int instead of just one int, but w/e. I'll trade
-	//an extra byte of memory (or 4 bytes if C# does the whole align things to word boundaries, idk on its optimizations) for less maintenance and less cycles managing the data. 
+	//an extra byte of memory (or 4 bytes if C# does the whole align things to word boundaries, idk on its optimizations) for less maintenance and less cycles managing the data.
 
 #warning Make sure to raise events for gender change and pass it along to femininity. Then implement all the various data changes. theres a ton of them.
 
 
-	//Genitals is the new "master class" for all things sex-related. Note that the old breast store and breast rows have been combined, so there's new behavior for everyone, 
+	//Genitals is the new "master class" for all things sex-related. Note that the old breast store and breast rows have been combined, so there's new behavior for everyone,
 	//but it's even more flexible. Lactation now works like cum - it builds with time, and the amount produced is altered by a multiplier and adder. additionally, it has a fill rate,
-	//which mimicks the old breast store levels 'enum'. To allow some leniency in time before overfull causes fill rate to drop, a buffer timer has been added. 
+	//which mimicks the old breast store levels 'enum'. To allow some leniency in time before overfull causes fill rate to drop, a buffer timer has been added.
 
 	//all sex related functions are available here, with exception to the one that handles receiving oral sex. These are much more specific than the original, but this allows us
 	//to store more metadata and statistics for various achievements, perks, or whatever you may need them for. I'll try to provide helpers where i can, but specific cases like gangbangs/threesomes
 	//and/or strage sexual situations may require you to deal with these directly. Generally, there are two functions that will need to be called - one for each creature involved, with the corresponding part.
-	//so if A is sticking their cock in B's ass, you'd call A.HandleCockPenetrate and B.HandleAnalPenetration. This will handle everything for you, even knockup, if you provide a spawn type. 
+	//so if A is sticking their cock in B's ass, you'd call A.HandleCockPenetrate and B.HandleAnalPenetration. This will handle everything for you, even knockup, if you provide a spawn type.
 	//you can handle specifics, like if the penetrator or penetratee orgasms or not, and whether or not to count this towards the creature's orgasm count (useful for when multiple body parts
 	//orgasm simultaneously, which should only count as one orgasm). This also applies to group sex or penetration free sex (tribbing, hotdogging, etc)
 
@@ -45,7 +45,7 @@ namespace CoC.Backend.BodyParts
 
 
 	//some variables are available in here to allow PC behavior (namely, 48 hours until full breasts, regardless of how high the lactation multiplier is) or normal behavior (breasts fill quicker
-	//the higher the lactation multiplier is). Remember, this ruleset works across all NPCs, because lactation amount dependant on breast size, breast count, and lactation multiplier. 
+	//the higher the lactation multiplier is). Remember, this ruleset works across all NPCs, because lactation amount dependant on breast size, breast count, and lactation multiplier.
 	//which means that despite the fact that Marble and Katherine can have the same lactation multiplier, Marble would take longer to fill up and not be complaining every 3 hours she needs a milking.
 	//RIP katherine, lol.
 
@@ -73,7 +73,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Private ReadOnly Members
 
-		//creator let's me do delayed init for perks and such. 
+		//creator let's me do delayed init for perks and such.
 		private readonly BreastCreator[] breastCreators;
 		private readonly CockCreator[] cockCreators;
 		private readonly VaginaCreator[] vaginaCreators;
@@ -135,15 +135,15 @@ namespace CoC.Backend.BodyParts
 		}
 
 		/* Trap check. use this where player appearance is more important than actual assets, or for trappy sex, idk.
-		 * 
+		 *
 		 * Female: C-cup breasts and >35 masculinity OR <6in Dick and >65 masculinity
 		 * Male: 6in+ Dick and <65 masculinity OR B-Cup or smaller breasts and <35 masculinity
 		 * Genderless: <6in Dick, B-cup or smaller breasts, and 35-65 masculinity.
 		 * Herm: everything else.
-		 * 
+		 *
 		 * How you deal with androgynous and herm is up to you. Note that b/c this is a trap check, something may appear
 		 * to be a herm, but not be (large breasts and a dick, for example, but no vag).
-		 * 
+		 *
 		 */
 		public Gender trappyGender
 		{
@@ -171,13 +171,13 @@ namespace CoC.Backend.BodyParts
 					else if (femininity.atLeastSlightlyMasculine) return Gender.MALE;
 					return Gender.GENDERLESS;
 				}
-				//noticable breasts or dick, but too masculine or feminine. 
+				//noticable breasts or dick, but too masculine or feminine.
 				return Gender.HERM;
 			}
 		}
 
-		//Parses the current gender information, to determine if the player appears more male than they do female. 
-		//Tiebreaker goes to male. 
+		//Parses the current gender information, to determine if the player appears more male than they do female.
+		//Tiebreaker goes to male.
 		public bool AppearsMoreMaleThanFemale()
 		{
 			Gender trapGender = trappyGender;
@@ -204,8 +204,8 @@ namespace CoC.Backend.BodyParts
 
 
 
-		//despite my attempts to remove status effects wherever possible, i'm not crazy. Heat/Rut/Dsyfunction seem like ideal status effects. 
-		//in that they are temporary effects. as such, i'm not putting them here. 
+		//despite my attempts to remove status effects wherever possible, i'm not crazy. Heat/Rut/Dsyfunction seem like ideal status effects.
+		//in that they are temporary effects. as such, i'm not putting them here.
 
 
 
@@ -282,12 +282,12 @@ namespace CoC.Backend.BodyParts
 		}
 
 #warning make sure this is up to date when the genitals are finally finished.
-		//consider thinking up a nicer way of pulling all that perk data in so i don't have to do deal with making sure all the perk values are correctly updated. 
+		//consider thinking up a nicer way of pulling all that perk data in so i don't have to do deal with making sure all the perk values are correctly updated.
 		//can't just reference them b/c they won't notify the source when they change; this will. It also prevents the values from updating these things so they have incorrect values.
-		//Atm: i both reference and store the data. 
+		//Atm: i both reference and store the data.
 
-		//Thought: Require the perk data class in the copy constructor, or pull it from the other. when the data is copied, simply pull the values from the perk data. 
-		//ALSO: convert everything to just store the data. wire up the perks so that each item gets its own update callback. when the perk value is updated, 
+		//Thought: Require the perk data class in the copy constructor, or pull it from the other. when the data is copied, simply pull the values from the perk data.
+		//ALSO: convert everything to just store the data. wire up the perks so that each item gets its own update callback. when the perk value is updated,
 
 		protected internal override void PostPerkInit()
 		{
@@ -423,7 +423,7 @@ namespace CoC.Backend.BodyParts
 		{
 			StringBuilder outputBuilder = new StringBuilder();
 			string outputHelper;
-			//i have no clue how this would work for multi-snatch configs. 
+			//i have no clue how this would work for multi-snatch configs.
 			foreach (var vagina in _vaginas)
 			{
 				if (DoLazy(vagina, isPlayer, hoursPassed, out outputHelper))
@@ -482,8 +482,8 @@ namespace CoC.Backend.BodyParts
 		public readonly AssData ass;
 		public readonly BallsData balls;
 
-		public byte numberOfBalls => balls.numBalls;
-		public byte ballSize => balls.ballSize;
+		public byte numberOfBalls => balls.count;
+		public byte ballSize => balls.size;
 
 		public int numCocks => cocks.Count;
 

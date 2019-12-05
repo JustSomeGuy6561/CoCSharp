@@ -16,8 +16,8 @@ namespace CoC.Backend.BodyParts
 	public enum TonguePiercingLocation { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
 
 	//ugh. i guess this fires on tongue length/width change? idk why, but whatever - overruled. i guess if you want to unlock some achievement when your tongue can cosplay
-	//for KISS, you can now easily do that. 
-	public sealed partial class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something. 
+	//for KISS, you can now easily do that.
+	public sealed partial class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something.
 	{
 		public override string BodyPartName() => Name();
 
@@ -110,7 +110,7 @@ namespace CoC.Backend.BodyParts
 
 		//these are the piercings for standard gameplay - if you want to create a scene where it's a giant ring and the PC gets dragged around by it
 		//because you're into German dungeon porn, that's fine. just do it via text and give them a stud afterward. or just pierce it and leave it open
-		//so the next time your kinky scene is called you can omit the bit where you pierce their tongue or whatever. 
+		//so the next time your kinky scene is called you can omit the bit where you pierce their tongue or whatever.
 		private JewelryType TongueSupportedJewelry(TonguePiercingLocation piercingLocation)
 		{
 			return JewelryType.BARBELL_STUD;
@@ -178,9 +178,9 @@ namespace CoC.Backend.BodyParts
 			}
 			return false;
 		}
-		//these widths are arbitrary af, so feel free to alter them. i figured the snake tongue should be really narrow, and available for cock sounding if you really want that. 
-		//though i suppose with a large enough cock any of these would be viable. also the length is the distance out of the mouth it can travel. add like 4 inches for full length if 
-		//you're deepthroating or some shit, idk. 
+		//these widths are arbitrary af, so feel free to alter them. i figured the snake tongue should be really narrow, and available for cock sounding if you really want that.
+		//though i suppose with a large enough cock any of these would be viable. also the length is the distance out of the mouth it can travel. add like 4 inches for full length if
+		//you're deepthroating or some shit, idk.
 		public static readonly TongueType HUMAN = new TongueType(4, 2.5f, HumanDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
 		public static readonly TongueType SNAKE = new TongueType(6, 0.25f, SnakeDesc, SnakeLongDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr);
 		public static readonly TongueType DEMONIC = new TongueType(24, 2.5f, DemonicDesc, DemonicLongDesc, DemonicPlayerStr, DemonicTransformStr, DemonicRestoreStr);

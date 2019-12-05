@@ -42,6 +42,8 @@ namespace CoC.Backend.SaveData
 		public int lowestDifficultyForThisCampaign = 1;
 		public bool hardcoreMode = false;
 
+		internal bool? SillyModeLocal = false;
+
 		public byte NumTimeNewGamePlus = 0;
 
 		public byte NewGamePlusLevel => Math.Min(NumTimeNewGamePlus, (byte)4);

@@ -49,7 +49,7 @@ namespace CoC.WinDesktop.ContentWrappers.ButtonWrappers
 			get => _toolTip;
 		}
 		private ToolTipWrapper toolTipSetter
-		{ 
+		{
 			set => CheckPropertyChanged(ref _toolTip, value, nameof(ToolTip));
 		}
 		private ToolTipWrapper _toolTip = null;
@@ -59,7 +59,7 @@ namespace CoC.WinDesktop.ContentWrappers.ButtonWrappers
 			get => _isDefault;
 		}
 		private bool isDefaultSetter
-		{ 
+		{
 			set => CheckPrimitivePropertyChanged(ref _isDefault, value, nameof(IsDefault));
 		}
 		private bool _isDefault;

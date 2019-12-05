@@ -66,6 +66,65 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
+		#region Nipple Aggregate Functions
+
+		public float LargestNippleSize()
+		{
+			if (nipples.Count == 0)
+			{
+				return 0;
+			}
+			return nipples.Max(x => x.length);
+		}
+
+		public Nipples LargestNipples()
+		{
+			if (_breasts.Count == 0)
+			{
+				return null;
+			}
+			return nipples.MaxItem(x => x.length);
+		}
+
+		public float SmallestNippleSize()
+		{
+			if (nipples.Count == 0)
+			{
+				return 0;
+			}
+			return nipples.Min(x => x.length);
+		}
+
+		public Nipples SmallestNipples()
+		{
+			if (_breasts.Count == 0)
+			{
+				return null;
+			}
+			return nipples.MinItem(x => x.length);
+		}
+
+		public float AverageNippleSize()
+		{
+			if (_breasts.Count == 0)
+			{
+				return 0;
+			}
+			return nipples.Average(x => x.length);
+		}
+
+		public NippleData AverageNipple()
+		{
+			if (_breasts.Count == 0)
+			{
+				return null;
+			}
+
+			return new NippleData(creatureID, AverageNippleSize(), -1, quadNipples, blackNipples, nippleType);
+		}
+
+		#endregion
+
 		#region Nipple Mutators
 		public void SetQuadNipples(bool active)
 		{
@@ -110,6 +169,6 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-#warning Add a means of preventing lactation decrease due to pregnancy that doesn't require pregnancy set the perk value. 
+#warning Add a means of preventing lactation decrease due to pregnancy that doesn't require pregnancy set the perk value.
 	}
 }

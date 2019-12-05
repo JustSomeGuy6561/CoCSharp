@@ -30,7 +30,7 @@ namespace CoC.Frontend.Areas.Locations
 
 		static Deepwoods()
 		{
-			//initialize encounters here. 
+			//initialize encounters here.
 			//generic
 			randomEncounters.Add(new WalkInDeepwoods());
 			randomEncounters.Add(new GatherWood());
@@ -52,7 +52,7 @@ namespace CoC.Frontend.Areas.Locations
 
 		public Deepwoods() : base(DeepwoodsName, UNLOCK_LEVEL, randomEncounters, semiRandomEncounters, triggeredEncounters)
 		{
-			
+
 		}
 
 		public override int timesVisited

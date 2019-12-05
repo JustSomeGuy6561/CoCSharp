@@ -30,7 +30,7 @@ namespace CoC.WinDesktop.CustomControls.ExtraItemViews
 			RTB.Url_Click(sender, e);
 		}
 
-		//public 
+		//public
 	}
 
 

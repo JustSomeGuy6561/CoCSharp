@@ -299,7 +299,7 @@ namespace CoC.Backend.BodyParts
 
 		//these need to be functions or order of initialization can break. These are the things you learn
 		//when running unit tests. Testing OP!
-		
+
 		private static ResourceAttackBase TENDRIL_GRAB(Func<ushort> x, Action<ushort> y) => new TentaGrab(x, y);
 
 		private static readonly EpidermalData CARAPACE = new EpidermalData(EpidermisType.CARAPACE, Tones.BLACK, SkinTexture.SHINY);
@@ -370,7 +370,7 @@ namespace CoC.Backend.BodyParts
 
 		internal override void ParseEpidermis(Epidermis epidermis)
 		{
-			//not really designed to EpidermalData => Epidermis, but unfortunately, it's the only way to make the data immutable. 
+			//not really designed to EpidermalData => Epidermis, but unfortunately, it's the only way to make the data immutable.
 			if (baseAppearance.isEmpty)
 			{
 				epidermis.Reset();

@@ -27,7 +27,7 @@ namespace CoC.Frontend.UI
 		{
 			DisplayManager.LoadDisplay(((IScene)this).RunSceneGetDisplay());
 		}
-	
+
 		DisplayBase IScene.RunSceneGetDisplay()
 		{
 			RunScene();

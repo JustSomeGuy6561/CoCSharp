@@ -13,7 +13,7 @@ namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 {
 	public partial class LanguageOptionsModelView
 	{
-		//handled by the language itself. 
+		//handled by the language itself.
 
 		private string LanguageButtonText()
 		{

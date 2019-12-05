@@ -18,7 +18,7 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
-	//ngl, i can never recall if medusa is top and labret bottom, or if it's the opposite. 
+	//ngl, i can never recall if medusa is top and labret bottom, or if it's the opposite.
 	public enum LipPiercingLocation { LABRET, MEDUSA, MONROE_LEFT, MONROE_RIGHT, LOWER_LEFT_1, LOWER_LEFT_2, LOWER_RIGHT_1, LOWER_RIGHT_2 }
 
 	public enum EyebrowPiercingLocation { LEFT_1, LEFT_2, RIGHT_1, RIGHT_2 }
@@ -43,6 +43,23 @@ namespace CoC.Backend.BodyParts
 		public readonly Piercing<NosePiercingLocation> nosePiercings;
 		public readonly Piercing<EyebrowPiercingLocation> eyebrowPiercings;
 
+		public EpidermalData facialSkin
+		{
+			get
+			{
+				var prime = primary;
+				if (prime.type is ToneBasedEpidermisType toneType)
+				{
+					return new EpidermalData(toneType, prime.tone, skinTexture);
+
+				}
+				else
+				{
+					return new EpidermalData(EpidermisType.SKIN, type.FacialSkinTone(bodyData), skinTexture);
+				}
+			}
+		}
+
 		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
 
 		public override FaceType type
@@ -50,8 +67,8 @@ namespace CoC.Backend.BodyParts
 			get => _type;
 			protected set
 			{
+				isFullMorph = value.MorphStrengthPostTransform(_type, isFullMorph);
 				_type = value;
-				isFullMorph = _type.MorphStrengthPostTransform(isFullMorph);
 			}
 		}
 		private FaceType _type;
@@ -84,6 +101,8 @@ namespace CoC.Backend.BodyParts
 		//public int hoursSinceIngestedCum => timeLastIngestedCum.hoursToNow();
 		//public float lastCumIngestAmount { get; private set; } = 0;
 
+		public FacialStructure facialStructure => type.GetFacialStructure(isFullMorph);
+
 		internal Face(Guid creatureID) : this(creatureID, FaceType.defaultValue)
 		{ }
 
@@ -115,7 +134,7 @@ namespace CoC.Backend.BodyParts
 		public override string ShortDescription()
 		{
 			if (isFullMorph) return type.secondLevelShortDescription();
-			else return type.shortDescription();
+			else return type.ShortDescription();
 		}
 
 		internal override bool UpdateType(FaceType newType)
@@ -196,7 +215,7 @@ namespace CoC.Backend.BodyParts
 
 		internal bool WeakenFacialMorph(bool restoreIfAlreadyLevelOne = true)
 		{
-			//if full morph, weaken it to half-morph level. 
+			//if full morph, weaken it to half-morph level.
 			if (isFullMorph)
 			{
 				var oldData = AsReadOnlyData();
@@ -310,6 +329,8 @@ namespace CoC.Backend.BodyParts
 			return SUPPORTED_LIP_JEWELRY;
 		}
 
+		public bool wearingCowNoseRing => nosePiercings.WearingJewelryAt(NosePiercingLocation.SEPTIMUS) && nosePiercings[NosePiercingLocation.SEPTIMUS].jewelryType == JewelryType.RING;
+
 		private bool NosePiercingUnlocked(NosePiercingLocation piercingLocation)
 		{
 			return true;
@@ -404,9 +425,10 @@ namespace CoC.Backend.BodyParts
 		AttackBase ICanAttackWith.attack => type.attack;
 	}
 
-	//facial features are occasionally described differently if they classify as "muzzle". IDK - maybe in the future more types will be added. for now it's just a boolean -
-	//is it a muzzle or is it not?. If you want more types, switch it to an enum. 
-	//public enum FacialStructure { HUMANOID, MUZZLE, }
+	//we run checks for beak and muzzle - idk if you want more types than that. default type is humanoid, though you could call it other or something.
+	//feel free to add more types. if you need a single instance to support multiple types at once, you could mark this with the [flags] attribute.
+	public enum FacialStructure { HUMANOID, MUZZLE, BEAK}
+
 
 	public abstract partial class FaceType : SaveableBehavior<FaceType, Face, FaceData>
 	{
@@ -426,16 +448,23 @@ namespace CoC.Backend.BodyParts
 
 		private readonly DescriptorWithArg<bool> morphText;
 
-		private readonly bool firstLevelIsMuzzle;
-		private readonly bool secondLevelIsMuzzle;
+		private readonly FacialStructure firstLevelFacialStructure;
+		private readonly FacialStructure secondLevelFacialStructure;
+
+		public virtual Tones FacialSkinTone(BodyData body) => body.mainSkin.tone;
 
 		public bool HasMuzzle(bool isSecondLevel)
 		{
-			return isSecondLevel ? secondLevelIsMuzzle : firstLevelIsMuzzle;
+			return isSecondLevel ? secondLevelFacialStructure == FacialStructure.MUZZLE : firstLevelFacialStructure == FacialStructure.MUZZLE;
+		}
+
+		public bool HasBeak(bool isSecondLevel)
+		{
+			return isSecondLevel ? secondLevelFacialStructure == FacialStructure.BEAK : firstLevelFacialStructure == FacialStructure.BEAK;
 		}
 
 		private protected FaceType(EpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc,
-			bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText,
+			FacialStructure firstLevelStructure, FacialStructure secondLevelStructure, DescriptorWithArg<bool> strengthenWeakenMorphText,
 			DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform,
 			RestoreType<FaceData> restore) : base(firstLevelShortDesc, longDesc, playerStr, transform, restore)
 		{
@@ -444,23 +473,23 @@ namespace CoC.Backend.BodyParts
 			morphText = strengthenWeakenMorphText;
 			hasSecondLevel = true;
 
-			firstLevelIsMuzzle = firstLevelMuzzle;
-			secondLevelIsMuzzle = secondLevelMuzzle;
+			firstLevelFacialStructure = firstLevelStructure;
+			secondLevelFacialStructure = secondLevelStructure;
 
 			faces.AddAt(this, _index);
 		}
 
-		private protected FaceType(EpidermisType epidermisType, bool isMuzzle,
+		private protected FaceType(EpidermisType epidermisType, FacialStructure structure,
 			SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr,
 			ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(shortDesc, longDesc, playerStr, transform, restore)
 		{
 			_index = indexMaker++;
-			secondLevelShortDescription = GlobalStrings.None;
+			secondLevelShortDescription = ShortDescription;
 			morphText = x => "";
 			hasSecondLevel = false;
 
-			firstLevelIsMuzzle = isMuzzle;
-			secondLevelIsMuzzle = isMuzzle;
+			firstLevelFacialStructure = structure;
+			secondLevelFacialStructure = structure;
 
 			faces.AddAt(this, _index);
 		}
@@ -482,7 +511,8 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		internal virtual bool MorphStrengthPostTransform(bool previousWasFullMorph)
+		//by default, just converts it to first level.
+		internal virtual bool MorphStrengthPostTransform(FaceType previousType, bool previousWasFullMorph)
 		{
 			return false;
 		}
@@ -525,61 +555,64 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public FacialStructure GetFacialStructure(bool isFullMorph)
+		{
+			return isFullMorph ? secondLevelFacialStructure : firstLevelFacialStructure;
+		}
 
-		public static readonly FaceType HUMAN = new ToneFace(EpidermisType.SKIN, false, HumanShortDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly FaceType HORSE = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultHorseFur, true, HorseShortDesc, HorseLongDesc, HorsePlayerStr,
-			HorseTransformStr, HorseRestoreStr); //muzzle. 
-		public static readonly FaceType DOG = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultDogFur, true, DogShortDesc, DogLongDesc, DogPlayerStr, DogTransformStr, DogRestoreStr); //muzzle
-		public static readonly FaceType COW_MINOTAUR = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultCowFur, CowShortDesc, MinotaurShortDesc, false, true,
-			CowMorphText, Cow_MinotaurLongDesc, Cow_MinotaurPlayerStr, Cow_MinotaurTransformStr, Cow_MinotaurRestoreStr); //muzzle, second level. 
+		public static readonly FaceType HUMAN = new ToneFace(EpidermisType.SKIN, FacialStructure.HUMANOID, HumanShortDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly FaceType HORSE = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultHorseFur, FacialStructure.MUZZLE, HorseShortDesc, HorseLongDesc, HorsePlayerStr,
+			HorseTransformStr, HorseRestoreStr); //muzzle.
+		public static readonly FaceType DOG = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultDogFur, FacialStructure.MUZZLE, DogShortDesc, DogLongDesc, DogPlayerStr, DogTransformStr,
+			DogRestoreStr); //muzzle
+		public static readonly FaceType COW_MINOTAUR = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultCowFur, FacialStructure.HUMANOID, FacialStructure.MUZZLE, CowShortDesc,
+			MinotaurShortDesc, CowMorphText, Cow_MinotaurLongDesc, Cow_MinotaurPlayerStr, Cow_MinotaurTransformStr, Cow_MinotaurRestoreStr); //muzzle, second level.
 		public static readonly FaceType SHARK = new SharkFace();
 		public static readonly FaceType SNAKE = new SnakeFace();
-		public static readonly FaceType CAT = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultCatFur, CatGirlShortDesc, CatMorphShortDesc, false, true,
-			CatMorphText, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr); //muzzle, second level. 
-		public static readonly FaceType LIZARD = new ToneFace(EpidermisType.SCALES, true, LizardShortDesc, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr); //muzzle.
-		public static readonly FaceType BUNNY = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultBunnyFur, BunnyFirstLevelShortDesc, BunnySecondLevelShortDesc,
-			false, true, BunnyMorphText, BunnyLongDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
-		public static readonly FaceType KANGAROO = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultKangarooFacialFur, true, KangarooShortDesc,
+		public static readonly FaceType CAT = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultCatFur, FacialStructure.HUMANOID, FacialStructure.MUZZLE, CatGirlShortDesc,
+			CatMorphShortDesc, CatMorphText, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr); //muzzle, second level.
+		public static readonly FaceType LIZARD = new MultiToneFace(EpidermisType.SCALES, Tones.NOT_APPLICABLE, FacialStructure.MUZZLE, LizardShortDesc, LizardLongDesc,
+			LizardPlayerStr, LizardTransformStr, LizardRestoreStr); //muzzle.);
+		public static readonly FaceType BUNNY = new BunnyMouseFace(DefaultValueHelpers.defaultBunnyFur, FacialStructure.MUZZLE, BunnyFirstLevelShortDesc,
+			BunnySecondLevelShortDesc, BunnyMorphText, BunnyLongDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
+		public static readonly FaceType KANGAROO = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultKangarooFacialFur, FacialStructure.MUZZLE, KangarooShortDesc,
 			KangarooLongDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
 		public static readonly FaceType SPIDER = new SpiderFace();
 		public static readonly FaceType FOX = new FoxFace();
-		public static readonly FaceType DRAGON = new ToneFace(EpidermisType.SCALES, true, DragonShortDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly FaceType RACCOON = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultRaccoonFur, RaccoonMaskShortDesc, RaccoonFaceShortDesc, false, false,
-			RaccoonMorphText, RaccoonLongDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
-		public static readonly FaceType MOUSE = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultMouseFur, MouseTeethShortDesc, MouseFaceShortDesc, false, false,
+		public static readonly FaceType DRAGON = new MultiToneFace(EpidermisType.SCALES, Tones.NOT_APPLICABLE, FacialStructure.MUZZLE, DragonShortDesc, DragonLongDesc, DragonPlayerStr,
+			DragonTransformStr, DragonRestoreStr);
+		public static readonly FaceType RACCOON = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultRaccoonFur, FacialStructure.HUMANOID, FacialStructure.HUMANOID, RaccoonMaskShortDesc,
+			RaccoonFaceShortDesc, RaccoonMorphText, RaccoonLongDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
+		public static readonly FaceType MOUSE = new BunnyMouseFace(DefaultValueHelpers.defaultMouseFur, FacialStructure.HUMANOID, MouseTeethShortDesc, MouseFaceShortDesc,
 			MouseMorphText, MouseLongDesc, MousePlayerStr, MouseTransformStr, MouseRestoreStr);
-		public static readonly FaceType FERRET = new MultiFurFace(EpidermisType.FUR, DefaultValueHelpers.defaultFerretFur, DefaultValueHelpers.defaultFerretSecondaryFacialFur,
-			FerretMaskShortDesc, FerretFaceShortDesc, false, true, FerretMorphText, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
+		public static readonly FaceType FERRET = new FerretFace();
 		public static readonly FaceType PIG = new PigFace(); //both pig and boar are not humanoid.
-		public static readonly FaceType RHINO = new ToneFace(EpidermisType.SKIN, false, RhinoShortDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr); //muzzle
-		public static readonly FaceType ECHIDNA = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultEchidnaFur, true, EchidnaShortDesc, EchidnaLongDesc,
+		public static readonly FaceType RHINO = new ToneFace(EpidermisType.SKIN, FacialStructure.HUMANOID, RhinoShortDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr); //muzzle
+		public static readonly FaceType ECHIDNA = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultEchidnaFur, FacialStructure.MUZZLE, EchidnaShortDesc, EchidnaLongDesc,
 			EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
-		public static readonly FaceType DEER = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultDeerFur, true, DeerShortDesc, DeerLongDesc, DeerPlayerStr,
+		public static readonly FaceType DEER = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultDeerFur, FacialStructure.MUZZLE, DeerShortDesc, DeerLongDesc, DeerPlayerStr,
 			DeerTransformStr, DeerRestoreStr); //muzzle
-		public static readonly FaceType WOLF = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultWolfFacialFur, true, WolfShortDesc, WolfLongDesc,
+		public static readonly FaceType WOLF = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultWolfFacialFur, FacialStructure.MUZZLE, WolfShortDesc, WolfLongDesc,
 			WolfPlayerStr, WolfTransformStr, WolfRestoreStr);//muzzle
 		public static readonly FaceType COCKATRICE = new CockatriceFace();
 		public static readonly FaceType RED_PANDA = new MultiFurFace(EpidermisType.FUR, DefaultValueHelpers.defaultRedPandaFur, DefaultValueHelpers.defaultRedPandaFaceEarTailFur,
-			true, PandaShortDesc, PandaLongDesc, PandaPlayerStr, PandaTransformStr, PandaRestoreStr);
+			FacialStructure.MUZZLE, PandaShortDesc, PandaLongDesc, PandaPlayerStr, PandaTransformStr, PandaRestoreStr);
 		//new type, broken out from standard because goo is now a full set or body parts.
-		public static readonly FaceType GOO = new ToneFace(EpidermisType.GOO, false, GooShortDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+		public static readonly FaceType GOO = new ToneFace(EpidermisType.GOO, FacialStructure.HUMANOID, GooShortDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 		//placeholder.
-		public static readonly FaceType BEAK = new FurFace(EpidermisType.FEATHERS, new FurColor(HairFurColors.WHITE), false, BeakShortDesc, BeakLongDesc,
-			BeakPlayerStr, BeakTransformStr, BeakRestoreStr);
+		//public static readonly FaceType BEAK = new FurFace(EpidermisType.FEATHERS, new FurColor(HairFurColors.WHITE), FacialStructure.BEAK, BeakShortDesc, BeakLongDesc,
+		//	BeakPlayerStr, BeakTransformStr, BeakRestoreStr);
 
 		private class ToneFace : FaceType
 		{
-			public ToneFace(ToneBasedEpidermisType epidermisType, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr,
-				ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, isMuzzle, shortDesc, longDesc, playerStr, transform, restore)
-			{
-			}
+			public ToneFace(ToneBasedEpidermisType epidermisType, FacialStructure structure, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc,
+				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
+				: base(epidermisType, structure, shortDesc, longDesc, playerStr, transform, restore) { }
 
-			public ToneFace(ToneBasedEpidermisType epidermisType, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, bool firstLevelMuzzle,
-				bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr,
-				ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle,
-					secondLevelMuzzle, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
-			{
-			}
+			public ToneFace(ToneBasedEpidermisType epidermisType, FacialStructure firstLevelStructure, FacialStructure secondLevelStructure, SimpleDescriptor firstLevelShortDesc,
+				SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr,
+				ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelStructure,
+					secondLevelStructure, strengthenWeakenMorphText, longDesc, playerStr, transform, restore) { }
 
 			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 
@@ -591,29 +624,36 @@ namespace CoC.Backend.BodyParts
 
 		private class MultiToneFace : ToneFace
 		{
-			private readonly Tones defaultSecondaryTone;
+			protected readonly Tones defaultSecondaryTone;
 
-			public MultiToneFace(ToneBasedEpidermisType epidermisType, Tones secondaryToneFallback, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc,
+			public MultiToneFace(ToneBasedEpidermisType epidermisType, Tones secondaryToneFallback, FacialStructure structure, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc,
 				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, isMuzzle, shortDesc, longDesc, playerStr, transform, restore)
+				: base(epidermisType, structure, shortDesc, longDesc, playerStr, transform, restore)
 			{
 				defaultSecondaryTone = secondaryToneFallback;
 			}
 
 
-			public MultiToneFace(ToneBasedEpidermisType epidermisType, Tones secondaryToneFallback, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc,
-				bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc,
-				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
+			public MultiToneFace(ToneBasedEpidermisType epidermisType, Tones secondaryToneFallback, FacialStructure firstLevelStructure, FacialStructure secondLevelStructure,
+				SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc,
+				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, firstLevelStructure,
+					secondLevelStructure, firstLevelShortDesc, secondLevelShortDesc, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
 			{
 				defaultSecondaryTone = secondaryToneFallback;
 			}
 
 			internal override EpidermalData ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
-				Tones tone = !bodyData.supplementary.tone.isEmpty ? bodyData.supplementary.tone : defaultSecondaryTone;
-				SkinTexture texture = bodyData.supplementary.usesTone ? bodyData.supplementary.skinTexture : SkinTexture.NONDESCRIPT;
-				return new EpidermalData(primaryEpidermis, tone, texture);
+				if (bodyData.supplementary.tone.isEmpty && defaultSecondaryTone.isEmpty)
+				{
+					return new EpidermalData();
+				}
+				else
+				{
+					Tones tone = !bodyData.supplementary.tone.isEmpty ? bodyData.supplementary.tone : defaultSecondaryTone;
+					SkinTexture texture = bodyData.supplementary.usesTone ? bodyData.supplementary.skinTexture : SkinTexture.NONDESCRIPT;
+					return new EpidermalData(primaryEpidermis, tone, texture);
+				}
 			}
 		}
 
@@ -623,17 +663,17 @@ namespace CoC.Backend.BodyParts
 
 			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 
-			public FurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, bool isMuzzle, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc,
+			public FurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, FacialStructure structure, SimpleDescriptor shortDesc, DescriptorWithArg<FaceData> longDesc,
 				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, isMuzzle, shortDesc, longDesc, playerStr, transform, restore)
+				: base(epidermisType, structure, shortDesc, longDesc, playerStr, transform, restore)
 			{
 				defaultColor = fallbackColor;
 			}
 
-			public FurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc,
-				bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc,
-				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
+			public FurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, FacialStructure firstLevelStructure, FacialStructure secondLevelStructure,
+				SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc,
+				PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, firstLevelShortDesc,
+					secondLevelShortDesc, firstLevelStructure, secondLevelStructure, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
 			{
 				defaultColor = fallbackColor;
 			}
@@ -661,17 +701,17 @@ namespace CoC.Backend.BodyParts
 		{
 			private readonly FurColor secondaryDefaultColor;
 
-			public MultiFurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, FurColor secondaryFallbackColor, bool isMuzzle, SimpleDescriptor shortDesc,
+			public MultiFurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, FurColor secondaryFallbackColor, FacialStructure structure, SimpleDescriptor shortDesc,
 				DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, fallbackColor, isMuzzle, shortDesc, longDesc, playerStr, transform, restore)
+				: base(epidermisType, fallbackColor, structure, shortDesc, longDesc, playerStr, transform, restore)
 			{
 				secondaryDefaultColor = secondaryFallbackColor;
 			}
 
-			public MultiFurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, FurColor secondaryFallbackColor, SimpleDescriptor firstLevelShortDesc,
-				SimpleDescriptor secondLevelShortDesc, bool firstLevelMuzzle, bool secondLevelMuzzle, DescriptorWithArg<bool> strengthenWeakenMorphText,
+			public MultiFurFace(FurBasedEpidermisType epidermisType, FurColor fallbackColor, FurColor secondaryFallbackColor, FacialStructure firstLevelStructure,
+				FacialStructure secondLevelStructure, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText,
 				DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
-				: base(epidermisType, fallbackColor, firstLevelShortDesc, secondLevelShortDesc, firstLevelMuzzle, secondLevelMuzzle, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
+				: base(epidermisType, fallbackColor, firstLevelStructure, secondLevelStructure, firstLevelShortDesc, secondLevelShortDesc, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
 			{
 				secondaryDefaultColor = secondaryFallbackColor;
 			}
@@ -689,7 +729,7 @@ namespace CoC.Backend.BodyParts
 					texture = bodyData.supplementary.furTexture;
 				}
 				////check if the hair isn't empty. further, make sure the primary color isn't also using the hair color.
-				else if (!bodyData.hairColor.isEmpty)
+				else if (!bodyData.hairColor.isEmpty && !primary.fur.IsIdenticalTo(bodyData.hairColor))
 				{
 					color = new FurColor(bodyData.hairColor);
 				}
@@ -700,7 +740,8 @@ namespace CoC.Backend.BodyParts
 
 		private sealed class PigFace : FurFace
 		{
-			public PigFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultPigFur, PigShortDesc, BoarShortDesc, false, false, PigMorphText, PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr) { }
+			public PigFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultPigFur, FacialStructure.HUMANOID, FacialStructure.HUMANOID, PigShortDesc, BoarShortDesc, PigMorphText,
+				PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr) { }
 
 			internal override bool isHumanoid(bool isSecondLevel)
 			{
@@ -709,7 +750,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private sealed class SpiderFace : ToneFace
 		{
-			public SpiderFace() : base(EpidermisType.SKIN, false, SpiderShortDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr) { }
+			public SpiderFace() : base(EpidermisType.SKIN, FacialStructure.HUMANOID, SpiderShortDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr) { }
 
 			internal override bool isHumanoid(bool isSecondLevel)
 			{
@@ -721,7 +762,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private sealed class SharkFace : ToneFace
 		{
-			public SharkFace() : base(EpidermisType.SKIN, false, SharkShortDesc, SharkLongDesc, SharkPlayerStr, SharkTransformStr, SharkRestoreStr) { }
+			public SharkFace() : base(EpidermisType.SKIN, FacialStructure.HUMANOID, SharkShortDesc, SharkLongDesc, SharkPlayerStr, SharkTransformStr, SharkRestoreStr) { }
 
 			internal override bool isHumanoid(bool isSecondLevel)
 			{
@@ -733,7 +774,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private sealed class SnakeFace : ToneFace
 		{
-			public SnakeFace() : base(EpidermisType.SCALES, false, SnakeShortDesc, SnakeLongDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr) { }
+			public SnakeFace() : base(EpidermisType.SCALES, FacialStructure.HUMANOID, SnakeShortDesc, SnakeLongDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr) { }
 
 			internal override bool isHumanoid(bool isSecondLevel)
 			{
@@ -744,11 +785,29 @@ namespace CoC.Backend.BodyParts
 			private static readonly AttackBase _attack = new NagaBite();
 		}
 
+		private class BunnyMouseFace : FurFace
+		{
+			public BunnyMouseFace(FurColor fallbackColor, FacialStructure secondLevelStructure, SimpleDescriptor firstLevelShortDesc, SimpleDescriptor secondLevelShortDesc,
+				DescriptorWithArg<bool> strengthenWeakenMorphText, DescriptorWithArg<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr, ChangeType<FaceData> transform, RestoreType<FaceData> restore)
+				: base(EpidermisType.FUR, fallbackColor, FacialStructure.HUMANOID, secondLevelStructure, firstLevelShortDesc, secondLevelShortDesc, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
+			{ }
+
+			//overridden - since bunny and mouse are basically the same (except one has a longer nose, i guess) i'm keeping the old level.
+			internal override bool MorphStrengthPostTransform(FaceType previousType, bool previousWasFullMorph)
+			{
+				if (previousType == BUNNY || previousType == MOUSE)
+				{
+					return previousWasFullMorph;
+				}
+				return base.MorphStrengthPostTransform(previousType, previousWasFullMorph);
+			}
+		}
+
 		private sealed class CockatriceFace : FurFace
 		{
 			private readonly ToneBasedEpidermisType secondaryEpidermis = EpidermisType.SCALES;
 			private readonly Tones defaultUnderTone = DefaultValueHelpers.defaultCockatriceScaleTone;
-			public CockatriceFace() : base(EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatricePrimaryFeathers, false, CockatriceShortDesc,
+			public CockatriceFace() : base(EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatricePrimaryFeathers, FacialStructure.BEAK, CockatriceShortDesc,
 				CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 			{ }
 
@@ -762,10 +821,11 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private sealed class FoxFace : FurFace
+		private sealed class FoxFace : MultiFurFace
 		{
 			private FurColor defaultKitsuneFur => DefaultValueHelpers.defaultKitsuneFacialFur;
-			public FoxFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultFoxFacialFur, KitsuneShortDesc, FoxShortDesc, false, true, FoxMorphText, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
+			public FoxFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultFoxFacialFur, DefaultValueHelpers.defaultFoxSecondaryFacialFur, FacialStructure.HUMANOID,
+				FacialStructure.MUZZLE, KitsuneShortDesc, FoxShortDesc, FoxMorphText, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
 
 			internal override EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
@@ -779,6 +839,41 @@ namespace CoC.Backend.BodyParts
 					color = new FurColor(bodyData.activeHairColor);
 				}
 				return new EpidermalData(primaryEpidermis, color, FurTexture.SOFT);
+			}
+
+			internal override EpidermalData ParseSecondaryEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
+			{
+				if (!isFullMorph)
+				{
+					return new EpidermalData();
+				}
+				else
+				{
+					return base.ParseSecondaryEpidermis(bodyData, isFullMorph, complexion);
+				}
+			}
+		}
+
+		private sealed class FerretFace : MultiFurFace
+		{
+			public FerretFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultFerretFur, DefaultValueHelpers.defaultFerretSecondaryFacialFur, FacialStructure.HUMANOID,
+			FacialStructure.MUZZLE, FerretMaskShortDesc, FerretFaceShortDesc, FerretMorphText, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr)
+			{ }
+
+			internal override EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
+			{
+				FurColor color = defaultColor;
+				FurTexture texture = FurTexture.SOFT;
+				if (!bodyData.activeFur.fur.isEmpty) //probably never null, but w/e i'll be safe.
+				{
+					color = bodyData.activeFur.fur;
+					texture = bodyData.activeFur.furTexture;
+				}
+				else if (!bodyData.activeHairColor.isEmpty)
+				{
+					color = new FurColor(bodyData.activeHairColor);
+				}
+				return new EpidermalData(primaryEpidermis, color, texture);
 			}
 		}
 	}
@@ -821,9 +916,17 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermalData secondaryEpidermis;
 		public readonly SkinTexture skinTexture;
 
+		public FacialStructure facialStructure => type.GetFacialStructure(isFullMorph);
+
 		public readonly ReadOnlyPiercing<LipPiercingLocation> lipPiercings;
 		public readonly ReadOnlyPiercing<NosePiercingLocation> nosePiercings;
 		public readonly ReadOnlyPiercing<EyebrowPiercingLocation> eyebrowPiercings;
+
+		public override string ShortDescription()
+		{
+			if (isFullMorph) return type.secondLevelShortDescription();
+			else return type.ShortDescription();
+		}
 
 		public override FaceData AsCurrentData()
 		{

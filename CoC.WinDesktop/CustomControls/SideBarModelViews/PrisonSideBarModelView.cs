@@ -124,7 +124,7 @@ namespace CoC.WinDesktop.CustomControls.SideBarModelViews
 		protected override void GetData(StatDataCollectionBase statData)
 		{
 			PlayerStatData stats = statData.playerStats;
-			//Handle stats bar data - automatic, but only if language hasn't changed. if it has, handle it. 
+			//Handle stats bar data - automatic, but only if language hasn't changed. if it has, handle it.
 			if (LastLanguageIndex != LanguageEngine.currentLanguageIndex)
 			{
 				LastLanguageIndex = LanguageEngine.currentLanguageIndex;
@@ -135,7 +135,7 @@ namespace CoC.WinDesktop.CustomControls.SideBarModelViews
 				RaisePropertyChanged(nameof(combatStatText));
 				RaisePropertyChanged(nameof(prisonStatText));
 			}
-			//similarly, handle changes in gameTime or playerName. these properties fire off the corresponding property changed events automatically. 
+			//similarly, handle changes in gameTime or playerName. these properties fire off the corresponding property changed events automatically.
 			if (gameTime != statData.currentTime)
 			{
 				gameTime = statData.currentTime;

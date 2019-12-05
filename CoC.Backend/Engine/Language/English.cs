@@ -10,11 +10,11 @@ namespace CoC.Backend.Engine.Language
 		{
 			return @"You were out walking  one fine and dandy day and decided to speak aloud in your native tongue, because apparently that's something you do" +
 			@" in order to make sure nothing weird has happened like someone magically changing the language you speak. ""<i>Hello World!</i>"" Sure enough, it was English. " +
-			@"You feel silly for questioning yourself, but stranger things have happened." + Environment.NewLine + Environment.NewLine + 
+			@"You feel silly for questioning yourself, but stranger things have happened." + Environment.NewLine + Environment.NewLine +
 			"This is <u>underlined</u>. This is <b>bold</b>. This is <font color=DarkRed>Dark Red</font>. This is <font color=Green>Green</font>";
 		}
 
-		//fallback to default, because we're English already. 
+		//fallback to default, because we're English already.
 		public override string GetText(string functionName, Type functionClass)
 		{
 			return null;

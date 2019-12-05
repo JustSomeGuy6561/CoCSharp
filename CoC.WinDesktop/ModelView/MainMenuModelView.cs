@@ -99,7 +99,7 @@ namespace CoC.WinDesktop.ModelView
 			if (LanguageEngine.currentLanguageIndex != LastLanguageIndex)
 			{
 				LastLanguageIndex = LanguageEngine.currentLanguageIndex;
-				//handle content that needs it. 
+				//handle content that needs it.
 			}
 		}
 	}

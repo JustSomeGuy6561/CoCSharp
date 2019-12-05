@@ -126,7 +126,7 @@ namespace CoC.Backend.CoC_Colors
 			return (isEmpty && hairColor?.isEmpty == true) || (!isMultiColored && hairColor == primaryColor);
 		}
 
-		public string AsString()
+		public string AsString(bool withArticle = false)
 		{
 			if (!isMultiColored)
 			{
@@ -138,14 +138,14 @@ namespace CoC.Backend.CoC_Colors
 				{
 
 					case FurMulticolorPattern.SPOTTED:
-						return primaryColor.AsString() + " with " + secondaryColor.AsString() + " spots";
+						return primaryColor.AsString(withArticle) + " with " + secondaryColor.AsString() + " spots";
 					case FurMulticolorPattern.STRIPED:
-						return primaryColor.AsString() + " with " + secondaryColor.AsString() + " stripes";
+						return primaryColor.AsString(withArticle) + " with " + secondaryColor.AsString() + " stripes";
 					case FurMulticolorPattern.MIXED:
-						return "mixed " + primaryColor.AsString() + " and " + secondaryColor.AsString();
+						return (withArticle ? "a " : "") + "mixed " + primaryColor.AsString() + " and " + secondaryColor.AsString();
 					case FurMulticolorPattern.NO_PATTERN:
 					default:
-						return primaryColor.AsString() + " and " + secondaryColor.AsString();
+						return primaryColor.AsString(withArticle) + " and " + secondaryColor.AsString();
 				}
 			}
 		}
@@ -236,6 +236,30 @@ namespace CoC.Backend.CoC_Colors
 				return null;
 			}
 			return new ReadOnlyFurColor(source);
+		}
+
+		public string AsString()
+		{
+			if (!isMultiColored)
+			{
+				return primary.AsString();
+			}
+			else
+			{
+				switch (pattern)
+				{
+
+					case FurMulticolorPattern.SPOTTED:
+						return primary.AsString() + " with " + secondary.AsString() + " spots";
+					case FurMulticolorPattern.STRIPED:
+						return primary.AsString() + " with " + secondary.AsString() + " stripes";
+					case FurMulticolorPattern.MIXED:
+						return "mixed " + primary.AsString() + " and " + secondary.AsString();
+					case FurMulticolorPattern.NO_PATTERN:
+					default:
+						return primary.AsString() + " and " + secondary.AsString();
+				}
+			}
 		}
 
 		public bool Equals(ReadOnlyFurColor other)

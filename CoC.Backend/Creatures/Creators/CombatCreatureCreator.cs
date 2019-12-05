@@ -13,7 +13,7 @@ namespace CoC.Backend.Creatures
 		public byte? intelligence;
 		public byte? toughness;
 
-		//i see no reason for these to be in the creator. 
+		//i see no reason for these to be in the creator.
 		//lust is immediately altered the moment the game starts, and fatigue is reset to 0.
 		//public ushort? lust;
 		//public byte? fatigue;

@@ -80,7 +80,7 @@ namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 		private DoubleCollection _ticks;
 
 		public OptionsRowSliderWrapper(SimpleDescriptor optionName, OrderedHashSet<int?> allOptions, Func<int?, string> availableOptions,
-			Func<int?, string> optionDescriptions, Func<int?> getStatus, Action<int?> onSelect, SimpleDescriptor warningTextGetter, 
+			Func<int?, string> optionDescriptions, Func<int?> getStatus, Action<int?> onSelect, SimpleDescriptor warningTextGetter,
 			EnabledOrDisabledWithTollTipNullSldr disabledTooltipGetter) : base(optionName)
 		{
 			nullable = true;
@@ -113,7 +113,7 @@ namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 		}
 
 		public OptionsRowSliderWrapper(SimpleDescriptor optionName, OrderedHashSet<int> allOptions, Func<int, string> availableOptions,
-			Func<int, string> optionDescriptions, Func<int> getStatus, Action<int> onSelect, 
+			Func<int, string> optionDescriptions, Func<int> getStatus, Action<int> onSelect,
 			SimpleDescriptor warningTextGetter, EnabledOrDisabledWithToolTipSldr disabledTooltipGetter) : base(optionName)
 		{
 			nullable = false;
@@ -177,7 +177,7 @@ namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 				else
 				{
 					temp.Add(x);
-				} 
+				}
 			}
 			if (sb.Length == 0)
 			{
@@ -190,7 +190,7 @@ namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 			Ticks = temp;
 			WarningText = warningTextFn();
 
-			#warning Handle the Ticks and tooltip - whatever is disabled, remove the corresponding index from the Ticks collection. Update the tooltip accordingly. 
+			#warning Handle the Ticks and tooltip - whatever is disabled, remove the corresponding index from the Ticks collection. Update the tooltip accordingly.
 
 
 

@@ -21,7 +21,7 @@ namespace CoC.Frontend.Areas
 		private static readonly Dictionary<Type, Func<HomeBaseBase>> homeBases = new Dictionary<Type, Func<HomeBaseBase>>();
 		internal static readonly ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBaseCollection = new ReadOnlyDictionary<Type, Func<HomeBaseBase>>(homeBases);
 
-		//add your areas here. 
+		//add your areas here.
 		static AreaManager()
 		{
 			AddLocationHelper(() => new Forest());

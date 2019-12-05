@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.Endowment
 		}
 		private static string LustyHint()
 		{
-			return "Do you have an unusually high sex-drive? (+5 Libido)" + Environment.NewLine + Environment.NewLine + 
+			return "Do you have an unusually high sex-drive? (+5 Libido)" + Environment.NewLine + Environment.NewLine +
 				"Libido affects how quickly your lust builds over time. You may find a high libido to be more trouble than it's worth...";
 		}
 		private static string LustyDesc()

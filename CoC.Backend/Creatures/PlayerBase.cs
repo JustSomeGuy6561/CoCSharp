@@ -15,8 +15,8 @@ using CoC.Backend.Perks;
 namespace CoC.Backend.Creatures
 {
 	/// <summary>
-	/// PlayerBase is the base class for the player. due to the fact that the player needs a ton of stuff in the frontend, frankly it makes more sense to just make it abstract. I was doing 
-	/// crazy workarounds with extensions and extra data classes that were abstract here with a constructor passed in from the frontend, and that's just a gaudy band-aid fix. 
+	/// PlayerBase is the base class for the player. due to the fact that the player needs a ton of stuff in the frontend, frankly it makes more sense to just make it abstract. I was doing
+	/// crazy workarounds with extensions and extra data classes that were abstract here with a constructor passed in from the frontend, and that's just a gaudy band-aid fix.
 	/// </summary>
 	public abstract class PlayerBase : CombatCreature
 	{
@@ -32,7 +32,7 @@ namespace CoC.Backend.Creatures
 		private float _hunger = 0;
 
 		internal float hungerGainRate = 1.0f;
-		
+
 
 		private sbyte bonusMinHunger { get; set; }
 		public byte minHunger => DEFAULT_HUNGER.offset(bonusMinHunger);
@@ -47,7 +47,7 @@ namespace CoC.Backend.Creatures
 			//now set up all the listeners.
 			//if any listeners are player specifc, and i mean really player specific, add them here.
 
-			//then activate them. 
+			//then activate them.
 			//occurs AFTER the creature constructor, so we're fine.
 			UnFreezeCreature();
 
@@ -80,7 +80,7 @@ namespace CoC.Backend.Creatures
 		}
 
 #warning NYI
-		public bool hasAnyStashes => false; 
+		public bool hasAnyStashes => false;
 
 		public override uint maxHealth
 		{

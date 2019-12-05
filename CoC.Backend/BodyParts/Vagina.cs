@@ -44,7 +44,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Clit clit;
 
-		private int vaginaIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.vaginas.IndexOf(this) : 0;
+		public int vaginaIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.vaginas.IndexOf(this) : 0;
 
 		internal VaginalLooseness minLooseness
 		{
@@ -142,7 +142,7 @@ namespace CoC.Backend.BodyParts
 		public ushort totalPenetrationCount { get; private set; } = 0;
 		public ushort dryOrgasmCount { get; private set; } = 0;
 
-		public bool virgin { get; private set; } = true;
+		public bool isVirgin { get; private set; } = true;
 
 		public bool everPracticedVaginal => totalPenetrationCount > 0;
 
@@ -180,7 +180,7 @@ namespace CoC.Backend.BodyParts
 		{
 
 			byte loose = (byte)looseness;
-			if (!virgin)
+			if (!isVirgin)
 			{
 				loose++;
 			}
@@ -209,7 +209,7 @@ namespace CoC.Backend.BodyParts
 		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType) : base(creatureID)
 		{
 			clit = new Clit(creatureID, this, initialPerkData);
-			virgin = true;
+			isVirgin = true;
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
 			_wetness = initialPerkData.defaultWetnessNew;
 			_looseness = initialPerkData.defaultLoosenessNew;
@@ -227,7 +227,7 @@ namespace CoC.Backend.BodyParts
 			{
 				isVirgin = vaginalLooseness == VaginalLooseness.TIGHT || vaginalLooseness is null;
 			}
-			virgin = (bool)isVirgin;
+			this.isVirgin = (bool)isVirgin;
 
 			minLooseness = initialPerkData.minLooseness;
 			maxLooseness = initialPerkData.maxLooseness;
@@ -252,6 +252,9 @@ namespace CoC.Backend.BodyParts
 			else return null;
 		}
 		#endregion
+
+		public string FullDescription() => type.FullDescription(AsReadOnlyData());
+
 		public override VaginaData AsReadOnlyData()
 		{
 			return new VaginaData(this, vaginaIndex);
@@ -275,7 +278,7 @@ namespace CoC.Backend.BodyParts
 			if (takeVirginity)
 			{
 				sexCount++;
-				virgin = false;
+				isVirgin = false;
 			}
 			if (reachOrgasm)
 			{
@@ -327,11 +330,11 @@ namespace CoC.Backend.BodyParts
 		#region Vagina-Specific
 		internal bool Deflower()
 		{
-			if (!virgin)
+			if (!isVirgin)
 			{
 				return false;
 			}
-			virgin = false;
+			isVirgin = false;
 			return true;
 		}
 
@@ -567,14 +570,15 @@ namespace CoC.Backend.BodyParts
 			else if (looseness > VaginalLooseness.NORMAL && looseness > minLooseness) //whichever is greator.
 			{
 				vaginaTightenTimer += hoursPassed;
-				if (vaginaTightenTimer >= timerAmount)
+				var oldLooseness = looseness;
+				while (vaginaTightenTimer >= timerAmount && looseness> minLooseness && looseness > VaginalLooseness.NORMAL)
 				{
-					if (isPlayer)
-					{
-						sb.Append(VaginaTightenedUpDueToInactivity(looseness));
-					}
+					vaginaTightenTimer -= timerAmount;
 					looseness--;
-					vaginaTightenTimer = 0;
+				}
+				if (isPlayer)
+				{
+					sb.Append(VaginaTightenedUpDueToInactivity(oldLooseness));
 				}
 			}
 
@@ -600,7 +604,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region NYI or Potential Ideas
-		//min and max looseness/wetness are locked to perks. because reasons. 
+		//min and max looseness/wetness are locked to perks. because reasons.
 		//internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
 		//{
 		//	VaginalLooseness looseness = minLooseness;
@@ -723,13 +727,17 @@ namespace CoC.Backend.BodyParts
 
 		public static VaginaType defaultValue => HUMAN;
 
+		private readonly DescriptorWithArg<VaginaData> fullDescFn;
+
+		public string FullDescription(VaginaData vagina) => fullDescFn(vagina);
 
 		private VaginaType(int capacityBonus,
-			SimpleDescriptor shortDesc, DescriptorWithArg<VaginaData> longDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
+			SimpleDescriptor shortDesc, DescriptorWithArg<VaginaData> longDesc, DescriptorWithArg<VaginaData> fullDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
 			ChangeType<VaginaData> transform, RestoreType<VaginaData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			typeCapacityBonus = capacityBonus;
+			fullDescFn = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
 			types.AddAt(this, _index);
 		}
 
@@ -749,9 +757,9 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanLongDesc, VagHumanPlayerStr, (x, y) => x.type.restoredString(x, y), GlobalStrings.RevertAsDefault);
-		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineLongDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
-		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapLongDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
+		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanLongDesc, VagHumanFullDesc, VagHumanPlayerStr, (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineLongDesc, VagEquineFullDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
+		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapLongDesc, VagSandTrapFullDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
 
 	}
 
@@ -779,7 +787,7 @@ namespace CoC.Backend.BodyParts
 			clit = source.clit.AsReadOnlyData();
 			looseness = source.looseness;
 			wetness = source.wetness;
-			isVirgin = source.virgin;
+			isVirgin = source.isVirgin;
 			everPracticedVaginal = source.everPracticedVaginal;
 
 			capacity = source.VaginalCapacity();

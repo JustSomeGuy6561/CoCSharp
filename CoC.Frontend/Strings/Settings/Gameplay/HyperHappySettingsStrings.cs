@@ -12,12 +12,12 @@ namespace CoC.Frontend.Settings.Gameplay
 		}
 	}
 	public partial class HyperHappySessionSetting
-	{ 
+	{
 		private string EnabledHintStr()
 		{
 			return "Items and transformations that would normally have unique effects based on your gender will no longer do so. Transformations that occur regardless of your gender" +
 				" will be unaffected";
-			
+
 		}
 
 		private string DisabledHintStr()

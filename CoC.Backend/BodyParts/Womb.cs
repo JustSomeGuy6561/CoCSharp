@@ -9,7 +9,10 @@ using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
-	public abstract partial class Womb : SimpleSaveablePart<Womb, WombData>
+	//womb is not sealed; if you need a womb that does custom things, feel free to do so.
+	//womb has several constructors, but
+
+	public partial class Womb : SimpleSaveablePart<Womb, WombData>
 	{
 		public override string BodyPartName()
 		{
@@ -17,7 +20,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//Note: we don't attach these to vagina and ass b/c it's possible to lose a vagina (and perhaps an asshole too if it's possible to TF to anemone or something)
-		//and we wouldn't want this to cause the pregnancy to be lost. 
+		//and we wouldn't want this to cause the pregnancy to be lost.
 		public float pregnancyMultiplier
 		{
 			get
@@ -38,37 +41,47 @@ namespace CoC.Backend.BodyParts
 		}
 		internal int pregnancyMultiplierCounter = 0;
 
-		//if null, cannot get pregnant via normal vagina.
-		public readonly VaginalPregnancyStore normalPregnancy;
-		public bool canGetPregnant(bool hasVagina) => normalPregnancy != null && canGetPregnantCheck(hasVagina);
-		protected virtual bool canGetPregnantCheck(bool hasVagina) => hasVagina;
-
 		public bool isPregnant => normalPregnancy?.isPregnant == true || analPregnancy?.isPregnant == true || secondaryNormalPregnancy?.isPregnant == true;
 
 
-		//if null, cannot get anally pregnant. 
-		public readonly AnalPregnancyStore analPregnancy;
-		//basically, by default, the normal creature cannot become anally pregnant, unless the source attempting to anally knock them up expressly says they don't care.
-		//most anal pregnancy attempts will respect the Womb's stance on anal pregnancies and therefore fail. as of now, the only thing that ignores this is a satyr, or PC with satyr sexuality.
-		//note that it's possible to have a womb that prevents all anal pregnancies without overriding this by setting anal pregnacy store to null.
-		//Note that this means creatures 
-		public bool canGetAnallyPregnant(bool hasAnus, bool sourceOverridesNoAnalPregnancies) => analPregnancy != null && canGetAnallyPregnantCheck(hasAnus, sourceOverridesNoAnalPregnancies);
-		protected virtual bool canGetAnallyPregnantCheck(bool hasAnus, bool sourceOverridesNoAnalPregnancies) => hasAnus && sourceOverridesNoAnalPregnancies;
+		//if null, cannot get pregnant via normal vagina.
+		public readonly VaginalPregnancyStore normalPregnancy;
+		public bool canGetPregnant(bool hasVagina) => normalPregnancy != null && hasVagina && AllowsVaginalPregnancies();
 
-		//allows a third pregnancy store for creatures with two vaginas. defaults to null, so we can't get pregnant through a second vagina. 
+		protected virtual bool AllowsVaginalPregnancies() => true;
+
+		//if null, cannot get anally pregnant.
+		public readonly AnalPregnancyStore analPregnancy;
+
+		//default case: has anus, and source forces us to allow it.
+		public bool canGetAnallyPregnant(bool hasAnus, bool sourceOverridesNoAnalPregnancies) => analPregnancy != null && hasAnus && sourceOverridesNoAnalPregnancies;
+
+		protected virtual bool AllowsAnalPregnancies(bool sourceIgnoresPregnancyPreferences) => sourceIgnoresPregnancyPreferences;
+
+		//allows a third pregnancy store for creatures with two vaginas. defaults to null, so we can't get pregnant through a second vagina.
 		public readonly VaginalPregnancyStore secondaryNormalPregnancy;
 
 		//same as normal pregnancy, though this one uses second vagina. since secondaryNormalPregnancy defaults to null, this defaults to false.
-		public bool canGetSecondaryNormalPregnant(bool hasSecondVagina) => secondaryNormalPregnancy != null && canGetSecondaryNormalPregnantCheck(hasSecondVagina);
-		protected virtual bool canGetSecondaryNormalPregnantCheck(bool hasSecondVagina) => hasSecondVagina;
+		public bool canGetSecondaryNormalPregnant(bool hasSecondVagina) => secondaryNormalPregnancy != null && AllowsAdditionalVaginalPregnancies();
+		protected virtual bool AllowsAdditionalVaginalPregnancies() => true;
 
 		public uint totalBirthCount => normalPregnancy?.birthCount + analPregnancy?.birthCount + secondaryNormalPregnancy?.birthCount ?? 0;
 
+		//allows full customization.
 		protected Womb(Guid creatureID, VaginalPregnancyStore primaryVagina, AnalPregnancyStore anus, VaginalPregnancyStore secondaryVagina) : base(creatureID)
 		{
 			normalPregnancy = primaryVagina;
 			analPregnancy = anus;
 			secondaryNormalPregnancy = secondaryVagina;
+		}
+
+		//default constructor.
+		protected internal Womb(Guid creatureID, bool allowsVaginalPregnancies, bool allowsAnalPregnancies) : base(creatureID)
+		{
+			normalPregnancy = allowsVaginalPregnancies ? new VaginalPregnancyStore(creatureID, 0) : null;
+			secondaryNormalPregnancy = allowsVaginalPregnancies ? new VaginalPregnancyStore(creatureID, 1) : null;
+
+			analPregnancy = allowsAnalPregnancies ? new AnalPregnancyStore(creatureID) : null;
 		}
 
 		public override WombData AsReadOnlyData()
@@ -138,7 +151,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		//does not throw a data changed, could. idk. 
+		//does not throw a data changed, could. idk.
 		internal void onConsumeLiquid()
 		{
 			if (hasDiapauseEnabled)
@@ -211,6 +224,7 @@ namespace CoC.Backend.BodyParts
 			secondaryNormalPregnancy.Reset(clearEggSize);
 		}
 
+		//note: allows standard spawn type for sake of convenience, however, if a spawn type does not derive SpawnTypeIncludeAnal, this will always fail.
 		protected internal bool AttemptAnalKnockUp(float knockupChance, StandardSpawnType type)
 		{
 			return analPregnancy.attemptKnockUp(knockupChance, type);
@@ -270,7 +284,10 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		protected abstract bool ExtraValidations(bool currentlyValid, bool correctInvalidData);
+		protected virtual bool ExtraValidations(bool currentlyValid, bool correctInvalidData)
+		{
+			return currentlyValid;
+		}
 
 		internal IEnumerable<ITimeActiveListenerFull> GetActiveListeners()
 		{
@@ -359,8 +376,8 @@ namespace CoC.Backend.BodyParts
 
 		public readonly bool hasDiapause;
 
-		public WombData(Guid creatureID, ReadOnlyPregnancyStore vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina, 
-			ReadOnlyPregnancyStore analPregnancyStore, Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus, 
+		public WombData(Guid creatureID, ReadOnlyPregnancyStore vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina,
+			ReadOnlyPregnancyStore analPregnancyStore, Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus,
 			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina, bool diapause) : base(creatureID)
 		{
 			this.vaginalPregnancyStore = vaginalPregnancyStore;
@@ -373,7 +390,7 @@ namespace CoC.Backend.BodyParts
 			hasDiapause = diapause;
 		}
 
-		internal WombData(Womb source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		protected internal WombData(Womb source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			vaginalPregnancyStore = source.normalPregnancy?.AsReadOnlyData();
 			analPregnancyStore = source.analPregnancy?.AsReadOnlyData();

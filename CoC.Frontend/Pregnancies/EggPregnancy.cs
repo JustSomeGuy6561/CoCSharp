@@ -11,7 +11,7 @@ using System;
 namespace CoC.Frontend.Pregnancies
 {
 	//eggs are weird man.
-	//need to account for fertalizing them. 
+	//need to account for fertalizing them.
 
 	public abstract class EggPregnancy : StandardSpawnType
 	{
@@ -19,7 +19,7 @@ namespace CoC.Frontend.Pregnancies
 		protected internal bool largeEggs { get; protected set; }
 		protected internal Func<bool, EggBase> knownEggType { get; protected set; }
 
-		public EggPregnancy(Guid creatureID, SimpleDescriptor eggText, SimpleDescriptor eggSourceText, ushort spawnTimer, bool largeClutch = false, bool? isLarge = null, 
+		public EggPregnancy(Guid creatureID, SimpleDescriptor eggText, SimpleDescriptor eggSourceText, ushort spawnTimer, bool largeClutch = false, bool? isLarge = null,
 			Func<bool, EggBase> color = null) : base(creatureID, eggText, eggSourceText, spawnTimer)
 		{
 			largeEggs = isLarge ?? Utils.RandBool();
@@ -61,7 +61,7 @@ namespace CoC.Frontend.Pregnancies
 
 		protected override bool AdditionalValidation(bool currentlyValid, bool correctInvalidData)
 		{
-			//silently correct these. 
+			//silently correct these.
 			if (eggCount < 4)
 			{
 				eggCount = 4;

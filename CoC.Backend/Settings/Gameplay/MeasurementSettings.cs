@@ -19,9 +19,6 @@ namespace CoC.Backend.Settings.Gameplay
 	}
 	public sealed partial class MeasurementGlobalSetting : SimpleSetting
 	{ 
-		private BackendSessionSave session => BackendSessionSave.data;
-		private BackendGlobalSave glob => BackendGlobalSave.data;
-
 		public MeasurementGlobalSetting() : base()
 		{
 		}

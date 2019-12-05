@@ -9,12 +9,12 @@ using System.Collections.Generic;
 
 namespace CoC.Frontend.Races
 {
-	//in the event you want to randomly generate content, it may be helpful to have a means to generate a creature creator from a given species. 
+	//in the event you want to randomly generate content, it may be helpful to have a means to generate a creature creator from a given species.
 	//to do so, uncomment the abstract function, and do so for all species defined.
 	public abstract partial class Species
 	{
 		private static Dictionary<int, Species> theSpecies = new Dictionary<int, Species>();
-		//private static Dictionary<Species, GenericCreatureCreator> speciesCreator = new Dictionary<Species, GenericCreatureCreator>(); 
+		//private static Dictionary<Species, GenericCreatureCreator> speciesCreator = new Dictionary<Species, GenericCreatureCreator>();
 		private static int indexMaker = 0;
 
 		public readonly int index;

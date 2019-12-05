@@ -9,7 +9,7 @@ using CoC.Backend.Creatures;
 
 namespace CoC.Backend.Attacks.BodyPartAttacks
 {
-	//more successful with larger and/or multiple horns. I made it this way so unicorns could use it. 
+	//more successful with larger and/or multiple horns. I made it this way so unicorns could use it.
 	public sealed partial class GoreHorn : PhysicalSpecial
 	{
 		private readonly Func<byte> len;

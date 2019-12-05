@@ -91,7 +91,7 @@ namespace CoC.WinDesktop.ModelView
 			};
 
 
-			//this requires both the option and the command to be initialized, so it's last. 
+			//this requires both the option and the command to be initialized, so it's last.
 			contentToButtonLookup = new Dictionary<OptionModelViewDataBase, LanguageAwareButtonWrapper>()
 			{
 				[languageOptions] = LanguageButton,
@@ -126,7 +126,7 @@ namespace CoC.WinDesktop.ModelView
 				UpdateButtonVisibility(newDisplay.requiresConfirmation);
 
 				subModelView = newDisplay;
-				//update the buttons' enabled properties. 
+				//update the buttons' enabled properties.
 				contentToButtonLookup[oldView].SetEnabled(true);
 				contentToButtonLookup[subModelView].SetEnabled(false);
 				ParseData();

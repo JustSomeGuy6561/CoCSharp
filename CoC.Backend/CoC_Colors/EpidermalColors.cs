@@ -10,7 +10,7 @@ namespace CoC.Backend.CoC_Colors
 
 	public abstract class CoCColors
 	{
-		//RGB is used for comparing colors. it factors in when trying to convert one color to something else 
+		//RGB is used for comparing colors. it factors in when trying to convert one color to something else
 		protected CoCColors(Color rgb, string colorName) : base()
 		{
 			rgbValue = rgb;
@@ -47,6 +47,13 @@ namespace CoC.Backend.CoC_Colors
 
 
 		public static double WeightedColorCompare(Color first, Color second)
+		{
+			return Math.Pow((second.R - first.R) * 0.30, 2)
+				+ Math.Pow((second.G - first.G) * 0.59, 2)
+				+ Math.Pow((second.B - first.B) * 0.11, 2);
+		}
+
+		public static double WeightedColorComparePercent(Color first, Color second)
 		{
 			return Math.Pow((second.R - first.R) * 0.30, 2)
 				+ Math.Pow((second.G - first.G) * 0.59, 2)

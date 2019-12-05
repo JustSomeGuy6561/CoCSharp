@@ -22,7 +22,7 @@ namespace CoC.Frontend.Encounters.Common
 		private StandardDisplay currentDisplay => DisplayManager.GetCurrentDisplay();
 
 		protected override int chances => Utils.LerpRound(1, 20, (int)player.level, 2, 0);
-			
+
 		protected override bool encounterDisabled()
 		{
 			return player.level >= 15;
@@ -41,9 +41,9 @@ namespace CoC.Frontend.Encounters.Common
 				"fight their way out of sight. ");
 			//unlockCodexImps();
 
-#warning add remaining choices here. 
+#warning add remaining choices here.
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
-			//imp food, incubus draft, succubus milk. 
+			//imp food, incubus draft, succubus milk.
 			//Func<ConsumableBase>[] choices = new Func<ConsumableBase>[] { () => new ImpFood() };
 
 			//ConsumableBase item = Utils.RandomChoice(choices).Invoke();

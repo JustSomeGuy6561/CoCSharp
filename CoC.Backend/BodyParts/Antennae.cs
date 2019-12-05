@@ -32,7 +32,7 @@ namespace CoC.Backend.BodyParts
 			type = antennaeType ?? throw new ArgumentNullException(nameof(antennaeType));
 		}
 
-		//default implementations of update and restore are valid. 
+		//default implementations of update and restore are valid.
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -101,8 +101,8 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		//Don't do this to this level lol. I just used lambdas everywhere because i changed the signature in the base to make things behave better globally, and didn't want to deal 
-		//with doing that to everything in here. do use lambdas if you need something not there or you want to use the empty string. 
+		//Don't do this to this level lol. I just used lambdas everywhere because i changed the signature in the base to make things behave better globally, and didn't want to deal
+		//with doing that to everything in here. do use lambdas if you need something not there or you want to use the empty string.
 		public static readonly AntennaeType NONE = new AntennaeType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
 
 		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeLongDesc,

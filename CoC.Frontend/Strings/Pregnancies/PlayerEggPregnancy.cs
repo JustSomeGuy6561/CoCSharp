@@ -164,7 +164,7 @@ namespace CoC.Frontend.Pregnancies
 			//}
 
 			return sb.ToString();
-			
+
 		}
 
 		private string eggDescript(EggBase eggsLaid, bool plural = true)
@@ -174,7 +174,7 @@ namespace CoC.Frontend.Pregnancies
 			descript += Utils.NumberAsText(eggCount) + " ";
 
 			if (largeEggs)
-			{ 
+			{
 				descript += "large ";
 			}
 			descript += eggsLaid.shortDesc();

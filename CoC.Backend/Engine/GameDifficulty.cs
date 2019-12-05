@@ -26,7 +26,7 @@ namespace CoC.Backend.Engine
 		public abstract ushort basePlayerHP(byte level);
 
 		//called after all game related data is parsed and ready to go. This allows you to correct any values that
-		//may not be valid for the current difficulty, such as hunger, autosave, etc. 
+		//may not be valid for the current difficulty, such as hunger, autosave, etc.
 		//you'll also need to change the home Base location here if you do not use the default (aka GrimDark mode)
 		public abstract void OnGameStart();
 

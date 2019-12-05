@@ -16,7 +16,7 @@ using System.Text;
 namespace CoC.Frontend.Pregnancies
 {
 	//eggs are weird man.
-	//need to account for fertalizing them. 
+	//need to account for fertalizing them.
 
 	public sealed partial class PlayerEggPregnancy : EggPregnancy
 	{

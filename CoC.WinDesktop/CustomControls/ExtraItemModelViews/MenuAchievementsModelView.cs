@@ -54,7 +54,7 @@ namespace CoC.WinDesktop.CustomControls.ExtraItemModelViews
 			{
 				LastLanguageIndex = LanguageEngine.currentLanguageIndex;
 
-				//achievement items handled automatically. 
+				//achievement items handled automatically.
 
 				ContentTitle = AchievementStr();
 				ContentHelper = AchievementHelperStr();

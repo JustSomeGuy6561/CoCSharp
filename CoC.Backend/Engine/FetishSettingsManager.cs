@@ -7,8 +7,8 @@ using System.Text;
 namespace CoC.Backend.Engine
 {
 	/// <summary>
-	/// Class used to allow user to update their preferences for strange/extreme fetishes. Members stored in here are given to the GUI 
-	/// to handle when it queries for fetishes to display so the user can set them accordingly. 
+	/// Class used to allow user to update their preferences for strange/extreme fetishes. Members stored in here are given to the GUI
+	/// to handle when it queries for fetishes to display so the user can set them accordingly.
 	/// </summary>
 	public static class FetishSettingsManager
 	{

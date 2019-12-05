@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.Endowment
 		}
 		private static string BigTitsHint()
 		{
-			return "Are your breasts bigger than average? (+1 Cup Size)" + Environment.NewLine + Environment.NewLine + 
+			return "Are your breasts bigger than average? (+1 Cup Size)" + Environment.NewLine + Environment.NewLine +
 				"Larger breasts will allow you to lactate greater amounts, tit-fuck larger cocks, and generally be a sexy bitch.";
 		}
 		private static string BigTitsDesc()

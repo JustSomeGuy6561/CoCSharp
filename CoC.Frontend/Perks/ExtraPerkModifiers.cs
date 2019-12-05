@@ -6,7 +6,7 @@ using System;
 
 namespace CoC.Frontend.Perks
 {
-	//any common variables for perks can go here. 
+	//any common variables for perks can go here.
 	public sealed class ExtendedPerkModifiers
 	{
 		private readonly Creature source;
@@ -50,10 +50,10 @@ namespace CoC.Frontend.Perks
 	public static class ExtraPerkHelper
 	{
 		//it's not uncommon (or unexpected, i suppose) to want to see if the player has slut perks.
-		//right now these are the main two in that, but i suppose others could be added. 
+		//right now these are the main two in that, but i suppose others could be added.
 		public static bool HasASlutPerk(this PerkCollection perkCollection)
 		{
-			return perkCollection.HasPerk<Slut>() || perkCollection.HasPerk<Whore>(); 
+			return perkCollection.HasPerk<Slut>() || perkCollection.HasPerk<Whore>();
 		}
 	}
 }

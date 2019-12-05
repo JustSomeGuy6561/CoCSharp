@@ -31,5 +31,17 @@ namespace CoC.Backend.Pregnancies
 		{
 			return GenericDiapauseText();
 		}
+
+		internal override bool attemptKnockUp(float knockupChance, StandardSpawnType type)
+		{
+			if (type is SpawnTypeIncludeAnal)
+			{
+				return base.attemptKnockUp(knockupChance, type);
+			}
+			else
+			{
+				return false;
+			}
+		}
 	}
 }

@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.Endowment
 		}
 		private static string SmartHint()
 		{
-			return "Are you a quick learner? (+5 Intellect)" + Environment.NewLine + Environment.NewLine + 
+			return "Are you a quick learner? (+5 Intellect)" + Environment.NewLine + Environment.NewLine +
 				"Intellect can help you avoid dangerous monsters or work with machinery. It will also boost the power of any spells you may learn in your travels.";
 		}
 		private static string SmartDesc()

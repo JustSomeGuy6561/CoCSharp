@@ -257,7 +257,7 @@ namespace CoC.Backend.BodyParts
 
 		private protected TailType(EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
 			bool longTail,/*float tailLength,*/ SimpleDescriptor shortDesc, DescriptorWithArg<TailData> longDesc,
-			PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore) 
+			PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
 			: base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			epidermisType = epidermis;
@@ -416,7 +416,7 @@ namespace CoC.Backend.BodyParts
 
 		private class FurryTailWithWhip : FurryTail
 		{
-			public FurryTailWithWhip(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, bool longTail, SimpleDescriptor shortDesc, 
+			public FurryTailWithWhip(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, bool longTail, SimpleDescriptor shortDesc,
 				DescriptorWithArg<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
 				: base(furType, defaultColor, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore) { }
 

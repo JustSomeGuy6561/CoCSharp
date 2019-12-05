@@ -10,8 +10,8 @@ using System.Windows.Media;
 
 namespace CoC.WinDesktop.ContentWrappers
 {
-	//the lifespan of these objects is actually the same as the base stat stored within it, so we don't need to worry about removing the event here. 
-	//cool. That was shaping up to be a huge hassle. 
+	//the lifespan of these objects is actually the same as the base stat stored within it, so we don't need to worry about removing the event here.
+	//cool. That was shaping up to be a huge hassle.
 	public sealed class StatDisplayItemWrapper : NotifierBase
 	{
 		public Visibility visibility { get; private set; }
@@ -153,7 +153,7 @@ namespace CoC.WinDesktop.ContentWrappers
 
 			silent = isSilent;
 
-			//updated externally via properties if not default values. 
+			//updated externally via properties if not default values.
 			minColor = null;
 			regColorDefaultOrMax = null;
 			regColorMin = null;

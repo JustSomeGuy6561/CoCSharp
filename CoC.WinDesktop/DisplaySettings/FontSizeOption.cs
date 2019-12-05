@@ -27,7 +27,7 @@ namespace CoC.WinDesktop.DisplaySettings
 				availableOptions = new OrderedHashSet<int>(Enumerable.Range((int)MeasurementHelpers.MinPointFontSize, count));
 			}
 
-			//we're wiring it through the runner so it procs the correct font size changes for the GUI. 
+			//we're wiring it through the runner so it procs the correct font size changes for the GUI.
 			public override int setting
 			{
 				get => (int)Math.Round(MeasurementHelpers.ConvertFromEms(glob.FontSizeInEms, SizeUnit.POINTS));

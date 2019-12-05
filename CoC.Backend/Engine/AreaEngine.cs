@@ -12,8 +12,8 @@ namespace CoC.Backend.Engine
 	//dungeon needs to add east, west, north, and south buttons, with masturbate, inventory.
 	//home base needs to basically set up everything for a home base - buttons for inventory, places, explore, stash, slaves/followers/lovers, masturbate, rest.
 	//the only thing that is unique to each location is its camp actions, which would probably still need a button at engine level, just with an abstract onClick and Enabled
-	//flag. if we go this route, it'd also be smart to simply make the unlock area/place/dungeon functions done internally, with output text of their unlock text (which 
-	//would now be abstract) there would still be a virtual function for onUnlock if they need to do anything else. 
+	//flag. if we go this route, it'd also be smart to simply make the unlock area/place/dungeon functions done internally, with output text of their unlock text (which
+	//would now be abstract) there would still be a virtual function for onUnlock if they need to do anything else.
 
 
 	public sealed class AreaEngine
@@ -41,7 +41,7 @@ namespace CoC.Backend.Engine
 		private readonly Dictionary<Type, string> unlockedLocations = new Dictionary<Type, string>();
 		private readonly Dictionary<Type, string> unlockedDungeons = new Dictionary<Type, string>();
 
-#warning if treating areas within places as places, this areaChanged logic will fail. figure out way to fix. 
+#warning if treating areas within places as places, this areaChanged logic will fail. figure out way to fix.
 
 		internal AreaBase currentArea
 		{
@@ -59,7 +59,7 @@ namespace CoC.Backend.Engine
 
 		private bool areaChanged = false;
 
-		//defined during a load of file or new game. obtained by the current difficulty. 
+		//defined during a load of file or new game. obtained by the current difficulty.
 		internal HomeBaseBase currentHomeBase { get; private set; }
 
 		internal AreaEngine(Func<DisplayBase> pageDataConstructor, Func<DisplayBase> currentPageGetter, Action<DisplayBase> currentPageSetter,
@@ -140,7 +140,7 @@ namespace CoC.Backend.Engine
 			return areaChanged;
 		}
 
-		//only should be called during creation or loading a save. I suppose this could also happen during prologue => normal gameplay. 
+		//only should be called during creation or loading a save. I suppose this could also happen during prologue => normal gameplay.
 		internal void ChangeHomeBase<T>() where T : HomeBaseBase
 		{
 			if (!homeBaseLookup.ContainsKey(typeof(T)))
@@ -301,12 +301,12 @@ namespace CoC.Backend.Engine
 				}
 			}
 
-			//if no special reactions occured, 
+			//if no special reactions occured,
 			if (ToDo == null)
 			{
 				ToDo = currentArea.RunArea;
 			}
-			//decrement the reaction counters for applicable area. 
+			//decrement the reaction counters for applicable area.
 			if (areaChanged)
 			{
 				if (currentArea is PlaceBase)
@@ -335,7 +335,7 @@ namespace CoC.Backend.Engine
 			ToDo();
 		}
 
-		//cannot unlock a base camp - hence this distinction. 
+		//cannot unlock a base camp - hence this distinction.
 		internal bool UnlockArea<T>(out string unlockText) where T : VisitableAreaBase
 		{
 			return UnlockArea(typeof(T), out unlockText);

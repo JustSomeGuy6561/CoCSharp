@@ -13,24 +13,24 @@
 //namespace  CoC.BodyParts
 //{
 //	//Can't use readonly, as beards aren't constant - they grow.
-//	//NOT FULLY DONE. There's no way to check if you can groom to a certain type of beard based on existing hair. 
+//	//NOT FULLY DONE. There's no way to check if you can groom to a certain type of beard based on existing hair.
 //	internal partial class FacialHair: IDyeable, ITimeAware
 //	{
 
 //		/*
-//		 * New Idea: length for sideburns, moustache, and beard. determine style from it. need enums for each then, or something. 
-//		 * 
+//		 * New Idea: length for sideburns, moustache, and beard. determine style from it. need enums for each then, or something.
+//		 *
 //		 * /
 
 
 //		/*
-//		 * Facial Hair can grow. This means styles may become other styles as they grow. for example, a van dyke may 
-//		 * connect if left alone, becoming a circle beard. Sideburns can become muttonchops; 
+//		 * Facial Hair can grow. This means styles may become other styles as they grow. for example, a van dyke may
+//		 * connect if left alone, becoming a circle beard. Sideburns can become muttonchops;
 //		 * Note that a full beard and Mountain man are actually different: mountain man is a full beard, but it is styled
-//		 * and kept (relatively) clean. 
+//		 * and kept (relatively) clean.
 //		 */
 
-//		//Possible "silly" idea: shaving is a skillset that you start out bad at. Which means that until you have experience/training, 
+//		//Possible "silly" idea: shaving is a skillset that you start out bad at. Which means that until you have experience/training,
 //		// every time you shave yourself you look terrible (unless it's clean shaven, i guess)
 //		//the only solution is for the stylist to clean shave you and then regrow it. growth serum costs money though.
 //		public enum BeardStyle {NONE, CLEAN_SHAVEN, FIVE_OCLOCK_SHADOW, GOATEE, HANDLEBAR, SIDEBURNS, FU_MANCHU, VAN_DYKE, MUTTONCHOPS, CIRCLE_BEARD, CHIN_CURTAIN, MOUNTAIN_MAN, FULL_BEARD }
@@ -109,7 +109,7 @@
 //			//return true;
 //		}
 
-//		//Use this to groom existing facial hair into applicable styles. 
+//		//Use this to groom existing facial hair into applicable styles.
 //		//Note that this has no validation. Only make available styles if they fit the requirements.
 //		public bool Groom(BeardStyle newStyle)
 //		{
@@ -119,7 +119,7 @@
 //			}
 //			style = newStyle;
 //			return Groom();
-			
+
 //		}
 
 //		//Use this to magically grow facial hair long enough for this style.
@@ -200,7 +200,7 @@
 //			else
 //			{
 //				return 0.02f * baseGrowthRate * boostValue;
-//			}			
+//			}
 //		}
 
 //		private void updateDescriptor()

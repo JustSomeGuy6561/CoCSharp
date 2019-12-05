@@ -76,7 +76,7 @@ namespace CoC.Backend.BodyParts
 			var oldGender = gender;
 
 			_vaginas.Add(new Vagina(creatureID, GetVaginaPerkWrapper(), newVaginaType));
-			
+
 			CheckGenderChanged(oldGender);
 			return true;
 		}
@@ -332,7 +332,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		//'Dry' orgasm is orgasm without stimulation. 
+		//'Dry' orgasm is orgasm without stimulation.
 		internal void HandleVaginaOrgasmGeneric(int vaginaIndex, bool dryOrgasm)
 		{
 

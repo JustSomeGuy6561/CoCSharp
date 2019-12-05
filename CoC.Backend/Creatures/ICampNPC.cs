@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CoC.Backend.Creatures
 {
-	//Farm is frontend, so creatures that can be sent to farm must implement an interface defined in the frontend. Not enforced here. 
+	//Farm is frontend, so creatures that can be sent to farm must implement an interface defined in the frontend. Not enforced here.
 	public interface ICampNPC
 	{
 		string Name();

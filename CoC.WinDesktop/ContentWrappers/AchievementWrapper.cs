@@ -7,7 +7,7 @@ namespace CoC.WinDesktop.ContentWrappers
 	public sealed class AchievementWrapper : NotifierBase
 	{
 		//View objects are created when needed, and destroyed when not needed. The achievements view objects will never be in scope when the language changes,
-		//so we don't need to worry about language changing in these objects. 
+		//so we don't need to worry about language changing in these objects.
 
 		public readonly AchievementBase source;
 

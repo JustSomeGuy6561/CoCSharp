@@ -33,7 +33,7 @@ namespace CoC.WinDesktop.CustomControls
 		/// <ExternalAPI/>
 		public CustomSlider() : base()
 		{
-			
+
 		}
 
 		/// <summary>
@@ -511,7 +511,7 @@ namespace CoC.WinDesktop.CustomControls
 			set => SetValue(TickFrequencyProperty, value);
 		}
 
-		// 
+		//
 
 		/// <summary>
 		///     The DependencyProperty for the Ticks property.
@@ -867,7 +867,7 @@ namespace CoC.WinDesktop.CustomControls
 			}
 		}
 
-		//only way i could find to trigger reposition without tearing my hear out. hacky af, but whatever. 
+		//only way i could find to trigger reposition without tearing my hear out. hacky af, but whatever.
 		private void RepositionPopup(Popup parent)
 		{
 			var offset = parent.HorizontalOffset;
@@ -1067,9 +1067,9 @@ namespace CoC.WinDesktop.CustomControls
 
 			}
 		}
-		//prevent tick snapping if we cannot snap to ticks - that is, if a tick collection is expressly set to null or empty, or 
-		//is implicitely empty, and the tick frequency is not set. If both are true, it's impossible to snap to ticks. The WPF default behavior 
-		//is to force a snap to min or max. IMO that's dumb. This 
+		//prevent tick snapping if we cannot snap to ticks - that is, if a tick collection is expressly set to null or empty, or
+		//is implicitely empty, and the tick frequency is not set. If both are true, it's impossible to snap to ticks. The WPF default behavior
+		//is to force a snap to min or max. IMO that's dumb. This
 		public bool CanSnapToTicks => IsSnapToTickEnabled ? ticksValid ? true : TickFrequency != 0 : false;
 
 		/// <summary>
@@ -1124,7 +1124,7 @@ namespace CoC.WinDesktop.CustomControls
 							double minD = (double)min;
 							double maxD = (double)max;
 							//we're introducing slight rounding error here, but so too would be the add and multiply used by default.
-							//This is also safer in the extremely rare case of 
+							//This is also safer in the extremely rare case of
 							double minDiff = value - minD;
 							double maxDiff = maxD - value;
 							value = DoubleUtil.GreaterThanOrClose(minDiff, maxDiff) ? maxD : minD;

@@ -339,7 +339,7 @@ namespace CoC.Frontend.Creatures
 	//	//	}
 	//	//	else
 	//	//	{
-	//	//		context += 
+	//	//		context +=
 	//	//		AddItemManual(originalItem, context, onUseItemReturn);
 	//	//	}
 	//	//}

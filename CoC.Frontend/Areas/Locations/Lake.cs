@@ -26,7 +26,7 @@ namespace CoC.Frontend.Areas.Locations
 			randomEncounters.Add(new AprilFoolsEncounter());
 
 			randomEncounters.Add(new GooCreatureEncounter());
-			//all the imps. 
+			//all the imps.
 			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
 			//all the goblins.
 			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());
@@ -44,10 +44,10 @@ namespace CoC.Frontend.Areas.Locations
 			//only available if pregnant.
 			//semiRandomEncounters.Add(new EggPregnancyLakeEncounter());
 
-			//find the NU-DEST BEEEEEEEEEEACH! 
+			//find the NU-DEST BEEEEEEEEEEACH!
 			//https://www.youtube.com/watch?v=c8WZ8DDejd4
 			//i can't find a clip of the dub, but i suppose both work.
-			//beach replaces "Boat" as a place, as "Boat" was more like a location with all the RNG. i've moved everything in "Boat" to various places within Beach. 
+			//beach replaces "Boat" as a place, as "Boat" was more like a location with all the RNG. i've moved everything in "Boat" to various places within Beach.
 			//triggeredOccurances.Add(new DiscoverBeachEncounter());
 		}
 

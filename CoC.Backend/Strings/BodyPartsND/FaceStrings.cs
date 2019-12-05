@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/11/2019, 6:58 PM
 using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
@@ -12,6 +13,70 @@ namespace CoC.Backend.BodyParts
 		public static string Name()
 		{
 			return "Face";
+		}
+
+		public static string PlayerFacialStructure(PlayerBase player)
+		{
+			return "It has " + FacialStructureText(player.genitals.femininity.AsReadOnlyData());
+		}
+
+		public static string FacialStructureText(FemininityData femininity)
+		{
+			//0-10
+			if (femininity.value < 10)
+			{
+				return "a square chin and chiseled jawline";
+			}
+			//10+ -20
+			else if (femininity.value < 20)
+			{
+				return "a rugged, handsome look to it";
+			}
+			//21-28
+			else if (femininity.value < 28)
+			{
+				return "a well-defined jawline and a fairly masculine profile";
+			}
+			//28+-35
+			else if (femininity.value < 35)
+			{
+				return "a somewhat masculine, angular jawline";
+			}
+			//35-45
+			else if (femininity.value < 45)
+			{
+				return "the barest hint of masculinity on its features";
+			}
+			//45-55
+			else if (femininity.value <= 55)
+			{
+				return "an androgynous set of features that would look normal on a male or female";
+			}
+			//55+-65
+			else if (femininity.value <= 65)
+			{
+				return "a tiny touch of femininity.value to it, with gentle curves";
+			}
+			//65+-72
+			else if (femininity.value <= 72)
+			{
+				return "a nice set of cheekbones and lips that have the barest hint of pout";
+			}
+			//72+-80
+			else if (femininity.value <= 80)
+			{
+				return "a beautiful, feminine shapeliness that's sure to draw the attention of males";
+			}
+			//81-90
+			else if (femininity.value <= 90)
+			{
+				return "a gorgeous profile with full lips, a button nose, and noticeable eyelashes";
+			}
+			//91-100
+			else
+			{
+				return "a jaw-droppingly feminine shape with full, pouting lips, an adorable nose, and long, beautiful eyelashes";
+			}
 		}
 	}
 
@@ -27,18 +92,19 @@ namespace CoC.Backend.BodyParts
 			return " your face";
 		}
 
-
+		#region Human
 		private static string HumanShortDesc()
 		{
-			return " face";
+			return "face";
 		}
 		private static string HumanLongDesc(FaceData face)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return face.skinTexture.AsString() + " human face";
 		}
 		private static string HumanPlayerStr(Face face, PlayerBase player)
 		{
-			return " Your face is human in shape and structure, covered in  .";
+			string noseStr = face.nosePiercings.isPierced ? "pierced " : "normal ";
+			return " Your face is human in shape and structure, with " + face.primary.DescriptionWithTexture() + " and a " + noseStr + "nose. ";
 		}
 		private static string HumanTransformStr(FaceData face, PlayerBase player)
 		{
@@ -48,17 +114,20 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Horse
 		private static string HorseShortDesc()
 		{
-			return "longe, equine muzzle";
+			return "horse-like face";
 		}
 		private static string HorseLongDesc(FaceData face)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return $"longe, equine muzzle covered in {face.primaryEpidermis.LongDescription()}";
 		}
 		private static string HorsePlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your face is almost entirely equine in appearance, even having a" + face.primary.LongDescription() +
+				". Underneath the fur, you believe you have " + face.facialSkin.LongDescription();
 		}
 		private static string HorseTransformStr(FaceData face, PlayerBase player)
 		{
@@ -68,17 +137,20 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Dog
 		private static string DogShortDesc()
 		{
 			return "canine muzzle";
 		}
 		private static string DogLongDesc(FaceData face)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return $"{face.primaryEpidermis.LongAdjectiveDescription()} canine face";
 		}
 		private static string DogPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "You have a dog's face, complete with wet nose and panting tongue.  You've got a" + face.primary.LongDescription() + ", hiding your " + face.facialSkin.LongDescription()
+				+ " underneath your furry visage.";
 		}
 		private static string DogTransformStr(FaceData face, PlayerBase player)
 		{
@@ -88,6 +160,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Cow/Minotaur
 		private static string CowShortDesc()
 		{
 			return "cow-like face";
@@ -115,7 +189,19 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string Cow_MinotaurPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (face.isFullMorph)
+			{
+				string noseRingStr = face.wearingCowNoseRing ? "particularly your nose, which is squared off and has a ring running through it" : "particularly a squared off wet nose";
+				return "You have a face resembling that of a minotaur, with cow-like features, " + noseRingStr + ". Your " + face.facialSkin.DescriptionWithColor() +
+					" thickens noticeably on your head, looking shaggy and more than a little monstrous once laid over your visage.";
+			}
+			else
+			{
+				string noseStr = face.wearingCowNoseRing
+					? "The most obvious is your nose, which is wider than a human's and squared off - not to mention the ring running through it."
+					: "Your nose, for example, is squared - off, like one you'd normally see on a cow.";
+				return "Your face appears human, though some features show some cow-like traits. " + noseStr;
+			}
 		}
 		private static string Cow_MinotaurTransformStr(FaceData face, PlayerBase player)
 		{
@@ -125,6 +211,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Shark
 		private static string SharkShortDesc()
 		{
 			return "shark teeth";
@@ -135,7 +223,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SharkPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your face is human in shape and structure, covered in " + face.facialSkin.LongDescription() + ". A set of razor-sharp, retractable shark-teeth fill your mouth " +
+				"and give your visage a slightly angular appearance.";
 		}
 		private static string SharkTransformStr(FaceData face, PlayerBase player)
 		{
@@ -145,6 +234,9 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Snake
+		//Snake? SNAKE?!? SNAAAAAAKE!?!?!?!?!
 		private static string SnakeShortDesc()
 		{
 			return "snake fangs";
@@ -155,7 +247,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SnakePlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your face is fairly human in shape, but is covered in " + face.primary.LongDescription() + ". In addition, a pair of fangs hang over your lower lip, " +
+				"dripping with venom.";
 		}
 		private static string SnakeTransformStr(FaceData face, PlayerBase player)
 		{
@@ -165,6 +258,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Cat
 		private static string CatGirlShortDesc()
 		{
 			return "cat-girl face";
@@ -193,7 +288,26 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CatPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			//deal with cat-morph first.
+			if (face.isFullMorph)
+			{
+				if (EpidermalData.MixedFurColors(face.primary, face.secondary))
+				{
+					return "You have a cat-like face, complete with moist nose and whiskers. Most of your face is covered in " + face.primary.LongDescription() +
+						", though there is also some " + face.secondary.DescriptionWithColor() + " mixed in. You have " + face.facialSkin.LongDescription() + " undeneath.";
+				}
+				else
+				{
+					return "You have a cat-like face, complete with moist nose and whiskers. Your face is covered in " + face.primary.LongDescription() +
+						", and you have " + face.facialSkin.LongDescription() + " undeneath.";
+				}
+			}
+			//cat-girl/guy.
+			else
+			{
+				return "Your face is mostly human in appearance, though you do show some feline features, most notably your teeth.";
+			}
+
 		}
 		private static string CatTransformStr(FaceData face, PlayerBase player)
 		{
@@ -203,6 +317,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Lizard
 		private static string LizardShortDesc()
 		{
 			return "reptilian face";
@@ -213,7 +329,16 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string LizardPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string intro = "Your face is that of a lizard, complete with a toothy maw and pointed snout. Reflective " + face.primary.DescriptionWithColor();
+
+			if (!face.secondary.isEmpty)
+			{
+				return intro + "everything but your lower jaw, which has " + face.secondary.LongDescription() + ". Together, they give your quite the fearsome look.";
+			}
+			else
+			{
+				return intro + "complete the look, making you look quite fearsome.";
+			}
 		}
 		private static string LizardTransformStr(FaceData face, PlayerBase player)
 		{
@@ -223,7 +348,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-
+		#endregion
+		#region Bunny
 		private static string BunnyFirstLevelShortDesc()
 		{
 			return "bunny-like teeth";
@@ -251,7 +377,16 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string BunnyPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (!face.isFullMorph)
+			{
+				return "Your face is generally human in shape and structure, though " + face.primary.LongDescription() + " covers your " + face.facialSkin.LongDescription() +
+					". Your two front teeth have grown into a pair of incisors, giving you a bunny-like appearance.";
+			}
+			else
+			{
+				return "Your face is somewhat human in appearance, though more oblong and covered in " + face.primary.LongDescription() + " The constant twitches of your nose " +
+				"and the length of your incisors gives your visage a hint of bunny - like cuteness.";
+			}
 		}
 		private static string BunnyTransformStr(FaceData face, PlayerBase player)
 		{
@@ -261,6 +396,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Kangaroo
 		private static string KangarooShortDesc()
 		{
 			return "kangaroo face";
@@ -271,7 +408,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string KangarooPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your face is covered with " + face.primary.LongDescription() + " and shaped like that of a kangaroo - somewhat rabbit-like except " +
+				"for the extreme length of your odd visage.";
 		}
 		private static string KangarooTransformStr(FaceData face, PlayerBase player)
 		{
@@ -281,6 +419,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Spider
 		private static string SpiderShortDesc()
 		{
 			return "spider fangs";
@@ -291,7 +431,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SpiderPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your face is mostly human in appearance, though it is covered in " + face.primary.LongDescription() + ". A set of retractable, needle-like fangs " +
+				"sit in place of your canines and are ready to dispense their venom.";
 		}
 		private static string SpiderTransformStr(FaceData face, PlayerBase player)
 		{
@@ -301,6 +442,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Fox/Kitsune
 		private static string KitsuneShortDesc()
 		{
 			return "kitsune face";
@@ -326,7 +469,25 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FoxPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (!face.isFullMorph)
+			{
+				return "Your face appears human, though your features are sharper and more playful - you'd almost say it makes you look mischievous. Short "
+					+ face.primary.DescriptionWithColor() + " pokes through your skin in various places, completing the kitsune look.";
+			}
+			else
+			{
+				string furStr;
+				if (EpidermalData.MixedFurColors(face.primary, face.secondary))
+				{
+					furStr = "Most of your face is covered in " + face.primary.LongDescription() + ", though some is covered in " + face.secondary.LongDescription() +
+						", particularly along your lower jaw.";
+				}
+				else
+				{
+					furStr = "Your coat of " + face.primary.LongDescription() + " decorates your face and muzzle";
+				}
+				return "You have a tapered, shrewd-looking vulpine face with a speckling of downward-curved whiskers just behind the nose." + furStr;
+			}
 		}
 		private static string FoxTransformStr(FaceData face, PlayerBase player)
 		{
@@ -336,6 +497,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Dragon
 		private static string DragonShortDesc()
 		{
 			return "reptilian face";
@@ -346,7 +509,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DragonPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string skinStr = face.secondary.isEmpty
+				? "decorated by " + face.primary.LongDescription()
+				: "mostly decorated by " + face.primary.LongDescription() + ", but with " + face.secondary.LongDescription() + " along the lower jaw.";
+
+			return "Your face is a narrow, reptilian muzzle.  It looks like a predatory lizard's, at first glance, but with an unusual array of spikes along the under-jaw. " +
+				"It gives you a regal but fierce visage. Opening your mouth reveals several rows of dagger-like sharp teeth. The fearsome visage is" + skinStr;
 		}
 		private static string DragonTransformStr(FaceData face, PlayerBase player)
 		{
@@ -356,6 +524,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Raccoon
 		private static string RaccoonMaskShortDesc()
 		{
 			return "raccoon mask";
@@ -381,7 +551,20 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RaccoonPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			bool colorsClose = CoC_Colors.CoCColors.WeightedColorComparePercent(face.primary.fur.primaryColor.rgbValue, face.secondary.fur.primaryColor.rgbValue) < 0.2f;
+			if (!face.isFullMorph)
+			{
+				string maskStr = colorsClose
+					? "barely differs from the rest of your face, giving you a definitive, if slight, raccoon mask."
+					: "differs from the rest of your face, giving you a distinctly sly-looking raccoon mask.";//you have no idea how badly i wanted to write Sly-(cooper)-looking.
+
+				return "Your face is human in shape and structure, but is covered in short " + face.primary.LongDescription() + ". The fur around your eyes" + maskStr;
+			}
+			else
+			{
+				return "  You have a triangular raccoon face, replete with sensitive whiskers and a little black nose; a mask of " + face.secondary.JustColor() +
+					" shades the space around your eyes, set apart from the " + face.primary.DescriptionWithColor() + "covering the rest of your face by a band of white.";
+			}
 		}
 		private static string RaccoonTransformStr(FaceData face, PlayerBase player)
 		{
@@ -391,6 +574,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Mouse
 		private static string MouseTeethShortDesc()
 		{
 			return "mouse-like teeth";
@@ -420,7 +605,16 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string MousePlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (!face.isFullMorph)
+			{
+				return "Your face is generally human in shape and structure, though " + face.primary.LongDescription() + " covers your " + face.facialSkin.LongDescription() +
+					". You also have a pair of buckteeth that would be more at home on a mouse.";
+			}
+			else
+			{
+				return "You have a snubby, tapered mouse's face, with whiskers, a little pink nose, and " + face.primary.LongDescription() + " covering your "
+					+ face.facialSkin.LongDescription() + ". Two large incisors complete it.";
+			}
 		}
 		private static string MouseTransformStr(FaceData face, PlayerBase player)
 		{
@@ -430,6 +624,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Ferret
 		private static string FerretMaskShortDesc()
 		{
 			return "ferret mask";
@@ -459,7 +655,17 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FerretPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (!face.isFullMorph)
+			{
+				return "Your face is an adorable cross between human and ferret features. A layer of  short, " + face.primary.LongDescription() + " covers the " +
+					face.facialSkin.DescriptionWithTexture() + " underneath, and the " + face.secondary.ShortDescription() + " around your eyes " +
+					"contrasts with it, giving you a cute little ferret mask.";
+			}
+			else
+			{
+				return "Your face has mustelid muzzle, with a ferret-like visage and a cute pink nose. It's covered by a layer of " + face.primary.LongDescription() +
+					", with patches of white on your muzzle and cheeks. A noticeable mask of " + face.secondary.DescriptionWithColor() + " is shaped around your eyes.";
+			}
 		}
 		private static string FerretTransformStr(FaceData face, PlayerBase player)
 		{
@@ -469,7 +675,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-
+		#endregion
+		#region Pig
 		private static string PigShortDesc()
 		{
 			return "pig-like face";
@@ -498,7 +705,15 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string PigPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (!face.isFullMorph)
+			{
+				return "Your face is like that of a pig, with " + face.facialSkin.JustColor() + " skin, complete with a snout that is always wiggling.";
+			}
+			else
+			{
+				return "Your face is like that of a boar: Elongated, with " + face.primary.LongDescription() + " covering your " + face.facialSkin.DescriptionWithColor() + " underneath. " +
+					"Tusks sprouting from your lower jaw complete the look, along a snout that is always wiggling.";
+			}
 		}
 		private static string PigTransformStr(FaceData face, PlayerBase player)
 		{
@@ -508,6 +723,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Rhino
 		private static string RhinoShortDesc()
 		{
 			return "rhino face";
@@ -518,7 +735,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RhinoPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your face is like that of a rhino: " + face.primary.JustColor() + ", with a long muzzle and a horn on your nose.";
 		}
 		private static string RhinoTransformStr(FaceData face, PlayerBase player)
 		{
@@ -528,6 +745,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Echidna
 		private static string EchidnaShortDesc()
 		{
 			return "echidna face";
@@ -538,7 +757,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string EchidnaPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your odd visage consists of a long, thin echidna snout, covered in " + face.primary.LongDescription();
 		}
 		private static string EchidnaTransformStr(FaceData face, PlayerBase player)
 		{
@@ -548,6 +767,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Deer
 		private static string DeerShortDesc()
 		{
 			return "deer face";
@@ -558,7 +779,17 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DeerPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string intro = "Your face is like that of a deer, with a nose at the end of your muzzle.";
+			if (EpidermalData.MixedFurColors(face.primary, face.secondary))
+			{
+				return intro + " It's covered in " + face.primary.LongDescription() + " on your upper jaw and head and " + face.secondary.LongDescription() + "on your lower jaw, " +
+					"both hiding the " + face.facialSkin.LongDescription() + " underneath.";
+			}
+			else
+			{
+
+				return " " + GlobalStrings.CapitalizeFirstLetter(face.primary.LongDescription()) + "covers your face, hiding the " + face.facialSkin.LongDescription() + " underneath.";
+			}
 		}
 		private static string DeerTransformStr(FaceData face, PlayerBase player)
 		{
@@ -568,6 +799,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Wolf
 		private static string WolfShortDesc()
 		{
 			return "wolf face";
@@ -578,7 +811,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string WolfPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "You have an angular wolf's face complete with a muzzle and black nose and covered in " + face.primary.LongDescription();
 		}
 		private static string WolfTransformStr(FaceData face, PlayerBase player)
 		{
@@ -588,6 +821,8 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		#region Cockatrice
 		private static string CockatriceShortDesc()
 		{
 			return "cockatrice face";
@@ -598,7 +833,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CockatricePlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "You have a cockatrice's face, complete with " + face.primary.DescriptionWithColor() + " and " + face.secondary.DescriptionWithColor();
 		}
 		private static string CockatriceTransformStr(FaceData face, PlayerBase player)
 		{
@@ -608,26 +843,28 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeakShortDesc()
-		{
-			return "placeholder beak face"; // This is a placeholder for the next beaked face type, so feel free to refactor (rename)
-		}
-		private static string BeakLongDesc(FaceData face)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string BeakPlayerStr(Face face, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string BeakTransformStr(FaceData face, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string BeakRestoreStr(FaceData face, PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
+		#endregion
+		//private static string BeakShortDesc()
+		//{
+		//	return "placeholder beak face"; // This is a placeholder for the next beaked face type, so feel free to refactor (rename)
+		//}
+		//private static string BeakLongDesc(FaceData face)
+		//{
+		//	throw new InDevelopmentExceptionThatBreaksOnRelease();
+		//}
+		//private static string BeakPlayerStr(Face face, PlayerBase player)
+		//{
+		//	return ""
+		//}
+		//private static string BeakTransformStr(FaceData face, PlayerBase player)
+		//{
+		//	throw new InDevelopmentExceptionThatBreaksOnRelease();
+		//}
+		//private static string BeakRestoreStr(FaceData face, PlayerBase player)
+		//{
+		//	throw new InDevelopmentExceptionThatBreaksOnRelease();
+		//}
+		#region Red Panda
 		private static string PandaShortDesc()
 		{
 			return "red panda face";
@@ -638,7 +875,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string PandaPlayerStr(Face face, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your face has a distinctive animalistic muzzle, proper from a red-panda, complete with a cute pink nose. A coat of soft, " + face.primary.DescriptionWithColor() +
+				" covers your head, with patches of " + face.secondary.JustColor() + " on your muzzle, cheeks and eyebrows.";
 		}
 		private static string PandaTransformStr(FaceData face, PlayerBase player)
 		{
@@ -648,12 +886,12 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-
+		#endregion
+		#region Goo
 		private static string GooShortDesc()
 		{
 			return "gooey, humanoid face";
 		}
-
 		private static string GooLongDesc(FaceData face)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -674,5 +912,9 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+		#endregion
+		//not part of face: the text that merges between face and neck or face and body. 
+		//if neck is not humanoid - the bridge text says: "The lowest parts of your face blend with the {epidermisType string} of your neck. Speaking of, "
+		//else if body epidermis type does not match primary face epidermis type. "Your neck blends the {face.epidermisType} on your face with the {epidermisType string} of the rest of your body"
 	}
 }

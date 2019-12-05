@@ -13,7 +13,7 @@ namespace CoC.WinDesktop.Views
 	/// <summary>
 	/// Interaction logic for StandardView.xaml
 	/// </summary>
-	/// 
+	///
 	public partial class StandardView : UserControl
 	{
 		//public static RoutedCommand TestCommand = new RoutedCommand();

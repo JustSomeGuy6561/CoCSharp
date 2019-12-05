@@ -22,7 +22,7 @@ namespace CoC.WinDesktop.Views
 	/// </summary>
 	public partial class MainMenuView : UserControl
 	{
-		
+
 		ModelViewRunner runner;
 		public MainMenuView()
 		{

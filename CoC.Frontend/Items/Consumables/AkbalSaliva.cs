@@ -14,7 +14,7 @@ namespace CoC.Frontend.Items.Consumables
 		{
 
 		}
-		
+
 		private static string Short()
 		{
 			return "AkbalSlv";

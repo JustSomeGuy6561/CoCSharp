@@ -29,7 +29,7 @@ namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 		}
 		private string _CustomControlsHelper;
 		protected override SimpleDescriptor TitleHelperText => CustomControlsHelperText;
-	
+
 		public override SimpleDescriptor ButtonText => CustomControlsButtonText;
 
 		public string CustomControlsHowToText => HowToStr();

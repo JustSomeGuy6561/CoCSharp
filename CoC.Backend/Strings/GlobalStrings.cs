@@ -10,6 +10,11 @@ namespace CoC.Backend.Strings
 {
 	public static class GlobalStrings
 	{
+		public static string Article(bool startsWithVowel)
+		{
+			return startsWithVowel ? "an " : "a ";
+		}
+
 		private static readonly string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" };
 
 		public static string NumberAsText(int number)

@@ -19,14 +19,14 @@ namespace CoC.WinDesktop.CustomControls
 	/// <summary>
 	/// Interaction logic for OptionRow.xaml
 	/// </summary>
-	
+
 
 	public partial class OptionRowSlider : UserControl
 	{
 		//public static readonly DependencyProperty DisplayModeProperty = DependencyProperty.Register("DisplayMode", typeof(OptionRowDisplayMode), typeof(OptionRowSlider),
 		//	new FrameworkPropertyMetadata(OptionRowDisplayMode.GAME, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-		
+
 
 
 		public OptionRowSlider()

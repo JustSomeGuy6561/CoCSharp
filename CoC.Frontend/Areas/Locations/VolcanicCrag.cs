@@ -53,8 +53,8 @@ namespace CoC.Frontend.Areas.Locations
 			//NPCs
 			randomEncounters.Add(new BehemothEncounter());
 			//monsters
-			
-			//really might want to add in some enemies here. 
+
+			//really might want to add in some enemies here.
 
 			//items
 			//semi-randoms

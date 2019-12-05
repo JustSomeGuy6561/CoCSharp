@@ -20,7 +20,7 @@ namespace CoC.WinDesktop.DisplaySettings
 
 			public TextBackgroundSetting()
 			{
-				
+
 			}
 
 			public override int setting

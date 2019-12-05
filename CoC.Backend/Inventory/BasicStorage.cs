@@ -32,7 +32,7 @@ namespace CoC.Backend.Inventory
 
 				if (_currentlyUnlockedSlots != value)
 				{
-					if (_currentlyUnlockedSlots > value) //should never happen. if it does, silently remove the items. 
+					if (_currentlyUnlockedSlots > value) //should never happen. if it does, silently remove the items.
 					{
 						slotStorage.RemoveRange(value - 1, _currentlyUnlockedSlots - value);
 					}
@@ -99,7 +99,7 @@ namespace CoC.Backend.Inventory
 		}
 
 		/// <summary>
-		/// Attempts to add the item. returns the index at which the item is stored, or -1 if it has not been added. 
+		/// Attempts to add the item. returns the index at which the item is stored, or -1 if it has not been added.
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>

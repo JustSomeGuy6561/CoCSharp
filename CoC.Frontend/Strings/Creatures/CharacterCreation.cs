@@ -379,8 +379,8 @@ namespace CoC.Frontend.Creatures
 			}
 
 			sb.Append(creator.hairColor.AsString());
-			HairType hairType = creator.hairType ?? HairType.NORMAL; //not changeable in customization menu. 
-			sb.Append(hairType.shortDescription());
+			HairType hairType = creator.hairType ?? HairType.NORMAL; //not changeable in customization menu.
+			sb.Append(hairType.ShortDescription());
 			if (!HairFurColors.IsNullOrEmpty(creator.hairHighlightColor))
 			{
 				sb.Append(" with " + creator.hairHighlightColor.AsString() + " highlights");

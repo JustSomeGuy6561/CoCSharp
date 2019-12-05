@@ -9,7 +9,7 @@ namespace CoC.WinDesktop.ModelView
 {
 	public abstract class ModelViewBase : NotifierBase
 	{
-		//gather all the data related to this display, from the controller and/or ui as needed. 
+		//gather all the data related to this display, from the controller and/or ui as needed.
 		protected abstract void ParseDataForDisplay();
 
 		internal void ParseData()
@@ -33,7 +33,7 @@ namespace CoC.WinDesktop.ModelView
 
 		/// <summary>
 		/// Switches to this model view. If it fails to do so, it executes last action instead. Note that you may have to set values in the
-		/// modelview before this is called in order for it to execute properly. It's not reasonably possible to do that here, though. 
+		/// modelview before this is called in order for it to execute properly. It's not reasonably possible to do that here, though.
 		/// </summary>
 		/// <param name="lastAction"></param>
 		internal void SwitchToThisView()

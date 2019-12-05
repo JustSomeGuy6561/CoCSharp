@@ -18,7 +18,7 @@ namespace CoC.WinDesktop.CustomControls
 	//Input - prop, string, two way, onFocusLost - stores the input field text.
 	//inputSelectVisible - prop, Visibility (or bool, same as above)
 	//inputSelect - prop, custom object - wraps the content of a comboBox
-	//selectedInput - the returnValue for inputSelect. needs to be two way, source needs to implement some catch for change logic. 
+	//selectedInput - the returnValue for inputSelect. needs to be two way, source needs to implement some catch for change logic.
 
 
 
@@ -146,7 +146,7 @@ namespace CoC.WinDesktop.CustomControls
 		{
 			InitializeComponent();
 
-			//Eat your heart out MVVM purists. 
+			//Eat your heart out MVVM purists.
 			InputField.IsVisibleChanged += InputField_IsVisibleChanged;
 			DropDown.IsVisibleChanged += DropDown_IsVisibleChanged;
 		}

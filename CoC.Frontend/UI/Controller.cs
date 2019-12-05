@@ -24,9 +24,9 @@ using CoC.Backend.Areas;
 namespace CoC.UI
 {
 
-	//consider firing custom events instead of INotifyPropertyChanged. 
+	//consider firing custom events instead of INotifyPropertyChanged.
 	//or, implement inotifypropertychanged, but instead of firing each time, add each property name to a hashset each time they change. then, when the code is ready
-	//for the game to return to the GUI layer, fire them off. This will prevent multiple fires and make sure the data is only updated when it needs to be. 
+	//for the game to return to the GUI layer, fire them off. This will prevent multiple fires and make sure the data is only updated when it needs to be.
 	public sealed partial class Controller
 	{
 #warning Consider moving all static functions for buttons, output, input, selector here. makes it easier to link everything in.
@@ -56,7 +56,7 @@ namespace CoC.UI
 		public bool displayTopMenu { get; private set; }
 		public PlayerStatus playerStatus { get; private set; }
 
-		//public Image outputImage; 
+		//public Image outputImage;
 		public string outputImagePath => _outputImagePath;
 		private string _outputImagePath;
 		public StringBuilder outputField => _outputField;
@@ -66,7 +66,7 @@ namespace CoC.UI
 		/// <summary>
 		/// Called from the GUI when the game needs to reload the current scene. Should only occur if the pc is currently at a home base. Forces the text for the current location
 		/// to be regenerated, but with no other interactions running. This way, the text can respond to language changes and such, or handle the case where it's switching from
-		/// appearance to skills and back to standard text or whatever. 
+		/// appearance to skills and back to standard text or whatever.
 		/// </summary>
 		public static void ForceReloadFromGUI()
 		{

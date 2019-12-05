@@ -22,8 +22,8 @@ namespace CoC.Backend.BodyParts
 	 */
 
 	//super confusing generics ftw! Basically, you have to define what it is, and what it's behavior is.
-	//TL;DR: BodyPart<[BodyPart], [BodyPartType]> 
-	//example: 
+	//TL;DR: BodyPart<[BodyPart], [BodyPartType]>
+	//example:
 	//internal class Arms : BodyPartBase<Arms, ArmType>
 	//internal class ArmType : BodyPartBehavior<ArmType, Arms>
 
@@ -42,7 +42,7 @@ namespace CoC.Backend.BodyParts
 		public bool isDefault => type == defaultType;
 		public abstract BehaviorClass defaultType { get; }
 
-		//each class may have additional updates for more specific or varied cases, notably cases that use extra variables unique to that class. 
+		//each class may have additional updates for more specific or varied cases, notably cases that use extra variables unique to that class.
 		//if this is the case, functions that can change these variables without updating the type may need to be implemented.
 
 		//internal bool Update[Special Name](BehaviorClass type, [additional parameters]);
@@ -61,13 +61,13 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//Text output.
-		public string LongDescription() => type.longDescription(AsReadOnlyData());
+		public string LongDescription() => type.LongDescription(AsReadOnlyData());
 
 		public string PlayerDescription()
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
-				return type.playerDescription((ThisClass)this, player);
+				return type.PlayerDescription((ThisClass)this, player);
 			}
 			else return "";
 		}
@@ -75,7 +75,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
-				return type.transformFrom(previousTypeData, player);
+				return type.TransformFrom(previousTypeData, player);
 			}
 			else return "";
 		}
@@ -84,7 +84,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
 			{
-				return oldData.type.restoredString(oldData, player);
+				return oldData.type.RestoredString(oldData, player);
 			}
 			else return "";
 		}

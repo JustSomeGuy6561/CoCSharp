@@ -25,7 +25,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		bool attemptToDye(HairFurColors dye, byte index);
 
 		//allows a single dye to be applied to multiple members at once. For example, the body sets this value to true, allowing the player
-		//to simultaneously dye their primary, secondary, and underbody fur/feather colors all at once. 
+		//to simultaneously dye their primary, secondary, and underbody fur/feather colors all at once.
 		//bool allowMultiDye = false
 	}
 
@@ -35,7 +35,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	}
 
 	//process: runs dye code like normal. before completing dye, checks for patternable. if patternable and conditions met, asks if PC wants to apply colors in a pattern.
-	//stores the PC choice. runs attempt to dye. 
+	//stores the PC choice. runs attempt to dye.
 	public interface IPatternable : ISimultaneousMultiDyeable
 	{
 		bool canPattern(HairFurColors dye, params byte[] indices);
@@ -51,7 +51,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	}
 
 	//i don't feel like forcing this on to the interface itself, as it's identical everywhere, and may not ever be used.
-	//i probably should give it a bool to disable this behavior from being possible if that's the desired result. 
+	//i probably should give it a bool to disable this behavior from being possible if that's the desired result.
 	public static class MultiDyeableHelper
 	{
 		public static bool[] attemptMultiDye(this IMultiDyeable multiDyeable, HairFurColors dye, params byte[] indices)
@@ -59,7 +59,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			if (dye == null) throw new System.ArgumentNullException();
 			if (multiDyeable == null) throw new System.ArgumentNullException();
 			if (indices == null) indices = new byte[0];
-			bool[] returnedValues = new bool[indices.Length]; 
+			bool[] returnedValues = new bool[indices.Length];
 
 			for (int x = 0; x < indices.Length; x++)
 			{

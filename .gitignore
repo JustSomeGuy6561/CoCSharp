@@ -278,3 +278,4 @@ __pycache__/
 *.settings
 /CoC.WinDesktop/resources/sprites/source
 /consumables
+*.leu

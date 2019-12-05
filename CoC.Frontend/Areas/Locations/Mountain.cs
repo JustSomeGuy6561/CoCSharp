@@ -60,7 +60,7 @@ namespace CoC.Frontend.Areas.Locations
 			randomEncounters.Add(new MinotaurEncounter());
 			randomEncounters.Add(new MinotaurLordEncounter());
 			randomEncounters.Add(new MimicEncounter(MountainMimic));
-			//all the imps. 
+			//all the imps.
 			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
 			//all the goblins.
 			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());

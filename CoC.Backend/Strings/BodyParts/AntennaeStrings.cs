@@ -20,7 +20,7 @@ namespace  CoC.Backend.BodyParts
 	{
 		private static string RemoveAntennaeStr(AntennaeData oldData, PlayerBase p)
 		{
-			return oldData.type.restoredString(oldData, p);
+			return oldData.type.RestoredString(oldData, p);
 		}
 
 		private static string BeeDesc()

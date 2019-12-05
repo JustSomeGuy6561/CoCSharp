@@ -33,7 +33,7 @@ namespace CoC.Backend.BodyParts
 		}
 		protected static string NoTailTransformStr(TailData previousTailData, PlayerBase player)
 		{
-			return previousTailData.type.restoredString(previousTailData, player);
+			return previousTailData.type.RestoredString(previousTailData, player);
 		}
 		protected static string NoTailRestoreStr(TailData previousTailData, PlayerBase player)
 		{

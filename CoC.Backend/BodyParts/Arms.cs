@@ -16,17 +16,17 @@ namespace CoC.Backend.BodyParts
 	/*
 	 * Arm covering (skin, scales, etc) Note:
 	 * Arms now have a consistent logic - if the arm is furry, it will first try to use the secondary (underbody) color, if the body has one. if not, it will fallback to the
-	 * body's regular fur color, if one exists. It will fallback to hair if not available, and if THAT is not available, fallback to the default for whatever type of arm it is. 
-	 * Tones will simply use the primary skin tone - i cannot think of a reason arms would have a special tone different from the body. 
+	 * body's regular fur color, if one exists. It will fallback to hair if not available, and if THAT is not available, fallback to the default for whatever type of arm it is.
+	 * Tones will simply use the primary skin tone - i cannot think of a reason arms would have a special tone different from the body.
 	 * Since this logic is implemented in the arm type, a derived class can override this behavior for custom arm types. currently, Ferrets do this.
-	 * 
+	 *
 	 * This epidermis data must be LAZY! meaning it won't be calculated until the moment it's needed. We achieve this by using a delegate (function pointer) to get the body data on demand.
 	 * We could (theoretically) get it and deal with it immediately, but Lazy implementation allows us to get around creating this before the body, if that ever happened.
-	 * 
+	 *
 	 * An aside: unfortunately, i can't think up a means to memoize the epidermis/secondary epidermis. so it'll have to get them each time. This shouldn't be costly enough to worry about that, though
 	 */
 
-	//Note: Never fires a data change event, as it has no data that can be changed. Note that technically claws could fire a change, but whatever. 
+	//Note: Never fires a data change event, as it has no data that can be changed. Note that technically claws could fire a change, but whatever.
 	public sealed partial class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
 	{
 		public override string BodyPartName() => Name();
@@ -111,7 +111,7 @@ namespace CoC.Backend.BodyParts
 		public readonly HandType handType;
 		public readonly EpidermisType epidermisType;
 
-		//update the original and secondary original based on the current data. 
+		//update the original and secondary original based on the current data.
 
 		//internal abstract Epidermis GetEpidermis(bool primary, in BodyData bodyData);
 		internal abstract EpidermalData GetPrimaryEpidermis(in BodyData bodyData);
@@ -238,7 +238,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		//upper half of arm - primary color, as fur. lower half: scales, uses secondary tone. 
+		//upper half of arm - primary color, as fur. lower half: scales, uses secondary tone.
 		private sealed class CockatriceArms : FurArms
 		{
 			private readonly ToneBasedEpidermisType secondaryType = EpidermisType.SCALES;

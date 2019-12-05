@@ -43,7 +43,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string NormalTransformStr(BackData back, PlayerBase player)
 		{
-			return back.type.restoredString(back, player);
+			return back.type.RestoredString(back, player);
 		}
 		private static string NormalRestoreStr(BackData back, PlayerBase player)
 		{

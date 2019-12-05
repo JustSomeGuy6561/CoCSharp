@@ -12,7 +12,7 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 {
 	public sealed partial class GenericBite : PhysicalSpecial
 	{
-		//note: strength is 0-5, cost increasing by 5 per level. 
+		//note: strength is 0-5, cost increasing by 5 per level.
 		private readonly byte biteStrength;
 		private readonly SimpleDescriptor teeth;
 

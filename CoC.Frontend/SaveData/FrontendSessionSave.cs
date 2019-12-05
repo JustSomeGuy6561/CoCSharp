@@ -106,8 +106,8 @@ namespace CoC.Frontend.SaveData
 		//if null, checks for global setting, and uses that if it's not null.
 		//if global is null, prompts user on first
 		//possible time it's needed. for silly mode, this
-		//is during game start, i guess. 
-		internal bool? SillyModeLocal = null;
+		//is during game start, i guess.
+
 		internal bool? WaterSportsLocal = null;
 		internal byte cabinProgress = 0;
 		internal byte wallProgress = 0;

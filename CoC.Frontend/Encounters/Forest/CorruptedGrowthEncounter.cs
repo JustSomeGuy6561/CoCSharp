@@ -11,25 +11,25 @@ using System;
 
 namespace CoC.Frontend.Encounters.Forest
 {
-	//Corrupted growth is a combination of tentacle beast and corrupted glades. 
-	//tentacle beast is getting nuked b/c that license is cancer. 
+	//Corrupted growth is a combination of tentacle beast and corrupted glades.
+	//tentacle beast is getting nuked b/c that license is cancer.
 
-	//20% of the time, it will be the satyr scene. You may now free the satyr, in addition to taking advantage of him. 
+	//20% of the time, it will be the satyr scene. You may now free the satyr, in addition to taking advantage of him.
 	//	if the satyr is particularly into tentacle rape (random chance), he may be mad and attack you. if he does, he will have high initial lust and some health loss.
 	//	otherwise the vines will attack you for stealing their plaything. you may get a reward from satyr.
 
 	//The remaining 80% is split between attacking you and normal interaction, according to your corruption:
-	//Of course, with high enough intellect and the plant book, you have the option to simply leave and ignore all of these. 
+	//Of course, with high enough intellect and the plant book, you have the option to simply leave and ignore all of these.
 	//0-33: 40% attack, 40% normal interract (destroy, leave, or explore further)
 	//34-66: 30% attack, 25% normal, 25% sexy time
 	//68+ : 20% attack, 60% sexy time
 
-	//if you decide to destroy the glade, it will attack you 33% of the time, though it will take damage before combat based on what you've done. 
-	//if you decide to explore further, you will always hit the corrupted dryad. 
+	//if you decide to destroy the glade, it will attack you 33% of the time, though it will take damage before combat based on what you've done.
+	//if you decide to explore further, you will always hit the corrupted dryad.
 	//if you go for sex, it will have varying effects based on gender and stats, as was the case before/
 
 	//dryads also have a small chance of procing on their own, completely independant of the glades.
-	
+
 	internal sealed class CorruptedGrowthEncounter : RandomEncounter
 	{
 		private static FrontendSessionSave data => FrontendSessionSave.data;

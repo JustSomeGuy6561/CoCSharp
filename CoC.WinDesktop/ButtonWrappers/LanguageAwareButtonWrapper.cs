@@ -9,8 +9,8 @@ namespace CoC.WinDesktop.ContentWrappers.ButtonWrappers
 {
 	public sealed class LanguageAwareButtonWrapper : AutomaticButtonWrapper
 	{
-		public LanguageAwareButtonWrapper(SimpleDescriptor TitleStrCallback, Action onClick, DescriptorWithArg<bool> unlockedLockedTipCallback, 
-			SimpleDescriptor tipTitleCallback, bool enabled = true, bool defaultButton = false) : base(TitleStrCallback, onClick, 
+		public LanguageAwareButtonWrapper(SimpleDescriptor TitleStrCallback, Action onClick, DescriptorWithArg<bool> unlockedLockedTipCallback,
+			SimpleDescriptor tipTitleCallback, bool enabled = true, bool defaultButton = false) : base(TitleStrCallback, onClick,
 			unlockedLockedTipCallback, tipTitleCallback, enabled, defaultButton)
 		{
 		}

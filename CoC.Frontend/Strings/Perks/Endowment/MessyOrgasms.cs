@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.Endowment
 		}
 		private static string MessyOrgasmsHint()
 		{
-			return "Are your orgasms particularly messy? (+50% Cum Multiplier)" + Environment.NewLine + Environment.NewLine + 
+			return "Are your orgasms particularly messy? (+50% Cum Multiplier)" + Environment.NewLine + Environment.NewLine +
 				"A higher cum multiplier will result in messier orgasms, and makes you more virile.";
 		}
 		private static string MessyOrgasmsDesc()

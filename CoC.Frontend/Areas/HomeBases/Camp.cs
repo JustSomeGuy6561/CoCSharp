@@ -105,7 +105,7 @@ namespace CoC.Frontend.Areas.HomeBases
 
 			//companion domains and such.
 			visitors.ForEach(x => sb.Append(x.HomeBaseDomainDescription(this, GameEngine.CurrentHour)));
-			
+
 			//fortifications.
 
 			if (HasDefenseCanopy) sb.Append("A thorny tree has sprouted near the center of the camp, growing a protective canopy of spiky vines around the portal and your camp. ");
@@ -156,7 +156,7 @@ namespace CoC.Frontend.Areas.HomeBases
 
 			visitors.ForEach(x => x.HomeBaseIdleDescription(this, GameDateTime.Now.hour));
 
-			//companion text. 
+			//companion text.
 			/*
 			if (flags[kFLAGS.ANT_KIDS] > 1000) sb.Append(" A series of small mounds exist nearby it, no doubt linked to the underground maze your ant children inhabit. Sometimes you'll catch movement around one of them - " +
 				"you have no doubt Phylla is keeping her promise to keep an eye on it. You feel a safer knowing you'll be notified should anything threaten the portal, or if, gods forbid, anyone else has come through after you." +
@@ -231,8 +231,8 @@ namespace CoC.Frontend.Areas.HomeBases
 						case Weather.THUNDERSTROMS:
 							sb.Append("Dark clouds and the pelting rain hinder your visibility, making most travel difficult. Occasional steaks of Lightning provide some visibility," +
 								" but are almost always followed by the deafening boom of thunder"); break;
-						//NGL, y'all suck at defaults with switch statements - default should always fallback to the default (hence the name) not be some sort of error. 
-						//so, if the default is sunny, make the sunny case fallthrough to the default and use it there. BUT, i'm keeping this one because rule of cool. 
+						//NGL, y'all suck at defaults with switch statements - default should always fallback to the default (hence the name) not be some sort of error.
+						//so, if the default is sunny, make the sunny case fallthrough to the default and use it there. BUT, i'm keeping this one because rule of cool.
 						default: sb.Append("The sky is black and flashing green 0's and 1's, seems like the weather is broken! "); break;
 					}
 				}
@@ -249,7 +249,7 @@ namespace CoC.Frontend.Areas.HomeBases
 				sb.Append("It's light outside, a good time to explore and forage for supplies with which to fortify your camp." + Environment.NewLine);
 			}
 
-			//the next time you visit camp, you'll realize it's pretty shitty to be in a tent still. 
+			//the next time you visit camp, you'll realize it's pretty shitty to be in a tent still.
 			if (CabinProgress <= 0 && GameDateTime.Now.day >= 14 && !isReload) //don't cause a dupe to fire if we are reloading.
 			{
 				GameEngine.AddHomeBaseReaction(new HomeBaseReaction(MakeACabinYouBitch));
@@ -258,7 +258,7 @@ namespace CoC.Frontend.Areas.HomeBases
 			//testing the reactions.
 			//if (!FrontendGlobalSave.data.UnlockedNewGameHerm && player.gender == Gender.HERM)
 			//{
-			//	GameEngine.AddOneOffReaction(new OneOffTimeReactionBase(new GenericSimpleReaction(UnlockedHermWhoo)));	
+			//	GameEngine.AddOneOffReaction(new OneOffTimeReactionBase(new GenericSimpleReaction(UnlockedHermWhoo)));
 			//}
 			if (!FrontendGlobalSave.data.UnlockedNewGameHerm)
 			{

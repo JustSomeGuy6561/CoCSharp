@@ -53,14 +53,14 @@ namespace CoC.Frontend.Areas.Locations
 			randomEncounters.Add(new WalkThroughGlacialRiftEncounter());
 			//NPCs
 			randomEncounters.Add(new ValeriaAtGlacialRiftEncounter()); //technically you fight her but whatever.
-			
+
 			//monsters
 			randomEncounters.Add(new ValkyrieEncounter());
 			randomEncounters.Add(new FrostGiantEncounter());
 			randomEncounters.Add(new YetiEncounter());
 			randomEncounters.Add(new AmarokEncounter());
 			//items
-			
+
 			//find godMead;
 			//find Icicle;
 

@@ -27,7 +27,7 @@ namespace CoC.WinDesktop.Helpers
 
 		public override void ParseData()
 		{
-			//don't do anything. the data is constant. 
+			//don't do anything. the data is constant.
 		}
 	}
 }

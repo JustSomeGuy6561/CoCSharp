@@ -73,7 +73,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanTransformStr(EyeData previousEyeData, PlayerBase player)
 		{
-			return previousEyeData.type.restoredString(previousEyeData, player);
+			return previousEyeData.type.RestoredString(previousEyeData, player);
 		}
 		//these eyes / these eyes have seen a lot of loves...
 		//(holy shit i'm old.)

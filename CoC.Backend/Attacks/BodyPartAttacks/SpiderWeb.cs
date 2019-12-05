@@ -35,7 +35,7 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 			//{
 			//	return NotEnoughResources();
 			//}
-			//attempt the webbing. 
+			//attempt the webbing.
 			resourceCount -= ATTACK_COST;
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

@@ -9,14 +9,14 @@ namespace CoC.Backend.BodyParts
 	{
 		#region Notes:
 
-		//Lactation: 
+		//Lactation:
 		//rework of lactation to allow common behavior between NPCs and PC. This is built from 3 parts - capacity, lactation rate, and overfullBuffer. Capacity is based on your form
 		//and is always available, even when you aren't lactating. the lactation rate affects how much you actually lactate, and as a result, how fast you fill up.
 		//overfullBuffer is a buffer that allows NPCs and players to have some leeway at max capacity before they start to be affected by their overfullness. Once at max capacity,
 		//the character has the duration of the buffer to be milked or their production will slow down. This allows different characters to handle being overly full at different rates
-		//without requiring crazy levels of customization. For example, the player has 48 hours between milkings before suffering any adverse effects, regardless of lactation amount. 
-		//Katherine, however, has no real buffer, and has to be milked as often as she is full or will slow down production. AFAIK marble is just perma-lactating, so she could have 
-		//a max value buffer, or simply just set prevent lactation decrease. 
+		//without requiring crazy levels of customization. For example, the player has 48 hours between milkings before suffering any adverse effects, regardless of lactation amount.
+		//Katherine, however, has no real buffer, and has to be milked as often as she is full or will slow down production. AFAIK marble is just perma-lactating, so she could have
+		//a max value buffer, or simply just set prevent lactation decrease.
 
 		#endregion
 
@@ -44,13 +44,13 @@ namespace CoC.Backend.BodyParts
 		//multiplies capacity volume by this value to determine actual amount you can lactate. completely breaks physics, but so does most of this game, so...
 		public float lactation_TotalCapacityMultiplier => lactation_CapacityMultiplier + perkLactationCapacityMultiplierOffset;
 
-		//some items may make your milk more "dense" for lack of better word, allowing you to lactate more without altering your capacity. this is that value. 
+		//some items may make your milk more "dense" for lack of better word, allowing you to lactate more without altering your capacity. this is that value.
 		public float lactation_CapacityMultiplier { get; private set; } = 1;
 
 		//This is the internal value that helps determine how much you're lactating. It's a range from 0-10, with 0 being not lactating and 10 being lactating at an ungodly rate.
 		//it will update automatically based on how often you breastfeed and how full you are. Boosting lactation will directly update this value.
 		//This value is used in calculations, and you should try not to use it in your logic. Lactation Status is much less arbitrary and thus are better to use.
-		//however, there may be cases where you want to boost lactation based on the current value, so this is available to you. 
+		//however, there may be cases where you want to boost lactation based on the current value, so this is available to you.
 		public float lactation_ProductionModifier
 		{
 			get => _lactationModifier;
@@ -69,17 +69,17 @@ namespace CoC.Backend.BodyParts
 
 		#region Lactation Perk Data
 
-#warning Consider adding text for lactation rate increase so that can be handled. 
+#warning Consider adding text for lactation rate increase so that can be handled.
 		//increase or decrease the lactation capacity based on perk data.
 		internal float perkLactationCapacityMultiplierOffset { get; set; } = 0;
 
 		//prevent the character from decreasing their current production rate at all.
 		internal bool preventLactationDecrease { get; set; } = false;
 
-		//prevent the character from decreasing their current production rate below a certain level. 
+		//prevent the character from decreasing their current production rate below a certain level.
 		internal LactationStatus minimumLactationLevel { get; set; } = LactationStatus.NOT_LACTATING;
 
-		//the character can store their absolute maximum lactation capacity, even if they aren't lactating heavily. 
+		//the character can store their absolute maximum lactation capacity, even if they aren't lactating heavily.
 		internal bool currentCapacityAlwaysMaxCapacity { get; set; } = false;
 		#endregion
 
@@ -119,12 +119,12 @@ namespace CoC.Backend.BodyParts
 
 		//note: it's possible to actually go over the max capacity if you're overfull, and going at the highest lactation level. Original game set this to 1.5; i'm going to cap it at 1.1
 		public float maximumLactationCapacity => lactation_TotalCapacityMultiplier * (float)breastRows.Sum(x => volumeFromCupSize(x.cupSize) * x.numBreasts);
-		//current maximum capacity. if you aren't lactating, this is 0. 
+		//current maximum capacity. if you aren't lactating, this is 0.
 		public float currentLactationCapacity => maximumLactationCapacity * lactationLevel * (isOverfull ? 1.1f : 1.0f);
 
 		public float lactationRate => Utils.Lerp(LACTATION_THRESHOLD, EPIC_LACTATION_THRESHOLD, lactation_ProductionModifier, 0, 1.0f);
 
-		//when you boost lactation to certain thresholds, your body can carry a larger amount of the full capacity. 
+		//when you boost lactation to certain thresholds, your body can carry a larger amount of the full capacity.
 		private float lactationLevel
 		{
 			get
@@ -142,7 +142,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		//takes 48 hours to fill when less than strong. 24 when strong, 12 when heavy, 6 when epic. 
+		//takes 48 hours to fill when less than strong. 24 when strong, 12 when heavy, 6 when epic.
 		private float hourlyFillRate
 		{
 			get
@@ -170,7 +170,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		//converts the lactation modifier into something that is less arbitrary from a human interpretation standpoint. running a check against this means you don't have magic numbers
-		//and your intent is much clearer. 
+		//and your intent is much clearer.
 		public LactationStatus lactationStatus
 		{
 			get
@@ -230,6 +230,27 @@ namespace CoC.Backend.BodyParts
 		public Breasts SmallestBreast()
 		{
 			return _breasts.MinItem(x => (byte)x.cupSize);
+		}
+
+		public Breasts SmallestBreastByNippleLength()
+		{
+			return _breasts.MinItem(x => x.nipples.length);
+		}
+
+		public Breasts LargestBreastByNippleLength()
+		{
+			return _breasts.MaxItem(x => x.nipples.length);
+		}
+
+		public BreastData AverageBreasts()
+		{
+			if (_breasts.Count == 0)
+			{
+				return null;
+			}
+			var averageCup = AverageCupSize();
+			var averageNippleLength = AverageNippleSize();
+			return Breasts.GenerateAggregate(creatureID, averageCup, averageNippleLength, blackNipples, quadNipples, nippleType);
 		}
 
 		#endregion
@@ -379,8 +400,8 @@ namespace CoC.Backend.BodyParts
 		}
 
 		/// <summary>
-		/// Attempts to boost the current lactation modifier by the given value, and returns the amount it actually boosted. if the value is negative and causes the character to drop below the 
-		/// lactation threshold, sets it to 0. can be called if the current 
+		/// Attempts to boost the current lactation modifier by the given value, and returns the amount it actually boosted. if the value is negative and causes the character to drop below the
+		/// lactation threshold, sets it to 0. can be called if the current
 		/// </summary>
 		/// <param name="byAmount">The amount to change the lactation modifier</param>
 		/// <returns>the amount the modifier changed.</returns>
@@ -423,6 +444,12 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Breast Sex Related Functions
+
+		public bool CanTitFuck()
+		{
+			return _breasts.Exists(x => x.TittyFuckable());
+		}
+
 		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
 		internal void HandleTittyFuck(int breastIndex, Cock sourceCock, bool reachOrgasm)
 		{
@@ -462,7 +489,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		/// <summary>
-		/// Attempt to milk the current character, up to a certain max threshold. negative numbers are treated as max value. 
+		/// Attempt to milk the current character, up to a certain max threshold. negative numbers are treated as max value.
 		/// Can be called when the character is not lactating, which will help induce lactation.
 		/// </summary>
 		/// <param name="maxAmount">The maximum amount allowed to be lactated</param>
@@ -499,37 +526,37 @@ namespace CoC.Backend.BodyParts
 		#region Private Lactation Helper Functions
 		private double volumeFromCupSize(CupSize cup)
 		{
-			//fun fact, i'm now more versed in how cup size works than most women - apparently 60% don't get proper fitting cup/bra measures. The more you know. 
+			//fun fact, i'm now more versed in how cup size works than most women - apparently 60% don't get proper fitting cup/bra measures. The more you know.
 			//Short version: actual capacity varies by figure, notably how wide the person is. basically, cupsize is the delta from measurement at sternum and across the breasts at the nipple level.
-			//for our calculations, we're gonna assume a "true" cup size - that is, ~a 30inch measurement at sternum, or a 34band size. 
+			//for our calculations, we're gonna assume a "true" cup size - that is, ~a 30inch measurement at sternum, or a 34band size.
 
 			//we'll simulate storage by using breast size combined with the internals that don't exactly show on a person's physique, so flat/a cups will still have some lactation, albeit very low amounts.
 
 			byte cupByte = (byte)cup;
 
 			//fudging this - basically, cupsize ~= measurement@nipples - (measurement@sternum+4) which roughly means breast height is 1/2 the cupsize value, but b/c breasts are curved, it's actually even less
-			//so we fudge it to ~1/2.54. then we convert that to CM, and it cancels out. i figure that conversion is probably a little off, so i fudge back in an extra .25cm. 
+			//so we fudge it to ~1/2.54. then we convert that to CM, and it cancels out. i figure that conversion is probably a little off, so i fudge back in an extra .25cm.
 			double height = cupByte + .25;
 
 			//radius of the breast where it meets the chest. we'll assume the figure gets slightly more accomodating as the breasts get bigger, so we widen the radius slightly per cup size.
 			double chestRadius = 2.5 + cupByte / 40.0;
 
-			//note: 
+			//note:
 
-			//tiny, not enough volume to be spherical. using an ellipsoid instead. the heights are small enough here that we can use a full ellipsoid and chalk it up to internal storage. 
+			//tiny, not enough volume to be spherical. using an ellipsoid instead. the heights are small enough here that we can use a full ellipsoid and chalk it up to internal storage.
 			if (cupByte < 3)
 			{
 				return 2 * chestRadius * chestRadius * height * 2 / 3 * Math.PI;
 			}
-			//big enough to have volume, but still small enough to remain firm and thus are roughly spherical. 
+			//big enough to have volume, but still small enough to remain firm and thus are roughly spherical.
 			if (cupByte < 5)
 			{
 				double breastRadius = cupByte;
-				//this might over-estimate internal storage a little, but this isn't precision math for rocket science, so cut me some slack lol. 
+				//this might over-estimate internal storage a little, but this isn't precision math for rocket science, so cut me some slack lol.
 				return 4 / 3 * Math.PI * Math.Pow(breastRadius, 3);
 			}
-			//biggest formula. no longer spherical, because gravity. we'll use a truncated sphere (think cylinder that gets wider as it goes along), that ends in a half-ellipsoid. 
-			//i'm more or less ignoring internal storage here because we have so much of it outside. i just add an extra 10 and call it a day. 
+			//biggest formula. no longer spherical, because gravity. we'll use a truncated sphere (think cylinder that gets wider as it goes along), that ends in a half-ellipsoid.
+			//i'm more or less ignoring internal storage here because we have so much of it outside. i just add an extra 10 and call it a day.
 			else
 			{
 				//ellipsoid at the end.
@@ -548,9 +575,9 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Lazy Listener
-		//This is written in this format to match the rest of the code in genitals for lazy listeners. it could just return a string, but this is more consistent. 
+		//This is written in this format to match the rest of the code in genitals for lazy listeners. it could just return a string, but this is more consistent.
 
-		//There's actually a strange behavior here in that the moment you become full, you get the overfull bonus (1.1x capacity), even if the amount you are adding would not cause 
+		//There's actually a strange behavior here in that the moment you become full, you get the overfull bonus (1.1x capacity), even if the amount you are adding would not cause
 		//you to reach the overfull capacity. frankly, considering the old method was just multiply it by 1.5 regardless of if you just became full or have been for hours,
 		//i think this is fine.
 		private bool DoLazyLactationCheck(bool isPlayer, byte hoursPassed, out string results)
@@ -608,7 +635,7 @@ namespace CoC.Backend.BodyParts
 							multiplier *= hoursSinceOverranBuffer;
 						}
 						//formula:
-						//(1 + breastCount / 8) * hours / 10. so .1 to .2 per hour, assuming 2 breasts per row. higher if that's not the case anymore. 
+						//(1 + breastCount / 8) * hours / 10. so .1 to .2 per hour, assuming 2 breasts per row. higher if that's not the case anymore.
 						boostLactation((float)((1 + numBreasts / 8) * multiplier));
 
 						if (lactationStatus < oldStatus)
@@ -626,18 +653,18 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 			//otherwise, handle cases for induced lactation (or some other non-zero modifier below the lactation threshold)
-			//we decrease this by 0.1 every 48 hours since the last time milked/attempted to induce lactation. 
+			//we decrease this by 0.1 every 48 hours since the last time milked/attempted to induce lactation.
 			else if (lactation_ProductionModifier != 0 && hoursSinceLastMilked >= 48)
 			{
 				//we do this by seeing if the increase in hours passed has caused us to reach a new multiple of 48.
-				//so, if we were previously at 43 hours and now we're at 51, for example. we do this via modulus of 48. 
+				//so, if we were previously at 43 hours and now we're at 51, for example. we do this via modulus of 48.
 
 				//this can be written as hourseSinceLastMilked % 48 < hoursPassed.
 
 				//The math:
 				//48x <= a < 48(x+1).        a - b < 48x. a, b > 0. x>= 0.  let c = a - 48x, or a = c + 48x. This is the same as c = a % 48.
 				//48x <= c + 48x < 48x+48.   c + 48x - b < 48x.             remove 48x from the equation.
-				//0 <= c < 48.               c -b < 0.                      solve for b.  
+				//0 <= c < 48.               c -b < 0.                      solve for b.
 				//c < b. THEREFORE: (a%48) < b
 
 				//however, we first need to handle cases where we need to proc more than once. this only occurs if hoursPassed > 48. Should never happen, but whatever.

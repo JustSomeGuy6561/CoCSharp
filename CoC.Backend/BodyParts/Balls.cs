@@ -17,7 +17,7 @@ namespace CoC.Backend.BodyParts
 	//though this probably needs more thought - is it two per sack, and multiple sacks? or is it all one sack?
 
 	//I'VE GOT BIG BALLS! OH, I'VE GOT BIG BALLS! THERE SUCH BIG BALLS! DIRTY BIG BALLS! HE'S GOT BIG BALLS! AND SHE'S GOT BIG BALLS! BUT WE'VE GOT THE BIGGEST BALLS OF THEM ALL!
-	//i'll see if i can hide this as an easter egg is some text somewhere. 
+	//i'll see if i can hide this as an easter egg is some text somewhere.
 	public sealed partial class Balls : SimpleSaveablePart<Balls, BallsData>, IGrowable, IShrinkable
 	{
 		//BasePerkModifiers modifiers => perkData();
@@ -34,7 +34,7 @@ namespace CoC.Backend.BodyParts
 		public const byte DEFAULT_BALLS_COUNT = 2;
 		public int index => size;
 
-		//huh. balls is never null, so we don't have to worry about it being correct. 
+		//huh. balls is never null, so we don't have to worry about it being correct.
 
 		internal byte defaultNewSize = 1;
 		internal sbyte newSizeOffset = 0;
@@ -46,7 +46,7 @@ namespace CoC.Backend.BodyParts
 		internal float growthMultiplier = 1.0f;
 
 		//recommend saving the hasBalls bool even though it is a determined property - in the event of malformed data, it allows an additional way to catch
-		//if the save should have balls. 
+		//if the save should have balls.
 		public bool hasBalls => count != 0;
 		public bool uniBall => count == UNIBALL_COUNT;
 
@@ -104,7 +104,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region Unique Functions and Updating Properties
-		//Grows a pair of balls. returns false if it already has balls. 
+		//Grows a pair of balls. returns false if it already has balls.
 		internal bool growBalls()
 		{
 			if (hasBalls)
@@ -280,6 +280,18 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
+		public string BallsOrProstateShort() => BallsData.ShortDesc(hasBalls);
+
+		public string DescriptionWithCount(bool preciseCount, bool withArticle) => BallsData.CountDescription(this, preciseCount, withArticle);
+
+		public string DescriptionWithSize(bool preciseSize) => BallsData.BallsWithSize(this, preciseSize);
+
+		public string BallsWithCountOrProstate(bool preciseCount, bool withArticle) => BallsData.BallsWithCountOrProstate(this, preciseCount, withArticle);
+
+		public string BallsLongOrProstate(bool preciseMeasurements, bool withArticle) => BallsData.BallsLongOrProstate(this, preciseMeasurements, withArticle);
+
+
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;
@@ -318,7 +330,7 @@ namespace CoC.Backend.BodyParts
 		float IShrinkable.UseReducto()
 		{
 			byte startVal = size;
-			//even chance of 2 - 5, or 3-6 if we have a somewhat large shrink multiplier. 
+			//even chance of 2 - 5, or 3-6 if we have a somewhat large shrink multiplier.
 			if (((IShrinkable)this).CanReducto())
 			{
 				size = size.subtract((byte)(Utils.Rand(4) + 2));
@@ -417,15 +429,27 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed class BallsData : SimpleData
+	public sealed partial class BallsData : SimpleData
 	{
-		public readonly byte numBalls;
-		public readonly byte ballSize;
+		public readonly byte count;
+		public readonly byte size;
+
+		bool hasBalls => count != 0;
+
+		public string BallsOrProstateShort() => BallsData.ShortDesc(hasBalls);
+		public string DescriptionWithCount(bool preciseCount, bool withArticle) => BallsData.CountDescription(this, preciseCount, withArticle);
+
+		public string DescriptionWithSize(bool preciseSize) => BallsData.BallsWithSize(this, preciseSize);
+
+		public string BallsWithCountOrProstate(bool preciseCount, bool withArticle) => BallsData.BallsWithCountOrProstate(this, preciseCount, withArticle);
+
+		public string BallsLongOrProstate(bool preciseMeasurements, bool withArticle) => BallsData.BallsLongOrProstate(this, preciseMeasurements, withArticle);
+
 
 		internal BallsData(Guid id, byte numBalls, byte ballSize) : base(id)
 		{
-			this.numBalls = numBalls;
-			this.ballSize = ballSize;
+			this.count = numBalls;
+			this.size = ballSize;
 		}
 	}
 }

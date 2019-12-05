@@ -92,7 +92,7 @@ namespace CoC.Backend.BodyParts
 		protected readonly int _index;
 		public override int index => _index;
 
-		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.restoredString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
 		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneLongDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
 		public static readonly GillType FISH = new GillType(FishDescStr, FishLongDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
 	}

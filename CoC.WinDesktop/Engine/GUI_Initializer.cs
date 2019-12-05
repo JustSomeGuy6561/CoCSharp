@@ -20,7 +20,7 @@ namespace CoC.WinDesktop.Engine
 
 		/// <summary>
 		/// Initialize any managers specific to the GUI layer that GUI save data may depend on in order to run correctly. For example, the language engine must exist, otherwise
-		/// the game cannot properly deserialize the previously selected language. 
+		/// the game cannot properly deserialize the previously selected language.
 		/// </summary>
 		public static void PreSaveInit()
 		{
@@ -31,7 +31,7 @@ namespace CoC.WinDesktop.Engine
 
 		/// <summary>
 		/// Some members may rely on other members to exist. Instead of worrying about initialization order, which can quickly become tedious, you may place all systems that are
-		/// independant of one another in the presave, then initialize the dependant ones in the late pre save. 
+		/// independant of one another in the presave, then initialize the dependant ones in the late pre save.
 		/// </summary>
 		public static void LatePreSaveInit()
 		{
@@ -39,13 +39,13 @@ namespace CoC.WinDesktop.Engine
 		}
 
 		/// <summary>
-		/// Handle the initial loading of global save information, if such a file exists. 
+		/// Handle the initial loading of global save information, if such a file exists.
 		/// </summary>
 		public static void InitializeSaveData()
 		{
 			FileInfo globalDataFile;
 
-			//We're in windows, don't overcomplicate shit. 
+			//We're in windows, don't overcomplicate shit.
 			//if (File.Exists(GLOBAL_SETTINGS_PATH))
 			//{
 			//	globalDataFile = new FileInfo(GLOBAL_SETTINGS_PATH);
@@ -95,7 +95,7 @@ namespace CoC.WinDesktop.Engine
 
 		/// <summary>
 		/// The final step, a sort of catch-all for anything missed previously. Things such as data validation can be run here to finalize the initialization and correct anything
-		/// that does not make sense, like bad save data (likely via save editing, for example). 
+		/// that does not make sense, like bad save data (likely via save editing, for example).
 		/// </summary>
 		public static void FinalizeInitialization()
 		{

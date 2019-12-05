@@ -41,15 +41,15 @@ namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 
 		public OptionsRowButtonWrapper(SimpleDescriptor optionName, Action<bool?> SetState, Func<bool?> GetState, SimpleDescriptor enabledText,
 			SimpleDescriptor disabledText, SimpleDescriptor nullText, SimpleDescriptor enabledHint, SimpleDescriptor disabledHint, SimpleDescriptor nullHint,
-			SimpleDescriptor warningText, EnabledOrDisabledWithToolTipNullBtn disabledWithTooltipGetter) : this(optionName, SetState, GetState, 
+			SimpleDescriptor warningText, EnabledOrDisabledWithToolTipNullBtn disabledWithTooltipGetter) : this(optionName, SetState, GetState,
 			ConvertToFunc(enabledText, disabledText, nullText), ConvertToFunc(enabledHint, disabledHint, nullHint), warningText, disabledWithTooltipGetter, true)
 		{
 
 		}
 
 		public OptionsRowButtonWrapper(SimpleDescriptor optionName, Action<bool> SetState, Func<bool> GetState, SimpleDescriptor enabledText,
-			SimpleDescriptor disabledText, SimpleDescriptor enabledHint, SimpleDescriptor disabledHint, SimpleDescriptor warningText, 
-			EnabledOrDisabledWithToolTipBtn disabledWithTooltipGetter) : this(optionName, x=> SetState(x??false), () => GetState(), 
+			SimpleDescriptor disabledText, SimpleDescriptor enabledHint, SimpleDescriptor disabledHint, SimpleDescriptor warningText,
+			EnabledOrDisabledWithToolTipBtn disabledWithTooltipGetter) : this(optionName, x=> SetState(x??false), () => GetState(),
 			ConvertToFunc(enabledText, disabledText), ConvertToFunc(enabledHint, disabledHint), warningText, convertDelegate(disabledWithTooltipGetter), false)
 		{
 
@@ -80,7 +80,7 @@ namespace CoC.WinDesktop.ContentWrappers.OptionsRow
 
 			string getData(bool? target, bool enabled)
 			{
-				//if enabled FnGetter returns true, we ignore the output. 
+				//if enabled FnGetter returns true, we ignore the output.
 				return enabledFnGetter(target, out string data) ? null : data;
 			}
 			nullable = allowsNull;

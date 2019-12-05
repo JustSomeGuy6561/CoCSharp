@@ -13,25 +13,25 @@ namespace CoC.Backend.BodyParts
 {
 
 	/*
-	 * Normal: standard nipple. Inverted: Two stages - Fully or Slightly. Fully inverted requires a small nipple, and the entirety of it is inside. 
+	 * Normal: standard nipple. Inverted: Two stages - Fully or Slightly. Fully inverted requires a small nipple, and the entirety of it is inside.
 	 * Slightly inverted can be a little larger, but sticks out slightly. Fuckable is a wide nipple with the milk-hole (for lack of better term) inside large enough to fit dicks.
 	 * dick nipple is a thin, long nipple, which appears normal, albeit oddly curved upward. when aroused, they grow and act like dicks. they can't impregnate, but do count as cum.
-	 * 
+	 *
 	 * as of now, there's only one way to revert any non-normal nipples - shrink them down to inverted, and have nipple piercings. after a period of 3.5 days, they'll be "pulled out"
-	 * and be back to normal. it's still in the spirit of vanilla, which had no natural way of doing this, but it also didn't have inverted nipples. it's also "realistic" in that 
+	 * and be back to normal. it's still in the spirit of vanilla, which had no natural way of doing this, but it also didn't have inverted nipples. it's also "realistic" in that
 	 * people actually do this, though i suppose magic eggs would also work if we wanted. ofc non-natural means like bro brew, omnibus gift, and ceraph breast steals still work.
-	 * 
+	 *
 	 * Note that all nipple (and its parent, breast) related functionality should be taken care of by the genitals class. for the sake of consistency and simplicity, all nipples will use the same
 	 * status. The first breast row is the primary one - most of the old game architecture is designed around one breast row, and the rest are based on it. I suppose that it'd be possible to rework
 	 * everything to factor in, but it's far simpler to just leave it as is. AS SUCH: we only care about the first breast row's nipples. that means the nipple status of the first row is mimicked across
-	 * the remaining rows, and nipple size is set accordingly. Similarly, while technically possible to pierce each breast row's nipples, the only one that is used in logic is the first. 
-	 * Of course, this restriction is limited to these classes - you can always just hard-code in text that says a random NPC or monster has all their nipples pierced or whatever, or a myriad or 
+	 * the remaining rows, and nipple size is set accordingly. Similarly, while technically possible to pierce each breast row's nipples, the only one that is used in logic is the first.
+	 * Of course, this restriction is limited to these classes - you can always just hard-code in text that says a random NPC or monster has all their nipples pierced or whatever, or a myriad or
 	 * nipple statuses - but doing it here is verboten. (German - forbidden, not possible).
-	 * 
-	 * note that the above is just context - you dont really need to know this to understand what this class does. TL;DR: this class assumes the data sent to it is valid. 
+	 *
+	 * note that the above is just context - you dont really need to know this to understand what this class does. TL;DR: this class assumes the data sent to it is valid.
 	 */
 
-	//Also note: this class is created after perks have been initialized. it's post perk init is never called. 
+	//Also note: this class is created after perks have been initialized. it's post perk init is never called.
 
 	public enum NippleStatus { NORMAL, FULLY_INVERTED, SLIGHTLY_INVERTED, FUCKABLE, DICK_NIPPLE }
 	public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
@@ -71,7 +71,7 @@ namespace CoC.Backend.BodyParts
 
 		private int BreastRowIndex => creature?.genitals.breastRows.IndexOf(parent) ?? 0;
 		private readonly Breasts parent;
-		//i guess we'll call tassels danglers - idk. 
+		//i guess we'll call tassels danglers - idk.
 
 		internal float growthMultiplier = 1;
 		internal float shrinkMultiplier = 1;
@@ -185,7 +185,7 @@ namespace CoC.Backend.BodyParts
 			if (dryOrgasm) dryOrgasmCount++;
 		}
 
-		
+
 
 		private bool PiercingLocationUnlocked(NipplePiercings piercingLocation)
 		{
@@ -275,7 +275,7 @@ namespace CoC.Backend.BodyParts
 			}
 			float oldLength = length;
 			length += Utils.Rand(6) / 20.0f + 0.25f; //ranges from 1/4- 1/2 inch.
-			return length - oldLength; //returns that change in value. limited only if it reaches the max. 
+			return length - oldLength; //returns that change in value. limited only if it reaches the max.
 		}
 
 		float IShrinkable.UseReducto()
@@ -397,6 +397,24 @@ namespace CoC.Backend.BodyParts
 		public readonly int breastRowIndex;
 
 		public readonly ReadOnlyPiercing<NipplePiercings> nipplePiercings;
+
+		public NippleData(Guid creatureID, float length, int breastIndex, bool quadNipples = false, bool blackNipples = false, NippleStatus nippleStatus = NippleStatus.NORMAL) : base(creatureID)
+		{
+			this.length = length;
+			this.breastRowIndex = breastIndex;
+			this.blackNipples = blackNipples;
+			this.quadNipples = quadNipples;
+			this.status = nippleStatus;
+		}
+
+		public NippleData(Guid creatureID, Gender currentGender) : base(creatureID)
+		{
+			length = currentGender.HasFlag(Gender.FEMALE) ? Nipples.FEMALE_DEFAULT_LENGTH : Nipples.MALE_DEFAULT_LENGTH;
+			breastRowIndex = 0;
+			status = NippleStatus.NORMAL;
+			quadNipples = false;
+			blackNipples = false;
+		}
 
 		internal NippleData(Nipples source, int currbreastRowIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{

@@ -28,7 +28,7 @@ namespace CoC.Backend.Creatures
 				double hp = GameEngine.difficulties[BackendSessionSave.data.difficulty].baseMonsterHP(level) + bonusHP;
 				//Apply NG+, NG++, NG+++, etc.
 				hp = GetAscensionHP(hp);
-				
+
 				hp += toughness * 2;
 				hp += perks.baseModifiers.bonusMaxHP;
 

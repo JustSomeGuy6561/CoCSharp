@@ -38,8 +38,8 @@ namespace CoC.Backend.Areas
 		//the dungeon entrance.
 		protected DungeonRoom entranceRoom { get; }
 
-		//Links together a series of dungeon rooms. Note that dungeons can now have one-way doors (think TLoZ). DungeonRooms are optional, but recommended, as they make it 
-		//easier to debug or maintain, as all logic for a single room can be done in its own little instance. 
+		//Links together a series of dungeon rooms. Note that dungeons can now have one-way doors (think TLoZ). DungeonRooms are optional, but recommended, as they make it
+		//easier to debug or maintain, as all logic for a single room can be done in its own little instance.
 		protected void LinkRooms(DungeonRoom sourceRoom, DungeonRoom destinationRoom, Direction direction, bool isOneWay = false)
 		{
 			if (sourceRoom is null) throw new ArgumentNullException(nameof(sourceRoom));
@@ -75,10 +75,10 @@ namespace CoC.Backend.Areas
 		//on its own, this only factors in to statistics and perhaps NPC who care (like Mareth, Jojo, etc), however, it gets additional effects based on disable flag.
 		public abstract bool isCompleted { get; protected set; }
 
-		//if true, causes this dungeon to be disabled when the isCompleted flag is set to true. the Player can no longer enter the dungeon once they leave. 
+		//if true, causes this dungeon to be disabled when the isCompleted flag is set to true. the Player can no longer enter the dungeon once they leave.
 		public abstract bool disableOnCompletion { get; }
 
-		//does the player get to see the dungeon in the list of available dungeons, assuming they found it? If false, there needs to be some other way to enter the dungeon. 
+		//does the player get to see the dungeon in the list of available dungeons, assuming they found it? If false, there needs to be some other way to enter the dungeon.
 		public abstract bool isHidden { get; }
 
 		internal override void RunArea()
@@ -88,11 +88,11 @@ namespace CoC.Backend.Areas
 				currentRoom = entranceRoom;
 				OnDungeonEnter();
 			}
-			
+
 			currentRoom.onEnter();
 		}
 
-		//a virtual function that handles any random data initialization, as needed. it should not print anything. 
+		//a virtual function that handles any random data initialization, as needed. it should not print anything.
 		protected virtual void OnDungeonEnter() { }
 
 	}

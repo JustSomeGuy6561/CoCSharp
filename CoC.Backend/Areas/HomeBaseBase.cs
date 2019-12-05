@@ -12,7 +12,7 @@ using System.Linq;
 namespace CoC.Backend.Areas
 {
 	//base class for a home base. it's basically a "place" but it also has saveable options - basically, when a game loads, we don't want to run the same checks as we would
-	//when we are returning to base, because that would incorrectly assume we left the base and thus some checks or rng would be altered to return bad or incorrect data. 
+	//when we are returning to base, because that would incorrectly assume we left the base and thus some checks or rng would be altered to return bad or incorrect data.
 	//Thus, "OnReload"
 
 	public abstract class HomeBaseBase : AreaBase
@@ -40,7 +40,7 @@ namespace CoC.Backend.Areas
 		}
 
 		/// <summary>
-		/// Called when the game reloads the home base.This can occur after loading a Save, or when changing Languages. 
+		/// Called when the game reloads the home base.This can occur after loading a Save, or when changing Languages.
 		/// </summary>
 		protected internal virtual void OnReload()
 		{
@@ -177,7 +177,7 @@ namespace CoC.Backend.Areas
 				listMaker.AddButtonToList(item.Value, true, () => GameEngine.GoToAreaAndRun(item.Key));
 			}
 
-			listMaker.CreateButtons(true); //create the list of buttons, with a reserved final button as given. 
+			listMaker.CreateButtons(true); //create the list of buttons, with a reserved final button as given.
 		}
 
 		private bool anyStashesUnlocked => GameEngine.currentlyControlledCharacter.hasAnyStashes;
@@ -255,7 +255,7 @@ namespace CoC.Backend.Areas
 					listMaker.AddButtonToList(item.Value, true, () => GameEngine.GoToAreaAndRun(item.Key));
 				}
 
-				listMaker.CreateButtons(true); //create the list of buttons, with a reserved final button as given. 
+				listMaker.CreateButtons(true); //create the list of buttons, with a reserved final button as given.
 			}
 		}
 

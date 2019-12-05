@@ -39,9 +39,9 @@ namespace CoC.Backend.Creatures
 			throw new NotImplementedException();
 		}
 
-		//Note: Min stat is given priority for all of these - if a computed max value is less than the current minimum, the minimum is the maximum. 
-		//all max stats are floored (capped below) to 50, meaning they cannot drop below 50. 
-		//ideally i'd prefer to cap mins to the same value, but that doesn't seem to be the case in given code. 
+		//Note: Min stat is given priority for all of these - if a computed max value is less than the current minimum, the minimum is the maximum.
+		//all max stats are floored (capped below) to 50, meaning they cannot drop below 50.
+		//ideally i'd prefer to cap mins to the same value, but that doesn't seem to be the case in given code.
 
 		public byte level
 		{
@@ -49,7 +49,7 @@ namespace CoC.Backend.Creatures
 			private protected set;
 		} = 1;
 
-		public virtual byte maxLevel => 50; //idk, could be anything really. iirc the player max is 30. 
+		public virtual byte maxLevel => 50; //idk, could be anything really. iirc the player max is 30.
 
 		public uint totalExperience
 		{
@@ -190,7 +190,7 @@ namespace CoC.Backend.Creatures
 
 		//public virtual byte maxHunger => BASE_MAX_HUNGER.offset(modifiers.bonusMaxHunger);
 
-		//will, etc are player-specific. 
+		//will, etc are player-specific.
 
 		//Combat Attributes - taunt strength, bow skill, magic skill, magical aptitude, etc.
 		//Equipment

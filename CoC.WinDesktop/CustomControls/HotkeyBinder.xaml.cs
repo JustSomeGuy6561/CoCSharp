@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 
 namespace CoC.WinDesktop.CustomControls
 {
-	//Largely lifted from 
+	//Largely lifted from
 	//https://tyrrrz.me/Blog/Hotkey-editor-control-in-WPF
 	//I will probably have to modify it, but still, credit where it's due.
 
@@ -60,7 +60,7 @@ namespace CoC.WinDesktop.CustomControls
 			}
 			else
 			{
-				
+
 				e.Handled = true;
 			}
 

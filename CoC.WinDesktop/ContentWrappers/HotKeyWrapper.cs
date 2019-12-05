@@ -25,7 +25,7 @@ namespace CoC.WinDesktop.ContentWrappers
 	//}
 
 	//Note: Had to convert everything to a HotKey instead of a KeyGesture because key gesture does validation on serialization and deserialization.
-	//That will cause notsupportedexceptions and break the game. 
+	//That will cause notsupportedexceptions and break the game.
 	public class HotKeyWrapper : NotifierBase
 	{
 		private readonly SimpleDescriptor hotkeyDefinition;

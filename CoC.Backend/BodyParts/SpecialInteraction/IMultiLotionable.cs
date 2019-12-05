@@ -9,7 +9,7 @@ using System.Text;
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {
 	//a new interface, so that you an get a soft face or freckled face or something, and another complexion or texture on the body.
-	public interface IMultiLotionable 
+	public interface IMultiLotionable
 	{
 		byte numLotionableMembers { get; }
 
@@ -34,7 +34,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	}
 
 	//i don't feel like forcing this on to the interface itself, as it's identical everywhere, and may not ever be used.
-	//i probably should give it a bool to disable this behavior from being possible if that's the desired result. 
+	//i probably should give it a bool to disable this behavior from being possible if that's the desired result.
 	public static class MultiLotionableHelper
 	{
 		public static bool[] attemptMultiLotion(this IMultiLotionable multiLotionable, SkinTexture lotion, params byte[] indices)

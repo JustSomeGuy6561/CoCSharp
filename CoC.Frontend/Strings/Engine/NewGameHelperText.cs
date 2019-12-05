@@ -114,7 +114,7 @@ namespace CoC.Frontend.Strings.Engine
 			return "You look around, surveying the hellish landscape as you plot your next move. The portal is a few yards away, nestled between a formation of rocks. " +
 				"It does not seem to exude the arousing influence it had on the other side. The ground and sky are both tinted different shades of red, " +
 				"though the earth beneath your feet feels as normal as any other lifeless patch of dirt. You settle on the idea of making a camp here " +
-				"and fortifying this side of the portal. No demons will ravage your beloved hometown on your watch." + Environment.NewLine + Environment.NewLine + 
+				"and fortifying this side of the portal. No demons will ravage your beloved hometown on your watch." + Environment.NewLine + Environment.NewLine +
 				"It does not take long to set up your tent and a few simple traps. You'll need to explore and gather more supplies to fortify it any further. " +
 				"Perhaps you will even manage to track down the demons who have been abducting the other champions!";
 		}

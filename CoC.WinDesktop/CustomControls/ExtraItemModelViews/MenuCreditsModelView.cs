@@ -88,14 +88,14 @@ namespace CoC.WinDesktop.CustomControls.ExtraItemModelViews
 				}
 			}
 			string temp = contentString.ToString();
-			//because we use string.Format to cheat and place 
+			//because we use string.Format to cheat and place
 
 			rtfContentWithSubstitutes = temp;
 
 			UpdateDisplay();
 		}
 
-		//we need 4 '{' chars per actual '{' in the end result - format consumes 2 to return 1, and converting to RTF at the FlowDocument level consumes 2 to return 1. 
+		//we need 4 '{' chars per actual '{' in the end result - format consumes 2 to return 1, and converting to RTF at the FlowDocument level consumes 2 to return 1.
 		//related: https://xkcd.com/1638/
 		private string ParseToFormatSafeRTFString(string unsafeString)
 		{
@@ -123,7 +123,7 @@ namespace CoC.WinDesktop.CustomControls.ExtraItemModelViews
 			Content = RTFParser.FromRTFText(string.Format(rtfContentWithSubstitutes, FontSizeInEms + 12, FontSizeInEms + 6, FontSizeInEms), colors, runner);
 			//			Content = @"{\rtf1\ansi\deff0\nouicompat{\fonttbl{\f0\fnil  Times New Roman;}}
 			//{\colortbl ;\red0\green0\blue0;\red0\green0\blue255;}
-			//{\*\generator Riched20 10.0.16299}\viewkind4\uc1 
+			//{\*\generator Riched20 10.0.16299}\viewkind4\uc1
 			//\pard\sa200\sl276\slmult1\cf1\f0\fs42\lang9\par
 			//\b Backend (Framework, Engine, Etc)\b0\par
 			//\fs36\par

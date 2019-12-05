@@ -21,13 +21,13 @@ namespace CoC.Backend.Engine.Language
 		public abstract string Language();
 
 		/// <summary>
-		/// Retrieves text explaining how to change the language. This can be formatted with HTML formatting. 
+		/// Retrieves text explaining how to change the language. This can be formatted with HTML formatting.
 		/// </summary>
 		/// <returns>a string describing how to change the language.</returns>
 		public abstract string LanguageInstructionText();
 
 		/// <summary>
-		/// Retrieves an example of how text may appear in the given language. This can be formatted with HTML formatting. 
+		/// Retrieves an example of how text may appear in the given language. This can be formatted with HTML formatting.
 		/// </summary>
 		/// <returns>a string showing how the language will appear in game.</returns>
 		public abstract string GenericFlavorTextExample();

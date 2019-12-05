@@ -13,11 +13,11 @@ using System.Collections.Generic;
 using System.Text;
 
 //most of these are simply bytes, though a few do have extra behavior. An common software engineering practice is to never use primitives directly - this can be
-//confusing or arbitrary - 5 could mean 5 years, 5 decades, 5 score, 5 centuries, etc. While i don't agree with that assessment 100%, it sometimes has merit. 
+//confusing or arbitrary - 5 could mean 5 years, 5 decades, 5 score, 5 centuries, etc. While i don't agree with that assessment 100%, it sometimes has merit.
 
 //i'm not 100% familiar with C#'s optimizations, though it may align objects to word (4 byte) boundaries, which would mean these could all use ints instead, but w/e.
 //though i suppose with even remotely modern hardware (read: it runs windows XP+) this game will never require memory sufficiently large enough to be an issue.
-//Honestly, if this thing costs more than a few mbs (if that) i'll be very surprised. 
+//Honestly, if this thing costs more than a few mbs (if that) i'll be very surprised.
 namespace CoC.Backend.BodyParts
 {
 	public sealed partial class Femininity : SimpleSaveablePart<Femininity, FemininityData>, IBodyPartTimeLazy
@@ -79,7 +79,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return femininity.value;
 		}
-		
+
 		//by default, we don't know if we have androgyny. so we'll just allow all the data. This is corrected in lateInit.
 		internal Femininity(Guid creatureID, Gender initialGender) : this(creatureID, initialGender, null)
 		{ }
@@ -264,8 +264,8 @@ namespace CoC.Backend.BodyParts
 				if (oldValue != value)
 				{
 					List<IFemininityListenerInternal> items = new List<IFemininityListenerInternal>(femininityListeners);
-					//copy list so they can be removed as they fire. Not really necessary, but good practice, i guess. 
-					items.ForEach(x => sb.AppendLine(x.reactToFemininityChangeFromTimePassing(isPlayer, hoursPassed, oldValue))); 
+					//copy list so they can be removed as they fire. Not really necessary, but good practice, i guess.
+					items.ForEach(x => sb.AppendLine(x.reactToFemininityChangeFromTimePassing(isPlayer, hoursPassed, oldValue)));
 				}
 				return sb.ToString();
 			}
@@ -304,10 +304,10 @@ namespace CoC.Backend.BodyParts
 				value = newValue;
 				NotifyDataChanged(oldData);
 				StringBuilder sb = new StringBuilder();
-				sb.Append(FemininityChangedDueToGenderHormonesStr(oldData.femininity.delta(value)));
+				sb.Append(FemininityChangedDueToGenderHormonesStr(oldData.value.delta(value)));
 				foreach (var item in internalFemininityListeners)
 				{
-					sb.Append(item.reactToFemininityChange(oldData.femininity) ?? "");
+					sb.Append(item.reactToFemininityChange(oldData.value) ?? "");
 				}
 				return sb.ToString();
 			}
@@ -333,33 +333,33 @@ namespace CoC.Backend.BodyParts
 		public const byte MASCULINE = Femininity.MASCULINE;
 		public const byte HYPER_MASCULINE = Femininity.HYPER_MASCULINE;
 
-		public readonly byte femininity;
+		public readonly byte value;
 
 		//enums are passed by value, so this should be fine.
 		internal FemininityData(Femininity fem) : base(fem?.creatureID ?? throw new ArgumentNullException(nameof(fem)))
 		{
-			femininity = fem;
+			value = fem;
 		}
 
 		internal FemininityData(Guid id, byte fem) : base(id)
 		{
-			femininity = fem;
+			value = fem;
 		}
 
-		public bool isFemale => Femininity.valueIsFemale(femininity);
-		public bool isMale => Femininity.valueIsMale(femininity);
+		public bool isFemale => Femininity.valueIsFemale(value);
+		public bool isMale => Femininity.valueIsMale(value);
 
-		public bool isAndrogynous => Femininity.valueIsAndrogynous(femininity);
+		public bool isAndrogynous => Femininity.valueIsAndrogynous(value);
 
-		public bool isSlightlyFeminine => Femininity.valueIsSlightlyFeminine(femininity);
-		public bool atLeastSlightlyFeminine => Femininity.valueAtLeastSlightlyFeminine(femininity);
-		public bool isFeminine => Femininity.valueIsFeminine(femininity);
-		public bool atLeastFeminine => Femininity.valueAtLeastFeminine(femininity);
-		public bool isHyperFeminine => Femininity.valueIsHyperFeminine(femininity);
-		public bool isSlightlyMasculine => Femininity.valueIsSlightlyMasculine(femininity);
-		public bool atLeastSlightlyMasculine => Femininity.valueAtLeastSlightlyMasculine(femininity);
-		public bool isMasculine => Femininity.valueIsMasculine(femininity);
-		public bool atLeastMasculine => Femininity.valueAtLeastMasculine(femininity);
-		public bool isHyperMasculine => Femininity.valueIsHyperMasculine(femininity);
+		public bool isSlightlyFeminine => Femininity.valueIsSlightlyFeminine(value);
+		public bool atLeastSlightlyFeminine => Femininity.valueAtLeastSlightlyFeminine(value);
+		public bool isFeminine => Femininity.valueIsFeminine(value);
+		public bool atLeastFeminine => Femininity.valueAtLeastFeminine(value);
+		public bool isHyperFeminine => Femininity.valueIsHyperFeminine(value);
+		public bool isSlightlyMasculine => Femininity.valueIsSlightlyMasculine(value);
+		public bool atLeastSlightlyMasculine => Femininity.valueAtLeastSlightlyMasculine(value);
+		public bool isMasculine => Femininity.valueIsMasculine(value);
+		public bool atLeastMasculine => Femininity.valueAtLeastMasculine(value);
+		public bool isHyperMasculine => Femininity.valueIsHyperMasculine(value);
 	}
 }

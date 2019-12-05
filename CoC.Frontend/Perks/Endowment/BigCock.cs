@@ -16,8 +16,8 @@ namespace CoC.Frontend.Perks.Endowment
 			baseModifiers.NewCockSizeDelta += 2.0f;
 			baseModifiers.CockGrowthMultiplier += 0.25f;
 			baseModifiers.CockShrinkMultiplier -= 0.25f;
-			//no limit on min cock size, as size is used to remove cocks. i suppose it'd be possible to set 
-			//a min value and once the size goes below the min, remove it. 
+			//no limit on min cock size, as size is used to remove cocks. i suppose it'd be possible to set
+			//a min value and once the size goes below the min, remove it.
 		}
 
 		protected override void OnRemoval()
@@ -26,8 +26,8 @@ namespace CoC.Frontend.Perks.Endowment
 			baseModifiers.NewCockSizeDelta -= 2.0f;
 			baseModifiers.CockGrowthMultiplier -= 0.25f;
 			baseModifiers.CockShrinkMultiplier += 0.25f;
-			//no limit on min cock size, as size is used to remove cocks. i suppose it'd be possible to set 
-			//a min value and once the size goes below the min, remove it. 
+			//no limit on min cock size, as size is used to remove cocks. i suppose it'd be possible to set
+			//a min value and once the size goes below the min, remove it.
 		}
 
 		protected override bool Unlocked(Gender gender)

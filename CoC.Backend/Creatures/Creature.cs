@@ -27,7 +27,7 @@ using System.Text;
 
 namespace CoC.Backend.Creatures
 {
-	//creature class breaks with non-standard creatures - it's generall 
+	//creature class breaks with non-standard creatures - it's generall
 	public enum CreatureType { STANDARD, PRIMITIVE, ARTIFICIAL }
 
 	public abstract class Creature : ITimeActiveListenerSimple, ITimeDayMultiListenerSimple, ITimeLazyListener, IInteractiveStorage<CapacityItem>
@@ -211,7 +211,7 @@ namespace CoC.Backend.Creatures
 
 		//other aliases that are nice.
 
-		
+
 
 		public bool hasBalls => genitals.hasBalls;
 
@@ -232,7 +232,7 @@ namespace CoC.Backend.Creatures
 		protected readonly Inventory.BasicInventory inventoryStore;
 
 #warning NYI
-		//raise equipment changed. 
+		//raise equipment changed.
 		public ArmorBase armor { get; protected set; }
 
 		public UpperGarmentBase upperGarment { get; protected set; }
@@ -661,7 +661,7 @@ namespace CoC.Backend.Creatures
 			return libidoTrue - oldValue;
 		}
 
-		
+
 
 		public float IncreaseLibido(float amount = 1, bool ignorePerks = false)
 		{
@@ -1142,7 +1142,7 @@ namespace CoC.Backend.Creatures
 
 		#endregion
 		#region Equipment Related
-		//equip is handled by use item. 
+		//equip is handled by use item.
 
 		//all equipment is handled by the item system, because removing, equiping, and replacing all have an effect on the item system, be it removing, replacing, or adding items into
 		//the inventory as a result. Thus, all of these are internal. These are simply helpers responsible for actually setting the values in this class, which cannot be done elsewhere
@@ -1738,7 +1738,7 @@ namespace CoC.Backend.Creatures
 		}
 		#endregion
 		#region Give Anal
-		//used to determine if you have an anal-sex fetish, mostly. 
+		//used to determine if you have an anal-sex fetish, mostly.
 		public uint TimesFuckedAnotherAss { get; private set; } = 0;
 
 		//public void FuckAButtWithADick(int cockIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
@@ -1815,7 +1815,7 @@ namespace CoC.Backend.Creatures
 			return genitals.HandleVaginalPregnancyOverride(vaginaIndex, knockupType, knockupRate);
 		}
 
-		//'Dry' orgasm is orgasm without stimulation. 
+		//'Dry' orgasm is orgasm without stimulation.
 		public void HaveGenericVaginalOrgasm(int vaginaIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
 
@@ -2184,7 +2184,7 @@ namespace CoC.Backend.Creatures
 		}
 		#endregion
 		#region Arms
-		//arms are weird b/c hands. technically it's own class, so we'll let you subscribe to it, but it may not change whenever armType does. 
+		//arms are weird b/c hands. technically it's own class, so we'll let you subscribe to it, but it may not change whenever armType does.
 		public bool UpdateArms(ArmType armType)
 		{
 			if (armType == null) throw new ArgumentNullException(nameof(armType));
@@ -2545,7 +2545,7 @@ namespace CoC.Backend.Creatures
 			return face.StrengthenFacialMorph();
 		}
 
-		//can call restore. so we need to fire an event if it does. 
+		//can call restore. so we need to fire an event if it does.
 		public bool WeakenFacialMorph(bool restoreIfAlreadyLevelOne = true)
 		{
 			return face.WeakenFacialMorph(restoreIfAlreadyLevelOne);
@@ -2598,7 +2598,7 @@ namespace CoC.Backend.Creatures
 			return horns.StrengthenTransform(numberOfTimes);
 		}
 
-		//NOTE: this may cause you to lose your horns!. hence we do the event shit. 
+		//NOTE: this may cause you to lose your horns!. hence we do the event shit.
 		public bool WeakenHornTransformation(byte numberOfTimes = 1)
 		{
 			return horns.WeakenTransform(numberOfTimes);

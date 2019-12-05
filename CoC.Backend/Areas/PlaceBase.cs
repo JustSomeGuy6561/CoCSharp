@@ -44,7 +44,7 @@ namespace CoC.Backend.Areas
 					}
 				}
 			}
-			//we didnt hit an interrupt, so we're fine to display normally. 
+			//we didnt hit an interrupt, so we're fine to display normally.
 			ExplorePlace();
 		}
 

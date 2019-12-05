@@ -10,9 +10,9 @@ using System.Runtime.Serialization;
 using WeakEvent;
 
 namespace CoC.Backend.BodyParts
-{	
+{
 	public abstract class PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass> : BehavioralPartBase<BehaviorClass, DataClass>, IBehavioralBodyPart
-		where ThisClass: PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass> 
+		where ThisClass: PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass>
 		where BehaviorClass : BehaviorBase
 		where DataClass : BehavioralPartDataBase<BehaviorClass>
 	{
@@ -32,7 +32,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		
+
 		private protected PartWithBehaviorAndEventBase(Guid CreatureID)
 		{
 			creatureID = CreatureID;

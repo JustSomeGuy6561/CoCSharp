@@ -132,7 +132,7 @@
 			return "You're something of a powerhouse, and you wager that between your odd mutations, power strong enough to threaten the village order, and talents, you're the natural choice to send through the portal.";
 		}
 
-		//WALL OF TEXT! used for testing with really long strings. i'll need to shorten it later. 
+		//WALL OF TEXT! used for testing with really long strings. i'll need to shorten it later.
 		internal static string PeoneText()
 		{
 			return "Being chosen as champion is just the latest in a series of crazy events that have defined your life. As a young girl, your susceptibility to tonics was discovered when an herbal rememdy turned your skin green, " +

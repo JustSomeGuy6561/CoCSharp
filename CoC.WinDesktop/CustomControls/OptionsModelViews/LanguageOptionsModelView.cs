@@ -49,11 +49,11 @@ namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 
 		private void GetRTFText()
 		{
-			mainContentStore = $@"\b\ul\fs{ModelViewRunner.HeaderSizeEm} {TitleText()}\b0\ul0\par\fs{ModelViewRunner.SmallHeaderEm}\par " + 
+			mainContentStore = $@"\b\ul\fs{ModelViewRunner.HeaderSizeEm} {TitleText()}\b0\ul0\par\fs{ModelViewRunner.SmallHeaderEm}\par " +
 				RTFParser.FromHTMLNoHeader(new StringBuilder(TitleHelperText()), runner.FontColor.Color, out mainContentColors);
 
 			postContentStore = RTFParser.FromHTMLNoHeader(new StringBuilder(ContentString), runner.FontColor.Color, out postContentColors);
-			
+
 			UpdateDisplay();
 		}
 
@@ -95,7 +95,7 @@ namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 			//update sidebar, rtf text.
 			sidebarView.UpdateSidebar(new SaveDataCollection(null));
 			GetRTFText();
-			//let parent update the buttons. 
+			//let parent update the buttons.
 			parent.OnLanguageChange();
 		}
 

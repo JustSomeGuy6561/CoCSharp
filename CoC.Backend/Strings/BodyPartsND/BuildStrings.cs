@@ -194,228 +194,215 @@ namespace CoC.Backend.BodyParts
 
 		public string ShortDescription()
 		{
-			StringBuilder sb = new StringBuilder();
-			string[] options;
+			string noun = Utils.RandomChoice("butt ", "ass ");
 			if (size < TIGHT)
 			{
-				options = new string[] { "insignificant ", "very small " };
+				return Utils.RandomChoice("insignificant ", "very small " ) + noun;
 			}
 			else if (size < AVERAGE)
 			{
-				options = new string[] { "tight ", "firm ", "compact " };
+				return Utils.RandomChoice("tight ", "firm ", "compact " ) + noun;
 			}
 			else if (size < NOTICEABLE)
 			{
-				options = new string[] { "regular ", "unremarkable " };
+				return Utils.RandomChoice("regular ", "unremarkable " ) + noun;
 			}
 			else if (size < LARGE)
 			{
 				if (Utils.Rand(3) == 0) return "handful of ass";
-				options = new string[] { "full ", "shapely " };
+				return Utils.RandomChoice("full ", "shapely " ) + noun;
 			}
 			else if (size < JIGGLY)
 			{
-				options = new string[] { "squeezable ", "large ", "substantial " };
+				return Utils.RandomChoice("squeezable ", "large ", "substantial " ) + noun;
 			}
 			else if (size < EXPANSIVE)
 			{
-				options = new string[] { "jiggling ", "spacious ", "heavy " };
+				return Utils.RandomChoice("jiggling ", "spacious ", "heavy " ) + noun;
 			}
 			else if (size < HUGE)
 			{
 				if (Utils.Rand(3) == 0) return "generous amount of ass";
-				options = new string[] { "expansive ", "voluminous " };
+				return Utils.RandomChoice("expansive ", "voluminous " ) + noun;
 			}
 			else if (size < INCONCEIVABLY_BIG)
 			{
 				if (Utils.Rand(3) == 0) return "jiggling expanse of ass";
-				options = new string[] { "huge ", "vast " };
+				return Utils.RandomChoice("huge ", "vast " ) + noun;
 			}
 			else //if (buttSize >= INCONCEIVABLY_BIG)
 			{
-				options = new string[] { "ginormous ", "colossal ", "tremendous " };
+				return Utils.RandomChoice("ginormous ", "colossal ", "tremendous " ) + noun;
 			}
-
-			sb.Append(Utils.RandomChoice(options));
-			options = new string[] { "butt ", "ass " };
-			sb.Append(Utils.RandomChoice(options));
-			if (Utils.RandBool()) sb.Append("cheeks");
-			return sb.ToString();
 		}
 
 		public string LongDescription(byte muscleTone)
 		{
-			StringBuilder sb = new StringBuilder();
-			string[] options;
-			if (size < Butt.TIGHT)
+			string noun = Utils.RandomChoice("butt", "butt", "butt", "butt", "ass", "ass", "ass", "ass", "backside", "backside", "derriere", "rump", "bottom");
+
+			if (size <= 1)
 			{
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
-				{
-					options = new string[] { "incredibly tight, perky " };
-				}
+				if (muscleTone >= 60)
+					return "incredibly tight, perky " + noun;
 				else
 				{
-					sb.Append(Utils.RandomChoice("tiny", "very small", "dainty"));
-					options = new string[1];
-					options[0] = " ";
-					//Soft PC's buns!
-					if (muscleTone <= Build.TONE_SOFT && Utils.Rand(3) == 0) options[0] = ", yet soft ";
+					string softness = (muscleTone <= 30 && Utils.Rand(3) == 0) ? "yet soft " : ""; 
+					return Utils.RandomChoice("tiny ", "very small ", "dainty ") + softness + noun;
 				}
 			}
-			else if (size < Butt.AVERAGE)
+			else if (size < 4)
 			{
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= 65)
 				{
-					options = new string[] { "perky, muscular ", "tight, toned ", "compact, muscular ", "tight ", "muscular, toned " };
+					return Utils.RandomChoice("perky, muscular ", "tight, toned ", "compact, muscular ", "tight ", "muscular, toned ") + noun;
 				}
 				//Nondescript
-				else if (muscleTone >= Build.TONE_SOFT)
+				else if (muscleTone >= 30)
 				{
-					options = new string[] { "tight ", "firm ", "compact ", "petite " };
+					return Utils.RandomChoice("tight ", "firm ", "compact ", "petite ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					options = new string[] { "small, heart-shaped ", "soft, compact ", "soft, heart-shaped ", "small, cushy ", "small ", "petite ", "snug ", };
+					return Utils.RandomChoice("small, heart-shaped ", "soft, compact ", "soft, heart-shaped ", "small, cushy ", "small ", "petite ", "snug ") + noun;
 				}
 			}
-			else if (size < Butt.NOTICEABLE)
+			else if (size < 6)
 			{
 				//TOIGHT LIKE A TIGER
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= 65)
 				{
-					options = new string[] { "nicely muscled ", "nice, toned ", "muscly ", "nice toned ", "toned ", "fair " };
+					return Utils.RandomChoice("nicely muscled ", "nice, toned ", "muscly ", "nice toned ", "toned ", "fair ") + noun;
 				}
 				//Nondescript
-				else if (muscleTone >= Build.TONE_SOFT)
+				else if (muscleTone >= 30)
 				{
-					options = new string[] { "nice ", "fair " };
+					return Utils.RandomChoice("nice ", "fair ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					options = new string[] { "nice, cushiony ", "soft ", "nicely-rounded, heart-shaped ", "cushy ", "soft, squeezable " };
+					return Utils.RandomChoice("nice, cushiony ", "soft ", "nicely-rounded, heart-shaped ", "cushy ", "soft, squeezable ") + noun;
 				}
 			}
-			else if (size < Butt.LARGE)
+			else if (size < 8)
 			{
 				//TOIGHT LIKE A TIGER
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= 65)
 				{
-					options = new string[] { "full, toned ", "muscly handful of ", "shapely, toned ", "muscular, hand-filling ", "shapely, chiseled ", "full ", "chiseled " };
+					return Utils.RandomChoice("full, toned ", "muscly handful of ", "shapely, toned ", "muscular, hand-filling ", "shapely, chiseled ", "full ", "chiseled ") + noun;
 				}
 				//Nondescript
-				else if (muscleTone >= Build.TONE_SOFT)
+				else if (muscleTone >= 30)
 				{
-					options = new string[] { "handful of ", "full ", "shapely ", "hand-filling " };
+					return Utils.RandomChoice("handful of ", "full ", "shapely ", "hand-filling ") + noun;
 				}
 				//FLABBAH
 				else
 				{
 					if (Utils.Rand(8) == 0) return "supple, handful of ass";
-					options = new string[] { "somewhat jiggly ", "soft, hand-filling ", "cushiony, full ", "plush, shapely ", "full ", "soft, shapely ", "rounded, spongy " };
+					return Utils.RandomChoice("somewhat jiggly ", "soft, hand-filling ", "cushiony, full ", "plush, shapely ", "full ", "soft, shapely ", "rounded, spongy ") + noun;
 				}
 			}
-			else if (size < Butt.JIGGLY)
+			else if (size < 10)
 			{
 				//TOIGHT LIKE A TIGER
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= 65)
 				{
-					options = new string[] { "large, muscular ", "substantial, toned ", "big-but-tight ", "squeezable, toned ", "large, brawny ", "big-but-fit ", "powerful, squeezable ", "large " };
+					return Utils.RandomChoice("large, muscular ", "substantial, toned ", "big-but-tight ", "squeezable, toned ", "large, brawny ",
+						"big-but-fit ", "powerful, squeezable ", "large ") + noun;
 				}
 				//Nondescript
-				else if (muscleTone >= Build.TONE_SOFT)
+				else if (muscleTone >= 30)
 				{
-					options = new string[] { "squeezable ", "large ", "substantial " };
+					return Utils.RandomChoice("squeezable ", "large ", "substantial ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					options = new string[] { "large, bouncy ", "soft, eye-catching ", "big, slappable ", "soft, pinchable ", "large, plush ", "squeezable ", "cushiony ", "plush ", "pleasantly plump " };
+					return Utils.RandomChoice("large, bouncy ", "soft, eye-catching ", "big, slappable ", "soft, pinchable ", "large, plush ", "squeezable ",
+						"cushiony ", "plush ", "pleasantly plump ") + noun;
 				}
 			}
-			else if (size < Butt.EXPANSIVE)
+			else if (size < 13)
 			{
 				//TOIGHT LIKE A TIGER
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= 65)
 				{
-					options = new string[] { "thick, muscular ", "big, burly ", "heavy, powerful ", "spacious, muscular ", "toned, cloth-straining ", "thick ", "thick, strong " };
+					return Utils.RandomChoice("thick, muscular ", "big, burly ", "heavy, powerful ", "spacious, muscular ", "toned, cloth-straining ", "thick ", "thick, strong ") + noun;
 				}
 				//Nondescript
-				else if (muscleTone >= Build.TONE_SOFT)
+				else if (muscleTone >= 30)
 				{
-					options = new string[] { "jiggling ", "spacious ", "heavy ", "cloth-straining " };
+					return Utils.RandomChoice("jiggling ", "spacious ", "heavy ", "cloth-straining ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					options = new string[] { "super-soft, jiggling ", "spacious, cushy ", "plush, cloth-straining ", "squeezable, over-sized ",
-						"spacious ", "heavy, cushiony ", "slappable, thick ", "jiggling ", "spacious ", "soft, plump " };
+					return Utils.RandomChoice("super-soft, jiggling ", "spacious, cushy ", "plush, cloth-straining ", "squeezable, over-sized ", "spacious ",
+						"heavy, cushiony ", "slappable, thick ", "jiggling ", "spacious ", "soft, plump ") + noun;
 				}
 			}
-			else if (size < Butt.HUGE)
+			else if (size < 16)
 			{
 				//TOIGHT LIKE A TIGER
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= 65)
 				{
-					options = new string[] { "expansive, muscled ", "voluminous, rippling ", "generous, powerful ",
-						"big, burly ", "well-built, voluminous ", "powerful ", "muscular ", "powerful, expansive " };
+					return Utils.RandomChoice("expansive, muscled ", "voluminous, rippling ", "generous, powerful ", "big, burly ", "well-built, voluminous ",
+						"powerful ", "muscular ", "powerful, expansive ") + noun;
 				}
 				//Nondescript
-				else if (muscleTone >= Build.TONE_SOFT)
+				else if (muscleTone >= 30)
 				{
-					options = new string[] { "expansive ", "generous ", "voluminous ", "wide " };
+					return Utils.RandomChoice("expansive ", "generous ", "voluminous ", "wide ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					options = new string[] { "pillow-like ", "generous, cushiony ", "wide, plush ", "soft, generous ", "expansive, squeezable ",
-						"slappable ", "thickly-padded ", "wide, jiggling ", "wide ", "voluminous ", "soft, padded " };
+					return Utils.RandomChoice("pillow-like ", "generous, cushiony ", "wide, plush ", "soft, generous ", "expansive, squeezable ",
+						"slappable ", "thickly-padded ", "wide, jiggling ", "wide ", "voluminous ", "soft, padded ") + noun;
 				}
 			}
-			else if (size < Butt.INCONCEIVABLY_BIG)
+			else if (size < 20)
 			{
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= 65)
 				{
-					options = new string[] { "huge, toned ", "vast, muscular ", "vast, well-built ", "huge, muscular ", "strong, immense ", "muscle-bound " };
+					return Utils.RandomChoice("huge, toned ", "vast, muscular ", "vast, well-built ", "huge, muscular ", "strong, immense ", "muscle-bound ") + noun;
 				}
 				//Nondescript
-				else if (muscleTone >= Build.TONE_SOFT)
+				else if (muscleTone >= 30)
 				{
 					if (Utils.Rand(5) == 0) return "jiggling expanse of ass";
-					else if (Utils.Rand(4) == 0) return "copious ass-flesh";
-					options = new string[] { "huge ", "vast ", "giant " };
+					if (Utils.Rand(5) == 0) return "copious ass-flesh";
+					return Utils.RandomChoice("huge ", "vast ", "giant ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					options = new string[] { "vast, cushiony ", "huge, plump ", "expansive, jiggling ", "huge, cushiony ", "huge, slappable ",
-						"seam-bursting ", "plush, vast ", "giant, slappable ", "giant ", "huge ", "swollen, pillow-like " };
+					return Utils.RandomChoice("vast, cushiony ", "huge, plump ", "expansive, jiggling ", "huge, cushiony ", "huge, slappable ",
+						"seam-bursting ", "plush, vast ", "giant, slappable ", "giant ", "huge ", "swollen, pillow-like ") + noun;
 				}
 			}
-			else //if (size >= INCONCEIVABLY_BIG)
+			else //if (size >= 20)
 			{
-				if (muscleTone >= Build.TONE_SLIGHTLY_VISIBLE)
+				if (muscleTone >= 65)
 				{
 					if (Utils.Rand(7) == 0) return "colossal, muscly ass";
-					options = new string[] { "ginormous, muscle-bound ", "colossal yet toned ", "strong, tremendously large ", "tremendous, muscled ", "ginormous, toned ", "colossal, well-defined " };
+					return Utils.RandomChoice("ginormous, muscle-bound ", "colossal yet toned ", "strong, tremendously large ", "tremendous, muscled ",
+						"ginormous, toned ", "colossal, well-defined ") + noun;
 				}
 				//Nondescript
-				else if (muscleTone >= Build.TONE_SOFT)
+				else if (muscleTone >= 30)
 				{
-					options = new string[] { "ginormous ", "colossal ", "tremendous ", "gigantic " };
+					return Utils.RandomChoice("ginormous ", "colossal ", "tremendous ", "gigantic ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					options = new string[] {"ginormous, jiggly ", "plush, ginormous ", "seam-destroying ", "tremendous, rounded ",
-						"bouncy, colossal ", "thong-devouring ", "tremendous, thickly padded ", "ginormous, slappable ",
-						"gigantic, rippling ", "gigantic ", "ginormous ", "colossal ", "tremendous "};
+					return Utils.RandomChoice("ginormous, jiggly ", "plush, ginormous ", "seam-destroying ", "tremendous, rounded ", "bouncy, colossal ",
+						"thong-devouring ", "tremendous, thickly padded ", "ginormous, slappable ", "gigantic, rippling ", "gigantic ", "ginormous ", "colossal ", "tremendous ") + noun;
 				}
 			}
-			sb.Append(Utils.RandomChoice(options));
-			sb.Append(new Lottery<string>("butt", "butt", "butt", "butt", "ass", "ass", "ass", "ass", "backside", "backside", "derriere", "rump", "bottom").Select());
-			return sb.ToString();
 		}
 	}
 }

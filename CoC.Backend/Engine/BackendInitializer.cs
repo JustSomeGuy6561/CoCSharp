@@ -18,10 +18,10 @@ namespace CoC.Backend.Engine
 {
 	public static class BackendInitializer
 	{
-		//rundown: to allow you to do whatever you want in the frontend, some data needs to be passed back here. 
+		//rundown: to allow you to do whatever you want in the frontend, some data needs to be passed back here.
 
 		public static void PreSaveInit(Func<DisplayBase> PageConstructor, Func<DisplayBase> GetCurrentPage, Action<DisplayBase> SetCurrentPage,
-			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations, 
+			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases, //AreaEngine
 			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
 		{
@@ -33,15 +33,16 @@ namespace CoC.Backend.Engine
 			GameplaySettingsManager.IncludeGameplaySetting(new HungerSettings());
 			GameplaySettingsManager.IncludeGameplaySetting(new HardcoreSettings());
 			GameplaySettingsManager.IncludeGameplaySetting(new SFW_Settings());
+			GameplaySettingsManager.IncludeGameplaySetting(new SillyModeSettings());
 			GameplaySettingsManager.IncludeGameplaySetting(new MeasurementSettings());
 			GameplaySettingsManager.IncludeGameplaySetting(new TimeDisplaySettings());
 
 			CreditManager.AddCreditCategory(new BackendCredits());
 
-#warning Add method to read file and load global backend game data. 
+#warning Add method to read file and load global backend game data.
 
 			//initialize game engine.
-			GameEngine.InitializeEngine(PageConstructor, GetCurrentPage, SetCurrentPage, gamePlaces, gameLocations, gameDungeons, homeBases, 
+			GameEngine.InitializeEngine(PageConstructor, GetCurrentPage, SetCurrentPage, gamePlaces, gameLocations, gameDungeons, homeBases,
 				gameDifficulties, defaultDifficultyIndex);
 		}
 
@@ -50,21 +51,21 @@ namespace CoC.Backend.Engine
 			//CreditManager.AddCreditCategory(new LocalizationCredits());
 			CreditManager.AddCreditCategory(new MiscellaneousCredits());
 
-			
+
 		}
 
 		public static void InitializeSaveData(FileInfo globalDataFile)
 		{
 			if (globalDataFile is null)
 			{
-				//initialize the saves. 
+				//initialize the saves.
 				SaveSystem.AddGlobalSave(new BackendGlobalSave(GameEngine.defaultDifficultyIndex));
 				SaveSystem.AddSessionSave<BackendSessionSave>();
 			}
 			else
 			{
-				//deserialize the global save data for the backend save. 
-				//initialize the 
+				//deserialize the global save data for the backend save.
+				//initialize the
 				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 			}
 
@@ -88,7 +89,7 @@ namespace CoC.Backend.Engine
 
 		public static void FinalizeInitialization()
 		{
-			
+
 
 		}
 	}

@@ -22,11 +22,11 @@ namespace CoC.WinDesktop.ModelView
 {
 	public sealed partial class StandardModelView : ModelViewBase
 	{
-		//Input field uses the same font size as the rest of the game, plus or minus a set amount. To handle variable font size, we need to know how big to make our 
+		//Input field uses the same font size as the rest of the game, plus or minus a set amount. To handle variable font size, we need to know how big to make our
 		//textbox that the user can input things into, so we need to know roughly how many characters to allow. The longest name i could think of ("Christopher") is only
 		//13 Characters. The longest special character as of now is 10 characters ("Vahdunbrii"/"Rann Rayla"). It also need to be able to fit in the sidebar, so...
 		//For Sizing, we're using this number of the widest character, in the given font and size -AFAIK W is the widest character in non kerned fonts, for English.
-		//obviously, if this ever gets translated, which we support, this will need to be updated to work for the current language. 
+		//obviously, if this ever gets translated, which we support, this will need to be updated to work for the current language.
 
 		public const byte INPUT_FIELD_MAX_CHARS = 16;
 		public const char INPUT_FIELD_WIDEST_CHAR = 'W';
@@ -263,7 +263,7 @@ namespace CoC.WinDesktop.ModelView
 		public ComboBoxWrapper DropdownWrapper { get; }
 		#endregion
 
-		#region Private 
+		#region Private
 
 		//private bool isLoadingStatus;
 #pragma warning disable IDE0044 // Add readonly modifier
@@ -337,13 +337,13 @@ namespace CoC.WinDesktop.ModelView
 			//Application.Current.
 
 			//the only way we hit need to update display is if we're at a location that allows us to do so. by definition, this location MUST have a OnReload method,
-			//so we're going to force it to call. 
+			//so we're going to force it to call.
 
 			bool needToUpdateDisplay = lastAction != ParseData;
 
 			lastAction = ParseData;
 
-			//update the data in the controller. 
+			//update the data in the controller.
 			controller.QueryData();
 
 			//handle main menu and stat visibility
@@ -372,7 +372,7 @@ namespace CoC.WinDesktop.ModelView
 			}
 			//handle extra elements
 
-			//we may later need to put these in a canvas or grid or something to make them play nice with each other. 
+			//we may later need to put these in a canvas or grid or something to make them play nice with each other.
 			//if (controller.inputField != null)
 			//{
 
@@ -394,7 +394,7 @@ namespace CoC.WinDesktop.ModelView
 						VisualTreeHelper.GetDpi(new TextBlock()).PixelsPerDip);
 
 					InputInUse = true;
-					InputWidth = formattedText.Width + 6; //the offset for empty is 6. No Longer need to multiply by 4/3 b/c we're actually using ems now. 
+					InputWidth = formattedText.Width + 6; //the offset for empty is 6. No Longer need to multiply by 4/3 b/c we're actually using ems now.
 					InputText = controller.inputField.defaultInput;
 					InputCharRegex = controller.inputField.limitValidInputCharacters;
 					StringValidRegex = controller.inputField.checkTextForValidity;
@@ -418,7 +418,7 @@ namespace CoC.WinDesktop.ModelView
 					{
 						wrapper.Add(new ComboBoxItemWrapper(WrapCallback(entry.onSelect), entry.title));
 					}
-					DropdownWrapper.UpdateCollection(wrapper, null); //in hindsight, a default value wouldn't really make sense, would it. still, clearing the default is probably good. 
+					DropdownWrapper.UpdateCollection(wrapper, null); //in hindsight, a default value wouldn't really make sense, would it. still, clearing the default is probably good.
 
 					DropdownInUse = true;
 				}
@@ -548,7 +548,7 @@ namespace CoC.WinDesktop.ModelView
 
 		//handles output for primary and secondary, based on what is passed in.
 		//we convert our html-like code to RTF, so RichTextBox can just load it as a "document" and keep all our formatting. In reality, we just dump a string into a memory stream
-		//but the converter doesn't know the difference between a memory stream and an inputstream, so we're fine. 
+		//but the converter doesn't know the difference between a memory stream and an inputstream, so we're fine.
 		private string ParseOutput(StringBuilder outputBuilder)
 		{
 			return RTFParser.FromHTML(outputBuilder, runner);
@@ -594,7 +594,7 @@ namespace CoC.WinDesktop.ModelView
 
 
 		//Buttons require commands to work. This will automatically wrap your button callback into a command that
-		//runs it, then updates the GUI. Tooltip and Text and such are handled seperately. 
+		//runs it, then updates the GUI. Tooltip and Text and such are handled seperately.
 		private ICommand SetupCallback(Action callback, bool canUse)
 		{
 

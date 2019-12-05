@@ -35,7 +35,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanTransformStr(TongueData previousTongueData, PlayerBase player)
 		{
-			return previousTongueData.type.restoredString(previousTongueData, player);
+			return previousTongueData.type.RestoredString(previousTongueData, player);
 		}
 		private static string HumanRestoreStr(TongueData previousTongueData, PlayerBase player)
 		{

@@ -35,7 +35,7 @@ namespace CoC.Backend.GameCredits
 	public class Creditor
 	{
 		public readonly string name;
-		public readonly Uri url; //if a url is required, this provides the option to do so. 
+		public readonly Uri url; //if a url is required, this provides the option to do so.
 
 		public static implicit operator Creditor(string text)
 		{

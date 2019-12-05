@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.Endowment
 		}
 		private static string PervertHint()
 		{
-			return "Are you unusually perverted? (+5 Corruption)" + Environment.NewLine + Environment.NewLine + 
+			return "Are you unusually perverted? (+5 Corruption)" + Environment.NewLine + Environment.NewLine +
 				"Corruption affects certain scenes and having a higher corruption makes you more prone to Bad Ends.";
 		}
 		private static string PervertDesc()

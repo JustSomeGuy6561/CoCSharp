@@ -12,11 +12,11 @@ using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
-	//as with looseness, anal wetness defaults to dry, so that should be normal. 
-	//Revised ruling: Normal - no wetness. a rather uncomfortable experience unless you're used to it. DAMP - slightly wet, should be considered barely self-lubricating. 
-	//Not exactly strange (especially by mareth standards), it just suggests you're rather into recieving anal penetration. obtained naturally if you have an anal fetish 
+	//as with looseness, anal wetness defaults to dry, so that should be normal.
+	//Revised ruling: Normal - no wetness. a rather uncomfortable experience unless you're used to it. DAMP - slightly wet, should be considered barely self-lubricating.
+	//Not exactly strange (especially by mareth standards), it just suggests you're rather into recieving anal penetration. obtained naturally if you have an anal fetish
 	//or if you have a lot of experience in anal sex.
-	//moist and up: same as before. not naturally achievable, though of course TF items or interactions can cause it. 
+	//moist and up: same as before. not naturally achievable, though of course TF items or interactions can cause it.
 	public enum AnalWetness : byte { NORMAL, DAMP, MOIST, SLIMY, DROOLING, SLIME_DROOLING }
 
 	//Pretty sure normal for ass size is pretty tight. so
@@ -69,7 +69,7 @@ namespace CoC.Backend.BodyParts
 					_maxLooseness = value;
 					if (looseness > maxLooseness)
 					{
-						looseness = maxLooseness; //again, let looseness handle firing event. 
+						looseness = maxLooseness; //again, let looseness handle firing event.
 					}
 				}
 			}
@@ -84,7 +84,7 @@ namespace CoC.Backend.BodyParts
 				Utils.ClampEnum(ref value, minLooseness, maxLooseness);
 				if (value != _analLooseness)
 				{
-					//if we shrink or grow the looseness, reset the timer. 
+					//if we shrink or grow the looseness, reset the timer.
 					buttTightenTimer = 0;
 					//then do the standard event stuff.
 					var oldData = AsReadOnlyData();
@@ -129,7 +129,7 @@ namespace CoC.Backend.BodyParts
 					_maxWetness = value;
 					if (wetness > maxWetness)
 					{
-						wetness = maxWetness; //again, let wetness handle firing event. 
+						wetness = maxWetness; //again, let wetness handle firing event.
 					}
 				}
 			}
@@ -321,7 +321,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		//Alias these in the creature class, adding the relevant features not in Ass itself (knockup, orgasm)
 		#region Unique Functions
-		
+
 		internal bool PenetrateAsshole(ushort penetratorArea, float knotArea, float cumAmount, bool takeAnalVirginity, bool reachOrgasm/*, byte analExperiencedGained = 1*/)
 		{
 			penetrateCount++;
@@ -335,7 +335,7 @@ namespace CoC.Backend.BodyParts
 			ushort capacity = analCapacity();
 
 			HandleStretching(penetratorArea, knotArea);
-			
+
 			if (!everPracticedAnal)
 			{
 				everPracticedAnal = true;
@@ -445,7 +445,7 @@ namespace CoC.Backend.BodyParts
 		{
 			StringBuilder outputBuilder = new StringBuilder();
 
-			//these should be done automatically, but if it's missed, we'll silently correct it. 
+			//these should be done automatically, but if it's missed, we'll silently correct it.
 			if (looseness < minLooseness)
 			{
 				looseness = minLooseness;
@@ -478,9 +478,9 @@ namespace CoC.Backend.BodyParts
 			return outputBuilder.ToString();
 		}
 		#endregion
-		
+
 		#region Not Implemented - Ideas
-		//how "experienced" the character is with anal sex. not used atm. as of now, it just increases by 1 with each experience. 
+		//how "experienced" the character is with anal sex. not used atm. as of now, it just increases by 1 with each experience.
 		//idk, maybe change this.
 		//public byte experience
 		//{
@@ -492,7 +492,7 @@ namespace CoC.Backend.BodyParts
 		//}
 		//private byte _experience;
 
-		//minimum and maximum looseness/wetness are locked to perks. it's theoretically possible to not do that, but umm... fuck it. 
+		//minimum and maximum looseness/wetness are locked to perks. it's theoretically possible to not do that, but umm... fuck it.
 
 		//internal byte IncreaseMinimumLooseness(byte amount = 1, bool forceIncreaseMax = false)
 		//{

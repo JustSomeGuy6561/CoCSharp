@@ -14,15 +14,15 @@ namespace CoC.WinDesktop.CustomControls
 	/// the clear arrow function to clear them, which should probably be done on a clear output or something of the like.
 	/// </summary>
 
-	//Animations do not exist, and we need to support it for feature parity. it's possible with animations, but idk how to fill them - is it just x number of milliseconds 
-	//per cent? so if hp goes up 30%, its duration is 30*time per cent? Because that's doable. 
+	//Animations do not exist, and we need to support it for feature parity. it's possible with animations, but idk how to fill them - is it just x number of milliseconds
+	//per cent? so if hp goes up 30%, its duration is 30*time per cent? Because that's doable.
 
 	//we're doing a two-way bind on the visibility property for arrow. this will allow us to force it invis
 
 	public partial class StatBar : UserControl
 	{
 		//these let you bind instead of just doing code-behind magic. Bind these and the whole code will just work (TM). Of course, the source you bind to needs to
-		//implement notify property changed or it won't do shit. 
+		//implement notify property changed or it won't do shit.
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(StatBar),
 			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender));
 
@@ -87,7 +87,7 @@ namespace CoC.WinDesktop.CustomControls
 			new FrameworkPropertyMetadata((uint)100, FrameworkPropertyMetadataOptions.AffectsRender, OnMaximumValueChanged));
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(string), typeof(StatBar),
 			new FrameworkPropertyMetadata(uint.MinValue.ToString(), FrameworkPropertyMetadataOptions.AffectsRender, OnValueChanged));
-		//update the current bar. called if value changes or max changes. 
+		//update the current bar. called if value changes or max changes.
 
 		private double barWidth => BarHolder.Width - 2;
 		private static void OnMinumumValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -112,7 +112,7 @@ namespace CoC.WinDesktop.CustomControls
 		private static void OnMaximumValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			StatBar statusBar = d as StatBar;
-			
+
 			if (statusBar.HasMinMax)
 			{
 				double width;

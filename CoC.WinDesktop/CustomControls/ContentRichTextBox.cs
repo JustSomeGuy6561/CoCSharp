@@ -58,15 +58,15 @@ namespace CoC.WinDesktop.CustomControls
 
 		//private void ContentRichTextBox_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		//{
-			
 
-			
+
+
 
 		//	TextRange textRange = new TextRange(Document.ContentStart, Document.ContentEnd);
 		//	string result = null;
 		//	using (MemoryStream ms = new MemoryStream())
 		//	{
-		//		textRange.Save(ms, DataFormats.Xaml); //Html is not supported (yet?) so i've done this workaround. 
+		//		textRange.Save(ms, DataFormats.Xaml); //Html is not supported (yet?) so i've done this workaround.
 		//		result = Encoding.Default.GetString(ms.ToArray());
 		//	}
 		//	Console.WriteLine(result);
@@ -79,7 +79,7 @@ namespace CoC.WinDesktop.CustomControls
 
 		//private void ContentRichTextBox_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		//{
-			
+
 		//}
 
 		private static void OnImageSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs baseValue)
@@ -117,7 +117,7 @@ namespace CoC.WinDesktop.CustomControls
 				TextRange textRange = new TextRange(Document.ContentStart, Document.ContentEnd);
 				using (MemoryStream ms = new MemoryStream(Encoding.Default.GetBytes(text)))
 				{
-					textRange.Load(ms, DataFormats.Rtf); //Html is not supported (yet?) so i've done this workaround. 
+					textRange.Load(ms, DataFormats.Rtf); //Html is not supported (yet?) so i've done this workaround.
 				}
 			}
 

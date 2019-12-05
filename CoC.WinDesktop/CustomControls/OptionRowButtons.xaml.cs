@@ -20,14 +20,14 @@ namespace CoC.WinDesktop.CustomControls
 	/// <summary>
 	/// Interaction logic for OptionRow.xaml
 	/// </summary>
-	
+
 
 	public partial class OptionRowButtons : UserControl
 	{
 		//public static readonly DependencyProperty DisplayModeProperty = DependencyProperty.Register("DisplayMode", typeof(OptionRowDisplayMode), typeof(OptionRow),
 		//	new FrameworkPropertyMetadata(OptionRowDisplayMode.GAME, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-		
+
 
 
 		public OptionRowButtons()

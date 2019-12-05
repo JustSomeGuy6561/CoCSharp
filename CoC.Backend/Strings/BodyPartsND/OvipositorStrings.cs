@@ -31,7 +31,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string NoneTransformStr(OvipositorData previousOvipositorData, PlayerBase player)
 		{
-			return previousOvipositorData.type.restoredString(previousOvipositorData, player);
+			return previousOvipositorData.type.RestoredString(previousOvipositorData, player);
 		}
 		private static string NoneRestoreStr(OvipositorData previousOvipositorData, PlayerBase player)
 		{

@@ -116,7 +116,7 @@ namespace CoC.Backend.CoC_Colors
 			return supportedColors.Aggregate((c, d) => c.compare(currentTone) < d.compare(currentTone) ? c : d);
 		}
 
-		//perhaps we don't want to use that one, idk. 
+		//perhaps we don't want to use that one, idk.
 		private double compare(Color color)
 		{
 			return WeightedColorCompare(color, rgbValue);

@@ -73,22 +73,22 @@ namespace CoC.WinDesktop
 		#endregion
 
 		#region SaveData
-		//Everything but the RTF uses size in pixels. However, points, and thus EMs, are greatly preferred because they work nicely with RTF and Typeface. 
-		
+		//Everything but the RTF uses size in pixels. However, points, and thus EMs, are greatly preferred because they work nicely with RTF and Typeface.
+
 		//BOUND, Handled
 		public double FontSizePixels => MeasurementHelpers.FontSizeInPx;
 		//Not (yet) bound, but handled anyway.
 		public int FontSizeEms => MeasurementHelpers.FontSizeInEms;
-		//Not (yet bound, but handled anyway. 
+		//Not (yet bound, but handled anyway.
 		public double FontSizePoints => MeasurementHelpers.FontSizeInPt;
 
-		//not bound - used to determine another property. that property is handled. 
+		//not bound - used to determine another property. that property is handled.
 		public int BackgroundIndex => saveData.backgroundIndex;
 
-		//not bound - used to determine text background, which is handled. 
+		//not bound - used to determine text background, which is handled.
 		public int TextBackgroundIndex => saveData.textBackgroundIndex;
 
-		//not bound - when the Standard model view needs to query a sprite, it calls a function here in the runner that uses this value. 
+		//not bound - when the Standard model view needs to query a sprite, it calls a function here in the runner that uses this value.
 		public bool? UsesOldSprites => saveData.usesOldSprites;
 
 		//not bound - when the standard model view needs to query an image, it calls a function here in the runner that uses this value.
@@ -96,7 +96,7 @@ namespace CoC.WinDesktop
 
 		//bound, handled
 		public bool IsAnimated => saveData.isAnimated;
-		
+
 		//bound, handled
 		public bool ShowEnemyStatBars => saveData.showEnemyStatBars;
 
@@ -333,7 +333,7 @@ namespace CoC.WinDesktop
 			_modelView = mainMenu;
 		}
 
-		
+
 
 		#region View Switching
 

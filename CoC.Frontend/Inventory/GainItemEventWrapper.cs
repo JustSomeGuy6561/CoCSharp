@@ -17,14 +17,14 @@ namespace CoC.Frontend.Inventory
 {
 	public static class GainItemHelper
 	{
-		//used for events that require items. Resumes execution once the item is obtained, no way to return an item or have any special callback for throw out. 
+		//used for events that require items. Resumes execution once the item is obtained, no way to return an item or have any special callback for throw out.
 		public static DynamicTimeReaction GainItemEvent(this Creature source, CapacityItem item, SimpleDescriptor gainItemContext)
 		{
 			return new GainItemSpecialEvent(source, item, gainItemContext);
 		}
 
 		//used for standard gameplay, which requires a callback to handle once the item has been added successfully. The content is guarenteed to be written to the display before the callback
-		//is called. 
+		//is called.
 		public static void GainItemWithCallback(this Creature source, CapacityItem item, string originalOutput, Action resumeCallback)
 		{
 			if (source.CanAddItem(item))
@@ -166,7 +166,7 @@ namespace CoC.Frontend.Inventory
 		{
 			inventory.ReplaceItem(item, index);
 			display.OutputText(inventory.ReplaceItemInSlotWith(item, index));
-			DisplayManager.LoadDisplay(display); //if not already, probably redundant. oh well. 
+			DisplayManager.LoadDisplay(display); //if not already, probably redundant. oh well.
 			resumeCallback();
 		}
 
@@ -230,7 +230,7 @@ namespace CoC.Frontend.Inventory
 		private readonly StandardDisplay display;
 
 		//
-		public ItemFullHelper(IInteractiveStorage<CapacityItem> source, CapacityItem item, string context, Action resumeCallback, 
+		public ItemFullHelper(IInteractiveStorage<CapacityItem> source, CapacityItem item, string context, Action resumeCallback,
 			Action returnItemFunction = null, Action cancelItemOverride = null)
 		{
 			this.inventory = source ?? throw new ArgumentNullException(nameof(source));
@@ -303,7 +303,7 @@ namespace CoC.Frontend.Inventory
 		}
 
 		private void DefaultAbandonAction()
-		{ 
+		{
 			DoReturn();
 		}
 
@@ -311,7 +311,7 @@ namespace CoC.Frontend.Inventory
 		{
 			inventory.ReplaceItem(item, index);
 			display.OutputText(inventory.ReplaceItemInSlotWith(item, index));
-			DisplayManager.LoadDisplay(display); //if not already, probably redundant. oh well. 
+			DisplayManager.LoadDisplay(display); //if not already, probably redundant. oh well.
 			resumeCallback();
 		}
 

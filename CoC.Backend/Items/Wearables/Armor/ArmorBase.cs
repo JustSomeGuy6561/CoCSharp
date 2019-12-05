@@ -31,7 +31,7 @@ namespace CoC.Backend.Items.Wearables.Armor
 		public abstract bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot);
 
 		//by default, body data is given priority, and if it fails the why not is just for that. then, if that passes, we check the garments and return them.
-		//if you prefer more control, override this. 
+		//if you prefer more control, override this.
 		public override bool CanUse(Creature creature, out string whyNot)
 		{
 			if (!CanWearWithBodyData(creature, out whyNot))

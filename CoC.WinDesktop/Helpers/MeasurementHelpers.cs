@@ -25,7 +25,7 @@ namespace CoC.WinDesktop.Helpers
 
 		public const double MinPointFontSize = MinEMFontSize / 2.0;
 		public const double MaxPointFontSize = MaxEMFontSize / 2.0;
-		//not even in pixel space but whatever. close enough. 
+		//not even in pixel space but whatever. close enough.
 		public const double MinPixelFontSize = MinEMFontSize / 2.0 * 3;
 		public const double MaxPixelFontSize = MaxEMFontSize / 2.0 * 3;
 

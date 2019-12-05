@@ -21,12 +21,12 @@ namespace CoC.Frontend.UI
 
 		//two Regular Expressions: one that does the simple filtering: limits input to only the valid characters, and one that checks if the finished string is valid.
 		//for example: for a length, '.' is not valid, but it is part of the valid string - the player could type '.25' and that's perfectly fine. You can't prevent them from
-		//entering an '.' because it could become valid, event if it's not currently valid. you can, of course, prevent all letters, as they aren't valid. you can also prevent 
+		//entering an '.' because it could become valid, event if it's not currently valid. you can, of course, prevent all letters, as they aren't valid. you can also prevent
 		//a second '.', because a number cannot have two decimal places.
 		public Regex limitValidInputCharacters { get; private set; }
 		public Regex checkTextForValidity { get; private set; }
 
-		//optional default input. allows the input field to have a default value, and potentially remember it if the GUI supports some sort of reset functionality, i dunno. regardless, it's stored. 
+		//optional default input. allows the input field to have a default value, and potentially remember it if the GUI supports some sort of reset functionality, i dunno. regardless, it's stored.
 		public string defaultInput { get; private set; }
 
 		//the actual input. initially set to defaultInput value.
@@ -50,11 +50,11 @@ namespace CoC.Frontend.UI
 		}
 
 		public static Regex VALID_POSITIVE_INTEGER_NONZERO => new Regex(@"^\+?[\d]*[1-9][\d]*$"); //optional plus sign. 0 or more digits. 1 non-zero digit. 0 or more digits.
-		
+
 		//optional plus. Three alternatives:
 			//0 or more digits. 1-9. 0 or more digits.
-			//0 or more digits. 1-9. 0 or more digits. decimal point. 1 or more digits. 
-			//0 or more digits. decimal point. 0 or more digits. 1-9. 0 or more digits. 
+			//0 or more digits. 1-9. 0 or more digits. decimal point. 1 or more digits.
+			//0 or more digits. decimal point. 0 or more digits. 1-9. 0 or more digits.
 		public static Regex VALID_POSITIVE_NUMBER_NONZERO => new Regex(@"^[+]?(\d*[1-9]\d*|\d*[1-9]\d*\.\d+|\d*\.\d*[1-9]\d*)$");
 
 		public static Regex VALID_ALL_NUMBER_NONZERO => new Regex(@"^[-+]?(\d*[1-9]\d*|\d*[1-9]\d*\.\d+|\d*\.\d*[1-9]\d*)$");
@@ -73,13 +73,13 @@ namespace CoC.Frontend.UI
 		public static Regex VALID_POSITIVE_INTEGERS_NOSIGN => new Regex(@"^[0-9]+$");//1 or more digits.
 
 		public static Regex INPUT_ALL_NUMBERS => new Regex(@"^[-+]?[0-9]*\.?[0-9]*$"); //optional +/- sign. 0 or more digits. optional decimal point. zero or more digits
-		public static Regex VALID_ALL_NUMBERS => new Regex(@"^[-+]?[0-9]*\.?[0-9]+$"); //does allow -.9, but that's still a valid number. 
+		public static Regex VALID_ALL_NUMBERS => new Regex(@"^[-+]?[0-9]*\.?[0-9]+$"); //does allow -.9, but that's still a valid number.
 
-		public static Regex COLOR => new Regex(@"^#?[0-9A-Fa-f]{6}?"); //standard #000000 color. html allows named colors, too, so this isn't used in out parser. 
+		public static Regex COLOR => new Regex(@"^#?[0-9A-Fa-f]{6}?"); //standard #000000 color. html allows named colors, too, so this isn't used in out parser.
 
 		internal string output => input;
 
-		//we'll allow null regex. Null value is treated as allowing everything. 
+		//we'll allow null regex. Null value is treated as allowing everything.
 		private void UpdateInputField(Regex possibleInputCharacters, Regex validInputString, string defaultValue, string titleText, int? maxLength)
 		{
 			limitValidInputCharacters = possibleInputCharacters;

@@ -3,13 +3,14 @@
 //Author: JustSomeGuy
 //7/10/2019, 6:21 AM
 
+using CoC.Backend.Settings.Gameplay;
 using CoC.Frontend.SaveData;
 
 namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class Scholar : HistoryPerkBase
 	{
-		private static bool silly => FrontendSessionSave.data.SillyModeLocal ?? false;
+		private static bool silly => SillyModeSettings.isEnabled;
 		private static string ScholarStr()
 		{
 			return "History: Scholar";

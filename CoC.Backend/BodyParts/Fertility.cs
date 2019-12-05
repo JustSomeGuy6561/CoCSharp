@@ -7,15 +7,15 @@ using CoC.Backend.Tools;
 using System;
 
 //most of these are simply bytes, though a few do have extra behavior. An common software engineering practice is to never use primitives directly - this can be
-//confusing or arbitrary - 5 could mean 5 years, 5 decades, 5 score, 5 centuries, etc. While i don't agree with that assessment 100%, it sometimes has merit. 
+//confusing or arbitrary - 5 could mean 5 years, 5 decades, 5 score, 5 centuries, etc. While i don't agree with that assessment 100%, it sometimes has merit.
 
 //i'm not 100% familiar with C#'s optimizations, though it may align objects to word (4 byte) boundaries, which would mean these could all use ints instead, but w/e.
 //though i suppose with even remotely modern hardware (read: it runs windows XP+) this game will never require memory sufficiently large enough to be an issue.
-//Honestly, if this thing costs more than a few mbs (if that) i'll be very surprised. 
+//Honestly, if this thing costs more than a few mbs (if that) i'll be very surprised.
 namespace CoC.Backend.BodyParts
 {
-	//it wraps a byte. I dunno. 
-	//now capping max base fertility to 75. Perks could boost this past the base 75 value. 
+	//it wraps a byte. I dunno.
+	//now capping max base fertility to 75. Perks could boost this past the base 75 value.
 	public sealed partial class Fertility : SimpleSaveablePart<Fertility, FertilityData>
 	{
 		public override string BodyPartName() => Name();

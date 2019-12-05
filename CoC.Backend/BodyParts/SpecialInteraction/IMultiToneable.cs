@@ -33,7 +33,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	}
 
 	//i don't feel like forcing this on to the interface itself, as it's identical everywhere, and may not ever be used.
-	//i probably should give it a bool to disable this behavior from being possible if that's the desired result. 
+	//i probably should give it a bool to disable this behavior from being possible if that's the desired result.
 	public static class MultiToneHelper
 	{
 		public static bool[] attemptMultiTone(this IMultiToneable multiToneable, Tones lotionTone, params byte[] indices)

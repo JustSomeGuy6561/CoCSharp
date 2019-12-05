@@ -44,7 +44,7 @@ namespace CoC.Frontend.Areas.Places
 				"However, your attention is soon drawn from her body to the pedestal upon which she stands. A pair of solid gold chains extend from the pedestal to her wrists, " +
 				"binding the statue. You notice a plaque has been bolted to the pedestal, a feature not present on any of the other statues here. Leaning down, " +
 				"you blow a sizable amount of dust from the plaque, revealing the following short inscription:" + Environment.NewLine + Environment.NewLine +
-				"\"" + SafelyFormattedString.FormattedText("Break my bonds to make me tame.", StringFormats.ITALIC) + "\"" + Environment.NewLine + Environment.NewLine + 
+				"\"" + SafelyFormattedString.FormattedText("Break my bonds to make me tame.", StringFormats.ITALIC) + "\"" + Environment.NewLine + Environment.NewLine +
 				"You suppose you could break the chains on the statue. But who knows what will happen if you do?" + Environment.NewLine + Environment.NewLine +
 				SafelyFormattedString.FormattedText("You have discovered the cathedral. You can return here in the future by selecting it from the 'Places' menu in your camp.", StringFormats.BOLD);
 		}

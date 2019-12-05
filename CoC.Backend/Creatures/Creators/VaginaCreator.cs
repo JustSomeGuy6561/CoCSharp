@@ -23,11 +23,11 @@ namespace CoC.Backend.Creatures
 		public float validClitLength => clitLength ?? Clit.DEFAULT_CLIT_SIZE;
 
 		public VaginaCreator(float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL,
-			VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool omnibusClit = false, bool isVirgin = true, 
+			VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool omnibusClit = false, bool isVirgin = true,
 			Dictionary<ClitPiercings, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
 			: this(VaginaType.HUMAN, clitLengthInInches, vaginalWetness, vaginalLooseness, omnibusClit, isVirgin, clitJewelry, labiaJewelry) { }
-		public VaginaCreator(VaginaType vaginaType, float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL, 
-			VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool omnibusClit = false, bool isVirgin = true, 
+		public VaginaCreator(VaginaType vaginaType, float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL,
+			VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool omnibusClit = false, bool isVirgin = true,
 			Dictionary<ClitPiercings, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
 		{
 			type = vaginaType;

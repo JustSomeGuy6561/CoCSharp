@@ -87,7 +87,7 @@ namespace CoC.Backend.Areas
 					{
 						continue;
 					}
-					//add any new items that are still active and proc our bad luck preventer. 
+					//add any new items that are still active and proc our bad luck preventer.
 					else if (entry.Value >= entry.Key.numEncountersBeforeRequiringThis && !badLuckPreventerScene.Contains(entry.Key))
 					{
 						badLuckPreventerScene.Enqueue(entry.Key);
@@ -122,7 +122,7 @@ namespace CoC.Backend.Areas
 			//run the scene.
 			currentScene.RunEncounter();
 
-			//if the scene is now complete, remove it from the hashset/dictionary that contains it. 
+			//if the scene is now complete, remove it from the hashset/dictionary that contains it.
 			if (currentScene.isCompleted)
 			{
 				if (currentScene is TriggeredEncounter trigger)

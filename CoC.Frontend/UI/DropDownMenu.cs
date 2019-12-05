@@ -110,8 +110,8 @@ namespace CoC.Frontend.UI
 	public sealed class DropDownEntry
 	{
 		public readonly string title;
-		//NOTE TO GUI DEVS: onSelect can be null, for separators. if you don't support them, make sure to remove 
-		//all entries where 
+		//NOTE TO GUI DEVS: onSelect can be null, for separators. if you don't support them, make sure to remove
+		//all entries where
 		public readonly Action onSelect;
 
 		internal DropDownEntry(string label, Action callback)
@@ -128,7 +128,7 @@ namespace CoC.Frontend.UI
 		}
 
 		//A separator is a special type of drop down entry that cannot be selected. it allows the dev to separate entries into
-		//groups, if desired. 
+		//groups, if desired.
 		internal static DropDownEntry CreateSeparator(string separatorText)
 		{
 			return new DropDownEntry(separatorText);

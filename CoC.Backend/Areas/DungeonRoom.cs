@@ -28,8 +28,8 @@ namespace CoC.Backend.Areas
 			onReEnter = onSubsequentEnters ?? throw new ArgumentNullException();
 		}
 
-		//by default, buttons are reserved for North, South, East, and West, and two additonal slots, to the left and right of North. 
-		//however, by default, these extra slots are null, though 
+		//by default, buttons are reserved for North, South, East, and West, and two additonal slots, to the left and right of North.
+		//however, by default, these extra slots are null, though
 		public DungeonRoom westRoom { get; internal set; } = null;
 		public DungeonRoom eastRoom { get; internal set; } = null;
 

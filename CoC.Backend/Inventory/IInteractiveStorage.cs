@@ -23,7 +23,7 @@ namespace CoC.Backend.Inventory
 		bool PlaceItem(T item, byte slot);
 
 		//note: can and try add should return the same - if can add returns true, try add should return a valid index.
-		//if can add returns false, try add should return -1. 
+		//if can add returns false, try add should return -1.
 
 		int TryAddItem(T item);
 		bool CanAddItem(T item);

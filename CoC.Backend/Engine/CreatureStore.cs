@@ -12,7 +12,7 @@ namespace CoC.Backend.Engine
 			[Guid.Empty] = new WeakReference<Creature>(null),
 		};
 
-		//artificially keeps creatures alive with a strong reference so they can participate in the time engine. 
+		//artificially keeps creatures alive with a strong reference so they can participate in the time engine.
 		private static readonly Dictionary<Guid, Creature> activeCreatures = new Dictionary<Guid, Creature>();
 
 		internal static IEnumerable<Creature> activeCreatureList => activeCreatures.Values;

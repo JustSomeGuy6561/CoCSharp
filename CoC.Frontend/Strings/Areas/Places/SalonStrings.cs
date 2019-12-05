@@ -41,7 +41,7 @@ namespace CoC.Frontend.Areas.Places
 				string genderStr = player.genitals.AppearsMoreMaleThanFemale() ? "kinky boi" : "naughty girl";
 				sb.Append(SafelyFormattedString.FormattedText(" I'll even do you the favor of letting you blow it in my mouth, I've already got a bun in the oven. " +
 					"So what do you say? Want a spooge and a haircut? Or would you rather go get your payment from one of the gloryholes in the back, you " + genderStr,
-					StringFormats.ITALIC) + Environment.NewLine + Environment.NewLine + 
+					StringFormats.ITALIC) + Environment.NewLine + Environment.NewLine +
 					"In the very back of the salon you can see a boarded-up wall with holes cut in it, some of which are currently plugged by various monstrous penises. " +
 					"Do you let the goblin blow you, or do you go suck your payment from one of them?");
 			}

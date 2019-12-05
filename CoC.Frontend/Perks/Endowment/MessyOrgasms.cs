@@ -21,7 +21,7 @@ namespace CoC.Frontend.Perks.Endowment
 			baseModifiers.BonusCumStacked -= 0.5f;
 		}
 
-		//apprently this is lots of jizz despite being called messy orgasms. 
+		//apprently this is lots of jizz despite being called messy orgasms.
 		protected override bool Unlocked(Gender gender)
 		{
 			return gender.HasFlag(Gender.MALE);

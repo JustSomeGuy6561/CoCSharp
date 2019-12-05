@@ -14,33 +14,33 @@ using System;
 
 //
 // NOTE TO SELF: FINISH NOT DONE BODY PARTS, ADD THEM THE REST OF THE WAY TO CREATOR
-// MAKE SURE PLAYER, COMBAT CREATURE, CREATURE CORRECTLY PARSE _ALL_ DATA FRM CREATOR 
+// MAKE SURE PLAYER, COMBAT CREATURE, CREATURE CORRECTLY PARSE _ALL_ DATA FRM CREATOR
 // CLEAN UP MINOR ERRORS. TRY TO BUILD AND CLEAN UP MAJOR ERRORS THEN DO THE SAME WITH FRONTEND
 
 //womb breaks all the fucking rules. it's a body part, but giving birth probably deserves its own page.
 //similarly, when NPCs and such get eggs and what the do with them varies due to their anatomy and implementations. There's no common rules to anything. Fuck it.
 
-//Pregnancy Store is generic. it can be used for anyone, by anything. but the SpawnType variable should be unique for player->NPC, NPC->player, or NPC->NPC (or other) spawns. 
+//Pregnancy Store is generic. it can be used for anyone, by anything. but the SpawnType variable should be unique for player->NPC, NPC->player, or NPC->NPC (or other) spawns.
 //if the spawnType is not unique, it must provide a constructor that lets the user determine which behavior it will have (like an ENUM or pair of bools or something, idk)
 //it's not my job to make sure you give the right SpawnType to the right PregnancyStore, but it's pretty straightforward imo.
 
 //Womb is now player specific, and a "helper" - i don't _need_ it, but it's convenient. As such, it's handled Differently. We'll save it like a body part, but
-//it gets its own wiring in player. 
+//it gets its own wiring in player.
 
 //If you want to wrap pregnancy stores in generic "Wombs" for random NPCs, and give them their own rules, go for it, but wiring it up to the system is on your.
 
 
 namespace CoC.Frontend.Creatures.PlayerData
 {
-	//even though technically butt pregnancies dont occur in the womb, i'm going to store them here. 
+	//even though technically butt pregnancies dont occur in the womb, i'm going to store them here.
 	//ITimeListener: if pregnant or anal pregnant, run them, check what's going on
 	//IDayListender: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant. output it.
 
 	public sealed partial class PlayerWomb : Womb, ITimeDailyListenerSimple
 	{
 		//egg related.
-		public bool laysEggs => basiliskWomb || oviposition;
-		private bool oviposition = false;
+		public bool laysEggs => basiliskWomb || hasOviposition;
+		public bool hasOviposition { get; private set; } = false;
 		//prevents laysEggs from being false;
 		public bool basiliskWomb { get; private set; } = false;
 
@@ -49,15 +49,21 @@ namespace CoC.Frontend.Creatures.PlayerData
 		public bool eggSizeKnown => normalPregnancy.eggSizeKnown;
 		public bool defaultKnownEggSize => normalPregnancy.eggsLarge;
 
-		//the player can get anally pregnant, even if the source does not force it. This allows things like bunny eggs in the ass, etc, 
-		protected override bool canGetAnallyPregnantCheck(bool hasAnus, bool sourceCanAnallyImpregnate)
+		//the player can get anally pregnant, even if the source does not force it. This allows things like bunny eggs in the ass, etc.
+		//note that this only applies if the player has an anus (which they should) and the spawn type allows anal pregnancies.
+		protected override bool AllowsAnalPregnancies(bool sourceIgnoresAnalPreferences)
 		{
 			return true;
 		}
 
-		public PlayerWomb(Guid creatureID) : base(creatureID, new VaginalPregnancyStore(creatureID, 0), new AnalPregnancyStore(creatureID), new VaginalPregnancyStore(creatureID, 1))
+		public PlayerWomb(Guid creatureID) : base(creatureID, true, true)
 		{
 
+		}
+
+		public override WombData AsReadOnlyData()
+		{
+			return new PlayerWombData(this);
 		}
 
 		public void SetEggSize(bool isLarge)
@@ -66,7 +72,7 @@ namespace CoC.Frontend.Creatures.PlayerData
 			SetSecondaryEggSize(isLarge);
 		}
 
-		//clears egg size "perk". now eggs are sized randomly. 
+		//clears egg size "perk". now eggs are sized randomly.
 		public void ClearEggSize()
 		{
 			ClearNormalEggSize();
@@ -75,7 +81,7 @@ namespace CoC.Frontend.Creatures.PlayerData
 
 		public bool GrantBasiliskWomb()
 		{
-			oviposition = true;
+			hasOviposition = true;
 			if (basiliskWomb)
 			{
 				return false;
@@ -86,30 +92,30 @@ namespace CoC.Frontend.Creatures.PlayerData
 
 		public bool GrantOviposition()
 		{
-			if (oviposition)
+			if (hasOviposition)
 			{
 				return false;
 			}
-			oviposition = true;
+			hasOviposition = true;
 			return true;
 		}
 
 		public void ClearBasiliskWomb(bool clearOviposition = true)
 		{
 			basiliskWomb = false;
-			if (oviposition && clearOviposition)
+			if (hasOviposition && clearOviposition)
 			{
-				oviposition = false;
+				hasOviposition = false;
 			}
 		}
 
 		public bool ClearOviposition()
 		{
-			if (!oviposition || basiliskWomb)
+			if (!hasOviposition || basiliskWomb)
 			{
 				return false;
 			}
-			oviposition = false;
+			hasOviposition = false;
 			return true;
 		}
 
@@ -132,6 +138,32 @@ namespace CoC.Frontend.Creatures.PlayerData
 		}
 
 		#endregion
+	}
+
+	public sealed class PlayerWombData : WombData
+	{
+		public bool laysEggs => basiliskWomb || hasOviposition;
+		public readonly bool hasOviposition;
+		//prevents laysEggs from being false;
+		public readonly bool basiliskWomb;
+
+		public readonly byte eggsEveryXDays;
+
+		public readonly bool? eggSize;
+
+		public bool eggSizeKnown => eggSize != null;
+		public bool defaultKnownEggSize => eggSize ?? false;
+
+		internal PlayerWombData(PlayerWomb womb) : base(womb)
+		{
+			hasOviposition = womb.hasOviposition;
+
+			basiliskWomb = womb.basiliskWomb;
+
+			eggsEveryXDays = womb.eggsEveryXDays;
+
+			eggSize = womb.normalPregnancy.eggSizeKnown ? (bool?)womb.normalPregnancy.eggsLarge : null;
+		}
 	}
 
 
@@ -194,15 +226,15 @@ namespace CoC.Frontend.Creatures.PlayerData
 	//		return true;
 	//	}
 
-	//	//new Harpy womb perk - old perk never expressly forced you to have eggs. 
+	//	//new Harpy womb perk - old perk never expressly forced you to have eggs.
 	//	//but made any eggs you had from that point forward always start out large.
 	//	//now, you can force eggs to start out either small or large via this function,
 
 	//	//Note that this is a wrapper for the pregnancy store function, as it's internal and there's no other way to access it.
-	//	//this is so that we can make it work for both pregnancy stores at once, and only give you one place to call it. 
+	//	//this is so that we can make it work for both pregnancy stores at once, and only give you one place to call it.
 	//	//it's easier to debug if there's only one way to make something happen. this also forces this to apply to anal pregnancies if eggs are ever allowed there
 	//	//it's possible to have something lay eggs in your ass right now, though they're already fertilized, or they dissolve over time, making both irrelevant.
-	//	//i have no idea if future changes may allow anal egg laying, but if it does happen, this perk will affect it. 
+	//	//i have no idea if future changes may allow anal egg laying, but if it does happen, this perk will affect it.
 
 	//	public void SetEggSize(bool isLarge = true)
 	//	{
@@ -210,7 +242,7 @@ namespace CoC.Frontend.Creatures.PlayerData
 	//		analPregnancy.SetEggSize(isLarge);
 	//	}
 
-	//	//clears egg size "perk". now eggs are sized randomly. 
+	//	//clears egg size "perk". now eggs are sized randomly.
 	//	public void ClearEggSize()
 	//	{
 	//		pregnancy.ClearEggSize();
@@ -277,7 +309,7 @@ namespace CoC.Frontend.Creatures.PlayerData
 	//				{
 	//					analPregnancy.ClearEggSize();
 	//				}
-	//				//othwerwise set the anal egg size to match the normal one. 
+	//				//othwerwise set the anal egg size to match the normal one.
 	//				else
 	//				{
 	//					analPregnancy.SetEggSize(pregnancy.eggsLarge);
@@ -310,7 +342,7 @@ namespace CoC.Frontend.Creatures.PlayerData
 	//				}
 	//			}
 	//		}
-	//		if (!pregnancy.isPregnant && timeListener.OnceDailyCheck(hoursPassed, 6)) 
+	//		if (!pregnancy.isPregnant && timeListener.OnceDailyCheck(hoursPassed, 6))
 	//		{
 	//			DoDaily();
 	//		}
@@ -355,7 +387,7 @@ namespace CoC.Frontend.Creatures.PlayerData
 
 	//	public static WombType STANDARD = new WombType(StandardDesc, StandardFullDesc, StandardPlayerStr, StandardTransformStr, StandardRestoreStr);
 	//	public static EggWomb EGG_LAYING = new EggWomb(15, EggSpawnText, EggDesc, EggFullDesc, EggPlayerStr, EggTransformStr, EggRestoreStr);
-	//	//harpy womb is not really a womb, i guess. it just forces all eggs laid to be large. 
+	//	//harpy womb is not really a womb, i guess. it just forces all eggs laid to be large.
 	//	public static EggWomb BUNNY = new EggWomb(15, BunnySpawnText, BunnyDesc, BunnyFullDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
 	//	public static EggWomb BASILISK = new EggWomb(15, BasiliskSpawnText, BasiliskDesc, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
 	//	//public static WombType KANGAROO = new KangarooWomb(); //i have no idea how to implement this.

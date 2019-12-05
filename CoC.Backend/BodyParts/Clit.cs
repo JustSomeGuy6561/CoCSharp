@@ -17,7 +17,7 @@ namespace CoC.Backend.BodyParts
 
 	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
 
-	//note: perks are guarenteed to be valid by the time this is created, so it's post perk init won't be called. 
+	//note: perks are guarenteed to be valid by the time this is created, so it's post perk init won't be called.
 	public sealed partial class Clit : SimpleSaveablePart<Clit, ClitData>, IGrowable, IShrinkable
 	{
 		public override string BodyPartName() => Name();
@@ -137,6 +137,8 @@ namespace CoC.Backend.BodyParts
 		{
 			return new ClitData(this, vaginaIndex);
 		}
+
+		public bool omnibusActive => CreatureStore.GetCreatureClean(creatureID)?.cocks.Count == 0 && omnibusClit;
 
 		public Cock AsClitCock()
 		{
@@ -331,10 +333,11 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed class ClitData : SimpleData
+	public sealed partial class ClitData : SimpleData
 	{
 		public readonly float length;
 		public readonly bool isClitCock;
+		public readonly bool clitCockActive;
 		public readonly int VaginaIndex;
 
 		public readonly ReadOnlyPiercing<ClitPiercings> clitPiercings;
@@ -343,6 +346,7 @@ namespace CoC.Backend.BodyParts
 		{
 			length = source.length;
 			isClitCock = source.omnibusClit;
+			isClitCock = source.omnibusActive;
 			VaginaIndex = currIndex;
 
 			clitPiercings = source.clitPiercings.AsReadOnlyData();

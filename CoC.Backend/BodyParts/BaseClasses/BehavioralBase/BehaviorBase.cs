@@ -9,15 +9,21 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	//Stores a simple body part. if any rules need to apply, add the logic here. 
+	//Stores a simple body part. if any rules need to apply, add the logic here.
 	public abstract class BehaviorBase
 	{
 		public abstract int index { get; }
 
-		public readonly SimpleDescriptor shortDescription;
-		private protected BehaviorBase(SimpleDescriptor shortDesc)
+		private readonly SimpleDescriptor shortDesc;
+
+		public string ShortDescription()
 		{
-			shortDescription = shortDesc ?? throw new ArgumentNullException(nameof(shortDesc));
+			return shortDesc();
+		}
+
+		private protected BehaviorBase(SimpleDescriptor shortDescFn)
+		{
+			shortDesc = shortDescFn ?? throw new ArgumentNullException(nameof(shortDescFn));
 		}
 	}
 }

@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 namespace CoC.WinDesktop.ModelView
 {
 
-	//this is a helper - i could do it all in standard, but that gets a bit conviluted. 
+	//this is a helper - i could do it all in standard, but that gets a bit conviluted.
 	public sealed class DataModelView : ModelViewBase
 	{
 		private readonly StatDisplayParser statDisplayParser;
@@ -42,7 +42,7 @@ namespace CoC.WinDesktop.ModelView
 		}
 		private ReadOnlyCollection<SaveDisplayDataWrapper> _gameSaves;
 
-		//for now. 
+		//for now.
 #pragma warning disable IDE0044 // Add readonly modifier
 		private List<SaveDisplayDataWrapper> gameSavesHolder;
 #pragma warning restore IDE0044 // Add readonly modifier
@@ -100,7 +100,7 @@ namespace CoC.WinDesktop.ModelView
 			private set
 			{
 				if (CheckPrimitivePropertyChanged(ref _optionsTextVisible, value))
-				{ 
+				{
 					RaisePropertyChanged(nameof(SaveItemsVisible));
 				}
 			}
@@ -110,7 +110,7 @@ namespace CoC.WinDesktop.ModelView
 		public bool SaveItemsVisible => !OptionsTextVisible;
 
 		//if language change set this to true; set this to true when options Command is clicked or return is clicked;
-		private bool forceUpdate = true; //initially true so it renders. set to true whenever we leave this view. 
+		private bool forceUpdate = true; //initially true so it renders. set to true whenever we leave this view.
 
 		//on Options command, set this to true.
 
@@ -167,7 +167,7 @@ namespace CoC.WinDesktop.ModelView
 
 		private void UpdateSavesPage()
 		{
-			//update the buttons text and commands to correct values. 
+			//update the buttons text and commands to correct values.
 
 			//if game save location changed:
 			//update gameSavesHolder, gameSaves
@@ -178,9 +178,9 @@ namespace CoC.WinDesktop.ModelView
 
 		private void UpdateOptionsPage()
 		{
-			//update the buttons text and commands to correct values. 
+			//update the buttons text and commands to correct values.
 
-			//Display the text to notify the player of current settings. 
+			//Display the text to notify the player of current settings.
 
 			throw new NotImplementedException();
 		}

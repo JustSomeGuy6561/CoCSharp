@@ -19,6 +19,6 @@ namespace CoC.Frontend.SaveData
 		//internal bool UnlockedNewGameHerm = true; //testing
 
 		internal bool? AllowWaterSports = false;
-		internal bool? SillyModeGlobal = null;
+
 	}
 }

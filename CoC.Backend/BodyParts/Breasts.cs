@@ -10,19 +10,39 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
+	public enum CupSize : byte
+	{
+		FLAT, A, B, C, D, DD, DD_BIG, E, E_BIG, EE,
+		EE_BIG, F, F_BIG, FF, FF_BIG, G, G_BIG, GG, GG_BIG, H,
+		H_BIG, HH, HH_BIG, HHH, I, I_BIG, II, II_BIG, J, J_BIG,
+		JJ, JJ_BIG, K, K_BIG, KK, KK_BIG, L, L_BIG, LL, LL_BIG,
+		M, M_BIG, MM, MM_BIG, MMM, MMM_LARGE, N, N_LARGE, NN, NN_LARGE,
+		O, O_LARGE, OO, OO_LARGE, P, P_LARGE, PP, PP_LARGE, Q, Q_LARGE,
+		QQ, QQ_LARGE, R, R_LARGE, RR, RR_LARGE, S, S_LARGE, SS, SS_LARGE,
+		T, T_LARGE, TT, TT_LARGE, U, U_LARGE, UU, UU_LARGE, V, V_LARGE,
+		VV, VV_LARGE, W, W_LARGE, WW, WW_LARGE, X, X_LARGE, XX, XX_LARGE,
+		Y, Y_LARGE, YY, YY_LARGE, Z, Z_LARGE, ZZ, ZZ_LARGE, ZZZ, ZZZ_LARGE,
+		HYPER_A, HYPER_B, HYPER_C, HYPER_D, HYPER_DD, HYPER_DD_BIG, HYPER_E, HYPER_E_BIG, HYPER_EE, HYPER_EE_BIG, //it was supposed to be 109 here, it's was only 108. idk man. i've moved the one up so it really is 109.
+		HYPER_F, HYPER_F_BIG, HYPER_FF, HYPER_FF_BIG, HYPER_G, HYPER_G_BIG, HYPER_GG, HYPER_GG_BIG, HYPER_H, HYPER_H_BIG,
+		HYPER_HH, HYPER_HH_BIG, HYPER_HHH, HYPER_I, HYPER_I_BIG, HYPER_II, HYPER_II_BIG, HYPER_J, HYPER_J_BIG, HYPER_JJ,
+		HYPER_JJ_BIG, HYPER_K, HYPER_K_BIG, HYPER_KK, HYPER_KK_BIG, HYPER_L, HYPER_L_BIG, HYPER_LL, HYPER_LL_BIG, HYPER_M,
+		HYPER_M_BIG, HYPER_MM, HYPER_MM_BIG, HYPER_MMM, HYPER_MMM_LARGE, HYPER_N, HYPER_N_LARGE, HYPER_NN, HYPER_NN_LARGE, HYPER_O,
+		HYPER_O_LARGE, HYPER_OO, HYPER_OO_LARGE, HYPER_P, HYPER_P_LARGE, HYPER_PP, HYPER_PP_LARGE, HYPER_Q, HYPER_Q_LARGE, HYPER_QQ,
+		HYPER_QQ_LARGE, HYPER_R, HYPER_R_LARGE, HYPER_RR, HYPER_RR_LARGE, HYPER_S, HYPER_S_LARGE, HYPER_SS, HYPER_SS_LARGE, HYPER_T,
+		HYPER_T_LARGE, HYPER_TT, HYPER_TT_LARGE, HYPER_U, HYPER_U_LARGE, HYPER_UU, HYPER_UU_LARGE, HYPER_V, HYPER_V_LARGE, HYPER_VV,
+		HYPER_VV_LARGE, HYPER_W, HYPER_W_LARGE, HYPER_WW, HYPER_WW_LARGE, HYPER_X, HYPER_X_LARGE, HYPER_XX, HYPER_XX_LARGE, HYPER_Y,
+		HYPER_Y_LARGE, HYPER_YY, HYPER_YY_LARGE, HYPER_Z, HYPER_Z_LARGE, HYPER_ZZ, HYPER_ZZ_LARGE, HYPER_ZZZ, HYPER_ZZZ_LARGE, JACQUES00
+	}
+
 	//Note: Breasts aren't generated until after perks have been created. Thus, their post perk init is never called, but initial constructor can use perk data without fail.
 	public sealed partial class Breasts : SimpleSaveablePart<Breasts, BreastData>, IGrowable, IShrinkable
 	{
 		public override string BodyPartName() => Name();
 
-		private Creature creature
-		{
-			get
-			{
-				CreatureStore.TryGetCreature(creatureID, out Creature creatureSource);
-				return creatureSource;
-			}
-		}
+		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
+
+		public float lactationRate => creature?.genitals.lactationRate ?? 0;
+		public LactationStatus lactationStatus => creature?.genitals.lactationStatus ?? LactationStatus.NOT_LACTATING;
 
 		private Gender currGender => creature?.genitals.gender ?? Gender.MALE;
 		private int currentBreastRow => creature?.genitals.breastRows.IndexOf(this) ?? 0;
@@ -275,7 +295,7 @@ namespace CoC.Backend.BodyParts
 				cupSize = CupSize.B;
 			}
 
-			//nipple data change 
+			//nipple data change
 			if (nipples.length < 0.5)
 			{
 				nipples.GrowNipple(0.5f - nipples.length);
@@ -292,6 +312,12 @@ namespace CoC.Backend.BodyParts
 			//nippleFuckCount = 0;
 			titFuckCount = 0;
 			//dickNippleFuckCount = 0;
+		}
+
+		public static BreastData GenerateAggregate(Guid creatureID, CupSize averageCup, float averageNippleLength, bool blackNipples, bool quadNipples, NippleStatus nippleType,
+			float lactationRate, LactationStatus lactationStatus)
+		{
+			return new BreastData(creatureID, averageCup, new NippleData(creatureID, averageNippleLength, -1, quadNipples, blackNipples, nippleType), -1, 1, lactationRate, lactationStatus);
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -382,13 +408,20 @@ namespace CoC.Backend.BodyParts
 			return oldSize - cupSize;
 		}
 		#endregion
+		public bool TittyFuckable()
+		{
+			return cupSize > CupSize.A && numBreasts > 1;
+		}
 	}
 
-	public sealed class BreastData : SimpleData
+	public sealed partial class BreastData : SimpleData
 	{
 		public readonly NippleData nipples;
 		public readonly CupSize cupSize;
 		public readonly int currBreastRowIndex;
+
+		public readonly float lactationRate;
+		public readonly LactationStatus lactationStatus;
 
 		public readonly byte numberOfBreasts;
 
@@ -401,6 +434,20 @@ namespace CoC.Backend.BodyParts
 
 			currBreastRowIndex = currentBreastRow;
 			numberOfBreasts = breasts.numBreasts;
+
+			lactationStatus = breasts.lactationStatus;
+			lactationRate = breasts.lactationRate;
+		}
+
+		internal BreastData(Guid creatureID, CupSize cupSize, NippleData nippleData, int currentBreastRow, byte breastCount, float lactationRate, LactationStatus lactationStatus) : base(creatureID)
+		{
+			this.cupSize = cupSize;
+			nipples = nippleData;
+			currBreastRowIndex = currentBreastRow;
+			numberOfBreasts = breastCount;
+
+			this.lactationRate = lactationRate;
+			this.lactationStatus = lactationStatus;
 		}
 
 		internal BreastData(Breasts breasts, NippleData overrideNippleData, int currentBreastRow) : base(breasts?.creatureID ?? throw new ArgumentNullException(nameof(breasts)))
@@ -411,6 +458,9 @@ namespace CoC.Backend.BodyParts
 			numberOfBreasts = breasts.numBreasts;
 
 			currBreastRowIndex = currentBreastRow;
+
+			lactationStatus = breasts.lactationStatus;
+			lactationRate = breasts.lactationRate;
 		}
 	}
 }

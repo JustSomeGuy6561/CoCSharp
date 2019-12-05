@@ -83,7 +83,7 @@ namespace CoC.Frontend.UI.ControllerData
 
 		public readonly CreatureStatNumeric Level = new CreatureStatNumeric(StatStrings.LevelStr, CreatureStatCategory.ADVANCEMENT);
 		public readonly CreatureStatWithMinMax XP = new CreatureStatWithMinMax(StatStrings.ExperienceStr, CreatureStatCategory.ADVANCEMENT) { isRatio = true };
-		public readonly CreatureStatNumeric Gems = new CreatureStatNumeric(StatStrings.GemsStr, CreatureStatCategory.ADVANCEMENT) { notifyPlayerOfChange = false };//idk why. 
+		public readonly CreatureStatNumeric Gems = new CreatureStatNumeric(StatStrings.GemsStr, CreatureStatCategory.ADVANCEMENT) { notifyPlayerOfChange = false };//idk why.
 
 		internal PlayerStatData()
 		{

@@ -115,7 +115,7 @@ namespace CoC.Frontend.UI
 			return true;
 		}
 
-		
+
 
 		public bool QueryButtons(out ReadOnlyCollection<ButtonData> buttonCollection)
 		{

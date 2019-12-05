@@ -17,7 +17,7 @@ namespace CoC.WinDesktop.Helpers
 		private readonly StandardSideBarModelView standardSideBar;
 		private readonly EnemySideBarModelView enemySideBar;
 		private readonly PrisonSideBarModelView prisonSideBar;
-		
+
 		//note: the stat data collection passed in here may not be valid - we only need it in the constructors to determine what we can output, not what we are outputting.
 		public StatDisplayParser(StatDataCollectionBase statData, bool silent = false)
 		{

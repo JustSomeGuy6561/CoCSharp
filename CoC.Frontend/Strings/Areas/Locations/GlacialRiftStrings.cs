@@ -20,7 +20,7 @@ namespace CoC.Frontend.Areas.Locations
 				"Every gust of wind seems to steal away part of your strength, the cool breeze having transformed into a veritable arctic gale. " +
 				"You wrap your arms around yourself tightly, shivering fiercely despite yourself as the hard pink dirt slowly turns to white; " +
 				"soon you’re crunching through actual snow, thick enough to make you stumble with every other step. You come to a stop suddenly as the ground before you " +
-				"gives way to a grand ocean, many parts of it frozen in great crystal islands larger than any city." + Environment.NewLine + Environment.NewLine + 
+				"gives way to a grand ocean, many parts of it frozen in great crystal islands larger than any city." + Environment.NewLine + Environment.NewLine +
 				SafelyFormattedString.FormattedText("You've discovered the Glacial Rift!", StringFormats.BOLD);
 		}
 

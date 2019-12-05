@@ -12,17 +12,17 @@ namespace CoC.Backend.BodyParts
 		#region Notes:
 
 		//Note on cocks: the computed values have different versions, one including clit-cock data, one not. I don't really know if that distinction is important or not,
-		//so i've just said fuck it and kept both. 
+		//so i've just said fuck it and kept both.
 
-		//This does not apply to the cock aggregate functions - the clit-cock only comes into play when the target does not have any normal cocks; it acts like a normal clit when the 
-		//creature also has a normal cock, so it makes no sense to combine them. 
+		//This does not apply to the cock aggregate functions - the clit-cock only comes into play when the target does not have any normal cocks; it acts like a normal clit when the
+		//creature also has a normal cock, so it makes no sense to combine them.
 
-		//Cum has been updated: the formula has been altered to allow for items to either update a multiplier or a flat added value, instead of just a multiplier. the formula for 
+		//Cum has been updated: the formula has been altered to allow for items to either update a multiplier or a flat added value, instead of just a multiplier. the formula for
 		//total cum amount has also been overhauled; it now uses the ball size and count with physics (GASP!). Ok, rough physics (PHEW), with proper fudging to make the calculations simpler.
-		//(An aside, if you have a hard-on for physics, just think of the multiplier as density, and somehow the cum is more dense than titanium or some shit, idk). 
+		//(An aside, if you have a hard-on for physics, just think of the multiplier as density, and somehow the cum is more dense than titanium or some shit, idk).
 
 		//By default, the add function in balls will add the given number of balls, regardless of whether or not the player has balls. specific functions have been added to provide a more
-		//consistent behavior, only adding them if the player does or does not already have balls, depending on the function. 
+		//consistent behavior, only adding them if the player does or does not already have balls, depending on the function.
 		#endregion
 
 		#region Cock Related Constants
@@ -80,6 +80,10 @@ namespace CoC.Backend.BodyParts
 
 		public bool cockVirgin => missingCockSexCount > 0 || missingClitCockSexCount > 0 ? false : anyCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
 		public bool maleCockVirgin => missingCockSexCount > 0 ? false : maleCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
+
+
+		public bool hasSheath => _cocks.Any(x => x.hasSheath);
+
 		#endregion
 
 		#region Public Balls Computed Values
@@ -91,7 +95,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Public Cum Related Computed Values
-		public ushort cumMultiplier => (ushort)Math.Round(cumMultiplierTrue); //0-65535 seems like a valid range imo. i don't think i need to cap it. 
+		public ushort cumMultiplier => (ushort)Math.Round(cumMultiplierTrue); //0-65535 seems like a valid range imo. i don't think i need to cap it.
 
 		public int hoursSinceLastCum => timeLastCum.hoursToNow();
 
@@ -121,7 +125,7 @@ namespace CoC.Backend.BodyParts
 				if (hoursSinceLastCum < 12 && !alwaysProducesMaxCum) //i'd do 24 but this is Mareth, so.
 				{
 					int hoursOffset = hoursSinceLastCum;
-					if (hoursSinceLastCum <= 0) //0 is possible and likely valid, but below 0 means we broke shit. this is just a catch-all. 
+					if (hoursSinceLastCum <= 0) //0 is possible and likely valid, but below 0 means we broke shit. this is just a catch-all.
 					{
 						hoursOffset = 1;
 					}
@@ -205,7 +209,7 @@ namespace CoC.Backend.BodyParts
 			var averageKnot = cocks.Average(x => x.knotMultiplier);
 			var averageKnotSize = cocks.Average(x => x.knotSize);
 			//first initially gets the first group. the second call to first gets the first element of the first group.
-			CockType type = _cocks.GroupBy(x => x.type).OrderByDescending(y => y.Count()).First().First().type; 
+			CockType type = _cocks.GroupBy(x => x.type).OrderByDescending(y => y.Count()).First().First().type;
 			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth);
 		}
 
@@ -315,11 +319,11 @@ namespace CoC.Backend.BodyParts
 			return RemoveCock(numCocks);
 		}
 		#endregion
-		
+
 		#region Add/Remove Balls
 
 		/// <summary>
-		/// Tries to grow a pair of balls, failing if the creature already has balls. 
+		/// Tries to grow a pair of balls, failing if the creature already has balls.
 		/// </summary>
 		/// <returns>True if the creature gained a pair of balls, false if they already had them.</returns>
 		public bool GrowBalls()
@@ -329,7 +333,7 @@ namespace CoC.Backend.BodyParts
 
 		/// <summary>
 		/// Tries to grow the number of balls provided, rounded down to the nearest even number, at the given size, if applicable. This will create a minimum of two balls if successful.
-		/// Fails if the target already has balls of any kind. 
+		/// Fails if the target already has balls of any kind.
 		/// </summary>
 		/// <param name="numberOfBalls"></param>
 		/// <param name="ballSize"></param>
@@ -350,7 +354,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		/// <summary>
-		/// Tries to grow the number of balls provided, at the given size, if applicable and possible. 
+		/// Tries to grow the number of balls provided, at the given size, if applicable and possible.
 		/// </summary>
 		/// <param name="numBalls"></param>
 		/// <param name="newSize"></param>
@@ -369,7 +373,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		/// <summary>
-		/// Grows the given amount of balls, even if the target currently does not have any balls. if they do, the two are added, then rounded down to the nearest even number. 
+		/// Grows the given amount of balls, even if the target currently does not have any balls. if they do, the two are added, then rounded down to the nearest even number.
 		/// The total amount grown is returned.
 		/// </summary>
 		/// <param name="ballsToAdd">The number of balls to add.</param>
@@ -388,8 +392,8 @@ namespace CoC.Backend.BodyParts
 		}
 
 		/// <summary>
-		/// Adds the given total of balls to the current amount. If the target does not have balls or the target has a uniball and the optional ignore if uniball flag is set, 
-		/// this will fail to add any balls. Returns the number of balls added. 
+		/// Adds the given total of balls to the current amount. If the target does not have balls or the target has a uniball and the optional ignore if uniball flag is set,
+		/// this will fail to add any balls. Returns the number of balls added.
 		/// </summary>
 		/// <param name="additionalBalls">Number of balls to add.</param>
 		/// <param name="ignoreIfUniball">Should this function respect a uniball, if applicable?</param>
@@ -464,7 +468,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
-		
+
 		#region Grow or Convert Balls
 		public bool GrowOrConvertToUniball()
 		{
@@ -490,7 +494,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		#endregion
-		
+
 		#region AllCocks Update Functions
 		public void NormalizeDicks(bool untilEven = false)
 		{

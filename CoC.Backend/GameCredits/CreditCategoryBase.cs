@@ -23,7 +23,7 @@ namespace CoC.Backend.GameCredits
 			subcategorySource = new List<SubCategory>(initialSubCategories);
 			subCategories = new ReadOnlyCollection<SubCategory>(subcategorySource);
 
-			
+
 		}
 
 		//public void AddSubCategory(SubCategory subCredit)

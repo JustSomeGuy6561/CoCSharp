@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.Endowment
 		}
 		private static string SensitiveHint()
 		{
-			return "Is your skin unusually sensitive? (+5 Sensitivity)" + Environment.NewLine + Environment.NewLine + 
+			return "Is your skin unusually sensitive? (+5 Sensitivity)" + Environment.NewLine + Environment.NewLine +
 				"Sensitivity affects how easily touches and certain magics will raise your lust. Very low sensitivity will make it difficult to orgasm.";
 		}
 		private static string SensitiveDesc()

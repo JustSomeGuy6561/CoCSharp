@@ -97,7 +97,7 @@ namespace CoC.Backend.BodyParts
 
 		public override string BodyPartName() => Name();
 
-#warning There were no descriptors for tone or thickness i could recall. may want to add a few in anyway just for kicks. 
+#warning There were no descriptors for tone or thickness i could recall. may want to add a few in anyway just for kicks.
 		//public SimpleDescriptor thicknessAsText => ThicknessText;
 		//public SimpleDescriptor toneAsText => ToneText;
 

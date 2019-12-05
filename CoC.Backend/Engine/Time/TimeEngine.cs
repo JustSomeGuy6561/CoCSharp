@@ -13,68 +13,68 @@ using System.Linq;
 
 namespace CoC.Backend.Engine.Time
 {
-#warning CONSIDER REWORKING ALL TIME AND AREA ENGINE BULLSHIT FAKE EVENTS TO USE WeakEvent. 
+#warning CONSIDER REWORKING ALL TIME AND AREA ENGINE BULLSHIT FAKE EVENTS TO USE WeakEvent.
 
 	public sealed class TimeEngine
 	{
 		//Time engine is a monstrosity. That's basically it. 90% of the time you only use one hour and this is all irrelevant. But in the case it's not, here's how it works:
 
-		//Time follows video game logic - We're embracing it, and not trying to overcomplicate things by making it actually make sense. Basically, we're lampshading it by saying your body 
-		//and mind process time differently, and your body tends not to reflect any time changes until you have time to notice it or are actively thinking about it (like with TF items). 
+		//Time follows video game logic - We're embracing it, and not trying to overcomplicate things by making it actually make sense. Basically, we're lampshading it by saying your body
+		//and mind process time differently, and your body tends not to reflect any time changes until you have time to notice it or are actively thinking about it (like with TF items).
 		//Any special events that occur go first, in the order they are processed. if they cause more time to be used, it is used up. Then, you notice all other changes, more or less at once.
 
 		//This explanation covers up for the fact that we break causality for the sake of convenience - you probably wouldn't be able to go off and fight goblins or whatever when about to give
-		//birth, but we simply ignore this, and you give birth after fighting the goblins. 
-		//We can pass time in two ways: used up time, and idled time. used up time is time that has already passed, and your body needs to catch up. this is basically everything in the game - 
-		//any interactions with NPCs or the environment/areas/whatever counts as time used up. idled time is synchronous - any event occurs in "real-time". used up time cannot be canceled 
-		//or interrupted, and as far as any event is concerned, the current time is after all those hours have passed. idle time can be interrupted; the current time is the same as the 
-		//current hour being processed. Note that these can stack, but use time overwrites any idle time before it. so if you are idleing for 4 hours and then use up two hours fighting, 
-		//the current time is 2 hours later, and we need to process 2 used up hours, and (4-2, or 2) idle hours. if you idle more in an idle, those are added, same with adding idle hours 
-		//after the current use hours, or using additional hours on previous used hours. 99.9% of the time, this will never happen, but in case it does, the logic is here. 
+		//birth, but we simply ignore this, and you give birth after fighting the goblins.
+		//We can pass time in two ways: used up time, and idled time. used up time is time that has already passed, and your body needs to catch up. this is basically everything in the game -
+		//any interactions with NPCs or the environment/areas/whatever counts as time used up. idled time is synchronous - any event occurs in "real-time". used up time cannot be canceled
+		//or interrupted, and as far as any event is concerned, the current time is after all those hours have passed. idle time can be interrupted; the current time is the same as the
+		//current hour being processed. Note that these can stack, but use time overwrites any idle time before it. so if you are idleing for 4 hours and then use up two hours fighting,
+		//the current time is 2 hours later, and we need to process 2 used up hours, and (4-2, or 2) idle hours. if you idle more in an idle, those are added, same with adding idle hours
+		//after the current use hours, or using additional hours on previous used hours. 99.9% of the time, this will never happen, but in case it does, the logic is here.
 
-		//as of this writing, we use idle time when the player is KOed, asleep, or resting. all other time is used up time. Do whichever makes the most sense in context. 
+		//as of this writing, we use idle time when the player is KOed, asleep, or resting. all other time is used up time. Do whichever makes the most sense in context.
 
 		//when any time is added (and not set aside, see below), the engine will immediately start running, and handle anything that "occured" during that time. It does this by running every
 		//hour until there is no more time left to handle.
 
 		//when an hour is run, it checks for any reactions that should occur for that hour, followed by any listeners for that hour, and then any listeners that happen every hour. each of these
 		//can either return a full scene or simply some text. if it requires a full scene, it is placed in a queue. if just text, it is added to a final display page. the queue is then processed
-		//and the resume callback always displays the next item in the queue. 
+		//and the resume callback always displays the next item in the queue.
 
 		//when all hours are ran, then any lazy listeners are checked, and their results are processed just like their daily and active counterparts. Additionally, once completed, it will add
 		//the final display page to the queue if it has any output at all. regardless, when the queue is finished, the last resume callback will change the player's location to whatever was
-		//initially provided, if applicable, or simply run the current area if not. 
+		//initially provided, if applicable, or simply run the current area if not.
 
-		//note that if the final page has no content, it will not be displayed, meaning the player wont have to click through an empty page - it'll simply skip to the run area. 
+		//note that if the final page has no content, it will not be displayed, meaning the player wont have to click through an empty page - it'll simply skip to the run area.
 
 		//it's also possible to set aside used up hours, without running the engine. In some cases, scenes may take variable amounts of time, and it may be convenient to simply let this handle
 		//any time changes as needed, instead of storing how much should be added, and passing the result around everywhere. Setting aside time will not cause the engine to run and will return
-		//execution immediately. however, since this does not start the time engine, make sure to do that later or the game will never load the target area as the time will never pass to do so. 
+		//execution immediately. however, since this does not start the time engine, make sure to do that later or the game will never load the target area as the time will never pass to do so.
 
 		//any event scene or reaction should function just like a normal scene, complete with calling the use hour/use hour change location, but with one key difference: it calls the
 		//resume callback that it initially received when it was called from here. These use hours and change location will simply stack until all hours are used up.
 
 		//finally, any calls that change location after a period of time can allow the location to be changed by any events. for example, it may make sense to allow the player to initially
 		//start to head toward the base, but on the way remember they need to meet up with an NPC about to give birth. Of course, if a scene says that it "reaches <location>" in the text,
-		//that really wouldn't make any sense, so you can also prevent that behavior. by default, any used up time will not allow its destination to be changed, and any idled time will. 
+		//that really wouldn't make any sense, so you can also prevent that behavior. by default, any used up time will not allow its destination to be changed, and any idled time will.
 		//if an event tries to change the location, but the current destination cannot be changed, the game will simply delay that location change by one hour, and increment the used up time
-		//to accommodate that. Essentially, it just stacks a use one hour change location function on top of the current data. for more on stacking, see below. 
+		//to accommodate that. Essentially, it just stacks a use one hour change location function on top of the current data. for more on stacking, see below.
 
 		//these functions can be stacked - if some event that occurs that would cause more time to be used (for example, if player the player is pregnanct with urta's kid, certain pregnancy
 		//progress checkpoints can result in sex, which uses up an hour.), the engine will handle this. One caveat worth knowing is there is no way to know if something will use more time
-		//until it's running, so anything parsed before this will get one hour as the current time and the ones after will get another. This really shouldn't be an issue, and odds of it 
+		//until it's running, so anything parsed before this will get one hour as the current time and the ones after will get another. This really shouldn't be an issue, and odds of it
 		//actually happening are pretty small.
 
-		//Tl;Dr: 99% of the time, you will be using the use hour group of functions, and it will not have any strange side effects. It will simply update the time and change location, 
-		//if necessary. in the rare case where something happens over this used up time, it will display the results before returning, with any scenes displaying first. 
-		//in the rarer case where it adds more time, it will stack on without issue. in the ultra-rare case where an event tries to change a location, it will do so immediately if possible, 
+		//Tl;Dr: 99% of the time, you will be using the use hour group of functions, and it will not have any strange side effects. It will simply update the time and change location,
+		//if necessary. in the rare case where something happens over this used up time, it will display the results before returning, with any scenes displaying first.
+		//in the rarer case where it adds more time, it will stack on without issue. in the ultra-rare case where an event tries to change a location, it will do so immediately if possible,
 		//or delay one hour and then do so if not. Events are processed in order, so if something before the current event uses additional time, it will be treated as if it ran at the new time
-		//instead. You don't need to worry about this to use everything here. 
+		//instead. You don't need to worry about this to use everything here.
 
-		//also, just 
+		//also, just
 
 		//dev notes:
-		//implement accordingly. use up used hours first, not idle hours. 
+		//implement accordingly. use up used hours first, not idle hours.
 
 
 		private readonly Func<DisplayBase> pageMaker;
@@ -83,8 +83,8 @@ namespace CoC.Backend.Engine.Time
 		//private readonly Action<string> OutputText;
 		//private readonly Action ClearOutput;
 
-		//this is a queue of all the active pages currently in the time engine. the call when done function for each page in the time queue is a function that checks this and 
-		//does the next one as available. It's 10x simpler to read, understand, and write than any other more "correct" version. Believe me, i tried. 
+		//this is a queue of all the active pages currently in the time engine. the call when done function for each page in the time queue is a function that checks this and
+		//does the next one as available. It's 10x simpler to read, understand, and write than any other more "correct" version. Believe me, i tried.
 		private readonly Queue<DisplayBase> activePages = new Queue<DisplayBase>();
 		private DisplayBase currentContentPage;
 
@@ -113,7 +113,7 @@ namespace CoC.Backend.Engine.Time
 
 		private readonly AreaEngine areaEngine;
 
-		//the actual important info for the time engine - the day and hour. 
+		//the actual important info for the time engine - the day and hour.
 		private byte currentHour;
 		private int currentDay;
 
@@ -129,7 +129,7 @@ namespace CoC.Backend.Engine.Time
 		//what i would do for a linked hashset in C#. Update: Nevermind, That's what friends (and beer, apparently) are for. -JSG
 
 		//lazies will only update when they need to. This generally means they will only update once, at the end of the given timeframe, before the final destination is locked in (if applicable)
-		//however, if there are multiple location changes in one timeframe, they will update just before each location change. 
+		//however, if there are multiple location changes in one timeframe, they will update just before each location change.
 		internal readonly OrderedHashSet<ITimeLazyListener> lazyListeners = new OrderedHashSet<ITimeLazyListener>();
 		//these run every hour.
 		internal readonly OrderedHashSet<ITimeActiveListenerSimple> simpleActiveListeners = new OrderedHashSet<ITimeActiveListenerSimple>();
@@ -141,10 +141,10 @@ namespace CoC.Backend.Engine.Time
 		internal readonly OrderedHashSet<ITimeDayMultiListenerSimple> simpleMultiTimeListeners = new OrderedHashSet<ITimeDayMultiListenerSimple>();
 		internal readonly OrderedHashSet<ITimeDayMultiListenerFull> fullMultiTimeListeners = new OrderedHashSet<ITimeDayMultiListenerFull>();
 
-		//i wrote the priority queue though - that wasn't too hard. though it also isn't even remotely bulletproof. 
+		//i wrote the priority queue though - that wasn't too hard. though it also isn't even remotely bulletproof.
 
 		//this is a list of special reactions that only run once. They are then removed from the queue.
-		//it is possible to add special reactions at any time, usually as a result of certain conditions being met. 
+		//it is possible to add special reactions at any time, usually as a result of certain conditions being met.
 		internal readonly PriorityQueue<OneOffTimeReactionBase> reactions = new PriorityQueue<OneOffTimeReactionBase>();
 		#endregion
 
@@ -177,7 +177,7 @@ namespace CoC.Backend.Engine.Time
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="hours"></param>
 		/// <param name="resumeCallback"></param>
@@ -198,7 +198,7 @@ namespace CoC.Backend.Engine.Time
 		/// <summary>
 		/// Reserve a certain number of hours to be consumed, but allow any interrupts or special events to use these hours as they see fit. If any hour is interrupted, the resumeCallback
 		/// will be called after all interrupts for that hour are handled. If no hours are interrupted, the default text will be called and displayed, if possible. during the final hour,
-		/// the location will be changed to the given value. Note that it's possible for an idle to be cancelled, and if this happens the player will not reach the given destination. 
+		/// the location will be changed to the given value. Note that it's possible for an idle to be cancelled, and if this happens the player will not reach the given destination.
 		/// </summary>
 		/// <typeparam name="T">the area to travel to after idleing</typeparam>
 		/// <param name="hours">the number of hours to idle away</param>
@@ -244,7 +244,7 @@ namespace CoC.Backend.Engine.Time
 			UseHoursPrivate(hours);
 		}
 
-		//alias that may be useful if something happens but for some reason does not take any time. 
+		//alias that may be useful if something happens but for some reason does not take any time.
 		internal void ResumeTimePassing()
 		{
 			RunEngine();
@@ -259,7 +259,7 @@ namespace CoC.Backend.Engine.Time
 				return;
 			}
 			idleHours = 0;
-			//any other stuff to do. 
+			//any other stuff to do.
 		}
 
 		private void DoLocationChange(Type newLocationType, byte hoursOffset)
@@ -342,9 +342,9 @@ namespace CoC.Backend.Engine.Time
 			//Linq for the win! Simple version: take all reactions, full daily, multi-daily, and active listeners, and convert them into a function that returns an eventwrapper.
 			//similarly, for all creatures currently participating in time events, take all their daily, multi-daily, and active items (collection of collections), and flatten them into one
 			//collection for each type. we union all of these results together into one giant collection of items for this engine to parse. this giant collection is passed into the constructor
-			//for a queue, and then we're good to go. 
+			//for a queue, and then we're good to go.
 
-			
+
 
 
 			while (!reactions.isEmpty && reactions.Peek().procTime.CompareTo(GameDateTime.Now) <= 0)
@@ -398,7 +398,7 @@ namespace CoC.Backend.Engine.Time
 					display.CombineWith(newHourHeader, false);
 					newHourHeader = null;
 				}
-				//enqueue the current page. create a new page, and load that. 
+				//enqueue the current page. create a new page, and load that.
 				if (ReferenceEquals(display, GetCurrentPage()))
 				{
 					activePages.Enqueue(display);
@@ -455,7 +455,7 @@ namespace CoC.Backend.Engine.Time
 			bool newPage = !currentContentPage.hasNoText;
 
 			//i'm placing the final destination text on the current content page. However, if the only thing on the current context page is just this text,
-			//it shouldn't get its own page, so that will appear on the same page as the destination context. 
+			//it shouldn't get its own page, so that will appear on the same page as the destination context.
 
 			string text;
 			if (!string.IsNullOrEmpty(newHourHeader))
@@ -464,7 +464,7 @@ namespace CoC.Backend.Engine.Time
 			}
 			else
 			{
-				text = finalDestination?.GetFinalText(); //trudge toward your final destination. 
+				text = finalDestination?.GetFinalText(); //trudge toward your final destination.
 			}
 			if (!string.IsNullOrWhiteSpace(text))
 			{
@@ -488,7 +488,7 @@ namespace CoC.Backend.Engine.Time
 
 			currentContentPage = null;
 		}
-		
+
 		private class IdleDestinationStorage
 		{
 			public readonly Type locationType;

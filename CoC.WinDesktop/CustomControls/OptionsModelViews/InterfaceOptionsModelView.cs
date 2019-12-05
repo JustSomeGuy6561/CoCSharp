@@ -35,7 +35,7 @@ namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 
 		public override SimpleDescriptor ButtonText => InterfaceButtonText;
 
-		//display options was so conviluted it's getting its own view, but the only way to see it is via a button in interface options. 
+		//display options was so conviluted it's getting its own view, but the only way to see it is via a button in interface options.
 
 		public string DisplayOptionsTitleText
 		{

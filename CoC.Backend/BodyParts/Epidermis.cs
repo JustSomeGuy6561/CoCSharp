@@ -18,22 +18,42 @@ namespace CoC.Backend.BodyParts
 
 	/* Epidermis is a weird case in that it cannot be alone; it must help make up something else. It is expressly for storage
 	 * so it should never be public. Epidermal Data is provided for public access, so if you want people to have access to the data
-	 * stored in the epidermis in the frontend, provide a means of obtaining the epidermal data instance. 
+	 * stored in the epidermis in the frontend, provide a means of obtaining the epidermal data instance.
 	 *   (generally, a property like so: public EpidermalData EpidermisName => EpidermisStorage.GetEpidermalData();)
-	 * 
+	 *
 	 * Note that different body parts will use the epidermis differently - be sure to check them on how they work.
 	 */
 
 	//NOTE: Epidermis is mutually exclusive - either it stores a fur color and furTexture, or the tone and skinTexture, not both.
 	//some body parts have a primary and secondary epidermis strictly for this reason (i suppose more is also possibe). It gets awful complicated awful fast if you store both and
-	//have conditionals and such - belive me, I tried.
+	//have conditionals and such - believe me, I tried.
 
+	//also, to make it so i don't have to copy paste all the same code over this and the readonly class, i've added an interface that both implement. this is one of the cases
+	//where i'd really love multiple inheritance, but c# doesn't support it. (or, i guess templates with interface, but i really don't feel like dealing with c# 8.0
+	//and whatever else it might require)
 
 	//feel free to add more of these. i just did these because they were there, and i didn't want to use a string.
 	public enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED, SLIMY }
 	public enum FurTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, FLUFFY, MANGEY, THICK }
 
-	public sealed partial class Epidermis : BehavioralPartBase<EpidermisType, EpidermalData>
+	//note: consider rewriting this - have a base class which both the data class and the actual class inherit. this allows us to do away with that interface.
+	//consider adding a fur only epidermis and tone only epidermis which do not allow the other type. this would allow some classes to prevent changing to tone or
+	//fur based so they don't break.
+
+	internal interface IEpidermis
+	{
+		FurColor furColor { get; }
+
+		Tones tone { get; }
+
+		SkinTexture skinTexture { get; }
+
+		FurTexture furTexture { get; }
+
+		EpidermisType epidermisType { get; }
+	}
+
+	public sealed partial class Epidermis : BehavioralPartBase<EpidermisType, EpidermalData>, IEpidermis, IEquatable<Epidermis>
 	{
 		//public FurColor fur { get; private set; }
 		public readonly FurColor fur;
@@ -121,8 +141,18 @@ namespace CoC.Backend.BodyParts
 
 		public bool isEmpty => type == EpidermisType.EMPTY;
 
+		FurColor IEpidermis.furColor => fur;
+
+		Tones IEpidermis.tone => tone;
+
+		SkinTexture IEpidermis.skinTexture => skinTexture;
+
+		FurTexture IEpidermis.furTexture => furTexture;
+
+		EpidermisType IEpidermis.epidermisType => type;
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="furType"></param>
 		/// <param name="furColor">the fur color to use. if null or empty, uses type default.</param>
@@ -137,7 +167,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="toneType"></param>
 		/// <param name="initialTone"></param>
@@ -375,10 +405,10 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Update Or Change
 		//Useful Helpers. Update if different, change if same. I'm not overly fond of the idea as the behavior is not identical in all instances, but
-		//considering how often the if/else check would be used this makes more sense. use these only if you are truly doing it - if you know the type is 
+		//considering how often the if/else check would be used this makes more sense. use these only if you are truly doing it - if you know the type is
 		//correct, then just call change.
 
-		//NOTE: while these may not throw themselves, they may call something that throws. this is why i don't like these helpers. 
+		//NOTE: while these may not throw themselves, they may call something that throws. this is why i don't like these helpers.
 
 		public bool UpdateOrChange(FurBasedEpidermisType furType, FurColor overrideColor)
 		{
@@ -444,52 +474,29 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		public string LongDescription()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.shortDescription);
-			else return fullStr(furTexture.AsString(), fur, type.shortDescription);
-		}
+		public string JustTexture(bool withArticle = false) => EpidermisType.JustTexture(this, withArticle);
 
-		public string DescriptionWithColor()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return ColoredStr(tone, type.shortDescription);
-			else return ColoredStr(fur, type.shortDescription);
-		}
+		public string JustColor(bool withArticle = false) => EpidermisType.JustColor(this, withArticle);
 
-		public string JustTexture()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return skinTexture.AsString();
-			else return furTexture.AsString();
-		}
+		public string DescriptionWithColor() => EpidermisType.DescriptionWithColor(this);
 
-		public string JustColor()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return tone.AsString();
-			else return fur.AsString();
-		}
+		public string DescriptionWithTexture() => EpidermisType.DescriptionWithTexture(this);
 
-		public string ShortAdjectiveDescription()
-		{
-			return type.adjectiveStr();
-		}
+		public string DescriptionWithoutType(bool withArticle = false) => EpidermisType.DescriptionWithoutType(this, withArticle);
 
-		public string LongAdjectiveDescription()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.adjectiveStr, true);
-			else return fullStr(furTexture.AsString(), fur, type.adjectiveStr, true);
-		}
+		public string LongDescription() => EpidermisType.LongDescription(this);
 
-		public string AdjectiveWithColor()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return ColoredStr(tone, type.adjectiveStr, true);
-			else return ColoredStr(fur, type.adjectiveStr, true);
-		}
+		public string AdjectiveWithColor(bool withArticle = false) => EpidermisType.AdjectiveWithColor(this, withArticle);
+
+		public string AdjectiveWithTexture(bool withArticle = false) => EpidermisType.AdjectiveWithTexture(this, withArticle);
+
+		public string AdjectiveDescriptionWithoutType(bool withArticle = false) => EpidermisType.AdjectiveDescriptionWithoutType(this, withArticle);
+
+		public string LongAdjectiveDescription(bool withArticle = false) => EpidermisType.LongAdjectiveDescription(this, withArticle);
+
+		public string DescriptionWith(bool noTexture = false, bool noColor = false) => EpidermisType.DescriptionWith(this, noTexture, noColor);
+
+		public string AdjectiveWith(bool noTexture = false, bool noColor = false, bool withArticle = false) => EpidermisType.AdjectiveWith(this, noTexture, noColor, withArticle);
 
 		public override EpidermalData AsReadOnlyData()
 		{
@@ -498,6 +505,24 @@ namespace CoC.Backend.BodyParts
 			else return new EpidermalData();
 		}
 
+		public bool IsIdenticalTo(EpidermalData other)
+		{
+			//other not null and types match.
+			return !(other is null) && this.type == other.type && (
+				//and fur/texture matches and we use fur OR
+				(this.usesFur && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
+				//tone/texture matches and we use tone.
+				(this.usesTone && this.tone == other.tone && this.skinTexture == other.skinTexture));
+		}
+
+		public bool Equals(Epidermis other)
+		{
+			return !(other is null) && this.type == other.type && (
+				//and fur/texture matches and we use fur OR
+				(this.usesFur && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
+				//tone/texture matches and we use tone.
+				(this.usesTone && this.tone == other.tone && this.skinTexture == other.skinTexture));
+		}
 	}
 
 
@@ -510,7 +535,9 @@ namespace CoC.Backend.BodyParts
 		public abstract bool usesTone { get; }
 		public virtual bool usesFur => !usesTone;
 
-		public readonly SimpleDescriptor adjectiveStr;
+		public string AdjectiveDescription(bool withArticle = false) => adjectiveDesc(withArticle);
+
+		private readonly AdjectiveDescriptor adjectiveDesc;
 
 		public readonly bool updateable;
 		protected readonly int _index;
@@ -520,20 +547,21 @@ namespace CoC.Backend.BodyParts
 		//public bool furMutable => usesFur && updateable;
 		//public bool toneMutable => usesTone && updateable;
 
-		private protected EpidermisType(SimpleDescriptor nounDescription, SimpleDescriptor adjectiveDescription, bool canChange) : base(nounDescription)
+		private protected EpidermisType(SimpleDescriptor nounDescription, AdjectiveDescriptor adjectiveDescription, bool canChange) : base(nounDescription)
 		{
 			_index = indexMaker++;
 			epidermi.AddAt(this, _index);
+			this.adjectiveDesc = adjectiveDescription;
 			updateable = canChange;
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if index is out of range</exception>
-		/// <exception cref="ArgumentException">Thrown if index points to a non-existant object</exception> 
+		/// <exception cref="ArgumentException">Thrown if index points to a non-existant object</exception>
 		internal static EpidermisType Deserialize(int index)
 		{
 			if (index < 0 || index >= epidermi.Count)
@@ -583,7 +611,6 @@ namespace CoC.Backend.BodyParts
 		public static readonly ToneBasedEpidermisType BARK = new ToneBasedEpidermisType(BarkStr, BarkAdjectiveStr, true, Tones.WOODLY_BROWN); //do you want the bark to change colors? idk? maybe make that false.
 		public static readonly ToneBasedEpidermisType CARAPACE = new ToneBasedEpidermisType(CarapaceStr, CarapaceAdjectiveStr, true, Tones.BLACK);
 		//cannot be changed by lotion. May convert this to a perk, which affects everything.
-		public static readonly ToneBasedEpidermisType RUBBER = new ToneBasedEpidermisType(RubberStr, RubberAdjectiveStr, false, Tones.GRAY); //now its own type. it's simpler this way imo - for now. may become a perk.
 		public static readonly EmptyEpidermisType EMPTY = new EmptyEpidermisType();
 	}
 
@@ -591,7 +618,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public FurColor defaultFur => new FurColor(_defaultFur);
 		private readonly FurColor _defaultFur;
-		internal FurBasedEpidermisType(SimpleDescriptor nounDescription, SimpleDescriptor adjectiveDescription, bool canChange, FurColor defaultColor) :
+		internal FurBasedEpidermisType(SimpleDescriptor nounDescription, AdjectiveDescriptor adjectiveDescription, bool canChange, FurColor defaultColor) :
 			base(nounDescription, adjectiveDescription, canChange)
 		{
 			_defaultFur = new FurColor(defaultColor);
@@ -616,7 +643,7 @@ namespace CoC.Backend.BodyParts
 	public class ToneBasedEpidermisType : EpidermisType
 	{
 		public readonly Tones defaultTone;
-		internal ToneBasedEpidermisType(SimpleDescriptor nounDescription, SimpleDescriptor adjectiveDescription, bool canChange, Tones defaultColor) :
+		internal ToneBasedEpidermisType(SimpleDescriptor nounDescription, AdjectiveDescriptor adjectiveDescription, bool canChange, Tones defaultColor) :
 			base(nounDescription, adjectiveDescription, canChange)
 		{
 			defaultTone = defaultColor;
@@ -640,7 +667,7 @@ namespace CoC.Backend.BodyParts
 
 	public class EmptyEpidermisType : EpidermisType
 	{
-		internal EmptyEpidermisType() : base(GlobalStrings.None, GlobalStrings.None, false) { }
+		internal EmptyEpidermisType() : base(GlobalStrings.None, (x) => GlobalStrings.None(), false) { }
 
 		public override bool usesTone => false;
 		public override bool usesFur => false;
@@ -654,7 +681,7 @@ namespace CoC.Backend.BodyParts
 
 	/// <summary>
 	/// </summary>
-	public partial class EpidermalData : BehavioralPartDataBase<EpidermisType>, IEquatable<EpidermalData>
+	public partial class EpidermalData : BehavioralPartDataBase<EpidermisType>, IEquatable<EpidermalData>, IEpidermis
 	{
 
 		private readonly FurColor _fur; //NOT NULL EVER!
@@ -664,7 +691,7 @@ namespace CoC.Backend.BodyParts
 		private readonly FurTexture _furTexture;
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="type"></param>
 		/// <param name="furColor"></param>
@@ -682,7 +709,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="toneType"></param>
 		/// <param name="tones"></param>
@@ -705,6 +732,16 @@ namespace CoC.Backend.BodyParts
 			_furTexture = FurTexture.NONDESCRIPT;
 			_skinTexture = SkinTexture.NONDESCRIPT;
 		}
+
+		FurColor IEpidermis.furColor => fur;
+
+		Tones IEpidermis.tone => tone;
+
+		SkinTexture IEpidermis.skinTexture => skinTexture;
+
+		FurTexture IEpidermis.furTexture => furTexture;
+
+		EpidermisType IEpidermis.epidermisType => type;
 
 
 		public bool usesFur => type.usesFur;
@@ -777,57 +814,62 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public string LongDescription()
+		public static bool MixedTextures(EpidermalData first, EpidermalData second, bool requireSameType = true)
 		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.shortDescription);
-			else return fullStr(furTexture.AsString(), fur, type.shortDescription);
+			if (CheckMixedTypes(first, second))
+			{
+				//if the types are mixed, return true if we do not require the same type for this check, false otherwise.
+				return !requireSameType;
+			}
+			else if (first.usesFur)
+			{
+				return first.furTexture != second.furTexture;
+			}
+			else
+			{
+				return first.skinTexture != second.skinTexture;
+			}
 		}
 
-		public string DescriptionWithColor()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return ColoredStr(tone, type.shortDescription);
-			else return ColoredStr(fur, type.shortDescription);
-		}
+		public string JustTexture(bool withArticle = false) => EpidermisType.JustTexture(this, withArticle);
 
-		public string JustTexture()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return skinTexture.AsString();
-			else return furTexture.AsString();
-		}
+		public string JustColor(bool withArticle = false) => EpidermisType.JustColor(this, withArticle);
 
-		public string JustColor()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return tone.AsString();
-			else return fur.AsString();
-		}
+		public string DescriptionWithColor() => EpidermisType.DescriptionWithColor(this);
 
-		public string ShortAdjectiveDescription()
-		{
-			return type.adjectiveStr();
-		}
+		public string DescriptionWithTexture() => EpidermisType.DescriptionWithTexture(this);
 
-		public string LongAdjectiveDescription()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return fullStr(skinTexture.AsString(), tone, type.adjectiveStr, true);
-			else return fullStr(furTexture.AsString(), fur, type.adjectiveStr, true);
-		}
+		public string DescriptionWithoutType(bool withArticle = false) => EpidermisType.DescriptionWithoutType(this, withArticle);
 
-		public string AdjectiveWithColor()
-		{
-			if (type == EpidermisType.EMPTY) return "";
-			else if (type.usesTone) return ColoredStr(tone, type.adjectiveStr, true);
-			else return ColoredStr(fur, type.adjectiveStr, true);
-		}
+		public string LongDescription() => EpidermisType.LongDescription(this);
+
+		public string AdjectiveWithColor(bool withArticle = false) => EpidermisType.AdjectiveWithColor(this, withArticle);
+
+		public string AdjectiveWithTexture(bool withArticle = false) => EpidermisType.AdjectiveWithTexture(this, withArticle);
+
+		public string AdjectiveDescriptionWithoutType(bool withArticle = false) => EpidermisType.AdjectiveDescriptionWithoutType(this, withArticle);
+
+		public string LongAdjectiveDescription(bool withArticle = false) => EpidermisType.LongAdjectiveDescription(this, withArticle);
+
+
+		public string DescriptionWith(bool noTexture = false, bool noColor = false) => EpidermisType.DescriptionWith(this, noTexture, noColor);
+
+		public string AdjectiveWith(bool noTexture = false, bool noColor = false, bool withArticle = false) => EpidermisType.AdjectiveWith(this, noTexture, noColor, withArticle);
 
 		public bool Equals(EpidermalData other)
 		{
 			return ReferenceEquals(this, other) || (!(other is null) && type == other.type && fur.Equals(other.fur) && furTexture == other.furTexture &&
 				tone == other.tone && skinTexture == other.skinTexture);
+		}
+
+		public bool IsIdenticalTo(Epidermis other)
+		{
+			//other not null and types match.
+			return !(other is null) && this.type == other.type && (
+				//and fur/texture matches and we use fur OR
+				(this.usesFur && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
+				//tone/texture matches and we use tone.
+				(this.usesTone && this.tone == other.tone && this.skinTexture == other.skinTexture));
 		}
 	}
 }

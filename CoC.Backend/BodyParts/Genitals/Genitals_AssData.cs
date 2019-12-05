@@ -7,7 +7,7 @@ namespace CoC.Backend.BodyParts
 {
 	partial class Genitals
 	{
-		//ass is readonly, always exists. we don't need any alias magic for it. 
+		//ass is readonly, always exists. we don't need any alias magic for it.
 		#region Public Ass Related Computed Values
 
 		public uint analSexCount => ass.sexCount;

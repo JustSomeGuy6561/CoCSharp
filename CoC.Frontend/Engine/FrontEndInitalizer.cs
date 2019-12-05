@@ -15,19 +15,19 @@ using CoC.Frontend.Settings.Gameplay;
 
 namespace CoC.Frontend.Engine
 {
-	//this class is responsible for initializing all relevant data for the frontend. It then calls the backend's initalizer, passing it the relevant data it needs from the frontend to set up the 
-	//overall engine. This the most technical part of the frontend, but it's necessary to allow you to create and alter content here in the frontend, but still have it work in the backend. 
+	//this class is responsible for initializing all relevant data for the frontend. It then calls the backend's initalizer, passing it the relevant data it needs from the frontend to set up the
+	//overall engine. This the most technical part of the frontend, but it's necessary to allow you to create and alter content here in the frontend, but still have it work in the backend.
 	public static class FrontendInitalizer
 	{
 
 		/// <summary>
 		/// Initialize any systems or engines in the frontend that the save data requires to exist before it loads. for example, any achievements declared in the frontend (so, all of them)
-		/// must be added to the achievement manager, or else they won't point to anything when the data is loaded and therefore be lost or ignored. 
+		/// must be added to the achievement manager, or else they won't point to anything when the data is loaded and therefore be lost or ignored.
 		/// </summary>
 		public static void PreSaveInit()
 		{
 
-			BackendInitializer.PreSaveInit(() => new StandardDisplay(), DisplayManager.GetCurrentDisplay, DisplayManager.LoadDisplay, AreaManager.placeCollection, AreaManager.locationCollection, 
+			BackendInitializer.PreSaveInit(() => new StandardDisplay(), DisplayManager.GetCurrentDisplay, DisplayManager.LoadDisplay, AreaManager.placeCollection, AreaManager.locationCollection,
 				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);
 
 			GameplaySettingsManager.IncludeGameplaySetting(new HyperHappySettings());

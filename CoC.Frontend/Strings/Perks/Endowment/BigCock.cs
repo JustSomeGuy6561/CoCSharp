@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.Endowment
 		}
 		private static string BigCockHint()
 		{
-			return "Do you have a big cock? (+2\" Cock Length)" + Environment.NewLine + Environment.NewLine + 
+			return "Do you have a big cock? (+2\" Cock Length)" + Environment.NewLine + Environment.NewLine +
 				"A bigger cock will make it easier to get off any sexual partners, but only if they can take your size.";
 		}
 		private static string BigCockDesc()

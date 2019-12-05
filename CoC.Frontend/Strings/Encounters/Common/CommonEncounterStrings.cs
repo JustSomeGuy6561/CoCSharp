@@ -45,7 +45,7 @@ namespace CoC.Frontend.Encounters.Common
 					helperText1 = " through the lakeside mud";
 					helperText2 = " the velvety folds of a monstrous pussy sliding along the head of your " + largestCock.shortDescription() + ", gently attempting to suck it off.";
 				}
-				
+
 				else
 				{
 					helperText1 = " along the dunes";
@@ -53,7 +53,7 @@ namespace CoC.Frontend.Encounters.Common
 				}
 				display.OutputText(" As it drags" + helperText1 + ", the sensation forces you to imagine" + helperText2);
 			}
-			else //(player.cocks.length >= 2) 
+			else //(player.cocks.length >= 2)
 			{
 				if (isForest)
 				{
@@ -73,7 +73,7 @@ namespace CoC.Frontend.Encounters.Common
 				display.OutputText(" With all of your " + player.genitals.AllCocksShortDesc() + " dragging" + helperText1 + ", they begin feeling as if the" + helperText2);
 			}
 			display.OutputText(Environment.NewLine + Environment.NewLine);
-			
+
 			//PARAGRAPH 2
 			if (player.lowerBody.isQuadruped)
 			{
@@ -106,7 +106,7 @@ namespace CoC.Frontend.Encounters.Common
 				if (isForest) helperText1 = " Your " + player.balls.ShortDescription() + " pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + " and onto the fertile soil of the forest.";
 				else if (isLake) helperText1 = " Your " + player.balls.ShortDescription() + " pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + " and into the waters of the nearby lake.";
 				else helperText1 = " The fiery warmth of the desert caresses it, causing your " + player.balls.ShortDescription() + " to pulse with the need to release their sperm through your " + player.genitals.AllCocksShortDesc() + ".";
-				
+
 				display.OutputText(" Your " + player.skin.tone + " " + player.sackDescript() + " rests beneath your raised " + player.buttDescript() + "." + helperText1);
 			}
 
@@ -191,7 +191,7 @@ namespace CoC.Frontend.Encounters.Common
 				display.OutputText(" You struggle and push with your " + player.legs() + " as hard as you can, but it's no use. You do the only thing you can and begin stroking your " +
 					player.genitals.AllCocksShortDesc() + " with as much vigor as you can muster. Eventually your body tenses and a light load of jizz erupts from your body, " +
 					"but the orgasm is truly mild compared to what you need. You're simply too weary from struggling to give yourself the masturbation you truly need, but you continue to try." +
-					" Nearly an hour later " + player.genitals.AllCocksFullDesc() + " has softened enough to allow you to stand again, and you make your way back to camp, still dragging your genitals" + helperText1); 
+					" Nearly an hour later " + player.genitals.AllCocksFullDesc() + " has softened enough to allow you to stand again, and you make your way back to camp, still dragging your genitals" + helperText1);
 			}*/
 		}
 	}

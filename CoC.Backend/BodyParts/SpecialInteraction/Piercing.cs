@@ -17,7 +17,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 	public class Piercing<Locations> where Locations : Enum
 	{
-		//tbh, not the cleanest tool, but idgaf. it works. As far as anyone implementing this shit will know or care, it's basically identical to the standard event. 
+		//tbh, not the cleanest tool, but idgaf. it works. As far as anyone implementing this shit will know or care, it's basically identical to the standard event.
 		private readonly WeakEventSource<PiercingDataChangedEventArgs<Locations>> piercingChangeSource = new WeakEventSource<PiercingDataChangedEventArgs<Locations>>();
 		public event EventHandler<PiercingDataChangedEventArgs<Locations>> OnPiercingChange
 		{
@@ -47,6 +47,11 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			return new ReadOnlyPiercing<Locations>(piercedAt, jewelryEquipped);
 		}
 
+		public PiercingJewelry this[Locations location]
+		{
+			get => jewelryEquipped[location];
+		}
+
 		public int piercingCount => piercedAt.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
 		public bool isPierced => piercedAt.Values.Any((x) => x);
 		public bool isPiercedAt(Locations location)
@@ -74,8 +79,8 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		internal bool EquipPiercingJewelry(Locations piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
 		{
 			if (jewelry == null) throw new ArgumentNullException(nameof(jewelry));
-			//if it's an unknown location: fail. occurs when people do arithmatic on an enum. 
-			//consider having this throw. I'm thinking index out of range, but idk. 
+			//if it's an unknown location: fail. occurs when people do arithmatic on an enum.
+			//consider having this throw. I'm thinking index out of range, but idk.
 			if (!Enum.IsDefined(typeof(Locations), piercingLocation))
 			{
 				return false;
@@ -113,7 +118,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 				ProcChange(piercingLocation, jewelry);
 				return jewelryEquipped.ContainsKey(piercingLocation); //should always return true, but i'd like to proc it on unit tests if we somehow broke Dictionaries.
 			}
-			//final case - we are pierced at this location and don't have any jewelry here and our jewelry type is valid for this location. 
+			//final case - we are pierced at this location and don't have any jewelry here and our jewelry type is valid for this location.
 			else
 			{
 				//put in the jewelry.

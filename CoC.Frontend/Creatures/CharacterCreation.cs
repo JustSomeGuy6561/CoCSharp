@@ -22,7 +22,7 @@ using System.Linq;
 using static CoC.Frontend.UI.ViewOptions;
 using CoC.Backend.UI;
 //minor rework of creator. I'm just going to make this dynamic (meaning you have to instantiate it, even though there's only one at a time)
-//because more often than not this won't be in use and therefore has no reason to be stored in memory. this also allows it to function like a true event-based program. 
+//because more often than not this won't be in use and therefore has no reason to be stored in memory. this also allows it to function like a true event-based program.
 
 //Note: From what i can tell (nothing is documented), NG+ prevents you from using a special character. Therefore, we can get away with a single creator in the constructor.
 //if it's a NG+, we simply have the NG+ stuff defined and nothing else. if it's a special character, it has no NG+ stuff defined. if it's neither, it'll be empty.
@@ -33,7 +33,7 @@ using CoC.Backend.UI;
 
 namespace CoC.Frontend.Creatures
 {
-	//partially defined characters are getting special treatment: 
+	//partially defined characters are getting special treatment:
 	internal sealed partial class CharacterCreation
 	{
 		private const byte MIN_HEIGHT_IN = 48;
@@ -59,7 +59,7 @@ namespace CoC.Frontend.Creatures
 		private readonly bool heightLocked, eyesLocked, beardLocked, cockLocked, clitLocked, breastsLocked;
 		private Gender chosenGender;
 
-		//a character is considered locked if its perks and gender, build, skin tone, and hair are all known. 
+		//a character is considered locked if its perks and gender, build, skin tone, and hair are all known.
 		//a character is considered semi-locked if its gender, build, skin tone, and hair are all known.
 		private bool isSemiLocked => genderLocked && buildLocked && complexionLocked && hairLocked;
 		private bool isLocked => isSemiLocked && historyLocked && endowmentLocked;
@@ -77,7 +77,7 @@ namespace CoC.Frontend.Creatures
 			newGamePlus = isNewGamePlus;
 
 			creator = specialCreator ?? throw new ArgumentNullException();
-			//primarily for predefined characters, but also works for NG+ if future NG+ lets you carry over appearance or gender. 
+			//primarily for predefined characters, but also works for NG+ if future NG+ lets you carry over appearance or gender.
 			if (!Tones.IsNullOrEmpty(creator.complexion))
 			{
 				complexionLocked = true;
@@ -94,7 +94,7 @@ namespace CoC.Frontend.Creatures
 			{
 				creator.hairColor = null;
 			}
-			//minor data cleanup. for the most part, we don't care if the creator is incomplete, but in this case, it's just easier if we do this. 
+			//minor data cleanup. for the most part, we don't care if the creator is incomplete, but in this case, it's just easier if we do this.
 			if (FurColor.IsNullOrEmpty(creator.furColor) && !FurColor.IsNullOrEmpty(creator.underFurColor))
 			{
 				creator.furColor = creator.underFurColor;
@@ -133,7 +133,7 @@ namespace CoC.Frontend.Creatures
 			clitLocked = genderLocked || (creator.vaginas != null && creator.vaginas.Length != 0);
 			breastsLocked = genderLocked || (creator.breasts != null && creator.breasts.Length != 0);
 
-			//set default stats. 
+			//set default stats.
 			if (creator.strength == null) creator.strength = 15;
 			if (creator.toughness == null) creator.toughness = 15;
 			if (creator.speed == null) creator.speed = 15;
@@ -148,7 +148,7 @@ namespace CoC.Frontend.Creatures
 			//clean up any invalid data set in the player creator.
 			creator.artificiallyInfertile = false;
 
-			//move these do player constructor. afaik theres not reason not to have these as default. 
+			//move these do player constructor. afaik theres not reason not to have these as default.
 			//if (creator.lust == null) creator.lust = 15;
 			//if (creator.hunger == null) creator.hunger = 80;
 			//if (creator.obey == null) creator. = 10;
@@ -255,7 +255,7 @@ namespace CoC.Frontend.Creatures
 
 		internal void GenderMale()
 		{
-			//set the base attributes, but only if they haven't been set. 
+			//set the base attributes, but only if they haven't been set.
 			//we aren't overriding custom defined values.
 
 			//make our life easier
@@ -409,7 +409,7 @@ namespace CoC.Frontend.Creatures
 			//attributes
 			//Genderless don't get any bonus stats as of current version.
 			//if (!newGamePlus)
-			//{ 
+			//{
 			//creator.strength += 1;
 			//creator.toughness += 1;
 			//creator.speed += 1;
@@ -669,7 +669,7 @@ namespace CoC.Frontend.Creatures
 					ChooseHairColor(false);
 				}
 			}
-			//else we came from the menu, but can't set this. This should be disabled, so this should never happen. in the event it does, simply ignore it. 
+			//else we came from the menu, but can't set this. This should be disabled, so this should never happen. in the event it does, simply ignore it.
 			//we don't clear the menu, so the menu is still there. We'll run a debug method that won't do anything in RELEASE
 			else
 			{
@@ -704,7 +704,7 @@ namespace CoC.Frontend.Creatures
 		//boolean used to determine if we've hit fur settings at least once. Note that this is a new option for the ultra-rare case a pre-defined character has fur, but there's no color selected.
 		//i dunno, it seems like it'd be a cool thing to do - a backstory about an abandoned baby in Ingnam that was mostly human - save for fur covering their body. perhaps they flaunted it, and that's
 		//why they're the champion, or perhaps they shaved it to appear normal, but the elders still feared "corrupting influence" or some shit. Or they never wanted this character to begin with, so they
-		//trained them to be a champion and are finally getting rid of them. Whatever you want. 
+		//trained them to be a champion and are finally getting rid of them. Whatever you want.
 		private bool setPrimaryFur = false;
 		//easier to store these. this class solely exists to make the creator work, even when you can't pass the data around because callbacks.
 		//so why not use it? (Note to Self: DUMMY)
@@ -907,7 +907,7 @@ namespace CoC.Frontend.Creatures
 		#endregion
 		#region Hair
 		//boolean used to determine if we've ran the hair color setting at least once. during character creation, the player must set their hair color, the rest is optional.
-		//we come from complexion straight to hair color, then return to the menu. if this isn't set, we can't return to the menu until it's set. 
+		//we come from complexion straight to hair color, then return to the menu. if this isn't set, we can't return to the menu until it's set.
 		private bool hitHairOptions = false;
 
 		private void ChooseHairColor(bool isHighlight)
@@ -952,7 +952,7 @@ namespace CoC.Frontend.Creatures
 			//else we're not supposed to be able to hit this button (should be disabled) so just pretend they didn't hit it.
 		}
 
-		//for the love of god, please use the release version to published projects. this is just here for debugging. 
+		//for the love of god, please use the release version to published projects. this is just here for debugging.
 		private void DebugBadButtonHit()
 		{
 #if DEBUG
@@ -987,7 +987,7 @@ namespace CoC.Frontend.Creatures
 			}
 		}
 
-		//either all hair options are locked or none are. 
+		//either all hair options are locked or none are.
 
 		private void HairOptions()
 		{
@@ -1002,7 +1002,7 @@ namespace CoC.Frontend.Creatures
 			currentDisplay.AddButton(2, HairLengthStr(), () => ChooseHairLength());
 			currentDisplay.AddButton(3, HairStyleStr(), ChooseHairStyle);
 
-			//did we come from customization? 
+			//did we come from customization?
 			string buttonText = hitCustomizationMenu ? GlobalStrings.RETURN() : GlobalStrings.CONTINUE();
 			currentDisplay.AddButton(14, buttonText, GenericStyleCustomizeMenu);
 		}
@@ -1301,7 +1301,7 @@ namespace CoC.Frontend.Creatures
 
 
 
-			currentDisplay.ActivateInputField(InputField.INPUT_POSITIVE_INTEGERS_NOSIGN, InputField.VALID_POSITIVE_INTEGERS_NOSIGN, 
+			currentDisplay.ActivateInputField(InputField.INPUT_POSITIVE_INTEGERS_NOSIGN, InputField.VALID_POSITIVE_INTEGERS_NOSIGN,
 				creator.heightInInches.ToString(), HeightStr(), maxLength);
 
 			currentDisplay.AddButton(0, GlobalStrings.OK(), ConfirmHeight);
@@ -1460,7 +1460,7 @@ namespace CoC.Frontend.Creatures
 		private void ChooseBreastSize(CupSize size)
 		{
 			creator.breasts[0].cupSize = size;
-			//remember null < anything is false, and null > anything is false. 
+			//remember null < anything is false, and null > anything is false.
 			//so these are fine. woo!
 			if (size > CupSize.C && creator.breasts[0].nippleLength < 0.5f)
 			{
@@ -1602,9 +1602,9 @@ namespace CoC.Frontend.Creatures
 				//----------------- SKIN COLOURS -----------------
 
 				//----------------- STARTER PERKS -----------------
-				
 
-				
+
+
 				//----------------- GAME MODES -----------------
 				private void chooseModeDifficulty()
 				{

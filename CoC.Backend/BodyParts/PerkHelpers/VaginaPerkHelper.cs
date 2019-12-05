@@ -45,7 +45,7 @@ namespace CoC.Backend.BodyParts
 		{
 		}
 
-		public VaginaPerkHelper(float newClitSizeDelta, float clitGrowthMultiplier, float clitShrinkMultiplier, float minNewClitSize, 
+		public VaginaPerkHelper(float newClitSizeDelta, float clitGrowthMultiplier, float clitShrinkMultiplier, float minNewClitSize,
 			float minClitSize, VaginalWetness defaultWetnessNew, VaginalLooseness defaultLoosenessNew, ushort perkBonusCapacity,
 			VaginalLooseness minLooseness, VaginalLooseness maxLooseness, VaginalWetness minWetness, VaginalWetness maxWetness)
 		{

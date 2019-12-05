@@ -28,16 +28,16 @@ namespace CoC.Frontend.Creatures
 	internal static class SpecialCharacters
 	{
 		//NOTE: Most of these characters were created during different versions of the code, and therefore have different levels of support for customization options.
-		//As of this writing (June 2019), new features have been implemented which none of these characters take advantage of. Normally, a player would have the 
-		//option to change these new features, as the custom character does not have values for these. However, in the spirit of the old style, any characters that 
-		//were otherwise locked from player customization will have these new features locked as well, using the default values. 
+		//As of this writing (June 2019), new features have been implemented which none of these characters take advantage of. Normally, a player would have the
+		//option to change these new features, as the custom character does not have values for these. However, in the spirit of the old style, any characters that
+		//were otherwise locked from player customization will have these new features locked as well, using the default values.
 
 		//In the event you are the creative mind behind these characters, feel free to implement the new features (or free them for player customization) as you see fit.
 
 		public static readonly Dictionary<string, Func<PlayerCreator>> specialCharacterLookup;
 		public static readonly Dictionary<string, SimpleDescriptor> nameAndFlavorText;
 
-		//technically, hashsets are ordered until something is removed, and since we'll never remove anything, we can abuse this. 
+		//technically, hashsets are ordered until something is removed, and since we'll never remove anything, we can abuse this.
 		private static readonly HashSet<string> charactersWithPartialHistory;
 		private static readonly HashSet<string> charactersWithFullHistory;
 
@@ -125,9 +125,9 @@ namespace CoC.Frontend.Creatures
 
 			// 2d array name | PlayerCreator | skip creation | description
 			public const customs:Array = [
-					// 
+					//
 			[ "Without pre-defined history:", null, false, "" ],
-					
+
 				]
 				*/
 		private static SimpleDescriptor AnnettaFlavorText => SpecialCharacterStrings.AnnettaText;
@@ -191,7 +191,7 @@ namespace CoC.Frontend.Creatures
 		private static PlayerCreator customAria()
 		{
 			//2/26/2013 8:18:21	rdolave@gmail.com	Character Creation	"female DD breasts feminity 100 butt size 5 hip size 5 body thickness 10 clit I would like her nipples pierced with Ceraphs piercing
-			//(on a side note how much do you think it would cost to add bell nipple,labia and clit piercings as well as an option for belly button piercings would like to see belly button piecings with a few different options as well. 
+			//(on a side note how much do you think it would cost to add bell nipple,labia and clit piercings as well as an option for belly button piercings would like to see belly button piecings with a few different options as well.
 			//Also would love to have handcuff ear piercings.)"	Would like the bimbo brain and bimbo body perks as well as the nine tail PerkLib. demonic high heels, pink skin, obscenely long pink hair would like her to be a kitsune with the nine tails.
 			//pink fur. starting equipment would like to be the succubus whip and nurse's outfit. Also would like the xmas perk and all three Vday perks. Aria
 			PiercingJewelry labiaPiercing() => new PiercingJewelry(JewelryType.RING, new Ruby(), true);
@@ -256,9 +256,9 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor BertramFlavorText => SpecialCharacterStrings.BertramText;
 		private static PlayerCreator customBertram()
 		{
-			//Character Creation	
-			//herm, canine cock - 8", virgin, tight, wet	
-			//fox ears, tails, A cup breasts with normal nipples	Betram	
+			//Character Creation
+			//herm, canine cock - 8", virgin, tight, wet
+			//fox ears, tails, A cup breasts with normal nipples	Betram
 			return new PlayerCreator("Bertram")
 			{
 				defaultGender = Gender.HERM,
@@ -297,7 +297,7 @@ namespace CoC.Frontend.Creatures
 				{
 					new VaginaCreator(2.0f, isVirgin:true, clitJewelry:new Dictionary<ClitPiercings, PiercingJewelry>(){[ClitPiercings.HOOD_VERTICAL] = new PiercingJewelry(JewelryType.HORSESHOE, new Silver(), true) })
 				},
-				//"Androgynous face, large brown eyes, long black hair down to about ass level, full lips, pirced with one silver ring ass itself is round and thick, chest is flat, only two nipples, about nickel sized pierced with silver studs, skin of a pale ghostly transparent complexion, rest of the body is not notably muscular or chubby in any definite way, feet seem to taper off into full transparency. Full body housed in the lewd Inquisitor Armor, wielding a Wizard Staff. Starting at level 5 with tank, regeneration, healing, smarts, channeling, mage and incorperability perks, a full knowledge of 
+				//"Androgynous face, large brown eyes, long black hair down to about ass level, full lips, pirced with one silver ring ass itself is round and thick, chest is flat, only two nipples, about nickel sized pierced with silver studs, skin of a pale ghostly transparent complexion, rest of the body is not notably muscular or chubby in any definite way, feet seem to taper off into full transparency. Full body housed in the lewd Inquisitor Armor, wielding a Wizard Staff. Starting at level 5 with tank, regeneration, healing, smarts, channeling, mage and incorperability perks, a full knowledge of
 				heightInInches = 72,
 				femininity = 50,
 				hairLength = 35,
@@ -353,7 +353,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor CharaunFlavorText => SpecialCharacterStrings.CharaunText;
 		private static PlayerCreator customCharaun()
 		{
-			//Herm, Fox Cock: (27"l x 1.4"w, knot multiplier 3.6), No Balls, Cum Multiplier: 7,500, Vaginal Wetness: 5, Clit length: 0.5, Virgin, Fertility: 15	9-tailed "enlightened" kitsune( a pure-blooded kitsune with the "Enlightened Nine-tails" perk and magic specials) 
+			//Herm, Fox Cock: (27"l x 1.4"w, knot multiplier 3.6), No Balls, Cum Multiplier: 7,500, Vaginal Wetness: 5, Clit length: 0.5, Virgin, Fertility: 15	9-tailed "enlightened" kitsune( a pure-blooded kitsune with the "Enlightened Nine-tails" perk and magic specials)
 			return new PlayerCreator("Charaun")
 			{
 				defaultGender = Gender.HERM,
@@ -436,10 +436,10 @@ namespace CoC.Frontend.Creatures
 				ballSize = 8,
 				//removed these and replaced them with messy orgasm. same effect, but now has an endowment perk.
 				////A virility boost would be nice too if possible.
-				//cumMultiplier = 50 
+				//cumMultiplier = 50
 
 				//Is it possible to get extra starting perks added? If so, I'd like History: Religious added to whatever is selected on creation. If not, please ignore this line.
-				//i mean, i guess it's possible. For reasons unknown, has fighter and whore. could remove them and do some magic to make religious added on. 
+				//i mean, i guess it's possible. For reasons unknown, has fighter and whore. could remove them and do some magic to make religious added on.
 				perks = new List<PerkBase>
 				{
 					new Fighter(),
@@ -491,7 +491,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor GalateaFlavorText => SpecialCharacterStrings.GalateaText;
 		private static PlayerCreator customGalatea()
 		{
-			//"(Dangit Fenoxo!  Stop adding sexy must-have things to the game!  If it's not too late to update it I've added in that sexy new armor.  Thanks!)		
+			//"(Dangit Fenoxo!  Stop adding sexy must-have things to the game!  If it's not too late to update it I've added in that sexy new armor.  Thanks!)
 			//outputText("You've got large breasts prone to lactation.  You aren't sure WHY you got chosen as a champion, but with your considerable strength, you're sure you'll do a good job protecting Ingnam.");
 			return new PlayerCreator("Galatea")
 			{
@@ -515,7 +515,7 @@ namespace CoC.Frontend.Creatures
 				//creator.createPerk(PerkLib.StrongBack, 0, 0, 0, 0);
 				//creator.createPerk(PerkLib.StrongBack2, 0, 0, 0, 0);
 
-				//Equipment: 
+				//Equipment:
 				//Weapon: Warhammer
 				//creator.setWeapon(weapons.WARHAM0);
 				//Armor: Lusty shit
@@ -615,7 +615,7 @@ namespace CoC.Frontend.Creatures
 				hairLength = 9,
 				hairColor = HairFurColors.SILVER_WHITE,
 				//- human face
-				//- fox ears 
+				//- fox ears
 				earType = EarType.FOX,
 				//- olive complexion
 				complexion = Tones.OLIVE,
@@ -626,7 +626,7 @@ namespace CoC.Frontend.Creatures
 				//- average build
 				//- body thickness of  around 50
 				thickness = 50,
-				//- 'tone of about 70  
+				//- 'tone of about 70
 				tone = 70,
 				//- two flat breasts each supporting one 0.2-inch nipple
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.FLAT, 0.2f) },
@@ -635,7 +635,7 @@ namespace CoC.Frontend.Creatures
 				tailCount = 3,
 				//- gift: fast
 				//creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
-				////- history: religion 
+				////- history: religion
 				//creator.createPerk(PerkLib.HistoryReligious,0,0,0,0);
 				////(and if possible)
 				////- history: fighter
@@ -669,7 +669,7 @@ namespace CoC.Frontend.Creatures
 				defaultGender = Gender.FEMALE,
 				forceDefaultGender = true,
 
-				//Gender: Female	
+				//Gender: Female
 				vaginas = new VaginaCreator[] { new VaginaCreator() },
 				//"Ears: Bunny
 				earType = EarType.BUNNY,
@@ -761,8 +761,8 @@ namespace CoC.Frontend.Creatures
 			{
 				defaultGender = Gender.MALE,
 				forceDefaultGender = false,
-				//Specific Character	
-				//Male. 11.5 inch dog dick, 4 balls, 2 inches in diameter.	
+				//Specific Character
+				//Male. 11.5 inch dog dick, 4 balls, 2 inches in diameter.
 				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 11.5f, 2, 1.5f) },
 				cockVirgin = false,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.FLAT) },
@@ -920,7 +920,7 @@ namespace CoC.Frontend.Creatures
 				defaultGender = Gender.HERM,
 				forceDefaultGender = false,
 
-				//Any equine or dragonny attributes accompanying it a big plus! As I'm a dragon-unicorn furry (Qilin~). Bonus points if you add a horn type for unicorn horn. 
+				//Any equine or dragonny attributes accompanying it a big plus! As I'm a dragon-unicorn furry (Qilin~). Bonus points if you add a horn type for unicorn horn.
 				speed = 18,
 				intelligence = 17,
 				strength = 18,
@@ -956,7 +956,7 @@ namespace CoC.Frontend.Creatures
 				complexion = Tones.BROWN,
 				bodyType = BodyType.SIMPLE_FUR,
 				furColor = new FurColor(HairFurColors.BLACK),
-				//Legs/Feet = Digigrade hooved 
+				//Legs/Feet = Digigrade hooved
 				lowerBodyType = LowerBodyType.HOOVED,
 				//Wing type = Dragon
 				wingType = WingType.DRACONIC,
@@ -1056,7 +1056,7 @@ namespace CoC.Frontend.Creatures
 			return new PlayerCreator("Navorn")
 			{
 				//outputText("There's been something special about you since day one, whether it's your numerous sexual endowments or your supernatural abilities.  You're a natural pick for champion.");
-				//Character Creation	"Herm same number and types of cocks from email sent earlier. 
+				//Character Creation	"Herm same number and types of cocks from email sent earlier.
 				defaultGender = Gender.HERM,
 				forceDefaultGender = false,
 
@@ -1132,7 +1132,7 @@ namespace CoC.Frontend.Creatures
 				//virgin pussy, 0.2"" clit
 				//wetness 2
 				vaginas = new VaginaCreator[] { new VaginaCreator(0.2f, VaginalWetness.WET) },
-				//fertility 30 
+				//fertility 30
 				//virgin bum
 				analLooseness = AnalLooseness.NORMAL,
 				assVirgin = true,
@@ -1186,7 +1186,7 @@ namespace CoC.Frontend.Creatures
 				},
 
 			};
-			////"	"I'm picturing a tall, feminine German-Shepherd morph, solid white and gorgeous. She has both sets of genitals, with no balls, and a large set of breasts. She wields a large claymore and is dressed in a full chain vest and pants. 
+			////"	"I'm picturing a tall, feminine German-Shepherd morph, solid white and gorgeous. She has both sets of genitals, with no balls, and a large set of breasts. She wields a large claymore and is dressed in a full chain vest and pants.
 			////large claymore (and the strength to use it)
 			//creator.setWeapon(weapons.CLAYMR0);
 			//creator.strength = 40;
@@ -1211,8 +1211,8 @@ namespace CoC.Frontend.Creatures
 				vaginas = new VaginaCreator[] { new VaginaCreator() },
 				fertility = 14,
 				speed = 35,
-				//In the human world, Prismere began as a scout, helping patrol areas with portals to make sure demonspawn and corruption didn't reach the human homeland. She's gotten herself into a few tight spots because of it, but she's hard to keep pinned down. She has a fiance back in her village whom she fully intends to get back to, so her libido isn't especially high. 
-				//As of the time the PC takes her on, she has some signs of demonic taint, so Corruption might start at 5 to 10 points."	"Breasts at E, height at 5'0, a curvy build with a more narrow waist and substantial hips and butt. Skin is olive, like a mocha, hair is long and wildly wavy, a deep red, and eyes are a stormy blue. Muscles are barely visible; what muscle she has is the lean build of a runner, not a fighter. Nipples aren't especially long, but more soft. 
+				//In the human world, Prismere began as a scout, helping patrol areas with portals to make sure demonspawn and corruption didn't reach the human homeland. She's gotten herself into a few tight spots because of it, but she's hard to keep pinned down. She has a fiance back in her village whom she fully intends to get back to, so her libido isn't especially high.
+				//As of the time the PC takes her on, she has some signs of demonic taint, so Corruption might start at 5 to 10 points."	"Breasts at E, height at 5'0, a curvy build with a more narrow waist and substantial hips and butt. Skin is olive, like a mocha, hair is long and wildly wavy, a deep red, and eyes are a stormy blue. Muscles are barely visible; what muscle she has is the lean build of a runner, not a fighter. Nipples aren't especially long, but more soft.
 				heightInInches = 60,
 				corruption = 10,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.E) },
@@ -1233,7 +1233,7 @@ namespace CoC.Frontend.Creatures
 				perks = new List<PerkBase>()
 				{
 					new Fast(),
-					//i interpreted the initially corrupt as this. sorry if that's not what you want. 
+					//i interpreted the initially corrupt as this. sorry if that's not what you want.
 					new Pervert(),
 				}
 				//creator.createPerk(PerkLib.Fast, 0.25, 0, 0, 0);
@@ -1461,7 +1461,7 @@ namespace CoC.Frontend.Creatures
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.E, 3.5f), new BreastCreator(CupSize.DD_BIG, 3.5f), new BreastCreator(CupSize.D, 3.5f) },
 				nippleStatus = NippleStatus.FUCKABLE,
 				heightInInches = 67,
-				//Perks: Slut and Fertile"	
+				//Perks: Slut and Fertile"
 
 				speed = 18,
 				intelligence = 17,
@@ -1476,7 +1476,7 @@ namespace CoC.Frontend.Creatures
 			//creator.teaseLevel = 3;
 		}
 
-		//this champ is so friggin overpowered holy shit. 
+		//this champ is so friggin overpowered holy shit.
 
 		private static SimpleDescriptor VahdunbriiFlavorText => SpecialCharacterStrings.VahdunbriiText;
 		private static PlayerCreator customVahdunbrii()
@@ -1702,7 +1702,7 @@ namespace CoC.Frontend.Creatures
 
 			//creator.createPerk(PerkLib.PiercedCrimstone, 5, 0, 0, 0); // with Omnibus' Gift it would give 50 min lust... perfect!
 
-			//creator.createStatusEffect(StatusEffects.KnowsHeal, 0, 0, 0, 0); // to compliment history	
+			//creator.createStatusEffect(StatusEffects.KnowsHeal, 0, 0, 0, 0); // to compliment history
 		}
 
 		//	private static SimpleDescriptor ChimeraFlavorText => SpecialCharacterStrings.ChimeraText;
@@ -1990,7 +1990,7 @@ namespace CoC.Frontend.Creatures
 				//again, stretched via toys, but never had vaginal sex.
 				vaginas = new VaginaCreator[] { new VaginaCreator(1f, VaginalWetness.WET, VaginalLooseness.LOOSE, true) },
 
-				//formerly C Cup, shrunk by the accident. Let's make use of that new inverted option - slightly. 
+				//formerly C Cup, shrunk by the accident. Let's make use of that new inverted option - slightly.
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.A, 1) },
 				nippleStatus = NippleStatus.SLIGHTLY_INVERTED,
 
@@ -2029,7 +2029,7 @@ namespace CoC.Frontend.Creatures
 				//concentrated incubus draft but no TF changes? that makes no sense. Have some demonic high-heels
 				lowerBodyType = LowerBodyType.DEMONIC_HIGH_HEELS,
 
-				//perk : Alchemist - Guniea Pig (makes you more sucsceptible to TFs) also slacker, as it seems to fit her backstory. 
+				//perk : Alchemist - Guniea Pig (makes you more sucsceptible to TFs) also slacker, as it seems to fit her backstory.
 				//endowment: sensitivity
 				perks = new List<PerkBase>()
 				{

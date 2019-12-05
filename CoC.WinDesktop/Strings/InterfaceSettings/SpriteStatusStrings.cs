@@ -1,7 +1,7 @@
 ﻿namespace CoC.WinDesktop.InterfaceSettings
 {
 	public partial class SpriteStatusOption
-	{ 
+	{
 		internal static string SpriteStatus()
 		{
 			return "Sprites";

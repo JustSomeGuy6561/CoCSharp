@@ -8,6 +8,7 @@ using CoC.Backend;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Settings.Gameplay;
 using CoC.Backend.Tools;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Perks.SpeciesPerks;
@@ -159,7 +160,7 @@ namespace CoC.Frontend.Races
 			{
 				beeCounter++;
 			}
-			//if has fur and it's black and yellow striped. 
+			//if has fur and it's black and yellow striped.
 			else if (source.body.mainEpidermis.usesFur && source.body.mainEpidermis.fur.Equals(defaultFur))
 			{
 				beeCounter += 2;
@@ -439,7 +440,7 @@ namespace CoC.Frontend.Races
 		//similarly, unless the check for cockatrice skin is ran, or FurColor is expressly called (which is VERY unsafe, unless the cockatrice check is ran),
 		//the primary fur color is ignored
 
-		//if cockatrice, store the fur and tone in the primary, and use them both. 
+		//if cockatrice, store the fur and tone in the primary, and use them both.
 
 		//i'm changing this - now the body will use the primary fur color and the tone as the underbody (which is scales)
 		//the secondary color is currently unused, but it would be possible to use it for the lower body for like fur around groin or something.
@@ -814,7 +815,7 @@ namespace CoC.Frontend.Races
 
 	public class Dog : Species
 	{
-		//correctly written - it uses and. 
+		//correctly written - it uses and.
 		public FurColor[] availableColors => new FurColor[]
 		{
 			new FurColor(HairFurColors.BROWN),
@@ -886,7 +887,7 @@ namespace CoC.Frontend.Races
 	public class Dragon : Species
 	{
 		//eye color: Orange
-		public Tones defaultTone => Tones.SILVER; // ember uses to silver/gold. So, that's what i'll use. screw it. 
+		public Tones defaultTone => Tones.SILVER; // ember uses to silver/gold. So, that's what i'll use. screw it.
 
 		public Tones defaultWingTone => Tones.DARK_RED;
 		public Tones defaultWingBoneTone => defaultWingTone;
@@ -1037,6 +1038,11 @@ namespace CoC.Frontend.Races
 				echidnaCounter++;
 			}
 			if (echidnaCounter >= 2 && source.genitals.CountCocksOfType(CockType.ECHIDNA) > 0)
+			{
+				echidnaCounter++;
+			}
+			//no one will ever see this easter egg, but i still think it's funnny.
+			if (echidnaCounter >= 2 && source.name == "Knuckles" && SillyModeSettings.isEnabled)
 			{
 				echidnaCounter++;
 			}
@@ -1321,7 +1327,7 @@ namespace CoC.Frontend.Races
 			{
 				gooCounter++;
 			}
-			if (source.statusEffects.HasStatusEffect<SlimeCraving>())//could make this a perk, idk. it's the same as the elastic innards perk in terms or requirements. 
+			if (source.statusEffects.HasStatusEffect<SlimeCraving>())//could make this a perk, idk. it's the same as the elastic innards perk in terms or requirements.
 			{
 				gooCounter++;
 			}
@@ -1383,7 +1389,7 @@ namespace CoC.Frontend.Races
 		protected Horse(SimpleDescriptor name) : base(name) { }
 
 		//april fools day will simply replace horse with pony if you match it. otherwise, you'll be a normal horse.
-		//the formula should be the same for both of them, idk how to do that. 
+		//the formula should be the same for both of them, idk how to do that.
 
 		public override byte Score(Creature source)
 		{

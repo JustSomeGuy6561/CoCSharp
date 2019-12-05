@@ -16,28 +16,28 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	//feel free to add other styles. 
+	//feel free to add other styles.
 	//try to keep the styles somewhat simplistic, as it needs to make sense no matter how long the hair gets. we're making an erotic text game, not the Sims (or a more realistic depiction thereof)
 	//i've added it because i think it's kinda cool to be able to say "wavy hair" or "curly tentacle-hair", or allow your pc to more accurately match what you have in mind (or yourself, if that's what you prefer)
 	//IMO it's nice to have the option to create a black character with type-4 (coiled) hair, as that's a common thing that doesn't often get represented in games (mostly because it's hard as hell to render)
 	//But at the same time, i'm aware there's a lot more hairstyles, and we're not really able to make all of them. For example, i've never seen an afro that's 6 feet tall, and i doubt physics supports it.
 
 	//in theory, you could do something where you choose a "cut" (not a style), like a bob or whatever, and as it grows out it just gradually turns into a curly/wavy/straight mess.
-	//It can be done, but from my experience it's a massive headache with little gain (tried it with beards). If someone wants to try it, go for it. 
+	//It can be done, but from my experience it's a massive headache with little gain (tried it with beards). If someone wants to try it, go for it.
 
-	//not included, but contemplated: Mohawk, Undercut, Pixi-Cut, Afro/Jew-fro, cornrows. they all seemed really dependant on hair length being a certain size.  
+	//not included, but contemplated: Mohawk, Undercut, Pixi-Cut, Afro/Jew-fro, cornrows. they all seemed really dependant on hair length being a certain size.
 	//also, contemplating removing ponytail (and to lesser extent braid), as it doesn't work with really short hair (i suppose it'd be more of a bun at short lengths), but Easter Egg demands it.
-	//An aside: some webcomic i read a while ago called an undercut a "sideways mohawk" or something of the like in passing (iirc a guy was apologizing to his friend for calling it that), and now i can't unsee it. 
+	//An aside: some webcomic i read a while ago called an undercut a "sideways mohawk" or something of the like in passing (iirc a guy was apologizing to his friend for calling it that), and now i can't unsee it.
 	//in the event you know the above webcomic feel free to add a url here and give it an unofficial shout-out. Mad props if you do - JSG
 
 	public enum HairStyle { NO_STYLE, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED, PONYTAIL }
 
 	//i'm unsure of behavior for hair color for PCs with NO_HAIR. no hair is for things that literally have no hair, like lizard-morphs and such.
 	//but the PC can change that via TFs, so do i store the old color so there's continuity? or should i be pedantic and say that they technically no longer have hair follicles,
-	//so there's no way to keep the old color? 
+	//so there's no way to keep the old color?
 
 	//right now, my solution is to keep the old color, even if the PC is bald/NO_HAIR, but in the event this changes or someone accidently clears the color, every time the hairType changes
-	//the new type checks to see if the color is null or empty and replaces it with their default (which is not null or empty) if it is. 
+	//the new type checks to see if the color is null or empty and replaces it with their default (which is not null or empty) if it is.
 
 	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType, HairData>, ISimultaneousMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
@@ -48,14 +48,14 @@ namespace CoC.Backend.BodyParts
 
 		//right now, accelerated growth lasts 8 hours. changing the accelorator level to non-zero will reset this to 8 hours. Changing it to zero will immediately set the duration to zero.
 		public const byte ACCELERATOR_DURATION = 8;
-		//accelerated growth can be stacked 3 times. 
+		//accelerated growth can be stacked 3 times.
 		//if you want to go nuts, you can set this up to a max of 126. after that, we are no longer in the range of float. personally, i'd highly recommend leaving it at 3, as that's already
 		//1.1 inches of growth an hour, up from the default of 0.1, though you could probably get away with a value up to 5 or 6 (5 is 4.7 inches per hour, 6 is 9.5)
 		//alternatively, you could alter the growth rate function, but whatever.
 		public const byte MAX_ACCELERATOR_LEVEL = 3;
 
 
-		//currently only limited by the range of a float in centimeters. we store things in imperial measures, however, so this is actually limited to 
+		//currently only limited by the range of a float in centimeters. we store things in imperial measures, however, so this is actually limited to
 		//max float divided by 2.54. In the future a more convenient value (like say, 360, or 30 feet long) may be used, but for now, i'm not limiting it. Go nuts, people!
 		public const float MAX_LENGTH = (float)(float.MaxValue * Measurement.TO_INCHES);
 		public const float MIN_LENGTH = 0;
@@ -77,7 +77,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private HairFurColors _hairColor = null;
 
-		//used for accelerated growth. as of now the extension serum is the only way to procc this, but it could technically be caused by anything. 
+		//used for accelerated growth. as of now the extension serum is the only way to procc this, but it could technically be caused by anything.
 
 		//make sure to leave room for this when we are loading a save. it's rare, but it could be saved.
 		public byte growthAccelerationLevel
@@ -120,23 +120,23 @@ namespace CoC.Backend.BodyParts
 
 		//growthAcceleration level is capped at 3 (right now)
 		//i use the sequence currently used in game (1,2), (2,5), (3,11), which implies => (4,23), (5,47), etc.
-		//that sequence is a(n) = 2 * a(n-1) + 1; n > 0. 
-		//my discreet math is a bit rusty, but fortunately wolfram exists. That's equal to 
-		//a(n) = 3*2^(n-1) - 1, which holds for all n > 0. 
-		//for 0, we use 1. 
+		//that sequence is a(n) = 2 * a(n-1) + 1; n > 0.
+		//my discreet math is a bit rusty, but fortunately wolfram exists. That's equal to
+		//a(n) = 3*2^(n-1) - 1, which holds for all n > 0.
+		//for 0, we use 1.
 
 		//use growth rate for all values not 0, otherwise use 1.
 		private float growthMultiplier => growthAccelerationLevel > 0 ? growthRateFn(growthAccelerationLevel) : 1.0f;
 
-		//max for amount: 127 after that we're out of range for a float. 
+		//max for amount: 127 after that we're out of range for a float.
 		//floats are weird, man. max is 1.99999999999999999999999^128 iirc
 		private float growthRateFn(byte amount)
 		{
 			//3*2^(n-1) -1;
 			//takes advantage of the fact that 2^n == 1 << (n+1). a bit shift right is the same as multiplying a number by 2 each time you shift it. right shift 5 of x and x * 2^5 are identical.
 			//thus, 2^(n-1) == 1 << n. bit shifts use massively less resources than Pow, though idk if they were smart enough to optimize in powers of 2.
-			//for reference, a bit shift is a single opcode in every assembly i'm aware of. technically a multiply is two opcodes, and pow is a series of multiplies. 
-			//plus C# abstraction, accounting for floating point values, etc. long story short, this is faster. 
+			//for reference, a bit shift is a single opcode in every assembly i'm aware of. technically a multiply is two opcodes, and pow is a series of multiplies.
+			//plus C# abstraction, accounting for floating point values, etc. long story short, this is faster.
 			return 3 * (1 << amount) - 1;
 		}
 
@@ -217,11 +217,11 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		//i'm gonna be lazy, fuck it. these are internal, anyway. the helpers are on the player class, so i can just parse it there. 
+		//i'm gonna be lazy, fuck it. these are internal, anyway. the helpers are on the player class, so i can just parse it there.
 
 		//Updates the type. returns true if it actually changed type. if it didn't change type, all other variables are ignored, and it returns false
-		//all variables beyond type are optional. All hair will first do its default action on transform, then update with any values here. 
-		//this is to prevent overriding when calling the tf on change effects. 
+		//all variables beyond type are optional. All hair will first do its default action on transform, then update with any values here.
+		//this is to prevent overriding when calling the tf on change effects.
 		internal bool UpdateType(HairType newType, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null, float? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
 		{
 			if (newType == null || type == newType)
@@ -230,7 +230,7 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldData = AsReadOnlyData();
 			var oldType = type;
-			//auto call the type tf change function. 
+			//auto call the type tf change function.
 			type = newType;
 
 			//if we have a new, valid hair length, and we can set the length
@@ -321,9 +321,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//use this to force a hair to be a certain length
-		//variables such as can cut or can lengthen will be ignored. 
+		//variables such as can cut or can lengthen will be ignored.
 		//of course, if the type has a single, fixed size for hair length, this will not be possible, and therefore return false.
-		//otherwise, it will return true. 
+		//otherwise, it will return true.
 
 		public bool SetHairLength(float newLength)
 		{
@@ -354,7 +354,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//Use these if you want to directly change your hair's length. if you want to do it naturally, alter the growth rate.
-		//by default, this function will take into consideration if your current hair type allows you to artifically lengthen it. 
+		//by default, this function will take into consideration if your current hair type allows you to artifically lengthen it.
 		//though you do have the option to ignore this variable. Note that even if you ignore this variable, types with a fixed hair Length
 		//will never change length.
 		//returns the amount the hair grew.
@@ -376,7 +376,7 @@ namespace CoC.Backend.BodyParts
 
 		//Use these if you want to directly shorten the hair's length. i can't think of a natural way this would happen,
 		//Unless you find a reason to go "all the hair fell out, then grew back in, but shorter"
-		//by default, this function will take into consideration if your current hair type allows you to cut it. 
+		//by default, this function will take into consideration if your current hair type allows you to cut it.
 		//though you do have the option to ignore this variable. Note that even if you ignore this variable, types with a fixed hair Length
 		//will never change length.
 		//returns the amount the hair shortened.
@@ -467,8 +467,8 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 		#endregion
-
-		public string ShortDescriptionWithTransparency() => type.ShortDescriptionWithTransparency(isSemiTransparent);
+		#region Extra Strings
+		public string DescriptionWithTransparency() => type.DescriptionWithTransparency(isSemiTransparent);
 
 		public string DescriptionWithColor() => type.DescriptionWithColor(AsReadOnlyData());
 
@@ -478,8 +478,18 @@ namespace CoC.Backend.BodyParts
 
 		public string FullDescription() => type.FullDescription(AsReadOnlyData());
 
-		public string SemiTransparentString() => HairType.SemiTransparentString(isSemiTransparent);
+		public string BaldOrDescriptionWithTransparency(bool baldWithArticle) => type.BaldOrDescriptionWithTransparency(isSemiTransparent, baldWithArticle);
 
+		public string BaldOrDescriptionWithColor(bool baldWithArticle) => type.BaldOrDescriptionWithColor(AsReadOnlyData(), baldWithArticle);
+
+		public string BaldOrDescriptionWithColorAndStyle(bool baldWithArticle) => type.BaldOrDescriptionWithColorAndStyle(AsReadOnlyData(), baldWithArticle);
+
+		public string BaldOrDescriptionWithColorLengthAndStyle(bool baldWithArticle) => type.BaldOrDescriptionWithColorLengthAndStyle(AsReadOnlyData(), baldWithArticle);
+
+		public string BaldOrLongDescription(bool baldWithArticle) => type.BaldOrLongDescription(AsReadOnlyData(), baldWithArticle);
+
+		public string BaldOrFullDescription(bool baldWithArticle) => type.BaldOrFullDescription(AsReadOnlyData(), baldWithArticle);
+		#endregion
 		#region HairAwareHelper
 		public override HairData AsReadOnlyData()
 		{
@@ -670,28 +680,43 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		//a boolean that determines if hair can change length at all. 
+		//a boolean that determines if hair can change length at all.
 		//which by default is if they grow over time or can be artificially lengthened.
 
-		//note that living hair override this, because they can be forced via TF items, but 
+		//note that living hair override this, because they can be forced via TF items, but
 		//otherwise do not grow or get cut.
 		public virtual bool isFixedLength => !growsOverTime && !canLengthen;
 
 		public abstract bool growsOverTime { get; }
 
 		//for now, simple descriptors. if it's discovered during conversion that i need to know the player for things like ears or antennae or whatever, or the hair length,
-		//i could convert to player str or player and type delegate. 
+		//i could convert to player str or player and type delegate.
 		public readonly SimpleDescriptor flavorTextForCutting;
 		public readonly SimpleDescriptor flavorTextForMagicHairGrowth;
 
 		public abstract bool canCut { get; }
 		public abstract bool canLengthen { get; }
 
-		public abstract bool canStyle { get; } //lets you prevent styling. 
+		public abstract bool canStyle { get; } //lets you prevent styling.
 
 		public abstract bool canDye { get; }
-		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc, PlayerBodyPartDelegate<Hair> playerDesc,
+
+		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc,DescriptorWithArg<HairData> longDesc,
 			SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
+			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, longDesc, DefaultPlayerDesc, transform, restore)
+		{
+			_index = indexMaker++;
+			hairTypes.AddAt(this, _index);
+
+			defaultColor = defaultHairColor;
+			defaultHairLength = defaultLength;
+
+			flavorTextForCutting = cutFlavorText;
+			flavorTextForMagicHairGrowth = growFlavorText;
+
+		}
+		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc,
+			PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
 			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -705,7 +730,7 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		//you also get the other color you're not dyeing, and a bool to tell you which one you're currently dyeing. may not really be necessary, but you can have them anyway. 
+		//you also get the other color you're not dyeing, and a bool to tell you which one you're currently dyeing. may not really be necessary, but you can have them anyway.
 		internal virtual bool tryToDye(ref HairFurColors currentColor, bool isPrimaryHair, in HairFurColors otherHairColor, HairFurColors newColor)
 		{
 			if (canDye)
@@ -742,32 +767,32 @@ namespace CoC.Backend.BodyParts
 
 		//super complicated but a lot more flexible this way - basically, you can choose to set anything you want as time passes. Does having living hair mean your hair randomly gets tangled?
 		//you can now make that happen. The cost is you now HAVE to set a Special Output string, but if you don't have anything to say, just set it to "";
-		//Don't worry about saying that the hair grew to a certain length relative to the player - that's taken care of by the Hair class, and it'll be appended after any other special text you set here. 
+		//Don't worry about saying that the hair grew to a certain length relative to the player - that's taken care of by the Hair class, and it'll be appended after any other special text you set here.
 		//also, return true if something happened to the hair - even if it didn't change length, the game needs to know that you messed with the hair style, for example. false otherwise.
 
 		internal abstract bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, byte hoursPassed,
 			float unitsGrown, out string SpecialOutput);
 
 
-		private static Func<float, float> KeepSize() => (x) => x;
-		private static Func<float, float> KeepSizeUnlessBald(float defaultSize) => (x) => x != 0 ? x : defaultSize; //currently unused, idk if that's a behavior someone would prefer.
-		private static Func<float, float> AtLeastThisBig(float defaultSize) => (x) => x > defaultSize ? x : defaultSize;
-		public static Func<float, float> SetTo(float defaultSize) => (x) => defaultSize;
+		protected static Func<float, float> KeepSize() => (x) => x;
+		protected static Func<float, float> KeepSizeUnlessBald(float defaultSize) => (x) => x != 0 ? x : defaultSize; //currently unused, idk if that's a behavior someone would prefer.
+		protected static Func<float, float> AtLeastThisBig(float defaultSize) => (x) => x > defaultSize ? x : defaultSize;
+		protected static Func<float, float> SetTo(float defaultSize) => (x) => defaultSize;
 
 		public static readonly HairType NO_HAIR = new NoHair(); //0.0
 		public static readonly HairType NORMAL = new NormalHair();
-		public static readonly HairType FEATHER = new GenericHairType(HairFurColors.WHITE, 5.0f, KeepSize(), FeatherDesc, FeatherLongDesc, FeatherPlayerStr, FeatherGrowStr, FeatherCutStr, FeatherTransformStr, FeatherRestoreStr);
-		public static readonly HairType GOO = new GenericHairType(HairFurColors.CERULEAN, 5.0f, AtLeastThisBig(5.0f), GooDesc, GooLongDesc, GooPlayerStr, GooGrowStr, GooCutStr, GooTransformStr, GooRestoreStr); //5 is if bald. updating behavior to <5 or bald to 5 inch. just say your old type 
-		public static readonly HairType ANEMONE = new LivingHair(DefaultValueHelpers.defaultAnemoneHair, 8.0f, new AnemoneSting(), AnemoneDesc, AnemoneLongDesc, AnemonePlayerStr, AnemoneNoGrowStr, AnemoneNoCutStr, AnemoneTransformStr, AnemoneRestoreStr);
-		public static readonly HairType QUILL = new GenericHairType(HairFurColors.WHITE, 12.0f, SetTo(12.0f), QuillDesc, QuillLongDesc, QuillPlayerStr, QuillGrowStr, QuillCutStr, QuillTransformStr, QuillRestoreStr); //shoulder length. not set though. whoops.
+		public static readonly HairType FEATHER = new GenericHairType(HairFurColors.WHITE, 5.0f, KeepSize(), FeatherDesc, FeatherLongDesc, FeatherGrowStr, FeatherCutStr, FeatherTransformStr, FeatherRestoreStr);
+		public static readonly HairType GOO = new GenericHairType(HairFurColors.CERULEAN, 5.0f, AtLeastThisBig(5.0f), GooDesc, GooLongDesc, GooGrowStr, GooCutStr, GooTransformStr, GooRestoreStr); //5 is if bald. updating behavior to <5 or bald to 5 inch. just say your old type
+		public static readonly HairType ANEMONE = new LivingHair(DefaultValueHelpers.defaultAnemoneHair, 8.0f, new AnemoneSting(), AnemoneDesc, AnemoneLongDesc, AnemoneNoGrowStr, AnemoneNoCutStr, AnemoneTransformStr, AnemoneRestoreStr);
+		public static readonly HairType QUILL = new GenericHairType(HairFurColors.WHITE, 12.0f, SetTo(12.0f), QuillDesc, QuillLongDesc, QuillGrowStr, QuillCutStr, QuillTransformStr, QuillRestoreStr); //shoulder length. not set though. whoops.
 		public static readonly HairType BASILISK_SPINES = new BasiliskSpines();
-		public static readonly HairType BASILISK_PLUME = new GenericHairType(DefaultValueHelpers.defaultBasiliskPlume, 2.0f, SetTo(2.0f), PlumeDesc, PlumeLongDesc, PlumePlayerStr, PlumeGrowStr, PlumeCutStr, PlumeTransformStr, PlumeRestoreStr); //2
-		public static readonly HairType WOOL = new GenericHairType(HairFurColors.WHITE, 1.0f, KeepSizeUnlessBald(1.0f), WoolDesc, WoolLongDesc, WoolPlayerStr, WoolGrowStr, WoolCutStr, WoolTransformStr, WoolRestoreStr); //not defined. 
-		public static readonly HairType LEAF = new LivingHair(DefaultValueHelpers.defaultVineColor, 12.0f, AttackBase.NO_ATTACK, VineDesc, VineLongDesc, VinePlayerStr, VineNoGrowStr, VineNoCutStr, VineTransformStr, VineRestoreStr);
+		public static readonly HairType BASILISK_PLUME = new GenericHairType(DefaultValueHelpers.defaultBasiliskPlume, 2.0f, SetTo(2.0f), PlumeDesc, PlumeLongDesc, PlumeGrowStr, PlumeCutStr, PlumeTransformStr, PlumeRestoreStr); //2
+		public static readonly HairType WOOL = new GenericHairType(HairFurColors.WHITE, 1.0f, KeepSizeUnlessBald(1.0f), WoolDesc, WoolLongDesc, WoolGrowStr, WoolCutStr, WoolTransformStr, WoolRestoreStr); //not defined.
+		public static readonly HairType LEAF = new LivingHair(DefaultValueHelpers.defaultVineColor, 12.0f, AttackBase.NO_ATTACK, VineDesc, VineLongDesc, VineNoGrowStr, VineNoCutStr, VineTransformStr, VineRestoreStr);
 
 		private class NoHair : HairType
 		{
-			public NoHair() : base(HairFurColors.BLACK, 0.0f, NoHairDesc, NoHairLongDesc, NoHairPlayerStr, NoHairToGrow, NoHairToCut, NoHairTransformStr, NoHairRestoreStr) { }
+			public NoHair() : base(HairFurColors.BLACK, 0.0f, NoHairDesc, NoHairLongDesc, NoHairToGrow, NoHairToCut, NoHairTransformStr, NoHairRestoreStr) { }
 
 			public override bool growsOverTime => false;
 
@@ -842,13 +867,13 @@ namespace CoC.Backend.BodyParts
 		//basically, this lets us "cheat", so we don't need to implement each hair type. most act the same way, so we can do this.
 		private class GenericHairType : HairType
 		{
-			//one exception is that some hair types act differently when transforming. some keep the hair length, some reset it to a specific length, 
+			//one exception is that some hair types act differently when transforming. some keep the hair length, some reset it to a specific length,
 			//and still others force the hair to be at least a certain length, or they will grow to that length. So, we use a function callback here to set the size on transform
-			//and this solves our problem. 
+			//and this solves our problem.
 			private readonly Func<float, float> SetHairLengthOnTransform;
 
 			//this allows you to define text for magically growing hair, or cutting hair. It's supposed to be useable for anything, but right now the only place this happens is the hair salon.
-			//i'll modify existing text to a sort of generic intro text for both the hair you can cut, and the hair you can't. this will be appended on to it. 
+			//i'll modify existing text to a sort of generic intro text for both the hair you can cut, and the hair you can't. this will be appended on to it.
 
 			public override bool canLengthen => true;
 
@@ -860,6 +885,14 @@ namespace CoC.Backend.BodyParts
 				SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
 				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, longDesc, playerDesc, growStr, cutStr, transform, restore)
+			{
+				SetHairLengthOnTransform = handleHairLengthOnTransform;
+			}
+
+			public GenericHairType(HairFurColors defaultHairColor, float defaultLength, Func<float, float> handleHairLengthOnTransform,
+				SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc, SimpleDescriptor growStr,
+				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
+				: base(defaultHairColor, defaultLength, shortDesc, longDesc, growStr, cutStr, transform, restore)
 			{
 				SetHairLengthOnTransform = handleHairLengthOnTransform;
 			}
@@ -892,7 +925,7 @@ namespace CoC.Backend.BodyParts
 					primaryColor = defaultColor;
 				}
 				//ehh, we'll keep the hair color if not empty, and we'll keep the highlight too. if you want to change this either derive it or put in a callback, i don't really care.
-				//same with the hair style. 
+				//same with the hair style.
 			}
 
 			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
@@ -906,11 +939,11 @@ namespace CoC.Backend.BodyParts
 
 		private class NormalHair : GenericHairType
 		{
-			public NormalHair() : base(HairFurColors.BLACK, 0.0f, KeepSize(), NormalDesc, NormalLongDesc, NormalPlayerStr, NormalGrowStr, NormalCutStr, NormalTransformStr, NormalRestoreStr) { }
+			public NormalHair() : base(HairFurColors.BLACK, 0.0f, KeepSize(), NormalDesc, NormalLongDesc, NormalGrowStr, NormalCutStr, NormalTransformStr, NormalRestoreStr) { }
 
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new HairWhip();
-			//this could have been done as a special extended content in the frontend, but i've already got the attackwith interface for anemone hair, might as well do it here. 
+			//this could have been done as a special extended content in the frontend, but i've already got the attackwith interface for anemone hair, might as well do it here.
 			internal override bool canAttackWith(Hair hair) //only allow it if it's Ret2Go! (or if it's braided a la harem style)
 			{
 				return hair.length >= 36.0f && (hair.style == HairStyle.BRAIDED || hair.style == HairStyle.PONYTAIL) && hair.hairColor == HairFurColors.PURPLE;
@@ -923,7 +956,7 @@ namespace CoC.Backend.BodyParts
 			//can't cut or lengthen
 			public override bool canCut => false;
 			public override bool canLengthen => false;
-			//but we still can change length. 
+			//but we still can change length.
 			public override bool isFixedLength => false;
 
 			public override bool canDye => true;
@@ -934,10 +967,9 @@ namespace CoC.Backend.BodyParts
 			internal override AttackBase attack => _attack; //caught a stack overflow here because attack was attack.
 			private readonly AttackBase _attack;
 
-			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc,
-				DescriptorWithArg<HairData> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor whyNoGrowingDesc,
-				SimpleDescriptor whyNoCuttingDesc, ChangeType<HairData> transform, RestoreType<HairData> restore)
-				: base(defaultHairColor, defaultLength, shortDesc, longDesc, playerDesc, whyNoGrowingDesc, whyNoCuttingDesc, transform, restore)
+			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc,
+				SimpleDescriptor whyNoGrowingDesc, SimpleDescriptor whyNoCuttingDesc, ChangeType<HairData> transform, RestoreType<HairData> restore)
+				: base(defaultHairColor, defaultLength, shortDesc, longDesc, whyNoGrowingDesc, whyNoCuttingDesc, transform, restore)
 			{
 				_attack = attack;
 			}
@@ -968,7 +1000,7 @@ namespace CoC.Backend.BodyParts
 				//clear the highlights.
 				highlightColor = HairFurColors.NO_HAIR_FUR;
 				//we technically don't prevent highlights from happening, as you can dye these. i dunno, all hair was dyeable before. i'm just going with it - JSG.
-				//living hair wants to be free, so remove the styles. maybe you want the vines to be braided, idk. if so, derive it, do what you want. 
+				//living hair wants to be free, so remove the styles. maybe you want the vines to be braided, idk. if so, derive it, do what you want.
 				hairStyle = HairStyle.NO_STYLE;
 
 			}
@@ -984,7 +1016,7 @@ namespace CoC.Backend.BodyParts
 
 		private class BasiliskSpines : HairType
 		{
-			public BasiliskSpines() : base(DefaultValueHelpers.defaultBasiliskSpines, 2.0f, SpineDesc, SpineLongDesc, SpinePlayerStr, SpineNoGrowStr, SpineNoCutStr, SpineTransformStr, SpineRestoreStr) { }
+			public BasiliskSpines() : base(DefaultValueHelpers.defaultBasiliskSpines, 2.0f, SpineDesc, SpineLongDesc, SpineNoGrowStr, SpineNoCutStr, SpineTransformStr, SpineRestoreStr) { }
 
 			public override bool growsOverTime => false;
 
@@ -1079,7 +1111,7 @@ namespace CoC.Backend.BodyParts
 
 		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
 
-		public string ShortDescriptionWithTransparency() => type.ShortDescriptionWithTransparency(isSemiTransparent);
+		public string DescriptionWithTransparency() => type.DescriptionWithTransparency(isSemiTransparent);
 
 		public string DescriptionWithColor() => type.DescriptionWithColor(this);
 
@@ -1089,6 +1121,17 @@ namespace CoC.Backend.BodyParts
 
 		public string FullDescription() => type.FullDescription(this);
 
+		public string BaldOrDescriptionWithTransparency(bool baldWithArticle) => type.BaldOrDescriptionWithTransparency(isSemiTransparent, baldWithArticle);
+
+		public string BaldOrDescriptionWithColor(bool baldWithArticle) => type.BaldOrDescriptionWithColor(this, baldWithArticle);
+
+		public string BaldOrDescriptionWithColorAndStyle(bool baldWithArticle) => type.BaldOrDescriptionWithColorAndStyle(this, baldWithArticle);
+
+		public string BaldOrDescriptionWithColorLengthAndStyle(bool baldWithArticle) => type.BaldOrDescriptionWithColorLengthAndStyle(this, baldWithArticle);
+
+		public string BaldOrLongDescription(bool baldWithArticle) => type.BaldOrLongDescription(this, baldWithArticle);
+
+		public string BaldOrFullDescription(bool baldWithArticle) => type.BaldOrFullDescription(this, baldWithArticle);
 
 		public override HairData AsCurrentData()
 		{

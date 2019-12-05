@@ -11,7 +11,7 @@ namespace CoC.WinDesktop.Helpers
 	{
 		//NOTE: <a> tag is NOT directly supported. The base for it is in play, and the contentRichTextBox actually checks for it, but I haven't written a regex for it,
 		//nor have i ran a check to see if the color for hyperlinks is in the list of available colors. the only instance that curerntly uses hyperlinks is a very
-		//controlled sub-case for credits, and the URL is given manually. You have no idea how hard that actually was to implement, though. 
+		//controlled sub-case for credits, and the URL is given manually. You have no idea how hard that actually was to implement, though.
 
 		public static string FromHTMLNoHeader(StringBuilder HTMLText, Color defaultColor, out List<Color> colors)
 		{
@@ -33,16 +33,16 @@ namespace CoC.WinDesktop.Helpers
 			HTMLText.Replace(@"<pre>", @"");
 			HTMLText.Replace(@"</pre>", @"");
 
-			//note the lack of @ on these strings - these strings we actually want to escape and look for the special character. 
-			//more fun facts: IIRC Environment.NewLine returns "\n" for all things not Windows, though idk if it has funny rules for Xamarin on Mac. 
+			//note the lack of @ on these strings - these strings we actually want to escape and look for the special character.
+			//more fun facts: IIRC Environment.NewLine returns "\n" for all things not Windows, though idk if it has funny rules for Xamarin on Mac.
 			HTMLText.Replace("\r\n", @"\par "); //You're on Windows and used the Environment.NewLine. Fun fact, the older parser stripped out the \r in \r\n
 			HTMLText.Replace("\n", @"\par "); //The 'standard'. IMO the safe route of throwing both (windows) is better, though then there are parsers that treat that as \n\n and that's bad.
 			HTMLText.Replace("\r", @"\par "); //It was written on a Mac. I hate you. JK, but damn - I'm surprised the old parser didn't blow up with \r
 			HTMLText.Replace("\t", @"\tab ");
 
-			//This is a simplistic way of simulating an unordered list. Hacky as all hell, and it'll break with nested lists, but we never have nested lists so this should work fine. 
+			//This is a simplistic way of simulating an unordered list. Hacky as all hell, and it'll break with nested lists, but we never have nested lists so this should work fine.
 			//also this will break with a random <li> or if there are ever ordered lists (<ol>). It's possible to do it correctly with about 10 different bullshit RTF tags, but fuck that.
-			//I mean, if you have a hard-on for perfectly formed RTF, i think you're playing the wrong game here ¯\_(ツ)_/¯. But by all means, fix it.   
+			//I mean, if you have a hard-on for perfectly formed RTF, i think you're playing the wrong game here ¯\_(ツ)_/¯. But by all means, fix it.
 			HTMLText.Replace(@"<ul>", @"");
 			HTMLText.Replace(@"</ul>", @"\line ");
 			HTMLText.Replace(@"<li>", @"\line  \bullet  ");
@@ -58,7 +58,7 @@ namespace CoC.WinDesktop.Helpers
 
 			//Color region
 
-			//add the first color manually b/c it's actually a solid color brush. This is our default color for this render. 
+			//add the first color manually b/c it's actually a solid color brush. This is our default color for this render.
 			IEnumerable<Color> colorList = new List<Color>
 			{
 				defaultColor
@@ -99,14 +99,14 @@ namespace CoC.WinDesktop.Helpers
 			}
 
 
-			//formatted matches and matchColors are the same length. which is als the length of matchList. 
+			//formatted matches and matchColors are the same length. which is als the length of matchList.
 			x = 0;
 			IEnumerable<Color> matchColors = formattedMatches.Select(toColor);
 			Color[] matchColorArray = matchColors.ToArray();
 			Dictionary<string, Color> matchesToColorLookup = new Dictionary<string, Color>();
 			for (x = 0; x < matchList.Length; x++)
 			{
-				matchesToColorLookup[matchList[x]] = matchColorArray[x]; //if there's a collision they should be identical anyway. 
+				matchesToColorLookup[matchList[x]] = matchColorArray[x]; //if there's a collision they should be identical anyway.
 			}
 
 
@@ -177,7 +177,7 @@ namespace CoC.WinDesktop.Helpers
 		}
 
 		//after delving ass-deep in c# source using dotPeek (apparently reference source doesn't want to play nice, idk)
-		//it turns out the hyperlink needs to be quotated in order to work. fun times. 
+		//it turns out the hyperlink needs to be quotated in order to work. fun times.
 		public static string ToRTFUrl(Uri unsafeUrl, int colorIndex)
 		{
 			string temp = ToRTFSafeString(unsafeUrl.ToString());

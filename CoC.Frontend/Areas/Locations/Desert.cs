@@ -65,7 +65,7 @@ namespace CoC.Frontend.Areas.Locations
 			randomEncounters.Add(new DemonPackEncounter());
 
 			semiRandomEncounters.Add(new DiscoverTelAdreEncounter());
-			semiRandomEncounters.Add(new DoAntColonyEncounter()); //demon pack on first encounter - it's weird. 
+			semiRandomEncounters.Add(new DoAntColonyEncounter()); //demon pack on first encounter - it's weird.
 			semiRandomEncounters.Add(new FindDesertDungeonEncounter());
 			semiRandomEncounters.Add(new FindChestEncounter());
 			semiRandomEncounters.Add(new FindFountainEncounter());

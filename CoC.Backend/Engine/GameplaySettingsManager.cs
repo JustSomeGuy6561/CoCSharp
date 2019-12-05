@@ -7,8 +7,8 @@ using System.Text;
 namespace CoC.Backend.Engine
 {
 	/// <summary>
-	/// Class used to allow user to update their gameplay settings. Members stored in here are given to the GUI 
-	/// to handle when it queries for gameplay settings to display so the user can set them accordingly. 
+	/// Class used to allow user to update their gameplay settings. Members stored in here are given to the GUI
+	/// to handle when it queries for gameplay settings to display so the user can set them accordingly.
 	/// </summary>
 	public static class GameplaySettingsManager
 	{
@@ -22,7 +22,7 @@ namespace CoC.Backend.Engine
 			gameSettings = new ReadOnlyCollection<GameplaySetting>(_settings);
 		}
 
-		//do this during the initialization phase, after the game has successfully loaded all save data sessions/globals. 
+		//do this during the initialization phase, after the game has successfully loaded all save data sessions/globals.
 		public static void IncludeGameplaySetting(GameplaySetting setting)
 		{
 			if (!_settingLookup.ContainsKey(setting.GetType()))
@@ -30,6 +30,11 @@ namespace CoC.Backend.Engine
 				_settingLookup.Add(setting.GetType(), setting);
 				_settings.Add(setting);
 			}
+		}
+
+		public static GameplaySetting GetSetting(Func<GameplaySetting, bool> findSetting)
+		{
+			return System.Linq.Enumerable.FirstOrDefault(gameSettings, findSetting);
 		}
 	}
 }

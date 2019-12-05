@@ -34,13 +34,13 @@ namespace CoC.Backend.BodyParts
 		private static string DragonShort() { return "dragon claws"; }
 		private static string DragonLongDesc(HandData hands)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return hands.clawTone.AsString() + "ish draconic claws";
 		}
 
 		private static string SalamanderShort() { return "salamander claws"; }
 		private static string SalamanderLongDesc(HandData hands)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "scaley " + SalamanderShort();
 		}
 
 		private static string CatShort() { return "cat paws"; }
@@ -64,7 +64,7 @@ namespace CoC.Backend.BodyParts
 		private static string ImpShort() { return "imp claws"; }
 		private static string ImpLongDesc(HandData hands)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return ImpShort();
 		}
 
 		private static string CockatriceShort() { return "cockatrice claws"; }

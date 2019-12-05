@@ -11,7 +11,7 @@ namespace CoC.Backend.BodyParts
 		public readonly BehaviorClass type;
 		public readonly Guid creatureID;
 
-		public virtual string ShortDescription() => type.shortDescription();
+		public virtual string ShortDescription() => type.ShortDescription();
 
 		private protected BehavioralPartDataBase(Guid creatureID, BehaviorClass currentBehavior)
 		{

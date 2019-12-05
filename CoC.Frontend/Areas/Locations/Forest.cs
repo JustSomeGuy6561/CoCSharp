@@ -72,7 +72,7 @@ namespace CoC.Frontend.Areas.Locations
 			randomEncounters.Add(new SuccubusEncounter());
 			randomEncounters.Add(new TamaniEncounter());
 			randomEncounters.Add(new DryadEncounter());
-			//all the imps. 
+			//all the imps.
 			randomEncounters.UnionWith(ImpEncounter.AllImpEncounters());
 			//all the goblins.
 			randomEncounters.UnionWith(GoblinEncounter.AllGoblinEncounters());

@@ -31,7 +31,7 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 
 		protected override SimpleDescriptor DoAttack(CombatCreature attacker, CombatCreature defender)
 		{
-			int attackStrength = resourceCount / 2; //num turns it'll last. 
+			int attackStrength = resourceCount / 2; //num turns it'll last.
 			resourceCount = 0; //remove all tendrils.
 			throw new NotImplementedException();
 		}

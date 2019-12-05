@@ -23,7 +23,7 @@ namespace CoC.Backend.BodyParts
 	 * HELIX: the thin upper outside part of your ear. ANTI-HELIX: the thin upper inside part of your ear.
 	 * I had more that i looked up but i can't realisticly make them part of anything not human.
 	 * I am aware everyone's ears are different and you may have tiny lobes and long-ass helix bits
-	 * (which i suppose is also true for elfin ears); i did what i could, sue me. 
+	 * (which i suppose is also true for elfin ears); i did what i could, sue me.
 	 * Also, each ear has a max of 14 values, as 14 is our max for one screen. right now, I use 13.
 	 */
 	public enum EarPiercings
@@ -38,7 +38,7 @@ namespace CoC.Backend.BodyParts
 		RIGHT_ANTI_HELIX
 	}
 
-	//lazy, so it actually wont fire any data changed events, even though the ear fur can change. 
+	//lazy, so it actually wont fire any data changed events, even though the ear fur can change.
 	public sealed partial class Ears : BehavioralSaveablePart<Ears, EarType, EarData>
 	{
 		public override string BodyPartName() => Name();

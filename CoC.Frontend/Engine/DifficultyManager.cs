@@ -18,7 +18,7 @@ namespace CoC.Frontend.Engine
 			difficulties.Add(new Easy());
 			difficulties.Add(new Normal());
 
-			defaultDifficultyIndex = difficulties.Count - 1; //must appear right after normal. 
+			defaultDifficultyIndex = difficulties.Count - 1; //must appear right after normal.
 
 			difficulties.Add(new Hard());
 			difficulties.Add(new Nightmare());

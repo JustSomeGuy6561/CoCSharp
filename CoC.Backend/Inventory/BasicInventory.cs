@@ -20,8 +20,8 @@ namespace CoC.Backend.Inventory
 		public byte currentlyUnlockedSlots => storage.currentlyUnlockedSlots;
 		public const byte MAX_SLOTS = 10;
 
-		//automatically handles allocating the right space for the slot storage. 
-		
+		//automatically handles allocating the right space for the slot storage.
+
 		public BasicInventory()
 		{
 			storage = new BasicStorage<CapacityItem>(MAX_SLOTS, 3); //start with 3 unlocked slots.
@@ -78,7 +78,7 @@ namespace CoC.Backend.Inventory
 		}
 
 		/// <summary>
-		/// Attempts to add the item. returns the index at which the item is stored, or -1 if it has not been added. 
+		/// Attempts to add the item. returns the index at which the item is stored, or -1 if it has not been added.
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>

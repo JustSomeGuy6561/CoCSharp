@@ -7,7 +7,7 @@ namespace CoC.WinDesktop
 	{
 		public static GuiGlobalSave data => SaveSystem.GetGlobalSave<GuiGlobalSave>();
 
-		//20px, 15pt. 
+		//20px, 15pt.
 		public int FontSizeInEms = 30;
 		//public int FontSizeInEms = MeasurementHelpers.ConvertToEms(20, SizeUnit.PIXELS);
 

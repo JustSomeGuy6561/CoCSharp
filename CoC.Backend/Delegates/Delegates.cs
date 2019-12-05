@@ -16,7 +16,17 @@ namespace CoC.Backend
 {
 
 	public delegate string SimpleDescriptor();
+
 	public delegate string DescriptorWithArg<T>(T arg);
+
+	//considering replacing above with these for body parts, allowing plurals to be handled cleanly.
+	public delegate string ShortDescription(bool plural = true);
+
+	public delegate string LongDescription<T>(T data, bool plural = true);
+
+
+
+	public delegate string AdjectiveDescriptor(bool withArticle);
 
 	public delegate string PlayerStr(PlayerBase player);
 	public delegate string ChangeStr<T>(T newBehavior, PlayerBase player);

@@ -15,7 +15,7 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	//NOTE: Removed a boolean (very adequately named pos - i can tell exactly what it does from that name.)
-	//that was used to determine if the neck was positioned out of the bottom of the head or out the back. however, 
+	//that was used to determine if the neck was positioned out of the bottom of the head or out the back. however,
 	//despite the fact that most lizards have their neck out the back of the their head (and most fish, for that matter)
 	//they were never implemented. it seemed like a half-baked idea, so it's no longer here. if it ever becomes full-baked,
 	//by all means, add it back.
@@ -24,6 +24,8 @@ namespace CoC.Backend.BodyParts
 		public override string BodyPartName() => Name();
 
 		public byte length { get; private set; } = NeckType.MIN_NECK_LENGTH;
+
+		public bool neckAtBaseOfSkull => type.neckAtBaseOfSkull; //(relative to humans, of course)
 
 		private HairFurColors hairColor => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.hair.hairColor : Hair.DEFAULT_COLOR;
 
@@ -35,16 +37,16 @@ namespace CoC.Backend.BodyParts
 				if (value != _type)
 				{
 					byte len = length;
-					HairFurColors col = neckColor;
+					HairFurColors col = color;
 					value.convertNeck(ref len, ref col, hairColor, _type);
 					length = len;
-					neckColor = col;
+					color = col;
 				}
 				_type = value;
 			}
 		}
 		private NeckType _type = NeckType.defaultValue;
-		public HairFurColors neckColor { get; private set; } = HairFurColors.NO_HAIR_FUR;
+		public HairFurColors color { get; private set; } = HairFurColors.NO_HAIR_FUR;
 
 		public override NeckType defaultType => NeckType.defaultValue;
 
@@ -63,9 +65,9 @@ namespace CoC.Backend.BodyParts
 		internal Neck(Guid creatureID, NeckType neckType, HairFurColors initialNeckColor = null, byte neckLength = NeckType.MIN_NECK_LENGTH) : this(creatureID, neckType)
 		{
 			GrowNeckInternal(neckLength.subtract(NeckType.MIN_NECK_LENGTH), true); //add in the remaining amount.
-			var neckCol = neckColor;
+			var neckCol = color;
 			type.ParseDye(ref neckCol, initialNeckColor);
-			neckColor = neckCol;
+			color = neckCol;
 		}
 
 		internal override bool UpdateType(NeckType newType)
@@ -104,7 +106,7 @@ namespace CoC.Backend.BodyParts
 
 		private void CheckDataChanged(NeckData oldData)
 		{
-			if (neckColor != oldData.neckHairColor || length != oldData.neckLength)
+			if (color != oldData.neckHairColor || length != oldData.length)
 			{
 				NotifyDataChanged(oldData);
 			}
@@ -147,10 +149,10 @@ namespace CoC.Backend.BodyParts
 		internal override bool Validate(bool correctInvalidData)
 		{
 			byte len = length;
-			HairFurColors col = neckColor;
+			HairFurColors col = color;
 			bool valid = NeckType.Validate(ref _type, ref len, ref col, correctInvalidData);
 			length = len;
-			neckColor = col;
+			color = col;
 			return valid;
 		}
 
@@ -162,16 +164,16 @@ namespace CoC.Backend.BodyParts
 
 		bool IDyeable.isDifferentColor(HairFurColors dyeColor)
 		{
-			return neckColor != dyeColor;
+			return color != dyeColor;
 		}
 
 		bool IDyeable.attemptToDye(HairFurColors dye)
 		{
 			if (((IDyeable)this).allowsDye())
 			{
-				HairFurColors color = neckColor;
-				bool retVal = type.ParseDye(ref color, dye);
-				neckColor = color;
+				HairFurColors col = color;
+				bool retVal = type.ParseDye(ref col, dye);
+				color = col;
 				return retVal;
 			}
 			return false;
@@ -194,7 +196,7 @@ namespace CoC.Backend.BodyParts
 
 		protected const int MAX_HUMAN_LENGTH = 2;
 		protected const int MAX_DRAGON_LENGTH = 30;
-		protected const int MAX_COCKATRICE_LENGTH = 2;
+		protected const int MAX_COCKATRICE_LENGTH = 5;
 
 		private static int indexMaker = 0;
 		private static readonly List<NeckType> necks = new List<NeckType>();
@@ -202,9 +204,13 @@ namespace CoC.Backend.BodyParts
 		private readonly int _index;
 
 		public readonly byte maxNeckLength;
-		public readonly HairFurColors defaultColor;
+		public virtual HairFurColors defaultColor => HairFurColors.NO_HAIR_FUR;
 
-		public readonly bool canDye;
+		public bool canDye => !defaultColor.isEmpty && allowsDye;
+
+		private protected virtual bool allowsDye => true;
+
+		public virtual byte minNeckLength => MIN_NECK_LENGTH;
 
 		public static NeckType defaultValue => HUMANOID;
 
@@ -220,21 +226,19 @@ namespace CoC.Backend.BodyParts
 		{
 			_index = indexMaker++;
 			maxNeckLength = maxLength;
-			canDye = false;
-			defaultColor = HairFurColors.NO_HAIR_FUR;
 			necks.AddAt(this, _index);
 		}
 
-		private protected NeckType(byte maxLength, HairFurColors defaultHairFur,
-			SimpleDescriptor shortDesc, DescriptorWithArg<NeckData> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
-			RestoreType<NeckData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
-		{
-			_index = indexMaker++;
-			maxNeckLength = maxLength;
-			defaultColor = defaultHairFur;
-			canDye = defaultColor != HairFurColors.NO_HAIR_FUR;
-			necks.AddAt(this, _index);
-		}
+		//private protected NeckType(byte minLength, byte maxLength, HairFurColors defaultHairFur,
+		//	SimpleDescriptor shortDesc, DescriptorWithArg<NeckData> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
+		//	RestoreType<NeckData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+		//{
+		//	_index = indexMaker++;
+		//	maxNeckLength = maxLength;
+		//	defaultColor = defaultHairFur;
+		//	canDye = defaultColor != HairFurColors.NO_HAIR_FUR;
+		//	necks.AddAt(this, _index);
+		//}
 
 		public override int index => _index;
 
@@ -242,6 +246,8 @@ namespace CoC.Backend.BodyParts
 		{
 			return currNeckLength < maxNeckLength;
 		}
+
+		internal virtual bool neckAtBaseOfSkull => true;
 
 		internal virtual byte StrengthenTransform(ref byte neckLength, byte amount)
 		{
@@ -276,16 +282,16 @@ namespace CoC.Backend.BodyParts
 		/// <param name="oldMaxLength"></param>
 		internal virtual void convertNeck(ref byte length, ref HairFurColors color, in HairFurColors currentHairColor, NeckType oldType)
 		{
-			if (maxNeckLength == MIN_NECK_LENGTH)
+			if (maxNeckLength == minNeckLength)
 			{
-				length = MIN_NECK_LENGTH;
+				length = minNeckLength;
 			}
 			else
 			{
-				length = Utils.LerpRound(MIN_NECK_LENGTH, oldType.maxNeckLength, length, MIN_NECK_LENGTH, maxNeckLength);
+				length = Utils.LerpRound(oldType.minNeckLength, oldType.maxNeckLength, length, minNeckLength, maxNeckLength);
 			}
 
-			//current behavior: we always use new default hair - we never save the old color. in the event this behavior gets changed 
+			//current behavior: we always use new default hair - we never save the old color. in the event this behavior gets changed
 			//as more necktypes are added, provide a means to determine that behavior and implement it here. or override this i guess.
 			color = defaultColor;
 		}
@@ -319,7 +325,7 @@ namespace CoC.Backend.BodyParts
 			if (valid || correctInvalidData)
 			{
 				byte len = length;
-				Utils.Clamp(ref len, MIN_NECK_LENGTH, maxNeckLength);
+				Utils.Clamp(ref len, minNeckLength, maxNeckLength);
 				if (length != len)
 				{
 					if (correctInvalidData)
@@ -332,15 +338,39 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanLongDesc, HumanPlayerStr, (x, y) => x.type.restoredString(x, y), GlobalStrings.RevertAsDefault);
-		public static readonly NeckType DRACONIC = new NeckType(MAX_DRAGON_LENGTH, DragonDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly NeckType COCKATRICE = new NeckType(MAX_COCKATRICE_LENGTH, HairFurColors.GREEN, CockatriceDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanLongDesc, HumanPlayerStr, (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly NeckType DRACONIC = new DraconicNeck();
+		public static readonly NeckType COCKATRICE = new CockatriceNeck();
+
+		//cockatrice does not grow, but is slightly larger than human neck (5inches). before, it was 2-5, with no way to grow.
+		private sealed class CockatriceNeck : NeckType
+		{
+			public CockatriceNeck() : base(MAX_COCKATRICE_LENGTH, CockatriceDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
+			{
+			}
+
+			public override HairFurColors defaultColor => HairFurColors.GREEN;
+
+			public override byte minNeckLength => MAX_COCKATRICE_LENGTH;
+		}
+
+		private sealed class DraconicNeck : NeckType
+		{
+			public DraconicNeck() : base(MAX_DRAGON_LENGTH, DragonDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr)
+			{
+			}
+
+			internal override bool neckAtBaseOfSkull => false;
+		}
 	}
 
 	public sealed class NeckData : BehavioralSaveablePartData<NeckData, Neck, NeckType>
 	{
-		public readonly byte neckLength;
+		public readonly byte length;
 		public readonly HairFurColors neckHairColor; //if applicable
+
+		public bool neckAtBaseOfSkull => type.neckAtBaseOfSkull; //(relative to humans, of course)
+
 
 		public override NeckData AsCurrentData()
 		{
@@ -349,8 +379,8 @@ namespace CoC.Backend.BodyParts
 
 	internal NeckData(Neck neck) : base(GetID(neck), GetBehavior(neck))
 		{
-			neckLength = neck.length;
-			neckHairColor = neck.neckColor;
+			length = neck.length;
+			neckHairColor = neck.color;
 		}
 	}
 }

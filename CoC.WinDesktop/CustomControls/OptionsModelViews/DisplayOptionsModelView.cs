@@ -85,7 +85,7 @@ namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 			lastLanguageIndex = LanguageEngine.currentLanguageIndex;
 			_DisplayOptionsText = TitleText();
 			_DisplayOptionsHelper = TitleHelperText();
-			
+
 			//GetRTFText();
 			rtfSource = null;
 
@@ -117,11 +117,11 @@ namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 		}
 
 		//Top: header, helper
-		//ContentRTB in the middle. Full of lorem ipsum or language check text. 
+		//ContentRTB in the middle. Full of lorem ipsum or language check text.
 
-		//bottom: 3 sliders - for font size, text bg color and bg image. 
+		//bottom: 3 sliders - for font size, text bg color and bg image.
 
-		//confirm on bottom icons. 
+		//confirm on bottom icons.
 		public override void ParseDataForDisplay()
 		{
 			if (lastLanguageIndex != LanguageEngine.currentLanguageIndex || string.IsNullOrEmpty(rtfSource))
@@ -151,7 +151,7 @@ namespace CoC.WinDesktop.CustomControls.OptionsModelViews
 
 		private void ConfirmControls()
 		{
-			//do nothing. 
+			//do nothing.
 		}
 	}
 }

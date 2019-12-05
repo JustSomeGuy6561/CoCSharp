@@ -11,7 +11,7 @@ using System.Text;
 namespace CoC.Frontend.Areas.Places
 {
 	//Called IngnamPlace to differentiate between this as a visitable place and a home base (grimdark mode)
-	//At the moment, Ingnam is more or less impossible to visit outside of the prologue, though that could change in the future. 
+	//At the moment, Ingnam is more or less impossible to visit outside of the prologue, though that could change in the future.
 	internal partial class IngnamPlace : PlaceBase
 	{
 		private static HashSet<TriggeredEncounter> optionalusInterruptus = new HashSet<TriggeredEncounter>();

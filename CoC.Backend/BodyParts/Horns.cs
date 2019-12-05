@@ -60,13 +60,13 @@ namespace CoC.Backend.BodyParts
 
 		//i suppose it's possible to use this for saves, though i'd personally not recommend it. It may be possible to save with invalid horn data
 		//due to a recent femininity change, and we wouldn't want it to auto-validate. I suppose this could lead to a player alterin their horn save data
-		//and it being considered valid, but that's not for us to police. 
+		//and it being considered valid, but that's not for us to police.
 		internal Horns(Guid creatureID, HornType hornType, byte hornLength, byte hornCount) : base(creatureID)
 		{
 			_type = hornType ?? throw new ArgumentNullException(nameof(hornType));
 			_significantHornSize = hornLength;
 			_numHorns = hornCount;
-			Validate(true); //check if the horn count/size is valid, given initial femininity. correct it if not. 
+			Validate(true); //check if the horn count/size is valid, given initial femininity. correct it if not.
 		}
 
 		internal Horns(Guid creatureID, HornType hornType, byte additionalStrengthLevel, bool uniform = false) : this(creatureID, hornType)
@@ -83,7 +83,7 @@ namespace CoC.Backend.BodyParts
 
 		private void FemininityChangedEvent(object sender, SimpleDataChangeEvent<Femininity, FemininityData> e)
 		{
-			type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, e.oldValues.femininity, e.newValues);
+			type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, e.oldValues.value, e.newValues);
 		}
 
 		public override HornData AsReadOnlyData()
@@ -675,7 +675,7 @@ namespace CoC.Backend.BodyParts
 					}
 					return false;
 				}
-				//feminine and horns are less than max. 
+				//feminine and horns are less than max.
 				else if (masculinity.isFemale && hornLength < maxFeminineLength)
 				{
 					if (byAmount > 1)
@@ -748,7 +748,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 
-			//grows or shrinks 
+			//grows or shrinks
 			private void feminizeHorns(ref byte amount, ref byte hornLength)
 			{
 				if (hornLength == maxFeminineLength)
@@ -781,11 +781,11 @@ namespace CoC.Backend.BodyParts
 		{
 			public DragonHorns() : base(2, 4, 4, 12, DragonShortDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr) { }
 
-			//video game logic, idk: horns can be shrunk via reducto, but since reducto cant remove horns (except antlers), you just keep 4 horns. 
-			//which means that it is technically valid to have four horns, with the first two tiny af. 
+			//video game logic, idk: horns can be shrunk via reducto, but since reducto cant remove horns (except antlers), you just keep 4 horns.
+			//which means that it is technically valid to have four horns, with the first two tiny af.
 			//which means it doesnt need custom validation. KK;
 
-			//Executive decision: second pair of dragon horns can't be shrunk. 
+			//Executive decision: second pair of dragon horns can't be shrunk.
 			internal override bool AllowsReducto => true;
 			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
@@ -1218,7 +1218,7 @@ namespace CoC.Backend.BodyParts
 
 		private class SheepHorns : HornType
 		{
-			private static readonly byte maxFeminineLength = 7;
+			public static readonly byte maxFeminineLength = 7;
 
 			public SheepHorns() : base(2, 2, 2, 30, SheepShortDesc, SheepLongDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr)
 			{
@@ -1296,7 +1296,7 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 
-			//if masculine, Lose third of length, down to max feminine length. 
+			//if masculine, Lose third of length, down to max feminine length.
 			//if feminine, go to max feminine length immediately
 			//after that go to min, then lose horns entirely.
 			internal override bool WeakenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
@@ -1355,15 +1355,15 @@ namespace CoC.Backend.BodyParts
 			private static readonly AttackBase _attack = new RamHorn();
 		}
 		/*
-		
 
 
 
-		
 
 
 
-		
+
+
+
 
 		IMP: "a pair of short, imp-like horns"
 		BULL: public override string GetDescriptor(byte numHorns, byte hornLength)

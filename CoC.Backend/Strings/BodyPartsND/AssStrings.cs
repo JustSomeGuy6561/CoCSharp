@@ -99,10 +99,22 @@ namespace CoC.Backend.BodyParts
 
 		public string ShortDescription()
 		{
-			return AssDesc(false);
+			if (SaveData.BackendSessionSave.data.SFW_Mode == true)
+			{
+				return Utils.RandomChoice("rear end", "backdoor");
+			}
+			else
+			{
+				return Utils.RandomChoice("ass", "anus", "pucker", "backdoor", "asshole", "butthole");
+			}
 		}
 
 		public string LongDescription()
+		{
+			return AssDesc(false);
+		}
+
+		public string FullDescription()
 		{
 			return AssDesc(true);
 		}
@@ -144,14 +156,7 @@ namespace CoC.Backend.BodyParts
 			{
 				sb.Append(" ");
 			}
-			if (SaveData.BackendSessionSave.data.SFW_Mode == true)
-			{
-				sb.Append(Utils.RandomChoice("rear end", "backdoor"));
-			}
-			else
-			{
-				sb.Append(Utils.RandomChoice("ass", "anus", "pucker", "backdoor", "asshole", "butthole"));
-			}
+			sb.Append(ShortDescription());
 			return sb.ToString();
 
 		}
@@ -176,7 +181,7 @@ namespace CoC.Backend.BodyParts
 			{
 				recoverText = " recovers from the brutal stretching it has received and tightens up.";
 			}
-			return Environment.NewLine + SafelyFormattedString.FormattedText("Your " + ShortDescription() + recoverText, StringFormats.BOLD) + Environment.NewLine;
+			return Environment.NewLine + SafelyFormattedString.FormattedText("Your " + LongDescription() + recoverText, StringFormats.BOLD) + Environment.NewLine;
 		}
 	}
 

@@ -48,7 +48,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HumanTransformStr(ArmData previousArmData, PlayerBase player)
 		{
-			return previousArmData.type.restoredString(previousArmData, player);
+			return previousArmData.type.RestoredString(previousArmData, player);
 		}
 		private static string HumanRestoreStr(ArmData previousArmData, PlayerBase player)
 		{

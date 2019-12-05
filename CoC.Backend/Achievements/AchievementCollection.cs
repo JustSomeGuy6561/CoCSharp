@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CoC.Backend.Achievements
 {
-	//all achievements unlocked. attached to the backend global save. stores 
+	//all achievements unlocked. attached to the backend global save. stores
 
 	public sealed class AchievementCollection
 	{

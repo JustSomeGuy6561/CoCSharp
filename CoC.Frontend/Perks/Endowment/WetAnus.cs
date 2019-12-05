@@ -6,7 +6,7 @@ using CoC.Backend.BodyParts;
 
 namespace CoC.Frontend.Perks.Endowment
 {
-	//new perk that allows Genderless PCs to have some unique perk. 
+	//new perk that allows Genderless PCs to have some unique perk.
 	public sealed partial class WetAnus : EndowmentPerkBase
 	{
 		public WetAnus() : base(WetAnusStr, WetAnusBtn, WetAnusHint, WetAnusDesc)

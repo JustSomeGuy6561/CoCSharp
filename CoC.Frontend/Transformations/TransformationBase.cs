@@ -12,8 +12,8 @@ namespace CoC.Frontend.Transformations
 {
 	internal abstract class GenericTransformationBase
 	{
-		//tfs can be applied to any creature, potentially - don't assume it's the player. but you can always check if the target is a Player object, 
-		//and if it is, do Player related things. 
+		//tfs can be applied to any creature, potentially - don't assume it's the player. but you can always check if the target is a Player object,
+		//and if it is, do Player related things.
 		protected internal abstract string DoTransformation(Creature target, out bool isBadEnd);
 
 		protected int GenerateChanceCount(Creature target, int[] extraRolls = null, int initialCount = 1, int minimumCount = 1)
@@ -65,7 +65,7 @@ namespace CoC.Frontend.Transformations
 		protected string GainedOvipositionTextGeneric(Creature target)
 		{
 			return Environment.NewLine + Environment.NewLine + "Deep inside yourself there is a change. It makes you feel a little woozy, but passes quickly. Beyond that, " +
-				"you aren't sure exactly what just happened, but you are sure it originated from your womb." + Environment.NewLine + 
+				"you aren't sure exactly what just happened, but you are sure it originated from your womb." + Environment.NewLine +
 				"(" + SafelyFormattedString.FormattedText("Perk Gained: Oviposition", StringFormats.BOLD) + ")";
 		}
 
@@ -86,6 +86,6 @@ namespace CoC.Frontend.Transformations
 			return false;
 		}
 
-		//add any common generic transformation related functions here - generic texts, common tfs, etc. 
+		//add any common generic transformation related functions here - generic texts, common tfs, etc.
 	}
 }

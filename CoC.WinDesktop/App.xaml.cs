@@ -15,7 +15,7 @@ using CoC.WinDesktop.ModelView;
 namespace CoC.WinDesktop
 {
 	//select text for textbox taken from https://www.intertech.com/Blog/how-to-select-all-text-in-a-wpf-textbox-on-focus/
-	//and modified so it doesn't select text in readonly or non-focusable items (that'd be weird) Afaik, it's not necessary for 
+	//and modified so it doesn't select text in readonly or non-focusable items (that'd be weird) Afaik, it's not necessary for
 	//non-focusable items (they never should get the focus). But what do i know?
 
 	/// <summary>
@@ -69,7 +69,7 @@ namespace CoC.WinDesktop
 
 	/*    protected override void OnStartup(StartupEventArgs e)
     {
-        
+
 
         base.OnStartup(e);
     }

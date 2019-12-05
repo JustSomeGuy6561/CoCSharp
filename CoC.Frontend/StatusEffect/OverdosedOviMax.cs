@@ -10,7 +10,7 @@ namespace CoC.Frontend.StatusEffect
 	{
 		private const ushort OVIMAX_DEFAULT_TIMEOUT = 336; //Two weeks.
 
-		public byte overdoseCount { get; private set; } 
+		public byte overdoseCount { get; private set; }
 
 		public OverdosedOviMax() : base(OviMaxODText, OVIMAX_DEFAULT_TIMEOUT)
 		{
@@ -19,13 +19,13 @@ namespace CoC.Frontend.StatusEffect
 
 		public override SimpleDescriptor obtainText => OverdoseText;
 
-		
+
 
 		public override SimpleDescriptor ShortDescription => ODShort;
 
 		public override SimpleDescriptor LongDescription => ODFull;
 
-		
+
 
 		protected override void OnActivation()
 		{ }

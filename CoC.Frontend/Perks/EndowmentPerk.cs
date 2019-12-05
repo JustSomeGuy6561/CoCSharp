@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace CoC.Frontend.Perks
 {
 	//slight buff to endowment perks: they all now have a "permanent," albeit minor effect. For example, large cock/clit/breasts now grant a slight boost to growth rates
-	//and/or set a minimum default size when new instances are created. others boost the minimum value for base stats. 
+	//and/or set a minimum default size when new instances are created. others boost the minimum value for base stats.
 
 	public abstract class EndowmentPerkBase : PerkBase
 	{
@@ -29,7 +29,7 @@ namespace CoC.Frontend.Perks
 			AddEndowmentHelper(() => new WetAnus()); //only available for genderless.
 			AddEndowmentHelper(() => new BigCock());
 			AddEndowmentHelper(() => new MessyOrgasms());
-							   
+
 			AddEndowmentHelper(() => new BigTits());
 			AddEndowmentHelper(() => new BigClit());
 			AddEndowmentHelper(() => new Fertile());

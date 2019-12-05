@@ -4,7 +4,6 @@
 //1/6/2019, 1:36 AM
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
-using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public override string BodyPartName() => Name();
 
-public HairFurColors featherColor
+		public HairFurColors featherColor
 		{
 			get => _featherColor;
 			private set => _featherColor = value;
@@ -78,6 +77,8 @@ public HairFurColors featherColor
 		{
 			featherColor = HairFurColors.IsNullOrEmpty(color) ? wingType.defaultFeatherColor : color;
 		}
+
+		public string ShortDescriptionWithSize() => type.shortDescriptionWithSize(isLarge);
 
 		public override WingData AsReadOnlyData()
 		{
@@ -456,6 +457,8 @@ public HairFurColors featherColor
 
 		public bool defaultIsLarge => UpdateSizeOnTransform(false);
 
+		public DescriptorWithArg<bool> shortDescriptionWithSize;
+
 		protected WingType(bool canFly,
 			SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
 			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
@@ -463,16 +466,17 @@ public HairFurColors featherColor
 			_index = indexMaker++;
 			wings.AddAt(this, _index);
 			transformBehavior = canFly ? BehaviorOnTransform.CONVERT_TO_LARGE : BehaviorOnTransform.CONVERT_TO_SMALL; //was wrong, caught in testing.
+			shortDescriptionWithSize = (x) => shortDesc();
 			canChangeSize = false;
 		}
 		//wings that support large wings need to define a behavior on transform - do they keep the large wings?
-		protected WingType(BehaviorOnTransform behaviorOnTransform,
-			SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
-			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+		protected WingType(BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<bool> shortDescWithSize, DescriptorWithArg<WingData> longDesc,
+			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			wings.AddAt(this, _index);
 			transformBehavior = behaviorOnTransform;
+			shortDescriptionWithSize = shortDescWithSize ?? throw new ArgumentNullException(nameof(shortDescWithSize));
 			canChangeSize = true;
 		}
 
@@ -544,14 +548,14 @@ public HairFurColors featherColor
 		}
 
 		public static readonly WingType NONE = new WingType(false, NoneDesc, NoneLongDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
-		public static readonly WingType BEE_LIKE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, BeeLikeDesc, BeeLikeLongDesc, BeeLikePlayerStr, BeeLikeTransformStr, BeeLikeRestoreStr);
-		//player always has larged feathered wings. small feathered wings are the new harpy wings. player can't get them naturally as of now.
-		public static readonly FeatheredWings FEATHERED = new FeatheredWings(DefaultValueHelpers.defaultHarpyFeatherHair, BehaviorOnTransform.CONVERT_TO_LARGE, FeatheredDesc, FeatheredLongDesc, FeatheredPlayerStr, FeatheredTransformStr, FeatheredRestoreStr);
-		public static readonly WingType BAT_LIKE = new WingType(BehaviorOnTransform.KEEP_SIZE, BatLikeDesc, BatLikeLongDesc, BatLikePlayerStr, BatLikeTransformStr, BatLikeRestoreStr);
-		public static readonly TonableWings DRACONIC = new TonableWings(DefaultValueHelpers.defaultDragonWingTone, DefaultValueHelpers.defaultDragonWingTone, BehaviorOnTransform.CONVERT_TO_SMALL, DraconicDesc, DraconicLongDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
-		public static readonly WingType FAERIE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, FaerieDesc, FaerieLongDesc, FaeriePlayerStr, FaerieTransformStr, FaerieRestoreStr);
+		public static readonly WingType BEE_LIKE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, BeeLikeDesc, BeeLikeSizeDesc, BeeLikeLongDesc, BeeLikePlayerStr, BeeLikeTransformStr, BeeLikeRestoreStr);
+		//player always has large feathered wings. small feathered wings are the new harpy wings. player can't get them naturally as of now.
+		public static readonly FeatheredWings FEATHERED = new FeatheredWings(DefaultValueHelpers.defaultHarpyFeatherHair, BehaviorOnTransform.CONVERT_TO_LARGE, FeatheredDesc, FeatheredSizeDesc, FeatheredLongDesc, FeatheredPlayerStr, FeatheredTransformStr, FeatheredRestoreStr);
+		public static readonly WingType BAT_LIKE = new WingType(BehaviorOnTransform.KEEP_SIZE, BatLikeDesc, BatLikeSizeDesc, BatLikeLongDesc, BatLikePlayerStr, BatLikeTransformStr, BatLikeRestoreStr);
+		public static readonly TonableWings DRACONIC = new TonableWings(DefaultValueHelpers.defaultDragonWingTone, DefaultValueHelpers.defaultDragonWingTone, BehaviorOnTransform.CONVERT_TO_SMALL, DraconicDesc, DraconicSizeDesc, DraconicLongDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
+		public static readonly WingType FAERIE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, FaerieDesc, FaerieSizeDesc, FaerieLongDesc, FaeriePlayerStr, FaerieTransformStr, FaerieRestoreStr);
 		public static readonly WingType DRAGONFLY = new WingType(true, DragonflyDesc, DragonflyLongDesc, DragonflyPlayerStr, DragonflyTransformStr, DragonflyRestoreStr);
-		public static readonly WingType IMP = new WingType(BehaviorOnTransform.KEEP_SIZE, ImpDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+		public static readonly WingType IMP = new WingType(BehaviorOnTransform.KEEP_SIZE, ImpDesc, ImpSizeDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
 
 
 	}
@@ -565,8 +569,8 @@ public HairFurColors featherColor
 			defaultFeatherColor = defaultHair;
 		}
 
-		public FeatheredWings(HairFurColors defaultHair, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc,
-			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore) : base(behaviorOnTransform, shortDesc, longDesc, playerDesc, transform, restore)
+		public FeatheredWings(HairFurColors defaultHair, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<bool> shortSizeDesc, DescriptorWithArg<WingData> longDesc,
+			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore) : base(behaviorOnTransform, shortDesc, shortSizeDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultFeatherColor = defaultHair;
 		}
@@ -605,8 +609,9 @@ public HairFurColors featherColor
 			defaultWingBoneTone = defaultBoneTone;
 		}
 
-		public TonableWings(Tones defaultTone, Tones defaultBoneTone, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc,
-			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore) : base(behaviorOnTransform, shortDesc, longDesc, playerDesc, transform, restore)
+		public TonableWings(Tones defaultTone, Tones defaultBoneTone, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<bool> shortSizeDesc,
+			DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore)
+			: base(behaviorOnTransform, shortDesc, shortSizeDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultWingTone = defaultTone;
 			defaultWingBoneTone = defaultBoneTone;
@@ -664,5 +669,7 @@ public HairFurColors featherColor
 			usesHair = source.usesHair;
 			usesTone = source.usesTone;
 		}
+
+		public string ShortDescriptionWithSize() => type.shortDescriptionWithSize(isLarge);
 	}
 }

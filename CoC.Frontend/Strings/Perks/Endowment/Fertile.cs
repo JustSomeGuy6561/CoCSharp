@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.Endowment
 		}
 		private static string FertileHint()
 		{
-			return "Is your family particularly fertile? (+15% Fertility)" + Environment.NewLine + Environment.NewLine + 
+			return "Is your family particularly fertile? (+15% Fertility)" + Environment.NewLine + Environment.NewLine +
 				"A high fertility will cause you to become pregnant much more easily. " +
 				"Pregnancy may result in: Strange children, larger bust, larger hips, a bigger ass, and other weirdness.";
 		}

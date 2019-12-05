@@ -11,9 +11,9 @@ namespace CoC.Frontend.Perks.Endowment
 		{ }
 		protected override void OnActivation()
 		{
-			//we're not setting min corruption as this is a non-removable perk and we don't want to lock players out of 
+			//we're not setting min corruption as this is a non-removable perk and we don't want to lock players out of
 			//low corruption abilities. I suppose we could set it anyway if items or whatever could counteract it.
-			
+
 			//baseModifiers.minCorruption += 5;
 			baseModifiers.CorruptionGainMultiplier += 0.25f;
 			if (hasExtraModifiers)

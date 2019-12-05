@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
-	//data changed event will never fire. 
+	//data changed event will never fire.
 	public sealed partial class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType, LowerBodyData>, ICanAttackWith
 	{
 		public override string BodyPartName() => Name();
@@ -210,7 +210,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly LowerBodyType SALAMANDER = new ToneLowerBody(FootType.MANDER_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultSalamanderTone, SkinTexture.NONDESCRIPT, true, SalamanderDesc, SalamanderLongDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
 		public static readonly LowerBodyType WOLF = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultWolfFurColor, FurTexture.NONDESCRIPT, true, WolfDesc, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
 		public static readonly LowerBodyType IMP = new ToneLowerBody(FootType.IMP_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultImpTone, SkinTexture.NONDESCRIPT, true, ImpDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
-		//remind me to add this later. 
+		//remind me to add this later.
 		//public static readonly LowerBodyType KID_OR_SQUID = new ToneLowerBody(FootType.TENDRIL, EpidermisType.SKIN, SEXTOPED, DefaultValueHelpers.defaultTENTACLE_BEASTTone, SkinTexture.SLIMY, true, OctoDesc, OctoLongDesc, OctoPlayerStr, OctiTransformStr, OctoRestoreStr);
 		public static readonly LowerBodyType COCKATRICE = new CockatriceLowerBody();
 		public static readonly LowerBodyType RED_PANDA = new RedPandaLowerBody();
