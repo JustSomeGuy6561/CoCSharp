@@ -6,13 +6,16 @@
 //As of current implementation, This is unused. all parts use multitoneable.
 //but it could be used, so here it is.
 using CoC.Backend.CoC_Colors;
+
 namespace  CoC.Backend.BodyParts.SpecialInteraction
 {
 	public interface IToneable
 	{
 		string buttonText();
 
-		string locationDesc();
+		string locationDesc(out bool isPlural);
+		string postToneDescription();
+
 
 		bool canToneLotion();
 
@@ -23,6 +26,6 @@ namespace  CoC.Backend.BodyParts.SpecialInteraction
 
 	public interface IToneableCustomText : IToneable
 	{
-		string ApplyOil(Tones oilTone);
+		string DisplayResults(Tones oilTone, bool successful);
 	}
 }

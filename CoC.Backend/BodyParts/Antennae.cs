@@ -3,7 +3,6 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
-using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -34,6 +33,15 @@ namespace CoC.Backend.BodyParts
 
 		//default implementations of update and restore are valid.
 
+		//description overloads.
+		public string ShortDescription (bool plural) => type.ShortDescription(plural);
+
+		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(AsReadOnlyData(), alternateForm, plural);
+
+		public string LongDescriptionPrimary (bool plural) => type.LongDescriptionPrimary(AsReadOnlyData(), plural);
+
+		public string LongDescriptionAlternate (bool plural) => type.LongDescriptionAlternate(AsReadOnlyData(), plural);
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			AntennaeType antennae = type;
@@ -57,13 +65,29 @@ namespace CoC.Backend.BodyParts
 		public static AntennaeType defaultValue => AntennaeType.NONE;
 
 
+
 		//C# 7.2 magic. basically, prevents it from being messed with except internally.
-		private AntennaeType(SimpleDescriptor desc, DescriptorWithArg<AntennaeData> longDesc, PlayerBodyPartDelegate<Antennae> playerDesc,
-			ChangeType<AntennaeData> transformMessage, RestoreType<AntennaeData> revertToDefault) : base(desc, longDesc, playerDesc, transformMessage, revertToDefault)
+		private AntennaeType(SimplePluralDescriptor desc, LongPluralDescriptor<AntennaeData> longDesc, PlayerBodyPartDelegate<Antennae> playerDesc,
+			ChangeType<AntennaeData> transformMessage, RestoreType<AntennaeData> revertToDefault)
+			: base(PluralHelper(desc), LongPluralHelper(longDesc), playerDesc, transformMessage, revertToDefault)
 		{
+			shortPluralDesc = desc ?? throw new ArgumentNullException(nameof(desc));
+			longPluralDesc = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
+
 			_index = indexMaker++;
 			antennaes.AddAt(this, _index);
 		}
+
+		private readonly SimplePluralDescriptor shortPluralDesc;
+		private readonly LongPluralDescriptor<AntennaeData> longPluralDesc;
+
+		public string ShortDescription(bool plural) => shortPluralDesc(plural);
+
+		public string LongDescription(AntennaeData data, bool alternateForm, bool plural) => longPluralDesc(data, alternateForm, plural);
+
+		public string LongDescriptionPrimary(AntennaeData data, bool plural) => longPluralDesc(data, false, plural);
+
+		public string LongDescriptionAlternate(AntennaeData data, bool plural) => longPluralDesc(data, true, plural);
 
 		public override int index => _index;
 		private readonly int _index;
@@ -103,7 +127,7 @@ namespace CoC.Backend.BodyParts
 
 		//Don't do this to this level lol. I just used lambdas everywhere because i changed the signature in the base to make things behave better globally, and didn't want to deal
 		//with doing that to everything in here. do use lambdas if you need something not there or you want to use the empty string.
-		public static readonly AntennaeType NONE = new AntennaeType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
+		public static readonly AntennaeType NONE = new AntennaeType((x) => GlobalStrings.None(), (x, y, z) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
 
 		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeLongDesc,
 			(x, y) => BeePlayerStr(y), BeeTransformStr, BeeRestoreStr);
@@ -119,6 +143,15 @@ namespace CoC.Backend.BodyParts
 		{
 			return this;
 		}
+
+		//description overloads.
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+
+		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(this, alternateForm, plural);
+
+		public string LongDescriptionPrimary(bool plural) => type.LongDescriptionPrimary(this, plural);
+
+		public string LongDescriptionAlternate(bool plural) => type.LongDescriptionAlternate(this, plural);
 
 		internal AntennaeData(Antennae source) : base(GetID(source), GetBehavior(source))
 		{ }

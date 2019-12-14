@@ -25,5 +25,12 @@ namespace CoC.Backend.BodyParts
 		{
 			shortDesc = shortDescFn ?? throw new ArgumentNullException(nameof(shortDescFn));
 		}
+
+		protected static SimpleDescriptor PluralHelper(SimplePluralDescriptor shortDescWithPluralFlag, bool defaultsToPlural = true)
+		{
+			if (shortDescWithPluralFlag is null) throw new ArgumentNullException(nameof(shortDescWithPluralFlag));
+
+			return () => shortDescWithPluralFlag(defaultsToPlural);
+		}
 	}
 }

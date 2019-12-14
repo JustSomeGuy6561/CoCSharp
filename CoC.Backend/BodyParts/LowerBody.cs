@@ -88,6 +88,8 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+
 		AttackBase ICanAttackWith.attack => type.attack;
 		bool ICanAttackWith.canAttackWith() => type.canAttackWith;
 
@@ -115,18 +117,50 @@ namespace CoC.Backend.BodyParts
 
 		public static LowerBodyType defaultValue => HUMAN;
 
+		private SimplePluralDescriptor shortPluralDesc;
+		private LongPluralDescriptor<LowerBodyData> longPluralDesc;
+		private LowerBodyAndFeetDescriptor descriptionWithFeet;
+
+		public string ShortDescription(bool pluralIfApplicable) => shortPluralDesc(pluralIfApplicable);
+
+		public string LongDescription(LowerBodyData data, bool alternateForm, bool pluralIfApplicable) => longPluralDesc(data, alternateForm, pluralIfApplicable);
+
+		public string LongDescriptionPrimary(LowerBodyData data, bool pluralIfApplicable) => longPluralDesc(data, false, pluralIfApplicable);
+
+		public string LongDescriptionAlternate(LowerBodyData data, bool pluralIfApplicable) => longPluralDesc(data, true, pluralIfApplicable);
+
+		public string FullDescription(LowerBodyData lowerBodys, bool alternateForm = false, bool plural = true, bool includeToes = false)
+		{
+			return descriptionWithFeet(lowerBodys, alternateForm, plural, includeToes);
+		}
+		public string FullDescriptionPrimary(LowerBodyData lowerBodys, bool plural = true, bool includeToes = false)
+		{
+			return descriptionWithFeet(lowerBodys, false, plural, includeToes);
+		}
+		public string FullDescriptionAlternate(LowerBodyData lowerBodys, bool plural = true, bool includeToes = false)
+		{
+			return descriptionWithFeet(lowerBodys, true, plural, includeToes);
+		}
+
+		protected delegate string LowerBodyAndFeetDescriptor(LowerBodyData arms, bool alternateForm, bool plural, bool includeToes);
+
 
 		public readonly FootType footType;
 		public readonly EpidermisType epidermisType;
 		protected LowerBodyType(FootType foot, EpidermisType epidermis, byte numLegs,
-			SimpleDescriptor shortDesc, DescriptorWithArg<LowerBodyData> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc,
-			ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+			SimplePluralDescriptor shortDesc, LongPluralDescriptor<LowerBodyData> longDesc, LowerBodyAndFeetDescriptor fullDesc, PlayerBodyPartDelegate<LowerBody> playerDesc,
+			ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore) : base(PluralHelper(shortDesc), LongPluralHelper(longDesc), playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			lowerBodyTypes.AddAt(this, _index);
 			footType = foot;
 			epidermisType = epidermis;
 			legCount = numLegs;
+
+			shortPluralDesc = shortDesc;
+			longPluralDesc = longDesc;
+
+			descriptionWithFeet = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
 		}
 
 		internal static bool Validate(ref LowerBodyType type, bool correctInvalidData)
@@ -184,34 +218,34 @@ namespace CoC.Backend.BodyParts
 		private readonly int _index;
 
 
-		public static readonly LowerBodyType HUMAN = new ToneLowerBody(FootType.HUMAN, EpidermisType.SKIN, BIPED, DefaultValueHelpers.defaultHumanTone, SkinTexture.NONDESCRIPT, true, HumanDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly LowerBodyType HOOVED = new FurLowerBodyWithKick(FootType.HOOVES, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultHorseFur, FurTexture.NONDESCRIPT, true, HoovedDesc, HoovedLongDesc, HoovedPlayerStr, HoovedTransformStr, HoovedRestoreStr);
-		public static readonly LowerBodyType DOG = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultDogFur, FurTexture.NONDESCRIPT, true, DogDesc, DogLongDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
-		public static readonly LowerBodyType CENTAUR = new FurLowerBodyWithKick(FootType.HOOVES, EpidermisType.FUR, QUADRUPED, DefaultValueHelpers.defaultHorseFur, FurTexture.NONDESCRIPT, true, HoovedDesc, HoovedLongDesc, HoovedPlayerStr, HoovedTransformStr, HoovedRestoreStr);
-		public static readonly LowerBodyType FERRET = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultFerretFur, FurTexture.NONDESCRIPT, false, FerretDesc, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
-		public static readonly LowerBodyType DEMONIC_HIGH_HEELS = new ToneLowerBody(FootType.DEMON_HEEL, EpidermisType.SKIN, BIPED, DefaultValueHelpers.defaultDemonTone, SkinTexture.NONDESCRIPT, true, DemonHiHeelsDesc, DemonHiHeelsLongDesc, DemonHiHeelsPlayerStr, DemonHiHeelsTransformStr, DemonHiHeelsRestoreStr);
-		public static readonly LowerBodyType DEMONIC_CLAWS = new ToneLowerBody(FootType.DEMON_CLAW, EpidermisType.SKIN, BIPED, DefaultValueHelpers.defaultDemonTone, SkinTexture.NONDESCRIPT, true, DemonClawDesc, DemonClawLongDesc, DemonClawPlayerStr, DemonClawTransformStr, DemonClawRestoreStr);
-		public static readonly LowerBodyType BEE = new ToneLowerBody(FootType.INSECTOID, EpidermisType.CARAPACE, BIPED, DefaultValueHelpers.defaultBeeTone, SkinTexture.SHINY, false, BeeDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
-		public static readonly LowerBodyType GOO = new ToneLowerBody(FootType.NONE, EpidermisType.GOO, MONOPED, DefaultValueHelpers.defaultGooTone, SkinTexture.NONDESCRIPT, true, GooDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
-		public static readonly LowerBodyType CAT = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultCatFur, FurTexture.NONDESCRIPT, true, CatDesc, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
-		public static readonly LowerBodyType LIZARD = new ToneLowerBody(FootType.LIZARD_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultLizardTone, SkinTexture.NONDESCRIPT, true, LizardDesc, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly LowerBodyType PONY = new FurLowerBodyWithKick(FootType.BRONY, EpidermisType.FUR, QUADRUPED, DefaultValueHelpers.defaultBronyFur, FurTexture.NONDESCRIPT, true, PonyDesc, PonyLongDesc, PonyPlayerStr, PonyTransformStr, PonyRestoreStr);
-		public static readonly LowerBodyType BUNNY = new FurLowerBodyWithKick(FootType.RABBIT, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultBunnyFur, FurTexture.NONDESCRIPT, true, BunnyDesc, BunnyLongDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
-		public static readonly LowerBodyType HARPY = new FurLowerBody(FootType.HARPY_TALON, EpidermisType.FEATHERS, BIPED, DefaultValueHelpers.defaultHarpyFeathers, FurTexture.NONDESCRIPT, true, HarpyDesc, HarpyLongDesc, HarpyPlayerStr, HarpyTransformStr, HarpyRestoreStr);
-		public static readonly LowerBodyType KANGAROO = new FurLowerBodyWithKick(FootType.KANGAROO, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultKangarooFur, FurTexture.NONDESCRIPT, true, KangarooDesc, KangarooLongDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
-		public static readonly LowerBodyType CHITINOUS_SPIDER = new ToneLowerBody(FootType.INSECTOID, EpidermisType.CARAPACE, BIPED, DefaultValueHelpers.defaultSpiderTone, SkinTexture.SHINY, false, SpiderDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr);
-		public static readonly LowerBodyType DRIDER = new ToneLowerBody(FootType.INSECTOID, EpidermisType.CARAPACE, OCTOPED, DefaultValueHelpers.defaultSpiderTone, SkinTexture.SHINY, false, DriderDesc, DriderLongDesc, DriderPlayerStr, DriderTransformStr, DriderRestoreStr);
-		public static readonly LowerBodyType FOX = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultFoxFur, FurTexture.NONDESCRIPT, true, FoxDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
-		public static readonly LowerBodyType DRAGON = new ToneLowerBody(FootType.DRAGON_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultDragonTone, SkinTexture.NONDESCRIPT, true, DragonDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly LowerBodyType RACCOON = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultRaccoonFur, FurTexture.NONDESCRIPT, true, RaccoonDesc, RaccoonLongDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
-		public static readonly LowerBodyType CLOVEN_HOOVED = new FurLowerBody(FootType.HOOVES, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultHorseFur, FurTexture.NONDESCRIPT, true, ClovenHoofDesc, ClovenHoofLongDesc, ClovenHoofPlayerStr, ClovenHoofTransformStr, ClovenHoofRestoreStr);//?
+		public static readonly LowerBodyType HUMAN = new ToneLowerBody(FootType.HUMAN, EpidermisType.SKIN, BIPED, DefaultValueHelpers.defaultHumanTone, SkinTexture.NONDESCRIPT, true, HumanDesc, HumanLongDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly LowerBodyType HOOVED = new FurLowerBodyWithKick(FootType.HOOVES, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultHorseFur, FurTexture.NONDESCRIPT, true, HoovedDesc, HoovedLongDesc, HoovedFullDesc, HoovedPlayerStr, HoovedTransformStr, HoovedRestoreStr);
+		public static readonly LowerBodyType DOG = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultDogFur, FurTexture.NONDESCRIPT, true, DogDesc, DogLongDesc, DogFullDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
+		public static readonly LowerBodyType CENTAUR = new FurLowerBodyWithKick(FootType.HOOVES, EpidermisType.FUR, QUADRUPED, DefaultValueHelpers.defaultHorseFur, FurTexture.NONDESCRIPT, true, HoovedDesc, HoovedLongDesc, HoovedFullDesc, HoovedPlayerStr, HoovedTransformStr, HoovedRestoreStr);
+		public static readonly LowerBodyType FERRET = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultFerretFur, FurTexture.NONDESCRIPT, false, FerretDesc, FerretLongDesc, FerretFullDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
+		public static readonly LowerBodyType DEMONIC_HIGH_HEELS = new ToneLowerBody(FootType.DEMON_HEEL, EpidermisType.SKIN, BIPED, DefaultValueHelpers.defaultDemonTone, SkinTexture.NONDESCRIPT, true, DemonHiHeelsDesc, DemonHiHeelsLongDesc, DemonHiHeelsFullDesc, DemonHiHeelsPlayerStr, DemonHiHeelsTransformStr, DemonHiHeelsRestoreStr);
+		public static readonly LowerBodyType DEMONIC_CLAWS = new ToneLowerBody(FootType.DEMON_CLAW, EpidermisType.SKIN, BIPED, DefaultValueHelpers.defaultDemonTone, SkinTexture.NONDESCRIPT, true, DemonClawDesc, DemonClawLongDesc, DemonClawFullDesc, DemonClawPlayerStr, DemonClawTransformStr, DemonClawRestoreStr);
+		public static readonly LowerBodyType BEE = new ToneLowerBody(FootType.INSECTOID, EpidermisType.CARAPACE, BIPED, DefaultValueHelpers.defaultBeeTone, SkinTexture.SHINY, false, BeeDesc, BeeLongDesc, BeeFullDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
+		public static readonly LowerBodyType GOO = new ToneLowerBody(FootType.NONE, EpidermisType.GOO, MONOPED, DefaultValueHelpers.defaultGooTone, SkinTexture.NONDESCRIPT, true, GooDesc, GooLongDesc, GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+		public static readonly LowerBodyType CAT = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultCatFur, FurTexture.NONDESCRIPT, true, CatDesc, CatLongDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly LowerBodyType LIZARD = new ToneLowerBody(FootType.LIZARD_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultLizardTone, SkinTexture.NONDESCRIPT, true, LizardDesc, LizardLongDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static readonly LowerBodyType PONY = new FurLowerBodyWithKick(FootType.BRONY, EpidermisType.FUR, QUADRUPED, DefaultValueHelpers.defaultBronyFur, FurTexture.NONDESCRIPT, true, PonyDesc, PonyLongDesc, PonyFullDesc, PonyPlayerStr, PonyTransformStr, PonyRestoreStr);
+		public static readonly LowerBodyType BUNNY = new FurLowerBodyWithKick(FootType.RABBIT, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultBunnyFur, FurTexture.NONDESCRIPT, true, BunnyDesc, BunnyLongDesc, BunnyFullDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
+		public static readonly LowerBodyType HARPY = new FurLowerBody(FootType.HARPY_TALON, EpidermisType.FEATHERS, BIPED, DefaultValueHelpers.defaultHarpyFeathers, FurTexture.NONDESCRIPT, true, HarpyDesc, HarpyLongDesc, HarpyFullDesc, HarpyPlayerStr, HarpyTransformStr, HarpyRestoreStr);
+		public static readonly LowerBodyType KANGAROO = new FurLowerBodyWithKick(FootType.KANGAROO, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultKangarooFur, FurTexture.NONDESCRIPT, true, KangarooDesc, KangarooLongDesc, KangarooFullDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
+		public static readonly LowerBodyType CHITINOUS_SPIDER = new ToneLowerBody(FootType.INSECTOID, EpidermisType.CARAPACE, BIPED, DefaultValueHelpers.defaultSpiderTone, SkinTexture.SHINY, false, SpiderDesc, SpiderLongDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr);
+		public static readonly LowerBodyType DRIDER = new ToneLowerBody(FootType.INSECTOID, EpidermisType.CARAPACE, OCTOPED, DefaultValueHelpers.defaultSpiderTone, SkinTexture.SHINY, false, DriderDesc, DriderLongDesc, DriderFullDesc, DriderPlayerStr, DriderTransformStr, DriderRestoreStr);
+		public static readonly LowerBodyType FOX = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultFoxFur, FurTexture.NONDESCRIPT, true, FoxDesc, FoxLongDesc, FoxFullDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
+		public static readonly LowerBodyType DRAGON = new ToneLowerBody(FootType.DRAGON_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultDragonTone, SkinTexture.NONDESCRIPT, true, DragonDesc, DragonLongDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static readonly LowerBodyType RACCOON = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultRaccoonFur, FurTexture.NONDESCRIPT, true, RaccoonDesc, RaccoonLongDesc, RaccoonFullDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
+		public static readonly LowerBodyType CLOVEN_HOOVED = new FurLowerBody(FootType.HOOVES, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultHorseFur, FurTexture.NONDESCRIPT, true, ClovenHoofDesc, ClovenHoofLongDesc, ClovenHoofFullDesc, ClovenHoofPlayerStr, ClovenHoofTransformStr, ClovenHoofRestoreStr);//?
 		public static readonly LowerBodyType NAGA = new NagaLowerBody();
-		public static readonly LowerBodyType ECHIDNA = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultEchidnaFur, FurTexture.NONDESCRIPT, true, EchidnaDesc, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
-		public static readonly LowerBodyType SALAMANDER = new ToneLowerBody(FootType.MANDER_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultSalamanderTone, SkinTexture.NONDESCRIPT, true, SalamanderDesc, SalamanderLongDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
-		public static readonly LowerBodyType WOLF = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultWolfFurColor, FurTexture.NONDESCRIPT, true, WolfDesc, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static readonly LowerBodyType IMP = new ToneLowerBody(FootType.IMP_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultImpTone, SkinTexture.NONDESCRIPT, true, ImpDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+		public static readonly LowerBodyType ECHIDNA = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultEchidnaFur, FurTexture.NONDESCRIPT, true, EchidnaDesc, EchidnaLongDesc, EchidnaFullDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
+		public static readonly LowerBodyType SALAMANDER = new ToneLowerBody(FootType.MANDER_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultSalamanderTone, SkinTexture.NONDESCRIPT, true, SalamanderDesc, SalamanderLongDesc, SalamanderFullDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr);
+		public static readonly LowerBodyType WOLF = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultWolfFurColor, FurTexture.NONDESCRIPT, true, WolfDesc, WolfLongDesc, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static readonly LowerBodyType IMP = new ToneLowerBody(FootType.IMP_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultImpTone, SkinTexture.NONDESCRIPT, true, ImpDesc, ImpLongDesc, ImpFullDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
 		//remind me to add this later.
-		//public static readonly LowerBodyType KID_OR_SQUID = new ToneLowerBody(FootType.TENDRIL, EpidermisType.SKIN, SEXTOPED, DefaultValueHelpers.defaultTENTACLE_BEASTTone, SkinTexture.SLIMY, true, OctoDesc, OctoLongDesc, OctoPlayerStr, OctiTransformStr, OctoRestoreStr);
+		public static readonly LowerBodyType KID_OR_SQUID = new ToneLowerBody(FootType.TENDRIL, EpidermisType.SKIN, SEXTOPED, DefaultValueHelpers.defaultTentacleTone, SkinTexture.SLIMY, true, OctoDesc, OctoLongDesc, OctoFullDesc, OctoPlayerStr, OctoTransformStr, OctoRestoreStr);
 		public static readonly LowerBodyType COCKATRICE = new CockatriceLowerBody();
 		public static readonly LowerBodyType RED_PANDA = new RedPandaLowerBody();
 
@@ -224,8 +258,8 @@ namespace CoC.Backend.BodyParts
 			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 
 			public FurLowerBody(FootType foot, FurBasedEpidermisType epidermis, byte numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
-				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBodyData> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform,
-				RestoreType<LowerBodyData> restore) : base(foot, epidermis, numLegs, shortDesc, longDesc, playerDesc, transform, restore)
+				SimplePluralDescriptor shortDesc, LongPluralDescriptor<LowerBodyData> longDesc, LowerBodyAndFeetDescriptor fullDesc, PlayerBodyPartDelegate<LowerBody> playerDesc,
+				ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore) : base(foot, epidermis, numLegs, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 			{
 				defaultColor = new FurColor(defaultFurColor);
 				defaultTexture = defaultFurTexture;
@@ -267,8 +301,9 @@ namespace CoC.Backend.BodyParts
 		private class FurLowerBodyWithKick : FurLowerBody
 		{
 			public FurLowerBodyWithKick(FootType foot, FurBasedEpidermisType epidermis, byte numLegs, FurColor defaultFurColor, FurTexture defaultFurTexture, bool canChange,
-				SimpleDescriptor shortDesc, DescriptorWithArg<LowerBodyData> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore)
-				: base(foot, epidermis, numLegs, defaultFurColor, defaultFurTexture, canChange, shortDesc, longDesc, playerDesc, transform, restore) { }
+				SimplePluralDescriptor shortDesc, LongPluralDescriptor<LowerBodyData> longDesc, LowerBodyAndFeetDescriptor fullDesc, PlayerBodyPartDelegate<LowerBody> playerDesc,
+				ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore)
+				: base(foot, epidermis, numLegs, defaultFurColor, defaultFurTexture, canChange, shortDesc, longDesc, fullDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new GenericKick();
@@ -282,8 +317,8 @@ namespace CoC.Backend.BodyParts
 
 			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 			public ToneLowerBody(FootType foot, ToneBasedEpidermisType epidermis, byte legCount, Tones defTone, SkinTexture defaultSkinTexture, bool canChange,
-				 SimpleDescriptor shortDesc, DescriptorWithArg<LowerBodyData> longDesc, PlayerBodyPartDelegate<LowerBody> playerDesc, ChangeType<LowerBodyData> transform,
-				 RestoreType<LowerBodyData> restore) : base(foot, epidermis, legCount, shortDesc, longDesc, playerDesc, transform, restore)
+				 SimplePluralDescriptor shortDesc, LongPluralDescriptor<LowerBodyData> longDesc, LowerBodyAndFeetDescriptor fullDesc, PlayerBodyPartDelegate<LowerBody> playerDesc,
+				 ChangeType<LowerBodyData> transform, RestoreType<LowerBodyData> restore) : base(foot, epidermis, legCount, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 			{
 				defaultTexture = defaultSkinTexture;
 				defaultTone = defTone;
@@ -304,7 +339,7 @@ namespace CoC.Backend.BodyParts
 		{
 			private Tones defaultUnderTone => DefaultValueHelpers.defaultNagaUnderTone;
 			public NagaLowerBody() : base(FootType.NONE, EpidermisType.SCALES, MONOPED, DefaultValueHelpers.defaultNagaTone,
-				SkinTexture.NONDESCRIPT, true, NagaDesc, NagaLongDesc, NagaPlayerStr, NagaTransformStr, NagaRestoreStr)
+				SkinTexture.NONDESCRIPT, true, NagaDesc, NagaLongDesc, NagaFullDesc, NagaPlayerStr, NagaTransformStr, NagaRestoreStr)
 			{ }
 
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
@@ -333,7 +368,8 @@ namespace CoC.Backend.BodyParts
 
 		private class CockatriceLowerBody : FurLowerBody
 		{
-			public CockatriceLowerBody() : base(FootType.HARPY_TALON, EpidermisType.FEATHERS, BIPED, DefaultValueHelpers.defaultCockatricePrimaryFeathers, FurTexture.NONDESCRIPT, true, CockatriceDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr) { }
+			public CockatriceLowerBody() : base(FootType.HARPY_TALON, EpidermisType.FEATHERS, BIPED, DefaultValueHelpers.defaultCockatricePrimaryFeathers, FurTexture.NONDESCRIPT, true,
+				CockatriceDesc, CockatriceLongDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr) { }
 
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
@@ -353,7 +389,8 @@ namespace CoC.Backend.BodyParts
 
 		private class RedPandaLowerBody : FurLowerBody
 		{
-			public RedPandaLowerBody() : base(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultRedPandaFur, FurTexture.NONDESCRIPT, true, RedPandaDesc, RedPandaLongDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr) { }
+			public RedPandaLowerBody() : base(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultRedPandaFur, FurTexture.NONDESCRIPT, true, RedPandaDesc,
+				RedPandaLongDesc, RedPandaFullDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr) { }
 
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
@@ -382,6 +419,8 @@ namespace CoC.Backend.BodyParts
 		{
 			return this;
 		}
+
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
 		internal LowerBodyData(Guid id, LowerBodyType type, EpidermalData epidermis, EpidermalData secondary) : base(id, type)
 		{

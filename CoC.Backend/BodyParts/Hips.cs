@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 using System;
 using WeakEvent;
@@ -39,7 +40,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private byte _hipSize;
-		public SimpleDescriptor AsText => HipAdjective;
+
+		internal LowerBodyType lowerBodyType => CreatureStore.GetCreatureClean(creatureID)?.lowerBody.type ?? LowerBodyType.defaultValue;
+		internal BodyType bodyType => CreatureStore.GetCreatureClean(creatureID)?.body.type ?? BodyType.defaultValue;
 
 		internal Hips(Guid creatureID) : this(creatureID, AVERAGE)
 		{
@@ -52,7 +55,7 @@ namespace CoC.Backend.BodyParts
 
 		public override HipData AsReadOnlyData()
 		{
-			return new HipData(creatureID, size);
+			return new HipData(this);
 		}
 
 		public byte GrowHips(byte amount = 1)
@@ -74,6 +77,12 @@ namespace CoC.Backend.BodyParts
 			size = newSize;
 			return size;
 		}
+
+		public string SizeAsAdjective() => BuildStrings.HipAdjective(size);
+
+		public string ShortDescription(bool plural = true) => BuildStrings.HipShortDescription(size, plural);
+
+		public string LongDescription(byte thickness) => BuildStrings.HipLongDescription(size, lowerBodyType, bodyType, thickness);
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -108,11 +117,38 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class HipData : SimpleData
 	{
-		public readonly byte hipSize;
+		public readonly byte size;
 
-		internal HipData(Guid creatureID, byte size) : base(creatureID)
+		internal readonly LowerBodyType lowerBodyType;
+		internal readonly BodyType bodyType;
+
+		public string SizeAsAdjective() => BuildStrings.HipAdjective(size);
+
+		public string ShortDescription(bool plural = true) => BuildStrings.HipShortDescription(size, plural);
+
+		public string LongDescription(byte thickness) => BuildStrings.HipLongDescription(size, lowerBodyType, bodyType, thickness);
+
+		internal HipData(Hips source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			hipSize = size;
+			size = source.size;
+			lowerBodyType = source.lowerBodyType;
+			bodyType = source.bodyType;
+		}
+
+		public HipData(Guid creatureID, byte size) : base(creatureID)
+		{
+			this.size = size;
+
+			this.bodyType = BodyType.defaultValue;
+			lowerBodyType = LowerBodyType.defaultValue;
+		}
+
+		public HipData(Guid creatureID, byte size, BodyType bodyType, LowerBodyType lowerBodyType) : base(creatureID)
+		{
+			this.size = size;
+
+			this.bodyType = bodyType ?? throw new ArgumentNullException(nameof(bodyType));
+			this.lowerBodyType = lowerBodyType ?? throw new ArgumentNullException(nameof(lowerBodyType));
 		}
 	}
 }

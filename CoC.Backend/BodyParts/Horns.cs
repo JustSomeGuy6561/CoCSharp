@@ -75,6 +75,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
+		public override string ShortDescription()
+		{
+			return base.ShortDescription();
+		}
+
 		protected internal override void LateInit()
 		{
 			if (CreatureStore.TryGetCreature(creatureID, out Creature creature)) creature.genitals.femininity.dataChange += FemininityChangedEvent;
@@ -247,14 +252,18 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	//i could go with function pobyteers throughout this, but frankly it's complicated enough that it might as well just be abstract.
+	//i could go with function pointers throughout this, but frankly it's complicated enough that it might as well just be abstract.
 
 	public abstract partial class HornType : SaveableBehavior<HornType, Horns, HornData>
 	{
+		//horns are super fucky - they can be both plural or singular (just like tails, which are also a pain), and some even switch between singular and plural.
+		//(thanks rhino horns) thus: HornType.<whatever>.ShortDescription will always be singular. however, type provides a count aware short description, which requires a byte.
+		//Both horn.ShortDescription() and hornData.ShortDescription() will be plural or singular based on the current number of horns.
+		//oth horns and horn data will provide a helpful alias to the singular form if you still want/require that.
+		//NYI: horns may provide a verbose
 		#region HornType
 
 		public static HornType defaultValue => NONE;
-
 
 		#region variables
 		//private vars
@@ -276,16 +285,32 @@ namespace CoC.Backend.BodyParts
 		public bool allowsHorns => maxHorns > 0;
 
 		public override int index => _index;
+
+		private readonly SimplePluralDescriptor shortPluralDesc;
+		private readonly LongPluralDescriptor<HornData> longPluralDesc;
 		#endregion
+		public string ShortDescription(bool pluralIfApplicable) => shortPluralDesc(pluralIfApplicable);
+
+		public string LongDescription(HornData data, bool alternateForm, bool pluralIfApplicable) => longPluralDesc(data, alternateForm, pluralIfApplicable);
+
+		public string LongDescriptionPrimary(HornData data, bool pluralIfApplicable) => longPluralDesc(data, false, pluralIfApplicable);
+
+		public string LongDescriptionAlternate(HornData data, bool pluralIfApplicable) => longPluralDesc(data, true, pluralIfApplicable);
+
 		//call the other constructor with defaults set to min.
 		private protected HornType(byte minHorns, byte maximumHorns, byte minLength, byte maxLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<HornData> longDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform, RestoreType<HornData> restore)
-			: this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, longDesc, playerDesc, transform, restore) { }
+			SimplePluralDescriptor shortDesc, LongPluralDescriptor<HornData> longDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform,
+			RestoreType<HornData> restore) : this(minHorns, maximumHorns, minLength, maxLength, minHorns, minLength, shortDesc, longDesc, playerDesc, transform, restore) { }
 
 		private protected HornType(byte minimumHorns, byte maximumHorns, byte minLength, byte maxLength, byte defaultHornCount, byte defaultHornLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<HornData> longDesc, PlayerBodyPartDelegate<Horns> playerDesc,
-			ChangeType<HornData> transform, RestoreType<HornData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+			SimplePluralDescriptor shortDesc, LongPluralDescriptor<HornData> longDesc, PlayerBodyPartDelegate<Horns> playerDesc,
+			ChangeType<HornData> transform, RestoreType<HornData> restore) : base(PluralHelper(shortDesc), LongPluralHelper(longDesc), playerDesc, transform, restore)
 		{
+
+			shortPluralDesc = shortDesc;
+			longPluralDesc = longDesc;
+
+
 			//Woo data cleanup.
 			maxHorns = Utils.Clamp2(maximumHorns, (byte)0, byte.MaxValue);
 			minHorns = Utils.Clamp2(minimumHorns, (byte)0, maxHorns);
@@ -435,11 +460,13 @@ namespace CoC.Backend.BodyParts
 
 		public static readonly HornType IMP = new SimpleOrNoHorns(2, 3, ImpShortDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);//"a pair of short, imp-like horns");
 		#endregion
+
+
 		//these horns are immutable - if you have them, they do not grow or shrink, and you can't get any more of them.
 		private class SimpleOrNoHorns : HornType
 		{
 			public SimpleOrNoHorns(byte hornCount, byte hornLength,
-				SimpleDescriptor shortDesc, DescriptorWithArg<HornData> longDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform,
+				SimplePluralDescriptor shortDesc, LongPluralDescriptor<HornData> longDesc, PlayerBodyPartDelegate<Horns> playerDesc, ChangeType<HornData> transform,
 				RestoreType<HornData> restore) : base(hornCount, hornCount, hornLength, hornLength, shortDesc, longDesc, playerDesc, transform, restore) { }
 
 			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte significantHornLength, in FemininityData masculinity, bool uniform = false)
@@ -856,7 +883,7 @@ namespace CoC.Backend.BodyParts
 		{
 			private readonly bool isReindeer;
 			public Antlers(bool reindeer, byte maxLength,
-				SimpleDescriptor shortDesc, DescriptorWithArg<HornData> longDesc, PlayerBodyPartDelegate<Horns> playerDesc,
+				SimplePluralDescriptor shortDesc, LongPluralDescriptor<HornData> longDesc, PlayerBodyPartDelegate<Horns> playerDesc,
 				ChangeType<HornData> transform, RestoreType<HornData> restore) : base(2, 20, 6, maxLength, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				isReindeer = reindeer;

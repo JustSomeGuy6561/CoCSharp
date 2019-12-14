@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 11:45 PM
+using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -11,32 +12,39 @@ using System.Text;
 namespace CoC.Backend.BodyParts
 {
 	public partial class Neck
-{
-public static string Name()
-{
-return "Neck";
-}
-}
+	{
+		public static string Name()
+		{
+			return "Neck";
+		}
+	}
 
-public partial class NeckType
+	public partial class NeckType
 	{
 		private string GenericButtonDesc()
 		{
 			return "Neck";
 		}
 
-		private string GenericLocationText()
+		private string GenericLocationText(out bool isPlural)
 		{
-			return " your neck";
+			isPlural = false;
+			return "";
 		}
+
+		private string GenericPostDyeText(HairFurColors color)
+		{
+			return "";
+		}
+
 
 		private static string HumanDesc()
 		{
 			return "neck";
 		}
-		private static string HumanLongDesc(NeckData neck)
+		private static string HumanLongDesc(NeckData neck, bool alternateFormat)
 		{
-			return "neck";
+			return (alternateFormat ? "a " : "") + "neck";
 		}
 		private static string HumanPlayerStr(Neck neck, PlayerBase player)
 		{
@@ -46,14 +54,35 @@ public partial class NeckType
 		{
 			return "draconic neck";
 		}
-		private static string DragonLongDesc(NeckData neck)
+		private static string DragonLongDesc(NeckData neck, bool alternateFormat)
 		{
 			string lengthText;
-			if (neck.length < 8) lengthText = "a long-ish ";
-			else if (neck.length < 13) lengthText = "a long ";
-			else if (neck.length < 18) lengthText = "a very long ";
-			else lengthText = "an extremely long ";
-			return lengthText + "draconic neck";
+			string article = "a ";
+			if (neck.length < 8)
+			{
+				lengthText = "long-ish ";
+			}
+			else if (neck.length < 13)
+			{
+				lengthText = "long ";
+			}
+			else if (neck.length < 18)
+			{
+				lengthText = "very long ";
+			}
+			else
+			{
+				lengthText = "extremely long ";
+				article = "an ";
+			}
+			if (alternateFormat)
+			{
+				return article + lengthText + "draconic neck";
+			}
+			else
+			{
+				return lengthText + "draconic neck";
+			}
 		}
 		private static string DragonPlayerStr(Neck neck, PlayerBase player)
 		{
@@ -97,17 +126,29 @@ public partial class NeckType
 		}
 		private static string DragonRestoreStr(NeckData previousNeckData, PlayerBase player)
 		{
-			return Utils.NewParagraph() + "Your draconic neck reverts down toward a more humanoid length, finally settling when it's back to normal. With the change, " +
+			return GlobalStrings.NewParagraph() + "Your draconic neck reverts down toward a more humanoid length, finally settling when it's back to normal. With the change, " +
 				"your neck also shifts back to the base or your skull, once again giving you lateral motion, though you don't have nearly the same flexibility. " +
 				Environment.NewLine + SafelyFormattedString.FormattedText("You have a human neck again!", StringFormats.BOLD);
 		}
+
+		private static string CockatriceDyeText(out bool isPlural)
+		{
+			isPlural = true;
+			return "the feathers on your neck";
+		}
+
+		private static string CockatricePostDyeText(HairFurColors color)
+		{
+			return color.AsString() + " feathers on your neck";
+		}
+
 		private static string CockatriceDesc()
 		{
 			return "cockatrice-like neck";
 		}
-		private static string CockatriceLongDesc(NeckData neck)
+		private static string CockatriceLongDesc(NeckData neck, bool alternateFormat)
 		{
-			return "an elongated, feathered cockatrice-like neck.";
+			return (alternateFormat ? "an " : "") + "elongated, feathered cockatrice-like neck.";
 		}
 		private static string CockatricePlayerStr(Neck neck, PlayerBase player)
 		{
@@ -124,20 +165,20 @@ public partial class NeckType
 			}
 			else if (previousNeckData.length < player.neck.length)
 			{
-				deltaLengthString = " and soon shifts, growing larger and thinner, until it's slightly longer than that of a human's. " + 
+				deltaLengthString = " and soon shifts, growing larger and thinner, until it's slightly longer than that of a human's. " +
 					GlobalStrings.CapitalizeFirstLetter(player.neck.color.AsString());
 			}
 			else
 			{
 				deltaLengthString = ", though nothing seems to happen, at least right away. Soon, however, " + player.neck.color.AsString();
 			}
-			return Utils.NewParagraph() + "Your neck starts to tingle" + deltaLengthString + " feathers begin to grow out of it, one after another, " +
+			return GlobalStrings.NewParagraph() + "Your neck starts to tingle" + deltaLengthString + " feathers begin to grow out of it, one after another, " +
 				"until a ruff of soft fluffy feathers has formed like that of an exotic bird." + Environment.NewLine +
 				SafelyFormattedString.FormattedText("You now have a cockatrice neck!", StringFormats.BOLD);
 		}
 		private static string CockatriceRestoreStr(NeckData previousNeckData, PlayerBase player)
 		{
-			return Utils.NewParagraph() + "Your neck starts to tingle uncomfortably, as if compressed like an accordion. As it does, the feathers that decorate your neck begin to " +
+			return GlobalStrings.NewParagraph() + "Your neck starts to tingle uncomfortably, as if compressed like an accordion. As it does, the feathers that decorate your neck begin to " +
 				"fall out until " + SafelyFormattedString.FormattedText("you're left with a normal neck!", StringFormats.BOLD);
 		}
 

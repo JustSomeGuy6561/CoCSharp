@@ -10,6 +10,9 @@ using System.Collections.ObjectModel;
 //using CoC.
 namespace CoC.Backend.BodyParts
 {
+	//note: i suppose gills could be considered plural, so it could make use of the short description variant with plural flag, but i can't really think of a reason you would need
+	//a verbose description and only one gill. feel free to add it if needed.
+
 	//has no special data. its data change will never be called.
 	public sealed partial class Gills : BehavioralSaveablePart<Gills, GillType, GillData>
 	{
@@ -51,7 +54,8 @@ namespace CoC.Backend.BodyParts
 
 		private static readonly List<GillType> gills = new List<GillType>();
 		public static readonly ReadOnlyCollection<GillType> availableTypes = new ReadOnlyCollection<GillType>(gills);
-		protected GillType(SimpleDescriptor shortDesc, DescriptorWithArg<GillData> longDesc, PlayerBodyPartDelegate<Gills> playerDesc,
+
+		protected GillType(SimpleDescriptor shortDesc, LongDescriptor<GillData> longDesc, PlayerBodyPartDelegate<Gills> playerDesc,
 			ChangeType<GillData> transform, RestoreType<GillData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -92,7 +96,7 @@ namespace CoC.Backend.BodyParts
 		protected readonly int _index;
 		public override int index => _index;
 
-		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x,y) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
 		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneLongDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
 		public static readonly GillType FISH = new GillType(FishDescStr, FishLongDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
 	}

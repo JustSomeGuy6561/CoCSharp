@@ -78,7 +78,8 @@ namespace CoC.Backend.BodyParts
 			featherColor = HairFurColors.IsNullOrEmpty(color) ? wingType.defaultFeatherColor : color;
 		}
 
-		public string ShortDescriptionWithSize() => type.shortDescriptionWithSize(isLarge);
+		public string ShortDescriptionWithSize(bool isLarge) => type.ShortDescriptionWithSize(isLarge);
+		public string ShortDescriptionWithSize(bool isLarge, bool plural) => type.ShortDescriptionWithSize(isLarge, plural);
 
 		public override WingData AsReadOnlyData()
 		{
@@ -333,9 +334,14 @@ namespace CoC.Backend.BodyParts
 			return type.buttonText(false);
 		}
 
-		string IDyeable.locationDesc()
+		string IDyeable.locationDesc(out bool isPlural)
 		{
-			return type.locationDesc(false);
+			return type.locationDesc(false, out isPlural);
+		}
+
+		string IDyeable.postDyeDescription()
+		{
+			return type.postDyeText(featherColor);
 		}
 
 
@@ -379,7 +385,12 @@ namespace CoC.Backend.BodyParts
 
 		byte IMultiToneable.numToneableMembers => 2;
 
-		string IMultiToneable.buttonText(byte index)
+		string IMultiToneable.buttonText()
+		{
+			return Name();
+		}
+
+		string IMultiToneable.memberButtonText(byte index)
 		{
 			if (index >= multiToneable.numToneableMembers)
 			{
@@ -399,24 +410,30 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		string IMultiToneable.locationDesc(byte index)
+		string IMultiToneable.memberLocationDesc(byte index, out bool isPlural)
 		{
 			if (index >= multiToneable.numToneableMembers)
 			{
+				isPlural = false;
 				return "";
 			}
 			else if (index == 1)
 			{
-				return type.secondaryLocationDesc();
+				return type.secondaryLocationDesc(out isPlural);
 			}
 			else if (index == 0)
 			{
-				return type.locationDesc(true);
+				return type.locationDesc(true, out isPlural);
 			}
 			else
 			{
 				throw new NotImplementedException("Somebody added a new toneable member and didn't implement it correctly.");
 			}
+		}
+
+		string IMultiToneable.memberPostToneDescription(byte index)
+		{
+			return type.postToneText(this, index);
 		}
 
 		private IMultiToneable multiToneable => this;
@@ -447,37 +464,74 @@ namespace CoC.Backend.BodyParts
 		public bool usesTone => this is TonableWings;
 		public bool usesHair => this is FeatheredWings;
 
-		internal virtual SimpleDescriptor secondaryButtonText => Wing2Text;
-		internal virtual SimpleDescriptor secondaryLocationDesc => YourBoneDesc;
+		internal virtual string secondaryButtonText() => Wing2Text();
+		internal virtual string secondaryLocationDesc(out bool isPlural) => YourBoneDesc(out isPlural);
 
 		internal virtual string buttonText(bool isLotion) => WingText();
-		internal virtual string locationDesc(bool isLotion) => WingDesc(isLotion);
+		internal virtual string locationDesc(bool isLotion, out bool isPlural) => WingDesc(isLotion, out isPlural);
+
+		internal virtual string postDyeText(HairFurColors color) => WingsDyeText(color);
+
+		internal virtual string postToneText(Wings wings, byte index) => WingsToneText(wings, index);
+
 		public readonly bool canChangeSize;
 		public virtual bool canChangeColor => usesHair || usesTone;
 
 		public bool defaultIsLarge => UpdateSizeOnTransform(false);
 
-		public DescriptorWithArg<bool> shortDescriptionWithSize;
+		//i hate everything.
+
+		protected internal delegate string WingShortDesc(bool? isLarge, bool plural = true);
+
+
+		private readonly WingShortDesc wingShortDesc;
+
+		public string ShortDescription(bool plural) => wingShortDesc(null, plural);
+
+		public string ShortDescriptionWithSize(bool isLarge) => wingShortDesc(isLarge);
+		public string ShortDescriptionWithSize(bool isLarge, bool plural) => wingShortDesc(isLarge, plural);
+
+
+		private readonly LongPluralDescriptor<WingData> longPluralDesc;
+
+		public string LongDescription(WingData data, bool alternateForm, bool plural) => longPluralDesc(data, alternateForm, plural);
+
+		public string LongDescriptionPrimary(WingData data, bool plural) => longPluralDesc(data, false, plural);
+
+		public string LongDescriptionAlternate(WingData data, bool plural) => longPluralDesc(data, true, plural);
 
 		protected WingType(bool canFly,
-			SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
-			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+			SimplePluralDescriptor shortDesc, LongPluralDescriptor<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
+			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(PluralHelper(shortDesc), LongPluralHelper(longDesc), playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			wings.AddAt(this, _index);
 			transformBehavior = canFly ? BehaviorOnTransform.CONVERT_TO_LARGE : BehaviorOnTransform.CONVERT_TO_SMALL; //was wrong, caught in testing.
-			shortDescriptionWithSize = (x) => shortDesc();
+
+			wingShortDesc = (_, plural) => shortDesc(plural);
+			longPluralDesc = longDesc;
+
 			canChangeSize = false;
 		}
 		//wings that support large wings need to define a behavior on transform - do they keep the large wings?
-		protected WingType(BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<bool> shortDescWithSize, DescriptorWithArg<WingData> longDesc,
-			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+		protected WingType(BehaviorOnTransform behaviorOnTransform, WingShortDesc wingShortDesc, LongPluralDescriptor<WingData> longDesc,
+			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore)
+			: base(WingParser(wingShortDesc), LongPluralHelper(longDesc), playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			wings.AddAt(this, _index);
 			transformBehavior = behaviorOnTransform;
-			shortDescriptionWithSize = shortDescWithSize ?? throw new ArgumentNullException(nameof(shortDescWithSize));
+
+			this.wingShortDesc = wingShortDesc;
+			longPluralDesc = longDesc;
+
 			canChangeSize = true;
+		}
+
+		private static SimpleDescriptor WingParser(WingShortDesc wingShort)
+		{
+			if (wingShort is null) throw new ArgumentNullException(nameof(wingShort));
+			return () => wingShort(null, true);
 		}
 
 		public override int index => _index;
@@ -548,14 +602,16 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public static readonly WingType NONE = new WingType(false, NoneDesc, NoneLongDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
-		public static readonly WingType BEE_LIKE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, BeeLikeDesc, BeeLikeSizeDesc, BeeLikeLongDesc, BeeLikePlayerStr, BeeLikeTransformStr, BeeLikeRestoreStr);
+		public static readonly WingType BEE_LIKE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, BeeLikeDesc, BeeLikeLongDesc, BeeLikePlayerStr, BeeLikeTransformStr, BeeLikeRestoreStr);
 		//player always has large feathered wings. small feathered wings are the new harpy wings. player can't get them naturally as of now.
-		public static readonly FeatheredWings FEATHERED = new FeatheredWings(DefaultValueHelpers.defaultHarpyFeatherHair, BehaviorOnTransform.CONVERT_TO_LARGE, FeatheredDesc, FeatheredSizeDesc, FeatheredLongDesc, FeatheredPlayerStr, FeatheredTransformStr, FeatheredRestoreStr);
-		public static readonly WingType BAT_LIKE = new WingType(BehaviorOnTransform.KEEP_SIZE, BatLikeDesc, BatLikeSizeDesc, BatLikeLongDesc, BatLikePlayerStr, BatLikeTransformStr, BatLikeRestoreStr);
-		public static readonly TonableWings DRACONIC = new TonableWings(DefaultValueHelpers.defaultDragonWingTone, DefaultValueHelpers.defaultDragonWingTone, BehaviorOnTransform.CONVERT_TO_SMALL, DraconicDesc, DraconicSizeDesc, DraconicLongDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
-		public static readonly WingType FAERIE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, FaerieDesc, FaerieSizeDesc, FaerieLongDesc, FaeriePlayerStr, FaerieTransformStr, FaerieRestoreStr);
+		public static readonly FeatheredWings FEATHERED = new FeatheredWings(DefaultValueHelpers.defaultHarpyFeatherHair, BehaviorOnTransform.CONVERT_TO_LARGE, FeatheredDesc,
+			FeatheredLongDesc, FeatheredPlayerStr, FeatheredTransformStr, FeatheredRestoreStr);
+		public static readonly WingType BAT_LIKE = new WingType(BehaviorOnTransform.KEEP_SIZE, BatLikeDesc, BatLikeLongDesc, BatLikePlayerStr, BatLikeTransformStr, BatLikeRestoreStr);
+		public static readonly TonableWings DRACONIC = new TonableWings(DefaultValueHelpers.defaultDragonWingTone, DefaultValueHelpers.defaultDragonWingTone,
+			BehaviorOnTransform.CONVERT_TO_SMALL, DraconicDesc, DraconicLongDesc, DraconicPlayerStr, DraconicTransformStr, DraconicRestoreStr);
+		public static readonly WingType FAERIE = new WingType(BehaviorOnTransform.CONVERT_TO_SMALL, FaerieDesc, FaerieLongDesc, FaeriePlayerStr, FaerieTransformStr, FaerieRestoreStr);
 		public static readonly WingType DRAGONFLY = new WingType(true, DragonflyDesc, DragonflyLongDesc, DragonflyPlayerStr, DragonflyTransformStr, DragonflyRestoreStr);
-		public static readonly WingType IMP = new WingType(BehaviorOnTransform.KEEP_SIZE, ImpDesc, ImpSizeDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+		public static readonly WingType IMP = new WingType(BehaviorOnTransform.KEEP_SIZE, ImpDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
 
 
 	}
@@ -563,14 +619,16 @@ namespace CoC.Backend.BodyParts
 	public class FeatheredWings : WingType
 	{
 		public readonly HairFurColors defaultFeatherColor;
-		public FeatheredWings(HairFurColors defaultHair, bool canFly, SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
-			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(canFly, shortDesc, longDesc, playerDesc, transform, restore)
+		internal FeatheredWings(HairFurColors defaultHair, bool canFly, SimplePluralDescriptor shortDesc, LongPluralDescriptor<WingData> longDesc,
+			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore)
+			: base(canFly, shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultFeatherColor = defaultHair;
 		}
 
-		public FeatheredWings(HairFurColors defaultHair, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<bool> shortSizeDesc, DescriptorWithArg<WingData> longDesc,
-			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore) : base(behaviorOnTransform, shortDesc, shortSizeDesc, longDesc, playerDesc, transform, restore)
+		internal FeatheredWings(HairFurColors defaultHair, BehaviorOnTransform behaviorOnTransform, WingShortDesc wingShortDesc, LongPluralDescriptor<WingData> longDesc,
+			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore)
+			: base(behaviorOnTransform, wingShortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultFeatherColor = defaultHair;
 		}
@@ -596,22 +654,25 @@ namespace CoC.Backend.BodyParts
 			}
 			return true;
 		}
+
+		internal override string postDyeText(HairFurColors color) => FeatheredWingsPostDyeText(color);
 	}
 
 	public class TonableWings : WingType
 	{
 		public readonly Tones defaultWingTone;
 		public readonly Tones defaultWingBoneTone;
-		public TonableWings(Tones defaultTone, Tones defaultBoneTone, bool canFly, SimpleDescriptor shortDesc, DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc,
-			ChangeType<WingData> transform, RestoreType<WingData> restore) : base(canFly, shortDesc, longDesc, playerDesc, transform, restore)
+		internal TonableWings(Tones defaultTone, Tones defaultBoneTone, bool canFly, SimplePluralDescriptor shortDesc, LongPluralDescriptor<WingData> longDesc,
+			PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore)
+			: base(canFly, shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultWingTone = defaultTone;
 			defaultWingBoneTone = defaultBoneTone;
 		}
 
-		public TonableWings(Tones defaultTone, Tones defaultBoneTone, BehaviorOnTransform behaviorOnTransform, SimpleDescriptor shortDesc, DescriptorWithArg<bool> shortSizeDesc,
-			DescriptorWithArg<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore)
-			: base(behaviorOnTransform, shortDesc, shortSizeDesc, longDesc, playerDesc, transform, restore)
+		internal TonableWings(Tones defaultTone, Tones defaultBoneTone, BehaviorOnTransform behaviorOnTransform, WingShortDesc wingShortDesc,
+			LongPluralDescriptor<WingData> longDesc, PlayerBodyPartDelegate<Wings> playerDesc, ChangeType<WingData> transform, RestoreType<WingData> restore)
+			: base(behaviorOnTransform, wingShortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultWingTone = defaultTone;
 			defaultWingBoneTone = defaultBoneTone;
@@ -642,6 +703,8 @@ namespace CoC.Backend.BodyParts
 
 			return valid;
 		}
+
+		internal override string postToneText(Wings wings, byte index) => TonablePostToneText(wings, index);
 	}
 
 	public sealed class WingData : BehavioralSaveablePartData<WingData, Wings, WingType>
@@ -670,6 +733,7 @@ namespace CoC.Backend.BodyParts
 			usesTone = source.usesTone;
 		}
 
-		public string ShortDescriptionWithSize() => type.shortDescriptionWithSize(isLarge);
+		public string ShortDescriptionWithSize(bool isLarge) => type.ShortDescriptionWithSize(isLarge);
+		public string ShortDescriptionWithSize(bool isLarge, bool plural) => type.ShortDescriptionWithSize(isLarge, plural);
 	}
 }

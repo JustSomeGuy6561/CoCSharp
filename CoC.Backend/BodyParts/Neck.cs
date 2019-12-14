@@ -184,9 +184,14 @@ namespace CoC.Backend.BodyParts
 			return type.buttonText();
 		}
 
-		string IDyeable.locationDesc()
+		string IDyeable.locationDesc(out bool isPlural)
 		{
-			return type.locationDesc();
+			return type.locationDesc(out isPlural);
+		}
+
+		string IDyeable.postDyeDescription()
+		{
+			return type.postDyeDescription(color);
 		}
 	}
 
@@ -217,11 +222,13 @@ namespace CoC.Backend.BodyParts
 
 		public bool usesHair => canDye;
 
-		internal virtual SimpleDescriptor buttonText => GenericButtonDesc;
-		internal virtual SimpleDescriptor locationDesc => GenericLocationText;
+		internal virtual string buttonText() => GenericButtonDesc();
+		internal virtual string locationDesc(out bool isPlural) => GenericLocationText(out isPlural);
+
+		internal virtual string postDyeDescription(HairFurColors color) => GenericPostDyeText(color);
 
 		private protected NeckType(byte maxLength,
-			SimpleDescriptor shortDesc, DescriptorWithArg<NeckData> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
+			SimpleDescriptor shortDesc, LongDescriptor<NeckData> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
 			RestoreType<NeckData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -352,6 +359,17 @@ namespace CoC.Backend.BodyParts
 			public override HairFurColors defaultColor => HairFurColors.GREEN;
 
 			public override byte minNeckLength => MAX_COCKATRICE_LENGTH;
+
+			internal override string locationDesc(out bool isPlural)
+			{
+				return CockatriceDyeText(out isPlural);
+			}
+
+			internal override string postDyeDescription(HairFurColors color)
+			{
+				return CockatricePostDyeText(color);
+			}
+
 		}
 
 		private sealed class DraconicNeck : NeckType
@@ -377,7 +395,7 @@ namespace CoC.Backend.BodyParts
 			return this;
 		}
 
-	internal NeckData(Neck neck) : base(GetID(neck), GetBehavior(neck))
+		internal NeckData(Neck neck) : base(GetID(neck), GetBehavior(neck))
 		{
 			length = neck.length;
 			neckHairColor = neck.color;

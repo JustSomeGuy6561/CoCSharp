@@ -35,7 +35,12 @@ namespace CoC.Backend.BodyParts
 
 		//private protected abstract SourceClass Deserialize(StreamingInfo info, DataContext dataa);
 
-		public string LongDescription() => type.LongDescription(AsCurrentData());
+		public string LongDescriptionPrimary() => type.LongDescriptionPrimary(AsCurrentData());
+
+		public string LongDescriptionAlternate() => type.LongDescriptionAlternate(AsCurrentData());
+
+		public string LongDescription(bool alternateForm) => type.LongDescription(AsCurrentData(), alternateForm);
+
 
 		protected static Guid GetID(SourceClass source)
 		{

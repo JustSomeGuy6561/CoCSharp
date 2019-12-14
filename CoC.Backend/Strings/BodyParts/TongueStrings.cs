@@ -17,7 +17,7 @@ namespace CoC.Backend.BodyParts
 			return "Tongue";
 		}
 	}
-	
+
 	public partial class TongueType
 	{
 		private static string HumanDesc()
@@ -25,9 +25,9 @@ namespace CoC.Backend.BodyParts
 			return "tongue";
 			//return "human tongue";
 		}
-		private static string HumanLongDesc(TongueData tongue)
+		private static string HumanLongDesc(TongueData tongue, bool alternateFormat)
 		{
-			return GenericLongDesc(tongue, HumanDesc());
+			return GenericLongDesc(tongue, alternateFormat, "a ");
 		}
 		private static string HumanPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -43,11 +43,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SnakeDesc()
 		{
-			return "serpentine tongue";
+			return "forked, serpentine tongue";
 		}
-		private static string SnakeLongDesc(TongueData tongue)
+		private static string SnakeLongDesc(TongueData tongue, bool alternateFormat)
 		{
-			return GenericLongDesc(tongue, SnakeDesc());
+			return GenericLongDesc(tongue, alternateFormat, "a ");
 		}
 		private static string SnakePlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -80,9 +80,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "demonic tongue";
 		}
-		private static string DemonicLongDesc(TongueData tongue)
+		private static string DemonicLongDesc(TongueData tongue, bool alternateFormat)
 		{
-			return GenericLongDesc(tongue, DemonicDesc());
+			return GenericLongDesc(tongue, alternateFormat, "a ");
 		}
 		private static string DemonicPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -120,9 +120,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "draconic tongue";
 		}
-		private static string DraconicLongDesc(TongueData tongue)
+		private static string DraconicLongDesc(TongueData tongue, bool alternateFormat)
 		{
-			return GenericLongDesc(tongue, DraconicDesc());
+			return GenericLongDesc(tongue, alternateFormat, "a ");
 		}
 		private static string DraconicPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -143,9 +143,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "echidna tongue";
 		}
-		private static string EchidnaLongDesc(TongueData tongue)
+		private static string EchidnaLongDesc(TongueData tongue, bool alternateFormat)
 		{
-			return GenericLongDesc(tongue, EchidnaDesc());
+			return GenericLongDesc(tongue, alternateFormat, "an ");
 		}
 		private static string EchidnaPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -175,11 +175,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string LizardDesc()
 		{
-			return "lizard tongue";
+			return "reptilian tongue";
 		}
-		private static string LizardLongDesc(TongueData tongue)
+		private static string LizardLongDesc(TongueData tongue, bool alternateFormat)
 		{
-			return GenericLongDesc(tongue, LizardDesc());
+			return GenericLongDesc(tongue, alternateFormat, "a ");
 		}
 		private static string LizardPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -238,11 +238,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CatDesc()
 		{
-			return "cat tongue";
+			return "feline tongue";
 		}
-		private static string CatLongDesc(TongueData tongue)
+		private static string CatLongDesc(TongueData tongue, bool alternateFormat)
 		{
-			return GenericLongDesc(tongue, CatDesc());
+			return GenericLongDesc(tongue, alternateFormat, "a ");
 		}
 		private static string CatPlayerStr(Tongue tongue, PlayerBase player)
 		{
@@ -268,17 +268,22 @@ namespace CoC.Backend.BodyParts
 			return GenericRestoreStr(previousTongueData, player);
 		}
 
-		private static string GenericLongDesc(TongueData tongue, string partialDesc)
+		private static string GenericLongDesc(TongueData tongue, bool alternateFormat, string alternateArticle)
 		{
 			StringBuilder sb = new StringBuilder();
-			if (Utils.Rand(10) <= 2)
+			if (Utils.Rand(10) <= 2 && tongue.tonguePiercings.wearingJewelry)
 			{
-				if (tongue.tonguePiercings.wearingJewelry)
+				if (alternateFormat)
 				{
-					sb.Append("pierced ");
+					sb.Append("a ");
 				}
+				sb.Append("pierced ");
 			}
-			sb.Append(partialDesc);
+			else if (alternateFormat)
+			{
+				sb.Append(alternateArticle);
+			}
+			sb.Append(tongue.type.ShortDescription());
 			return sb.ToString();
 		}
 

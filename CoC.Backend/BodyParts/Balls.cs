@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -15,6 +16,9 @@ namespace CoC.Backend.BodyParts
 	//It's possible to actually get 4 balls in source, despite my initial assumption otherwise. I've let you max up to 8 b/c i missed this. could revert to just 4, w/e.
 
 	//though this probably needs more thought - is it two per sack, and multiple sacks? or is it all one sack?
+
+	//note for writers: balls are technically plural, but it really doesn't make sense to say 'a ball.' the expected text would be 'one of [pronoun] balls'
+	//
 
 	//I'VE GOT BIG BALLS! OH, I'VE GOT BIG BALLS! THERE SUCH BIG BALLS! DIRTY BIG BALLS! HE'S GOT BIG BALLS! AND SHE'S GOT BIG BALLS! BUT WE'VE GOT THE BIGGEST BALLS OF THEM ALL!
 	//i'll see if i can hide this as an easter egg is some text somewhere.
@@ -67,6 +71,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _size;
 
+		internal int hoursSinceCum => CreatureStore.GetCreatureClean(creatureID)?.genitals.hoursSinceLastCum ?? 0;
+		internal float relativeLust => CreatureStore.GetCreatureClean(creatureID)?.relativeLust ?? Creature.DEFAULT_LUST;
+		internal BodyType bodyType => CreatureStore.GetCreatureClean(creatureID)?.body.type ?? BodyType.defaultValue;
+
+
 		internal Balls(Guid creatureID, bool hasBalls) : base(creatureID)
 		{
 			setBalls(hasBalls, silent:true);
@@ -100,7 +109,7 @@ namespace CoC.Backend.BodyParts
 
 		public override BallsData AsReadOnlyData()
 		{
-			return new BallsData(creatureID, count, size);
+			return new BallsData(this);
 		}
 
 		#region Unique Functions and Updating Properties
@@ -280,17 +289,23 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-		public string BallsOrProstateShort() => BallsData.ShortDesc(hasBalls);
+		public string ShortDescription(bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.ShortDesc(count, alternateForm, prostateIfNoBalls);
 
-		public string DescriptionWithCount(bool preciseCount, bool withArticle) => BallsData.CountDescription(this, preciseCount, withArticle);
+		public string DescriptionWithCount(bool preciseCount, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.CountDescription(this, preciseCount, alternateForm, prostateIfNoBalls);
 
-		public string DescriptionWithSize(bool preciseSize) => BallsData.BallsWithSize(this, preciseSize);
+		public string DescriptionWithSize(bool preciseSize) => BallsStrings.SizeDescription(this, preciseSize);
 
-		public string BallsWithCountOrProstate(bool preciseCount, bool withArticle) => BallsData.BallsWithCountOrProstate(this, preciseCount, withArticle);
+		public string DescriptionWithSizeOrProstate(bool preciseSize, bool prostateFallbackUsesAlternateForm = false)
+		{
+			if (hasBalls) return BallsStrings.SizeDescription(this, preciseSize);
+			else return BallsStrings.FallbackProstateText(prostateFallbackUsesAlternateForm);
+		}
 
-		public string BallsLongOrProstate(bool preciseMeasurements, bool withArticle) => BallsData.BallsLongOrProstate(this, preciseMeasurements, withArticle);
+		public string LongDescription(bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.LongDescription(this, preciseMeasurements, alternateForm, prostateIfNoBalls);
 
+		public string SackDescription() => BallsStrings.SackDescription(this);
 
+		public string FullDescription(bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.FullDescription(this, preciseMeasurements, alternateForm, prostateIfNoBalls);
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -434,22 +449,54 @@ namespace CoC.Backend.BodyParts
 		public readonly byte count;
 		public readonly byte size;
 
-		bool hasBalls => count != 0;
+		public bool hasBalls => count != 0;
 
-		public string BallsOrProstateShort() => BallsData.ShortDesc(hasBalls);
-		public string DescriptionWithCount(bool preciseCount, bool withArticle) => BallsData.CountDescription(this, preciseCount, withArticle);
+		internal readonly BodyType bodyType;
+		internal readonly float relativeLust;
+		internal readonly int hoursSinceLastCum;
 
-		public string DescriptionWithSize(bool preciseSize) => BallsData.BallsWithSize(this, preciseSize);
+		public string ShortDescription(bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.ShortDesc(count, alternateForm, prostateIfNoBalls);
 
-		public string BallsWithCountOrProstate(bool preciseCount, bool withArticle) => BallsData.BallsWithCountOrProstate(this, preciseCount, withArticle);
+		public string DescriptionWithCount(bool preciseCount, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.CountDescription(this, preciseCount, alternateForm, prostateIfNoBalls);
 
-		public string BallsLongOrProstate(bool preciseMeasurements, bool withArticle) => BallsData.BallsLongOrProstate(this, preciseMeasurements, withArticle);
+		public string DescriptionWithSize(bool preciseSize) => BallsStrings.SizeDescription(this, preciseSize);
+
+		public string DescriptionWithSizeOrProstate(bool preciseSize, bool prostateFallbackUsesAlternateForm = false)
+		{
+			if (hasBalls) return BallsStrings.SizeDescription(this, preciseSize);
+			else return BallsStrings.FallbackProstateText(prostateFallbackUsesAlternateForm);
+		}
+
+		public string LongDescription(bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.LongDescription(this, preciseMeasurements, alternateForm, prostateIfNoBalls);
+
+		public string SackDescription() => BallsStrings.SackDescription(this);
+
+		public string FullDescription(bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.FullDescription(this, preciseMeasurements, alternateForm, prostateIfNoBalls);
 
 
-		internal BallsData(Guid id, byte numBalls, byte ballSize) : base(id)
+		internal BallsData(Balls source) : base(GetID(source))
+		{
+			count = source.count;
+			size = source.size;
+
+			hoursSinceLastCum = source.hoursSinceCum;
+			bodyType = source.bodyType;
+			relativeLust = source.relativeLust;
+		}
+		internal BallsData(Guid id, byte numBalls, byte ballSize, int hoursSinceLastCum, float relativeLust, BodyType bodyType) : base(id)
 		{
 			this.count = numBalls;
 			this.size = ballSize;
+
+			this.bodyType = bodyType;
+			this.relativeLust = relativeLust;
+			this.hoursSinceLastCum = hoursSinceLastCum;
+		}
+
+		private static Guid GetID(Balls source)
+		{
+			if (source is null) throw new ArgumentNullException(nameof(source));
+			return source.creatureID;
 		}
 	}
 }

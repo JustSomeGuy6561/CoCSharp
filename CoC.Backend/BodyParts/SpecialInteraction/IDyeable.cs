@@ -10,7 +10,8 @@ namespace  CoC.Backend.BodyParts.SpecialInteraction
 	{
 		string buttonText();
 
-		string locationDesc();
+		string locationDesc(out bool isPlural);
+		string postDyeDescription();
 
 		bool allowsDye();
 
@@ -21,6 +22,23 @@ namespace  CoC.Backend.BodyParts.SpecialInteraction
 
 	public interface IDyeableCustomText : IDyeable
 	{
-		string ApplyDye(HairFurColors dyeColor);
+		string DisplayResults(HairFurColors dyeColor, bool successful);
+	}
+
+	public interface IPatternable : IDyeable
+	{
+		bool allowsPatterning();
+
+		bool isDifferetPrimaryColor(HairFurColors dyeColor);
+		bool isDifferentSecondaryColor(HairFurColors dyeColor);
+
+		bool attemptToPattern(HairFurColors dyeColor, FurMulticolorPattern pattern, bool primaryColor);
+
+	}
+
+	public interface IPatternableCustomText : IPatternable
+	{
+		string DisplayResults(HairFurColors dyeColor, FurMulticolorPattern pattern, bool primaryColor, bool successful);
+
 	}
 }

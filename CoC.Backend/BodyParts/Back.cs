@@ -6,6 +6,7 @@ using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -168,9 +169,14 @@ namespace CoC.Backend.BodyParts
 			return type.dyeDesc();
 		}
 
-		string IDyeable.locationDesc()
+		string IDyeable.locationDesc(out bool isPlural)
 		{
-			return type.dyeText();
+			return type.dyeText(out isPlural);
+		}
+
+		string IDyeable.postDyeDescription()
+		{
+			return type.postText(this.epidermis.fur.primaryColor);
 		}
 
 		private bool canDye => dyeable.allowsDye();
@@ -241,11 +247,12 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		internal virtual SimpleDescriptor dyeDesc => GenericBtnkDesc;
-		internal virtual SimpleDescriptor dyeText => GenericLocDesc;
+		internal virtual string dyeDesc() => GenericBtnkDesc();
+		internal virtual string dyeText(out bool isPlural) => GenericLocDesc(out isPlural);
+		internal virtual string postText(HairFurColors hairColor) => GenericPostUseDesc(hairColor);
 		public virtual bool hasSpecialEpidermis => false; //replaces usesHair, as we now have types that can use tones. we've fixed this with a single epidermis here.
 
-		protected BackType(SimpleDescriptor shortDesc, DescriptorWithArg<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc,
+		protected BackType(SimpleDescriptor shortDesc, LongDescriptor<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc,
 			ChangeType<BackData> transform, RestoreType<BackData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -292,8 +299,6 @@ namespace CoC.Backend.BodyParts
 		public static readonly DragonBackMane DRACONIC_MANE;
 		public static readonly BackType DRACONIC_SPIKES;
 		public static readonly BackType SHARK_FIN;
-		public static readonly AttackableBackType SPIDER_ABDOMEN; //web
-		public static readonly AttackableBackType BEE_STINGER; //sting
 		public static readonly AttackableBackType TENDRILS; //tendril grab
 		public static readonly BehemothBack BEHEMOTH;
 
@@ -301,8 +306,6 @@ namespace CoC.Backend.BodyParts
 		//when running unit tests. Testing OP!
 
 		private static ResourceAttackBase TENDRIL_GRAB(Func<ushort> x, Action<ushort> y) => new TentaGrab(x, y);
-
-		private static readonly EpidermalData CARAPACE = new EpidermalData(EpidermisType.CARAPACE, Tones.BLACK, SkinTexture.SHINY);
 		private static readonly EpidermalData TENDRIL_EPIDERMIS = new EpidermalData(EpidermisType.GOO, Tones.CERULEAN, SkinTexture.SLIMY);
 
 		static BackType()
@@ -313,13 +316,16 @@ namespace CoC.Backend.BodyParts
 			SHARK_FIN = new BackType(SharkFinDesc, SharkFinLongDesc, SharkFinPlayerStr, SharkFinTransformStr, SharkFinRestoreStr);
 			TENDRILS = new AttackableBackType(TENDRIL_GRAB, TENDRIL_EPIDERMIS, TendrilShortDesc, TendrilLongDesc, TendrilPlayerStr, TendrilTransformStr, TendrilRestoreStr); //tendril grab
 			BEHEMOTH = new BehemothBack();
+
 		}
 	}
 	public sealed class DragonBackMane : BackType
 	{
 		public HairFurColors defaultHair => DefaultValueHelpers.defaultDragonManeColor;
-		internal override SimpleDescriptor dyeDesc => ManeDesc;
-		internal override SimpleDescriptor dyeText => YourManeDesc;
+		internal override string dyeDesc() => ManeDesc();
+		internal override string dyeText(out bool isPlural) => YourManeDesc(out isPlural);
+
+		internal override string postText(HairFurColors hairColor) => ManePostDyeText(hairColor);
 
 		public override bool hasSpecialEpidermis => true;
 
@@ -338,8 +344,9 @@ namespace CoC.Backend.BodyParts
 	public sealed class BehemothBack : BackType
 	{
 		public HairFurColors defaultHair => DefaultValueHelpers.defaultDragonManeColor;
-		internal override SimpleDescriptor dyeDesc => ManeDesc;
-		internal override SimpleDescriptor dyeText => YourManeDesc;
+		internal override string dyeDesc() => ManeDesc();
+		internal override string dyeText(out bool isPlural) => YourManeDesc(out isPlural);
+		internal override string postText(HairFurColors hairColor) => ManePostDyeText(hairColor);
 
 		public override bool hasSpecialEpidermis => true;
 
@@ -361,7 +368,7 @@ namespace CoC.Backend.BodyParts
 		//BUT, given a callback to the resources, we can generate the attack here, using another callback. Clarity dictates i not do this, but fuck it.
 		private readonly GenerateResourceAttack getAttack; //a callback. takes another callback (that returns a ushort), and returns an attack that requires resources.
 		internal AttackableBackType(GenerateResourceAttack attackGetter, EpidermalData appearance,
-			SimpleDescriptor shortDesc, DescriptorWithArg<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
+			SimpleDescriptor shortDesc, LongDescriptor<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
 			: base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			getAttack = attackGetter ?? throw new ArgumentNullException(nameof(attackGetter));

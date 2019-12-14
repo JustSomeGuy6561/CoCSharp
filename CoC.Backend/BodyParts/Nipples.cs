@@ -81,6 +81,7 @@ namespace CoC.Backend.BodyParts
 		public NippleStatus nippleStatus => creature?.genitals.nippleType ?? NippleStatus.NORMAL;
 		public bool quadNipples => creature?.genitals.quadNipples ?? false;
 		public bool blackNipples => creature?.genitals.blackNipples ?? false;
+		internal BodyType bodyType => creature?.body.type ?? BodyType.defaultValue;
 
 		public uint dickNippleFuckCount { get; private set; } = 0;
 		public uint nippleFuckCount { get; private set; } = 0;
@@ -113,6 +114,11 @@ namespace CoC.Backend.BodyParts
 
 		public bool isPierced => nipplePiercing.isPierced;
 		public bool wearingJewelry => nipplePiercing.wearingJewelry;
+
+		public LactationStatus lactationStatus => creature?.genitals.lactationStatus ?? LactationStatus.NOT_LACTATING;
+		public float lactationRate => creature?.genitals.lactationRate ?? 0;
+
+		public float relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
 
 		internal Nipples(Guid creatureID, Breasts parent, BreastPerkHelper initialPerkData, Gender gender) : base(creatureID)
 		{
@@ -388,7 +394,7 @@ namespace CoC.Backend.BodyParts
 		//	}
 	}
 
-	public sealed class NippleData : SimpleData
+	public sealed partial class NippleData : SimpleData
 	{
 		public readonly bool quadNipples;
 		public readonly bool blackNipples;
@@ -396,15 +402,37 @@ namespace CoC.Backend.BodyParts
 		public readonly float length;
 		public readonly int breastRowIndex;
 
+		public readonly float lactationRate;
+		public readonly LactationStatus lactationStatus;
+
 		public readonly ReadOnlyPiercing<NipplePiercings> nipplePiercings;
 
-		public NippleData(Guid creatureID, float length, int breastIndex, bool quadNipples = false, bool blackNipples = false, NippleStatus nippleStatus = NippleStatus.NORMAL) : base(creatureID)
+		public readonly float relativeLust;
+
+		internal readonly BodyType bodyType;
+
+		public NippleData(Guid creatureID, float length, int breastIndex, float lactationRate = 0, bool quadNipples = false, bool blackNipples = false,
+			NippleStatus nippleStatus = NippleStatus.NORMAL, ReadOnlyPiercing<NipplePiercings> piercings = null, float relativeLust = Creature.DEFAULT_LUST)
+			: this(creatureID, length, breastIndex, BodyType.defaultValue, lactationRate, quadNipples, blackNipples, nippleStatus, piercings, relativeLust)
+		{ }
+
+		public NippleData(Guid creatureID, float length, int breastIndex, BodyType bodyType, float lactationRate = 0, bool quadNipples = false, bool blackNipples = false,
+			NippleStatus nippleStatus = NippleStatus.NORMAL, ReadOnlyPiercing<NipplePiercings> piercings = null, float relativeLust = Creature.DEFAULT_LUST) : base(creatureID)
 		{
 			this.length = length;
 			this.breastRowIndex = breastIndex;
 			this.blackNipples = blackNipples;
 			this.quadNipples = quadNipples;
 			this.status = nippleStatus;
+
+			this.lactationRate = lactationRate;
+			lactationStatus = Genitals.StatusFromRate(lactationRate);
+
+			nipplePiercings = piercings ?? new ReadOnlyPiercing<NipplePiercings>();
+
+			this.relativeLust = Utils.Clamp2(relativeLust, 0, 100);
+
+			this.bodyType = bodyType;
 		}
 
 		public NippleData(Guid creatureID, Gender currentGender) : base(creatureID)
@@ -414,7 +442,17 @@ namespace CoC.Backend.BodyParts
 			status = NippleStatus.NORMAL;
 			quadNipples = false;
 			blackNipples = false;
+
+			lactationRate = 0;
+			lactationStatus = LactationStatus.NOT_LACTATING;
+
+			nipplePiercings = new ReadOnlyPiercing<NipplePiercings>();
+
+			relativeLust = Creature.DEFAULT_LUST;
+
+			bodyType = BodyType.defaultValue;
 		}
+
 
 		internal NippleData(Nipples source, int currbreastRowIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
@@ -426,6 +464,13 @@ namespace CoC.Backend.BodyParts
 			breastRowIndex = currbreastRowIndex;
 
 			nipplePiercings = source.nipplePiercing.AsReadOnlyData();
+
+			lactationRate = source.lactationRate;
+			lactationStatus = source.lactationStatus;
+
+			nipplePiercings = new ReadOnlyPiercing<NipplePiercings>();
+
+			bodyType = source.bodyType;
 		}
 	}
 }

@@ -29,7 +29,37 @@ namespace CoC.Backend.BodyParts
 			return new HandData(this);
 		}
 
-		public SimpleDescriptor LongDescription => () => type.LongDescription(AsReadOnlyData());
+		public string HandText(bool plural) => type.HandText(plural);
+
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+
+		public string LongDescription() => type.LongDescription(AsReadOnlyData());
+		public string LongDescription(bool alternateForm) => type.LongDescription(AsReadOnlyData(), alternateForm);
+
+		public string LongPrimaryDescription() => type.LongPrimaryDescription(AsReadOnlyData());
+		public string LongAlternateDescription() => type.LongAlternateDescription(AsReadOnlyData());
+
+		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(AsReadOnlyData(), alternateForm, plural);
+
+		public string LongPrimaryDescription(bool plural) => type.LongPrimaryDescription(AsReadOnlyData(), plural);
+		public string LongAlternateDescription(bool plural) => type.LongAlternateDescription(AsReadOnlyData(), plural);
+
+		public string FullDescription() => type.FullDescription(AsReadOnlyData());
+		public string FullDescription(bool alternateForm) => type.FullDescription(AsReadOnlyData(), alternateForm);
+
+		public string FullPrimaryDescription() => type.FullPrimaryDescription(AsReadOnlyData());
+		public string FullAlternateDescription() => type.FullAlternateDescription(AsReadOnlyData());
+
+		public string FullDescription(bool alternateForm, bool plural) => type.FullDescription(AsReadOnlyData(), alternateForm, plural);
+
+		public string FullPrimaryDescription(bool plural) => type.FullPrimaryDescription(AsReadOnlyData(), plural);
+		public string FullAlternateDescription(bool plural) => type.FullAlternateDescription(AsReadOnlyData(), plural);
+
+		public string LongOrFullDescription(bool alternateForm, bool plural, bool isFull)
+		{
+			if (isFull) return FullDescription(alternateForm, plural);
+			else return LongDescription(alternateForm, plural);
+		}
 	}
 
 	public partial class HandType : BehaviorBase
@@ -38,7 +68,39 @@ namespace CoC.Backend.BodyParts
 
 		protected enum HandStyle { HANDS, CLAWS, PAWS, OTHER }
 
-		public readonly DescriptorWithArg<HandData> LongDescription;
+		private readonly LongPluralDescriptor<HandData> longDescription;
+		private readonly LongPluralDescriptor<HandData> fullDescription;
+		private readonly SimplePluralDescriptor shortPluralDesc;
+		private readonly SimplePluralDescriptor handStr;
+
+		//Text for when you want to say 'hand' but hand my not be accurate. it'll return things like 'clawed hand' or 'talon' or 'gooey "hand"'
+		//that still make it clear you're talking about the 'hand', but still respecting the actual hand type.
+		public string HandText(bool plural) => handStr(plural);
+
+		public string ShortDescription(bool plural) => shortPluralDesc(plural);
+
+		public string LongDescription(HandData handData) => longDescription(handData);
+		public string LongDescription(HandData handData, bool alternateForm) => longDescription(handData, alternateForm);
+
+		public string LongPrimaryDescription(HandData handData) => longDescription(handData, false);
+		public string LongAlternateDescription(HandData handData) => longDescription(handData, true);
+
+		public string LongDescription(HandData handData, bool alternateForm, bool plural) => longDescription(handData, alternateForm, plural);
+
+		public string LongPrimaryDescription(HandData handData, bool plural) => longDescription(handData, false, plural);
+		public string LongAlternateDescription(HandData handData, bool plural) => longDescription(handData, true, plural);
+
+		public string FullDescription(HandData handData) => fullDescription(handData);
+		public string FullDescription(HandData handData, bool alternateForm) => fullDescription(handData, alternateForm);
+
+		public string FullPrimaryDescription(HandData handData) => fullDescription(handData, false);
+		public string FullAlternateDescription(HandData handData) => fullDescription(handData, true);
+
+		public string FullDescription(HandData handData, bool alternateForm, bool plural) => fullDescription(handData, alternateForm, plural);
+
+		public string FullPrimaryDescription(HandData handData, bool plural) => fullDescription(handData, false, plural);
+		public string FullAlternateDescription(HandData handData, bool plural) => fullDescription(handData, true, plural);
+
 		public override int index => _index;
 		protected readonly int _index;
 
@@ -63,31 +125,36 @@ namespace CoC.Backend.BodyParts
 			return Tones.NOT_APPLICABLE;
 		}
 
-		private protected HandType(HandStyle style, SimpleDescriptor shortDesc, DescriptorWithArg<HandData> longDesc) : base(shortDesc)
+		private protected HandType(HandStyle style, SimplePluralDescriptor nounText, SimplePluralDescriptor shortDesc, LongPluralDescriptor<HandData> longDesc, LongPluralDescriptor<HandData> fullDesc)
+			: base(PluralHelper(shortDesc))
 		{
 			_index = indexMaker++;
-			LongDescription = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
+			longDescription = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
+			handStr = nounText ?? throw new ArgumentNullException(nameof(nounText));
+			shortPluralDesc = shortDesc;
+			fullDescription = fullDesc ?? throw new ArgumentNullException(nameof(longDesc));
+
 			handStyle = style;
 		}
 
-		public static readonly HandType HUMAN = new HandType(HandStyle.HANDS, HumanShort, HumanLongDesc);
+		public static readonly HandType HUMAN = new HandType(HandStyle.HANDS, HumanNoun, HumanShort, HumanLongDesc, HumanFullDesc);
 		public static readonly HandType LIZARD = new LizardClaws();
-		public static readonly HandType DRAGON = new HandType(HandStyle.CLAWS, DragonShort, DragonLongDesc);
-		public static readonly HandType SALAMANDER = new HandType(HandStyle.CLAWS, SalamanderShort, SalamanderLongDesc);
-		public static readonly HandType CAT = new HandType(HandStyle.PAWS, CatShort, CatLongDesc);
-		public static readonly HandType DOG = new HandType(HandStyle.PAWS, DogShort, DogLongDesc);
-		public static readonly HandType FOX = new HandType(HandStyle.PAWS, FoxShort, FoxLongDesc);
+		public static readonly HandType DRAGON = new HandType(HandStyle.CLAWS, DragonNoun, DragonShort, DragonLongDesc, DragonFullDesc);
+		public static readonly HandType SALAMANDER = new HandType(HandStyle.CLAWS, SalamanderNoun, SalamanderShort, SalamanderLongDesc, SalamanderFullDesc);
+		public static readonly HandType CAT = new HandType(HandStyle.PAWS, CatNoun, CatShort, CatLongDesc, CatFullDesc);
+		public static readonly HandType DOG = new HandType(HandStyle.PAWS, DogNoun, DogShort, DogLongDesc, DogFullDesc);
+		public static readonly HandType FOX = new HandType(HandStyle.PAWS, FoxNoun, FoxShort, FoxLongDesc, FoxFullDesc);
 		public static readonly HandType IMP = new ImpClaws();
-		public static readonly HandType COCKATRICE = new HandType(HandStyle.CLAWS, CockatriceShort, CockatriceLongDesc);
-		public static readonly HandType RED_PANDA = new HandType(HandStyle.PAWS, RedPandaShort, RedPandaLongDesc);
-		public static readonly HandType FERRET = new HandType(HandStyle.PAWS, FerretShort, FerretLongDesc);
-		public static readonly HandType GOO = new HandType(HandStyle.OTHER, GooShort, GooLongDesc);
-		//public static readonly Hands MANTIS = new Hands(HandStyle.OTHER, MantisShort MantisLongDesc); //Not even remotely implemented.
+		public static readonly HandType COCKATRICE = new HandType(HandStyle.CLAWS, CockatriceNoun, CockatriceShort, CockatriceLongDesc, CockatriceFullDesc);
+		public static readonly HandType RED_PANDA = new HandType(HandStyle.PAWS, RedPandaNoun, RedPandaShort, RedPandaLongDesc, RedPandaFullDesc);
+		public static readonly HandType FERRET = new HandType(HandStyle.PAWS, FerretNoun, FerretShort, FerretLongDesc, FerretFullDesc);
+		public static readonly HandType GOO = new HandType(HandStyle.OTHER, GooNoun, GooShort, GooLongDesc, GooFullDesc);
+		//public static readonly Hands MANTIS = new Hands(HandStyle.OTHER, MantisNoun, MantisShort MantisLongDesc); //Not even remotely implemented.
 
 		private class LizardClaws : HandType
 		{
 
-			public LizardClaws() : base(HandStyle.CLAWS, LizardShort, LizardLongDesc) { }
+			public LizardClaws() : base(HandStyle.CLAWS, LizardNoun, LizardShort, LizardLongDesc, LizardFullDesc) { }
 
 			public override bool canTone()
 			{
@@ -103,7 +170,7 @@ namespace CoC.Backend.BodyParts
 
 		private class ImpClaws : HandType
 		{
-			public ImpClaws() : base(HandStyle.CLAWS, ImpShort, ImpLongDesc) { }
+			public ImpClaws() : base(HandStyle.CLAWS, ImpNoun, ImpShort, ImpLongDesc, ImpFullDesc) { }
 
 			public override bool canTone()
 			{
@@ -129,7 +196,37 @@ namespace CoC.Backend.BodyParts
 		//default case. never procs, though that may change in the future, idk.
 		public bool isOther => type.isOther;
 
+		public string HandText(bool plural) => type.HandText(plural);
+
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+
 		public string LongDescription() => type.LongDescription(this);
+		public string LongDescription(bool alternateForm) => type.LongDescription(this, alternateForm);
+
+		public string LongPrimaryDescription() => type.LongPrimaryDescription(this);
+		public string LongAlternateDescription() => type.LongAlternateDescription(this);
+
+		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(this, alternateForm, plural);
+
+		public string LongPrimaryDescription(bool plural) => type.LongPrimaryDescription(this, plural);
+		public string LongAlternateDescription(bool plural) => type.LongAlternateDescription(this, plural);
+
+		public string FullDescription() => type.FullDescription(this);
+		public string FullDescription(bool alternateForm) => type.FullDescription(this, alternateForm);
+
+		public string FullPrimaryDescription() => type.FullPrimaryDescription(this);
+		public string FullAlternateDescription() => type.FullAlternateDescription(this);
+
+		public string FullDescription(bool alternateForm, bool plural) => type.FullDescription(this, alternateForm, plural);
+
+		public string FullPrimaryDescription(bool plural) => type.FullPrimaryDescription(this, plural);
+		public string FullAlternateDescription(bool plural) => type.FullAlternateDescription(this, plural);
+
+		public string LongOrFullDescription(bool alternateForm, bool plural, bool isFull)
+		{
+			if (isFull) return FullDescription(alternateForm, plural);
+			else return LongDescription(alternateForm, plural);
+		}
 
 		public HandData(Hands source) : base(GetID(source), GetBehavior(source))
 		{

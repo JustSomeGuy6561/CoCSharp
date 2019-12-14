@@ -50,18 +50,36 @@ namespace CoC.Backend.BodyParts
 			return "Hair";
 		}
 
+		private string AllHairStr()
+		{
+			return "All Hair";
+		}
+
+		private string RegularHairStr()
+		{
+			return "Regular Hair";
+		}
+
 		private string HighlightStr()
 		{
 			return "Highlights";
 		}
 
-		private string YourHairStr()
+		private string YourHairAllStr(out bool isPlural)
 		{
-			return " your hair";
+			isPlural = false;
+			return " all of your hair";
 		}
 
-		private string YourHighlightsStr()
+		private string YourHairRegularStr(out bool isPlural)
 		{
+			isPlural = false;
+			return " your hair (minus the highlights)";
+		}
+
+		private string YourHighlightsStr(out bool isPlural)
+		{
+			isPlural = false;
 			return " the hair that forms your highlights";
 		}
 
@@ -73,36 +91,40 @@ namespace CoC.Backend.BodyParts
 
 		private string NoLongerBaldStr()
 		{
-			return Environment.NewLine + Tools.SafelyFormattedString.FormattedText("You are no longer bald. You now have " + LongDescription() + " coating your head.", StringFormats.BOLD) + Environment.NewLine;
+			return Environment.NewLine + Tools.SafelyFormattedString.FormattedText("You are no longer bald. You now have " + LongDescription(true) + " coating your head.", StringFormats.BOLD) + Environment.NewLine;
 		}
 
 		private string HairLongerStr()
 		{
-			return Environment.NewLine + SafelyFormattedString.FormattedText("Your hair's growth has reached a new threshold, giving you " + LongDescription() + ".", StringFormats.BOLD) + Environment.NewLine;
+			return Environment.NewLine + SafelyFormattedString.FormattedText("Your hair's growth has reached a new threshold, giving you " + LongDescription(true) + ".", StringFormats.BOLD) + Environment.NewLine;
 		}
 	}
 
-	//by default, we actually don't use the hair's player description; it's part of ears. For the sake of completion, it's just the long text, but made into a sentence. 
-	//idk if this may change in the future. 
+	//by default, we actually don't use the hair's player description; it's part of ears. For the sake of completion, it's just the long text, but made into a sentence.
+	//idk if this may change in the future.
 
 	//Grammar format: (English. adapt to target language if necessary)
 	//Hair breaks the rules for most other cases because it cannot work as a noun and an object in the same way.
 	//Hair is a "indifferent" noun: it can be quantified (i.e all the hair on my neck), or treated as a single group (i.e. a full head of hair)
 	//however, head is not indifferent; it must be quantified. ('my head', or 'i have _A_ head');
-	//evidently, this breaks these strings. My solution is to create an "object" and "noun" format for this class; use whichever makes the most sense for the current context. 
+	//evidently, this breaks these strings. My solution is to create an "object" and "noun" format for this class; use whichever makes the most sense for the current context.
 
-	//by default, this is virtual; only no-hair (or any hair that is currently bald) have unique text for each one. 
+	//by default, this is virtual; only no-hair (or any hair that is currently bald) have unique text for each one.
 	public partial class HairType
 	{
+		public static string BaldText(bool alternateFormat)
+		{
+			return alternateFormat ? "a bald head" : "bald head";
+		}
 
 		private static string NoHairDesc()
 		{
-			return "";
+			return "non-existent hair";
 		}
 
-		private static string NoHairLongDesc(HairData hair)
+		private static string NoHairLongDesc(HairData hair, bool alternateFormat)
 		{
-			return "";
+			return alternateFormat ? "no hair" : "lack of hair";
 		}
 
 		private static string NoHairToGrow()
@@ -128,9 +150,9 @@ namespace CoC.Backend.BodyParts
 			return "hair";
 		}
 
-		private static string NormalLongDesc(HairData hair)
+		private static string NormalLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, NormalDesc());
+			return GenericLongDesc(hair, alternateFormat, NormalDesc());
 		}
 
 		private static string NormalGrowStr()
@@ -156,9 +178,9 @@ namespace CoC.Backend.BodyParts
 			return "hair-feathers";
 		}
 
-		private static string FeatherLongDesc(HairData hair)
+		private static string FeatherLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, Utils.RandomChoice("feathered hair", "fluffy plumes for hair", "hair-like basilisk plumes", "shock of feathers for hair"));
+			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("feathered hair", "fluffy plumes for hair", "hair-like basilisk plumes", "shock of feathers for hair"));
 		}
 
 		private static string FeatherGrowStr()
@@ -186,9 +208,9 @@ namespace CoC.Backend.BodyParts
 			return "gooey hair";
 		}
 
-		private static string GooLongDesc(HairData hair)
+		private static string GooLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, Utils.RandomChoice("goo-hair", "gooey hair", "gelatinous hair"));
+			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("goo-hair", "gooey hair", "gelatinous hair"));
 		}
 
 		private static string GooGrowStr()
@@ -214,9 +236,9 @@ namespace CoC.Backend.BodyParts
 			return "hair-like tendrils";
 		}
 
-		private static string AnemoneLongDesc(HairData hair)
+		private static string AnemoneLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, Utils.RandomChoice(AnemoneDesc(), "anemone-hair"));
+			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice(AnemoneDesc(), "anemone-hair"));
 		}
 
 		private static string AnemoneNoGrowStr()
@@ -242,9 +264,9 @@ namespace CoC.Backend.BodyParts
 			return "quill-hair";
 		}
 
-		private static string QuillLongDesc(HairData hair)
+		private static string QuillLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, Utils.RandomChoice(QuillDesc(), "hair-like quills"));
+			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice(QuillDesc(), "hair-like quills"));
 		}
 
 		private static string QuillGrowStr()
@@ -270,9 +292,9 @@ namespace CoC.Backend.BodyParts
 			return "basilisk spines for hair";
 		}
 
-		private static string SpineLongDesc(HairData hair)
+		private static string SpineLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, Utils.RandomChoice("rubbery spines for hair", "crown of spines for hair", "basilisk spines for hair", "reptilian spines for hair"));
+			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("rubbery spines for hair", "crown of spines for hair", "basilisk spines for hair", "reptilian spines for hair"));
 		}
 
 		private static string SpineNoGrowStr()
@@ -299,9 +321,9 @@ namespace CoC.Backend.BodyParts
 			return "basilisk plumes for hair";
 		}
 
-		private static string PlumeLongDesc(HairData hair)
+		private static string PlumeLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, Utils.RandomChoice("feathered hair", "fluffy plumes for hair", "hair-like basilisk plumes", "shock of feathers for hair"));
+			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("feathered hair", "fluffy plumes for hair", "hair-like basilisk plumes", "shock of feathers for hair"));
 		}
 
 		private static string PlumeGrowStr()
@@ -327,11 +349,9 @@ namespace CoC.Backend.BodyParts
 			return "woolen hair";
 		}
 
-		private static string WoolLongDesc(HairData hair)
+		private static string WoolLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, Utils.RandomChoice("woolen hair",
-						"poofy hair",
-						"soft wool-hair"));
+			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("woolen hair", "poofy hair", "soft wool-hair"));
 		}
 		private static string WoolGrowStr()
 		{
@@ -356,9 +376,9 @@ namespace CoC.Backend.BodyParts
 			return "leafy vines for hair";
 		}
 
-		private static string VineLongDesc(HairData hair)
+		private static string VineLongDesc(HairData hair, bool alternateFormat)
 		{
-			return GenericLongDesc(hair, Utils.RandomChoice("leafy hair", "grassy hair", "pine needle hair", "hair-like vines", "leafy vines for hair"));
+			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("leafy hair", "grassy hair", "pine needle hair", "hair-like vines", "leafy vines for hair"));
 		}
 
 		private static string VineNoGrowStr()
@@ -380,20 +400,20 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		public string DescriptionWithTransparency(bool isSemiTransparent)
+		public string DescriptionWithTransparency(bool isSemiTransparent, bool alternateFormat = false)
 		{
 			if (this == NO_HAIR)
 			{
-				return "";
+				return BaldHeadText(alternateFormat);
 			}
 			return SemiTransparentString(isSemiTransparent) + ShortDescription();
 		}
 
-		public string DescriptionWithColor(HairData hair)
+		public string DescriptionWithColor(HairData hair, bool alternateFormat = false)
 		{
 			if (this == NO_HAIR || hair.length == 0)
 			{
-				return "";
+				return BaldHeadText(alternateFormat);
 			}
 			else
 			{
@@ -401,11 +421,11 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public string DescriptionWithColorAndStyle(HairData hair)
+		public string DescriptionWithColorAndStyle(HairData hair, bool alternateFormat = false)
 		{
 			if (this == NO_HAIR || hair.length == 0)
 			{
-				return "";
+				return BaldHeadText(alternateFormat);
 			}
 			else
 			{
@@ -414,11 +434,11 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public string DescriptionWithColorLengthAndStyle(HairData hair)
+		public string DescriptionWithColorLengthAndStyle(HairData hair, bool alternateFormat = false)
 		{
 			if (this == NO_HAIR || hair.length == 0)
 			{
-				return "";
+				return BaldHeadText(alternateFormat);
 			}
 			else
 			{
@@ -429,11 +449,11 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//long has length, color, and highlights.
-		protected static string GenericLongDesc(HairData hair, string desc)
+		protected static string GenericLongDesc(HairData hair, bool alternateFormat, string desc)
 		{
 			if (hair.type == NO_HAIR || hair.length == 0)
 			{
-				return "";
+				return NO_HAIR.LongDescription(hair, alternateFormat);
 			}
 			else
 			{
@@ -443,11 +463,11 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public string FullDescription(HairData hair)
+		public string FullDescription(HairData hair, bool alternateFormat = false)
 		{
 			if (this == NO_HAIR || hair.length == 0)
 			{
-				return "";
+				return NO_HAIR.LongDescription(hair, alternateFormat);
 			}
 			else
 			{
@@ -470,46 +490,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public string BaldOrDescriptionWithTransparency(bool isSemiTransparent, bool baldFallbackNeedsArticle)
-		{
-			if (this == NO_HAIR) return BaldHeadText(baldFallbackNeedsArticle);
-			return DescriptionWithTransparency(isSemiTransparent);
-		}
-
-		public string BaldOrDescriptionWithColor(HairData hair, bool baldFallbackNeedsArticle)
-		{
-			if (this == NO_HAIR || hair.length == 0) return BaldHeadText(baldFallbackNeedsArticle);
-			else return DescriptionWithColor(hair);
-		}
-
-		public string BaldOrDescriptionWithColorAndStyle(HairData hair, bool baldFallbackNeedsArticle)
-		{
-			if (this == NO_HAIR || hair.length == 0) return BaldHeadText(baldFallbackNeedsArticle);
-			else return DescriptionWithColorAndStyle(hair);
-		}
-
-		public string BaldOrDescriptionWithColorLengthAndStyle(HairData hair, bool baldFallbackNeedsArticle)
-		{
-			if (this == NO_HAIR || hair.length == 0) return BaldHeadText(baldFallbackNeedsArticle);
-			else return DescriptionWithColorLengthAndStyle(hair);
-		}
-
-		//long has length, color, and highlights.
-		public string BaldOrLongDescription(HairData hair, bool baldFallbackNeedsArticle)
-		{
-			if (this == NO_HAIR || hair.length == 0) return BaldHeadText(baldFallbackNeedsArticle);
-			else return LongDescription(hair);
-		}
-
-		public string BaldOrFullDescription(HairData hair, bool baldFallbackNeedsArticle)
-		{
-			if (this == NO_HAIR || hair.length == 0) return BaldHeadText(baldFallbackNeedsArticle);
-			else return FullDescription(hair);
-		}
-
 		protected static string DefaultPlayerDesc(Hair hair, PlayerBase player)
 		{
-			return "You have " + hair.type.BaldOrFullDescription(hair.AsReadOnlyData(), false); //you have (hair stuff) or you have no hair if bald or no hair. 
+			return "You have " + hair.type.FullDescription(hair.AsReadOnlyData(), true); //'you have <hair stuff>' OR 'you have no hair' (if bald or no hair_.
 		}
 
 		public static string SemiTransparentString(bool isSemiTransparent) { return isSemiTransparent ? " semi-transparent " : ""; }

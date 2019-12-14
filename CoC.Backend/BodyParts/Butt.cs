@@ -95,6 +95,12 @@ namespace CoC.Backend.BodyParts
 			return size;
 		}
 
+		public string SizeAsAdjective() => BuildStrings.ButtAdjective(size);
+
+		public string ShortDescription() => BuildStrings.ButtShortDescription(size);
+
+		public string LongDescription(bool alternateFormat, byte muscleTone) => BuildStrings.ButtLongDescription(size, muscleTone, alternateFormat);
+
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -133,6 +139,13 @@ namespace CoC.Backend.BodyParts
 	public sealed class ButtData : SimpleData
 	{
 		public readonly byte size;
+
+		public string SizeAsAdjective() => BuildStrings.ButtAdjective(size);
+
+		public string ShortDescription() => BuildStrings.ButtShortDescription(size);
+
+		public string LongDescription(bool alternateFormat, byte muscleTone) => BuildStrings.ButtLongDescription(size, muscleTone, alternateFormat);
+
 		internal ButtData(Guid creatureID, byte buttSize) : base(creatureID)
 		{
 			size = buttSize;

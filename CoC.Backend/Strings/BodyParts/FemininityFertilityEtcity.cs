@@ -26,7 +26,7 @@ namespace CoC.Backend.BodyParts
 
 		private string FemininityChangedDueToGenderHormonesStr(short diff)
 		{
-			//NOTE: it's possible to have different text for M/F/H/G, but the base game didn't. And oddly enough, the way this is designed right now lets us 
+			//NOTE: it's possible to have different text for M/F/H/G, but the base game didn't. And oddly enough, the way this is designed right now lets us
 			//just use diff to determine what to display. 100% planned.
 			//if we became more masculine
 			if (diff > 0)

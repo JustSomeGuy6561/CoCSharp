@@ -244,6 +244,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return new AssData(this);
 		}
+		public string ShortDescription() => AssStrings.ShortDescription();
+		public string LongDescription(bool alternateFormat = false) => AssStrings.LongDescription(this, alternateFormat);
+		public string FullDescription(bool alternateFormat = false) => AssStrings.FullDescription(this, alternateFormat);
+
 		#region Update Variables - Ass-Specific
 		internal byte StretchAnus(byte amount = 1)
 		{
@@ -608,18 +612,35 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed class AssData : SimpleData
+	public sealed class AssData : SimpleData, IAss
 	{
 		public readonly AnalWetness wetness;
 		public readonly AnalLooseness looseness;
 
 		public readonly ushort analCapacity;
 
+		public readonly bool virgin;
+		public readonly bool everPracticedAnal;
+
+		public string ShortDescription() => AssStrings.ShortDescription();
+		public string LongDescription(bool alternateFormat = false) => AssStrings.LongDescription(this, alternateFormat);
+		public string FullDescription(bool alternateFormat = false) => AssStrings.FullDescription(this, alternateFormat);
+
 		internal AssData(Ass source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			wetness = source.wetness;
 			looseness = source.looseness;
 			analCapacity = source.analCapacity();
+			virgin = source.virgin;
+			everPracticedAnal = source.everPracticedAnal;
 		}
+
+		bool IAss.virgin => virgin;
+
+		AnalLooseness IAss.looseness => looseness;
+
+		AnalWetness IAss.wetness => wetness;
+
+		bool IAss.everPracticedAnal => everPracticedAnal;
 	}
 }

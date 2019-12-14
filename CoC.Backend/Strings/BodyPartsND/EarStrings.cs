@@ -18,11 +18,11 @@ namespace CoC.Backend.BodyParts
 	public partial class EarType
 	{
 		#region Human
-		private static string HumanDescStr()
+		private static string HumanDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanLongDesc(EarData ears)
+		private static string HumanLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -50,11 +50,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Horse
-		private static string HorseDescStr()
+		private static string HorseDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseLongDesc(EarData ears)
+		private static string HorseLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -79,11 +79,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Dog
-		private static string DogDescStr()
+		private static string DogDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogLongDesc(EarData ears)
+		private static string DogLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -108,11 +108,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Cow
-		private static string CowDescStr()
+		private static string CowDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CowLongDesc(EarData ears)
+		private static string CowLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -137,11 +137,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Elfin
-		private static string ElfinDescStr()
+		private static string ElfinDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ElfinLongDesc(EarData ears)
+		private static string ElfinLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -166,11 +166,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Cat
-		private static string CatDescStr()
+		private static string CatDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatLongDesc(EarData ears)
+		private static string CatLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -195,11 +195,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Lizard
-		private static string LizardDescStr()
+		private static string LizardDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardLongDesc(EarData ears)
+		private static string LizardLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -222,11 +222,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyDescStr()
+		private static string BunnyDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyLongDesc(EarData ears)
+		private static string BunnyLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -251,11 +251,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Kangaroo
-		private static string KangarooDescStr()
+		private static string KangarooDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooLongDesc(EarData ears)
+		private static string KangarooLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -273,11 +273,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Fox
-		private static string FoxDescStr()
+		private static string FoxDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxLongDesc(EarData ears)
+		private static string FoxLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -302,11 +302,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Dragon
-		private static string DragonDescStr()
+		private static string DragonDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonLongDesc(EarData ears)
+		private static string DragonLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -331,11 +331,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Raccoon
-		private static string RaccoonDescStr()
+		private static string RaccoonDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonLongDesc(EarData ears)
+		private static string RaccoonLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -360,11 +360,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Mouse
-		private static string MouseDescStr()
+		private static string MouseDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseLongDesc(EarData ears)
+		private static string MouseLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -389,11 +389,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Ferret
-		private static string FerretDescStr()
+		private static string FerretDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretLongDesc(EarData ears)
+		private static string FerretLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -418,11 +418,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Pig
-		private static string PigDescStr()
+		private static string PigDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigLongDesc(EarData ears)
+		private static string PigLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -448,11 +448,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Rhino
-		private static string RhinoDescStr()
+		private static string RhinoDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoLongDesc(EarData ears)
+		private static string RhinoLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -477,11 +477,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Echidna
-		private static string EchidnaDescStr()
+		private static string EchidnaDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaLongDesc(EarData ears)
+		private static string EchidnaLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -506,11 +506,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Deer
-		private static string DeerDescStr()
+		private static string DeerDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerLongDesc(EarData ears)
+		private static string DeerLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -535,11 +535,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Wolf
-		private static string WolfDescStr()
+		private static string WolfDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfLongDesc(EarData ears)
+		private static string WolfLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -564,11 +564,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Sheep
-		private static string SheepDescStr()
+		private static string SheepDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepLongDesc(EarData ears)
+		private static string SheepLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -593,16 +593,16 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Imp
-		private static string ImpDescStr()
+		private static string ImpDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpLongDesc(EarData ears)
+		private static string ImpLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		//fun fact: this was never implemented in the original game. IDK why. Google shows imp ears to basically just be pointed ears like an elf, but larger and curved backward 
-		//slightly. so i'm just stealing elfin ears and modifying it slightly. 
+		//fun fact: this was never implemented in the original game. IDK why. Google shows imp ears to basically just be pointed ears like an elf, but larger and curved backward
+		//slightly. so i'm just stealing elfin ears and modifying it slightly.
 		private static string ImpPlayerStr(Ears ears, PlayerBase player)
 		{
 			if (player.hair.isBald)
@@ -625,11 +625,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Cockatrice
-		private static string CockatriceDescStr()
+		private static string CockatriceDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceLongDesc(EarData ears)
+		private static string CockatriceLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -648,11 +648,11 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region RedPanda
-		private static string RedPandaDescStr()
+		private static string RedPandaDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaLongDesc(EarData ears)
+		private static string RedPandaLongDesc(EarData ears, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

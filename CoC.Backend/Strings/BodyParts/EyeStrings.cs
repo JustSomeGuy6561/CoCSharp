@@ -4,30 +4,31 @@
 //1/4/2019, 3:16 PM
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
+using CoC.Backend.Tools;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
 	public static class EyeHelper
 	{
-		public static string AsString(this EyeColor eyeColor)
+		public static string AsString(this EyeColor eyeColor, bool withArticle = false)
 		{
 			switch (eyeColor)
 			{
-				case EyeColor.AMBER: return "amber";
-				case EyeColor.BLUE: return "blue";
-				case EyeColor.GRAY: return "gray";
-				case EyeColor.GREEN: return "green";
-				case EyeColor.HAZEL: return "hazel";
-				case EyeColor.INDIGO: return "indigo";
-				case EyeColor.ORANGE: return "orange";
-				case EyeColor.PINK: return "pink";
-				case EyeColor.RED: return "red";
-				case EyeColor.TAN: return "tan";
-				case EyeColor.VIOLET: return "violet";
-				case EyeColor.YELLOW: return "yellow";
+				case EyeColor.AMBER: return (withArticle ? "an " : "") + "amber";
+				case EyeColor.BLUE: return (withArticle ? "a " : "") + "blue";
+				case EyeColor.GRAY: return (withArticle ? "a " : "") + "gray";
+				case EyeColor.GREEN: return (withArticle ? "a " : "") + "green";
+				case EyeColor.HAZEL: return (withArticle ? "a " : "") + "hazel";
+				case EyeColor.INDIGO: return (withArticle ? "a " : "") + "indigo";
+				case EyeColor.ORANGE: return (withArticle ? "a " : "") + "orange";
+				case EyeColor.PINK: return (withArticle ? "a " : "") + "pink";
+				case EyeColor.RED: return (withArticle ? "a " : "") + "red";
+				case EyeColor.TAN: return (withArticle ? "a " : "") + "tan";
+				case EyeColor.VIOLET: return (withArticle ? "a " : "") + "violet";
+				case EyeColor.YELLOW: return (withArticle ? "a " : "") + "yellow";
 				case EyeColor.BROWN:
-				default: return "brown";
+				default: return (withArticle ? "a " : "") + "brown";
 			}
 		}
 	}
@@ -42,27 +43,73 @@ namespace CoC.Backend.BodyParts
 
 	public partial class EyeType
 	{
+		private static string GenericCountText(byte eyeCount, bool withArticle)
+		{
+			if (eyeCount == 0) return "";
+			else if (eyeCount == 1)
+			{
+				if (withArticle)
+				{
+					return Utils.RandomChoice("a single ", "one ", "a ", "a single ", "a ");
+				}
+				else
+				{
+					return Utils.RandomChoice("single ", "one ", "", "single ", "");
+				}
+			}
+			else if (eyeCount == 2)
+			{
+				if (withArticle)
+				{
+					return Utils.RandomChoice("a pair of ", "two ", "a pair of ");
+				}
+				else
+				{
+					return Utils.RandomChoice("pair of ", "two ", "pair of ");
+				}
+			}
+			else if (eyeCount % 2 == 1)
+			{
+				return Utils.NumberAsText(eyeCount) + " ";
+			}
+			else if (eyeCount < 10)
+			{
+				return Utils.NumberAsText(eyeCount / 2) + " pairs of ";
+			}
+			else
+			{
+				return eyeCount.ToString() + " ";
+			}
+		}
+
+		public string ShortDescriptionWithColor(EyeColor leftIris, EyeColor rightIris)
+		{
+			if (eyeCount <= 1) return leftIris.AsString() + ShortDescription(false);
+			else if (leftIris == rightIris) return leftIris.AsString() + " " + ShortDescription();
+			else return "mismatched " + ShortDescription();
+		}
+
 		private static string HumanEyeChange(EyeColor oldLeft, EyeColor newLeft, EyeColor oldRight, EyeColor newRight)
 		{
 			return GenericEyeChange(oldLeft, newLeft, oldRight, newRight);
 		}
-		private static string HumanShortStr()
+		private static string HumanShortStr(bool plural)
 		{
-			return "human eyes";
+			return "human eye" + (plural ? "s" : "");
 		}
-		private static string HumanLongDesc(EyeData eyes)
+		private static string HumanLongDesc(EyeData eyes, bool alternateForm)
 		{
-			if (eyes.isHeterochromia)
-			{
-				return "a pair of mismatched human eyes - the left " + eyes.leftIrisColor.AsString() + ", the right " + eyes.rightIrisColor.AsString();
-			}
-			else
-			{
-				return "a pair of " + eyes.leftIrisColor.AsString() + " human eyes";
-			}
+			return GenericLongDescription(eyes, alternateForm);
 		}
-
-
+		private static string HumanFullDesc(EyeData eyes, bool alternateForm)
+		{
+			return GenericFullDescription(eyes, alternateForm);
+		}
+		private static string HumanSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			if (useLeftIrisColor) return eyes.leftIrisColor.AsString(alternateFormat) + " eye";
+			else return eyes.rightIrisColor.AsString(alternateFormat) + " eye";
+		}
 		private static string HumanPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			if (eyes.isHeterochromia)
@@ -117,23 +164,25 @@ namespace CoC.Backend.BodyParts
 			}
 			return sb.ToString();
 		}
-		private static string SpiderShortStr()
+		private static string SpiderShortStr(bool plural)
 		{
-			return "spider eyes";
+			return "spider eye" + (plural ? "s" : "");
 		}
 		//i suppose technically i could have supported tetrachromia, but that seems excessive.
-		private static string SpiderLongDesc(EyeData eyes)
+		private static string SpiderLongDesc(EyeData eyes, bool alternateFormat)
 		{
-			if (eyes.isHeterochromia)
-			{
-				return "two pairs of mismatched spider eyes - the left ones " + eyes.leftIrisColor.AsString() + ", the right ones " + eyes.rightIrisColor.AsString();
-			}
-			else
-			{
-				return "two pairs of " + eyes.leftIrisColor.AsString() + " spider eyes";
-			}
+			return GenericLongDescription(eyes, alternateFormat);
 		}
 
+		private static string SpiderSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			return GenericOneEyeDescription(eyes, alternateFormat, useLeftIrisColor);
+		}
+
+		private static string SpiderFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return GenericFullDescription(eyes, alternateFormat);
+		}
 		private static string SpiderPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your eyes appear human - if your pupils were fully dialated all the time, and partially reflected the light. A faint ring of ");
@@ -176,15 +225,25 @@ namespace CoC.Backend.BodyParts
 		{
 			return "While you're certain the change took effect, it's impossible to tell with Sand Trap eyes. Perhaps such a change would be better suited for a different type of eyes?";
 		}
-		private static string SandTrapShortStr()
+		private static string SandTrapShortStr(bool plural)
 		{
-			return "sandtrap eyes";
+			return "sandtrap eye" + (plural ? "s" : "");
 		}
-		private static string SandTrapLongDesc(EyeData eyes)
+		private static string SandTrapLongDesc(EyeData eyes, bool alternateFormat)
 		{
-			return "a half dozen " + eyes.leftIrisColor.AsString() + (eyes.isHeterochromia ? " and " + eyes.rightIrisColor.AsString() : "") + " sandtrap eyes surrounded by an inky blackness";
+			string countText = Utils.RandBool() ? (alternateFormat ? "a " : "") + "half dozen " : GenericCountText(eyes.eyeCount, alternateFormat);
+			return countText + "solid, inky black eyes";
 		}
 
+		private static string SandTrapSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			return (alternateFormat ? "an " : "") + "inky black sand-trap eye";
+		}
+
+		private static string SandTrapFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return SandTrapLongDesc(eyes, alternateFormat);
+		}
 		private static string SandTrapPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			return " Your eyes are solid spheres of inky, alien darkness.";
@@ -193,8 +252,8 @@ namespace CoC.Backend.BodyParts
 		{
 			StringBuilder sb = new StringBuilder("You blink, and then blink again. It feels like something is irritating your eyes."
 				+ " Panic sets in as black suddenly blooms in the corner of your left eye and then your right, as if drops of ink were falling into them."
-				+ " You calm yourself down with the thought that rubbing at your eyes will certainly make whatever is happening to them worse;"
-				+ " through force of will you hold your hands behind your back and wait for the strange affliction to run its course."
+				+ " You go to rub your eyes, but quickly come to the conclusion that rubbing at them will certainly make whatever is happening to them worse. "
+				+ " Still, it requires all of your willpower to hold your hands behind your back and wait for the strange affliction to run its course."
 				+ " The strange inky substance pools over your entire vision before slowly fading, thankfully taking the irritation with it.");
 			//the following should never proc, as it only lets these tfs happen if the pc has human eyes first, but w/e.
 			if (previousEyeData.eyeCount > 2)
@@ -385,20 +444,31 @@ namespace CoC.Backend.BodyParts
 			return color == EyeColor.YELLOW || color == EyeColor.GREEN;
 		}
 
-		private static string LizardShortStr()
+		private static string LizardShortStr(bool plural)
 		{
-			return "lizard eyes";
+			return "lizard eye" + (plural ? "s" : "");
 		}
-		private static string LizardLongDesc(EyeData eyes)
+		private static string LizardLongDesc(EyeData eyes, bool alternateFormat)
 		{
 			if (eyes.isHeterochromia)
 			{
-				return "a pair of mismatched reptilian eyes - the left " + eyes.leftIrisColor.AsString() + ", the right " + eyes.rightIrisColor.AsString();
+				return GenericCountText(eyes.eyeCount, alternateFormat) + "mismatched reptilian eyes";
 			}
 			else
 			{
-				return "a pair of " + eyes.leftIrisColor.AsString() + " reptilian eyes";
+				return GenericCountText(eyes.eyeCount, alternateFormat) + eyes.leftIrisColor.AsString() + " reptilian eyes";
 			}
+		}
+
+
+		private static string LizardSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			return GenericOneEyeDescription(eyes, alternateFormat, useLeftIrisColor);
+		}
+
+		private static string LizardFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return GenericFullDescription(eyes, alternateFormat);
 		}
 		private static string LizardPlayerStr(Eyes eyes, PlayerBase player)
 		{
@@ -598,20 +668,29 @@ namespace CoC.Backend.BodyParts
 			}
 			return sb.ToString();
 		}
-		private static string DragonShortStr()
+		private static string DragonShortStr(bool plural)
 		{
-			return "dragon eyes";
+			return "dragon eye" + (plural ? "s" : "");
 		}
-		private static string DragonLongDesc(EyeData eyes)
+		private static string DragonLongDesc(EyeData eyes, bool alternateFormat)
 		{
 			if (eyes.isHeterochromia)
 			{
-				return "a pair of mismatched draconic eyes - the left " + eyes.leftIrisColor.AsString() + ", the right " + eyes.rightIrisColor.AsString();
+				return GenericCountText(eyes.eyeCount, alternateFormat) + "mismatched draconic eyes";
 			}
 			else
 			{
-				return "a pair of " + eyes.leftIrisColor.AsString() + " draconic eyes";
+				return GenericCountText(eyes.eyeCount, alternateFormat) + eyes.leftIrisColor.AsString() + " draconic eyes";
 			}
+		}
+		private static string DragonSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			return GenericOneEyeDescription(eyes, alternateFormat, useLeftIrisColor);
+		}
+
+		private static string DragonFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return GenericFullDescription(eyes, alternateFormat);
 		}
 		private static string DragonPlayerStr(Eyes eyes, PlayerBase player)
 		{
@@ -789,13 +868,22 @@ namespace CoC.Backend.BodyParts
 			sb.Append("Despite this, you have no doubt your stare remain just as mesmerizing. ");
 			return sb.ToString();
 		}
-		private static string BasiliskShortStr()
+		private static string BasiliskShortStr(bool plural)
 		{
-			return "basilisk eyes";
+			return "basilisk eye" + (plural ? "s" : "");
 		}
-		private static string BasiliskLongDesc(EyeData eyes)
+		private static string BasiliskLongDesc(EyeData eyes, bool alternateFormat)
 		{
-			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + (eyes.isHeterochromia ? " and " + eyes.rightIrisColor.AsString() : "") + " basilisk eyes";
+			return GenericCountText(eyes.eyeCount, alternateFormat) + "dazzling" + (eyes.isHeterochromia ? " but mismatched " : eyes.leftIrisColor.AsString()) + eyes.type.ShortDescription();
+		}
+		private static string BasiliskSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			return (alternateFormat ? "a " : "") + "dazzling " + GenericOneEyeDescription(eyes, false, useLeftIrisColor);
+		}
+
+		private static string BasiliskFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return GenericFullDescription(eyes, alternateFormat);
 		}
 		private static string BasiliskPlayerStr(Eyes eyes, PlayerBase player)
 		{
@@ -837,7 +925,7 @@ namespace CoC.Backend.BodyParts
 			return sb.ToString();
 		}
 
-		//unless some weird shit happens (some sort of randomizer item), this should never be used. 
+		//unless some weird shit happens (some sort of randomizer item), this should never be used.
 		//the only way to get these is via Benoit, and that is an edge case that should implement its own transform text.
 		private static string BasiliskTransformStr(EyeData previousEyeData, PlayerBase player)
 		{
@@ -887,24 +975,26 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericEyeChange(oldLeft, newLeft, oldRight, newRight);
 		}
-		private static string WolfShortStr()
+		private static string WolfShortStr(bool plural)
 		{
-			return "wolven eyes";
+			return "wolven eye" + (plural ? "s" : "");
 		}
-		private static string WolfLongDesc(EyeData eyes)
+		private static string WolfLongDesc(EyeData eyes, bool alternateFormat)
 		{
-			if (eyes.isHeterochromia)
-			{
-				return "a pair of mismatched wolven eyes - the left " + eyes.leftIrisColor.AsString() + ", the right " + eyes.rightIrisColor.AsString();
-			}
-			else
-			{
-				return "a pair of " + eyes.leftIrisColor.AsString() + " wolven eyes";
-			}
+			return GenericLongDescription(eyes, alternateFormat);
 		}
 		//most of these i've kept the color in the vanilla code, and adapted it to use the iris color.
-		//for wolf, i've just replaced "amber" with the right color. it seemed right to me, idk. if you wish to 
+		//for wolf, i've just replaced "amber" with the right color. it seemed right to me, idk. if you wish to
 		//make it like the others, go for it.
+		private static string WolfSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			return GenericOneEyeDescription(eyes, alternateFormat, useLeftIrisColor);
+		}
+
+		private static string WolfFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return GenericFullDescription(eyes, alternateFormat);
+		}
 		private static string WolfPlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder(" Your ");
@@ -975,15 +1065,24 @@ namespace CoC.Backend.BodyParts
 			sb.Append("Despite the change, your eyes feel just as powerful. ");
 			return sb.ToString();
 		}
-		private static string CockatriceShortStr()
+		private static string CockatriceShortStr(bool plural)
 		{
-			return "cockatrice eyes";
+			return "cockatrice eye" + (plural ? "s" : "");
 		}
-		private static string CockatriceLongDesc(EyeData eyes)
+		private static string CockatriceLongDesc(EyeData eyes, bool alternateFormat)
 		{
-			return "a pair of dazzling " + eyes.leftIrisColor.AsString() + (eyes.isHeterochromia ? " and " + eyes.rightIrisColor.AsString() : "") + " cockatrice eyes";
+			return GenericCountText(eyes.eyeCount, alternateFormat) + "dazzling" + (eyes.isHeterochromia ? " but mismatched " : eyes.leftIrisColor.AsString()) + eyes.type.ShortDescription();
 		}
 
+		private static string CockatriceSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			return (alternateFormat ? "a " : "") + "dazzling " + GenericOneEyeDescription(eyes, false, useLeftIrisColor);
+		}
+
+		private static string CockatriceFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return GenericFullDescription(eyes, alternateFormat);
+		}
 		private static string CockatricePlayerStr(Eyes eyes, PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder("Your eyes have the slit-shaped pupils of a reptile, but your irises are an electric blue. Lightning-like streaks");
@@ -1031,20 +1130,31 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericEyeChange(oldLeft, newLeft, oldRight, newRight);
 		}
-		private static string CatShortStr()
+		private static string CatShortStr(bool plural)
 		{
-			return "cat eyes";
+			return "cat eye" + (plural ? "s" : "");
 		}
-		private static string CatLongDesc(EyeData eyes)
+		private static string CatLongDesc(EyeData eyes, bool alternateFormat)
 		{
 			if (eyes.isHeterochromia)
 			{
-				return "a pair of mismatched feline eyes - the left " + eyes.leftIrisColor.AsString() + ", the right " + eyes.rightIrisColor.AsString();
+				return GenericCountText(eyes.eyeCount, alternateFormat) + "mismatched feline eyes";
 			}
 			else
 			{
-				return "a pair of " + eyes.leftIrisColor.AsString() + " feline eyes";
+				return GenericCountText(eyes.eyeCount, alternateFormat) + eyes.leftIrisColor.AsString() + " feline eyes";
 			}
+		}
+
+
+		private static string CatSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			return GenericOneEyeDescription(eyes, alternateFormat, useLeftIrisColor);
+		}
+
+		private static string CatFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return GenericFullDescription(eyes, alternateFormat);
 		}
 		private static string CatPlayerStr(Eyes eyes, PlayerBase player)
 		{
@@ -1119,5 +1229,30 @@ namespace CoC.Backend.BodyParts
 			}
 			return sb.ToString();
 		}
+
+		private static string GenericLongDescription(EyeData eyes, bool alternateFormat)
+		{
+			return GenericCountText(eyes.eyeCount, alternateFormat) + eyes.type.ShortDescriptionWithColor(eyes.leftIrisColor, eyes.rightIrisColor);
+		}
+
+		private static string GenericOneEyeDescription(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
+		{
+			if (useLeftIrisColor) return eyes.leftIrisColor.AsString(alternateFormat) + eyes.ShortDescription(false);
+			else return eyes.rightIrisColor.AsString(alternateFormat) + eyes.ShortDescription(false);
+		}
+
+		private static string GenericFullDescription(EyeData eyes, bool alternateForm)
+		{
+			if (eyes.eyeCount == 2 && eyes.isHeterochromia)
+			{
+				return eyes.LongDescription(alternateForm) + " - the left " + eyes.leftIrisColor.AsString() + ", the right " + eyes.rightIrisColor.AsString();
+			}
+			else if (eyes.eyeCount > 2 && eyes.isHeterochromia)
+			{
+				return eyes.LongDescription(alternateForm) + " - the left ones" + eyes.leftIrisColor.AsString() + ", the right ones" + eyes.rightIrisColor.AsString();
+			}
+			else return eyes.LongDescription(alternateForm);
+		}
 	}
+
 }

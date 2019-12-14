@@ -6,6 +6,7 @@ using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using System;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
@@ -20,6 +21,13 @@ namespace CoC.Backend.BodyParts
 
 	public partial class ArmType
 	{
+		private static string IntroMaker(bool plural, bool articleFormat, bool useAn)
+		{
+			if (plural && articleFormat) return "a pair of ";
+			else if (articleFormat) return useAn ? "an " : "a ";
+			else return "";
+		}
+
 		public static string ArmEpidermisDescription(EpidermalData primary, EpidermalData secondary)
 		{
 			if (EpidermalData.CheckMixedTypes(primary, secondary))
@@ -32,14 +40,37 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private static string HumanDesc()
+		private static string HumanDesc(bool plural)
 		{
-			return "human arms";
+			return plural ? "arms" : "arm";
 		}
 
-		private static string HumanLongDesc(ArmData arm)
+		private static string HumanLongDesc(ArmData arm, bool articleForm, bool plural)
 		{
-			return HumanDesc();
+			if (plural && articleForm) return "a pair of humainoid arms";
+			if (plural) return "humanoid arms";
+			else return "humanoid arm";
+		}
+
+		private static string HumanFullDesc(ArmData arm, bool articleForm, bool plural, bool includeFingers)
+		{
+			string hand = Utils.Pluralize("hand", plural);
+			string handText;
+			if (includeFingers)
+			{
+				handText = $", {hand}, and fingers";
+			}
+			else
+			{
+				handText = $" and {hand}";
+			}
+
+			if (plural && articleForm)
+			{
+				return "a pair of humainoid arms" + handText;
+			}
+			else if (plural) return "humanoid arms" + handText;
+			else return "humanoid arm" + handText;
 		}
 
 		private static string HumanPlayerStr(Arms arm, PlayerBase player)
@@ -54,14 +85,43 @@ namespace CoC.Backend.BodyParts
 		{
 			return GlobalStrings.RevertAsDefault(previousArmData, player);
 		}
-		private static string HarpyDescStr()
+		private static string HarpyDesc(bool plural)
 		{
-			return "feathered arms";
+			return Utils.Pluralize("feathered arm", plural);
 		}
 
-		private static string HarpyLongDesc(ArmData arm)
+		private static string HarpyLongDesc(ArmData arm, bool articleForm, bool plural)
 		{
-			return arm.epidermis.JustColor() + " feathered arms";
+			if (plural)
+			{
+				string articleText = articleForm ? "a pair of " : "";
+				return articleText + arm.epidermis.JustColor() + " feathered arms";
+			}
+			else if (articleForm)
+			{
+				return $"a {arm.epidermis.JustColor()} feathered arm";
+			}
+			else
+			{
+				return $"{arm.epidermis.JustColor()} feathered arm";
+			}
+		}
+
+		private static string HarpyFullDesc(ArmData arm, bool articleForm, bool plural, bool includeFingers)
+		{
+			if (plural)
+			{
+				string articleText = articleForm ? "a pair of " : "";
+				return articleText + arm.epidermis.JustColor() + " feathered arms ending in " + arm.hands.LongOrFullDescription(false, true, includeFingers);
+			}
+			else if (articleForm)
+			{
+				return $"a {arm.epidermis.JustColor()} feathered arm ending in " + arm.hands.LongOrFullDescription(articleForm, plural, includeFingers);
+			}
+			else
+			{
+				return "feathered arm with its " + arm.hands.LongOrFullDescription(false, plural, includeFingers);
+			}
 		}
 
 		private static string HarpyPlayerStr(Arms arm, PlayerBase player)
@@ -78,7 +138,7 @@ namespace CoC.Backend.BodyParts
 			else
 			{
 				retVal.Append("avian plumage sprouts from your " + previousArmData.epidermis.ShortDescription() + ", covering your forearms "
-					+ "until <b>your arms look vaguely like wings.</b>");
+					+ "until " + SafelyFormattedString.FormattedText("your arms look vaguely like wings.", StringFormats.BOLD));
 			}
 			if (previousArmData.hands.type != HandType.HUMAN)
 			{
@@ -95,16 +155,26 @@ namespace CoC.Backend.BodyParts
 		{
 			return "You scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
 				+ "Glancing down in irritation, you discover that your feathery arms are shedding their feathery coating."
-				+ "\nThe wing-like shape your arms once had is gone in a matter of moments, leaving human skin behind.";
+				 + Environment.NewLine + "The wing-like shape your arms once had is gone in a matter of moments, leaving human skin behind.";
 		}
-		private static string SpiderDescStr()
+		private static string SpiderDesc(bool plural)
 		{
-			return "spider arms";
+			return Utils.Pluralize("spider arm", plural);
 		}
 
-		private static string SpiderLongDesc(ArmData arm)
+		private static string SpiderLongDesc(ArmData arm, bool alternateForm, bool plural)
 		{
-			return "chitinous " + arm.epidermis.JustColor() + " spider arms";
+			string intro;
+			if (alternateForm && plural) intro = "a pair of ";
+			else if (alternateForm) intro = "a ";
+			else intro = "";
+
+			return intro + "chitinous " + arm.epidermis.JustColor() + Utils.Pluralize(" spider arm", plural);
+		}
+
+		private static string SpiderFullDesc(ArmData arm, bool alternateForm, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateForm, plural, includeFingers);
 		}
 
 		private static string SpiderPlayerStr(Arms arm, PlayerBase player)
@@ -121,7 +191,7 @@ namespace CoC.Backend.BodyParts
 			retVal.Append("You watch, spellbound, while your forearms gradually become shiny. The entire outer structure of your arms tingles while it divides into segments");
 			if (previousArmData.type != HUMAN && previousArmData.type != HARPY)
 			{
-				retVal.Append(", <b>turning the " + previousArmData.EpidermisDescription() + " into a shiny black carapace</b>. ");
+				retVal.Append(", " + SafelyFormattedString.FormattedText("turning the " + previousArmData.EpidermisDescription() + " into a shiny black carapace", StringFormats.BOLD) + ". ");
 			}
 			else
 			{
@@ -132,25 +202,33 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SpiderRestoreStr(ArmData previousArmData, PlayerBase player)
 		{
-			return "\n\nYou scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
+			return GlobalStrings.NewParagraph() + "You scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
 				+ "Glancing down in irritation, you discover that your arms' chitinous covering is flaking away."
-				+ "\nThe glossy black coating is soon gone, leaving human skin behind.";
+				 + Environment.NewLine + "The glossy black coating is soon gone, leaving human skin behind.";
 		}
-		private static string BeeDesc()
+		private static string BeeDesc(bool plural)
 		{
-			return "fuzzy bee arms";
+			return Utils.Pluralize("fuzzy bee arm", plural);
 		}
-		private static string BeeLongDesc(ArmData arm)
+		private static string BeeLongDesc(ArmData arm, bool alternateForm, bool plural)
 		{
-			return BeeDesc();
+			string intro = IntroMaker(plural, alternateForm, false);
+			return $"{intro}fuzzy {arm.epidermis.JustColor()} bee-arms";
 		}
+
+		private static string BeeFullDesc(ArmData arm, bool alternateForm, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateForm, plural, includeFingers);
+		}
+
+
 		private static string BeePlayerStr(Arms arm, PlayerBase player)
 		{
 			return arm.epidermis.LongDescription() + " covers your arms from the biceps down, resembling a pair of long black gloves ended with a yellow fuzz from a distance.";
 		}
 		private static string BeeTransformStr(ArmData previousArmData, PlayerBase player)
 		{
-			StringBuilder sb = new StringBuilder("\n\n");
+			StringBuilder sb = new StringBuilder(GlobalStrings.NewParagraph());
 			if (previousArmData.type == ArmType.SPIDER)
 			{
 				sb.Append("The " + previousArmData.epidermis.ShortDescription() + "on your upper arms slowly starting to grown yellow fuzz, making them looks more like those of bee.");
@@ -169,11 +247,11 @@ namespace CoC.Backend.BodyParts
 				sb.Append("You watch, spellbound, while your forearms gradually become shiny. The entire outer structure of your arms tingles while it divides into segments");
 				if (previousArmData.type == HARPY || previousArmData.type == HUMAN)
 				{
-					sb.Append("<b>until it resembles a shiny black exoskeleton</b>");
+					sb.Append(SafelyFormattedString.FormattedText("until it resembles a shiny black exoskeleton", StringFormats.BOLD));
 				}
 				else
 				{
-					sb.Append(", <b>turning the " + previousArmData.epidermis.ShortDescription() + " into a shiny black carapace</b>. ");
+					sb.Append(", " + SafelyFormattedString.FormattedText("turning the " + previousArmData.epidermis.ShortDescription() + " into a shiny black carapace", StringFormats.BOLD) + ". ");
 				}
 				sb.Append("A moment later the pain fades and you are able to turn your gaze down to your beautiful new arms, covered in " +
 					"shining black chitin from the upper arm down, and downy yellow fuzz along your upper arm.");
@@ -182,18 +260,22 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string BeeRestoreStr(ArmData previousArmData, PlayerBase player)
 		{
-			return "\n\nYou arms start to itch like crazy, and no matter how much you scrath, you can't shake the itch. Looking down, you see the cause - the exoskeleton covering"
-				+ "your arm is flaking away. Not to be outdone, the yellow fur towards the end starts to fall out as well."
-				+ "<b> You now have human arms!</b>";
+			return GlobalStrings.NewParagraph() + "You arms start to itch like crazy, and no matter how much you scrath, you can't shake the itch. Looking down, you see the cause - "
+				+ "the exoskeleton covering your arm is flaking away. Not to be outdone, the yellow fur towards the end starts to fall out as well. "
+				+ SafelyFormattedString.FormattedText("You now have human arms!", StringFormats.BOLD);
 		}
-		private static string DragonDescStr()
+		private static string DragonDesc(bool plural)
 		{
-			return "draconic arms";
+			return Utils.Pluralize("draconic arm", plural);
 		}
-		
-		private static string DragonLongDesc(ArmData arm)
+
+		private static string DragonLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return DragonDescStr();
+			return GenericLongDesc(arm, alternateFormat, plural);
+		}
+		private static string DragonFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 
 		private static string DragonPlayerStr(Arms arm, PlayerBase player)
@@ -204,28 +286,34 @@ namespace CoC.Backend.BodyParts
 		{
 			if (previousArmData.type.isPredatorArms())
 			{
-				return "\n\nYour " + previousArmData.hands.ShortDescription() + " change a little to become more dragon-like." +
-					" <b>Your arms and claws are like those of a dragon.</b>";
+				return GlobalStrings.NewParagraph() + "Your " + previousArmData.hands.ShortDescription() + " change a little to become more dragon-like." +
+					" " + SafelyFormattedString.FormattedText("Your arms and claws are like those of a dragon.", StringFormats.BOLD);
 			}
-			return "\n\nYou scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. " +
+			return GlobalStrings.NewParagraph() + "You scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. " +
 				"After a longer moment of ignoring it you finally glance down in irritation, only to discover that your arms former " +
 				"appearance has changed into those of some reptilian killer with shield-shaped " + player.body.mainEpidermis.tone +
-				" scales and powerful, thick, curved steel-gray claws replacing your fingernails.\n<b>You now have dragon arms.</b>";
+				" scales and powerful, thick, curved steel-gray claws replacing your fingernails." + Environment.NewLine + SafelyFormattedString.FormattedText("You now have dragon arms.", StringFormats.BOLD);
 		}
 		private static string DragonRestoreStr(ArmData previousArmData, PlayerBase player)
 		{
 			return PredatorRestoreStr(previousArmData, player);
 		}
-		private static string ImpDescStr()
+		private static string ImpDesc(bool plural)
 		{
-			return "predator arms";
+			return Utils.Pluralize("predator arm", plural);
 		}
-		
-		private static string ImpLongDesc(ArmData arm)
-		{
-			return arm.epidermis.JustColor() + " predator arms ending in imp claws";
 
+		private static string ImpLongDesc(ArmData arm, bool alternateFormat, bool plural)
+		{
+			return GenericLongDesc(arm, alternateFormat, plural);
 		}
+
+		private static string ImpFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
+		}
+
+
 
 		private static string ImpPlayerStr(Arms arm, PlayerBase player)
 		{
@@ -236,19 +324,19 @@ namespace CoC.Backend.BodyParts
 			StringBuilder sb = new StringBuilder();
 			if (previousArmData.type != HUMAN)
 			{
-				sb.Append("\n\nYour arms twist and mangle, warping back into human-like arms. But that, you realize, is just the beginning."
+				sb.Append(GlobalStrings.NewParagraph() + "Your arms twist and mangle, warping back into human-like arms. But that, you realize, is just the beginning."
 					+ "The skin on your arms visibly thicken, then segment into a hybrid between scales and skin.");
 			}
 			if (!previousArmData.hands.isClaws)
 			{
-				sb.Append("\n\nYour " + previousArmData.hands.ShortDescription() + " suddenly ache in pain, and all you can do is curl " +
+				sb.Append(GlobalStrings.NewParagraph() + "Your " + previousArmData.hands.ShortDescription() + " suddenly ache in pain, and all you can do is curl " +
 					"them up to you. Against your body, you feel them form into three long claws, with a smaller one replacing your thumb but " +
-					"just as versatile. <b>You have imp claws!</b>");
+					"just as versatile. " + SafelyFormattedString.FormattedText("You have imp claws!", StringFormats.BOLD));
 			}
 			else
 			{ //has claws
-				sb.Append("\n\nYour claws suddenly begin to shift and change, starting to turn back into normal hands. But just before they do, they" +
-					" stretch out into three long claws, with a smaller one coming to form a pointed thumb. <b>You have imp claws!</b>");
+				sb.Append(GlobalStrings.NewParagraph() + "Your claws suddenly begin to shift and change, starting to turn back into normal hands. But just before they do, they" +
+					" stretch out into three long claws, with a smaller one coming to form a pointed thumb. " + SafelyFormattedString.FormattedText("You have imp claws!", StringFormats.BOLD));
 			}
 			return sb.ToString();
 		}
@@ -256,15 +344,19 @@ namespace CoC.Backend.BodyParts
 		{
 			return PredatorRestoreStr(previousArmData, player);
 		}
-		private static string LizardDescStr()
+		private static string LizardDesc(bool plural)
 		{
-			return "predator arms";
+			return Utils.Pluralize("predator arm", plural);
 		}
-		private static string LizardLongDesc(ArmData arm)
+		private static string LizardLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return "predator arms with " + arm.hands.LongDescription();
+			return GenericLongDesc(arm, alternateFormat, plural);
+		}
+		private static string LizardFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
+		}
 
-		}
 		private static string LizardPlayerStr(Arms arm, PlayerBase player)
 		{
 			return PredatorPlayerStr(arm, player);
@@ -273,25 +365,29 @@ namespace CoC.Backend.BodyParts
 		{
 			if (previousArmData.type.isPredatorArms())
 			{
-				return "\n\nYour " + previousArmData.hands.ShortDescription() + " change a little to become more lizard-like." +
-					" <b>You now have lizard-like claws.</b>";
+				return GlobalStrings.NewParagraph() + "Your " + previousArmData.hands.ShortDescription() + " change a little to become more lizard-like." +
+					" " + SafelyFormattedString.FormattedText("You now have lizard-like claws.", StringFormats.BOLD);
 			}
-			else return "\n\nYou scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. After a longer"
+			else return GlobalStrings.NewParagraph() + "You scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. After a longer"
 				+ " moment of ignoring it you finally glance down in irritation, only to discover that your arms' former appearance has changed into "
 				+ "those of some reptilian killer, complete with scales and claws in place of fingernails. Strangely, your claws seem to match the "
-				+ "tone of your arms.\n<b>You now have reptilian arms.</b>";
+				+ "tone of your arms." + Environment.NewLine + SafelyFormattedString.FormattedText("You now have reptilian arms.", StringFormats.BOLD);
 		}
 		private static string LizardRestoreStr(ArmData previousArmData, PlayerBase player)
 		{
 			return PredatorRestoreStr(previousArmData, player);
 		}
-		private static string SalamanderDescStr()
+		private static string SalamanderDesc(bool plural)
 		{
-			return "salamader arms";
+			return Utils.Pluralize("salamader arm", plural);
 		}
-		private static string SalamanderLongDesc(ArmData arm)
+		private static string SalamanderLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return "salamander arms with " + arm.hands.LongDescription();
+			return GenericLongDesc(arm, alternateFormat, plural);
+		}
+		private static string SalamanderFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 		private static string SalamanderPlayerStr(Arms arm, PlayerBase player)
 		{
@@ -301,22 +397,26 @@ namespace CoC.Backend.BodyParts
 		{
 			return "You scratch your biceps absentmindedly, but no matter how much you scratch, you can't get rid of the itch. After a longer moment of"
 				+ " ignoring it you finally glance down in irritation, only to discover that your arms former appearance has changed into those of a salamander,"
-				+ " complete with leathery, red scales and short, fiery-red claws replacing your fingernails.  <b>You now have salamander arms.</b>";
+				+ " complete with leathery, red scales and short, fiery-red claws replacing your fingernails.  " + SafelyFormattedString.FormattedText("You now have salamander arms.", StringFormats.BOLD);
 		}
 		private static string SalamanderRestoreStr(ArmData previousArmData, PlayerBase player)
 		{
-			return "\n\nYou scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
+			return GlobalStrings.NewParagraph() + "You scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
 				+ "Glancing down in irritation, you discover that your once scaly arms are shedding their scales and that"
-				+ " your claws become normal human fingernails again. <b>You have normal human arms again.</b>";
+				+ " your claws become normal human fingernails again. " + SafelyFormattedString.FormattedText("You have normal human arms again.", StringFormats.BOLD);
 
 		}
-		private static string WolfDescStr()
+		private static string WolfDesc(bool plural)
 		{
-			return "wolfen arms";
+			return Utils.Pluralize("wolfen arm", plural);
 		}
-		private static string WolfLongDesc(ArmData arm)
+		private static string WolfLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return "wolf-like arms and " + arm.hands.ShortDescription();
+			return GenericLongDesc(arm, alternateFormat, plural);
+		}
+		private static string WolfFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 		private static string WolfPlayerStr(Arms arm, PlayerBase player)
 		{
@@ -324,14 +424,14 @@ namespace CoC.Backend.BodyParts
 				+ " They're covered in " + arm.epidermis.LongDescription() + " and end in paws with just enough flexibility to be used as hands."
 				+ " They're rather difficult to move in directions besides back and forth.";
 		}
-		//based off dog. it was never implemented in game, even though there was text for the PC having them. 
+		//based off dog. it was never implemented in game, even though there was text for the PC having them.
 		private static string WolfTransformStr(ArmData previousArmData, PlayerBase player)
 		{
 			if (previousArmData.type == ArmType.DOG)
 			{
 				return "Your arms feel stiff, and despite any attempt to move them, they just sit there, limply. You soon realize the bones in your " + previousArmData.hands.ShortDescription() +
 					" are changing, as well as the muscles on your arms. Strangely, your arms don't seem to change much, though they feel much stronger than before. " +
-					"Stretching a little, you realize your paws are also much less dextrous than before, though your claws are much sharper. <b> You now have wolf-like arms!</b>";
+					"Stretching a little, you realize your paws are also much less dextrous than before, though your claws are much sharper. " + SafelyFormattedString.FormattedText(" You now have wolf-like arms!", StringFormats.BOLD);
 			}
 			else
 			{
@@ -342,13 +442,27 @@ namespace CoC.Backend.BodyParts
 		{
 			return PawRestoreString();
 		}
-		private static string CockatriceDescStr()
+		private static string CockatriceDesc(bool plural)
 		{
-			return "feathery arms";
+			return Utils.Pluralize("feathery arm", plural);
 		}
-		private static string CockatriceLongDesc(ArmData arm)
+		private static string CockatriceLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return arm.epidermis.fur.AsString() + ", feathered cockatrice arms with " + arm.hands.LongDescription();
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + arm.epidermis.JustColor() + " ";
+			}
+			else
+			{
+				intro = arm.epidermis.JustColor(alternateFormat);
+			}
+
+			return intro + Utils.Pluralize(", feathered cockatrice arm", plural);
+		}
+		private static string CockatriceFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 
 		private static string CockatricePlayerStr(Arms arm, PlayerBase player)
@@ -365,23 +479,38 @@ namespace CoC.Backend.BodyParts
 			+ " Your arms feel like they are " + (previousArmData.usesAnyFur ? "shedding" : "molting") + ". Sure enough, the old"
 			+ " outer layer falls off, replaced with leathery scales. Additionally, the upper part of your arms gain feathers, covering them"
 			+ " from shoulder to elbow, where they end in a fluffy cuff. As suddenly as the itching came it fades, leaving you to marvel"
-			+ " over your new arms.\n<b>You now have cockatrice arms!</b>";
+			+ " over your new arms." + Environment.NewLine + SafelyFormattedString.FormattedText("You now have cockatrice arms!", StringFormats.BOLD);
 		}
 		private static string CockatriceRestoreStr(ArmData previousArmData, PlayerBase player)
 		{
 			return "You scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch. "
 				+ "You quickly notice your arms are shedding their scales, and while this is normal, you've never seen it to this extent. "
 				+ "Weirder still, underneath it is not new scales, but rather skin. Your upper arms are also experiencing the change, as the feathers "
-				+ "that once covered them are falling out. You soon realize <b>You have normal arms again!</b>.";
+				+ "that once covered them are falling out. You soon realize " + SafelyFormattedString.FormattedText("You have normal arms again!", StringFormats.BOLD) + ".";
 		}
-		private static string RedPandaDescStr()
+		private static string RedPandaDesc(bool plural)
 		{
-			return "panda-arms";
+			return Utils.Pluralize("panda-arm", plural);
 		}
-		private static string RedPandaLongDesc(ArmData arm)
+		private static string RedPandaLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return arm.epidermis.LongAdjectiveDescription() + "panda-arms";
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + arm.epidermis.LongAdjectiveDescription();
+			}
+			else
+			{
+				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
+			}
+			//smooth, furry, (color)
+			return intro + Utils.Pluralize("panda-arm", plural);
 		}
+		private static string RedPandaFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
+		}
+
 		private static string RedPandaPlayerStr(Arms arm, PlayerBase player)
 		{
 			return arm.epidermis.furTexture.ToString() + ", " + arm.epidermis.JustColor() + " fluff cover your arms. Your paws have " + arm.hands.ShortDescription() + ".";
@@ -394,14 +523,29 @@ namespace CoC.Backend.BodyParts
 		{
 			return PawRestoreString();
 		}
-		private static string FerretDescStr()
+		private static string FerretDesc(bool plural)
 		{
-			return "ferret-arms";
+			return Utils.Pluralize("ferret-arm", plural);
 		}
-		private static string FerretLongDesc(ArmData arm)
+		private static string FerretLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return arm.epidermis.LongAdjectiveDescription() + " ferret arms with " + arm.hands.LongDescription();
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + arm.epidermis.LongAdjectiveDescription();
+			}
+			else
+			{
+				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
+			}
+			//smooth, furry, (color)
+			return intro + " " + Utils.Pluralize("ferret arm", plural);
 		}
+		private static string FerretFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
+		}
+
 		private static string FerretPlayerStr(Arms arm, PlayerBase player)
 		{
 			return "Soft, " + arm.epidermis.JustColor() + " fluff covers your arms, turning into "
@@ -417,13 +561,27 @@ namespace CoC.Backend.BodyParts
 		{
 			return PawRestoreString();
 		}
-		private static string CatDescStr()
+		private static string CatDesc(bool plural)
 		{
-			return "feline arms";
+			return Utils.Pluralize("feline arm", plural);
 		}
-		private static string CatLongDesc(ArmData arm)
+		private static string CatLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return arm.epidermis.LongAdjectiveDescription() + " feline arms with " + arm.hands.LongDescription();
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + arm.epidermis.LongAdjectiveDescription();
+			}
+			else
+			{
+				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
+			}
+			//smooth, furry, (color)
+			return intro + Utils.Pluralize("feline arm", plural);
+		}
+		private static string CatFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 		private static string CatPlayerStr(Arms arm, PlayerBase player)
 		{
@@ -437,13 +595,28 @@ namespace CoC.Backend.BodyParts
 		{
 			return PawRestoreString();
 		}
-		private static string DogDescStr()
+		private static string DogDesc(bool plural)
 		{
-			return "canine arms";
+			return Utils.Pluralize("canine arm", plural);
 		}
-		private static string DogLongDesc(ArmData arm)
+
+		private static string DogLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return arm.epidermis.LongAdjectiveDescription() + " canine arms with " + arm.hands.LongDescription();
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + arm.epidermis.LongAdjectiveDescription();
+			}
+			else
+			{
+				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
+			}
+			//smooth, furry, (color)
+			return intro + Utils.Pluralize("canine arm", plural);
+		}
+		private static string DogFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 		private static string DogPlayerStr(Arms arm, PlayerBase player)
 		{
@@ -456,7 +629,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return "Your arms feel stiff, and despite any attempt to move them, they just sit there, limply. You soon realize the bones in your " + previousArmData.hands.ShortDescription() +
 					" are changing, as well as the muscles on your arms. Strangely, your arms don't seem to change much, though they feel a bit weaker than before. " +
-					"Stretching a little, you realize your paws are also much more dextrous than before, though your claws are much duller. <b> You now have dog-like arms!</b>";
+					"Stretching a little, you realize your paws are also much more dextrous than before, though your claws are much duller. " + SafelyFormattedString.FormattedText(" You now have dog-like arms!", StringFormats.BOLD);
 			}
 			else
 			{
@@ -467,13 +640,27 @@ namespace CoC.Backend.BodyParts
 		{
 			return PawRestoreString();
 		}
-		private static string FoxDescStr()
+		private static string FoxDesc(bool plural)
 		{
-			return "fox-like arms";
+			return Utils.Pluralize("vulpine arm", plural);
 		}
-		private static string FoxLongDesc(ArmData arm)
+		private static string FoxLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return arm.epidermis.LongAdjectiveDescription() + ", fox-like arms with " + arm.hands.LongDescription();
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + arm.epidermis.LongAdjectiveDescription();
+			}
+			else
+			{
+				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
+			}
+			//smooth, furry, (color)
+			return intro + arm.type.ShortDescription();
+		}
+		private static string FoxFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 		private static string FoxPlayerStr(Arms arm, PlayerBase player)
 		{
@@ -488,13 +675,27 @@ namespace CoC.Backend.BodyParts
 			return PawRestoreString();
 		}
 
-		private static string GooDesc()
+		private static string GooDesc(bool plural)
 		{
-			return "gooey arms";
+			return Utils.Pluralize("gooey arm", plural);
 		}
-		private static string GooLongDesc(ArmData arms)
+		private static string GooLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
-			return arms.epidermis.LongAdjectiveDescription() + " goo arms with " + arms.hands.LongDescription();
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + arm.epidermis.LongAdjectiveDescription();
+			}
+			else
+			{
+				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
+			}
+			//smooth, gooey, (color)
+			return intro + " goo arm" + (plural ? "s with " : " with its ") + arm.hands.LongDescription(plural);
+		}
+		private static string GooFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
+		{
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 		private static string GooPlayerStr(Arms arm, PlayerBase player)
 		{
@@ -533,16 +734,31 @@ namespace CoC.Backend.BodyParts
 			return "Soft, " + arms.epidermis.JustColor() + " fluff covers your arms. Your paw-like hands have " + arms.hands.LongDescription() + ".";
 		}
 
+		private static string GenericLongDesc(ArmData arm, bool alternateFormat, bool plural)
+		{
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + arm.epidermis.JustColor();
+			}
+			else
+			{
+				intro = arm.epidermis.JustColor(alternateFormat);
+			}
+
+			return intro + arm.ShortDescription(plural);
+		}
+
 		private static string PredatorPlayerStr(Arms arms, PlayerBase player)
 		{
-			return "Your arms are covered by " + arms.epidermis.ShortDescription() + " and your hands are noew " + arms.hands.LongDescription() + ".";
+			return "Your arms are covered by " + arms.epidermis.ShortDescription() + " and your hands are now " + arms.hands.LongDescription() + ".";
 		}
 
 		private static string PredatorRestoreStr(ArmData previousArmData, PlayerBase player)
 		{
-			return "\n\nYou feel a sudden tingle in your " + previousArmData.hands.ShortDescription() + " and then you realize,"
+			return GlobalStrings.NewParagraph() + "You feel a sudden tingle in your " + previousArmData.hands.ShortDescription() + " and then you realize,"
 				+ " that they have become normal human fingernails again. Your arms quickly follow suit. "
-				+ "<b>You have normal human arms again.</b>";
+				 + SafelyFormattedString.FormattedText("You have normal human arms again.", StringFormats.BOLD);
 		}
 
 		private static string GenericPawTransformStr(ArmData previousArmData, string newArmString, bool canClimb, bool canTearFlesh, FurColor optionalFurColor = null)
@@ -601,19 +817,22 @@ namespace CoC.Backend.BodyParts
 		{
 			return "You scratch at your biceps absentmindedly, but no matter how much you scratch, it isn't getting rid of the itch."
 				+ "Glancing down in irritation, you discover that your arms are shedding their furry coating."
-				+ "\nYour hands follow suit, losing their pads and claws until your have a normal hand and fingernails."
-				+ "<b>You have normal human arms again.</b>";
+				 + Environment.NewLine + "Your hands follow suit, losing their pads and claws until your have a normal hand and fingernails."
+				 + SafelyFormattedString.FormattedText("You have normal human arms again.", StringFormats.BOLD);
 		}
 
 
 		private static string GenericRestoreString()
 		{
-			return "\n\nYour unusual arms change more and more until they are normal human arms, leaving only skin behind." +
-				"<b>You have normal human arms again.</b>";
+			return GlobalStrings.NewParagraph() + "Your unusual arms change more and more until they are normal human arms, leaving only skin behind." +
+				SafelyFormattedString.FormattedText("You have normal human arms again.", StringFormats.BOLD);
 		}
 
+		private static string GenericFullDescription(ArmData arm, bool alternateForm, bool plural, bool includeFingers)
+		{
+			string transition = plural || alternateForm ? " ending in " : " with its ";
 
-
-		//"<b>You have normal human arms again.</b>"
+			return arm.type.LongDescription(arm, alternateForm, plural) + transition + arm.hands.LongOrFullDescription(false, plural, includeFingers);
+		}
 	}
 }

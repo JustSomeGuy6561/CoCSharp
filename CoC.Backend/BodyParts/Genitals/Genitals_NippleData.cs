@@ -120,7 +120,7 @@ namespace CoC.Backend.BodyParts
 				return null;
 			}
 
-			return new NippleData(creatureID, AverageNippleSize(), -1, quadNipples, blackNipples, nippleType);
+			return new NippleData(creatureID, AverageNippleSize(), -1, lactationRate, quadNipples, blackNipples, nippleType, null, relativeLust);
 		}
 
 		#endregion

@@ -9,6 +9,32 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Horns
 	{
+		public string OneHornShortDescription(string pronoun = "your")
+		{
+			if (numHorns == 0)
+			{
+				return "";
+			}
+			else if (numHorns == 1)
+			{
+				return pronoun + " " + ShortDescription();
+			}
+			else return "one of " + pronoun + " " + ShortDescription();
+		}
+
+		public string EachHornShortDescription(string pronoun = "your")
+		{
+			if (numHorns == 0)
+			{
+				return "";
+			}
+			else if (numHorns == 1)
+			{
+				return pronoun + " " + ShortDescription();
+			}
+			else return "each of " + pronoun + " " + ShortDescription();
+		}
+
 		public static string Name()
 		{
 			return "Horns";
@@ -17,11 +43,11 @@ namespace CoC.Backend.BodyParts
 
 	public partial class HornType
 	{
-		private static string NoHornsShortDesc()
+		private static string NoHornsShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHornsLongDesc(HornData horns)
+		private static string NoHornsLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -37,11 +63,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonShortDesc()
+		private static string DemonShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonLongDesc(HornData horns)
+		private static string DemonLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -76,11 +102,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BullShortDesc()
+		private static string BullShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BullLongDesc(HornData horns)
+		private static string BullLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -122,11 +148,11 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		private static string DragonShortDesc()
+		private static string DragonShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonLongDesc(HornData horns)
+		private static string DragonLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -151,11 +177,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerShortDesc()
+		private static string DeerShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerLongDesc(HornData horns)
+		private static string DeerLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -172,11 +198,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ReindeerShortDesc()
+		private static string ReindeerShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ReindeerLongDesc(HornData horns)
+		private static string ReindeerLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -193,11 +219,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatShortDesc()
+		private static string GoatShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatLongDesc(HornData horns)
+		private static string GoatLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -221,11 +247,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string UniHornShortDesc()
+		private static string UniHornShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string UniHornLongDesc(HornData horns)
+		private static string UniHornLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -238,7 +264,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return intro + " It has developed its own cute little spiral. You estimate it to be about " + Measurement.ToNearestSmallUnit(horns.significantHornSize, false, false) + 
+				return intro + " It has developed its own cute little spiral. You estimate it to be about " + Measurement.ToNearestSmallUnit(horns.significantHornSize, false, false) +
 					" long, " + Measurement.ToNearestSmallUnit(2, false, false) + " thick and very sturdy. A very useful natural weapon.";
 			}
 		}
@@ -250,11 +276,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoShortDesc()
+		private static string RhinoShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoLongDesc(HornData horns)
+		private static string RhinoLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -268,7 +294,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return " A single horn sprouts from your forehead. It is conical and resembles a rhino's horn. You estimate it to be about " + 
+				return " A single horn sprouts from your forehead. It is conical and resembles a rhino's horn. You estimate it to be about " +
 					Measurement.ToNearestSmallUnit(horns.significantHornSize, false, true) + " long.";
 			}
 		}
@@ -280,11 +306,11 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepShortDesc()
+		private static string SheepShortDesc(bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepLongDesc(HornData horns)
+		private static string SheepLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -318,13 +344,26 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpShortDesc()
+		private static string ImpShortDesc(bool plural)
 		{
-			return "short, imp-like horns";
+			return Utils.Pluralize("short, imp-like horn", plural);
 		}
-		private static string ImpLongDesc(HornData horns)
+		private static string ImpLongDesc(HornData horns, bool alternateFormat, bool plural)
 		{
-			return "a pair of short, imp-like horns";
+			string intro;
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of";
+			}
+			else if (alternateFormat)
+			{
+				intro = "a ";
+			}
+			else
+			{
+				intro = "";
+			}
+			return intro + ImpShortDesc(plural);
 		}
 		private static string ImpPlayerStr(Horns horns, PlayerBase player)
 		{

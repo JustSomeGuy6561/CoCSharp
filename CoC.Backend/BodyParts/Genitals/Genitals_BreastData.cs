@@ -51,7 +51,7 @@ namespace CoC.Backend.BodyParts
 		//it will update automatically based on how often you breastfeed and how full you are. Boosting lactation will directly update this value.
 		//This value is used in calculations, and you should try not to use it in your logic. Lactation Status is much less arbitrary and thus are better to use.
 		//however, there may be cases where you want to boost lactation based on the current value, so this is available to you.
-		public float lactation_ProductionModifier
+		public float lactationProductionModifier
 		{
 			get => _lactationModifier;
 			private set
@@ -65,6 +65,8 @@ namespace CoC.Backend.BodyParts
 		public uint overfullBuffer { get; private set; } = 0;
 
 		public float currentLactationAmount { get; private set; }
+
+		public float lactationAmountPerBreast => currentLactationAmount / numBreasts;
 		#endregion
 
 		#region Lactation Perk Data
@@ -122,7 +124,7 @@ namespace CoC.Backend.BodyParts
 		//current maximum capacity. if you aren't lactating, this is 0.
 		public float currentLactationCapacity => maximumLactationCapacity * lactationLevel * (isOverfull ? 1.1f : 1.0f);
 
-		public float lactationRate => Utils.Lerp(LACTATION_THRESHOLD, EPIC_LACTATION_THRESHOLD, lactation_ProductionModifier, 0, 1.0f);
+		public float lactationRate => Utils.Lerp(LACTATION_THRESHOLD, EPIC_LACTATION_THRESHOLD, lactationProductionModifier, 0, 1.0f);
 
 		//when you boost lactation to certain thresholds, your body can carry a larger amount of the full capacity.
 		private float lactationLevel
@@ -171,34 +173,33 @@ namespace CoC.Backend.BodyParts
 		}
 		//converts the lactation modifier into something that is less arbitrary from a human interpretation standpoint. running a check against this means you don't have magic numbers
 		//and your intent is much clearer.
-		public LactationStatus lactationStatus
+		public LactationStatus lactationStatus => StatusFromRate(lactationRate);
+
+		internal static LactationStatus StatusFromRate(float lactationRate)
 		{
-			get
+			if (lactationRate < LACTATION_THRESHOLD)
 			{
-				if (lactation_ProductionModifier < LACTATION_THRESHOLD)
-				{
-					return LactationStatus.NOT_LACTATING;
-				}
-				else if (lactation_ProductionModifier < MODERATE_LACTATION_THRESHOLD)
-				{
-					return LactationStatus.LIGHT;
-				}
-				else if (lactation_ProductionModifier < STRONG_LACTATION_THRESHOLD)
-				{
-					return LactationStatus.MODERATE;
-				}
-				else if (lactation_ProductionModifier < HEAVY_LACTATION_THRESHOLD)
-				{
-					return LactationStatus.STRONG;
-				}
-				else if (lactation_ProductionModifier < EPIC_LACTATION_THRESHOLD)
-				{
-					return LactationStatus.HEAVY;
-				}
-				else
-				{
-					return LactationStatus.EPIC;
-				}
+				return LactationStatus.NOT_LACTATING;
+			}
+			else if (lactationRate < MODERATE_LACTATION_THRESHOLD)
+			{
+				return LactationStatus.LIGHT;
+			}
+			else if (lactationRate < STRONG_LACTATION_THRESHOLD)
+			{
+				return LactationStatus.MODERATE;
+			}
+			else if (lactationRate < HEAVY_LACTATION_THRESHOLD)
+			{
+				return LactationStatus.STRONG;
+			}
+			else if (lactationRate < EPIC_LACTATION_THRESHOLD)
+			{
+				return LactationStatus.HEAVY;
+			}
+			else
+			{
+				return LactationStatus.EPIC;
 			}
 		}
 
@@ -250,7 +251,8 @@ namespace CoC.Backend.BodyParts
 			}
 			var averageCup = AverageCupSize();
 			var averageNippleLength = AverageNippleSize();
-			return Breasts.GenerateAggregate(creatureID, averageCup, averageNippleLength, blackNipples, quadNipples, nippleType);
+			return Breasts.GenerateAggregate(creatureID, averageCup, averageNippleLength, blackNipples, quadNipples, nippleType, lactationRate, lactationStatus,
+				isOverfull, gender, relativeLust);
 		}
 
 		#endregion
@@ -386,7 +388,7 @@ namespace CoC.Backend.BodyParts
 		/// <returns>The lactation status given, or the closest value it can reach do to other factors.</returns>
 		public LactationStatus setLactationTo(LactationStatus newStatus)
 		{
-			lactation_ProductionModifier = newStatus.MinThreshold();
+			lactationProductionModifier = newStatus.MinThreshold();
 			return lactationStatus;
 		}
 
@@ -412,17 +414,17 @@ namespace CoC.Backend.BodyParts
 			{
 				return 0;
 			}
-			var modifier = lactation_ProductionModifier;
-			lactation_ProductionModifier += byAmount;
+			var modifier = lactationProductionModifier;
+			lactationProductionModifier += byAmount;
 			if (lactationStatus < minimumLactationLevel)
 			{
 				setLactationTo(minimumLactationLevel);
 			}
-			else if (lactation_ProductionModifier < LACTATION_THRESHOLD && byAmount < 0)
+			else if (lactationProductionModifier < LACTATION_THRESHOLD && byAmount < 0)
 			{
-				lactation_ProductionModifier = 0;
+				lactationProductionModifier = 0;
 			}
-			return lactation_ProductionModifier - modifier;
+			return lactationProductionModifier - modifier;
 		}
 
 		/// <summary>
@@ -431,7 +433,7 @@ namespace CoC.Backend.BodyParts
 		public void StartOrBoostLactation()
 		{
 
-			var oldLactation = lactation_ProductionModifier;
+			var oldLactation = lactationProductionModifier;
 			if (!isLactating)
 			{
 				setLactationTo(LactationStatus.LIGHT);
@@ -654,7 +656,7 @@ namespace CoC.Backend.BodyParts
 			}
 			//otherwise, handle cases for induced lactation (or some other non-zero modifier below the lactation threshold)
 			//we decrease this by 0.1 every 48 hours since the last time milked/attempted to induce lactation.
-			else if (lactation_ProductionModifier != 0 && hoursSinceLastMilked >= 48)
+			else if (lactationProductionModifier != 0 && hoursSinceLastMilked >= 48)
 			{
 				//we do this by seeing if the increase in hours passed has caused us to reach a new multiple of 48.
 				//so, if we were previously at 43 hours and now we're at 51, for example. we do this via modulus of 48.

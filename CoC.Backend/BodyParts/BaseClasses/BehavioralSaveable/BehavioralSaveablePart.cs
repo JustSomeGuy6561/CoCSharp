@@ -61,7 +61,12 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//Text output.
-		public string LongDescription() => type.LongDescription(AsReadOnlyData());
+		public string LongDescriptionPrimary() => type.LongDescriptionPrimary(AsReadOnlyData());
+
+		public string LongDescriptionAlternate() => type.LongDescriptionAlternate(AsReadOnlyData());
+
+		public string LongDescription(bool alternateForm = false) => type.LongDescription(AsReadOnlyData(), alternateForm);
+
 
 		public string PlayerDescription()
 		{

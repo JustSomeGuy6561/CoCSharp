@@ -9,7 +9,14 @@ namespace CoC.Backend.BodyParts
 		//if you want to add resource to this, implement body part lazy, make sure it's attached to list of lazies in the creature.
 		//increment resouce as needed. provide function for removing resources.
 
-		public Ovipositor(Guid creatureID) : base(creatureID) { }
+		public Ovipositor(Guid creatureID) : base(creatureID)
+		{
+			type = defaultType;
+		}
+		public Ovipositor(Guid creatureID, OvipositorType ovipositorType) : base(creatureID)
+		{
+			type = ovipositorType ?? throw new ArgumentNullException(nameof(ovipositorType));
+		}
 
 		public override OvipositorType defaultType => OvipositorType.defaultValue;
 
@@ -62,7 +69,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly OvipositorType SPIDER = new OvipositorType(SpiderShortDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //none
 		public static readonly OvipositorType BEE = new OvipositorType(BeeShortDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //none)
 
-		public OvipositorType(SimpleDescriptor shortDesc, DescriptorWithArg<OvipositorData> longDesc, PlayerBodyPartDelegate<Ovipositor> playerDesc,
+		public OvipositorType(SimpleDescriptor shortDesc, LongDescriptor<OvipositorData> longDesc, PlayerBodyPartDelegate<Ovipositor> playerDesc,
 			ChangeType<OvipositorData> transform, RestoreType<OvipositorData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore) { }
 	}
 

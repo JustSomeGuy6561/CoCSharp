@@ -11,6 +11,32 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Tail
 	{
+		public string OneTailShortDescription(string pronoun = "your")
+		{
+			if (tailCount == 0)
+			{
+				return "";
+			}
+			else if (tailCount == 1)
+			{
+				return pronoun + " " + ShortDescription();
+			}
+			else return "one of " + pronoun + " " + ShortDescription();
+		}
+
+		public string EachTailShortDescription(string pronoun = "your")
+		{
+			if (tailCount == 0)
+			{
+				return "";
+			}
+			else if (tailCount == 1)
+			{
+				return pronoun + " " + ShortDescription();
+			}
+			else return "each of " + pronoun + " " + ShortDescription();
+		}
+
 		public static string Name()
 		{
 			return "Tail";
@@ -21,11 +47,11 @@ namespace CoC.Backend.BodyParts
 	{
 		protected static string NoTailShortDesc()
 		{
-			return "non-existant tail";
+			return "";
 		}
-		protected static string NoTailLongDesc(TailData tail)
+		protected static string NoTailLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "non-existant tail";
+			return alternateFormat ? "no tails" : "non-existent tail";
 		}
 		protected static string NoTailPlayerStr(Tail tail, PlayerBase player)
 		{
@@ -43,9 +69,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "horse tail";
 		}
-		private static string HorseLongDesc(TailData tail)
+		private static string HorseLongDesc(TailData tail, bool alternateFormat)
 		{
-			return tail.primaryEpidermis.ShortDescription() + "horse tail";
+			return tail.primaryEpidermis.AdjectiveDescription(alternateFormat) + "horse tail";
 		}
 		private static string HorsePlayerStr(Tail tail, PlayerBase player)
 		{
@@ -81,9 +107,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "dog tail";
 		}
-		private static string DogLongDesc(TailData tail)
+		private static string DogLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "fluffy dog tail";
+			return (alternateFormat ? "a " : "") + "fluffy dog tail";
 		}
 		private static string DogPlayerStr(Tail tail, PlayerBase player)
 		{
@@ -122,13 +148,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return "demonic tail";
 		}
-		private static string DemonLongDesc(TailData tail)
+		private static string DemonLongDesc(TailData tail, bool alternateFormat)
 		{
+
 			if (tail.tailPiercings.wearingJewelry && Utils.Rand(10) <= 2)
 			{
-				return "pierced, demonic tail";
+				return (alternateFormat ? "a " : "") + "pierced, demonic tail";
 			}
-			return "demonic tail";
+			return (alternateFormat ? "a " : "") + "demonic tail";
 		}
 
 
@@ -171,9 +198,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cow tail";
 		}
-		private static string CowLongDesc(TailData tail)
+		private static string CowLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "cow tail";
+			return (alternateFormat ? "a " : "") + "cow tail";
 		}
 		private static string CowPlayerStr(Tail tail, PlayerBase player)
 		{
@@ -204,10 +231,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "spider abdomen";
 		}
-		private static string SpiderLongDesc(TailData tail)
+		private static string SpiderLongDesc(TailData tail, bool alternateFormat)
 		{
 			//maybe include venom count indication, idk.
-			return "spider abdomen";
+			return (alternateFormat ? "a " : "") + "spider abdomen";
 		}
 		private static string SpiderPlayerStr(Tail tail, PlayerBase player)
 		{
@@ -253,10 +280,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "bee abdomen";
 		}
-		private static string BeeLongDesc(TailData tail)
+		private static string BeeLongDesc(TailData tail, bool alternateFormat)
 		{
 			//maybe include venom count indication, idk.
-			return "bee abdomen";
+			return (alternateFormat ? "a " : "") + "bee abdomen";
 		}
 		private static string BeePlayerStr(Tail tail, PlayerBase player)
 		{
@@ -296,9 +323,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "shark tail";
 		}
-		private static string SharkLongDesc(TailData tail)
+		private static string SharkLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "rough shark tail";
+			return (alternateFormat ? "a " : "") + "rough shark tail";
 		}
 
 		private static string SharkPlayerStr(Tail tail, PlayerBase player)
@@ -339,9 +366,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cat tail";
 		}
-		private static string CatLongDesc(TailData tail)
+		private static string CatLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "cat tail";
+			return (alternateFormat ? "a " : "") + "feline tail";
 		}
 
 		private static string CatPlayerStr(Tail tail, PlayerBase player)
@@ -395,9 +422,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "lizard tail";
 		}
-		private static string LizardLongDesc(TailData tail)
+		private static string LizardLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "lizard tail";
+			return (alternateFormat ? "a " : "") + "reptilian tail";
 		}
 
 		private static string LizardPlayerStr(Tail tail, PlayerBase player)
@@ -427,9 +454,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "rabbit tail";
 		}
-		private static string RabbitLongDesc(TailData tail)
+		private static string RabbitLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "puffy rabbit tail";
+			return (alternateFormat ? "a " : "") + "puffy rabbit tail";
 		}
 
 		private static string RabbitPlayerStr(Tail tail, PlayerBase player)
@@ -450,9 +477,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "harpy tail";
 		}
-		private static string HarpyLongDesc(TailData tail)
+		private static string HarpyLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "feathery harpy tail";
+			return (alternateFormat ? "a " : "") + "feathery harpy tail";
 		}
 
 		private static string HarpyPlayerStr(Tail tail, PlayerBase player)
@@ -473,9 +500,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "kangaroo tail";
 		}
-		private static string KangarooLongDesc(TailData tail)
+		private static string KangarooLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "kangaroo tail";
+			return (alternateFormat ? "a " : "") + "marsupial tail";
 		}
 
 		private static string KangarooPlayerStr(Tail tail, PlayerBase player)
@@ -492,36 +519,48 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string FoxShortDesc()
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="treatAsPlural">Flag altering the behavior of the description. if null, use default. if true, treat as plural if applicable. if false, treat as singular.</param>
+		/// <returns></returns>
+		protected static string FoxShortDesc(bool treatAsPlural)
 		{
-			return "fox tail";
+			if (treatAsPlural) return "kitsune tails";
+			else return "vulpine tail";
 		}
-		protected static string FoxLongDesc(TailData tail)
+		protected static string FoxLongDesc(TailData tail, bool alternateFormat, bool pluralIfApplicable)
 		{
+			string intro = alternateFormat ? "a " : "";
 			byte count = tail.tailCount;
+			if (!pluralIfApplicable && count > 1)
+			{
+				return intro + "kitsune tail";
+			}
 			if (count > 5)
 			{
-				return "bundle of kitsune tails";
+				return intro + "bundle of kitsune tails";
 			}
 			else if (count > 4)
 			{
-				return "quintet of kitsune tails";
+				return intro + "quintet of kitsune tails";
 			}
 			else if (count > 3)
 			{
-				return "quartet of kitsune tails";
+				return intro + "quartet of kitsune tails";
 			}
 			else if (count > 2)
 			{
-				return "trio of kitsune tails";
+				return intro + "trio of kitsune tails";
 			}
 			else if (count > 1)
 			{
-				return "pair of kitsune tails";
+				return intro + "pair of kitsune tails";
 			}
 			else //if (count == 1)
 			{
-				return "fox tail";
+				return intro + "fox tail";
 			}
 		}
 
@@ -546,9 +585,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "draconic tail";
 		}
-		private static string DragonLongDesc(TailData tail)
+		private static string DragonLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "fierce draconic tail";
+			return (alternateFormat ? "a " : "") + "fierce draconic tail";
 		}
 
 		private static string DragonPlayerStr(Tail tail, PlayerBase player)
@@ -581,9 +620,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "raccoon tail";
 		}
-		private static string RaccoonLongDesc(TailData tail)
+		private static string RaccoonLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "raccoon tail";
+			return (alternateFormat ? "a " : "") + "raccoon tail";
 		}
 
 		private static string RaccoonPlayerStr(Tail tail, PlayerBase player)
@@ -603,9 +642,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "mouse tail";
 		}
-		private static string MouseLongDesc(TailData tail)
+		private static string MouseLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "bushy mouse tail";
+			return (alternateFormat ? "a " : "") + "bushy mouse tail";
 		}
 
 		private static string MousePlayerStr(Tail tail, PlayerBase player)
@@ -624,9 +663,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "ferret tail";
 		}
-		private static string FerretLongDesc(TailData tail)
+		private static string FerretLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "ferret tail";
+			return (alternateFormat ? "a " : "") + "ferret tail";
 		}
 
 		private static string FerretPlayerStr(Tail tail, PlayerBase player)
@@ -647,9 +686,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "behemoth tail";
 		}
-		private static string BehemothLongDesc(TailData tail)
+		private static string BehemothLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "behemoth tail";
+			return (alternateFormat ? "a " : "") + "behemoth tail";
 		}
 
 		private static string BehemothPlayerStr(Tail tail, PlayerBase player)
@@ -668,9 +707,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "pig tail";
 		}
-		private static string PigLongDesc(TailData tail)
+		private static string PigLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "curly pig tail";
+			return (alternateFormat ? "a " : "") + "curly pig tail";
 		}
 
 		private static string PigPlayerStr(Tail tail, PlayerBase player)
@@ -689,10 +728,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "scorpion tail";
 		}
-		private static string ScorpionLongDesc(TailData tail)
+		private static string ScorpionLongDesc(TailData tail, bool alternateFormat)
 		{
 			//add venom count flavor text.
-			return "scorpion tail";
+			return (alternateFormat ? "a " : "") + "scorpion tail";
 		}
 
 		private static string ScorpionPlayerStr(Tail tail, PlayerBase player)
@@ -711,9 +750,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "goat tail";
 		}
-		private static string GoatLongDesc(TailData tail)
+		private static string GoatLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "goat tail";
+			return (alternateFormat ? "a " : "") + "goat tail";
 		}
 
 		private static string GoatPlayerStr(Tail tail, PlayerBase player)
@@ -732,9 +771,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "rhino tail";
 		}
-		private static string RhinoLongDesc(TailData tail)
+		private static string RhinoLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "rhino tail";
+			return (alternateFormat ? "a " : "") + "rhino tail";
 		}
 
 		private static string RhinoPlayerStr(Tail tail, PlayerBase player)
@@ -753,9 +792,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "echidna tail";
 		}
-		private static string EchidnaLongDesc(TailData tail)
+		private static string EchidnaLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "echidna tail";
+			return (alternateFormat ? "a " : "") + "echidna tail";
 		}
 
 		private static string EchidnaPlayerStr(Tail tail, PlayerBase player)
@@ -775,9 +814,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "deer tail";
 		}
-		private static string DeerLongDesc(TailData tail)
+		private static string DeerLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "short deer tail";
+			return (alternateFormat ? "a " : "") + "short deer tail";
 		}
 
 		private static string DeerPlayerStr(Tail tail, PlayerBase player)
@@ -796,9 +835,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "salamander tail";
 		}
-		private static string SalamanderLongDesc(TailData tail)
+		private static string SalamanderLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "flame-tipped salamander tail";
+			return (alternateFormat ? "a " : "") + "flame-tipped salamander tail";
 		}
 
 		private static string SalamanderPlayerStr(Tail tail, PlayerBase player)
@@ -820,9 +859,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolf tail";
 		}
-		private static string WolfLongDesc(TailData tail)
+		private static string WolfLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "wolf tail";
+			return (alternateFormat ? "a " : "") + "wolf tail";
 		}
 
 		private static string WolfPlayerStr(Tail tail, PlayerBase player)
@@ -842,9 +881,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "sheep tail";
 		}
-		private static string SheepLongDesc(TailData tail)
+		private static string SheepLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "short, fluffy sheep tail";
+			return (alternateFormat ? "a " : "") + "short, fluffy sheep tail";
 		}
 
 		private static string SheepPlayerStr(Tail tail, PlayerBase player)
@@ -865,9 +904,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "imp tail";
 		}
-		private static string ImpLongDesc(TailData tail)
+		private static string ImpLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "imp tail";
+			return (alternateFormat ? "an " : "") + "imp tail";
 		}
 
 		private static string ImpPlayerStr(Tail tail, PlayerBase player)
@@ -889,9 +928,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cockatrice tail";
 		}
-		private static string CockatriceLongDesc(TailData tail)
+		private static string CockatriceLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "cockatrice tail";
+			return (alternateFormat ? "a " : "") + "cockatrice tail";
 		}
 
 		private static string CockatricePlayerStr(Tail tail, PlayerBase player)
@@ -912,9 +951,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "red-panda tail";
 		}
-		private static string RedPandaLongDesc(TailData tail)
+		private static string RedPandaLongDesc(TailData tail, bool alternateFormat)
 		{
-			return "red-panda tail";
+			return (alternateFormat ? "a " : "") + "red-panda tail";
 		}
 
 		private static string RedPandaPlayerStr(Tail tail, PlayerBase player)

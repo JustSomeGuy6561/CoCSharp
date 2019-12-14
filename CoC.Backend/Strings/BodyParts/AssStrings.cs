@@ -90,80 +90,16 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed partial class Ass
+	public sealed partial class Ass : IAss
 	{
 		public static string Name()
 		{
 			return "Ass";
 		}
 
-		public string ShortDescription()
-		{
-			if (SaveData.BackendSessionSave.data.SFW_Mode == true)
-			{
-				return Utils.RandomChoice("rear end", "backdoor");
-			}
-			else
-			{
-				return Utils.RandomChoice("ass", "anus", "pucker", "backdoor", "asshole", "butthole");
-			}
-		}
-
-		public string LongDescription()
-		{
-			return AssDesc(false);
-		}
-
-		public string FullDescription()
-		{
-			return AssDesc(true);
-		}
-
-		private string AssDesc(bool full)
-		{
-			StringBuilder sb = new StringBuilder();
-			//virgin looseness: 100%
-
-			if (full || virgin || Utils.Rand(4) == 0)
-			{
-				sb.Append(looseness.AsDescriptor());
-			}
-			if (wetness > AnalWetness.DAMP && (full || virgin || Utils.Rand(3) != 0))
-			{
-				if (sb.Length != 0)
-				{
-					sb.Append(", ");
-				}
-				sb.Append(wetness.AsDescriptor());
-			}
-			if (!everPracticedAnal)
-			{
-				if (sb.Length != 0)
-				{
-					sb.Append(" ");
-				}
-				sb.Append("true virgin");
-			}
-			else if (virgin)
-			{
-				if (sb.Length != 0)
-				{
-					sb.Append(" ");
-				}
-				sb.Append("virgin");
-			}
-			if (sb.Length != 0)
-			{
-				sb.Append(" ");
-			}
-			sb.Append(ShortDescription());
-			return sb.ToString();
-
-		}
-
 		public string PlayerString(PlayerBase player)
 		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			return Environment.NewLine + "You have " + FullDescription(true) + ", placed between your butt-cheeks where it belongs." + Environment.NewLine;
 		}
 
 		private string AssTightenedUpDueToInactivity(AnalLooseness currentLooseness)
@@ -185,11 +121,97 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed partial class Butt
+	internal interface IAss
 	{
-		public static string Name()
+		bool virgin { get; }
+		AnalLooseness looseness { get; }
+		AnalWetness wetness { get; }
+
+		bool everPracticedAnal { get; }
+
+
+	}
+
+	internal static class AssStrings
+	{
+		public static string ShortDescription()
 		{
-			return "Butt";
+			if (SaveData.BackendSessionSave.data.SFW_Mode == true)
+			{
+				return Utils.RandomChoice("rear end", "backdoor");
+			}
+			else
+			{
+				return Utils.RandomChoice("ass", "anus", "pucker", "backdoor", "asshole", "butthole");
+			}
+		}
+
+		public static string LongDescription(IAss ass, bool alternateFormat)
+		{
+			return AssDesc(ass, alternateFormat, false);
+		}
+
+		public static string FullDescription(IAss ass, bool alternateFormat)
+		{
+			return AssDesc(ass, alternateFormat, true);
+		}
+
+		private static string AssDesc(IAss ass, bool alternateFormat, bool full)
+		{
+			StringBuilder sb = new StringBuilder();
+			//virgin looseness: 100%
+
+			if (full || ass.virgin || Utils.Rand(4) == 0)
+			{
+				sb.Append(Utils.AddArticle(ass.looseness.AsDescriptor(), alternateFormat));
+			}
+			if (ass.wetness > AnalWetness.DAMP && (full || ass.virgin || Utils.Rand(3) != 0))
+			{
+				if (sb.Length != 0)
+				{
+					sb.Append(", ");
+					sb.Append(ass.wetness.AsDescriptor());
+				}
+				else
+				{
+					sb.Append(Utils.AddArticle(ass.wetness.AsDescriptor(), alternateFormat));
+				}
+			}
+			if (!ass.everPracticedAnal)
+			{
+				if (sb.Length != 0)
+				{
+					sb.Append(" ");
+				}
+				else if (alternateFormat)
+				{
+					sb.Append("a ");
+				}
+				sb.Append("true virgin");
+			}
+			else if (ass.virgin)
+			{
+				if (sb.Length != 0)
+				{
+					sb.Append(" ");
+				}
+				else if (alternateFormat)
+				{
+					sb.Append("a ");
+				}
+				sb.Append("virgin");
+			}
+			if (sb.Length != 0)
+			{
+				sb.Append(" ");
+			}
+			else if (alternateFormat)
+			{
+				sb.Append("a ");
+			}
+			sb.Append(ShortDescription());
+			return sb.ToString();
+
 		}
 	}
 }

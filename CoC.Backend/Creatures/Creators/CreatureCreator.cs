@@ -92,6 +92,8 @@ namespace CoC.Backend.Creatures
 		//Neck
 		public NeckType neckType;
 		public byte neckLength = NeckType.MIN_NECK_LENGTH; //ignored if type does not support neck length.
+		//Ovipositor
+		public OvipositorType ovipositorType;
 
 		//Tail
 		public byte? tailCount = null;

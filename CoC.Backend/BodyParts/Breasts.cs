@@ -44,7 +44,9 @@ namespace CoC.Backend.BodyParts
 		public float lactationRate => creature?.genitals.lactationRate ?? 0;
 		public LactationStatus lactationStatus => creature?.genitals.lactationStatus ?? LactationStatus.NOT_LACTATING;
 
-		private Gender currGender => creature?.genitals.gender ?? Gender.MALE;
+		public bool isOverFull => creature?.genitals.isOverfull ?? false;
+
+		internal Gender currGender => creature?.genitals.gender ?? Gender.MALE;
 		private int currentBreastRow => creature?.genitals.breastRows.IndexOf(this) ?? 0;
 
 		public int index => currentBreastRow;
@@ -315,9 +317,10 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public static BreastData GenerateAggregate(Guid creatureID, CupSize averageCup, float averageNippleLength, bool blackNipples, bool quadNipples, NippleStatus nippleType,
-			float lactationRate, LactationStatus lactationStatus)
+			float lactationRate, LactationStatus lactationStatus, bool overfull, Gender gender, float relativeLust)
 		{
-			return new BreastData(creatureID, averageCup, new NippleData(creatureID, averageNippleLength, -1, quadNipples, blackNipples, nippleType), -1, 1, lactationRate, lactationStatus);
+			return new BreastData(creatureID, averageCup, new NippleData(creatureID, averageNippleLength, -1, lactationRate, quadNipples, blackNipples, nippleType, null,
+				relativeLust), -1, 1, lactationRate, lactationStatus, overfull, gender);
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -425,7 +428,9 @@ namespace CoC.Backend.BodyParts
 
 		public readonly byte numberOfBreasts;
 
+		public readonly bool isOverFull;
 
+		internal readonly Gender gender;
 
 		internal BreastData(Breasts breasts, int currentBreastRow) : base(breasts?.creatureID ?? throw new ArgumentNullException(nameof(breasts)))
 		{
@@ -437,9 +442,14 @@ namespace CoC.Backend.BodyParts
 
 			lactationStatus = breasts.lactationStatus;
 			lactationRate = breasts.lactationRate;
+
+			isOverFull = breasts.isOverFull;
+
+			gender = breasts.currGender;
 		}
 
-		internal BreastData(Guid creatureID, CupSize cupSize, NippleData nippleData, int currentBreastRow, byte breastCount, float lactationRate, LactationStatus lactationStatus) : base(creatureID)
+		internal BreastData(Guid creatureID, CupSize cupSize, NippleData nippleData, int currentBreastRow, byte breastCount, float lactationRate, LactationStatus lactationStatus,
+			bool overfull, Gender gender) : base(creatureID)
 		{
 			this.cupSize = cupSize;
 			nipples = nippleData;
@@ -448,6 +458,10 @@ namespace CoC.Backend.BodyParts
 
 			this.lactationRate = lactationRate;
 			this.lactationStatus = lactationStatus;
+
+			isOverFull = overfull;
+
+			this.gender = gender;
 		}
 
 		internal BreastData(Breasts breasts, NippleData overrideNippleData, int currentBreastRow) : base(breasts?.creatureID ?? throw new ArgumentNullException(nameof(breasts)))
@@ -461,6 +475,10 @@ namespace CoC.Backend.BodyParts
 
 			lactationStatus = breasts.lactationStatus;
 			lactationRate = breasts.lactationRate;
+
+			isOverFull = breasts.isOverFull;
+
+			gender = breasts.currGender;
 		}
 	}
 }

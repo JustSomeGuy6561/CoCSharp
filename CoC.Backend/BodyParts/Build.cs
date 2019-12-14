@@ -3,10 +3,8 @@
 //Author: JustSomeGuy
 //4/10/2019, 4:44 AM
 using CoC.Backend.BodyParts.EventHelpers;
-using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
-using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -101,13 +99,13 @@ namespace CoC.Backend.BodyParts
 		//public SimpleDescriptor thicknessAsText => ThicknessText;
 		//public SimpleDescriptor toneAsText => ToneText;
 
-		public string ButtSizeAsAdjective() => butt.ButtAdjective();
-		public string HipSizeAsAdjective() => hips.HipAdjective();
+		public string ButtSizeAsAdjective() => butt.SizeAsAdjective();
+		public string HipSizeAsAdjective() => hips.SizeAsAdjective();
 
 		public string ButtShortDescription() => butt.ShortDescription();
-		public string HipsShortDescription() => hips.ShortDescription();
+		public string HipsShortDescription(bool plural = true) => hips.ShortDescription(plural);
 
-		public string ButtLongDescription() => butt.LongDescription(muscleTone);
+		public string ButtLongDescription(bool alternateFormat) => butt.LongDescription(alternateFormat, muscleTone);
 		public string HipsLongDescription() => hips.LongDescription(thickness);
 
 		internal Build(Guid creatureID, byte heightInches, byte? characterThickness, byte? characterTone, byte? characterHipSize, byte? characterButtSize) : base(creatureID)
@@ -142,12 +140,12 @@ namespace CoC.Backend.BodyParts
 
 		private void Hips_dataChange(object sender, SimpleDataChangeEvent<Hips, HipData> e)
 		{
-			NotifyDataChanged(new BuildData(creatureID, heightInInches, muscleTone, thickness, butt.size, e.oldValues.hipSize));
+			NotifyDataChanged(new BuildData(creatureID, heightInInches, muscleTone, thickness, butt.AsReadOnlyData(), e.oldValues));
 		}
 
 		private void Butt_dataChange(object sender, SimpleDataChangeEvent<Butt, ButtData> e)
 		{
-			NotifyDataChanged(new BuildData(creatureID, heightInInches, muscleTone, thickness, e.oldValues.size, hips.size));
+			NotifyDataChanged(new BuildData(creatureID, heightInInches, muscleTone, thickness, e.oldValues, hips.AsReadOnlyData()));
 		}
 
 		public byte GrowButt(byte amount = 1)
@@ -256,7 +254,7 @@ namespace CoC.Backend.BodyParts
 
 		public override BuildData AsReadOnlyData()
 		{
-			return new BuildData(creatureID, heightInInches, muscleTone, thickness, butt.size, hips.size);
+			return new BuildData(this);
 		}
 	}
 
@@ -265,26 +263,52 @@ namespace CoC.Backend.BodyParts
 		public readonly byte heightInInches;
 		public readonly byte muscleTone;
 		public readonly byte thickness;
-		public readonly byte buttSize;
-		public readonly byte hipSize;
+		private readonly ButtData butt;
+		public byte buttSize => butt.size;
+		private readonly HipData hips;
+		public byte hipSize => hips.size;
 
-		internal BuildData(Guid id, byte height, byte tone, byte thicc, byte butt, byte hips) : base(id)
+		public string ButtSizeAsAdjective() => butt.SizeAsAdjective();
+		public string HipSizeAsAdjective() => hips.SizeAsAdjective();
+
+		public string ButtShortDescription() => butt.ShortDescription();
+		public string HipsShortDescription(bool plural = true) => hips.ShortDescription(plural);
+
+		public string ButtLongDescription(bool alternateFormat) => butt.LongDescription(alternateFormat, muscleTone);
+		public string HipsLongDescription() => hips.LongDescription(thickness);
+
+		internal BuildData(Build build) : base(build?.creatureID ?? throw new ArgumentNullException(nameof(build)))
+		{
+
+		}
+
+		public BuildData(Guid id, byte height, byte tone, byte thicc, ButtData butt, HipData hips) : base(id)
 		{
 			heightInInches = height;
 			muscleTone = tone;
 			thickness = thicc;
-			buttSize = butt;
-			hipSize = hips;
+			this.butt = butt ?? throw new ArgumentNullException(nameof(butt));
+			this.hips = hips ?? throw new ArgumentNullException(nameof(hips));
 
 		}
 
-		internal BuildData(Guid id) : base(id)
+		public BuildData(Guid id, byte height, byte tone, byte thicc, byte butt, byte hips, BodyType bodyType, LowerBodyType lowerBodyType) : base(id)
+		{
+			heightInInches = height;
+			muscleTone = tone;
+			thickness = thicc;
+			this.butt = new ButtData(id, butt);
+			this.hips = new HipData(id, hips, bodyType, lowerBodyType);
+		}
+
+
+		public BuildData(Guid id) : base(id)
 		{
 			heightInInches = Build.DEFAULT_HEIGHT;
 			muscleTone = Build.THICKNESS_NORMAL;
 			thickness = Build.TONE_SOFT;
-			buttSize = Butt.AVERAGE;
-			hipSize = Hips.AVERAGE;
+			butt = new ButtData(id, Butt.AVERAGE);
+			hips = new HipData(id, Hips.AVERAGE);
 		}
 	}
 }

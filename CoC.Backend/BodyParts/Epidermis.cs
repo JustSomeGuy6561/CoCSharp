@@ -33,6 +33,7 @@ namespace CoC.Backend.BodyParts
 	//and whatever else it might require)
 
 	//feel free to add more of these. i just did these because they were there, and i didn't want to use a string.
+	//note for implementers: nondescript is essentially clear/unblemished/whatever. it won't add any flavor text. so, for example, the old clear body lotion should use it.
 	public enum SkinTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, SEXY, ROUGH, THICK, FRECKLED, SLIMY }
 	public enum FurTexture { NONDESCRIPT, SHINY, SOFT, SMOOTH, FLUFFY, MANGEY, THICK }
 
@@ -486,6 +487,8 @@ namespace CoC.Backend.BodyParts
 
 		public string LongDescription() => EpidermisType.LongDescription(this);
 
+		public string AdjectiveDescription(bool withArticle = false) => type.AdjectiveDescription(withArticle);
+
 		public string AdjectiveWithColor(bool withArticle = false) => EpidermisType.AdjectiveWithColor(this, withArticle);
 
 		public string AdjectiveWithTexture(bool withArticle = false) => EpidermisType.AdjectiveWithTexture(this, withArticle);
@@ -561,7 +564,7 @@ namespace CoC.Backend.BodyParts
 		/// <param name="index"></param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if index is out of range</exception>
-		/// <exception cref="ArgumentException">Thrown if index points to a non-existant object</exception>
+		/// <exception cref="ArgumentException">Thrown if index points to a non-existent object</exception>
 		internal static EpidermisType Deserialize(int index)
 		{
 			if (index < 0 || index >= epidermi.Count)
@@ -842,6 +845,8 @@ namespace CoC.Backend.BodyParts
 		public string DescriptionWithoutType(bool withArticle = false) => EpidermisType.DescriptionWithoutType(this, withArticle);
 
 		public string LongDescription() => EpidermisType.LongDescription(this);
+
+		public string AdjectiveDescription(bool withArticle = false) => type.AdjectiveDescription(withArticle);
 
 		public string AdjectiveWithColor(bool withArticle = false) => EpidermisType.AdjectiveWithColor(this, withArticle);
 

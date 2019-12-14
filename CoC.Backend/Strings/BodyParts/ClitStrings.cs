@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Settings.Gameplay;
 using CoC.Backend.Tools;
 using System;
 
@@ -37,13 +38,11 @@ namespace CoC.Backend.BodyParts
 			return "Clit";
 		}
 
-		public string ShortDescription() => ClitData.ShortDesc(length);
-		public string LongDescription() => ClitData.Desc(this, false);
-		public string FullDescription() => ClitData.Desc(this, true);
-
 	}
 	public partial class ClitData : IClit
 	{
+
+
 		float IClit.length => length;
 
 		bool IClit.clitCockActive => clitCockActive;
@@ -51,24 +50,23 @@ namespace CoC.Backend.BodyParts
 		ReadOnlyPiercing<ClitPiercings> IClit.piercings => clitPiercings;
 
 		Guid IClit.creatureID => CreatureID;
+	}
 
-		public static string ClitNouns()
+	internal static class ClitStrings
+	{
+		public static string ClitNouns(bool withArticle = false)
 		{
-			if (CoC.Backend.SaveData.BackendSessionSave.data.SFW_Mode) return Utils.RandomChoice("bump", "button");
-			else return Utils.RandomChoice("clit", "clitty", "button", "pleasure-buzzer", "clit", "clitty", "button", "clit", "clit", "button");
+			if (SFW_Settings.SFW_Enabled) return (withArticle ? "a " : "") + Utils.RandomChoice("bump", "button");
+			else return (withArticle ? "a " : "") + Utils.RandomChoice("clit", "clitty", "button", "pleasure-buzzer", "clit", "clitty", "button", "clit", "clit", "button");
 		}
-
-		public string ShortDescription() => ShortDesc(length);
-		public string LongDescription() => Desc(this, false);
-		public string FullDescription() => Desc(this, true);
 
 		internal static string ShortDesc(float length)
 		{
 			return Measurement.ToNearestHalfSmallUnit(length, false, true, false) + " clit";
 		}
 
-		//some of these get an oxford comma on full description, some don't. Sue me. 
-		internal static string Desc(IClit clit, bool full)
+		//some of these get an oxford comma on full description, some don't. Sue me.
+		internal static string Desc(IClit clit, bool alternateFormat, bool full)
 		{
 			float relativeLibido, relativeLust;
 
@@ -84,12 +82,17 @@ namespace CoC.Backend.BodyParts
 			}
 
 			string size = "";
+			//this is not a pretty solution, but i'm just going to cheat it anyway. basically, i'm going to check and see if article is null, and if it is, replace it.
+			//by setting it to empty when we don't need it, it'll never be null and thus always skipped.
+			string article = alternateFormat ? null : "";
+
 			//Length Adjective - 50% chance
 			if (Utils.RandBool() || full)
 			{
 				//small clits!
 				if (clit.length <= .5)
 				{
+					if (article is null) article = "a ";
 					size = Utils.RandomChoice("tiny", "little", "petite", "diminutive", "miniature ");
 				}
 				//"average". no comment
@@ -100,12 +103,15 @@ namespace CoC.Backend.BodyParts
 				//Biggies!
 				else if (clit.length < 4)
 				{
+					if (article is null) article = "a ";
 					size = Utils.RandomChoice("large", "large", "substantial", "substantial", "considerable ");
 				}
 				//'Uge
 				else //if (clit.length >= 4)
 				{
 					size = Utils.RandomChoice("monster", "tremendous", "colossal", "enormous", "bulky ");
+					if (size == "enormous" && article is null) article = "an ";
+					else if (article is null) article = "a";
 				}
 			}
 
@@ -130,23 +136,32 @@ namespace CoC.Backend.BodyParts
 				//Horny descriptors - 75% chance
 				if (relativeLust > 70 && Utils.Rand(4) < 3)
 				{
-					adjective = separator + Utils.RandomChoice("throbbing", "pulsating", "hard") ;
+					if (article is null) article = "a ";
+					adjective = separator + Utils.RandomChoice("throbbing", "pulsating", "hard");
 				}
 				//High libido - always use if no other descript
 				else if (relativeLibido > 50 && Utils.Rand(2) == 0)
 				{
-					adjective = separator + Utils.RandomChoice("insatiable", "greedy", "demanding", "rapacious") ;
+					if (Utils.Rand(4) == 0)
+					{
+						adjective = "insatiable";
+						if (article is null) article = "an ";
+					}
+					else
+					{
+						adjective = separator + Utils.RandomChoice("greedy", "demanding", "rapacious");
+						if (article is null) article = "a ";
+					}
 				}
 				else if (clit.clitCockActive && Utils.RandBool())
 				{
-					adjective = separator + Utils.RandomChoice("mutated", "corrupted") ;
+					adjective = separator + Utils.RandomChoice("mutated", "corrupted");
+					if (article is null) article = "a ";
 				}
-
-
 
 				if (!full)
 				{
-					return size + adjective + " " + ClitNouns();
+					return article + size + adjective + " " + ClitNouns();
 				}
 				else if (clit.clitCockActive)
 				{
@@ -161,12 +176,13 @@ namespace CoC.Backend.BodyParts
 			//100% display rate if pierced and we've fallen through to this point, so we dont need to check for full.
 			if (clit.piercings.isPierced)
 			{
-				return size + adjective + "pierced " + ClitNouns();
+				if (article is null) article = "a ";
+				return article + size + adjective + "pierced " + ClitNouns();
 			}
 
 
-			//fall through. will rarely hit this, if ever. 
-			return ClitNouns();
+			//fall through. will rarely hit this, if ever.
+			return ClitNouns(article is null);
 		}
 	}
 }

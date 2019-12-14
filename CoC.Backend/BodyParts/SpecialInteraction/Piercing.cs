@@ -435,6 +435,11 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			return jewelryAt;
 		}
 
+		public PiercingJewelry this[Location location]
+		{
+			get => jewelryEquipped[location];
+		}
+
 		public ReadOnlyPiercing(Dictionary<Location, bool> piercedAt, Dictionary<Location, PiercingJewelry> jewelryEquipped)
 		{
 			this.piercedAt = new Dictionary<Location, bool>(piercedAt);

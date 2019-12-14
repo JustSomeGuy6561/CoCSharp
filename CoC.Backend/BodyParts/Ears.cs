@@ -89,6 +89,15 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+
+		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(AsReadOnlyData(), alternateForm, plural);
+
+		public string LongDescriptionPrimary(bool plural) => type.LongDescriptionPrimary(AsReadOnlyData(), plural);
+
+		public string LongDescriptionAlternate(bool plural) => type.LongDescriptionAlternate(AsReadOnlyData(), plural);
+
+
 		private bool PiercingLocationUnlocked(EarPiercings piercingLocation)
 		{
 			return true;
@@ -134,10 +143,24 @@ namespace CoC.Backend.BodyParts
 
 		public static EarType defaultValue => HUMAN;
 
+		private readonly SimplePluralDescriptor shortPluralDesc;
+		private readonly LongPluralDescriptor<EarData> longPluralDesc;
 
-		protected EarType(SimpleDescriptor shortDesc, DescriptorWithArg<EarData> longDesc, PlayerBodyPartDelegate<Ears> playerDesc,
-			ChangeType<EarData> transform, RestoreType<EarData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+		public string ShortDescription(bool plural) => shortPluralDesc(plural);
+
+		public string LongDescription(EarData data, bool alternateForm, bool plural) => longPluralDesc(data, alternateForm, plural);
+
+		public string LongDescriptionPrimary(EarData data, bool plural) => longPluralDesc(data, false, plural);
+
+		public string LongDescriptionAlternate(EarData data, bool plural) => longPluralDesc(data, true, plural);
+
+
+		protected EarType(SimplePluralDescriptor shortDesc, LongPluralDescriptor<EarData> longDesc, PlayerBodyPartDelegate<Ears> playerDesc,
+			ChangeType<EarData> transform, RestoreType<EarData> restore) : base(PluralHelper(shortDesc), LongPluralHelper(longDesc), playerDesc, transform, restore)
 		{
+			shortPluralDesc = shortDesc;
+			longPluralDesc = longDesc;
+
 			_index = indexMaker++;
 			ears.AddAt(this, index);
 		}
@@ -162,7 +185,7 @@ namespace CoC.Backend.BodyParts
 				}
 				else
 				{
-					throw new System.ArgumentException("index for arm type points to an object that does not exist. this may be due to obsolete code");
+					throw new System.ArgumentException("index for ear type points to an object that does not exist. this may be due to obsolete code");
 				}
 			}
 		}
@@ -182,29 +205,29 @@ namespace CoC.Backend.BodyParts
 
 		public override int index => _index;
 
-		public static readonly EarType HUMAN = new EarType(HumanDescStr, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly EarType HORSE = new EarType(HorseDescStr, HorseLongDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
-		public static readonly EarType DOG = new EarType(DogDescStr, DogLongDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
-		public static readonly EarType COW = new EarType(CowDescStr, CowLongDesc, CowPlayerStr, CowTransformStr, CowRestoreStr);
-		public static readonly EarType ELFIN = new EarType(ElfinDescStr, ElfinLongDesc, ElfinPlayerStr, ElfinTransformStr, ElfinRestoreStr);
-		public static readonly EarType CAT = new EarType(CatDescStr, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
-		public static readonly EarType LIZARD = new EarType(LizardDescStr, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly EarType BUNNY = new EarType(BunnyDescStr, BunnyLongDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
-		public static readonly EarType KANGAROO = new EarType(KangarooDescStr, KangarooLongDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
-		public static readonly EarType FOX = new EarType(FoxDescStr, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
-		public static readonly EarType DRAGON = new EarType(DragonDescStr, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly EarType RACCOON = new EarType(RaccoonDescStr, RaccoonLongDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
-		public static readonly EarType MOUSE = new EarType(MouseDescStr, MouseLongDesc, MousePlayerStr, MouseTransformStr, MouseRestoreStr);
-		public static readonly FurEarType FERRET = new FurEarType(DefaultValueHelpers.defaultFerretUnderFur, FerretDescStr, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
-		public static readonly EarType PIG = new EarType(PigDescStr, PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr);
-		public static readonly EarType RHINO = new EarType(RhinoDescStr, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
-		public static readonly EarType ECHIDNA = new EarType(EchidnaDescStr, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
-		public static readonly EarType DEER = new EarType(DeerDescStr, DeerLongDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
-		public static readonly EarType WOLF = new EarType(WolfDescStr, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static readonly EarType SHEEP = new EarType(SheepDescStr, SheepLongDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr);
-		public static readonly EarType IMP = new EarType(ImpDescStr, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
-		public static readonly EarType COCKATRICE = new EarType(CockatriceDescStr, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
-		public static readonly EarType RED_PANDA = new EarType(RedPandaDescStr, RedPandaLongDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr);
+		public static readonly EarType HUMAN = new EarType(HumanDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
+		public static readonly EarType HORSE = new EarType(HorseDesc, HorseLongDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
+		public static readonly EarType DOG = new EarType(DogDesc, DogLongDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);
+		public static readonly EarType COW = new EarType(CowDesc, CowLongDesc, CowPlayerStr, CowTransformStr, CowRestoreStr);
+		public static readonly EarType ELFIN = new EarType(ElfinDesc, ElfinLongDesc, ElfinPlayerStr, ElfinTransformStr, ElfinRestoreStr);
+		public static readonly EarType CAT = new EarType(CatDesc, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static readonly EarType LIZARD = new EarType(LizardDesc, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static readonly EarType BUNNY = new EarType(BunnyDesc, BunnyLongDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
+		public static readonly EarType KANGAROO = new EarType(KangarooDesc, KangarooLongDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
+		public static readonly EarType FOX = new EarType(FoxDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
+		public static readonly EarType DRAGON = new EarType(DragonDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static readonly EarType RACCOON = new EarType(RaccoonDesc, RaccoonLongDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
+		public static readonly EarType MOUSE = new EarType(MouseDesc, MouseLongDesc, MousePlayerStr, MouseTransformStr, MouseRestoreStr);
+		public static readonly FurEarType FERRET = new FurEarType(DefaultValueHelpers.defaultFerretUnderFur, FerretDesc, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
+		public static readonly EarType PIG = new EarType(PigDesc, PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr);
+		public static readonly EarType RHINO = new EarType(RhinoDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
+		public static readonly EarType ECHIDNA = new EarType(EchidnaDesc, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
+		public static readonly EarType DEER = new EarType(DeerDesc, DeerLongDesc, DeerPlayerStr, DeerTransformStr, DeerRestoreStr);
+		public static readonly EarType WOLF = new EarType(WolfDesc, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static readonly EarType SHEEP = new EarType(SheepDesc, SheepLongDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr);
+		public static readonly EarType IMP = new EarType(ImpDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
+		public static readonly EarType COCKATRICE = new EarType(CockatriceDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static readonly EarType RED_PANDA = new EarType(RedPandaDesc, RedPandaLongDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr);
 
 
 	}
@@ -212,7 +235,7 @@ namespace CoC.Backend.BodyParts
 	public class FurEarType : EarType
 	{
 		public readonly FurColor defaultFur;
-		public FurEarType(FurColor defaultColor, SimpleDescriptor shortDesc, DescriptorWithArg<EarData> longDesc, PlayerBodyPartDelegate<Ears> playerDesc,
+		public FurEarType(FurColor defaultColor, SimplePluralDescriptor shortDesc, LongPluralDescriptor<EarData> longDesc, PlayerBodyPartDelegate<Ears> playerDesc,
 			ChangeType<EarData> transform, RestoreType<EarData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			defaultFur = defaultColor;
@@ -235,6 +258,16 @@ namespace CoC.Backend.BodyParts
 		public readonly ReadOnlyFurColor earFurColor;
 
 		public readonly ReadOnlyPiercing<EarPiercings> earPiercings;
+
+
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+
+		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(this, alternateForm, plural);
+
+		public string LongDescriptionPrimary(bool plural) => type.LongDescriptionPrimary(this, plural);
+
+		public string LongDescriptionAlternate(bool plural) => type.LongDescriptionAlternate(this, plural);
+
 
 		public override EarData AsCurrentData()
 		{

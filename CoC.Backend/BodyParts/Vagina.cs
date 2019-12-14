@@ -253,7 +253,12 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-		public string FullDescription() => type.FullDescription(AsReadOnlyData());
+		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(AsReadOnlyData());
+
+		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(AsReadOnlyData());
+
+		public string FullDescription(bool alternateForm) => type.FullDescription(AsReadOnlyData(), alternateForm);
+
 
 		public override VaginaData AsReadOnlyData()
 		{
@@ -262,7 +267,33 @@ namespace CoC.Backend.BodyParts
 
 		#region Update
 
-		//default update is fine.
+		internal override bool UpdateType(VaginaType newType)
+		{
+			if (newType is null || newType == type)
+			{
+				return false;
+			}
+
+			var oldValue = type;
+			if (newType.orgasmOnTransform)
+			{
+				if (CreatureStore.TryGetCreature(creatureID, out Creature creature))
+				{
+					creature.HaveGenericVaginalOrgasm(vaginaIndex, false, true);
+				}
+				else
+				{
+					OrgasmGeneric(false);
+				}
+			}
+			type = newType;
+
+			NotifyTypeChanged(oldValue);
+
+
+			return true;
+		}
+
 		#endregion
 		#region Unique Functions
 
@@ -571,7 +602,7 @@ namespace CoC.Backend.BodyParts
 			{
 				vaginaTightenTimer += hoursPassed;
 				var oldLooseness = looseness;
-				while (vaginaTightenTimer >= timerAmount && looseness> minLooseness && looseness > VaginalLooseness.NORMAL)
+				while (vaginaTightenTimer >= timerAmount && looseness > minLooseness && looseness > VaginalLooseness.NORMAL)
 				{
 					vaginaTightenTimer -= timerAmount;
 					looseness--;
@@ -720,6 +751,10 @@ namespace CoC.Backend.BodyParts
 
 	public sealed partial class VaginaType : SaveableBehavior<VaginaType, Vagina, VaginaData>
 	{
+		//in this game, you can have two vaginas, so it technically needs to be plural. BUT, it makes no sense to have long/full description here do that
+		//because they will generally have different stats (and even if they are the same that's a bit misleading). So we dont. regardless, genitals handles the multiple
+		//vaginas text; so long as we provide a plural short description (for matching plural types - that actually makes sense), we don't really need to worry here.
+
 		private static int indexMaker = 0;
 		private static readonly List<VaginaType> types = new List<VaginaType>();
 		public static readonly ReadOnlyCollection<VaginaType> availableTypes = new ReadOnlyCollection<VaginaType>(types);
@@ -727,19 +762,39 @@ namespace CoC.Backend.BodyParts
 
 		public static VaginaType defaultValue => HUMAN;
 
-		private readonly DescriptorWithArg<VaginaData> fullDescFn;
+		private readonly SimplePluralDescriptor shortPluralDesc;
+		private readonly LongDescriptor<VaginaData> fullStr;
 
-		public string FullDescription(VaginaData vagina) => fullDescFn(vagina);
+		public readonly bool orgasmOnTransform;
 
-		private VaginaType(int capacityBonus,
-			SimpleDescriptor shortDesc, DescriptorWithArg<VaginaData> longDesc, DescriptorWithArg<VaginaData> fullDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
-			ChangeType<VaginaData> transform, RestoreType<VaginaData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+		//only should be used when actually dealing with 2. does not check if the creature has 2. Not aliased in the data or source classes because that doesn't make sense.
+		public string ShortDescription(bool plural) => shortPluralDesc(plural);
+
+		public string FullDescriptionPrimary(VaginaData data)
+		{
+			return FullDescription(data, false);
+		}
+
+		public string FullDescriptionAlternate(VaginaData data)
+		{
+			return FullDescription(data, true);
+		}
+
+		public string FullDescription(VaginaData vagina, bool alternateForm) => fullStr(vagina, alternateForm);
+
+		private VaginaType(int capacityBonus, bool orgasmWhenTransforming,
+			SimplePluralDescriptor shortDesc, LongDescriptor<VaginaData> longDesc, LongDescriptor<VaginaData> fullDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
+			ChangeType<VaginaData> transform, RestoreType<VaginaData> restore) : base(PluralHelper(shortDesc, false), longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			typeCapacityBonus = capacityBonus;
-			fullDescFn = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
+
+			shortPluralDesc = shortDesc;
+			fullStr = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
+
 			types.AddAt(this, _index);
 		}
+
 
 		internal static bool Validate(ref VaginaType vaginaType, bool correctInvalidData)
 		{
@@ -757,9 +812,10 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public static readonly VaginaType HUMAN = new VaginaType(0, VagHumanDesc, VagHumanLongDesc, VagHumanFullDesc, VagHumanPlayerStr, (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
-		public static readonly VaginaType EQUINE = new VaginaType(0, VagEquineDesc, VagEquineLongDesc, VagEquineFullDesc, VagEquinePlayerStr, VagEquineTransformStr, VagEquineRestoreStr);
-		public static readonly VaginaType SAND_TRAP = new VaginaType(0, VagSandTrapDesc, VagSandTrapLongDesc, VagSandTrapFullDesc, VagSandTrapPlayerStr, VagSandTrapTransformStr, VagSandTrapRestoreStr);
+		public static readonly VaginaType HUMAN = new VaginaType(0, false, HumanShortDesc, HumanLongDesc, HumanFullDesc, HumanPlayerStr, (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
+		//defined, but never originally used in code (afaik, could be somewhere but i missed it because spaghetti). will be used in new code. feel free to update/fix any of the strings.
+		public static readonly VaginaType EQUINE = new VaginaType(10, true, EquineDesc, EquineLongDesc, EquineFullDesc, EquinePlayerStr, EquineTransformStr, EquineRestoreStr);
+		public static readonly VaginaType SAND_TRAP = new VaginaType(0, false, SandTrapDesc, SandTrapLongDesc, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr);
 
 	}
 
@@ -781,6 +837,12 @@ namespace CoC.Backend.BodyParts
 		{
 			return this;
 		}
+
+		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(this);
+
+		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(this);
+
+		public string FullDescription(bool alternateForm) => type.FullDescription(this, alternateForm);
 
 		public VaginaData(Vagina source, int currIndex) : base(GetID(source), GetBehavior(source))
 		{

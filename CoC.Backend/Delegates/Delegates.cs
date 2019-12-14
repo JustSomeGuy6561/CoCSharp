@@ -4,12 +4,10 @@
 //12/29/2018, 11:03 AM
 
 using CoC.Backend.Areas;
+using CoC.Backend.Attacks;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Items;
-using CoC.Backend.Attacks;
 using System;
 
 namespace CoC.Backend
@@ -17,13 +15,26 @@ namespace CoC.Backend
 
 	public delegate string SimpleDescriptor();
 
+	public delegate string DescriptorWithMetaData(out bool isPlural);
+	//short description delegate where the short description can be plural. by default, it will be plural if the type or behavior has more than one member (or none, see below)
+	//or singular if it does not. if the flag is set to false, it will return a singular format, regardless of whether that type or behavior has more than one member. Note that
+	//the edge case where this flag is set to false when the behavior or type has no members is not defined.
+	public delegate string SimplePluralDescriptor(bool pluralIfApplicable = true);
+
 	public delegate string DescriptorWithArg<T>(T arg);
 
-	//considering replacing above with these for body parts, allowing plurals to be handled cleanly.
-	public delegate string ShortDescription(bool plural = true);
 
-	public delegate string LongDescription<T>(T data, bool plural = true);
 
+	//standard long description delegate.
+	public delegate string LongDescriptor<T>(T arg, bool alternateForm = false);
+
+	//long descripton delegate when the long description can be plural. by default, it will be plural if the type or behavior has more than one member (or none, as english treats
+	//no members as plural as opposed to one member); otherwise it will be singular). However, there may be some instance(s) where you only want one member and thus don't want it to be
+	//plural. this delegate allows that. Note that what happens when plural if applicable is false and the type or behavior has no members is not defined.
+
+	//if a type can be singular or plural (for example, some types of horns only allow 1 horn, while others allow none or multiple horns), and you use this to manually parse complex edge
+	//cases, make sure you check to see if there are more than one members or if it's just one (or none) and react accordingly.
+	public delegate string LongPluralDescriptor<T>(T arg, bool alternateForm = false, bool pluralIfApplicable = true);
 
 
 	public delegate string AdjectiveDescriptor(bool withArticle);

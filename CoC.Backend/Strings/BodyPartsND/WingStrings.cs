@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019,A 10:27 PM
+using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -21,30 +22,49 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Wings 2";
 		}
-		private static string YourBoneDesc()
+		private static string YourBoneDesc(out bool isPlural)
 		{
+			isPlural = true;
 			return " your wings' bones";
 		}
 		private static string WingText()
 		{
 			return "Wings";
 		}
-		private static string WingDesc(bool isLotion)
+		private static string WingDesc(bool isLotion, out bool isPlural)
 		{
 			if (isLotion)
 			{
+				isPlural = true;
 				return " your wings' membranes";
 			}
 			else
 			{
+				isPlural = true;
 				return " your wings";
 			}
 		}
-		private static string NoneDesc()
+
+		private string WingsDyeText(HairFurColors color)
 		{
 			return "";
 		}
-		private static string NoneLongDesc(WingData wings)
+
+		private string WingsToneText(Wings wings, byte index)
+		{
+			return "";
+		}
+
+		protected string TonablePostToneText(Wings wings, byte index)
+		{
+			return $"{wings.wingTone.AsString()} membranes and {wings.wingBoneTone.AsString()} bones";
+		}
+
+		private static string NoneDesc(bool plural)
+		{
+			return "";
+		}
+		private static string NoneLongDesc(WingData wings, bool alternateFormat, bool plural)
 		{
 			return "";
 		}
@@ -60,20 +80,36 @@ namespace CoC.Backend.BodyParts
 		{
 			return GlobalStrings.RevertAsDefault(previousWingData, player);
 		}
-		private static string BeeLikeDesc()
+		private static string BeeLikeDesc(bool? isLarge, bool plural = true)
 		{
-			return "bee-like wings";
+			string size = "";
+			if (isLarge is bool large)
+			{
+				size = large ? "large, " : "tiny, ";
+			}
+			return size + "bee-like wing" + (plural ? "s" : "");
 		}
 
-		private static string BeeLikeSizeDesc(bool isLarge)
+		private static string BeeLikeLongDesc(WingData wings, bool alternateFormat, bool plural)
 		{
-			string sizeStr = isLarge ? "large" : "tiny";
-			return sizeStr + ", bee-like wings";
-		}
-
-		private static string BeeLikeLongDesc(WingData wings)
-		{
-			return "a pair of " + BeeLikeSizeDesc(wings.isLarge);
+			string intro = "";
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of ";
+			}
+			else if (alternateFormat)
+			{
+				intro = "a ";
+			}
+			else if (plural)
+			{
+				intro = "pair of ";
+			}
+			else
+			{
+				intro = "";
+			}
+			return intro + BeeLikeDesc(wings.isLarge);
 		}
 		private static string BeeLikePlayerStr(Wings wings, PlayerBase player)
 		{
@@ -95,30 +131,66 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatheredDesc()
+
+		protected string FeatheredWingsPostDyeText(HairFurColors color)
 		{
-			return "feathered wings";
+			return $"{color.AsString()}-tinted feathers on your wings";
 		}
-		private static string FeatheredSizeDesc(bool isLarge)
+
+		private static string FeatheredDesc(bool? isLarge, bool plural)
 		{
-			if (isLarge)
+			if (isLarge is bool large)
 			{
-				return "large feathered wings";
+				return large ? "large feathered wing" + (plural ? "s" : "") : "feathered harpy wing" + (plural ? "s" : "");
 			}
 			else
 			{
-				return "feathered harpy wings";
+				return "feathered wing" + (plural ? "s" : "");
 			}
 		}
-		private static string FeatheredLongDesc(WingData wings)
+		private static string FeatheredLongDesc(WingData wings, bool alternateFormat, bool plural)
 		{
+			string intro;
 			if (wings.isLarge)
 			{
-				return "a pair of large wings covered in " + wings.featherColor.AsString() + " feathers";
+				if (alternateFormat && plural)
+				{
+					intro = "a pair of ";
+				}
+				else if (alternateFormat)
+				{
+					intro = "a ";
+				}
+				else if (plural)
+				{
+					intro = "pair of ";
+				}
+				else
+				{
+					intro = "";
+				}
+				return intro + Utils.Pluralize("large wing", plural) + " covered in " + wings.featherColor.AsString() + " feathers";
+
 			}
 			else
 			{
-				return "a pair of " + wings.featherColor.AsString() + "harpy wings";
+				if (alternateFormat && plural)
+				{
+					intro = "a pair of " + wings.featherColor.AsString();
+				}
+				else if (alternateFormat)
+				{
+					intro = Utils.AddArticle(wings.featherColor.AsString());
+				}
+				else if (plural)
+				{
+					intro = "pair of " + wings.featherColor.AsString();
+				}
+				else
+				{
+					intro = wings.featherColor.AsString();
+				}
+				return intro + Utils.Pluralize("harpy wing", plural);
 			}
 		}
 		private static string FeatheredPlayerStr(Wings wings, PlayerBase player)
@@ -134,22 +206,39 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BatLikeDesc()
+		private static string BatLikeDesc(bool? isLarge, bool plural)
 		{
-			return "demonic, bat-like wings";
+			string sizeStr = "";
+			if (isLarge is bool large)
+			{
+				sizeStr = large ? "large, " : "tiny, ";
+			}
+
+			return sizeStr + "demonic, bat-like wing" + (plural ? "s" : "");
 		}
-		private static string BatLikeSizeDesc(bool isLarge)
+
+		private static string BatLikeLongDesc(WingData wings, bool alternateFormat, bool plural)
 		{
-			string sizeStr = isLarge ? "large, " : "tiny, ";
-			return sizeStr + BatLikeDesc();
-		}
-		private static string BatLikeLongDesc(WingData wings)
-		{
+			//large and cute both use "a ", so i can cheat.
+			string intro = "";
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of ";
+			}
+			else if (alternateFormat)
+			{
+				intro = "a ";
+			}
+			else if (plural)
+			{
+				intro = "pair of ";
+			}
+
 			if (wings.isLarge)
 			{
-				return "a pair of large demonic wings, which appear similar to those of a bat.";
+				return intro + "large demonic wings, which appear similar to those of a bat.";
 			}
-			return "a pair of cute, tiny, demonic bat-like wings.";
+			return intro + "cute, tiny, demonic bat-like wings.";
 		}
 		private static string BatLikePlayerStr(Wings wings, PlayerBase player)
 		{
@@ -170,24 +259,43 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DraconicDesc()
+		private static string DraconicDesc(bool? isLarge, bool plural = true)
 		{
-			return "draconic wings";
-		}
-		private static string DraconicSizeDesc(bool isLarge)
-		{
-			if (isLarge)
+			string wingStr = plural ? "wings" : "wing";
+			if (isLarge is null)
 			{
-				return "large, draconic wings";
+				return "draconic " + wingStr;
+			}
+			else if (isLarge == true)
+			{
+				return "large draconic " + wingStr;
 			}
 			else
 			{
 				return "small, vestigial wings";
 			}
 		}
-		private static string DraconicLongDesc(WingData wings)
+
+		private static string DraconicLongDesc(WingData wings, bool alternateFormat, bool plural)
 		{
-			return "a pair of " + wings.wingTone.AsString() + " " + DraconicSizeDesc(wings.isLarge);
+			string intro = "";
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of " + wings.wingTone.AsString();
+			}
+			else if (alternateFormat)
+			{
+				intro = Utils.AddArticle(wings.wingTone.AsString());
+			}
+			else if (plural)
+			{
+				intro = "pair of " + wings.wingTone.AsString();
+			}
+			else
+			{
+				intro = wings.wingTone.AsString();
+			}
+			return intro + " " + DraconicDesc(wings.isLarge, plural);
 		}
 		private static string DraconicPlayerStr(Wings wings, PlayerBase player)
 		{
@@ -211,22 +319,36 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		//not (normally) available to the player. Still need the short and long for npcs/enemies, but whatever.
-		private static string FaerieDesc()
+		private static string FaerieDesc(bool? isLarge, bool plural = true)
 		{
-			return "faerie-like wings";
+			string size = isLarge is bool large ? (large ? "large " : "small ") : "";
+			return size + "faerie-like wing" + (plural ? "s" : "");
 		}
-		private static string FaerieSizeDesc(bool isLarge)
+
+		private static string FaerieLongDesc(WingData wings, bool alternateFormat, bool plural)
 		{
-			return (isLarge ? "large " : "small ") + FaerieDesc();
-		}
-		private static string FaerieLongDesc(WingData wings)
-		{
-			return "a pair of " + FaerieSizeDesc(wings.isLarge);
+			string intro = "";
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of ";
+			}
+			else if (alternateFormat)
+			{
+				intro = "a ";
+			}
+			else if (plural)
+			{
+				intro = "pair of ";
+			}
+			else
+			{
+				intro = "";
+			}
+			return intro + FaerieDesc(wings.isLarge, plural);
 		}
 		private static string FaeriePlayerStr(Wings wings, PlayerBase player)
 		{
-			return "You have somehow obtained " + FaerieLongDesc(wings.AsReadOnlyData()) + ". Congratulations! You should never see this, because this is just for NPCs and monsters! "
+			return "You have somehow obtained " + wings.LongDescription(true) + ". Congratulations! You should never see this, because this is just for NPCs and monsters! "
 					+ "Have a cookie. Also, report this to a dev, so they can either fix this if it was caused by a bug, or update this text if added intentionally.";
 		}
 		private static string FaerieTransformStr(WingData previousWingData, PlayerBase player)
@@ -239,17 +361,31 @@ namespace CoC.Backend.BodyParts
 			return "As if to remedy this strange case of you (a player) having faerie wings, they have decided to cease to exist, leaving you without wings. Still, " +
 				"this should never happen unless someone changed the content and didn't update this. Regardless, please report this to a dev.";
 		}
-		private static string DragonflyDesc()
+		//always large.
+		private static string DragonflyDesc(bool plural = true)
 		{
-			return "dragonfly wings";
+			return "giant dragonfly wing" + (plural ? "s" : "");
 		}
-		private static string DragonflySizeDesc(bool isLarge)
+		private static string DragonflyLongDesc(WingData wings, bool alternateFormat, bool plural)
 		{
-			return "giant dragonfly wings";
-		}
-		private static string DragonflyLongDesc(WingData wings)
-		{
-			return "A pair of " + DragonflySizeDesc(true);
+			string intro = "";
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of ";
+			}
+			else if (alternateFormat)
+			{
+				intro = "a ";
+			}
+			else if (plural)
+			{
+				intro = "pair of ";
+			}
+			else
+			{
+				intro = "";
+			}
+			return intro + DragonflyDesc();
 		}
 		private static string DragonflyPlayerStr(Wings wings, PlayerBase player)
 		{
@@ -263,17 +399,31 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpDesc()
+		private static string ImpDesc(bool? isLarge, bool plural = true)
 		{
-			return "imp-like wings";
+			string size = isLarge is bool large ? (large ? "large " : "small ") : "";
+			return size + "imp-like wing" + (plural ? "s" : "");
 		}
-		private static string ImpSizeDesc(bool isLarge)
+		private static string ImpLongDesc(WingData wings, bool alternateFormat, bool plural)
 		{
-			return (isLarge ? "large " : "small ") + ImpDesc();
-		}
-		private static string ImpLongDesc(WingData wings)
-		{
-			return "a pair of " + ImpSizeDesc(wings.isLarge);
+			string intro = "";
+			if (alternateFormat && plural)
+			{
+				intro = "a pair of ";
+			}
+			else if (alternateFormat)
+			{
+				intro = "a ";
+			}
+			else if (plural)
+			{
+				intro = "pair of ";
+			}
+			else
+			{
+				intro = "";
+			}
+			return intro + ImpDesc(wings.isLarge);
 		}
 		private static string ImpPlayerStr(Wings wings, PlayerBase player)
 		{

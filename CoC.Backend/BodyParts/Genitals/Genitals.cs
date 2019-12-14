@@ -97,6 +97,7 @@ namespace CoC.Backend.BodyParts
 		#region Common Derived/Helper Properties
 		public int numCocksOrClitCocks => _cocks.Count == 0 ? (hasClitCock ? 1 : 0) : _cocks.Count;
 
+		internal float relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
 
 		#endregion
 		#region Pregnancy Related Computed Properties

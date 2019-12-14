@@ -253,7 +253,10 @@ namespace CoC.Backend.BodyParts
 			return clitPiercings.Validate(correctInvalidData);
 		}
 
-
+		public static string AvailableNouns(bool withArticle = false) => ClitStrings.ClitNouns(withArticle);
+		public string ShortDescription() => ClitStrings.ShortDesc(length);
+		public string LongDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, false);
+		public string FullDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, true);
 
 		#region Piercing Related
 		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
@@ -341,6 +344,11 @@ namespace CoC.Backend.BodyParts
 		public readonly int VaginaIndex;
 
 		public readonly ReadOnlyPiercing<ClitPiercings> clitPiercings;
+
+		public static string AvailableNouns(bool withArticle = false) => ClitStrings.ClitNouns(withArticle);
+		public string ShortDescription() => ClitStrings.ShortDesc(length);
+		public string LongDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, false);
+		public string FullDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, true);
 
 		internal ClitData(Clit source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{

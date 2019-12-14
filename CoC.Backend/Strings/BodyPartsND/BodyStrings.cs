@@ -5,6 +5,7 @@
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Settings.Gameplay;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
 
@@ -17,77 +18,59 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Body";
 		}
-
-		private string MultiDye(HairFurColors dyeColor, HashSet<byte> indices)
-		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private string SingleDye(HairFurColors dyeColor, byte index)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private string MultiLotions(SkinTexture lotionTexture, HashSet<byte> indices)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private string SingleLotion(SkinTexture lotionTexture, byte index)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		public bool IsFurry()
-		{
-			return type.epidermisType.usesFur;
-		}
 	}
 
 	public partial class BodyType
 	{
 		#region Generics
 
-		protected static string BodyDesc()
+		protected static string AllBodyDesc(bool isTone) => AllBodyDesc();
+
+		protected static string AllBodyDesc()
 		{
-			return "Body";
+			return "Body (All)";
 		}
 
-		protected static string Body2Desc()
+		protected static string MainBodyDesc(bool isTone) => MainBodyDesc();
+		protected static string MainBodyDesc()
 		{
-			return "Body 2";
+			return "Body (Main)";
 		}
 
-		protected static string YourBodyDesc()
-		{
-			return " your body";
-		}
-
-		protected static string PartsOfFurPatternDesc()
-		{
-			return " parts of your fur to form a pattern";
-		}
-
+		protected static string UnderBodyDesc(bool isTone) => UnderBodyDesc();
 		protected static string UnderBodyDesc()
 		{
 			return "Underbody";
 		}
 
-		protected static string YourUnderBodyDesc()
+		protected static string YourBodyDesc(out bool isPlural)
 		{
+			isPlural = false;
+			return " your body";
+		}
+
+		protected static string YourUnderBodyDesc(out bool isPlural)
+		{
+			isPlural = false;
 			return " your underbody";
 		}
 
-		protected static SimpleDescriptor YourDescriptor(EpidermisType epidermisType)
+		protected static string TheSkinUnderStr(string locationDesc)
 		{
-			return () => YourDesc(epidermisType);
+			return "the skin under " + locationDesc;
 		}
 
-		private static string YourDesc(EpidermisType epidermisType)
+		protected static string SkinUnderStr(Body body, string locationDesc)
 		{
-			return " your " + epidermisType.ShortDescription;
+			return body.primarySkin.LongDescription() + " under " + locationDesc;
 		}
 		#endregion
+
+		protected static string GenericPostDesc(Body body)
+		{
+			return body.LongDescription(true);
+		}
+
 		//primary fur: fur
 		//secondary fur: fur on your underbody
 
@@ -124,40 +107,106 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region Skin
+
+		protected static string YourSkinDesc(out bool isPlural)
+		{
+			isPlural = false;
+			return "your skin";
+		}
+
 		private static string SkinDesc()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "body";
 		}
-		private static string SkinLongDesc(BodyData body)
+		private static string SkinLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return $"{body.main.JustColor(alternateFormat)}-skinned body";
 		}
 		private static string SkinPlayerStr(Body body, PlayerBase player)
 		{
-			//feel free to rephrase this, but you'd need to store the "acceptable/normal" skin tones for a human, then say something like, 
+			//feel free to rephrase this, but you'd need to store the "acceptable/normal" skin tones for a human, then say something like,
 			return GenericBodyPlayerDesc(false) + " You have " + body.mainEpidermis.LongDescription();
 		}
 		private static string SkinTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return previousBodyData.type.RestoredString(previousBodyData, player);
 		}
 		private static string SkinRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return GlobalStrings.RevertAsDefault(previousBodyData, player);
 		}
 		#endregion
 		#region Scales
+
+		protected static string AllScalesButton(bool isTone)
+		{
+			if (isTone)
+			{
+				return "All Scales";
+			}
+			else return AllBodyDesc();
+		}
+
+		protected static string MainScalesButton(bool isTone)
+		{
+			if (isTone)
+			{
+				return "Main Scales";
+			}
+			else
+			{
+				return MainBodyDesc();
+			}
+		}
+
+		protected static string AlternateScalesButton(bool isTone)
+		{
+			if (isTone)
+			{
+				return "Vent. Scales";
+			}
+			else
+			{
+				return UnderBodyDesc();
+			}
+		}
+		protected static string AllScalesDesc(out bool isPlural)
+		{
+			isPlural = true;
+			return "all of your scales";
+		}
+
+		protected static string YourScalesDesc(out bool isPlural)
+		{
+			isPlural = true;
+			return "your scales";
+		}
+
+		protected static string YourVentralScalesDesc(out bool isPlural)
+		{
+			isPlural = true;
+			return "your ventral scales";
+		}
+
+
 		private static string ScalesDesc()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "scaley body";
 		}
 		private static string ScalesUnderbodyDesc()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "ventral scales";
 		}
-		private static string ScalesLongDesc(BodyData body)
+		private static string ScalesLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (EpidermalData.MixedTones(body.main, body.supplementary))
+			{
+				return "multi-colored, scaley body";
+			}
+			else
+			{
+				return body.main.LongAdjectiveDescription(alternateFormat) + " body";
+			}
 		}
 		private static string ScalesPlayerStr(Body body, PlayerBase player)
 		{
@@ -193,6 +242,22 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Naga
+
+		private static string AllNagaDesc(out bool isPlural)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string YourNagaDesc(out bool isPlural)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string YourUnderNagaDesc(out bool isPlural)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		private static string NagaDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -201,9 +266,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaLongDesc(BodyData body)
+		private static string NagaLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (EpidermalData.MixedTones(body.main, body.supplementary))
+			{
+				return "multi-colored, scaley, almost serpentine body";
+			}
+			else
+			{
+				return body.main.LongAdjectiveDescription(alternateFormat) + ", almost serpentine body";
+			}
 		}
 		private static string NagaPlayerStr(Body body, PlayerBase player)
 		{
@@ -214,7 +286,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (EpidermalData.MixedTextures(body.mainEpidermis, body.supplementaryEpidermis))
 			{
-				return GenericBodyPlayerDesc() + "Your body is covered in snake-like scales. Most of the them are " + body.mainEpidermis.JustTexture(true) + "but the lower ones, along with some near your" +
+				return GenericBodyPlayerDesc() + "Your body is covered in snake-like scales,  Most of the them are " + body.mainEpidermis.JustTexture(true) + "but the lower ones, along with some near your" +
 					"stomach, are " + body.supplementaryEpidermis.JustTexture(true);
 			}
 			else
@@ -231,21 +303,37 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string YourUnderNagaDesc()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
+
 		#endregion
+
 		#region Cockatrice
+		protected static string CockatriceFeathersButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "Feathers";
+			}
+			else return MainBodyDesc();
+		}
+
+		protected static string CockatriceScalesButton(bool isTone)
+		{
+			if (isTone)
+			{
+				return "Scales";
+			}
+			else return UnderBodyDesc();
+		}
+
 		protected static string CockatriceDesc()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "partially feathered, partially scaled body";
 		}
 		protected static string CockatriceUnderbodyDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string CockatriceLongDesc(BodyData body)
+		protected static string CockatriceLongDesc(BodyData body, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -264,6 +352,24 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Kitsune
+		protected static string KitsuneSkinButton(bool isTone)
+		{
+			if (isTone)
+			{
+				return "Skin";
+			}
+			else return MainBodyDesc();
+		}
+
+		protected static string KitsuneFurButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "Fur";
+			}
+			else return UnderBodyDesc();
+		}
+
 		protected static string KitsuneDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -272,7 +378,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string KitsuneLongDesc(BodyData body)
+		protected static string KitsuneLongDesc(BodyData body, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -299,11 +405,17 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Bark
+		protected static string YourBarkDesc(out bool isPlural)
+		{
+			isPlural = false;
+			return "your bark";
+		}
+
 		private static string BarkDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BarkLongDesc(BodyData body)
+		private static string BarkLongDesc(BodyData body, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -322,19 +434,75 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Fur
+		protected static string AllFurButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "All Fur";
+			}
+			else
+			{
+				return AllBodyDesc();
+			}
+		}
+
+
+		protected static string MainFurButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "Standard Fur";
+			}
+			else
+			{
+				return MainBodyDesc();
+			}
+		}
+		protected static string AlternateFurButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "UnderbodyFur";
+			}
+			else
+			{
+				return UnderBodyDesc();
+			}
+		}
+
+		protected static string YourFurDesc(out bool isPlural)
+		{
+			isPlural = false;
+			return "your fur";
+		}
+
+		private static string AllFurDye(out bool isPlural)
+		{
+			isPlural = false;
+			return "all of your fur";
+		}
+
+		private static string AllFurTone(out bool isPlural)
+		{
+			isPlural = false;
+			return TheSkinUnderStr(AllFurDye(out bool _));
+		}
+
+		private static string PostAllFurTone(Body body)
+		{
+			return SkinUnderStr(body, AllFurDye(out bool _));
+		}
+
 		private static string FurDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FurUnderbodyDesc()
+
+		private static string FurLongDesc(BodyData body, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FurLongDesc(BodyData body)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		//applies to both simple and underbody. 
+		//applies to both simple and underbody.
 		private static string FurPlayerStr(Body body, PlayerBase player)
 		{
 			//first, see if we have different color underbody (if we have one at all). if so
@@ -347,9 +515,9 @@ namespace CoC.Backend.BodyParts
 			//same color, different textures.
 			else if (body.hasSecondaryEpidermis && EpidermalData.MixedTextures(body.mainEpidermis, body.supplementaryEpidermis))
 			{
-				return GenericBodyPlayerDesc() + $" Your body is covered in {body.mainEpidermis.DescriptionWithColor()}. The fur around your {player.genitals.AllBreastsLongDescription()}" 
-					+$" appears {body.supplementaryEpidermis.JustTexture()}, contrasting with the rest, which appears {body.mainEpidermis.JustTexture()}. Despite this, it provides little "
-					+$"in terms of modesty as the fur around your stomach and {player.genitals.AllBreastsLongDescription()} is significantly shorter than the rest.";
+				return GenericBodyPlayerDesc() + $" Your body is covered in {body.mainEpidermis.DescriptionWithColor()}. The fur around your {player.genitals.AllBreastsLongDescription()}"
+					+ $" appears {body.supplementaryEpidermis.JustTexture()}, contrasting with the rest, which appears {body.mainEpidermis.JustTexture()}. Despite this, it provides little "
+					+ $"in terms of modesty as the fur around your stomach and {player.genitals.AllBreastsLongDescription()} is significantly shorter than the rest.";
 			}
 			//solid color/texture throughout, or the underbody is identical to the main.
 			else
@@ -368,12 +536,77 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string YourUnderFurDesc()
+		private static string YourUnderFurDesc(out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Feathers
+		protected static string AllFeathersButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "All Feathers";
+			}
+			else
+			{
+				return AllBodyDesc();
+			}
+		}
+
+		protected static string MainFeathersButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "LongFeathers";
+			}
+			else
+			{
+				return MainBodyDesc();
+			}
+		}
+
+		protected static string AlternateFeathersButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "Downy Fthrs.";
+			}
+			else
+			{
+				return UnderBodyDesc();
+			}
+		}
+
+
+
+		protected static string YourFeathersDesc(out bool isPlural)
+		{
+			isPlural = false;
+			return "your feathers";
+		}
+		private static string YourUnderFeatherDesc(out bool isPlural)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string AllFeathersDye(out bool isPlural)
+		{
+			isPlural = true;
+			return "all of your feathers";
+		}
+
+		private static string AllFeathersTone(out bool isPlural)
+		{
+			isPlural = false;
+			return TheSkinUnderStr(AllFeathersDye(out bool _));
+		}
+
+		private static string PostAllFeathersTone(Body body)
+		{
+			return SkinUnderStr(body, AllFeathersDye(out bool _));
+		}
+
 		private static string FeatherDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -382,7 +615,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FeatherLongDesc(BodyData body)
+		private static string FeatherLongDesc(BodyData body, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -419,12 +652,74 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string YourUnderFeatherDesc()
+
+		#endregion
+		#region Wool
+		protected static string AllWoolButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "All Wool";
+			}
+			else
+			{
+				return AllBodyDesc();
+			}
+		}
+
+		protected static string MainWoolButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "Normal Wool";
+			}
+			else
+			{
+				return MainBodyDesc();
+			}
+		}
+
+		protected static string AlternateWoolButton(bool isTone)
+		{
+			if (!isTone)
+			{
+				return "Under-Wool";
+			}
+			else
+			{
+				return UnderBodyDesc();
+			}
+		}
+
+		private static string AllWoolDye(out bool isPlural)
+		{
+			isPlural = false;
+			return "all of your wool";
+		}
+
+		protected static string YourWoolDesc(out bool isPlural)
+		{
+			isPlural = false;
+			return "your wool";
+		}
+
+
+		private static string YourUnderWoolDesc(out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		#endregion
-		#region Wool
+
+		private static string AllWoolTone(out bool isPlural)
+		{
+			isPlural = false;
+			return TheSkinUnderStr(AllWoolDye(out bool _));
+		}
+
+		private static string PostAllWoolTone(Body body)
+		{
+			return SkinUnderStr(body, AllWoolDye(out bool _));
+		}
+
 		private static string WoolDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -433,7 +728,7 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WoolLongDesc(BodyData body)
+		private static string WoolLongDesc(BodyData body, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -442,8 +737,8 @@ namespace CoC.Backend.BodyParts
 			//first, see if we have different color underbody (if we have one at all). if so
 			if (body.hasSecondaryEpidermis && EpidermalData.MixedFurColors(body.mainEpidermis, body.supplementaryEpidermis))
 			{
-				return GenericBodyPlayerDesc() + $"{body.mainEpidermis.LongDescription()} covers your body, though the regions around your {player.genitals.AllBreastsLongDescription()} " 
-					+ $"and nethers are {body.supplementaryEpidermis.AdjectiveDescriptionWithoutType(true)}. Fortunately, it doesn't seem to grow too long or too quickly, so you're able " 
+				return GenericBodyPlayerDesc() + $"{body.mainEpidermis.LongDescription()} covers your body, though the regions around your {player.genitals.AllBreastsLongDescription()} "
+					+ $"and nethers are {body.supplementaryEpidermis.AdjectiveDescriptionWithoutType(true)}. Fortunately, it doesn't seem to grow too long or too quickly, so you're able "
 					+ $"to keep it just the way it is with only a little effort.";
 			}
 			//same color, different textures.
@@ -469,17 +764,21 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string YourUnderWoolDesc()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
+
 		#endregion
 		#region Goo
+
+		protected static string YourGooDesc(out bool isPlural)
+		{
+			isPlural = false;
+			return "your goo";
+		}
+
 		private static string GooDesc()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooLongDesc(BodyData body)
+		private static string GooLongDesc(BodyData body, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -487,7 +786,7 @@ namespace CoC.Backend.BodyParts
 		{
 #warning ToDo: Add text about the heart crystal key item. IDK if that's a backend thing or a body accessory.
 			//realistically, if the body is goo, all the appendages should be too (except cocks, but that's an exception because reasons). but if it's not, we have some unique text
-			//lampshading how absurd it is. 
+			//lampshading how absurd it is.
 			string bodyText;
 
 			if (player.face.type == FaceType.GOO && player.arms.type == ArmType.GOO && player.lowerBody.type == LowerBodyType.GOO)
@@ -516,11 +815,17 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Carapace
+		protected static string YourCarapaceDesc(out bool isPlural)
+		{
+			isPlural = false;
+			return "your carapace";
+		}
+
 		private static string CarapaceStr()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CarapaceLongDesc(BodyData body)
+		private static string CarapaceLongDesc(BodyData body, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

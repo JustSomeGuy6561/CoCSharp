@@ -28,7 +28,7 @@ namespace CoC.Backend.Strings
 
 		public static string None() { return ""; }
 
-		
+
 
 		public static string RevertAsDefault<T>(T type, PlayerBase p)
 		{
@@ -49,7 +49,7 @@ namespace CoC.Backend.Strings
 #endif
 		}
 
-		public static string CantAttackWith<T, U,V>(T type, PlayerBase player) where T : BehavioralSaveablePart<T, U,V> where U : SaveableBehavior<U, T, V> 
+		public static string CantAttackWith<T, U,V>(T type, PlayerBase player) where T : BehavioralSaveablePart<T, U,V> where U : SaveableBehavior<U, T, V>
 			where V: BehavioralSaveablePartData<V, T, U>
 		{
 #if DEBUG
@@ -74,13 +74,18 @@ namespace CoC.Backend.Strings
 			return new string(chars);
 		}
 
-		
+
 
 		//simple plural check for strings ending in S.
 		public static bool IsPluralWithS(this string text)
 		{
 			string s = text.TrimEnd();
 			return s[s.Length - 1] == 's';
+		}
+
+		public static string NewParagraph()
+		{
+			return Environment.NewLine + Environment.NewLine;
 		}
 
 		public static string YES() => YES(true);

@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/7/2019, 1:29 AM
+using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -24,18 +25,24 @@ namespace CoC.Backend.BodyParts
 			return "Back";
 		}
 
-		private string GenericLocDesc()
+		private string GenericLocDesc(out bool isPlural)
 		{
-			return " your back";
+			isPlural = false;
+			return "";
+		}
+
+		private string GenericPostUseDesc(HairFurColors color)
+		{
+			return "";
 		}
 
 		private static string NormalDesc()
 		{
 			return "normal back";
 		}
-		private static string NormalLongDesc(BackData back)
+		private static string NormalLongDesc(BackData back, bool alternateFormat)
 		{
-			return NormalDesc();
+			return (alternateFormat ? "a " : "") + NormalDesc();
 		}
 		private static string NormalPlayerStr(Back back, PlayerBase player)
 		{
@@ -54,18 +61,24 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Mane";
 		}
-		protected static string YourManeDesc()
+		protected static string YourManeDesc(out bool isPlural)
 		{
-			return " your mane";
+			isPlural = false;
+			return "the mane along your back";
+		}
+
+		protected static string ManePostDyeText(HairFurColors hairColor)
+		{
+			return $"{Utils.AddArticle(hairColor.AsString())} mane along your back";
 		}
 
 		protected static string DraconicManeDesc()
 		{
 			return "draconic back-mane";
 		}
-		protected static string DraconicManeLongDesc(BackData back)
+		protected static string DraconicManeLongDesc(BackData back, bool alternateFormat)
 		{
-			return "a mane of " + back.epidermis.JustColor() + " draconic " + back.epidermis.ShortDescription() + "running along the spine"; //a mane of red draconic fur running along the spine.
+			return (alternateFormat ? "a" : "") + "mane of " + back.epidermis.JustColor() + " draconic " + back.epidermis.ShortDescription() + "running along the spine"; //a mane of red draconic fur running along the spine.
 
 		}
 		protected static string DraconicManePlayerStr(Back back, PlayerBase player)
@@ -94,25 +107,25 @@ namespace CoC.Backend.BodyParts
 			string tailText = player.tail.type != TailType.NONE ? "your tail, all the way to the end, where it forms a small tuft. " : "until it reaches your butt. ";
 			string oldText = previousBackData.type != BackType.NORMAL ? "Somehow, your back has become perfectly smooth, though the tingling remains. " : "";
 
-			return Utils.NewParagraph() + "You feel a sudden tingle just above your spine. Eager to see what's causing this, " + seeItHow + oldText +
+			return GlobalStrings.NewParagraph() + "You feel a sudden tingle just above your spine. Eager to see what's causing this, " + seeItHow + oldText +
 				"Tiny splotches of hair begin growing out of your " + player.body.mainEpidermis.ShortDescription() +
 				". The hair grows longer and the splotches grow until they slowly merge to a vertical strip right above your spine." +
-				Utils.NewParagraph() + "The hair forms a mane along your spine, starting at the base of your neck and continuing down " + tailText +
+				GlobalStrings.NewParagraph() + "The hair forms a mane along your spine, starting at the base of your neck and continuing down " + tailText +
 				"It is the same color as the hair on your head, but shorter and denser; it has grown in a thick vertical strip, maybe " + Measurement.ToNearestSmallUnit(2, false, true) +
 				" wide. It reminds you vaguely of a horse's mane. " + SafelyFormattedString.FormattedText("You now have a hairy mane along your spine!", StringFormats.BOLD);
 		}
 		protected static string DraconicManeRestoreStr(BackData back, PlayerBase player)
 		{
-			return Utils.NewParagraph() + "You feel a tingling just above your spine. Your glimpse at your back and see hair falling down from it, first in strands, " +
+			return GlobalStrings.NewParagraph() + "You feel a tingling just above your spine. Your glimpse at your back and see hair falling down from it, first in strands, " +
 				"then in bigger and bigger chunks, until " + SafelyFormattedString.FormattedText("Your hairy draconic mane has completely disappeared!", StringFormats.BOLD);
 		}
 		private static string DraconicSpikesDesc()
 		{
 			return "draconic back-spikes";
 		}
-		private static string DraconicSpikesLongDesc(BackData back)
+		private static string DraconicSpikesLongDesc(BackData back, bool alternateFormat)
 		{
-			return "a series of draconic spikes along the spine";
+			return (alternateFormat ? "a " : "") + "series of draconic spikes along the spine";
 		}
 
 		private static string DraconicSpikesPlayerStr(Back back, PlayerBase player)
@@ -141,17 +154,17 @@ namespace CoC.Backend.BodyParts
 			string oldText = back.type != BackType.NORMAL ? " your back shakes violently, forcibly reshaping until it's once again smooth, but the pain still remains. " : "";
 			string tailText = player.tail.type != TailType.NONE ? "your tail, ending just before the tip. " : "until it reaches your butt. ";
 
-			return Utils.NewParagraph() + "You feel a sudden pain along your spine. Eager to see what's causing this, " + seeItHow + oldText +
+			return GlobalStrings.NewParagraph() + "You feel a sudden pain along your spine. Eager to see what's causing this, " + seeItHow + oldText +
 				"The pain seems to focus into smaller areas, which start to bulge outward against your skin. The bulges grow larger and more painful until, with one final " +
 				"burst of pain, spikes break through your skin. You nearly black out, but manage to retain your senses as they continue their growth, curving down and away from your neck. " +
-				Utils.NewParagraph() + "Once they stop growing, you notice the spikes form a line along your spine, starting at the base of your neck and continuing down " + tailText +
+				GlobalStrings.NewParagraph() + "Once they stop growing, you notice the spikes form a line along your spine, starting at the base of your neck and continuing down " + tailText +
 				"The spikes are spaced evenly, each one steel-gray in color and maybe " + Measurement.ToNearestSmallUnit(2, false, true) +
 				" tall, their base roughly " + Measurement.ToNearestHalfSmallUnit(1, false, true) + " in diameter. "
 				+ SafelyFormattedString.FormattedText("Your spine is now decorated with a row of curved spikes!", StringFormats.BOLD);
 		}
 		private static string DraconicSpikesRestoreStr(BackData back, PlayerBase player)
 		{
-			return Utils.NewParagraph() + "Your spine starts to make painful cracking sounds and you feel your spikes retracting along it. " +
+			return GlobalStrings.NewParagraph() + "Your spine starts to make painful cracking sounds and you feel your spikes retracting along it. " +
 				"The pain ceases, replaced with a strange tingling sensation as the skin along your spine closes over where your spikes once were." +
 				SafelyFormattedString.FormattedText("The spikes on your rear have disappeared!", StringFormats.BOLD);
 		}
@@ -159,9 +172,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "shark fin";
 		}
-		private static string SharkFinLongDesc(BackData back)
+		private static string SharkFinLongDesc(BackData back, bool alternateFormat)
 		{
-			return "a shark fin sitting along the spine";
+			return (alternateFormat ? "a " : "") + "shark fin sitting along the spine";
 		}
 		private static string SharkFinPlayerStr(Back back, PlayerBase player)
 		{
@@ -210,7 +223,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SharkFinRestoreStr(BackData back, PlayerBase player)
 		{
-			return Utils.NewParagraph() + "A wave of tightness spreads through your back, and it feels as if someone is stabbing a dagger into your spine. " +
+			return GlobalStrings.NewParagraph() + "A wave of tightness spreads through your back, and it feels as if someone is stabbing a dagger into your spine. " +
 				SafelyFormattedString.FormattedText("After a moment the pain passes, though your fin is gone!", StringFormats.BOLD);
 		}
 
@@ -220,13 +233,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "tendril-covered back";
 		}
-		private static string TendrilLongDesc(BackData back)
+		private static string TendrilLongDesc(BackData back, bool alternateFormat)
 		{
-			return "back with several inky-black tendrils sprouting from the center, near the spine";
+			if (alternateFormat)
+			{
+				return "a back covered in inky-black tendrils near the center, along the spine";
+			}
+			else return "back, with inky-black tendrils sprouting from its center, near the spine";
 		}
 		private static string TendrilPlayerStr(Back back, PlayerBase player)
 		{
-			//initially starts with full tendrils, so if we aren't at max, then we are missing some from combat. 
+			//initially starts with full tendrils, so if we aren't at max, then we are missing some from combat.
 
 
 			if (back.resources != 0)
@@ -308,9 +325,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "spike-surrounded behemoth back-mane";
 		}
-		protected static string BehemothLongDesc(BackData back)
+		protected static string BehemothLongDesc(BackData back, bool alternateFormat)
 		{
-			return "behemoth-like, complete with a mane of " + back.epidermis.LongDescription() + " along the spine, set between two rows of small spikes";
+
+			return (alternateFormat ? "a " : "") + "behemoth-like back, complete with a mane of " + back.epidermis.LongDescription() + " along the spine, " +
+				"set between two rows of small spikes";
 		}
 
 		protected static string BehemothPlayerStr(Back back, PlayerBase player)
@@ -322,7 +341,7 @@ namespace CoC.Backend.BodyParts
 		}
 		protected static string BehemothTransformStr(BackData back, PlayerBase player)
 		{
-			StringBuilder sb = new StringBuilder(Utils.NewParagraph() + "Your back and spine are suddenly overwhelmed with a sense of pins-and-needles. Unsure as to what exactly is causing this, you " +
+			StringBuilder sb = new StringBuilder(GlobalStrings.NewParagraph() + "Your back and spine are suddenly overwhelmed with a sense of pins-and-needles. Unsure as to what exactly is causing this, you " +
 				(player.wearingAnything ? "undress and " : "") + "find something reflective to check your back with.");
 
 			if (back.type == BackType.DRACONIC_SPIKES)

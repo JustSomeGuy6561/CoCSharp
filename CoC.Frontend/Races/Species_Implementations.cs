@@ -188,7 +188,7 @@ namespace CoC.Frontend.Races
 				if (source.vaginas.Count == 1)
 					beeCounter++;
 			}
-			if (source.back.type == BackType.BEE_STINGER)
+			if (source.ovipositor.type == OvipositorType.BEE)
 			{
 				beeCounter++;
 			}
@@ -2531,7 +2531,7 @@ namespace CoC.Frontend.Races
 			{
 				score--;
 			}
-			if (source.back.type == BackType.SPIDER_ABDOMEN)
+			if (source.ovipositor.type == OvipositorType.SPIDER)
 			{
 				score += 2;
 			}

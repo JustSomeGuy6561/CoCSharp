@@ -170,6 +170,7 @@ namespace CoC.Backend.Creatures
 		public readonly Horns horns;
 		public readonly LowerBody lowerBody;
 		public readonly Neck neck;
+		public readonly Ovipositor ovipositor;
 		public readonly Tail tail;
 		public readonly Tongue tongue;
 		public readonly Wings wings;
@@ -507,6 +508,17 @@ namespace CoC.Backend.Creatures
 			{
 				neck = new Neck(id, creator.neckType);
 			}
+			//Ovipositor
+			if (creator.ovipositorType is null)
+			{
+				ovipositor = new Ovipositor(id);
+			}
+			else
+			{
+				ovipositor = new Ovipositor(id, creator.ovipositorType);
+			}
+
+
 			//Tail
 
 			if (creator.tailType is null)

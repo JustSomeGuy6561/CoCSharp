@@ -35,8 +35,8 @@ namespace CoC.Backend.Tools
 			rnd = new Random(newSeed);
 		}
 
-		//no idea if anyone would ever use this, but 
-		//it now supports negative numbers. 
+		//no idea if anyone would ever use this, but
+		//it now supports negative numbers.
 		//(neg_num - 0]
 		public static int Rand(int max)
 		{
@@ -248,9 +248,49 @@ namespace CoC.Backend.Tools
 			}
 		}
 
-		public static string NewParagraph()
+		public static string DescribeByScale(float value, float[] scale, string lessThan = "less than", string moreThan = "more than")
 		{
-			return Environment.NewLine + Environment.NewLine;
+			if (scale.Length == 0) return "indescribable";
+			if (scale.Length == 1) return "about " + scale[0];
+			if (value < scale[0]) return lessThan + " " + scale[0];
+			if (value == scale[0]) return scale[0].ToString();
+			for (int i = 1; i < scale.Length; i++)
+			{
+				if (value < scale[i]) return "between " + scale[i - 1] + " and " + scale[i];
+				if (value == scale[i]) return scale[i].ToString();
+			}
+			return moreThan + " " + scale[scale.Length - 1];
+		}
+
+		//simple version of adding an article for english. not foolproof (i.e. "a hour" vs "an hour"), simply checks first letter, appends a or an accordingly.
+		public static string AddArticle(string text)
+		{
+			text = text.TrimStart();
+			if (text[0] == 'a' || text[0] == 'e' || text[0] == 'i' || text[0] == 'o' || text[0] == 'u' ||
+				text[0] == 'A' || text[0] == 'E' || text[0] == 'I' || text[0] == 'O' || text[0] == 'U')
+			{
+				return "an " + text;
+			}
+			else
+			{
+				return "a " + text;
+			}
+		}
+
+		public static string AddArticle(string text, bool needsArticle)
+		{
+			if (needsArticle) return AddArticle(text);
+			else return text.TrimStart();
+		}
+
+		public static string Pluralize(string text)
+		{
+			return text.TrimEnd() + "s";
+		}
+		public static string Pluralize(string text, bool plural)
+		{
+			if (plural) return Pluralize(text);
+			else return text.TrimEnd();
 		}
 	}
 

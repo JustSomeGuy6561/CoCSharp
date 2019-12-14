@@ -157,6 +157,8 @@ namespace CoC.Backend.BodyParts
 		public uint orgasmCount { get; private set; } = 0;
 		public uint dryOrgasmCount { get; private set; } = 0;
 
+		public bool hasSheath => type.usesASheath;
+
 		public float cumAmount => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.totalCum : minCumAmount;
 
 		public override CockType type
@@ -270,10 +272,7 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-		public string AdjectiveText(bool multipleAdjectives)
-		{
-			return CockType.CockAdjectiveText(AsReadOnlyData(), multipleAdjectives);
-		}
+
 
 		public override CockData AsReadOnlyData()
 		{
@@ -525,11 +524,28 @@ namespace CoC.Backend.BodyParts
 #warning implement cocksock equip and remove and replace.
 
 		#endregion
+		#region Text
+		public string AdjectiveText(bool multipleAdjectives)
+		{
+			return CockType.CockAdjectiveText(AsReadOnlyData(), multipleAdjectives);
+		}
 
-		public string ShortDescription(bool noAdjective) => type.ShortDescription(noAdjective);
+
+		public string ShortDescriptionNoAdjective() => type.ShortDescriptionNoAdjective();
+		public string ShortDescriptionNoAdjective(bool plural) => type.ShortDescriptionNoAdjective(plural);
+
+		public string ShortDescription(bool noAdjective, bool plural) => type.ShortDescription(noAdjective, plural);
+
+
+		public string FullDescription(bool alternateForm) => type.FullDescription(AsReadOnlyData(), alternateForm);
 
 		public string FullDescription() => type.FullDescription(AsReadOnlyData());
 
+		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(AsReadOnlyData());
+
+		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(AsReadOnlyData());
+
+		#endregion
 
 		#region Piercings
 		private bool PiercingLocationUnlocked(CockPiercings piercingLocation)
@@ -713,13 +729,14 @@ namespace CoC.Backend.BodyParts
 
 		public readonly bool usesASheath;
 
-		//some cocks have a built-in adjective to their short description - this is the way it was before. This can cause grammatic weirdness, so cock types use a different version of
-		//short description instead: They include a boolean to disable the built-in adjective. This is exposed as an overload to the standard ShortDescription().
-		//the standard ShortDescription() simply calls this with the value set to false.
-		private readonly DescriptorWithArg<bool> shortDescWithAdjArg;
+		protected delegate string CockDescriptor(bool noAdjective, bool plural = false);
+
+		//some cocks have a built-in adjective to their short description - this is the way it was before. This can cause grammatic weirdness, so cocks use a custom delegate that
+		//allows this adjective to be disabled, in addition to the plural flag. just like vagina, cock defaults to singular instead of plural.
+		private readonly CockDescriptor shortDescWithAdjArg;
 
 		private protected CockType(CockGroup cockGroup, bool hasSheath, SimpleDescriptor headDesc,
-			DescriptorWithArg<bool> shortDescWithAdjFlag, DescriptorWithArg<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			CockDescriptor shortDescWithAdjFlag, LongDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
 			ChangeType<CockData> transform, RestoreType<CockData> restore) : base(shortDescMaker(shortDescWithAdjFlag), longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -734,7 +751,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		private protected CockType(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor headDesc, //any cocktype specific values.
-			DescriptorWithArg<bool> shortDescWithAdjFlag, DescriptorWithArg<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			CockDescriptor shortDescWithAdjFlag, LongDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
 			ChangeType<CockData> transform, RestoreType<CockData> restore) : base(shortDescMaker(shortDescWithAdjFlag), longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -747,15 +764,36 @@ namespace CoC.Backend.BodyParts
 			types.AddAt(this, _index);
 		}
 
-		public string ShortDescription(bool noAdjective)
-		{
-			return shortDescWithAdjArg(noAdjective);
-		}
-
-		private static SimpleDescriptor shortDescMaker(DescriptorWithArg<bool> shortAdjDesc)
+		private static SimpleDescriptor shortDescMaker(CockDescriptor shortAdjDesc)
 		{
 			if (shortAdjDesc is null) throw new ArgumentNullException(nameof(shortAdjDesc));
-			return () => shortAdjDesc(false);
+			return () => shortAdjDesc(false, false);
+		}
+
+		public string ShortDescriptionNoAdjective() => shortDescWithAdjArg(true);
+		public string ShortDescriptionNoAdjective(bool plural) => shortDescWithAdjArg(true, plural);
+
+		public string ShortDescription(bool noAdjective, bool plural) => shortDescWithAdjArg(noAdjective, plural);
+
+
+		public virtual string FullDescription(CockData cock, bool alternateForm)
+		{
+			return GenericFullDescription(cock, alternateForm);
+		}
+
+		public string FullDescription(CockData cock)
+		{
+			return FullDescription(cock, false);
+		}
+
+		public string FullDescriptionPrimary(CockData data)
+		{
+			return FullDescription(data, false);
+		}
+
+		public string FullDescriptionAlternate(CockData data)
+		{
+			return FullDescription(data, true);
 		}
 
 		internal static bool Validate(ref CockType cockType, bool correctInvalidData)
@@ -802,12 +840,12 @@ namespace CoC.Backend.BodyParts
 		{
 			public override bool flexibleOrStretchyCock => true;
 
-			public FlexiCock(CockGroup cockGroup, bool hasSheath, SimpleDescriptor cockHeadDesc, DescriptorWithArg<bool> shortDescWithAdjFlag, DescriptorWithArg<CockData> longDesc,
+			public FlexiCock(CockGroup cockGroup, bool hasSheath, SimpleDescriptor cockHeadDesc, CockDescriptor shortDescWithAdjFlag, LongDescriptor<CockData> longDesc,
 				PlayerBodyPartDelegate<Cock> playerDesc, ChangeType<CockData> transform, RestoreType<CockData> restore)
 				: base(cockGroup, hasSheath, cockHeadDesc, shortDescWithAdjFlag, longDesc, playerDesc, transform, restore) { }
 
-			public FlexiCock(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor cockHeadDesc, DescriptorWithArg<bool> shortDescWithAdjFlag,
-				DescriptorWithArg<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc, ChangeType<CockData> transform, RestoreType<CockData> restore)
+			public FlexiCock(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor cockHeadDesc, CockDescriptor shortDescWithAdjFlag,
+				LongDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc, ChangeType<CockData> transform, RestoreType<CockData> restore)
 				: base(cockGroup, hasSheath, initialKnotMultiplier, cockHeadDesc, shortDescWithAdjFlag, longDesc, playerDesc, transform, restore) { }
 		}
 	}
@@ -836,9 +874,20 @@ namespace CoC.Backend.BodyParts
 			return CockType.CockAdjectiveText(this, multipleAdjectives);
 		}
 
-		public string ShortDescription(bool noAdjective) => type.ShortDescription(noAdjective);
+
+		public string ShortDescriptionNoAdjective() => type.ShortDescriptionNoAdjective();
+		public string ShortDescriptionNoAdjective(bool plural) => type.ShortDescriptionNoAdjective(plural);
+
+		public string ShortDescription(bool noAdjective, bool plural) => type.ShortDescription(noAdjective, plural);
+
+
+		public string FullDescription(bool alternateForm) => type.FullDescription(this, alternateForm);
 
 		public string FullDescription() => type.FullDescription(this);
+
+		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(this);
+
+		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(this);
 
 		public override CockData AsCurrentData()
 		{

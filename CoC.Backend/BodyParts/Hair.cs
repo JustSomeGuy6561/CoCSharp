@@ -32,6 +32,17 @@ namespace CoC.Backend.BodyParts
 
 	public enum HairStyle { NO_STYLE, MESSY, STRAIGHT, BRAIDED, WAVY, CURLY, COILED, PONYTAIL }
 
+	//defaults to all hair.
+	internal enum HairDyeLocations:byte { ALL_HAIR, MAIN_COLOR, HIGHLIGHT}
+
+	internal static class HairDyeHelper
+	{
+		internal static bool IsDefined(this HairDyeLocations location)
+		{
+			return Enum.IsDefined(typeof(HairDyeLocations), location);
+		}
+	}
+
 	//i'm unsure of behavior for hair color for PCs with NO_HAIR. no hair is for things that literally have no hair, like lizard-morphs and such.
 	//but the PC can change that via TFs, so do i store the old color so there's continuity? or should i be pedantic and say that they technically no longer have hair follicles,
 	//so there's no way to keep the old color?
@@ -39,7 +50,11 @@ namespace CoC.Backend.BodyParts
 	//right now, my solution is to keep the old color, even if the PC is bald/NO_HAIR, but in the event this changes or someone accidently clears the color, every time the hairType changes
 	//the new type checks to see if the color is null or empty and replaces it with their default (which is not null or empty) if it is.
 
-	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType, HairData>, ISimultaneousMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
+	//also: we use the catch-all term 'highlights' for any sort of two-tone styling with hair. if we're being pedantic, this is somewhat incorrect - if the second tone is darker
+	//than the primary tone, it instead uses the generic term 'lowlights'. It's possible to convert RGB to HSL and then use the lightness value to compare if two colors are
+	//lighter or darker than one another, and thus correctly use "highlight" or "lowlight". But i'm not fucking with that.
+
+	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType, HairData>, IMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
 
@@ -468,27 +483,18 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Extra Strings
-		public string DescriptionWithTransparency() => type.DescriptionWithTransparency(isSemiTransparent);
+		public string DescriptionWithTransparency(bool alternateFormat = false) => type.DescriptionWithTransparency(isSemiTransparent, alternateFormat);
 
-		public string DescriptionWithColor() => type.DescriptionWithColor(AsReadOnlyData());
+		public string DescriptionWithColor(bool alternateFormat = false) => type.DescriptionWithColor(AsReadOnlyData(), alternateFormat);
 
-		public string DescriptionWithColorAndStyle() => type.DescriptionWithColorAndStyle(AsReadOnlyData());
+		public string DescriptionWithColorAndStyle(bool alternateFormat = false) => type.DescriptionWithColorAndStyle(AsReadOnlyData(), alternateFormat);
 
-		public string DescriptionWithColorLengthAndStyle() => type.DescriptionWithColorLengthAndStyle(AsReadOnlyData());
+		public string DescriptionWithColorLengthAndStyle(bool alternateFormat = false) => type.DescriptionWithColorLengthAndStyle(AsReadOnlyData(), alternateFormat);
 
-		public string FullDescription() => type.FullDescription(AsReadOnlyData());
+		public string FullDescription(bool alternateFormat = false) => type.FullDescription(AsReadOnlyData(), alternateFormat);
 
-		public string BaldOrDescriptionWithTransparency(bool baldWithArticle) => type.BaldOrDescriptionWithTransparency(isSemiTransparent, baldWithArticle);
 
-		public string BaldOrDescriptionWithColor(bool baldWithArticle) => type.BaldOrDescriptionWithColor(AsReadOnlyData(), baldWithArticle);
 
-		public string BaldOrDescriptionWithColorAndStyle(bool baldWithArticle) => type.BaldOrDescriptionWithColorAndStyle(AsReadOnlyData(), baldWithArticle);
-
-		public string BaldOrDescriptionWithColorLengthAndStyle(bool baldWithArticle) => type.BaldOrDescriptionWithColorLengthAndStyle(AsReadOnlyData(), baldWithArticle);
-
-		public string BaldOrLongDescription(bool baldWithArticle) => type.BaldOrLongDescription(AsReadOnlyData(), baldWithArticle);
-
-		public string BaldOrFullDescription(bool baldWithArticle) => type.BaldOrFullDescription(AsReadOnlyData(), baldWithArticle);
 		#endregion
 		#region HairAwareHelper
 		public override HairData AsReadOnlyData()
@@ -498,7 +504,8 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Dyeable
-		byte IMultiDyeable.numDyeableMembers => 2;
+		//hair, highlight, both. all 3 are always available, assuming the creature has hair.
+		byte IMultiDyeable.numDyeableMembers => 3;
 
 		bool IMultiDyeable.allowsDye(byte index)
 		{
@@ -506,33 +513,30 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			else if (index <= 1)
-			{
-				return type.canDye;
-			}
 			else
 			{
-				throw new NotImplementedException("Somebody added a new dyeable member and didn't implement it correctly.");
+				return type.canDye;
 			}
 		}
 
 		bool IMultiDyeable.isDifferentColor(HairFurColors dyeColor, byte index)
 		{
-			if (index >= numDyeMembers)
+			HairDyeLocations location = (HairDyeLocations)index;
+			if (!location.IsDefined())
 			{
 				return false;
 			}
-			else if (index == 1)
-			{
-				return dyeColor != highlightColor;
-			}
-			else if (index == 0)
+			else if (location == HairDyeLocations.MAIN_COLOR)
 			{
 				return dyeColor != hairColor;
 			}
+			else if (location == HairDyeLocations.HIGHLIGHT)
+			{
+				return dyeColor != highlightColor;
+			}
 			else
 			{
-				throw new NotImplementedException("Somebody added a new dyeable member and didn't implement it correctly.");
+				return dyeColor != highlightColor || dyeColor != hairColor;
 			}
 		}
 
@@ -543,53 +547,76 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			else if (index == 1)
+			//if we've reached this point, we can assume location is defined. no need to check it.
+			HairDyeLocations location = (HairDyeLocations)index;
+
+			bool success = false;
+
+
+
+			if (location != HairDyeLocations.MAIN_COLOR)
 			{
-				return type.tryToDye(ref _highlightColor, false, in _hairColor, dye);
+				success |= type.tryToDye(ref _highlightColor, false, _hairColor, dye);
 			}
-			else
+
+			if (location != HairDyeLocations.HIGHLIGHT)
 			{
-				return type.tryToDye(ref _hairColor, true, in _highlightColor, dye);
+				success |= type.tryToDye(ref _hairColor, true, _highlightColor, dye);
+			}
+
+			return success;
+		}
+
+		string IMultiDyeable.buttonText()
+		{
+			return Name();
+		}
+
+
+
+		string IMultiDyeable.memberButtonText(byte index)
+		{
+			HairDyeLocations location = (HairDyeLocations)index;
+			switch (location)
+			{
+				case HairDyeLocations.ALL_HAIR:
+					return AllHairStr();
+				case HairDyeLocations.HIGHLIGHT:
+					return HighlightStr();
+				case HairDyeLocations.MAIN_COLOR:
+					return RegularHairStr();
+				default:
+					return "";
 			}
 		}
 
-		string IMultiDyeable.buttonText(byte index)
+		string IMultiDyeable.memberLocationDesc(byte index, out bool isPlural)
 		{
-			if (index >= numDyeMembers)
+			HairDyeLocations location = (HairDyeLocations)index;
+			switch (location)
 			{
-				return "";
-			}
-			else if (index == 1)
-			{
-				return HighlightStr();
-			}
-			else if (index == 0)
-			{
-				return Name();
-			}
-			else
-			{
-				throw new System.NotImplementedException("Hair's multidyeable was not fully implemented. Consider fixing this. ");
+				case HairDyeLocations.ALL_HAIR:
+					return YourHairAllStr(out isPlural);
+				case HairDyeLocations.HIGHLIGHT:
+					return YourHighlightsStr(out isPlural);
+				case HairDyeLocations.MAIN_COLOR:
+					return YourHairRegularStr(out isPlural);
+				default:
+					isPlural = false;
+					return "";
 			}
 		}
 
-		string IMultiDyeable.locationDesc(byte index)
+		string IMultiDyeable.memberPostDyeDescription(byte index)
 		{
-			if (index >= numDyeMembers)
+			HairDyeLocations location = (HairDyeLocations)index;
+			if (!location.IsDefined())
 			{
 				return "";
 			}
-			else if (index == 1)
-			{
-				return YourHighlightsStr();
-			}
-			else if (index == 0)
-			{
-				return YourHairStr();
-			}
 			else
 			{
-				throw new System.NotImplementedException("Hair's multidyeable was not fully implemented. Consider fixing this. ");
+				return LongDescription();
 			}
 		}
 
@@ -661,7 +688,6 @@ namespace CoC.Backend.BodyParts
 
 			return sb.ToString();
 		}
-
 		#endregion
 	}
 
@@ -701,7 +727,7 @@ namespace CoC.Backend.BodyParts
 
 		public abstract bool canDye { get; }
 
-		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc,DescriptorWithArg<HairData> longDesc,
+		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, LongDescriptor<HairData> longDesc,
 			SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
 			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, longDesc, DefaultPlayerDesc, transform, restore)
 		{
@@ -715,7 +741,7 @@ namespace CoC.Backend.BodyParts
 			flavorTextForMagicHairGrowth = growFlavorText;
 
 		}
-		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc,
+		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, LongDescriptor<HairData> longDesc,
 			PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
 			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
@@ -882,7 +908,7 @@ namespace CoC.Backend.BodyParts
 			public override bool canStyle => true;
 
 			public GenericHairType(HairFurColors defaultHairColor, float defaultLength, Func<float, float> handleHairLengthOnTransform,
-				SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
+				SimpleDescriptor shortDesc, LongDescriptor<HairData> longDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
 				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, longDesc, playerDesc, growStr, cutStr, transform, restore)
 			{
@@ -890,7 +916,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			public GenericHairType(HairFurColors defaultHairColor, float defaultLength, Func<float, float> handleHairLengthOnTransform,
-				SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc, SimpleDescriptor growStr,
+				SimpleDescriptor shortDesc, LongDescriptor<HairData> longDesc, SimpleDescriptor growStr,
 				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, longDesc, growStr, cutStr, transform, restore)
 			{
@@ -967,7 +993,7 @@ namespace CoC.Backend.BodyParts
 			internal override AttackBase attack => _attack; //caught a stack overflow here because attack was attack.
 			private readonly AttackBase _attack;
 
-			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc, DescriptorWithArg<HairData> longDesc,
+			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc, LongDescriptor<HairData> longDesc,
 				SimpleDescriptor whyNoGrowingDesc, SimpleDescriptor whyNoCuttingDesc, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, longDesc, whyNoGrowingDesc, whyNoCuttingDesc, transform, restore)
 			{
@@ -1111,27 +1137,15 @@ namespace CoC.Backend.BodyParts
 
 		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
 
-		public string DescriptionWithTransparency() => type.DescriptionWithTransparency(isSemiTransparent);
+		public string DescriptionWithTransparency(bool alternateFormat = false) => type.DescriptionWithTransparency(isSemiTransparent, alternateFormat);
 
-		public string DescriptionWithColor() => type.DescriptionWithColor(this);
+		public string DescriptionWithColor(bool alternateFormat = false) => type.DescriptionWithColor(this, alternateFormat);
 
-		public string DescriptionWithColorAndStyle() => type.DescriptionWithColorAndStyle(this);
+		public string DescriptionWithColorAndStyle(bool alternateFormat = false) => type.DescriptionWithColorAndStyle(this, alternateFormat);
 
-		public string DescriptionWithColorLengthAndStyle() => type.DescriptionWithColorLengthAndStyle(this);
+		public string DescriptionWithColorLengthAndStyle(bool alternateFormat = false) => type.DescriptionWithColorLengthAndStyle(this, alternateFormat);
 
-		public string FullDescription() => type.FullDescription(this);
-
-		public string BaldOrDescriptionWithTransparency(bool baldWithArticle) => type.BaldOrDescriptionWithTransparency(isSemiTransparent, baldWithArticle);
-
-		public string BaldOrDescriptionWithColor(bool baldWithArticle) => type.BaldOrDescriptionWithColor(this, baldWithArticle);
-
-		public string BaldOrDescriptionWithColorAndStyle(bool baldWithArticle) => type.BaldOrDescriptionWithColorAndStyle(this, baldWithArticle);
-
-		public string BaldOrDescriptionWithColorLengthAndStyle(bool baldWithArticle) => type.BaldOrDescriptionWithColorLengthAndStyle(this, baldWithArticle);
-
-		public string BaldOrLongDescription(bool baldWithArticle) => type.BaldOrLongDescription(this, baldWithArticle);
-
-		public string BaldOrFullDescription(bool baldWithArticle) => type.BaldOrFullDescription(this, baldWithArticle);
+		public string FullDescription(bool alternateFormat = false) => type.FullDescription(this, alternateFormat);
 
 		public override HairData AsCurrentData()
 		{

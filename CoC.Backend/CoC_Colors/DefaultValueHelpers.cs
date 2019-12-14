@@ -143,6 +143,7 @@ namespace CoC.Backend.CoC_Colors
 		public static EyeColor defaultSpiderEyeColor => EyeColor.BLACK;
 		public static Tones defaultSpiderTone => Tones.BLACK;
 
+		public static Tones defaultTentacleTone => Tones.CERULEAN;
 
 		public static EyeColor defaultWolfEyeColor => EyeColor.AMBER;
 		public static FurColor defaultWolfFurColor => new FurColor(HairFurColors.BLACK, HairFurColors.GRAY, FurMulticolorPattern.NO_PATTERN);

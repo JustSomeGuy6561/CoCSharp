@@ -104,7 +104,6 @@ namespace CoC.Frontend.Engine
 		{
 			//ClearOutput();
 			//OutputText("Not Yet Implemented :)");
-			FrontendSessionSave.data.SillyModeLocal = false;
 			BackendSessionSave.data.difficulty = 1;
 			//hunger enabled is false. NYI.
 			BackendSessionSave.data.HungerEnabled = false;

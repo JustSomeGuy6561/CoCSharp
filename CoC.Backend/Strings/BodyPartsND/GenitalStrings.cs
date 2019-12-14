@@ -187,10 +187,10 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 			bool mismatched = _cocks.Exists(x => x.type != _cocks[0].type);
 
-			return mismatched ? CockType.GenericCockNoun() + "s" : cocks[0].ShortDescription() + "s";
+			return mismatched ? CockType.GenericCockNoun(true) : cocks[0].ShortDescription(false, true);
 		}
 
-		public string OneCockOrCocksText(bool capital)
+		public string OneCockOrCocksText(string pronoun = "your")
 		{
 			if (cocks.Count == 0)
 			{
@@ -198,12 +198,12 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 			else if (cocks.Count == 1)
 			{
-				return (capital ? "Your " : "your ") + AllCocksShortDescription();
+				return pronoun + " " + AllCocksShortDescription();
 			}
-			else return (capital ? "One " : "one ") + "of your " + AllCocksShortDescription();
+			else return "one of " + pronoun + " " + AllCocksShortDescription();
 		}
 
-		public string EachCockOrCocksText(bool capital)
+		public string EachCockOrCocksText(string pronoun = "your")
 		{
 			if (cocks.Count == 0)
 			{
@@ -211,9 +211,9 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 			else if (cocks.Count == 1)
 			{
-				return (capital ? "Your " : "your ") + AllCocksShortDescription();
+				return pronoun + " " + AllCocksShortDescription();
 			}
-			else return (capital ? "Each " : "each ") + "of your " + AllCocksShortDescription();
+			else return "each of " + pronoun + " " + AllCocksShortDescription();
 		}
 
 		public string AllCocksLongDescription()
@@ -312,7 +312,7 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 					plural = true;
 				}
 
-				sb.Append(cock.LongDescription() + (plural ? "s" : "") + " is " + Measurement.ToNearestLargeAndSmallUnit(cock.length, false) + " long and " +
+				sb.Append(cock.AdjectiveText(false) + " " + Cock.GenericCockNoun(plural) + " is " + Measurement.ToNearestLargeAndSmallUnit(cock.length, false) + " long and " +
 					Measurement.ToNearestSmallUnit(cock.girth, false, false));
 				if (rando % 3 == 0)
 				{
@@ -365,14 +365,49 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 			if (vaginas.Count == 1)
 			{
+				var vagina = vaginas[0];
+				sb.Append("You have " + vagina.LongDescription(true) + ", with " + vagina.clit.LongDescription(true));
+				if (vagina.isVirgin)
+				{
+					sb.Append("and an intact hymen");
+				}
+				sb.Append(". ");
 				sb.Append(vaginas[0].PlayerDescription());
 			}
+			/*StringBuilder sb = new StringBuilder();
+		bool onlyOneVag = player.vaginas.Count == 1;
+		//start with intro for this vag.
+		if (onlyOneVag)
+		{
+			sb.Append();
+		}
+		else if (vagina.vaginaIndex == 0)
+		{
+			sb.Append("Your first is a" + vagina.ShortDescription());
+		}
+		else
+		{
+			sb.Append("Your second is a" + vagina.ShortDescription());
+		}
+		//clit
+		sb.Append();
+		//virgin.
+
+		return sb.ToString();*/
 			else
 			{
 				sb.Append("Unlike most " + gender.AsText() + "s, you have a pair of vaginas, situated alongside one another. ");
-				foreach (var vag in vaginas)
+				for (int x = 0; x < 2; x++)
 				{
-					sb.Append(vag.PlayerDescription());
+					var vagina = vaginas[x];
+					sb.Append("Your " + Utils.NumberAsPlace(x) + " is " + vagina.LongDescription(true) + ", with " + vagina.clit.LongDescription(true));
+					if (vagina.isVirgin)
+					{
+						sb.Append("and an intact hymen");
+					}
+					sb.Append(". ");
+					sb.Append(vagina.PlayerDescription());
+					sb.Append(Environment.NewLine);
 				}
 			}
 
@@ -426,11 +461,11 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 				}
 				else if (wetnessLevel == 1)
 				{
-					return "Moisture gleams in "; //horny and below wet or not horny and between wet and max wetness. 
+					return "Moisture gleams in "; //horny and below wet or not horny and between wet and max wetness.
 				}
 				else if (wetnessLevel == 2)
 				{
-					return "Occasional beads of lubricant drip from "; //uber horny and below wet or horny and above wet and not max or not horny and max. 
+					return "Occasional beads of lubricant drip from "; //uber horny and below wet or horny and above wet and not max or not horny and max.
 				}
 				else if (wetnessLevel == 3) //uber horny and above wet, but not max. or horny and max.
 				{
@@ -472,11 +507,11 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 				}
 				else if (wetnessLevel == 1)
 				{
-					return "gleams"; //horny and below wet or not horny and between wet and max wetness. 
+					return "gleams"; //horny and below wet or not horny and between wet and max wetness.
 				}
 				else if (wetnessLevel == 2)
 				{
-					return "drips"; //uber horny and below wet or horny and above wet and not max or not horny and max. 
+					return "drips"; //uber horny and below wet or horny and above wet and not max or not horny and max.
 				}
 				else if (wetnessLevel == 3) //uber horny and above wet, but not max. or horny and max.
 				{
@@ -574,7 +609,7 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 					//wetness normal, non-normal looseness.
 					else if (first.wetness == VaginalWetness.NORMAL)
 					{
-						return "Both of your " + VaginaType.VaginaNoun() + "s are " + loosenessText(first.looseness) + ", but otherwise normal.";
+						return "Both of your " + VaginaType.VaginaNoun(true) + " are " + loosenessText(first.looseness) + ", but otherwise normal.";
 					}
 					//looseness normal, non-normal wetness.
 					else if (first.looseness == VaginalLooseness.NORMAL)
@@ -590,7 +625,7 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 					}
 					else
 					{
-						return "Both of your " + VaginaType.VaginaNoun() + "s are " + loosenessText(first.looseness) + ", and " + WetnessText(first).ToLower() + "from both of them";
+						return "Both of your " + VaginaType.VaginaNoun(true) + " are " + loosenessText(first.looseness) + ", and " + WetnessText(first).ToLower() + "from both of them";
 					}
 				}
 				//same looseness, different wetness.
@@ -609,7 +644,7 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 						describe = "your second is " + second.wetness.AsAdjective() + "; your first: " + first.wetness.AsAdjective();
 					}
 
-					return "Both of your " + VaginaType.VaginaNoun() + "s are " + loosenessText(first.looseness) + ", but your " + wetter + " is wetter - " + describe + ".";
+					return "Both of your " + VaginaType.VaginaNoun(true) + " are " + loosenessText(first.looseness) + ", but your " + wetter + " is wetter - " + describe + ".";
 				}
 				//same wetness, differnet looseness.
 				else if (first.wetness == second.wetness)
@@ -619,7 +654,7 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 					{
 						string looser = first.looseness > second.looseness ? "first" : "second";
 
-						return "Both of your " + VaginaType.VaginaNoun() + "s are " + first.wetness.AsAdjective() + " and are so loose they gape; but your " + looser +
+						return "Both of your " + VaginaType.VaginaNoun(true) + " are " + first.wetness.AsAdjective() + " and are so loose they gape; but your " + looser +
 							" is slightly looser. ";
 					}
 					else
@@ -636,7 +671,7 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 							describe = "your second is " + loosenessText(second.looseness) + "; your first: " + loosenessText(first.looseness);
 						}
 
-						return "Both of your " + VaginaType.VaginaNoun() + "s are " + first.wetness.AsAdjective() + ", but your " + looser + " is looser - " + describe + ".";
+						return "Both of your " + VaginaType.VaginaNoun(true) + " are " + first.wetness.AsAdjective() + ", but your " + looser + " is looser - " + describe + ".";
 					}
 
 				}
@@ -692,12 +727,13 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 		}
 
-		private string BreastRowCountText(bool withEven)
+		private string BreastRowCountText(bool alternateFormat, bool withEven)
 		{
 			string evenStr = withEven ? (_breasts.Exists(x => x.cupSize != _breasts[0].cupSize) ? "uneven " : "even ") : "";
 			if (_breasts.Count <= 1)
 			{
-				return "";
+				if (alternateFormat) return "a pair of ";
+				else return "";
 			}
 			else if (_breasts.Count == 2)
 			{
@@ -713,19 +749,52 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 		}
 
-		public string AllBreastsShortDescription()
+
+		public string AllBreastsShortDescription(bool alternateFormat = false)
 		{
-			return BreastRowCountText(true) + this.AverageBreasts().ShortDescription();
+			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().ShortDescription();
 		}
 
-		public string AllBreastsLongDescription()
+		public string AllBreastsLongDescription(bool alternateFormat = false)
 		{
-			return BreastRowCountText(true) + this.AverageBreasts().LongDescription(false);
+			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().LongDescription(false, true);
 		}
 
-		public string AllBreastsFullDescription()
+		public string AllBreastsFullDescription(bool alternateFormat = false, bool includeNipples = false)
 		{
-			return BreastRowCountText(true) + this.AverageBreasts().FullDescription(false);
+			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().FullDescription(false, false, true, includeNipples);
+		}
+
+		public string ChestOrAllBreastsShort(bool alternateFormat = false)
+		{
+			if (numBreastRows == 1 && _breasts[0].isMale)
+			{
+				return alternateFormat ? "a chest" : "chest";
+			}
+			else return AllBreastsShortDescription(alternateFormat);
+		}
+
+		public string ChestOrAllBreastsLong(bool alternateFormat = false)
+		{
+			if (numBreastRows == 1 && _breasts[0].isMale)
+			{
+				return alternateFormat ? "a flat chest" : "flat chest";
+			}
+			else return AllBreastsLongDescription(alternateFormat);
+		}
+
+		public string ChestOrAllBreastsFull(bool alternateFormat = false, bool includeNipples = false)
+		{
+			if (numBreastRows == 1 && _breasts[0].isMale)
+			{
+				string chestDesc = alternateFormat ? "a flat chest" : "flat chest";
+				if (includeNipples)
+				{
+					return chestDesc + " with " + NippleStrings.NippleSizeAdjective(_breasts[0].nipples.length) + " nipples";
+				}
+				else return chestDesc;
+			}
+			else return AllBreastsFullDescription(alternateFormat, includeNipples);
 		}
 
 		private string LactationSlowedDownDueToInactivity(bool becameOverFullThisPass, LactationStatus oldLevel)

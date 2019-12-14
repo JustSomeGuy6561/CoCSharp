@@ -14,20 +14,23 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Cock";
 		}
+
+		public static string GenericCockNoun(bool plural = false) => CockType.GenericCockNoun(plural);
 	}
 
 	public partial class CockType
 	{
-		public static string GenericCockNoun()
+		public static string GenericCockNoun(bool plural = false)
 		{
-			return Utils.RandomChoice("cock", "dick", "dong", "endowment", "mast", "member", "pecker", "penis", "prick", "shaft", "tool");
+			if (!plural) return Utils.RandomChoice("cock", "dick", "dong", "endowment", "mast", "member", "pecker", "penis", "prick", "shaft", "tool");
+			else return Utils.RandomChoice("cocks", "dicks", "dongs", "endowments", "masts", "members", "peckers", "penises", "pricks", "shafts", "tools");
 		}
 
 		//New cock adjectives. The old one sucked dicks
 		//This function handles all cockAdjectives. Previously there were separate functions for the player, monsters and NPCs.
 		//C# note: this still works for everything, but all the random data is wrapped in the CockData class. It's more flexible this way- adding or removing
 		//extra variables wont break existing code.
-		public static string CockAdjectiveText(CockData cock, bool multipleAdjectives)
+		internal static string CockAdjectiveText(CockData cock, bool multipleAdjectives)
 		{
 			//modified to allow ultra verbose descriptions - the original order of precedence is kept, but the order it's displayed is new.
 			//note that this only applies to the verbose version with multiple objectives - for single adjective, this is irrelevant.
@@ -153,14 +156,14 @@ namespace CoC.Backend.BodyParts
 		{
 				return Utils.RandomChoice("crown", "crown", "head", "cock-head");
 		}
-		private static string HumanDesc(bool noAdjective = false)
+		private static string HumanDesc(bool noAdjective, bool plural = false)
 		{
-			return (Utils.RandBool() || noAdjective ? Utils.RandomChoice("human ", "humanoid ", "ordinary-looking ") : "") + GenericCockNoun();
+			return (Utils.RandBool() || noAdjective ? Utils.RandomChoice("human ", "humanoid ", "ordinary-looking ") : "") + GenericCockNoun(plural);
 		}
 
-		private static string HumanLongDesc(CockData cock)
+		private static string HumanLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string HumanPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -191,14 +194,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("flare", "flat tip");
 		}
-		private static string HorseDesc(bool noAdjective = false)
+		private static string HorseDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = (Utils.Rand(3) >= 1 && !noAdjective ? Utils.RandomChoice("flared ", "bestial ", "flat-tipped ", "mushroom-headed ", "") : "");
-			return adj + Utils.RandomChoice("horse-", "equine ", "stallion-", "beast ") + GenericCockNoun();
+			return adj + Utils.RandomChoice("horse-", "equine ", "stallion-", "beast ") + GenericCockNoun(plural);
 		}
-		private static string HorseLongDesc(CockData cock)
+		private static string HorseLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string HorsePlayerStr(Cock cock, PlayerBase player)
 		{
@@ -216,14 +219,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("pointed tip", "narrow tip");
 		}
-		private static string DogDesc(bool noAdjective = false)
+		private static string DogDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.RandBool() && !noAdjective ? Utils.RandomChoice("pointed ", "knotty ", "knotted ", "bestial ", "animalistic ") : "";
-			return adj + Utils.RandomChoice("dog-", "dog-shaped ", "canine ", "bestial ", " puppy-", "canine ") + GenericCockNoun();
+			return adj + Utils.RandomChoice("dog-", "dog-shaped ", "canine ", "bestial ", " puppy-", "canine ") + GenericCockNoun(plural);
 		}
-		private static string DogLongDesc(CockData cock)
+		private static string DogLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string DogPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -241,14 +244,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("tainted crown", "nub-ringed tip");
 		}
-		private static string DemonDesc(bool noAdjective = false)
+		private static string DemonDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.RandomChoice("corrupted ", "nub-covered ", "nubby ", "perverse ", "bumpy ", "cursed ", "infernal ", "unholy ", "blighted ");
-			return adj + (Utils.RandBool() || noAdjective ? Utils.RandomChoice("demon-", "demonic ") : "") + GenericCockNoun();
+			return adj + (Utils.RandBool() || noAdjective ? Utils.RandomChoice("demon-", "demonic ") : "") + GenericCockNoun(plural);
 		}
-		private static string DemonLongDesc(CockData cock)
+		private static string DemonLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string DemonPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -267,14 +270,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("mushroom-like tip", "wide plant-like crown");
 		}
-		private static string TentacleDesc(bool noAdjective = false)
+		private static string TentacleDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.RandBool() && !noAdjective ? Utils.RandomChoice("twisting ", "wriggling ", "writhing", "sinuous ", "squirming ", "undulating ", "slithering ") : "";
-			return adj + Utils.RandomChoice("tentacle-", "plant-", "tentacle-", "plant-", "flora ", "smooth ", "vine-", "vine-shaped ", "", "") + GenericCockNoun();
+			return adj + Utils.RandomChoice("tentacle-", "plant-", "tentacle-", "plant-", "flora ", "smooth ", "vine-", "vine-shaped ", "", "") + GenericCockNoun(plural);
 		}
-		private static string TentacleLongDesc(CockData cock)
+		private static string TentacleLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string TentaclePlayerStr(Cock cock, PlayerBase player)
 		{
@@ -294,14 +297,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("point", "narrow tip");
 		}
-		private static string CatDesc(bool noAdjective = false)
+		private static string CatDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.Rand(3) >= 1 && !noAdjective ? Utils.RandomChoice("pink ", "animalistic ", "spiny ", "spined ", "oddly-textured ", "barbed ", "nubby ") : "";
-			return adj + Utils.RandomChoice("feline ", "cat-", "kitty-", " kitten-") + GenericCockNoun();
+			return adj + Utils.RandomChoice("feline ", "cat-", "kitty-", " kitten-") + GenericCockNoun(plural);
 		}
-		private static string CatLongDesc(CockData cock)
+		private static string CatLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string CatPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -321,14 +324,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("crown", "head");
 		}
-		private static string LizardDesc(bool noAdjective = false)
+		private static string LizardDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.RandBool() && !noAdjective ? Utils.RandomChoice("purple ", "bulbous ", "bulging ") : "";
-			return adj + Utils.RandomChoice("reptilian ", "inhuman ", "serpentine ", " snake-", " snake-") + GenericCockNoun();
+			return adj + Utils.RandomChoice("reptilian ", "inhuman ", "serpentine ", " snake-", " snake-") + GenericCockNoun(plural);
 		}
-		private static string LizardLongDesc(CockData cock)
+		private static string LizardLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string LizardPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -346,15 +349,15 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("tentacle-ringed head", "stinger-laden crown");
 		}
-		private static string AnemoneDesc(bool noAdjective = false)
+		private static string AnemoneDesc(bool noAdjective, bool plural = false)
 		{
 			return Utils.RandomChoice("anemone ", "tentacle-ringed ", "blue ", "stinger-laden ", "pulsating ", "anemone ", "stinger-coated ", "blue ",
-				"tentacle-ringed ", "near-transparent ", "squirming ") + GenericCockNoun();
+				"tentacle-ringed ", "near-transparent ", "squirming ") + GenericCockNoun(plural);
 		}
 
-		private static string AnemoneLongDesc(CockData cock)
+		private static string AnemoneLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string AnemonePlayerStr(Cock cock, PlayerBase player)
 		{
@@ -373,14 +376,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("tip", "point");
 		}
-		private static string KangarooDesc(bool noAdjective = false)
+		private static string KangarooDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.RandBool() && !noAdjective ? Utils.RandomChoice("pointed ", "tapered ", "curved ", "squirming ") : "";
-			return adj + (Utils.Rand(4) >= 1 || noAdjective ? Utils.RandomChoice("kangaroo-like ", "marsupial ") : "") + GenericCockNoun();
+			return adj + (Utils.Rand(4) >= 1 || noAdjective ? Utils.RandomChoice("kangaroo-like ", "marsupial ") : "") + GenericCockNoun(plural);
 		}
-		private static string KangarooLongDesc(CockData cock)
+		private static string KangarooLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string KangarooPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -398,14 +401,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("tapered head", "tip");
 		}
-		private static string DragonDesc(bool noAdjective = false)
+		private static string DragonDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.RandBool() && !noAdjective ? Utils.RandomChoice("segmented ", "pointed ", "knotted ", "mythical ", "tapered", "unusual ", "scaly ") : "";
-			return adj + Utils.RandomChoice("dragon-like ", "draconic ", "dragon-") + GenericCockNoun();
+			return adj + Utils.RandomChoice("dragon-like ", "draconic ", "dragon-") + GenericCockNoun(plural);
 		}
-		private static string DragonLongDesc(CockData cock)
+		private static string DragonLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string DragonPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -425,15 +428,15 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("star tip", "blooming cock-head", "open crown", "alien tip", "bizarre head");
 		}
-		private static string DisplacerDesc(bool noAdjective = false)
+		private static string DisplacerDesc(bool noAdjective, bool plural = false)
 		{
 
 			string adj = noAdjective ? "" : Utils.RandomChoice("tentacle-tipped ", "starfish-tipped ", "bizarre ", "beastly ", "cthulhu-tier ", "star-capped ", "knotted ");
-			return adj + (Utils.Rand(3) >= 1 || noAdjective ? Utils.RandomChoice("coerl ", "alien ", "almost-canine ", "animal ", "displacer ") : "") + GenericCockNoun();
+			return adj + (Utils.Rand(3) >= 1 || noAdjective ? Utils.RandomChoice("coerl ", "alien ", "almost-canine ", "animal ", "displacer ") : "") + GenericCockNoun(plural);
 		}
-		private static string DisplacerLongDesc(CockData cock)
+		private static string DisplacerLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string DisplacerPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -452,14 +455,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("pointed tip", "narrow tip");
 		}
-		private static string FoxDesc(bool noAdjective = false)
+		private static string FoxDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.RandBool() && !noAdjective ? Utils.RandomChoice("pointed ", "knotty ", "knotted", "bestial ", "animalistic ") : "";
-			return adj + Utils.RandomChoice("fox-", "fox-shaped ", "vulpine ", "vixen-") + GenericCockNoun();
+			return adj + Utils.RandomChoice("fox-", "fox-shaped ", "vulpine ", "vixen-") + GenericCockNoun(plural);
 		}
-		private static string FoxLongDesc(CockData cock)
+		private static string FoxLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string FoxPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -477,13 +480,13 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("narrow tip", "flat point");
 		}
-		private static string BeeDesc(bool noAdjective = false)
+		private static string BeeDesc(bool noAdjective, bool plural = false)
 		{
-			return Utils.RandomChoice("bee ", "insectoid ", "furred ") + GenericCockNoun();
+			return Utils.RandomChoice("bee ", "insectoid ", "furred ") + GenericCockNoun(plural);
 		}
-		private static string BeeLongDesc(CockData cock)
+		private static string BeeLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string BeePlayerStr(Cock cock, PlayerBase player)
 		{
@@ -502,13 +505,13 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("corkscrew tip", "corkscrew head");
 		}
-		private static string PigDesc(bool noAdjective = false)
+		private static string PigDesc(bool noAdjective, bool plural = false)
 		{
-			return Utils.RandomChoice("pig ", "swine ", "pig-like ", "corkscrew-tipped ", "hoggish ", "pink pig-", "pink ") + GenericCockNoun();
+			return Utils.RandomChoice("pig ", "swine ", "pig-like ", "corkscrew-tipped ", "hoggish ", "pink pig-", "pink ") + GenericCockNoun(plural);
 		}
-		private static string PigLongDesc(CockData cock)
+		private static string PigLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string PigPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -526,13 +529,13 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("tapered head", "tip");
 		}
-		private static string AvianDesc(bool noAdjective = false)
+		private static string AvianDesc(bool noAdjective, bool plural = false)
 		{
-			return Utils.RandomChoice("bird ", "avian ", "tapered ") + GenericCockNoun();
+			return Utils.RandomChoice("bird ", "avian ", "tapered ") + GenericCockNoun(plural);
 		}
-		private static string AvianLongDesc(CockData cock)
+		private static string AvianLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string AvianPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -550,13 +553,13 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("flared head", "rhinoceros dickhead");
 		}
-		private static string RhinoDesc(bool noAdjective = false)
+		private static string RhinoDesc(bool noAdjective, bool plural = false)
 		{
-			return Utils.RandomChoice("oblong ", "rhino ", "bulged rhino ") + GenericCockNoun();
+			return Utils.RandomChoice("oblong ", "rhino ", "bulged rhino ") + GenericCockNoun(plural);
 		}
-		private static string RhinoLongDesc(CockData cock)
+		private static string RhinoLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string RhinoPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -574,14 +577,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("quad heads", "echidna quad heads");
 		}
-		private static string EchidnaDesc(bool noAdjective = false)
+		private static string EchidnaDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = (Utils.RandBool() && !noAdjective ? Utils.RandomChoice("strange ", "four-headed ", "exotic ", "unusual ") : "");
-			return adj + (Utils.Rand(4) >= 1 || noAdjective ? "echidna " : "") + GenericCockNoun();
+			return adj + (Utils.Rand(4) >= 1 || noAdjective ? "echidna " : "") + GenericCockNoun(plural);
 		}
-		private static string EchidnaLongDesc(CockData cock)
+		private static string EchidnaLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string EchidnaPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -599,14 +602,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("pointed tip", "narrow tip");
 		}
-		private static string WolfDesc(bool noAdjective = false)
+		private static string WolfDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = (Utils.Rand(3) >= 1 && !noAdjective ? Utils.RandomChoice("knotted ", "knotty ", "animalistic ", "pointed ", "bestial ") : "");
-			return adj + Utils.RandomChoice("wolf-shaped ", "wolf-", "wolf-", "wolf-", "canine ", "", "") + GenericCockNoun();
+			return adj + Utils.RandomChoice("wolf-shaped ", "wolf-", "wolf-", "wolf-", "canine ", "", "") + GenericCockNoun(plural);
 		}
-		private static string WolfLongDesc(CockData cock)
+		private static string WolfLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string WolfPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -626,14 +629,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("pointed tip", "narrow tip");
 		}
-		private static string RedPandaDesc(bool noAdjective = false)
+		private static string RedPandaDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.Rand(3) >= 1 && !noAdjective ? Utils.RandomChoice("animalistic ", "oddly-textured ") : "";
-			return adj + Utils.RandomChoice("panda-", "panda-like", "red panda ") + GenericCockNoun();
+			return adj + Utils.RandomChoice("panda-", "panda-like", "red panda ") + GenericCockNoun(plural);
 		}
-		private static string RedPandaLongDesc(CockData cock)
+		private static string RedPandaLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string RedPandaPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -653,14 +656,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("pointed tip", "narrow tip");
 		}
-		private static string FerretDesc(bool noAdjective = false)
+		private static string FerretDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.Rand(3) >= 1 && !noAdjective ? Utils.RandomChoice("animalistic ", "oddly-textured ") : "";
-			return adj + Utils.RandomChoice("ferret-", "ferret-like") + GenericCockNoun();
+			return adj + Utils.RandomChoice("ferret-", "ferret-like") + GenericCockNoun(plural);
 		}
-		private static string FerretLongDesc(CockData cock)
+		private static string FerretLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string FerretPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -680,14 +683,14 @@ namespace CoC.Backend.BodyParts
 		{
 			return Utils.RandomChoice("gooey crown", "soft dickhead", "elastic head");
 		}
-		private static string GooDesc(bool noAdjective = false)
+		private static string GooDesc(bool noAdjective, bool plural = false)
 		{
 			string adj = Utils.RandBool() && !noAdjective ? "semi-transparent " : "";
-			return adj + Utils.RandomChoice("gooey ", "goo-", "gelatenous") + GenericCockNoun();
+			return adj + Utils.RandomChoice("gooey ", "goo-", "gelatenous") + GenericCockNoun(plural);
 		}
-		private static string GooLongDesc(CockData cock)
+		private static string GooLongDesc(CockData cock, bool alternateForm)
 		{
-			return GenericLongDesc(cock);
+			return GenericLongDesc(cock, alternateForm);
 		}
 		private static string GooPlayerStr(Cock cock, PlayerBase player)
 		{
@@ -704,14 +707,25 @@ namespace CoC.Backend.BodyParts
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string GenericLongDesc(CockData cock)
+		//i should handle articles manually, but i really don't want to.
+		private static string GenericLongDesc(CockData cock, bool alternateForm)
 		{
-			return CockAdjectiveText(cock, false) + cock.ShortDescription();
+			string text = CockAdjectiveText(cock, false) + cock.ShortDescription();
+			if (alternateForm)
+			{
+				return Utils.AddArticle(text);
+			}
+			else return text;
 		}
 
-		public string FullDescription(CockData cock)
+		protected string GenericFullDescription(CockData cock, bool alternateForm = false)
 		{
-			return CockAdjectiveText(cock, true) + cock.ShortDescription(true);
+			string text = CockAdjectiveText(cock, true) + cock.ShortDescription();
+			if (alternateForm)
+			{
+				return Utils.AddArticle(text);
+			}
+			else return text;
 		}
 
 		private static string GenericPlayerPostText(Cock cock, PlayerBase player)

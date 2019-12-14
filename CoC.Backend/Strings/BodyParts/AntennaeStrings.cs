@@ -23,14 +23,29 @@ namespace  CoC.Backend.BodyParts
 			return oldData.type.RestoredString(oldData, p);
 		}
 
-		private static string BeeDesc()
+		private static string BeeDesc(bool plural)
 		{
-			return "bee antennae";
+			return plural ? "bee antennae" : "bee antenna";
 		}
 
-		private static string BeeLongDesc(AntennaeData antennae)
+		private static string BeeLongDesc(AntennaeData antennae, bool plural, bool articleFormat)
 		{
-			return "a pair of cute bee antennae";
+			string article;
+			if (plural && articleFormat)
+			{
+				article = "a pair of ";
+			}
+			else if (articleFormat)
+			{
+				article = "a ";
+			}
+			//no article.
+			else
+			{
+				article = "";
+			}
+
+			return article + "cute " + BeeDesc(plural);
 		}
 
 		private static string BeePlayerStr(PlayerBase player)
@@ -50,19 +65,34 @@ namespace  CoC.Backend.BodyParts
 				+ Environment.NewLine + SafelyFormattedString.FormattedText("You've lost your antennae", StringFormats.BOLD) + "!";
 		}
 
-		private static string CockatriceDesc()
+		private static string CockatriceDesc(bool plural)
 		{
-			return "cockatrice antennae";
+			return plural ? "cockatrice antennae" : "cockatrice antenna";
 		}
 
-		private static string CockatriceLongDesc(AntennaeData antennae)
+		private static string CockatriceLongDesc(AntennaeData antennae, bool plural, bool articleFormat)
 		{
-			return "a pair of quill-like feathers atop the eyes";
+			string article;
+			if (articleFormat && plural)
+			{
+				article = "a pair of ";
+			}
+			else if (articleFormat)
+			{
+				article = "an ";
+			}
+			else
+			{
+				article = "";
+			}
+			string noun = plural ? "quill-feathers" : "quill-feather";
+
+			return article + "antenna-like " + noun;
 		}
 
 		private static string CockatricePlayerStr(PlayerBase player)
 		{
-			return "Two long antennae like feathers sit on your hairline, curling over the shape of your head. " +
+			return "Two long antenna-like feathers sit on your hairline, curling over the shape of your head. " +
 				   "They move with every expression, making even the most mundane action seem dramatic.";
 		}
 

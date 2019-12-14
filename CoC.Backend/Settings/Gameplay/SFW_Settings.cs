@@ -7,6 +7,8 @@ namespace CoC.Backend.Settings.Gameplay
 {
 	public sealed partial class SFW_Settings : GameplaySetting
 	{
+		public static bool SFW_Enabled => BackendSessionSave.data.SFW_Mode;
+
 		public SFW_Settings() : base(SfwSettingsStr, new SFW_SessionSetting(), new SFW_GlobalSetting())
 		{
 		}
@@ -19,8 +21,7 @@ namespace CoC.Backend.Settings.Gameplay
 		}
 	}
 	public sealed partial class SFW_SessionSetting : SimpleSetting
-	{ 
-		public static bool SFW_Enabled => BackendSessionSave.data.SFW_Mode;
+	{
 
 		private BackendSessionSave session => BackendSessionSave.data;
 

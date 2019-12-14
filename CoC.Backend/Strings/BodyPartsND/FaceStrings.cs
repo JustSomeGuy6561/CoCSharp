@@ -87,9 +87,54 @@ namespace CoC.Backend.BodyParts
 			return "Face";
 		}
 
-		private string YourFaceStr()
+		private string YourFaceStr(out bool isPlural)
 		{
-			return " your face";
+			if (epidermisType == EpidermisType.FEATHERS)
+			{
+				isPlural = false;
+				return "the skin beneath the feathers covering your face";
+			}
+			else if (epidermisType == EpidermisType.FUR)
+			{
+				isPlural = false;
+				return "the skin beneath the fur covering your face";
+			}
+			else if (epidermisType == EpidermisType.BARK)
+			{
+				isPlural = false;
+				return "the bark covering your face";
+			}
+			else if (epidermisType == EpidermisType.CARAPACE)
+			{
+				isPlural = false;
+				return "the carapace making up your face";
+			}
+			else if (epidermisType == EpidermisType.GOO)
+			{
+				isPlural = false;
+				return "the gooey surface of your face";
+			}
+			else if (epidermisType == EpidermisType.WOOL)
+			{
+				isPlural = false;
+				return "the skin beneath the wool covering your face";
+			}
+			else if (epidermisType == EpidermisType.SKIN)
+			{
+				isPlural = false;
+				return "the skin covering your face";
+			}
+			else if (epidermisType == EpidermisType.SCALES)
+			{
+				isPlural = true;
+				return "the scales covering your face";
+			}
+
+			else //(epidermisType == EpidermisType.EMPTY)
+			{
+				isPlural = false;
+				return "your face";
+			}
 		}
 
 		#region Human
@@ -97,9 +142,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "face";
 		}
-		private static string HumanLongDesc(FaceData face)
+		private static string HumanLongDesc(FaceData face, bool alternateFormat)
 		{
-			return face.skinTexture.AsString() + " human face";
+			return face.skinTexture.AsString(alternateFormat) + " human face";
 		}
 		private static string HumanPlayerStr(Face face, PlayerBase player)
 		{
@@ -120,9 +165,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "horse-like face";
 		}
-		private static string HorseLongDesc(FaceData face)
+		private static string HorseLongDesc(FaceData face, bool alternateForm)
 		{
-			return $"longe, equine muzzle covered in {face.primaryEpidermis.LongDescription()}";
+			return $"{(alternateForm ? "a " : "")}longe, equine muzzle covered in {face.primaryEpidermis.LongDescription()}";
 		}
 		private static string HorsePlayerStr(Face face, PlayerBase player)
 		{
@@ -143,9 +188,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "canine muzzle";
 		}
-		private static string DogLongDesc(FaceData face)
+		private static string DogLongDesc(FaceData face, bool alternateForm)
 		{
-			return $"{face.primaryEpidermis.LongAdjectiveDescription()} canine face";
+			return $"{face.primaryEpidermis.LongAdjectiveDescription(alternateForm)} canine face";
 		}
 		private static string DogPlayerStr(Face face, PlayerBase player)
 		{
@@ -183,7 +228,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private static string Cow_MinotaurLongDesc(FaceData face)
+		private static string Cow_MinotaurLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -217,7 +262,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "shark teeth";
 		}
-		private static string SharkLongDesc(FaceData face)
+		private static string SharkLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -241,7 +286,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "snake fangs";
 		}
-		private static string SnakeLongDesc(FaceData face)
+		private static string SnakeLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -282,7 +327,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 		}
-		private static string CatLongDesc(FaceData face)
+		private static string CatLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -323,7 +368,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "reptilian face";
 		}
-		private static string LizardLongDesc(FaceData face)
+		private static string LizardLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -371,7 +416,7 @@ namespace CoC.Backend.BodyParts
 					" Unfortunately, you still have your bunny-like teeth. Bummer. ";
 			}
 		}
-		private static string BunnyLongDesc(FaceData face)
+		private static string BunnyLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -402,7 +447,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "kangaroo face";
 		}
-		private static string KangarooLongDesc(FaceData face)
+		private static string KangarooLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -425,7 +470,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "spider fangs";
 		}
-		private static string SpiderLongDesc(FaceData face)
+		private static string SpiderLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -463,7 +508,7 @@ namespace CoC.Backend.BodyParts
 				return "Your face starts to soften, and soon the telltale facial features of a kitsune poke free from your fox-like visage. ";
 			}
 		}
-		private static string FoxLongDesc(FaceData face)
+		private static string FoxLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -503,7 +548,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "reptilian face";
 		}
-		private static string DragonLongDesc(FaceData face)
+		private static string DragonLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -545,7 +590,7 @@ namespace CoC.Backend.BodyParts
 				return "The raccoon-like features covering your face start to fall away, leaving a mostly-human face, however, a layer around your eyes remains. ";
 			}
 		}
-		private static string RaccoonLongDesc(FaceData face)
+		private static string RaccoonLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -584,7 +629,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "mouse face";
 		}
-		//shamelessly pulled from bunny. 
+		//shamelessly pulled from bunny.
 		private static string MouseMorphText(bool isStrengthening)
 		{
 			if (isStrengthening)
@@ -599,7 +644,7 @@ namespace CoC.Backend.BodyParts
 					" Unfortunately, you still have your mouse-like teeth. Bummer. ";
 			}
 		}
-		private static string MouseLongDesc(FaceData face)
+		private static string MouseLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -649,7 +694,7 @@ namespace CoC.Backend.BodyParts
 					+ "A thin layer remains here and there, notably around your eyes, giving the appearance of you wearing a ferret mask. ";
 			}
 		}
-		private static string FerretLongDesc(FaceData face)
+		private static string FerretLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -699,7 +744,7 @@ namespace CoC.Backend.BodyParts
 					+ "After it ends, you note that while your snout isn't completely gone, it's far more humanoid, now resembling that of a pig-morph. You've also lost your boar-like tusks. ";
 			}
 		}
-		private static string PigLongDesc(FaceData face)
+		private static string PigLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -729,7 +774,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "rhino face";
 		}
-		private static string RhinoLongDesc(FaceData face)
+		private static string RhinoLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -751,7 +796,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "echidna face";
 		}
-		private static string EchidnaLongDesc(FaceData face)
+		private static string EchidnaLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -773,7 +818,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "deer face";
 		}
-		private static string DeerLongDesc(FaceData face)
+		private static string DeerLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -805,7 +850,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolf face";
 		}
-		private static string WolfLongDesc(FaceData face)
+		private static string WolfLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -827,7 +872,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cockatrice face";
 		}
-		private static string CockatriceLongDesc(FaceData face)
+		private static string CockatriceLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -869,7 +914,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "red panda face";
 		}
-		private static string PandaLongDesc(FaceData face)
+		private static string PandaLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -892,7 +937,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "gooey, humanoid face";
 		}
-		private static string GooLongDesc(FaceData face)
+		private static string GooLongDesc(FaceData face, bool alternateFormat)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -913,7 +958,7 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
-		//not part of face: the text that merges between face and neck or face and body. 
+		//not part of face: the text that merges between face and neck or face and body.
 		//if neck is not humanoid - the bridge text says: "The lowest parts of your face blend with the {epidermisType string} of your neck. Speaking of, "
 		//else if body epidermis type does not match primary face epidermis type. "Your neck blends the {face.epidermisType} on your face with the {epidermisType string} of the rest of your body"
 	}

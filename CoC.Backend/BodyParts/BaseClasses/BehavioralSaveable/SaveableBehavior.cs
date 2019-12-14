@@ -27,7 +27,7 @@ namespace CoC.Backend.BodyParts
 	public abstract class SaveableBehavior<ThisClass, ContainerClass, DataClass> : BehaviorBase
 		where ThisClass : SaveableBehavior<ThisClass, ContainerClass, DataClass>
 		where ContainerClass : BehavioralSaveablePart<ContainerClass, ThisClass, DataClass>
-		where DataClass: BehavioralSaveablePartData<DataClass, ContainerClass, ThisClass>
+		where DataClass : BehavioralSaveablePartData<DataClass, ContainerClass, ThisClass>
 	{
 
 
@@ -35,14 +35,42 @@ namespace CoC.Backend.BodyParts
 		//but they make the code significantly shorter and at the same time way more
 		//functional. with these, it's possible (and easier) to support language packs.
 
-		//a short description saying the race and type. ex: Hands.CAT: "cat paws"
-		//The full description of this part.
-		private readonly DescriptorWithArg<DataClass> longStr;
-		public string LongDescription(DataClass data)
+		//A long description is a longer, more verbose form of a short description. However, this also means it's more likely to mess up grammar and sound weird, notably when used with
+		//an article (for example, "you have 'a' no hair" (bad) versus "you have no hair" (ok) or "you have a bald head" (ok) vs "you have bald head" (bad). This gets even worse when
+		//using different sentence structures (like ending in $"your {LongDescription()}"). in above example, "your bald head" is ok, but "your no hair" isn't.
+		//to handle this, each long description has an alternate form flag. It's not 100% perfect, but it's good enough for most text.
+
+
+
+		//In english, this generally means the first form will be without an article and work with "your ...", while the second will have an article and work with "you have...".
+		//note that it's possible to have both versions return the same text, if the text works with both "your..." and "you have...". Use whichever makes the most sense.
+
+		//This also works for non-English languages (if ever implemented), though what the alternate form entails in a given language may vary.
+		private readonly LongDescriptor<DataClass> longStr;
+		public string LongDescriptionPrimary(DataClass data)
 		{
 			return longStr(data);
 		}
-		//a full description of this part, with flavor text. it will be called whenever the player asks for their description.
+
+		public string LongDescriptionAlternate(DataClass data)
+		{
+			return longStr(data, true);
+		}
+
+		public string LongDescription(DataClass data, bool alternateForm)
+		{
+			return longStr(data, alternateForm);
+		}
+
+		//there are a few rare cases where the body part may be plural - a pair of wings or a pair of antennae, for example. It may be desired to have a single version of those, like
+		//"your left wing"
+
+		//to handle this, a simple plural descriptor and long plural descriptor delegate are provided. This is implemented on a case-by-case basis. The exact format and implementation
+		//may vary between classes; be aware of what it is for the class you are using.
+
+
+		//a full description of this part, with flavor text. it will be called whenever the player asks for their description. It generally will be entirely standalone, and
+		//is expected to be a full sentence.
 		private readonly PlayerBodyPartDelegate<ContainerClass> playerStr;
 		public string PlayerDescription(ContainerClass source, PlayerBase player)
 		{
@@ -66,13 +94,20 @@ namespace CoC.Backend.BodyParts
 			return restoredStr(originalData, player);
 		}
 
-		private protected SaveableBehavior(SimpleDescriptor shortDesc, DescriptorWithArg<DataClass> longDesc,
+		private protected SaveableBehavior(SimpleDescriptor shortDesc, LongDescriptor<DataClass> longDesc,
 			PlayerBodyPartDelegate<ContainerClass> playerDesc, ChangeType<DataClass> transformDesc, RestoreType<DataClass> restoreDesc) : base(shortDesc)
 		{
 			longStr = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
 			playerStr = playerDesc ?? throw new ArgumentNullException(nameof(playerDesc));
 			transformFromStr = transformDesc ?? throw new ArgumentNullException(nameof(transformDesc));
 			restoredStr = restoreDesc ?? throw new ArgumentNullException(nameof(restoreDesc));
+		}
+
+		protected static LongDescriptor<T> LongPluralHelper<T>(LongPluralDescriptor<T> longDescWithPluralFlag, bool defaultsToPlural = true)
+		{
+			if (longDescWithPluralFlag is null) throw new ArgumentNullException(nameof(longDescWithPluralFlag));
+
+			return (arg, alternate) => longDescWithPluralFlag(arg, alternate, defaultsToPlural);
 		}
 
 	}
