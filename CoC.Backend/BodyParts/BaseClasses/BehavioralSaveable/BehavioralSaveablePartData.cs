@@ -39,7 +39,7 @@ namespace CoC.Backend.BodyParts
 
 		public string LongDescriptionAlternate() => type.LongDescriptionAlternate(AsCurrentData());
 
-		public string LongDescription(bool alternateForm) => type.LongDescription(AsCurrentData(), alternateForm);
+		public string LongDescription(bool alternateFormat = false) => type.LongDescription(AsCurrentData(), alternateFormat);
 
 
 		protected static Guid GetID(SourceClass source)

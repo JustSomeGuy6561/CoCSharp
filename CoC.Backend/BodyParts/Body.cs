@@ -27,8 +27,15 @@ namespace CoC.Backend.BodyParts
 
 	//Trying to come up with decent logic for this thing is a pain in the ass. This is maybe the 5th revision. I think it works well enough now.
 
-	//First off, we store two "Main" elements: Fur and Skin. Fur stores an epidermis that uses fur colors (fur or feathers in current implementation).
-	//Skin stores an epidermis dealing with Tone Colors (skin, scales, carapace, goo, rubber, etc). For the most part, body parts that make use of one main
+	//First off, it should be noted that these body relates to the core of the creature, the anthropomorphied 'chest,' so to speak. it's responsible for setting the
+	//skin tone and fur color, and anything that uses fur or skin tone should parse this data accordingly before setting their color or whatever.
+	//This is not to be consfused with build - this simply sets the type and tells the body what it's covered in, and thus doesn't deal with physique.
+
+
+	//Now for how it all works:
+
+	//we store two "Main" elements: Fur and Skin. Fur stores an epidermis that uses fur colors (fur or feathers or wool in current implementation).
+	//Skin stores an epidermis dealing with Tone Colors (skin, scales, carapace, goo, etc). For the most part, body parts that make use of one main
 	//will not use the other. These will be given priority when dyeing or toneing.
 
 	//We also have two Epidermis instances: primary and secondary. These can be any epidermis type, though the primary cannot be empty.
@@ -50,18 +57,29 @@ namespace CoC.Backend.BodyParts
 
 	//finally, there are helper booleans for the main skin and fur telling whether or not they are active in the current body type. this allows for even more complicated behavior, if that's what you want.
 
+	//Some body types may have the exact same underlying data, but be presented in different ways. currently, there are several different types that all use
+	//scales for the main epidermis and scales for the secondary epidermis, but are described differently. While we try to avoid this, as it causes things to become more complex,
+	//it's perfectly ok, and in some cases it's necessary so things make sense - you would't want to describe fish scales the same way you would a naga's scaled.
+
+	//currently, the only type to do this is Naga - it could be taken care of in Scales, but it's weird because underside and such, and powerful stomach muscles
+	//defining the form (along with the giant tail for a leg)
+
+
 	//Quick Aside: Fur color supports two colors at once, so it's possible to do something like a cat with orange and grey stripes, and a white underbody.
 	//Tones, however, only have one, as the original logic only ever had one tone. If you need two, see if you can get away with just using main and suppliment.
 	//if not, i could add it in, though that would require some rewrite - basically, it would require a new ToneColor class, which works the same as the FurColor class.
 	//all references to Tones would need to be changed to ToneColor, made readonly, and passed by value instead of by reference where applicable - not hard, just tedious.
 
 	//Also worth noting: We do weird shit with dyes - because we allow dual-colored fur/feathers, we need the ability to create this multicolored magic with dyes, but also need to provide the option
-	//to dye to a single color. Doing this in code is easy - displaying it, not so much. As such, a custom version of text is applied, as well as the patternable interface. It's conviluted, ik. i'm sorry.
+	//to dye to a single color. Conceptually, it's really easy, which means implementing it in the frontend is straightforward (though you do need to deal with type checking),
+	//but actually getting it all to work regardless of the current body type means it gets conviluted really quickly. i'm sorry, i know it's not elegant, but i've done what i can.
 
 	//Final Note: Validation assumes that the data is properly set during serialization - that is, the body type's Init was called, or, barring that, mainFur and mainSkin were at least initialized correctly.
 
 	public enum NavelPiercingLocation { TOP, BOTTOM }
 
+	//i mean, i don't actually know how you'd do dermal piercings in the land of swords and such, but, uhhh... video game logic. It seems to be important to people in some
+	//circles, and i'm not going to prevent anyone from recreating their OC because i'm worried about plausibility in a video game.
 	public enum HipPiercingLocation { LEFT_TOP, LEFT_CENTER, LEFT_BOTTOM, RIGHT_TOP, RIGHT_CENTER, RIGHT_BOTTOM }
 
 	internal enum ToneDyeLotionLocations : byte { EVERYTHING, PRIMARY, ALTERNATE }
@@ -668,9 +686,27 @@ namespace CoC.Backend.BodyParts
 			return new BodyData(this);
 		}
 
-#warning Fix Now Broken Lotion/Tone/Dye body parts.
-		//it's been reworked - any multi member gets a submenu and if you want to support multiple different places at once, you have to do that manually.
-		//then clean up the shitty strings here associated with all of that. Plus side, it's really easy to implement in the frontend content layer.
+		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(AsReadOnlyData());
+
+		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(AsReadOnlyData());
+
+		public string FullDescription(bool alternateFormat = false) => type.FullDescription(AsReadOnlyData(), alternateFormat);
+
+		//describe the main epidermis (no body)
+		public string MainDescription() => type.MainDescription();
+		public string MainDescription(out bool isPlural) => type.MainDescription(out isPlural);
+
+		//describe the supplementary epidermis (no body). Empty string if no supplementary epidermis
+		public string SupplementaryDescription() => type.SupplementaryDescription();
+		public string SupplementaryDescription(out bool isPlural) => type.SupplementaryDescription(out isPlural);
+
+		//describe the main and supplementary epidermis (if applicable) without mentioning body.
+		public string ShortEpidermisDescription() => type.ShortDescriptionWithoutBody();
+		public string ShortEpidermisDescription(out bool isPlural) => type.ShortDescriptionWithoutBody(out isPlural);
+
+		//same as above, but the more verbose version.
+		public string LongEpidermisDescription() => type.LongDescriptionWithoutBody(AsReadOnlyData());
+		public string LongEpidermisDescription(out bool isPlural) => type.LongDescriptionWithoutBody(AsReadOnlyData(), out isPlural);
 
 		#region MultiPatternable
 		//3 possibilities: all fur, primary fur, or secondary fur. if there is no under fur available, primary and secondary are disabled.
@@ -1214,20 +1250,47 @@ namespace CoC.Backend.BodyParts
 		private protected readonly BodyMember primary;
 		private protected readonly BodyMember secondary;
 
+		public bool hasFurOrFeathersOrWool => primaryIsFur || secondaryIsFur;
+
 		public bool primaryIsFur => primary.usesFur;
 		public bool secondaryIsFur => secondary.usesFur;
+
+		public bool hasScales => primary.epidermisType == EpidermisType.SCALES || secondary.epidermisType == EpidermisType.SCALES;
 
 		public EpidermisType epidermisType => primary.epidermisType;
 		public EpidermisType secondaryEpidermisType => secondary.epidermisType;
 
+		public string MainDescription() => primary.MemberDescription(out bool _);
+		public virtual string MainDescription(out bool isPlural) => primary.MemberDescription(out isPlural);
+
+
+		public string SupplementaryDescription() => secondary.MemberDescription(out bool _);
+		public string SupplementaryDescription(out bool isPlural) => secondary.MemberDescription(out isPlural);
+
+
+		//the same as the standard long descriptor, but without the 'body' text. this is useful if you just want to say "your fur and scales" or whatever.
+
+		private readonly PartDescriptor<BodyData> fullDescriptor;
+
+		public string FullDescription(BodyData bodyData, bool alternateFormat = false)
+		{
+			return fullDescriptor(bodyData, alternateFormat);
+		}
+
+		public string FullDescriptionPrimary(BodyData body) => fullDescriptor(body, false);
+
+		public string FullDescriptionAlternate(BodyData body) => fullDescriptor(body, true);
+
+
 		//allows you to rename the buttons for dyeing and toning. by default, they are "body" and "underbody". For example, Cockatrice uses this to say "feathers"
 		//when dyeing primary, and "scales" when toning secondary. Also, furry types override "body" with "skin" when lotioning/oiling, as it affects the skin under the fur/feathers.
-		private protected BodyType(BodyMember primaryMember, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : this(primaryMember, new EmptyBodyMember(), shortDesc, longDesc, playerDesc, transform, restore)
+		private protected BodyType(BodyMember primaryMember, ShortDescriptor shortDesc, PartDescriptor<BodyData> longDesc,
+			PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: this(primaryMember, new EmptyBodyMember(), shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{ }
 
-		private protected BodyType(BodyMember primaryMember, BodyMember secondaryMember, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc,
-			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+		private protected BodyType(BodyMember primaryMember, BodyMember secondaryMember, ShortDescriptor shortDesc, PartDescriptor<BodyData> longDesc,
+			PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
 			: base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			primary = primaryMember ?? throw new ArgumentNullException();
@@ -1238,6 +1301,8 @@ namespace CoC.Backend.BodyParts
 
 			_index = indexMaker++;
 			bodyTypes.AddAt(this, _index);
+
+			fullDescriptor = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
 		}
 
 		//initializes the main skin, main fur, primary, and secondary values for this type.
@@ -1363,27 +1428,38 @@ namespace CoC.Backend.BodyParts
 		//apparently cat, fox, wolf, horse, and dog use fur underbody, kindof.
 
 		#region Instances
-		private static readonly FurBodyMember GENERIC_FUR_MEMBER = new FurBodyMember(EpidermisType.FUR, new FurColor(HairFurColors.BLACK), false, MainFurButton, YourFurDesc, GenericPostDesc);
+		private static FurBodyMember GeneratePrimaryFurMember(bool hasUnderbody)
+		{
+			if (hasUnderbody)
+			{
+				return new FurBodyMember(EpidermisType.FUR, new FurColor(HairFurColors.BLACK), false, FurPrimaryDesc, MainFurButton, GenericPostDesc);
+			}
+			else
+			{
+				return new FurBodyMember(EpidermisType.FUR, new FurColor(HairFurColors.BLACK), false, FurDescNoType, MainFurButtonNoUnderbody, GenericPostDesc);
+			}
+
+		}
 
 		public static readonly SimpleToneBodyType HUMANOID = new SimpleToneBodyType(
-			new ToneBodyMember(EpidermisType.SKIN, DefaultValueHelpers.defaultHumanTone, false, YourSkinDesc, GenericPostDesc, true),
-			SkinDesc, SkinLongDesc, SkinPlayerStr, SkinTransformStr, SkinRestoreStr);
+			new ToneBodyMember(EpidermisType.SKIN, DefaultValueHelpers.defaultHumanTone, false, SkinDescNoType, GenericPostDesc, true),
+			SkinDesc, SkinLongDesc, SkinFullDesc, SkinPlayerStr, SkinTransformStr, SkinRestoreStr);
 
-		public static readonly CompoundToneBodyType REPTILIAN = new CompoundToneBodyType(
-			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, MainScalesButton, YourScalesDesc, GenericPostDesc),
-			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, AlternateScalesButton, YourVentralScalesDesc, GenericPostDesc),
-			AllScalesButton, AllScalesDesc, GenericPostDesc, ScalesDesc, ScalesLongDesc, ScalesPlayerStr, ScalesTransformStr, ScalesRestoreStr);
+		public static readonly CompoundToneBodyType DRAGON = new CompoundToneBodyType(
+			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultDragonTone, false, DragonBodyDesc, MainScalesButton, GenericPostDesc),
+			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultDragonTone, false, DragonUnderbodyDesc, AlternateScalesButton, GenericPostDesc),
+			AllScalesButton, AllScalesDesc, GenericPostDesc, DragonDesc, DragonLongDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
 
-		public static readonly CompoundToneBodyType NAGA = new CompoundToneBodyType(
-			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultNagaTone, false, MainScalesButton, YourNagaDesc, GenericPostDesc),
-			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultNagaUnderTone, false, AlternateScalesButton, YourUnderNagaDesc, GenericPostDesc),
-			AllScalesButton, AllNagaDesc, GenericPostDesc, NagaDesc, NagaLongDesc, NagaPlayerStr, NagaTransformStr, NagaRestoreStr);
+		public static readonly CompoundToneBodyType REPTILE = new CompoundToneBodyType(
+			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, ReptileBodyDesc, MainScalesButton, GenericPostDesc),
+			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, ReptileUnderbodyDesc, AlternateScalesButton, GenericPostDesc),
+			AllScalesButton, AllScalesDesc, GenericPostDesc, ReptileDesc, ReptileLongDesc, ReptileFullDesc, ReptilePlayerStr, ReptileTransformStr, ReptileRestoreStr);
 
 		public static readonly CockatriceBodyType COCKATRICE = new CockatriceBodyType();
 		public static readonly KitsuneBodyType KITSUNE = new KitsuneBodyType();
 		public static readonly SimpleToneBodyType WOODEN = new SimpleToneBodyType(
-			new ToneBodyMember(EpidermisType.BARK, DefaultValueHelpers.defaultBarkColor, true, YourBarkDesc, GenericPostDesc, true),
-			BarkDesc, BarkLongDesc, BarkPlayerStr, BarkTransformStr, BarkRestoreStr);
+			new ToneBodyMember(EpidermisType.BARK, DefaultValueHelpers.defaultBarkColor, true, BarkDescNoType, GenericPostDesc, true),
+			BarkDesc, BarkLongDesc, BarkFullDesc, BarkPlayerStr, BarkTransformStr, BarkRestoreStr);
 
 		//NOTE: Fur represents all body types that use fur. there are two variations: simple and underbody. Simple will have one color (or color pattern) for the entire body
 		//while underbody will have one color for most of the body and a second color for underbody (or anthropomorphic equivalent).
@@ -1404,23 +1480,25 @@ namespace CoC.Backend.BodyParts
 
 
 		//one color (or two in a pattern, like zebra stripes) over the entire body.
-		public static readonly SimpleFurBodyType SIMPLE_FUR = new SimpleFurBodyType(GENERIC_FUR_MEMBER, FurDesc, FurLongDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
+		public static readonly SimpleFurBodyType SIMPLE_FUR = new SimpleFurBodyType(GeneratePrimaryFurMember(false), FurDesc, FurLongDesc, FurFullDesc,
+			FurPlayerStr, FurTransformStr, FurRestoreStr);
 
 		//the anthropomorphic equivalent of underbody, at least. this means that most of the body is the first color (or pattern), while the chest is the other. note that this may also
 		//effect the arms, legs, and face (and possibly others if implemented), as they may utilize both or just one of these colors, depending on the type.
-		public static readonly CompoundFurBodyType UNDERBODY_FUR = new CompoundFurBodyType(GENERIC_FUR_MEMBER,
-			new FurBodyMember(EpidermisType.FUR, new FurColor(HairFurColors.BLACK), false, AlternateFurButton, YourUnderFurDesc, GenericPostDesc),
-			AllFurButton, AllFurDye, AllFurTone, GenericPostDesc, PostAllFurTone, FurDesc, FurLongDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
+		public static readonly CompoundFurBodyType UNDERBODY_FUR = new CompoundFurBodyType(GeneratePrimaryFurMember(true),
+			new FurBodyMember(EpidermisType.FUR, new FurColor(HairFurColors.BLACK), false, FurUnderBodyDesc, AlternateFurButton, GenericPostDesc),
+			AllFurButton, AllFurDye, AllFurTone, GenericPostDesc, PostAllFurTone, FurDesc, FurLongDesc, FurFullDesc, FurPlayerStr, FurTransformStr, FurRestoreStr);
 
 		public static readonly CompoundFurBodyType FEATHERED = new CompoundFurBodyType(
-			new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, false, MainFeathersButton, YourFeathersDesc, GenericPostDesc),
-			new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, false, AlternateFeathersButton, YourUnderFeatherDesc, GenericPostDesc),
-			AllFeathersButton, AllFeathersDye, AllFeathersTone, GenericPostDesc, PostAllFeathersTone, FeatherDesc, FeatherLongDesc, FeatherPlayerStr, FeatherTransformStr, FeatherRestoreStr);
+			new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, false, PrimaryFeatherDesc, MainFeathersButton, GenericPostDesc),
+			new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultHarpyFeathers, false, UnderFeatherDesc, AlternateFeathersButton, GenericPostDesc),
+			AllFeathersButton, AllFeathersDye, AllFeathersTone, GenericPostDesc, PostAllFeathersTone, FeatherDesc, FeatherLongDesc, FeatherFullDesc, FeatherPlayerStr,
+			FeatherTransformStr, FeatherRestoreStr);
 
 		public static readonly CompoundFurBodyType WOOL = new CompoundFurBodyType(
-			new FurBodyMember(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, false, MainWoolButton, YourWoolDesc, GenericPostDesc),
-			new FurBodyMember(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, false, AlternateWoolButton, YourUnderWoolDesc, GenericPostDesc),
-			AllWoolButton, AllWoolDye, AllWoolTone, GenericPostDesc, PostAllWoolTone, FeatherDesc, WoolLongDesc, WoolPlayerStr, WoolTransformStr, WoolRestoreStr);
+			new FurBodyMember(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, false, WoolBodyDesc, MainWoolButton, GenericPostDesc),
+			new FurBodyMember(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, false, WoolUnderbodyDesc, AlternateWoolButton, GenericPostDesc),
+			AllWoolButton, AllWoolDye, AllWoolTone, GenericPostDesc, PostAllWoolTone, WoolDesc, WoolLongDesc, WoolFullDesc, WoolPlayerStr, WoolTransformStr, WoolRestoreStr);
 		//now, if you have gooey body, give the goo innards perk. simple.
 		//Also: Goo body is getting a rework/revamp. it was originally a spaghetti code of a mess of partially implemented checks on a perk. now it's its own type.
 		//any body part not "Goo" will act like it should, regardless of the gooey body. It never really made sense before; it still doesn't.
@@ -1431,11 +1509,11 @@ namespace CoC.Backend.BodyParts
 		//a chimera-like monster could get text like: "it's arms|legs|whatever clash with the rest of its goo-like form, though it succeeds in making it more disturbing";
 
 		public static readonly SimpleToneBodyType GOO = new SimpleToneBodyType(
-			new ToneBodyMember(EpidermisType.GOO, DefaultValueHelpers.defaultGooTone, false, YourGooDesc, GenericPostDesc, true),
-			GooDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+			new ToneBodyMember(EpidermisType.GOO, DefaultValueHelpers.defaultGooTone, false, GooDescNoType, GenericPostDesc, true),
+			GooDesc, GooLongDesc, GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 		//like a turtle shell or bee exoskeleton.
-		public static readonly SimpleToneBodyType CARAPACE = new SimpleToneBodyType(new ToneBodyMember(EpidermisType.CARAPACE, Tones.BLACK, true, YourCarapaceDesc, GenericPostDesc, true),
-			CarapaceStr, CarapaceLongDesc, CarapacePlayerStr, CarapaceTransformStr, CarapaceRestoreStr);
+		public static readonly SimpleToneBodyType CARAPACE = new SimpleToneBodyType(new ToneBodyMember(EpidermisType.CARAPACE, Tones.BLACK, true, CarapaceDescNoType, GenericPostDesc, true),
+			CarapaceDesc, CarapaceLongDesc, CarapaceFullDesc, CarapacePlayerStr, CarapaceTransformStr, CarapaceRestoreStr);
 		#endregion
 
 		internal abstract class BodyMember
@@ -1444,6 +1522,8 @@ namespace CoC.Backend.BodyParts
 			internal bool usesFur => epidermisType.usesFur;
 
 			internal readonly EpidermisType epidermisType;
+
+			internal string MemberDescription(out bool isPlural) => locationDesc(out isPlural);
 
 			internal abstract string FurLocationDescription(out bool isPlural);
 
@@ -1454,37 +1534,40 @@ namespace CoC.Backend.BodyParts
 
 			//what do we call this when the player wants to describe this? i.e. the draconic underbody is "ventral scales". the regular one is just scales or 'standard scales'
 			internal readonly DescriptorWithArg<bool> buttonText;
-			protected readonly DescriptorWithMetaData locationDescriptor;
+			protected readonly MaybePluralDescriptor locationDesc;
 			//how do we describe this after a dye or toner has been applied to it? options that cannot dye or tone should simply return "";
 			protected readonly DescriptorWithArg<Body> dyeOrToneDescriptor;
 
 			//body member that cannot be altered by dye or tone.
-			internal BodyMember(EpidermisType epidermis, bool primary)
+			internal BodyMember(EpidermisType epidermis, MaybePluralDescriptor locationText, bool primary)
 			{
 				epidermisType = epidermis ?? throw new ArgumentNullException(nameof(epidermis));
 
+				locationDesc = locationText ?? throw new ArgumentNullException(nameof(locationText));
+
 				buttonText = primary ? (DescriptorWithArg<bool>)MainBodyDesc : (DescriptorWithArg<bool>)UnderBodyDesc;
-				locationDescriptor = primary ? (DescriptorWithMetaData)YourBodyDesc : (DescriptorWithMetaData)YourUnderBodyDesc;
 				dyeOrToneDescriptor = (x) => GlobalStrings.None();
 			}
 
 			//default case.
-			internal BodyMember(EpidermisType epidermis, DescriptorWithMetaData describeThisMember, DescriptorWithArg<Body> overrideToneDyeText, bool primary)
+			internal BodyMember(EpidermisType epidermis, MaybePluralDescriptor locationText, DescriptorWithArg<Body> overrideToneDyeText, bool primary)
 			{
 				epidermisType = epidermis ?? throw new ArgumentNullException(nameof(epidermis));
 
+				locationDesc = locationText ?? throw new ArgumentNullException(nameof(locationText));
+
 				this.buttonText = primary ? (DescriptorWithArg<bool>)MainBodyDesc : (DescriptorWithArg<bool>)UnderBodyDesc;
-				locationDescriptor = describeThisMember ?? throw new ArgumentNullException(nameof(describeThisMember));
 				dyeOrToneDescriptor = overrideToneDyeText ?? throw new ArgumentNullException(nameof(overrideToneDyeText));
 
 			}
 
-			internal BodyMember(EpidermisType epidermis, DescriptorWithArg<bool> buttonText, DescriptorWithMetaData describeThisMember, DescriptorWithArg<Body> overrideToneDyeText)
+			internal BodyMember(EpidermisType epidermis, MaybePluralDescriptor locationText, DescriptorWithArg<bool> buttonText, DescriptorWithArg<Body> overrideToneDyeText)
 			{
 				epidermisType = epidermis ?? throw new ArgumentNullException(nameof(epidermis));
 
+				locationDesc = locationText ?? throw new ArgumentNullException(nameof(locationText));
+
 				this.buttonText = buttonText ?? throw new ArgumentNullException(nameof(buttonText));
-				locationDescriptor = describeThisMember ?? throw new ArgumentNullException(nameof(describeThisMember));
 				dyeOrToneDescriptor = overrideToneDyeText ?? throw new ArgumentNullException(nameof(overrideToneDyeText));
 
 			}
@@ -1499,16 +1582,16 @@ namespace CoC.Backend.BodyParts
 			public FurBasedEpidermisType furType => (FurBasedEpidermisType)epidermisType;
 
 			public FurBodyMember(FurBasedEpidermisType furType, FurColor fallbackColor, bool useFallbackColorOnTF,
-				DescriptorWithMetaData describeThisMember, DescriptorWithArg<Body> overrideToneDyeText, bool primary)
-				: base(furType, describeThisMember, overrideToneDyeText, primary)
+				 MaybePluralDescriptor locationText, DescriptorWithArg<Body> overrideToneDyeText, bool primary)
+				: base(furType, locationText, overrideToneDyeText, primary)
 			{
 				defaultFur = fallbackColor;
 				overrideFur = useFallbackColorOnTF;
 			}
 
 			public FurBodyMember(FurBasedEpidermisType furType, FurColor fallbackColor, bool useFallbackColorOnTF,
-				DescriptorWithArg<bool> buttonText, DescriptorWithMetaData describeThisMember, DescriptorWithArg<Body> overrideToneDyeText)
-				: base(furType, buttonText, describeThisMember, overrideToneDyeText)
+				MaybePluralDescriptor locationText, DescriptorWithArg<bool> buttonText, DescriptorWithArg<Body> overrideToneDyeText)
+				: base(furType, locationText, buttonText, overrideToneDyeText)
 			{
 				defaultFur = fallbackColor;
 				overrideFur = useFallbackColorOnTF;
@@ -1516,18 +1599,18 @@ namespace CoC.Backend.BodyParts
 
 			internal override string FurLocationDescription(out bool isPlural)
 			{
-				return locationDescriptor(out isPlural);
+				return YourLocationStr(locationDesc(out isPlural));
 			}
 
 			internal override string ToneLocationDescription(out bool isPlural)
 			{
 				isPlural = false;
-				return TheSkinUnderStr(locationDescriptor(out bool _));
+				return TheSkinUnderStr(locationDesc(out bool _));
 			}
 
 			internal override string PostToneDescription(Body body)
 			{
-				return SkinUnderStr(body, locationDescriptor(out bool _));
+				return SkinUnderStr(body, locationDesc(out bool _));
 			}
 
 			internal override string PostDyeDescription(Body body)
@@ -1542,16 +1625,16 @@ namespace CoC.Backend.BodyParts
 			public readonly bool overrideTone;
 
 			public ToneBodyMember(ToneBasedEpidermisType furType, Tones fallbackColor, bool useFallbackColorOnTF,
-				DescriptorWithMetaData describeThisMember, DescriptorWithArg<Body> overrideToneDyeText, bool primary)
-				: base(furType, describeThisMember, overrideToneDyeText, primary)
+				MaybePluralDescriptor locationText, DescriptorWithArg<Body> overrideToneDyeText, bool primary)
+				: base(furType, locationText, overrideToneDyeText, primary)
 			{
 				defaultTone = fallbackColor;
 				overrideTone = useFallbackColorOnTF;
 			}
 
 			public ToneBodyMember(ToneBasedEpidermisType furType, Tones fallbackColor, bool useFallbackColorOnTF,
-				DescriptorWithArg<bool> buttonText, DescriptorWithMetaData describeThisMember, DescriptorWithArg<Body> overrideToneDyeText)
-				: base(furType, buttonText, describeThisMember, overrideToneDyeText)
+				MaybePluralDescriptor locationText, DescriptorWithArg<bool> buttonText, DescriptorWithArg<Body> overrideToneDyeText)
+				: base(furType, locationText, buttonText, overrideToneDyeText)
 			{
 				defaultTone = fallbackColor;
 				overrideTone = useFallbackColorOnTF;
@@ -1559,7 +1642,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override string ToneLocationDescription(out bool isPlural)
 			{
-				return locationDescriptor(out isPlural);
+				return YourLocationStr(locationDesc(out isPlural));
 			}
 
 			internal override string FurLocationDescription(out bool isPlural)
@@ -1581,7 +1664,7 @@ namespace CoC.Backend.BodyParts
 
 		internal sealed class EmptyBodyMember : BodyMember
 		{
-			public EmptyBodyMember() : base(EpidermisType.EMPTY, false) { }
+			public EmptyBodyMember() : base(EpidermisType.EMPTY, GlobalStrings.PluralNone, false) { }
 
 			internal override string FurLocationDescription(out bool isPlural)
 			{
@@ -1613,14 +1696,16 @@ namespace CoC.Backend.BodyParts
 	{
 		protected readonly DescriptorWithArg<bool> allButtonText;
 
-		private protected SimpleBodyType(BodyMember primaryMember, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(primaryMember, shortDesc, longDesc, playerDesc, transform, restore)
+		private protected SimpleBodyType(BodyMember primaryMember, ShortDescriptor shortDesc, PartDescriptor<BodyData> longDesc,
+			PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryMember, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{
 			allButtonText = AllBodyDesc;
 		}
 
-		private protected SimpleBodyType(BodyMember primaryMember, DescriptorWithArg<bool> buttonText, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(primaryMember, shortDesc, longDesc, playerDesc, transform, restore)
+		private protected SimpleBodyType(BodyMember primaryMember, DescriptorWithArg<bool> buttonText, ShortDescriptor shortDesc,
+			PartDescriptor<BodyData> longDesc, PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryMember, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{
 			allButtonText = buttonText ?? throw new ArgumentNullException(nameof(buttonText));
 		}
@@ -1711,23 +1796,25 @@ namespace CoC.Backend.BodyParts
 	{
 		protected readonly DescriptorWithArg<bool> allButtonText;
 
-		private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc,
+		private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder, ShortDescriptor shortDesc,
+			PartDescriptor<BodyData> longDesc, PartDescriptor<BodyData> fullDesc,
 			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-			: base(primaryBuilder, secondaryBuilder, shortDesc, longDesc, playerDesc, transform, restore)
+			: base(primaryBuilder, secondaryBuilder, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{
 			allButtonText = AllBodyDesc;
 		}
 
-		private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder, DescriptorWithArg<bool> buttonText, SimpleDescriptor shortDesc,
-			LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-			: base(primaryBuilder, secondaryBuilder, shortDesc, longDesc, playerDesc, transform, restore)
+		private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder, DescriptorWithArg<bool> buttonText, ShortDescriptor shortDesc,
+			PartDescriptor<BodyData> longDesc, PartDescriptor<BodyData> fullDesc,
+			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryBuilder, secondaryBuilder, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{
 			allButtonText = buttonText ?? throw new ArgumentNullException(nameof(buttonText));
 		}
 
 		//private protected CompoundBodyType(BodyMember primaryBuilder, BodyMember secondaryBuilder,
-		//	LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-		//	: base(primaryBuilder, secondaryBuilder, longDesc, playerDesc, transform, restore) { }
+		//	LongDescriptor<BodyData> longDesc, LongDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+		//	: base(primaryBuilder, secondaryBuilder, longDesc, fullDesc, playerDesc, transform, restore) { }
 
 		//handle all the tone and dye texts. this becomes complicated because a body type can potentially mix fur and tone types.
 		//we can't handle 'all' functions because we don't know if it's mixed types.
@@ -1839,13 +1926,14 @@ namespace CoC.Backend.BodyParts
 
 	public class SimpleFurBodyType : SimpleBodyType
 	{
-		internal SimpleFurBodyType(FurBodyMember primaryMember, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(primaryMember, shortDesc, longDesc, playerDesc, transform, restore)
+		internal SimpleFurBodyType(FurBodyMember primaryMember, ShortDescriptor shortDesc, PartDescriptor<BodyData> longDesc,
+			PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryMember, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{ }
 
-		internal SimpleFurBodyType(FurBodyMember primaryMember, DescriptorWithArg<bool> buttonText, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc,
-			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-			: base(primaryMember, buttonText, shortDesc, longDesc, playerDesc, transform, restore)
+		internal SimpleFurBodyType(FurBodyMember primaryMember, DescriptorWithArg<bool> buttonText, ShortDescriptor shortDesc,
+			PartDescriptor<BodyData> longDesc, PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryMember, buttonText, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{ }
 
 		internal FurBodyMember furMember => (FurBodyMember)primary;
@@ -1882,15 +1970,15 @@ namespace CoC.Backend.BodyParts
 		public bool overrideSupplementaryFur => secondaryFurMember.overrideFur;
 		public FurBasedEpidermisType secondaryFurType => (FurBasedEpidermisType)secondaryFurMember.epidermisType;
 
-		protected readonly DescriptorWithMetaData allDyeLocation;
-		protected readonly DescriptorWithMetaData allToneLocation;
+		protected readonly MaybePluralDescriptor allDyeLocation;
+		protected readonly MaybePluralDescriptor allToneLocation;
 		protected readonly DescriptorWithArg<Body> postDyeAllText;
 		protected readonly DescriptorWithArg<Body> postToneAllText;
 
-		internal CompoundFurBodyType(FurBodyMember primaryBuilder, FurBodyMember secondaryBuilder, DescriptorWithArg<bool> buttonText, DescriptorWithMetaData allDyeDesc,
-			DescriptorWithMetaData allToneDesc, DescriptorWithArg<Body> postAllDyeDesc, DescriptorWithArg<Body> postAllToneDesc,
-			SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-			: base(primaryBuilder, secondaryBuilder, buttonText, shortDesc, longDesc, playerDesc, transform, restore)
+		internal CompoundFurBodyType(FurBodyMember primaryBuilder, FurBodyMember secondaryBuilder, DescriptorWithArg<bool> buttonText, MaybePluralDescriptor allDyeDesc,
+			MaybePluralDescriptor allToneDesc, DescriptorWithArg<Body> postAllDyeDesc, DescriptorWithArg<Body> postAllToneDesc, ShortDescriptor shortDesc, PartDescriptor<BodyData> longDesc,
+			PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryBuilder, secondaryBuilder, buttonText, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{
 			allDyeLocation = allDyeDesc ?? throw new ArgumentNullException(nameof(allDyeDesc));
 			allToneLocation = allToneDesc ?? throw new ArgumentNullException(nameof(allToneDesc));
@@ -1946,17 +2034,20 @@ namespace CoC.Backend.BodyParts
 	}
 	public class SimpleToneBodyType : SimpleBodyType
 	{
+
+
 		internal ToneBodyMember toneMember => (ToneBodyMember)primary;
 		public ToneBasedEpidermisType toneType => (ToneBasedEpidermisType)epidermisType;
 		public Tones defaultTone => toneMember.defaultTone;
 		public bool overrideTone => toneMember.overrideTone;
 
-		internal SimpleToneBodyType(ToneBodyMember builder, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(builder, shortDesc, longDesc, playerDesc, transform, restore) { }
+		internal SimpleToneBodyType(BodyMember primaryMember, ShortDescriptor shortDesc, PartDescriptor<BodyData> longDesc,
+			PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryMember, shortDesc, longDesc, fullDesc, playerDesc, transform, restore) { }
 
-		internal SimpleToneBodyType(ToneBodyMember builder, DescriptorWithArg<bool> buttonText, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc,
-			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
-			: base(builder, buttonText, shortDesc, longDesc, playerDesc, transform, restore) { }
+		internal SimpleToneBodyType(BodyMember primaryMember, DescriptorWithArg<bool> buttonText, ShortDescriptor shortDesc,
+			PartDescriptor<BodyData> longDesc, PartDescriptor<BodyData> fullDesc, PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryMember, buttonText, shortDesc, longDesc, fullDesc, playerDesc, transform, restore) { }
 
 		private protected override void HandleTypeChange(Epidermis mainFur, Epidermis mainSkin, in EpidermalData secondaryData, in HairData hairData, out Epidermis secondaryEpidermis)
 		{
@@ -1985,12 +2076,13 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultSupplementaryTone => secondaryMember.defaultTone;
 		public bool overrideSupplementaryTone => secondaryMember.overrideTone;
 
-		protected readonly DescriptorWithMetaData allToneLocation;
+		protected readonly MaybePluralDescriptor allToneLocation;
 		protected readonly DescriptorWithArg<Body> postToneAllText;
 
-		internal CompoundToneBodyType(ToneBodyMember primaryBuilder, ToneBodyMember secondaryBuilder, DescriptorWithArg<bool> buttonText, DescriptorWithMetaData allToneDesc,
-			DescriptorWithArg<Body> postAllToneDesc, SimpleDescriptor shortDesc, LongDescriptor<BodyData> longDesc, PlayerBodyPartDelegate<Body> playerDesc,
-			ChangeType<BodyData> transform, RestoreType<BodyData> restore) : base(primaryBuilder, secondaryBuilder, buttonText, shortDesc, longDesc, playerDesc, transform, restore)
+		internal CompoundToneBodyType(ToneBodyMember primaryBuilder, ToneBodyMember secondaryBuilder, DescriptorWithArg<bool> buttonText, MaybePluralDescriptor allToneDesc,
+			DescriptorWithArg<Body> postAllToneDesc, ShortDescriptor shortDesc, PartDescriptor<BodyData> longDesc, PartDescriptor<BodyData> fullDesc,
+			PlayerBodyPartDelegate<Body> playerDesc, ChangeType<BodyData> transform, RestoreType<BodyData> restore)
+			: base(primaryBuilder, secondaryBuilder, buttonText, shortDesc, longDesc, fullDesc, playerDesc, transform, restore)
 		{
 			allToneLocation = allToneDesc ?? throw new ArgumentNullException(nameof(allToneDesc));
 			postToneAllText = postAllToneDesc ?? throw new ArgumentNullException(nameof(postAllToneDesc));
@@ -2061,9 +2153,9 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultTone => ((ToneBodyMember)primary).defaultTone;
 		public FurColor defaultFur => ((FurBodyMember)secondary).defaultFur;
 		internal KitsuneBodyType() : base(
-			new ToneBodyMember(EpidermisType.SKIN, DefaultValueHelpers.defaultKitsuneSkin, false, KitsuneSkinButton, YourSkinDesc, GenericPostDesc),
-			new FurBodyMember(EpidermisType.FUR, DefaultValueHelpers.defaultKitsuneFur, false, KitsuneFurButton, YourFurDesc, GenericPostDesc),
-			KitsuneDesc, KitsuneLongDesc, KitsunePlayerStr, KitsuneTransformStr, KitsuneRestoreStr)
+			new ToneBodyMember(EpidermisType.SKIN, DefaultValueHelpers.defaultKitsuneSkin, false, KitsuneBodyDesc, KitsuneSkinButton, GenericPostDesc),
+			new FurBodyMember(EpidermisType.FUR, DefaultValueHelpers.defaultKitsuneFur, false, KitsuneUnderbodyDesc, KitsuneFurButton, GenericPostDesc),
+			KitsuneDesc, KitsuneLongDesc, KitsuneFullDesc, KitsunePlayerStr, KitsuneTransformStr, KitsuneRestoreStr)
 		{ }
 
 		private protected override void HandleTypeChange(Epidermis mainFur, Epidermis mainSkin, in EpidermalData secondaryData, in HairData hairData, out Epidermis secondaryEpidermis)
@@ -2113,9 +2205,9 @@ namespace CoC.Backend.BodyParts
 		public Tones defaultScales => ((ToneBodyMember)secondary).defaultTone;
 
 		internal CockatriceBodyType() : base(
-				new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatricePrimaryFeathers, false, CockatriceFeathersButton, YourFeathersDesc, GenericPostDesc),
-				new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultCockatriceScaleTone, false, CockatriceScalesButton, YourScalesDesc, GenericPostDesc),
-				CockatriceDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
+				new FurBodyMember(EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatricePrimaryFeathers, false, CockatriceBodyDesc, CockatriceFeathersButton, GenericPostDesc),
+				new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultCockatriceScaleTone, false, CockatriceUnderbodyDesc, CockatriceScalesButton, GenericPostDesc),
+				CockatriceDesc, CockatriceLongDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
 		{ }
 
 		private protected override void HandleTypeChange(Epidermis mainFur, Epidermis mainSkin, in EpidermalData secondaryData, in HairData hairData, out Epidermis secondaryEpidermis)
@@ -2175,6 +2267,30 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ReadOnlyPiercing<NavelPiercingLocation> navelPiercings;
 		public readonly ReadOnlyPiercing<HipPiercingLocation> hipPiercings;
+
+		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(this);
+
+		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(this);
+
+		public string FullDescription(bool alternateFormat = false) => type.FullDescription(this, alternateFormat);
+
+		//describe the main epidermis (no body)
+		public string MainDescription() => type.MainDescription();
+		public string MainDescription(out bool isPlural) => type.MainDescription(out isPlural);
+
+		//describe the supplementary epidermis (no body). Empty string if no supplementary epidermis
+		public string SupplementaryDescription() => type.SupplementaryDescription();
+		public string SupplementaryDescription(out bool isPlural) => type.SupplementaryDescription(out isPlural);
+
+		//describe the main and supplementary epidermis (if applicable) without mentioning body.
+		public string ShortEpidermisDescription() => type.ShortDescriptionWithoutBody();
+		public string ShortEpidermisDescription(out bool isPlural) => type.ShortDescriptionWithoutBody(out isPlural);
+
+		//same as above, but the more verbose version.
+		public string LongEpidermisDescription() => type.LongDescriptionWithoutBody(this);
+		public string LongEpidermisDescription(out bool isPlural) => type.LongDescriptionWithoutBody(this, out isPlural);
+
+		public bool hasAnyFur => !activeFur.isEmpty;
 
 		public override BodyData AsCurrentData()
 		{

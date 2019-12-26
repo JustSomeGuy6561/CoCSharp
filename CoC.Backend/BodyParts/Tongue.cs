@@ -136,7 +136,7 @@ namespace CoC.Backend.BodyParts
 		public static TongueType defaultValue => HUMAN;
 
 
-		private protected TongueType(ushort tongueLength, float tongueWidth, SimpleDescriptor shortDesc, LongDescriptor<TongueData> longDesc,
+		private protected TongueType(ushort tongueLength, float tongueWidth, ShortDescriptor shortDesc, PartDescriptor<TongueData> longDesc,
 			PlayerBodyPartDelegate<Tongue> playerDesc, ChangeType<TongueData> transform, RestoreType<TongueData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;

@@ -28,7 +28,11 @@ namespace CoC.Backend.Strings
 
 		public static string None() { return ""; }
 
-
+		public static string PluralNone(out bool isPlural)
+		{
+			isPlural = false;
+			return "";
+		}
 
 		public static string RevertAsDefault<T>(T type, PlayerBase p)
 		{

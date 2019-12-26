@@ -3,7 +3,6 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
-using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -34,13 +33,13 @@ namespace CoC.Backend.BodyParts
 		//default implementations of update and restore are valid.
 
 		//description overloads.
-		public string ShortDescription (bool plural) => type.ShortDescription(plural);
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
-		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(AsReadOnlyData(), alternateForm, plural);
+		public string LongDescription(bool alternateFormat, bool plural) => type.LongDescription(AsReadOnlyData(), alternateFormat, plural);
 
-		public string LongDescriptionPrimary (bool plural) => type.LongDescriptionPrimary(AsReadOnlyData(), plural);
+		public string LongDescriptionPrimary(bool plural) => type.LongDescriptionPrimary(AsReadOnlyData(), plural);
 
-		public string LongDescriptionAlternate (bool plural) => type.LongDescriptionAlternate(AsReadOnlyData(), plural);
+		public string LongDescriptionAlternate(bool plural) => type.LongDescriptionAlternate(AsReadOnlyData(), plural);
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -67,9 +66,9 @@ namespace CoC.Backend.BodyParts
 
 
 		//C# 7.2 magic. basically, prevents it from being messed with except internally.
-		private AntennaeType(SimplePluralDescriptor desc, LongPluralDescriptor<AntennaeData> longDesc, PlayerBodyPartDelegate<Antennae> playerDesc,
-			ChangeType<AntennaeData> transformMessage, RestoreType<AntennaeData> revertToDefault)
-			: base(PluralHelper(desc), LongPluralHelper(longDesc), playerDesc, transformMessage, revertToDefault)
+		private AntennaeType(ShortPluralDescriptor desc, SimpleDescriptor singleItemDesc, PluralPartDescriptor<AntennaeData> longDesc,
+			PlayerBodyPartDelegate<Antennae> playerDesc, ChangeType<AntennaeData> transformMessage, RestoreType<AntennaeData> revertToDefault)
+			: base(PluralHelper(desc), singleItemDesc, LongPluralHelper(longDesc), playerDesc, transformMessage, revertToDefault)
 		{
 			shortPluralDesc = desc ?? throw new ArgumentNullException(nameof(desc));
 			longPluralDesc = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
@@ -78,12 +77,12 @@ namespace CoC.Backend.BodyParts
 			antennaes.AddAt(this, _index);
 		}
 
-		private readonly SimplePluralDescriptor shortPluralDesc;
-		private readonly LongPluralDescriptor<AntennaeData> longPluralDesc;
+		private readonly ShortPluralDescriptor shortPluralDesc;
+		private readonly PluralPartDescriptor<AntennaeData> longPluralDesc;
 
 		public string ShortDescription(bool plural) => shortPluralDesc(plural);
 
-		public string LongDescription(AntennaeData data, bool alternateForm, bool plural) => longPluralDesc(data, alternateForm, plural);
+		public string LongDescription(AntennaeData data, bool alternateFormat, bool plural) => longPluralDesc(data, alternateFormat, plural);
 
 		public string LongDescriptionPrimary(AntennaeData data, bool plural) => longPluralDesc(data, false, plural);
 
@@ -125,14 +124,12 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		//Don't do this to this level lol. I just used lambdas everywhere because i changed the signature in the base to make things behave better globally, and didn't want to deal
-		//with doing that to everything in here. do use lambdas if you need something not there or you want to use the empty string.
-		public static readonly AntennaeType NONE = new AntennaeType((x) => GlobalStrings.None(), (x, y, z) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), RemoveAntennaeStr, GlobalStrings.RevertAsDefault);
+		public static readonly AntennaeType NONE = new AntennaeType(NoneDesc, NoneSingleDesc, NoneLongdesc, NonePlayerStr, RemoveAntennaeStr, NoneRestoreStr);
 
-		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeLongDesc,
+		public static readonly AntennaeType BEE = new AntennaeType(BeeDesc, BeeSingleDesc, BeeLongDesc,
 			(x, y) => BeePlayerStr(y), BeeTransformStr, BeeRestoreStr);
 
-		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceLongDesc,
+		public static readonly AntennaeType COCKATRICE = new AntennaeType(CockatriceDesc, CockatriceSingleDesc, CockatriceLongDesc,
 			(x, y) => CockatricePlayerStr(y), CockatriceTransformStr, CockatriceRestoreStr);
 	}
 
@@ -144,10 +141,9 @@ namespace CoC.Backend.BodyParts
 			return this;
 		}
 
-		//description overloads.
 		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
-		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(this, alternateForm, plural);
+		public string LongDescription(bool alternateFormat, bool plural) => type.LongDescription(this, alternateFormat, plural);
 
 		public string LongDescriptionPrimary(bool plural) => type.LongDescriptionPrimary(this, plural);
 

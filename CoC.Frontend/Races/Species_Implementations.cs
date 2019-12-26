@@ -129,7 +129,7 @@ namespace CoC.Frontend.Races
 					{
 						basiliskCount++;
 					}
-					if (source.body.type == BodyType.REPTILIAN)
+					if (source.body.type == BodyType.REPTILE)
 					{
 						basiliskCount++;
 					}
@@ -928,7 +928,7 @@ namespace CoC.Frontend.Races
 			{
 				dragonCounter++;
 			}
-			if (source.body.type == BodyType.REPTILIAN && dragonCounter > 0)
+			if (source.body.type == BodyType.REPTILE && dragonCounter > 0)
 			{
 				dragonCounter++;
 			}
@@ -1610,7 +1610,8 @@ namespace CoC.Frontend.Races
 			HairFurColors.GRAY
 		};
 
-		public FurColor[] kitsuneFurColors => new FurColor[]
+		//also allows dual tones with and white. or and grey if white.
+		public FurColor[] kitsuneBaseColors => new FurColor[]
 		{
 			new FurColor(HairFurColors.ORANGE),
 			new FurColor(HairFurColors.BLACK),
@@ -1618,24 +1619,15 @@ namespace CoC.Frontend.Races
 			new FurColor(HairFurColors.WHITE)
 		};
 
-		public void GetRandomKitsuneFurColors(out FurColor primary, out FurColor underbody)
+		public FurColor[] kitsuneMixedColors => new FurColor[]
 		{
-			FurColor[] colors = kitsuneFurColors;
+			new FurColor(HairFurColors.ORANGE, HairFurColors.WHITE, FurMulticolorPattern.MIXED),
+			new FurColor(HairFurColors.BLACK, HairFurColors.WHITE, FurMulticolorPattern.MIXED),
+			new FurColor(HairFurColors.RED, HairFurColors.WHITE, FurMulticolorPattern.MIXED),
+			new FurColor(HairFurColors.WHITE, HairFurColors.GRAY, FurMulticolorPattern.MIXED)
+		};
 
-
-
-			primary = Utils.RandomChoice(kitsuneFurColors);
-			if (Utils.RandBool())
-			{
-				underbody = new FurColor(HairFurColors.WHITE);
-				if (primary.primaryColor == HairFurColors.WHITE)
-				{
-					underbody.UpdateFurColor(HairFurColors.GRAY);
-				}
-			}
-			else underbody = new FurColor();
-		}
-
+		public FurColor[] allKitsuneColors => kitsuneBaseColors.Union(kitsuneMixedColors).ToArray();
 
 		public FurColor[] elderKitsuneFurColors => new FurColor[]
 		{
@@ -1653,7 +1645,7 @@ namespace CoC.Frontend.Races
 
 		public FurColor defaultFacialFur => new FurColor(HairFurColors.WHITE);
 
-		public FurColor defaultFur => kitsuneFurColors[0];
+		public FurColor defaultFur => kitsuneBaseColors[0];
 		public Tones defaultSkin => KitsuneTones[0];
 
 		internal Kitsune() : base(KitsuneStr) { }
@@ -1705,14 +1697,14 @@ namespace CoC.Frontend.Races
 			{
 				kitsuneCounter += 2;
 				//if the secondary epidermis fur matches an elder or regular color, and the primary epidermis skin is either elder or regular kitsune skin tone.
-				if ((elderKitsuneFurColors.Contains(source.body.supplementaryEpidermis.fur) || kitsuneFurColors.Contains(source.body.supplementaryEpidermis.fur)) &&
+				if ((elderKitsuneFurColors.Contains(source.body.supplementaryEpidermis.fur) || allKitsuneColors.Contains(source.body.supplementaryEpidermis.fur)) &&
 					(ElderKitsuneTones.Contains(source.body.mainEpidermis.tone) || KitsuneTones.Contains(source.body.mainEpidermis.tone)))
 				{
 					kitsuneCounter++;
 				}
 
 			}
-			else if (source.hasPrimaryFur && (this.elderKitsuneFurColors.Contains(source.body.mainEpidermis.fur) || this.kitsuneFurColors.Contains(source.body.mainEpidermis.fur)))
+			else if (source.hasPrimaryFur && (this.elderKitsuneFurColors.Contains(source.body.mainEpidermis.fur) || this.kitsuneBaseColors.Contains(source.body.mainEpidermis.fur)))
 			{
 				kitsuneCounter++;
 			}
@@ -1843,7 +1835,7 @@ namespace CoC.Frontend.Races
 				{
 					lizardCounter++;
 				}
-				if (source.body.type == BodyType.REPTILIAN)
+				if (source.body.type == BodyType.REPTILE)
 				{
 					lizardCounter++;
 				}

@@ -35,16 +35,6 @@ namespace CoC.Backend.BodyParts
 			return "Breasts";
 		}
 
-		public string ShortDescription() => BreastHelpers.ShortDesc(this, true);
-		public string ShortDescription(bool plural) => BreastHelpers.ShortDesc(this, plural);
-
-		public string LongDescription(bool alternateFormat, bool plural) => BreastHelpers.LongDesc(this, alternateFormat, plural);
-
-		public string FullDescription(bool alternateFormat, bool preciseMeasurements, bool plural, bool includeNipples)
-		{
-			return BreastHelpers.Desc(this, alternateFormat, preciseMeasurements, plural, includeNipples);
-		}
-
 		CupSize IBreast.cupSize => cupSize;
 
 		NippleData IBreast.nipples => nipples.AsReadOnlyData();
@@ -70,24 +60,6 @@ namespace CoC.Backend.BodyParts
 		bool IBreast.isOverFull => isOverFull;
 
 		Gender IBreast.gender => gender;
-
-		//by default, short description simply returns the noun, in plural format.
-		//it's possible via overloads to have this return singular or plural, with/without an article, or any combination thereof.
-		//Note that this description will only assume you're talking about this particular set of breasts, not all of them (if applicable)
-		//use the strings in genitals for descriptions that require all breast rows.
-		//also note: it is possible to describe all breasts by simply using the short description in conjunction with whatever flavor text you want
-		//(i.e. "several pairs of " {ShortDescription()}) in fact, this is how the all rows is done, but with an aggregate of all breast rows.
-
-
-		public string ShortDescription() => BreastHelpers.ShortDesc(this, true);
-		public string ShortDescription(bool plural) => BreastHelpers.ShortDesc(this, plural);
-
-		public string LongDescription(bool alternateFormat, bool plural) => BreastHelpers.LongDesc(this, alternateFormat, plural);
-
-		public string FullDescription(bool alternateFormat, bool preciseMeasurements, bool plural, bool includeNipples)
-		{
-			return BreastHelpers.Desc(this, alternateFormat, preciseMeasurements, plural, includeNipples);
-		}
 	}
 
 	public static class BreastHelpers
@@ -221,7 +193,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (plural || !withArticle)
 				{
-					return "milky " + Utils.Pluralize(breast.cupSize > CupSize.D ? "tit" : "breast", plural);
+					return "milky " + Utils.PluralizeIf(breast.cupSize > CupSize.D ? "tit" : "breast", plural);
 				}
 				else
 				{
@@ -232,7 +204,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (plural || !withArticle)
 				{
-					return Utils.Pluralize("milk-udder", plural);
+					return Utils.PluralizeIf("milk-udder", plural);
 				}
 				else
 				{
@@ -247,7 +219,7 @@ namespace CoC.Backend.BodyParts
 				}
 				else
 				{
-					return (breast.lactationRate > 1.5 ? "milk " : "") + Utils.Pluralize("jug", plural);
+					return (breast.lactationRate > 1.5 ? "milk " : "") + Utils.PluralizeIf("jug", plural);
 				}
 			}
 			else if (rand == 7 && breast.cupSize > CupSize.DD_BIG)
@@ -268,7 +240,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return "a breast";
 			}
-			return Utils.Pluralize("breast", plural);
+			return Utils.PluralizeIf("breast", plural);
 		}
 
 		internal static string ShortDesc(IBreast breast, bool plural)
@@ -276,21 +248,14 @@ namespace CoC.Backend.BodyParts
 			return Noun(breast, plural, false);
 		}
 
-		internal static string LongDesc(IBreast breast, bool alternateFormat, bool plural)
+		internal static string SingleItemDesc(IBreast breast)
 		{
-			if (alternateFormat && plural)
-			{
-				return "a pair of " + Noun(breast, true, false);
-			}
-			else
-			{
-				return Noun(breast, plural, alternateFormat);
-			}
+			return Noun(breast, false, true);
 		}
 
 
 		//standard: measurement as adjective + cupsize + breastNoun;
-		internal static string Desc(IBreast breast, bool alternateFormat, bool preciseMeasurements, bool plural, bool includeNipples)
+		internal static string Desc(IBreast breast, bool alternateFormat, bool plural, bool preciseMeasurements, bool includeNipples)
 		{
 			string intro = "";
 			if (plural && alternateFormat)
@@ -329,11 +294,11 @@ namespace CoC.Backend.BodyParts
 				string withText = plural ? ", each with " : " with ";
 				if (preciseMeasurements)
 				{
-					return intro + breast.cupSize.DescribeSize(breast.gender, getArticle) + milkText + breast.cupSize.AsText() + " " + ShortDesc(breast, plural) + withText + breast.nipples.FullDescription(true, true, true, false);
+					return intro + breast.cupSize.DescribeSize(breast.gender, getArticle) + milkText + breast.cupSize.AsText() + " " + ShortDesc(breast, plural) + withText + breast.nipples.FullDescription(true, true, true);
 				}
 				else
 				{
-					return intro + breast.cupSize.DescribeSize(breast.gender, getArticle) + milkText + ShortDesc(breast, plural) + withText + breast.nipples.FullDescription(true, false, true, false);
+					return intro + breast.cupSize.DescribeSize(breast.gender, getArticle) + milkText + ShortDesc(breast, plural) + withText + breast.nipples.FullDescription(true, true, false);
 				}
 			}
 		}

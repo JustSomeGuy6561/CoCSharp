@@ -6,7 +6,6 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
-using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -253,11 +252,15 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+
+
+
 		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(AsReadOnlyData());
 
 		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(AsReadOnlyData());
 
-		public string FullDescription(bool alternateForm) => type.FullDescription(AsReadOnlyData(), alternateForm);
+		public string FullDescription(bool alternateFormat) => type.FullDescription(AsReadOnlyData(), alternateFormat);
 
 
 		public override VaginaData AsReadOnlyData()
@@ -762,13 +765,14 @@ namespace CoC.Backend.BodyParts
 
 		public static VaginaType defaultValue => HUMAN;
 
-		private readonly SimplePluralDescriptor shortPluralDesc;
-		private readonly LongDescriptor<VaginaData> fullStr;
+		private readonly ShortPluralDescriptor shortPluralDesc;
+		private readonly PartDescriptor<VaginaData> fullStr;
 
 		public readonly bool orgasmOnTransform;
 
 		//only should be used when actually dealing with 2. does not check if the creature has 2. Not aliased in the data or source classes because that doesn't make sense.
 		public string ShortDescription(bool plural) => shortPluralDesc(plural);
+
 
 		public string FullDescriptionPrimary(VaginaData data)
 		{
@@ -780,11 +784,22 @@ namespace CoC.Backend.BodyParts
 			return FullDescription(data, true);
 		}
 
-		public string FullDescription(VaginaData vagina, bool alternateForm) => fullStr(vagina, alternateForm);
+		public string FullDescription(VaginaData vagina, bool alternateFormat) => fullStr(vagina, alternateFormat);
+
+		private delegate string GrowVaginaDescriptor(PlayerBase player, byte grownVaginaIndex);
+		private delegate string RemoveVaginaDescriptor(VaginaData removedVagina, PlayerBase player);
+
+		private readonly GrowVaginaDescriptor grewVaginaStr;
+		private readonly RemoveVaginaDescriptor removedVaginaStr;
+
+		//aliased in the genitals class.
+		internal string GrewVaginaText(PlayerBase player, byte grownVaginaIndex) => grewVaginaStr(player, grownVaginaIndex);
+
 
 		private VaginaType(int capacityBonus, bool orgasmWhenTransforming,
-			SimplePluralDescriptor shortDesc, LongDescriptor<VaginaData> longDesc, LongDescriptor<VaginaData> fullDesc, PlayerBodyPartDelegate<Vagina> playerDesc,
-			ChangeType<VaginaData> transform, RestoreType<VaginaData> restore) : base(PluralHelper(shortDesc, false), longDesc, playerDesc, transform, restore)
+			ShortPluralDescriptor shortDesc, SimpleDescriptor singleDesc, PartDescriptor<VaginaData> longDesc, PartDescriptor<VaginaData> fullDesc,
+			PlayerBodyPartDelegate<Vagina> playerDesc, ChangeType<VaginaData> transform, GrowVaginaDescriptor growVaginaText, RestoreType<VaginaData> restore,
+			RemoveVaginaDescriptor removeVaginaText) : base(PluralHelper(shortDesc, false), singleDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			typeCapacityBonus = capacityBonus;
@@ -793,6 +808,9 @@ namespace CoC.Backend.BodyParts
 			fullStr = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
 
 			types.AddAt(this, _index);
+
+			grewVaginaStr = growVaginaText ?? throw new ArgumentNullException(nameof(growVaginaText));
+			removedVaginaStr = removeVaginaText ?? throw new ArgumentNullException(nameof(removeVaginaText));
 		}
 
 
@@ -812,10 +830,10 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public static readonly VaginaType HUMAN = new VaginaType(0, false, HumanShortDesc, HumanLongDesc, HumanFullDesc, HumanPlayerStr, (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
+		public static readonly VaginaType HUMAN = new VaginaType(0, false, HumanShortDesc, HumanSingleDesc, HumanLongDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanGrewVaginaStr, HumanRestoreStr, HumanRemovedVaginaStr);
 		//defined, but never originally used in code (afaik, could be somewhere but i missed it because spaghetti). will be used in new code. feel free to update/fix any of the strings.
-		public static readonly VaginaType EQUINE = new VaginaType(10, true, EquineDesc, EquineLongDesc, EquineFullDesc, EquinePlayerStr, EquineTransformStr, EquineRestoreStr);
-		public static readonly VaginaType SAND_TRAP = new VaginaType(0, false, SandTrapDesc, SandTrapLongDesc, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr);
+		public static readonly VaginaType EQUINE = new VaginaType(0, true, EquineDesc, EquineSingleDesc, EquineLongDesc, EquineFullDesc, EquinePlayerStr, EquineTransformStr, EquineGrewVaginaStr, EquineRestoreStr, EquineRemovedVaginaStr);
+		public static readonly VaginaType SAND_TRAP = new VaginaType(0, false, SandTrapDesc, SandTrapSingleDesc, SandTrapLongDesc, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapGrewVaginaStr, SandTrapRestoreStr, SandTrapRemovedVaginaStr);
 
 	}
 
@@ -838,11 +856,15 @@ namespace CoC.Backend.BodyParts
 			return this;
 		}
 
+		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+
+
+
 		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(this);
 
 		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(this);
 
-		public string FullDescription(bool alternateForm) => type.FullDescription(this, alternateForm);
+		public string FullDescription(bool alternateFormat) => type.FullDescription(this, alternateFormat);
 
 		public VaginaData(Vagina source, int currIndex) : base(GetID(source), GetBehavior(source))
 		{

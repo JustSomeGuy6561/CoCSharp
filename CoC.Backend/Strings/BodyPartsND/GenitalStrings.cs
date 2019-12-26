@@ -190,7 +190,20 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			return mismatched ? CockType.GenericCockNoun(true) : cocks[0].ShortDescription(false, true);
 		}
 
-		public string OneCockOrCocksText(string pronoun = "your")
+		public string OneCockOrCocksNoun(string pronoun = "your")
+		{
+			if (cocks.Count == 0)
+			{
+				return "";
+			}
+			else if (cocks.Count == 1)
+			{
+				return pronoun + " " + CockType.GenericCockNoun();
+			}
+			else return "one of " + pronoun + " " + CockType.GenericCockNoun(true);
+		}
+
+		public string OneCockOrCocksShort(string pronoun = "your")
 		{
 			if (cocks.Count == 0)
 			{
@@ -203,7 +216,20 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			else return "one of " + pronoun + " " + AllCocksShortDescription();
 		}
 
-		public string EachCockOrCocksText(string pronoun = "your")
+		public string EachCockOrCocksNoun(string pronoun = "your")
+		{
+			if (cocks.Count == 0)
+			{
+				return "";
+			}
+			else if (cocks.Count == 1)
+			{
+				return pronoun + " " + CockType.GenericCockNoun(false);
+			}
+			else return "each of " + pronoun + " " + CockType.GenericCockNoun(true);
+		}
+
+		public string EachCockOrCocksShort(string pronoun = "your")
 		{
 			if (cocks.Count == 0)
 			{
@@ -760,9 +786,9 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().LongDescription(false, true);
 		}
 
-		public string AllBreastsFullDescription(bool alternateFormat = false, bool includeNipples = false)
+		public string AllBreastsFullDescription(bool alternateFormat = false)
 		{
-			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().FullDescription(false, false, true, includeNipples);
+			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().FullDescription(false, false, true);
 		}
 
 		public string ChestOrAllBreastsShort(bool alternateFormat = false)
@@ -783,18 +809,13 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			else return AllBreastsLongDescription(alternateFormat);
 		}
 
-		public string ChestOrAllBreastsFull(bool alternateFormat = false, bool includeNipples = false)
+		public string ChestOrAllBreastsFull(bool alternateFormat = false)
 		{
 			if (numBreastRows == 1 && _breasts[0].isMale)
 			{
-				string chestDesc = alternateFormat ? "a flat chest" : "flat chest";
-				if (includeNipples)
-				{
-					return chestDesc + " with " + NippleStrings.NippleSizeAdjective(_breasts[0].nipples.length) + " nipples";
-				}
-				else return chestDesc;
+				return (alternateFormat ? "a flat chest" : "flat chest") + " with " + NippleStrings.NippleSizeAdjective(_breasts[0].nipples.length) + " nipples";
 			}
-			else return AllBreastsFullDescription(alternateFormat, includeNipples);
+			else return AllBreastsFullDescription(alternateFormat);
 		}
 
 		private string LactationSlowedDownDueToInactivity(bool becameOverFullThisPass, LactationStatus oldLevel)

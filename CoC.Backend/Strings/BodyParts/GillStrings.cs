@@ -18,11 +18,46 @@ namespace CoC.Backend.BodyParts
 
 	public partial class GillType
 	{
-
-		private static string AnemoneDescStr()
+		private static string NoneDesc(bool plural)
 		{
-			return "anemone gills";
+			return "";
 		}
+
+		private static string NoneSingleDesc()
+		{
+			return "";
+		}
+
+		private static string NoneLongDesc(GillData arg, bool alternateFormat)
+		{
+			return "";
+		}
+
+		private static string NonePlayerStr(Gills bodyPart, PlayerBase player)
+		{
+			return "";
+		}
+
+		private static string NoneTransformStr(GillData oldData, PlayerBase player)
+		{
+			return oldData.type.RestoredString(oldData, player);
+		}
+
+		private static string NoneRestoreStr(GillData originalData, PlayerBase player)
+		{
+			return GlobalStrings.RevertAsDefault(originalData, player);
+		}
+
+		private static string AnemoneDesc(bool plural)
+		{
+			return Utils.PluralizeIf("anemone gill", plural);
+		}
+
+		private static string AnemoneSingleDesc()
+		{
+			return "an anemone gill";
+		}
+
 		private static string AnemoneLongDesc(GillData gills, bool alternateFormat)
 		{
 			return (alternateFormat ? "a pair of " : "") + "feathery anemone gills";
@@ -54,10 +89,16 @@ namespace CoC.Backend.BodyParts
 				SafelyFormattedString.FormattedText("You no longer have gills!", StringFormats.BOLD);
 		}
 
-		private static string FishDescStr()
+		private static string FishDesc(bool plural)
 		{
-			return "gills";
+			return Utils.PluralizeIf("gill", plural);
 		}
+
+		private static string FishSingleDesc()
+		{
+			return "a fish-like gill";
+		}
+
 		private static string FishLongDesc(GillData gills, bool alternateFormat)
 		{
 			return (alternateFormat ? "a pair of " : "") + "large, fish-like gills";

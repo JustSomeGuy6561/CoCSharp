@@ -157,7 +157,9 @@ namespace CoC.Backend.BodyParts
 		public uint orgasmCount { get; private set; } = 0;
 		public uint dryOrgasmCount { get; private set; } = 0;
 
-		public bool hasSheath => type.usesASheath;
+		public bool hasSheath => requiresASheath || creature?.genitals.hasSheath == true;
+
+		public bool requiresASheath => type.usesASheath;
 
 		public float cumAmount => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.totalCum : minCumAmount;
 
@@ -525,6 +527,9 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Text
+
+		public string HeadDescription() => type.HeadDescription();
+
 		public string AdjectiveText(bool multipleAdjectives)
 		{
 			return CockType.CockAdjectiveText(AsReadOnlyData(), multipleAdjectives);
@@ -537,7 +542,7 @@ namespace CoC.Backend.BodyParts
 		public string ShortDescription(bool noAdjective, bool plural) => type.ShortDescription(noAdjective, plural);
 
 
-		public string FullDescription(bool alternateForm) => type.FullDescription(AsReadOnlyData(), alternateForm);
+		public string FullDescription(bool alternateFormat) => type.FullDescription(AsReadOnlyData(), alternateFormat);
 
 		public string FullDescription() => type.FullDescription(AsReadOnlyData());
 
@@ -704,7 +709,7 @@ namespace CoC.Backend.BodyParts
 
 		public static CockType defaultValue => HUMAN;
 
-		public bool hasKnot => baseKnotMultiplier != 0f;
+		public bool hasKnot => baseKnotMultiplier > 1.0f;
 		public readonly float baseKnotMultiplier;
 
 		//vanilla game limited cock width to 2/5 the length. i realize that some cocks may require that ratio be lower, so if it irks you, you
@@ -730,14 +735,36 @@ namespace CoC.Backend.BodyParts
 		public readonly bool usesASheath;
 
 		protected delegate string CockDescriptor(bool noAdjective, bool plural = false);
+		protected delegate string CockSingleDescriptor(bool noAdjective);
+
+		//a convenient descriptor for when you grow a cock, not transform it. cocks are weird because you can get more of them, not just transform them.
+		//generally, you'll want to mention any other cocks you already have, and the effect on your gender (i.e. if it makes you a herm or a male from female/genderless)
+		protected delegate string GrowCockDescriptor(PlayerBase player, byte grownCockIndex);
+		protected delegate string RemoveCockDescriptor(CockData removedCock, PlayerBase player);
 
 		//some cocks have a built-in adjective to their short description - this is the way it was before. This can cause grammatic weirdness, so cocks use a custom delegate that
 		//allows this adjective to be disabled, in addition to the plural flag. just like vagina, cock defaults to singular instead of plural.
 		private readonly CockDescriptor shortDescWithAdjArg;
+		private readonly CockSingleDescriptor singleDescWithAdjArg;
+
+		private readonly GrowCockDescriptor grewCockStr;
+		private readonly RemoveCockDescriptor removedCockStr;
+		private readonly SimpleDescriptor headStr;
+
+		public string HeadDescription()
+		{
+			return headStr();
+		}
+
+		//aliased in the genitals class.
+		//you may choose to use your own that is unique to whatever is causing it, but this exists for simplicity's sake.
+		internal string GrewCockText(PlayerBase player, byte grownCockIndex) => grewCockStr(player, grownCockIndex);
+		public string RemovedCockText(CockData removedCock, PlayerBase player) => removedCockStr(removedCock, player);
 
 		private protected CockType(CockGroup cockGroup, bool hasSheath, SimpleDescriptor headDesc,
-			CockDescriptor shortDescWithAdjFlag, LongDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
-			ChangeType<CockData> transform, RestoreType<CockData> restore) : base(shortDescMaker(shortDescWithAdjFlag), longDesc, playerDesc, transform, restore)
+			CockDescriptor shortDescWithAdjFlag, CockSingleDescriptor singleDescWithAdjFlag, PartDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			ChangeType<CockData> transform, GrowCockDescriptor growCockText, RestoreType<CockData> restore, RemoveCockDescriptor removeCockText)
+			: base(shortDescMaker(shortDescWithAdjFlag), singleDescMaker(singleDescWithAdjFlag), longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			baseKnotMultiplier = 0;
@@ -745,14 +772,19 @@ namespace CoC.Backend.BodyParts
 			usesASheath = hasSheath;
 
 			shortDescWithAdjArg = shortDescWithAdjFlag ?? throw new ArgumentNullException(nameof(shortDescWithAdjFlag));
+			singleDescWithAdjArg = singleDescWithAdjFlag ?? throw new ArgumentNullException(nameof(singleDescWithAdjFlag));
 
 			types.AddAt(this, _index);
 
+			headStr = headDesc ?? throw new ArgumentNullException(nameof(headDesc));
+			grewCockStr = growCockText ?? throw new ArgumentNullException(nameof(growCockText));
+			removedCockStr = removeCockText ?? throw new ArgumentNullException(nameof(removeCockText));
 		}
 
-		private protected CockType(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor headDesc, //any cocktype specific values.
-			CockDescriptor shortDescWithAdjFlag, LongDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
-			ChangeType<CockData> transform, RestoreType<CockData> restore) : base(shortDescMaker(shortDescWithAdjFlag), longDesc, playerDesc, transform, restore)
+		private protected CockType(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor headDesc,
+			CockDescriptor shortDescWithAdjFlag, CockSingleDescriptor singleDescWithAdjFlag, PartDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
+			ChangeType<CockData> transform, GrowCockDescriptor growCockText, RestoreType<CockData> restore, RemoveCockDescriptor removeCockText)
+			: base(shortDescMaker(shortDescWithAdjFlag), singleDescMaker(singleDescWithAdjFlag), longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			Utils.Clamp(ref initialKnotMultiplier, Cock.MIN_KNOT_MULTIPLIER, MAX_INITIAL_MULTIPLIER);
@@ -760,8 +792,13 @@ namespace CoC.Backend.BodyParts
 			usesASheath = hasSheath;
 
 			shortDescWithAdjArg = shortDescWithAdjFlag ?? throw new ArgumentNullException(nameof(shortDescWithAdjFlag));
+			singleDescWithAdjArg = singleDescWithAdjFlag ?? throw new ArgumentNullException(nameof(singleDescWithAdjFlag));
 
 			types.AddAt(this, _index);
+
+			headStr = headDesc ?? throw new ArgumentNullException(nameof(headDesc));
+			grewCockStr = growCockText ?? throw new ArgumentNullException(nameof(growCockText));
+			removedCockStr = removeCockText ?? throw new ArgumentNullException(nameof(removeCockText));
 		}
 
 		private static SimpleDescriptor shortDescMaker(CockDescriptor shortAdjDesc)
@@ -770,15 +807,21 @@ namespace CoC.Backend.BodyParts
 			return () => shortAdjDesc(false, false);
 		}
 
+		private static SimpleDescriptor singleDescMaker(CockSingleDescriptor singleDesc)
+		{
+			if (singleDesc is null) throw new ArgumentNullException(nameof(singleDesc));
+			return () => singleDesc(false);
+		}
+
 		public string ShortDescriptionNoAdjective() => shortDescWithAdjArg(true);
 		public string ShortDescriptionNoAdjective(bool plural) => shortDescWithAdjArg(true, plural);
 
 		public string ShortDescription(bool noAdjective, bool plural) => shortDescWithAdjArg(noAdjective, plural);
 
 
-		public virtual string FullDescription(CockData cock, bool alternateForm)
+		public virtual string FullDescription(CockData cock, bool alternateFormat)
 		{
-			return GenericFullDescription(cock, alternateForm);
+			return GenericFullDescription(cock, alternateFormat);
 		}
 
 		public string FullDescription(CockData cock)
@@ -814,39 +857,45 @@ namespace CoC.Backend.BodyParts
 			return girth / 8f;
 		}
 
-		public static readonly CockType HUMAN = new CockType(CockGroup.HUMAN, false, HumanCockHeadDesc, HumanDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
-		public static readonly CockType HORSE = new CockType(CockGroup.MAMMALIAN, true, HorseCockHeadDesc, HorseDesc, HorseLongDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);
-		public static readonly CockType DOG = new CockType(CockGroup.MAMMALIAN, true, 1.1f, DogCockHeadDesc, DogDesc, DogLongDesc, DogPlayerStr, DogTransformStr, DogRestoreStr);// can range up to 2.1 depending on item.
-		public static readonly CockType DEMON = new CockType(CockGroup.CORRUPTED, false, DemonCockHeadDesc, DemonDesc, DemonLongDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr);
-		public static readonly CockType TENTACLE = new FlexiCock(CockGroup.CORRUPTED, false, 1.1f, TentacleCockHeadDesc, TentacleDesc, TentacleLongDesc, TentaclePlayerStr, TentacleTransformStr, TentacleRestoreStr);
-		public static readonly CockType CAT = new CockType(CockGroup.MAMMALIAN, true, CatCockHeadDesc, CatDesc, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
-		public static readonly CockType LIZARD = new CockType(CockGroup.REPTILIAN, false, LizardCockHeadDesc, LizardDesc, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static readonly CockType ANEMONE = new CockType(CockGroup.AQUATIC, false, AnemoneCockHeadDesc, AnemoneDesc, AnemoneLongDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
-		public static readonly CockType KANGAROO = new CockType(CockGroup.MAMMALIAN, true, KangarooCockHeadDesc, KangarooDesc, KangarooLongDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
-		public static readonly CockType DRAGON = new CockType(CockGroup.REPTILIAN, false, 1.3f, DragonCockHeadDesc, DragonDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static readonly CockType DISPLACER = new CockType(CockGroup.OTHER, true, 1.5f, DisplacerCockHeadDesc, DisplacerDesc, DisplacerLongDesc, DisplacerPlayerStr, DisplacerTransformStr, DisplacerRestoreStr);
-		public static readonly CockType FOX = new CockType(CockGroup.MAMMALIAN, true, 1.25f, FoxCockHeadDesc, FoxDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr);
-		public static readonly CockType BEE = new CockType(CockGroup.FLYING, false, BeeCockHeadDesc, BeeDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr);
-		public static readonly CockType PIG = new CockType(CockGroup.MAMMALIAN, false, PigCockHeadDesc, PigDesc, PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr);
-		public static readonly CockType AVIAN = new CockType(CockGroup.FLYING, true, AvianCockHeadDesc, AvianDesc, AvianLongDesc, AvianPlayerStr, AvianTransformStr, AvianRestoreStr);
-		public static readonly CockType RHINO = new CockType(CockGroup.MAMMALIAN, false, RhinoCockHeadDesc, RhinoDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
-		public static readonly CockType ECHIDNA = new CockType(CockGroup.MAMMALIAN, true, EchidnaCockHeadDesc, EchidnaDesc, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
-		public static readonly CockType WOLF = new CockType(CockGroup.MAMMALIAN, true, 1.5f, WolfCockHeadDesc, WolfDesc, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static readonly CockType RED_PANDA = new CockType(CockGroup.MAMMALIAN, true, RedPandaCockHeadDesc, RedPandaDesc, RedPandaLongDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr);
-		public static readonly CockType FERRET = new CockType(CockGroup.MAMMALIAN, true, FerretCockHeadDesc, FerretDesc, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr);
-		public static readonly CockType GOO = new FlexiCock(CockGroup.AQUATIC, false, GooCockHeadDesc, GooDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+		//note: fox existed in the original enum but was never used. i mean, ever. so for now, it's still here, just commented out. feel free to implement it if it ever gets a use.
+
+		public static readonly CockType HUMAN = new CockType(CockGroup.HUMAN, false, HumanCockHeadDesc, HumanDesc, HumanSingleDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanGrewCockStr, HumanRestoreStr, HumanRemoveCockStr);
+		public static readonly CockType HORSE = new CockType(CockGroup.MAMMALIAN, true, HorseCockHeadDesc, HorseDesc, HorseSingleDesc, HorseLongDesc, HorsePlayerStr, HorseTransformStr, HorseGrewCockStr, HorseRestoreStr, HorseRemoveCockStr);
+		public static readonly CockType DOG = new CockType(CockGroup.MAMMALIAN, true, 1.1f, DogCockHeadDesc, DogDesc, DogSingleDesc, DogLongDesc, DogPlayerStr, DogTransformStr, DogGrewCockStr, DogRestoreStr, DogRemoveCockStr);// can range up to 2.1 depending on item.
+		public static readonly CockType DEMON = new CockType(CockGroup.CORRUPTED, false, DemonCockHeadDesc, DemonDesc, DemonSingleDesc, DemonLongDesc, DemonPlayerStr, DemonTransformStr, DemonGrewCockStr, DemonRestoreStr, DemonRemoveCockStr);
+		public static readonly CockType TENTACLE = new FlexiCock(CockGroup.CORRUPTED, false, 1.1f, TentacleCockHeadDesc, TentacleDesc, TentacleSingleDesc, TentacleLongDesc, TentaclePlayerStr, TentacleTransformStr, TentacleGrewCockStr, TentacleRestoreStr, TentacleRemoveCockStr);
+		public static readonly CockType CAT = new CockType(CockGroup.MAMMALIAN, true, CatCockHeadDesc, CatDesc, CatSingleDesc, CatLongDesc, CatPlayerStr, CatTransformStr, CatGrewCockStr, CatRestoreStr, CatRemoveCockStr);
+		public static readonly CockType LIZARD = new CockType(CockGroup.REPTILIAN, false, LizardCockHeadDesc, LizardDesc, LizardSingleDesc, LizardLongDesc, LizardPlayerStr, LizardTransformStr, LizardGrewCockStr, LizardRestoreStr, LizardRemoveCockStr);
+		public static readonly CockType ANEMONE = new CockType(CockGroup.AQUATIC, false, AnemoneCockHeadDesc, AnemoneDesc, AnemoneSingleDesc, AnemoneLongDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneGrewCockStr, AnemoneRestoreStr, AnemoneRemoveCockStr);
+		public static readonly CockType KANGAROO = new CockType(CockGroup.MAMMALIAN, true, KangarooCockHeadDesc, KangarooDesc, KangarooSingleDesc, KangarooLongDesc, KangarooPlayerStr, KangarooTransformStr, KangarooGrewCockStr, KangarooRestoreStr, KangarooRemoveCockStr);
+		public static readonly CockType DRAGON = new CockType(CockGroup.REPTILIAN, false, 1.3f, DragonCockHeadDesc, DragonDesc, DragonSingleDesc, DragonLongDesc, DragonPlayerStr, DragonTransformStr, DragonGrewCockStr, DragonRestoreStr, DragonRemoveCockStr);
+		public static readonly CockType DISPLACER = new CockType(CockGroup.OTHER, true, 1.5f, DisplacerCockHeadDesc, DisplacerDesc, DisplacerSingleDesc, DisplacerLongDesc, DisplacerPlayerStr, DisplacerTransformStr, DisplacerGrewCockStr, DisplacerRestoreStr, DisplacerRemoveCockStr);
+		//public static readonly CockType FOX = new CockType(CockGroup.MAMMALIAN, true, 1.25f, FoxCockHeadDesc, FoxDesc, FoxSingleDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxGrewCockStr, FoxRestoreStr, FoxRemoveCockStr);
+		public static readonly CockType BEE = new CockType(CockGroup.FLYING, false, BeeCockHeadDesc, BeeDesc, BeeSingleDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeGrewCockStr, BeeRestoreStr, BeeRemoveCockStr);
+		public static readonly CockType PIG = new CockType(CockGroup.MAMMALIAN, false, PigCockHeadDesc, PigDesc, PigSingleDesc, PigLongDesc, PigPlayerStr, PigTransformStr, PigGrewCockStr, PigRestoreStr, PigRemoveCockStr);
+		public static readonly CockType AVIAN = new CockType(CockGroup.FLYING, true, AvianCockHeadDesc, AvianDesc, AvianSingleDesc, AvianLongDesc, AvianPlayerStr, AvianTransformStr, AvianGrewCockStr, AvianRestoreStr, AvianRemoveCockStr);
+		public static readonly CockType RHINO = new CockType(CockGroup.MAMMALIAN, false, RhinoCockHeadDesc, RhinoDesc, RhinoSingleDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoGrewCockStr, RhinoRestoreStr, RhinoRemoveCockStr);
+		public static readonly CockType ECHIDNA = new CockType(CockGroup.MAMMALIAN, true, EchidnaCockHeadDesc, EchidnaDesc, EchidnaSingleDesc, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaGrewCockStr, EchidnaRestoreStr, EchidnaRemoveCockStr);
+		public static readonly CockType WOLF = new CockType(CockGroup.MAMMALIAN, true, 1.5f, WolfCockHeadDesc, WolfDesc, WolfSingleDesc, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfGrewCockStr, WolfRestoreStr, WolfRemoveCockStr);
+		public static readonly CockType RED_PANDA = new CockType(CockGroup.MAMMALIAN, true, RedPandaCockHeadDesc, RedPandaDesc, RedPandaSingleDesc, RedPandaLongDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaGrewCockStr, RedPandaRestoreStr, RedPandaRemoveCockStr);
+		public static readonly CockType FERRET = new CockType(CockGroup.MAMMALIAN, true, FerretCockHeadDesc, FerretDesc, FerretSingleDesc, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretGrewCockStr, FerretRestoreStr, FerretRemoveCockStr);
+		public static readonly CockType GOO = new FlexiCock(CockGroup.AQUATIC, false, GooCockHeadDesc, GooDesc, GooSingleDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooGrewCockStr, GooRestoreStr, GooRemoveCockStr);
 
 		private class FlexiCock : CockType
 		{
+			public FlexiCock(CockGroup cockGroup, bool hasSheath, SimpleDescriptor headDesc, CockDescriptor shortDesc, CockSingleDescriptor singleDesc,
+				PartDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc, ChangeType<CockData> transform, GrowCockDescriptor growCockText, RestoreType<CockData> restore,
+				RemoveCockDescriptor removeCockText) : base(cockGroup, hasSheath, headDesc, shortDesc, singleDesc, longDesc, playerDesc, transform, growCockText, restore, removeCockText)
+			{ }
+
+			public FlexiCock(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor headDesc, CockDescriptor shortDescWithAdjFlag,
+				CockSingleDescriptor singleDesc, PartDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc, ChangeType<CockData> transform,
+				GrowCockDescriptor growCockText, RestoreType<CockData> restore, RemoveCockDescriptor removeCockText)
+				: base(cockGroup, hasSheath, initialKnotMultiplier, headDesc, shortDescWithAdjFlag, singleDesc, longDesc, playerDesc, transform, growCockText, restore, removeCockText) { }
+
 			public override bool flexibleOrStretchyCock => true;
 
-			public FlexiCock(CockGroup cockGroup, bool hasSheath, SimpleDescriptor cockHeadDesc, CockDescriptor shortDescWithAdjFlag, LongDescriptor<CockData> longDesc,
-				PlayerBodyPartDelegate<Cock> playerDesc, ChangeType<CockData> transform, RestoreType<CockData> restore)
-				: base(cockGroup, hasSheath, cockHeadDesc, shortDescWithAdjFlag, longDesc, playerDesc, transform, restore) { }
 
-			public FlexiCock(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor cockHeadDesc, CockDescriptor shortDescWithAdjFlag,
-				LongDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc, ChangeType<CockData> transform, RestoreType<CockData> restore)
-				: base(cockGroup, hasSheath, initialKnotMultiplier, cockHeadDesc, shortDescWithAdjFlag, longDesc, playerDesc, transform, restore) { }
 		}
 	}
 
@@ -867,7 +916,14 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ReadOnlyPiercing<CockPiercings> cockPiercings;
 
+		public readonly bool currentlyHasSheath;
+		public bool requiresSheath => type.usesASheath;
+
+		public bool hasKnot => knotMultiplier >= 1.1f;
+
 		public float cockArea => length * girth;
+
+		public string HeadDescription() => type.HeadDescription();
 
 		public string AdjectiveText(bool multipleAdjectives)
 		{
@@ -881,7 +937,7 @@ namespace CoC.Backend.BodyParts
 		public string ShortDescription(bool noAdjective, bool plural) => type.ShortDescription(noAdjective, plural);
 
 
-		public string FullDescription(bool alternateForm) => type.FullDescription(this, alternateForm);
+		public string FullDescription(bool alternateFormat) => type.FullDescription(this, alternateFormat);
 
 		public string FullDescription() => type.FullDescription(this);
 
@@ -909,6 +965,8 @@ namespace CoC.Backend.BodyParts
 			cockSock = source.cockSock;
 
 			cockPiercings = source.cockPiercings.AsReadOnlyData();
+
+			currentlyHasSheath = source.hasSheath;
 		}
 	}
 }

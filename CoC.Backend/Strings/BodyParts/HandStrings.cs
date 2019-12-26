@@ -20,51 +20,31 @@ namespace CoC.Backend.BodyParts
 	{
 		private static string HumanNoun(bool plural)
 		{
-			return Utils.Pluralize("hand", plural);
+			return Utils.PluralizeIf("hand", plural);
 		}
 
+		private static string HumanNails(bool plural)
+		{
+			return Utils.PluralizeIf("nail", plural);
+		}
 		private static string HumanShort(bool plural)
 		{
 			return HumanNoun(plural);
 		}
-
-		public static string HumanLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string HumanSingle()
 		{
-			string intro;
-			if (alternateForm && plural)
-			{
-				intro = "a pair of ";
-			}
-			else if (alternateForm)
-			{
-				intro = "a ";
-			}
-			else
-			{
-				intro = "";
-			}
-
-			return intro + Utils.Pluralize("normal hand", plural);
-
+			return "a human " + HumanNoun(false);
 		}
 
-		public static string HumanFullDesc(HandData hands, bool alternateForm, bool plural)
+		public static string HumanLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
-			if (alternateForm && plural)
+			if (!plural)
 			{
-				return "a pair of normal hands, fingers, and nails.";
-			}
-			else if (alternateForm)
-			{
-				return "a normal hand, complete with normal fingers and nails.";
-			}
-			else if (plural)
-			{
-				return "normal hands, fingers, and nails";
+				return "a hand with fingers and nails";
 			}
 			else
 			{
-				return "normal hand, with it's equally normal fingers and nails";
+				return "normal hands, fingers, and nails";
 			}
 		}
 
@@ -73,44 +53,33 @@ namespace CoC.Backend.BodyParts
 			return GenericClawedNoun(plural);
 		}
 
+		private static string LizardNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string LizardShort(bool plural)
 		{
-			return Utils.Pluralize("reptilian claw", plural);
+			return Utils.PluralizeIf("reptilian claw", plural);
 		}
-
-		private static string LizardLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string LizardSingle()
 		{
-			string intro = "";
-			if (alternateForm && plural)
-			{
-				intro = "a pair of" + hands.clawTone.AsString();
-			}
-			else if (alternateForm)
-			{
-				intro = Utils.AddArticle(hands.clawTone.AsString());
-			}
-			else
-			{
-				intro = hands.clawTone.AsString();
-			}
-
-			return intro + "ish " + LizardShort(plural);
+			return "a reptilian claw";
 		}
 
-		private static string LizardFullDesc(HandData hands, bool alternateForm, bool plural)
+		private static string LizardLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
 			string intro;
-			if (alternateForm && plural)
+			if (alternateFormat && plural)
 			{
-				intro = "a pair of distinctly reptilian hands,";
+				intro = "distinctly reptilian hands,";
 			}
-			else if (alternateForm)
+			else if (alternateFormat)
 			{
 				intro = "a distinctly reptilian hand,";
 			}
 			else
 			{
-				intro = Utils.Pluralize("distinctly reptilian hand", plural);
+				intro = Utils.PluralizeIf("distinctly reptilian hand", plural);
 			}
 
 			return intro + $"with {hands.clawTone.AsString()}ish claws for fingers";
@@ -121,43 +90,33 @@ namespace CoC.Backend.BodyParts
 			return GenericClawedNoun(plural);
 		}
 
+		private static string DragonNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string DragonShort(bool plural)
 		{
-			return Utils.Pluralize("dragonic claw", plural);
+			return Utils.PluralizeIf("dragonic claw", plural);
 		}
-		private static string DragonLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string DragonSingle()
 		{
-			string intro = "";
-			if (alternateForm && plural)
-			{
-				intro = "a pair of long, " + hands.clawTone.AsString();
-			}
-			else if (alternateForm)
-			{
-				intro = "a long, " + hands.clawTone.AsString();
-			}
-			else
-			{
-				intro = "long, " + hands.clawTone.AsString();
-			}
-
-			return intro + "ish " + DragonShort(plural);
+			return "a dragonic claw";
 		}
 
-		private static string DragonFullDesc(HandData hands, bool alternateForm, bool plural)
+		private static string DragonLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
 			string intro;
-			if (alternateForm && plural)
+			if (alternateFormat && plural)
 			{
-				intro = "a pair of distinctly draconic hands,";
+				intro = "distinctly draconic hands,";
 			}
-			else if (alternateForm)
+			else if (alternateFormat)
 			{
 				intro = "a distinctly draconic hand,";
 			}
 			else
 			{
-				intro = Utils.Pluralize("distinctly draconic hand", plural);
+				intro = Utils.PluralizeIf("distinctly draconic hand", plural);
 			}
 
 			return intro + $"with long, {hands.clawTone.AsString()}ish claws for fingers";
@@ -167,42 +126,34 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericClawedNoun(plural);
 		}
+		private static string SalamanderNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string SalamanderShort(bool plural)
 		{
-			return Utils.Pluralize("salamander claw", plural);
+			return Utils.PluralizeIf("salamander claw", plural);
 		}
-		private static string SalamanderLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string SalamanderSingle()
 		{
-			string intro;
-			if (alternateForm && plural)
-			{
-				intro = "a pair of scaley ";
-			}
-			else if (alternateForm)
-			{
-				intro = "a scaley, ";
-			}
-			else
-			{
-				intro = "scaley ";
-			}
-			return intro + SalamanderShort(plural);
+			return "a salamander claw";
 		}
 
-		private static string SalamanderFullDesc(HandData hands, bool alternateForm, bool plural)
+
+		private static string SalamanderLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
 			string intro;
-			if (alternateForm && plural)
+			if (alternateFormat && plural)
 			{
 				intro = "a pair of scaley, salamander-like hands";
 			}
-			else if (alternateForm)
+			else if (alternateFormat)
 			{
 				intro = "a scaley, salamander-like hand";
 			}
 			else
 			{
-				intro = Utils.Pluralize("scaley, salamander-like hand", plural);
+				intro = Utils.PluralizeIf("scaley, salamander-like hand", plural);
 			}
 
 			return intro + $" with claws for fingers";
@@ -212,92 +163,98 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericPawedNoun(plural);
 		}
+		private static string CatNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string CatShort(bool plural)
 		{
-			return Utils.Pluralize("cat paw", plural);
+			return Utils.PluralizeIf("cat paw", plural);
 		}
-		private static string CatLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string CatSingle()
 		{
-			return GenericPawLongDesc(alternateForm, plural);
+			return "a cat paw";
 		}
-		private static string CatFullDesc(HandData hands, bool alternateForm, bool plural)
+
+		private static string CatLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
-			return GenericPawFullDesc(alternateForm, plural);
+			return GenericPawLongDesc(alternateFormat, plural);
 		}
 
 		private static string DogNoun(bool plural)
 		{
 			return GenericPawedNoun(plural);
 		}
+		private static string DogNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string DogShort(bool plural)
 		{
-			return Utils.Pluralize("dog paw", plural);
+			return Utils.PluralizeIf("dog paw", plural);
 		}
-		private static string DogLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string DogSingle()
 		{
-			return GenericPawLongDesc(alternateForm, plural);
+			return "a dog paw";
 		}
-		private static string DogFullDesc(HandData hands, bool alternateForm, bool plural)
+
+		private static string DogLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
-			return GenericPawFullDesc(alternateForm, plural);
+			return GenericPawLongDesc(alternateFormat, plural);
 		}
 
 		private static string FoxNoun(bool plural)
 		{
 			return GenericPawedNoun(plural);
 		}
+		private static string FoxNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string FoxShort(bool plural)
 		{
-			return Utils.Pluralize("fox paw", plural);
+			return Utils.PluralizeIf("fox paw", plural);
 		}
-		private static string FoxLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string FoxSingle()
 		{
-			return GenericPawLongDesc(alternateForm, plural);
+			return "a fox paw";
 		}
-		private static string FoxFullDesc(HandData hands, bool alternateForm, bool plural)
+		private static string FoxLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
-			return GenericPawFullDesc(alternateForm, plural);
+			return GenericPawLongDesc(alternateFormat, plural);
 		}
 
 		private static string ImpNoun(bool plural)
 		{
 			return GenericClawedNoun(plural);
 		}
+		private static string ImpNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string ImpShort(bool plural)
 		{
-			return Utils.Pluralize("imp claw", plural);
+			return Utils.PluralizeIf("imp claw", plural);
 		}
-		private static string ImpLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string ImpSingle()
+		{
+			return "an imp claw";
+		}
+
+		private static string ImpLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
 			string intro;
-			if (alternateForm && plural)
+			if (alternateFormat && plural)
 			{
-				intro = "a pair of ";
+				intro = "imp-like hands";
 			}
-			else if (alternateForm)
-			{
-				intro = "a ";
-			}
-			else
-			{
-				intro = "";
-			}
-			return intro + "clawed, imp-like hands";
-		}
-		private static string ImpFullDesc(HandData hands, bool alternateForm, bool plural)
-		{
-			string intro;
-			if (alternateForm && plural)
-			{
-				intro = "a pair of imp-like hands";
-			}
-			else if (alternateForm)
+			else if (alternateFormat)
 			{
 				intro = "an imp-like hand";
 			}
 			else
 			{
-				intro = Utils.Pluralize("imp-like hand", plural);
+				intro = Utils.PluralizeIf("imp-like hand", plural);
 			}
 
 			return intro + " with short claws for fingers";
@@ -306,53 +263,53 @@ namespace CoC.Backend.BodyParts
 
 		private static string CockatriceNoun(bool plural)
 		{
-			return Utils.Pluralize("talon", plural);
+			return Utils.PluralizeIf("talon", plural);
+		}
+		private static string CockatriceNails(bool plural)
+		{
+			return ClawNails(plural);
 		}
 		private static string CockatriceShort(bool plural)
 		{
-			return Utils.Pluralize("avian talon", plural);
+			return Utils.PluralizeIf("avian talon", plural);
 		}
-		private static string CockatriceLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string CockatriceSingle()
 		{
-			string intro;
-			if (alternateForm && plural)
+			return "an avian talon";
+		}
+
+		private static string CockatriceLongDesc(HandData hands, bool alternateFormat, bool plural)
+		{
+			if (!plural)
 			{
-				intro = "a pair of ";
-			}
-			else if (alternateForm)
-			{
-				intro = "a ";
+				return (alternateFormat ? "an " : "") + "avian talon ending in sharp claws";
 			}
 			else
 			{
-				intro = "";
+				return "avian talons ending in sharp claws";
 			}
-
-			return intro + Utils.Pluralize("deadly looking avian talon", plural);
-		}
-
-		private static string CockatriceFullDesc(HandData hands, bool alternateForm, bool plural)
-		{
-			string claws = plural ? ", each ending in sharp claws" : "ending in sharp claws";
-
-			return CockatriceLongDesc(hands, alternateForm, plural) + claws;
 		}
 
 		private static string RedPandaNoun(bool plural)
 		{
 			return GenericPawedNoun(plural);
 		}
+		private static string RedPandaNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string RedPandaShort(bool plural)
 		{
-			return Utils.Pluralize("panda paw", plural);
+			return Utils.PluralizeIf("panda paw", plural);
 		}
-		private static string RedPandaLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string RedPandaSingle()
 		{
-			return GenericPawLongDesc(alternateForm, plural);
+			return "a panda paw";
 		}
-		private static string RedPandaFullDesc(HandData hands, bool alternateForm, bool plural)
+
+		private static string RedPandaLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
-			return GenericPawFullDesc(alternateForm, plural);
+			return GenericPawLongDesc(alternateFormat, plural);
 		}
 
 
@@ -360,116 +317,94 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericPawedNoun(plural);
 		}
+		private static string FerretNails(bool plural)
+		{
+			return ClawNails(plural);
+		}
 		private static string FerretShort(bool plural)
 		{
-			return Utils.Pluralize("ferret paw", plural);
+			return Utils.PluralizeIf("ferret paw", plural);
 		}
-		private static string FerretLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string FerretSingle()
 		{
-			return GenericPawLongDesc(alternateForm, plural);
+			return "a ferret paw";
 		}
-		private static string FerretFullDesc(HandData hands, bool alternateForm, bool plural)
+		private static string FerretLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
-			return GenericPawFullDesc(alternateForm, plural);
+			return GenericPawLongDesc(alternateFormat, plural);
 		}
-
 
 		private static string GooNoun(bool plural)
 		{
-			return Utils.Pluralize("gooey \"hand\"", plural);
+			return Utils.PluralizeIf("gooey \"hand\"", plural);
+		}
+		private static string GooNails(bool plural)
+		{
+			if (plural) return "goo";
+			else return "little bit of goo";
 		}
 		private static string GooShort(bool plural)
 		{
-			return Utils.Pluralize("gooey appendage", plural);
+			return Utils.PluralizeIf("gooey appendage", plural);
+		}
+		private static string GooSingle()
+		{
+			return "a gooey appendage";
 		}
 
-		private static string GooLongDesc(HandData hands, bool alternateForm, bool plural)
+		private static string GooLongDesc(HandData hands, bool alternateFormat, bool plural)
 		{
-			string intro;
-			if (alternateForm && plural)
+			if (plural)
 			{
-				intro = "a pair of ";
+				return "gooey, vaguely hand-like appendages, with two large digits that form a rough mitten shape";
 			}
-			else if (alternateForm)
+			else if (alternateFormat)
 			{
-				intro = "a ";
+				return "a gooey, vaguely hand-like appendage, the two opposing digits forming a rough mitten shape";
 			}
 			else
 			{
-				intro = "";
+				return "gooey, vaguely hand-like appendage, the two opposing digits forming a rough mitten shape";
 			}
-
-			return intro + Utils.Pluralize("gooey, vaguely hand-like appendage", plural);
 		}
 
-		private static string GooFullDesc(HandData hands, bool alternateForm, bool plural)
+		private static string ClawNails(bool plural)
 		{
-			if (alternateForm && plural)
-			{
-				return "a pair of gooey, vaguely hand-like appendages, each with two large digits that form a rough mitten shape";
-			}
-			else if (alternateForm)
-			{
-				return "a gooey, vaguely hand-like appendage, the two opposing digits forming a rough mitten shape.";
-			}
-			else if (plural)
-			{
-				return "gooey, vaguely hand-like appendages, each with two large digits that form a rough mitten shape";
-			}
-			else
-			{
-				return "gooey, vaguely hand-like appendage, the two opposing digits forming a rough mitten shape.";
-
-			}
+			return Utils.PluralizeIf("claw", plural);
 		}
 
-		private static string GenericPawLongDesc(bool alternateForm, bool plural)
+		private static string GenericPawLongDesc(bool alternateFormat, bool plural)
 		{
 			string intro = "";
-			if (alternateForm && plural)
-			{
-				intro = "a pair of ";
-			}
-			else if (alternateForm)
+			if (alternateFormat && !plural)
 			{
 				intro = "a ";
 			}
 
-			return intro + Utils.Pluralize("cute, pink pad paw", plural);
+			return intro + Utils.PluralizeIf("cute, pink pad paw", plural) + " with short claws";
 		}
 
-		private static string GenericPawFullDesc(bool alternateForm, bool plural)
-		{
-			string intro = "";
-			if (alternateForm && plural)
-			{
-				intro = "a pair of ";
-			}
-			else if (alternateForm)
-			{
-				intro = "a ";
-			}
+		//private static string MantisNails(bool plural)
+		//{
 
-			return intro + Utils.Pluralize("cute, pink pad paw", plural) + " with short claws";
-		}
-
+		//}
 		//private static string MantisShort(bool plural)
 		//{
 		//	return Utils.Pluralize("mantis scythe", plural)
 		//};
-		//private static string MantisLongDesc(HandData hands, bool alternateForm, bool plural)
+		//private static string DELETE_MEHandData hands, bool alternateFormat, bool plural)
 		//{
 		//	return Utils.Pluralize("mantis scythe", plural)
 		//};
 
 		private static string GenericClawedNoun(bool plural)
 		{
-			return Utils.Pluralize("clawed hand", plural);
+			return Utils.PluralizeIf("clawed hand", plural);
 		}
 
 		private static string GenericPawedNoun(bool plural)
 		{
-			return Utils.Pluralize("paw", plural);
+			return Utils.PluralizeIf("paw", plural);
 		}
 	}
 }

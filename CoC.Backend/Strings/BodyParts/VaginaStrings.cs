@@ -44,6 +44,7 @@ namespace CoC.Backend.BodyParts
 		private static readonly string[] allVagDescPlural = new string[] { "vaginas", "pussies", "cooters", "twats", "cunts", "snatches", "fuck-holes", "muffs" };
 
 		private static readonly string[] sandTrapStrings = new string[] { "black", "onyx", "ebony", "dusky", "sable", "obsidian", "midnight-hued", "jet black" };
+		private static readonly string[] sandTrapStringsWithArticle = new string[] { "a black", "an onyx", "an ebony", "a dusky", "a sable", "an obsidian", "a midnight-hued", "a jet black" };
 
 
 		public static string VaginaNoun(bool plural)
@@ -68,14 +69,20 @@ namespace CoC.Backend.BodyParts
 		{
 			return VaginaNoun(plural);
 		}
-		private static string HumanLongDesc(VaginaData vagina, bool alternateForm)
+
+		private static string HumanSingleDesc()
 		{
-			return GenericDesc(vagina, alternateForm, false);
+			return Utils.RandomChoice("an ordinary ", "a normal ", "a human") + VaginaNoun(false);
+		}
+
+		private static string HumanLongDesc(VaginaData vagina, bool alternateFormat)
+		{
+			return GenericDesc(vagina, alternateFormat, false);
 
 		}
-		private static string HumanFullDesc(VaginaData vagina, bool alternateForm)
+		private static string HumanFullDesc(VaginaData vagina, bool alternateFormat)
 		{
-			return GenericDesc(vagina, alternateForm, true);
+			return GenericDesc(vagina, alternateFormat, true);
 
 		}
 		//ngl, no idea how to make this sound unique, so i've just gone with capacity based text here.
@@ -104,18 +111,43 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		private static string HumanTransformStr(VaginaData previousVagina, PlayerBase player)
+		{
+			return previousVagina.type.RestoredString(previousVagina, player);
+		}
+
+		private static string HumanGrewVaginaStr(PlayerBase player, byte grownVaginaIndex)
+		{
+			return GenericGrewVaginaDesc(player, grownVaginaIndex);
+		}
+
+		private static string HumanRestoreStr(VaginaData originalVagina, PlayerBase player)
+		{
+			return GlobalStrings.RevertAsDefault(originalVagina, player);
+		}
+
+		private static string HumanRemovedVaginaStr(VaginaData removedVagina, PlayerBase player)
+		{
+			return GenericLoseVaginaDesc(removedVagina, player);
+		}
 
 		private static string EquineDesc(bool plural)
 		{
 			return "equine " + VaginaNoun(plural);
 		}
-		private static string EquineLongDesc(VaginaData vagina, bool alternateForm)
+
+		private static string EquineSingleDesc()
 		{
-			return GenericDesc(vagina, alternateForm, false, "equine");
+			return "an equine " + VaginaNoun(false);
 		}
-		private static string EquineFullDesc(VaginaData vagina, bool alternateForm)
+
+		private static string EquineLongDesc(VaginaData vagina, bool alternateFormat)
 		{
-			return GenericDesc(vagina, alternateForm, true, "equine");
+			return GenericDesc(vagina, alternateFormat, false, "equine");
+		}
+		private static string EquineFullDesc(VaginaData vagina, bool alternateFormat)
+		{
+			return GenericDesc(vagina, alternateFormat, true, "equine");
 		}
 		private static string EquinePlayerStr(Vagina vagina, PlayerBase player)
 		{
@@ -227,6 +259,11 @@ namespace CoC.Backend.BodyParts
 			return sb.ToString();
 		}
 
+		private static string EquineGrewVaginaStr(PlayerBase player, byte grownVaginaIndex)
+		{
+			return GenericGrewVaginaDesc(player, grownVaginaIndex);
+		}
+
 		//largely stolen from kelly horse-cunt-> humanoid pussy, and adapted to make it work here.
 		private static string EquineRestoreStr(VaginaData oldVagina, PlayerBase player)
 		{
@@ -257,18 +294,30 @@ namespace CoC.Backend.BodyParts
 				" While smaller than it used to be, it appears just as tight, relatively speaking, and is still just as wet as it was before. Still, you're almost certain " +
 				"you've lost some of your former capacity, and a quick probe into your folds proves that is indeed the case. ";
 		}
+
+		private static string EquineRemovedVaginaStr(VaginaData removedVagina, PlayerBase player)
+		{
+			return GenericLoseVaginaDesc(removedVagina, player);
+		}
+
 		private static string SandTrapDesc(bool plural)
 		{
 			return Utils.RandomChoice(sandTrapStrings) + VaginaNoun(plural);
 		}
-		private static string SandTrapLongDesc(VaginaData vagina, bool alternateForm)
+
+		private static string SandTrapSingleDesc()
 		{
-			return GenericDesc(vagina, alternateForm, false, Utils.RandomChoice(sandTrapStrings));
+			return Utils.RandomChoice(sandTrapStringsWithArticle) + VaginaNoun(false);
 		}
 
-		private static string SandTrapFullDesc(VaginaData vagina, bool alternateForm)
+		private static string SandTrapLongDesc(VaginaData vagina, bool alternateFormat)
 		{
-			return GenericDesc(vagina, alternateForm, true, Utils.RandomChoice(sandTrapStrings));
+			return GenericDesc(vagina, alternateFormat, false, Utils.RandomChoice(sandTrapStrings));
+		}
+
+		private static string SandTrapFullDesc(VaginaData vagina, bool alternateFormat)
+		{
+			return GenericDesc(vagina, alternateFormat, true, Utils.RandomChoice(sandTrapStrings));
 		}
 		private static string SandTrapPlayerStr(Vagina vagina, PlayerBase player)
 		{
@@ -330,6 +379,12 @@ namespace CoC.Backend.BodyParts
 
 			return sb.ToString();
 		}
+
+		private static string SandTrapGrewVaginaStr(PlayerBase player, byte grownVaginaIndex)
+		{
+			return GenericGrewVaginaDesc(player, grownVaginaIndex);
+		}
+
 		private static string SandTrapRestoreStr(VaginaData oldVagina, PlayerBase player)
 		{
 			string vagDesc;
@@ -355,8 +410,12 @@ namespace CoC.Backend.BodyParts
 			return GlobalStrings.NewParagraph() + "Something invisible brushes against your sex, making you twinge. " + wearingText;
 		}
 
+		private static string SandTrapRemovedVaginaStr(VaginaData removedVagina, PlayerBase player)
+		{
+			return GenericLoseVaginaDesc(removedVagina, player);
+		}
 
-		private static string GenericDesc(VaginaData vagina, bool alternateForm, bool fullDesc, string optionalAdjective = null)
+		private static string GenericDesc(VaginaData vagina, bool alternateFormat, bool fullDesc, string optionalAdjective = null)
 		{
 
 			StringBuilder sb = new StringBuilder();
@@ -447,15 +506,41 @@ namespace CoC.Backend.BodyParts
 			//possible to add to frontend as an extension method, but would require some edge case detection requiring vag type to be humanoid/normal/whatever the default is called.
 
 
-			return (alternateForm ? "a " : "") + sb.ToString();
+			return (alternateFormat ? "a " : "") + sb.ToString();
 
 		}
 
-		//if one: You have a (vagina desc) with a (clit desc) (virgin desc if applicable)
-		// wetness, looseness. clitcock.
+		private static string GenericGrewVaginaDesc(PlayerBase player, byte grownVaginaIndex)
+		{
+			string multiVagText = player.vaginas.Count > 1 ? "alongside your previous one!" : "!";
+			return "An itching starts in your crotch and spreads vertically. You reach down and discover an opening.  You have grown a " +
+				SafelyFormattedString.FormattedText("new " + player.vaginas[grownVaginaIndex].LongDescription() + multiVagText, StringFormats.BOLD);
+		}
 
-		//if two: your first is a vagina desc with a clit desc (virgin desc). Your second is ...
-		//wetness/looseness first, while second wetness/looseness. clitcock.
+		private static string GenericLoseVaginaDesc(VaginaData removedVagina, PlayerBase player)
+		{
+			string byeVag = "You slip a hand down to check on it, only to feel the slit growing smaller and smaller until it disappears, taking your clit with it! ";
+			if (player.vaginas.Count == 0)
+			{
+				return "Your " + removedVagina.ShortDescription() + " clenches in pain, doubling you over. " + byeVag +
+					SafelyFormattedString.FormattedText("Your vagina is gone!", StringFormats.BOLD);
+			}
+			else
+			{
+				if (player.genitals.CountVaginasOfType(removedVagina.type) == 1)
+				{
+					return "One of your " + removedVagina.ShortDescription() + "clenches in pain, causing you to double over. " + byeVag +
+						SafelyFormattedString.FormattedText("One of your " + removedVagina.ShortDescription(true) + "is gone", StringFormats.BOLD) +
+						", leaving you with just your " + player.vaginas[0].LongDescription();
+				}
+				else
+				{
+					return "Your " + removedVagina.ShortDescription() + " clenches in pain, doubling you over. " + byeVag +
+						SafelyFormattedString.FormattedText("Your " + removedVagina.LongDescription() + "is gone", StringFormats.BOLD) +
+						", leaving you with just your " + player.vaginas[0].LongDescription();
+				}
+			}
+		}
 	}
 
 	public static class VaginaHelpers

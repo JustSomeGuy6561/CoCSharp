@@ -43,11 +43,16 @@ namespace CoC.Backend.BodyParts
 
 	public partial class HornType
 	{
-		private static string NoHornsShortDesc(bool plural)
+		private static string NoHornsShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NoHornsLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string NoHornsSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string NoHornsLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -63,11 +68,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonShortDesc(bool plural)
+		private static string DemonShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string DemonSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string DemonLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -102,11 +112,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BullShortDesc(bool plural)
+		private static string BullShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BullLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string BullSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string BullLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -148,11 +163,16 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		private static string DragonShortDesc(bool plural)
+		private static string DragonShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string DragonSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string DragonLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -177,11 +197,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerShortDesc(bool plural)
+		private static string DeerShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string DeerSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string DeerLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -198,11 +223,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ReindeerShortDesc(bool plural)
+		private static string ReindeerShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ReindeerLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string ReindeerSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string ReindeerLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -219,11 +249,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatShortDesc(bool plural)
+		private static string GoatShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string GoatSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string GoatLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -247,11 +282,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string UniHornShortDesc(bool plural)
+		private static string UniHornShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string UniHornLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string UniHornSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string UniHornLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -276,11 +316,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoShortDesc(bool plural)
+		private static string RhinoShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string RhinoSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string RhinoLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -306,11 +351,16 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepShortDesc(bool plural)
+		private static string SheepShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string SheepSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string SheepLongDesc(HornData horns, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -344,11 +394,17 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpShortDesc(bool plural)
+		private static string ImpShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
-			return Utils.Pluralize("short, imp-like horn", plural);
+			isPlural = pluralIfApplicable;
+			return Utils.PluralizeIf("short, imp-like horn", pluralIfApplicable);
 		}
-		private static string ImpLongDesc(HornData horns, bool alternateFormat, bool plural)
+		private static string ImpSingleDesc()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string ImpLongDesc(HornData horns, bool alternateFormat, bool plural, out bool isPlural)
 		{
 			string intro;
 			if (alternateFormat && plural)
@@ -363,7 +419,7 @@ namespace CoC.Backend.BodyParts
 			{
 				intro = "";
 			}
-			return intro + ImpShortDesc(plural);
+			return intro + ImpShortDesc(plural, out isPlural);
 		}
 		private static string ImpPlayerStr(Horns horns, PlayerBase player)
 		{

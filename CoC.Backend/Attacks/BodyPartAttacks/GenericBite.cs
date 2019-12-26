@@ -24,6 +24,13 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 			teeth = teethName ?? throw new ArgumentNullException();
 		}
 
+		public GenericBite(ShortDescriptor teethName, byte strength = 1) : base(Attack)
+		{
+			biteStrength = Utils.Clamp2(strength, (byte)0, (byte)5);
+			if (teethName is null) throw new ArgumentNullException();
+			teeth = () => teethName(false);
+		}
+
 		protected override DescriptorWithArg<CombatCreature> AttackDescription()
 		{
 			return (x) => Tip(teeth(), x);

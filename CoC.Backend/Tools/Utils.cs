@@ -267,7 +267,8 @@ namespace CoC.Backend.Tools
 		{
 			text = text.TrimStart();
 			if (text[0] == 'a' || text[0] == 'e' || text[0] == 'i' || text[0] == 'o' || text[0] == 'u' ||
-				text[0] == 'A' || text[0] == 'E' || text[0] == 'I' || text[0] == 'O' || text[0] == 'U')
+				text[0] == 'A' || text[0] == 'E' || text[0] == 'I' || text[0] == 'O' || text[0] == 'U' ||
+				text[0] == '8')
 			{
 				return "an " + text;
 			}
@@ -277,7 +278,7 @@ namespace CoC.Backend.Tools
 			}
 		}
 
-		public static string AddArticle(string text, bool needsArticle)
+		public static string AddArticleIf(string text, bool needsArticle)
 		{
 			if (needsArticle) return AddArticle(text);
 			else return text.TrimStart();
@@ -287,7 +288,7 @@ namespace CoC.Backend.Tools
 		{
 			return text.TrimEnd() + "s";
 		}
-		public static string Pluralize(string text, bool plural)
+		public static string PluralizeIf(string text, bool plural)
 		{
 			if (plural) return Pluralize(text);
 			else return text.TrimEnd();

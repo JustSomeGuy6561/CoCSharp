@@ -97,13 +97,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "human eye" + (plural ? "s" : "");
 		}
-		private static string HumanLongDesc(EyeData eyes, bool alternateForm)
+		private static string HumanSingleDesc()
 		{
-			return GenericLongDescription(eyes, alternateForm);
+			return "a human eye";
 		}
-		private static string HumanFullDesc(EyeData eyes, bool alternateForm)
+		private static string HumanLongDesc(EyeData eyes, bool alternateFormat)
 		{
-			return GenericFullDescription(eyes, alternateForm);
+			return GenericLongDescription(eyes, alternateFormat);
+		}
+		private static string HumanFullDesc(EyeData eyes, bool alternateFormat)
+		{
+			return GenericFullDescription(eyes, alternateFormat);
 		}
 		private static string HumanSingleDesc(EyeData eyes, bool alternateFormat, bool useLeftIrisColor)
 		{
@@ -168,6 +172,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "spider eye" + (plural ? "s" : "");
 		}
+		private static string SpiderSingleDesc()
+		{
+			return "a spider eye";
+		}
 		//i suppose technically i could have supported tetrachromia, but that seems excessive.
 		private static string SpiderLongDesc(EyeData eyes, bool alternateFormat)
 		{
@@ -228,6 +236,10 @@ namespace CoC.Backend.BodyParts
 		private static string SandTrapShortStr(bool plural)
 		{
 			return "sandtrap eye" + (plural ? "s" : "");
+		}
+		private static string SandTrapSingleDesc()
+		{
+			return "a sandtrap eye";
 		}
 		private static string SandTrapLongDesc(EyeData eyes, bool alternateFormat)
 		{
@@ -447,6 +459,10 @@ namespace CoC.Backend.BodyParts
 		private static string LizardShortStr(bool plural)
 		{
 			return "lizard eye" + (plural ? "s" : "");
+		}
+		private static string LizardSingleDesc()
+		{
+			return "a lizard eye";
 		}
 		private static string LizardLongDesc(EyeData eyes, bool alternateFormat)
 		{
@@ -672,6 +688,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "dragon eye" + (plural ? "s" : "");
 		}
+		private static string DragonSingleDesc()
+		{
+			return "a dragon eye";
+		}
 		private static string DragonLongDesc(EyeData eyes, bool alternateFormat)
 		{
 			if (eyes.isHeterochromia)
@@ -872,6 +892,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "basilisk eye" + (plural ? "s" : "");
 		}
+		private static string BasiliskSingleDesc()
+		{
+			return "a basilisk eye";
+		}
 		private static string BasiliskLongDesc(EyeData eyes, bool alternateFormat)
 		{
 			return GenericCountText(eyes.eyeCount, alternateFormat) + "dazzling" + (eyes.isHeterochromia ? " but mismatched " : eyes.leftIrisColor.AsString()) + eyes.type.ShortDescription();
@@ -979,6 +1003,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "wolven eye" + (plural ? "s" : "");
 		}
+		private static string WolfSingleDesc()
+		{
+			return "a wolven eye";
+		}
 		private static string WolfLongDesc(EyeData eyes, bool alternateFormat)
 		{
 			return GenericLongDescription(eyes, alternateFormat);
@@ -1069,6 +1097,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "cockatrice eye" + (plural ? "s" : "");
 		}
+		private static string CockatriceSingleDesc()
+		{
+			return "a cockatrice eye";
+		}
 		private static string CockatriceLongDesc(EyeData eyes, bool alternateFormat)
 		{
 			return GenericCountText(eyes.eyeCount, alternateFormat) + "dazzling" + (eyes.isHeterochromia ? " but mismatched " : eyes.leftIrisColor.AsString()) + eyes.type.ShortDescription();
@@ -1133,6 +1165,10 @@ namespace CoC.Backend.BodyParts
 		private static string CatShortStr(bool plural)
 		{
 			return "cat eye" + (plural ? "s" : "");
+		}
+		private static string CatSingleDesc()
+		{
+			return "a cat eye";
 		}
 		private static string CatLongDesc(EyeData eyes, bool alternateFormat)
 		{
@@ -1241,17 +1277,17 @@ namespace CoC.Backend.BodyParts
 			else return eyes.rightIrisColor.AsString(alternateFormat) + eyes.ShortDescription(false);
 		}
 
-		private static string GenericFullDescription(EyeData eyes, bool alternateForm)
+		private static string GenericFullDescription(EyeData eyes, bool alternateFormat)
 		{
 			if (eyes.eyeCount == 2 && eyes.isHeterochromia)
 			{
-				return eyes.LongDescription(alternateForm) + " - the left " + eyes.leftIrisColor.AsString() + ", the right " + eyes.rightIrisColor.AsString();
+				return eyes.LongDescription(alternateFormat) + " - the left " + eyes.leftIrisColor.AsString() + ", the right " + eyes.rightIrisColor.AsString();
 			}
 			else if (eyes.eyeCount > 2 && eyes.isHeterochromia)
 			{
-				return eyes.LongDescription(alternateForm) + " - the left ones" + eyes.leftIrisColor.AsString() + ", the right ones" + eyes.rightIrisColor.AsString();
+				return eyes.LongDescription(alternateFormat) + " - the left ones" + eyes.leftIrisColor.AsString() + ", the right ones" + eyes.rightIrisColor.AsString();
 			}
-			else return eyes.LongDescription(alternateForm);
+			else return eyes.LongDescription(alternateFormat);
 		}
 	}
 

@@ -10,6 +10,7 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	//tbh back doesn't really make sense with
 	public partial class Back
 	{
 		public static string Name()
@@ -36,13 +37,13 @@ namespace CoC.Backend.BodyParts
 			return "";
 		}
 
-		private static string NormalDesc()
+		private static string NormalDesc(bool alternateFormat)
 		{
-			return "normal back";
+			return Utils.AddArticleIf("normal back", alternateFormat);
 		}
 		private static string NormalLongDesc(BackData back, bool alternateFormat)
 		{
-			return (alternateFormat ? "a " : "") + NormalDesc();
+			return NormalDesc(alternateFormat);
 		}
 		private static string NormalPlayerStr(Back back, PlayerBase player)
 		{
@@ -72,15 +73,15 @@ namespace CoC.Backend.BodyParts
 			return $"{Utils.AddArticle(hairColor.AsString())} mane along your back";
 		}
 
-		protected static string DraconicManeDesc()
+		protected static string DraconicManeDesc(bool alternateFormat)
 		{
-			return "draconic back-mane";
+			return Utils.AddArticleIf("draconic-maned back", alternateFormat);
 		}
 		protected static string DraconicManeLongDesc(BackData back, bool alternateFormat)
 		{
-			return (alternateFormat ? "a" : "") + "mane of " + back.epidermis.JustColor() + " draconic " + back.epidermis.ShortDescription() + "running along the spine"; //a mane of red draconic fur running along the spine.
-
+			return (alternateFormat ? "a" : "") + "draconic back with a mane of " + back.epidermis.DescriptionWithColor() + "running along the spine"; //a mane of red draconic fur running along the spine.
 		}
+
 		protected static string DraconicManePlayerStr(Back back, PlayerBase player)
 		{
 			return " Tracing your spine, a mane of " + back.epidermalData.JustColor() + " hair grows, starting at the base of your neck and " +
@@ -119,13 +120,13 @@ namespace CoC.Backend.BodyParts
 			return GlobalStrings.NewParagraph() + "You feel a tingling just above your spine. Your glimpse at your back and see hair falling down from it, first in strands, " +
 				"then in bigger and bigger chunks, until " + SafelyFormattedString.FormattedText("Your hairy draconic mane has completely disappeared!", StringFormats.BOLD);
 		}
-		private static string DraconicSpikesDesc()
+		private static string DraconicSpikesDesc(bool alternateFormat)
 		{
-			return "draconic back-spikes";
+			return Utils.AddArticleIf("spiked, draconic back", alternateFormat);
 		}
 		private static string DraconicSpikesLongDesc(BackData back, bool alternateFormat)
 		{
-			return (alternateFormat ? "a " : "") + "series of draconic spikes along the spine";
+			return (alternateFormat ? "a " : "") + "draconic back with a series of spikes along the spine";
 		}
 
 		private static string DraconicSpikesPlayerStr(Back back, PlayerBase player)
@@ -168,13 +169,13 @@ namespace CoC.Backend.BodyParts
 				"The pain ceases, replaced with a strange tingling sensation as the skin along your spine closes over where your spikes once were." +
 				SafelyFormattedString.FormattedText("The spikes on your rear have disappeared!", StringFormats.BOLD);
 		}
-		private static string SharkFinDesc()
+		private static string SharkFinDesc(bool alternateFormat)
 		{
-			return "shark fin";
+			return Utils.AddArticleIf("shark-finned back", alternateFormat);
 		}
 		private static string SharkFinLongDesc(BackData back, bool alternateFormat)
 		{
-			return (alternateFormat ? "a " : "") + "shark fin sitting along the spine";
+			return (alternateFormat ? "a " : "") + "back with a shark fin sitting along the spine";
 		}
 		private static string SharkFinPlayerStr(Back back, PlayerBase player)
 		{
@@ -229,9 +230,9 @@ namespace CoC.Backend.BodyParts
 
 
 
-		private static string TendrilShortDesc()
+		private static string TendrilShortDesc(bool alternateFormat)
 		{
-			return "tendril-covered back";
+			return Utils.AddArticleIf("tendril-covered back", alternateFormat);
 		}
 		private static string TendrilLongDesc(BackData back, bool alternateFormat)
 		{
@@ -321,9 +322,9 @@ namespace CoC.Backend.BodyParts
 				"regrowing. In fact, your back feels completely smooth. It seems " + SafelyFormattedString.FormattedText("you've lost your tendrils!", StringFormats.BOLD);
 		}
 
-		protected static string BehemothDesc()
+		protected static string BehemothDesc(bool alternateFormat)
 		{
-			return "spike-surrounded behemoth back-mane";
+			return Utils.AddArticleIf("spike-covered, central-maned behemoth back", alternateFormat);
 		}
 		protected static string BehemothLongDesc(BackData back, bool alternateFormat)
 		{

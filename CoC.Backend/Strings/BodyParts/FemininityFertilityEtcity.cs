@@ -7,6 +7,7 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
+#warning Just like build, fertility and femininity don't have any descriptors i could find. consider adding a few?
 	public partial class Fertility
 	{
 		public static string Name()

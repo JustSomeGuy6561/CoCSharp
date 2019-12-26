@@ -95,6 +95,8 @@ namespace CoC.Backend.BodyParts
 
 		public override string BodyPartName() => Name();
 
+		#region Text
+
 #warning There were no descriptors for tone or thickness i could recall. may want to add a few in anyway just for kicks.
 		//public SimpleDescriptor thicknessAsText => ThicknessText;
 		//public SimpleDescriptor toneAsText => ToneText;
@@ -103,11 +105,13 @@ namespace CoC.Backend.BodyParts
 		public string HipSizeAsAdjective() => hips.SizeAsAdjective();
 
 		public string ButtShortDescription() => butt.ShortDescription();
+		public string ButtSingleItemDescription() => butt.SingleItemDescription();
 		public string HipsShortDescription(bool plural = true) => hips.ShortDescription(plural);
+		public string HipsSingleItemDescription() => hips.SingleItemDescription();
 
 		public string ButtLongDescription(bool alternateFormat) => butt.LongDescription(alternateFormat, muscleTone);
 		public string HipsLongDescription() => hips.LongDescription(thickness);
-
+		#endregion
 		internal Build(Guid creatureID, byte heightInches, byte? characterThickness, byte? characterTone, byte? characterHipSize, byte? characterButtSize) : base(creatureID)
 		{
 			_heightInInches = Utils.Clamp2(heightInches, MIN_HEIGHT, MAX_HEIGHT);
@@ -268,14 +272,22 @@ namespace CoC.Backend.BodyParts
 		private readonly HipData hips;
 		public byte hipSize => hips.size;
 
+		#region Text
+
+		//public SimpleDescriptor thicknessAsText => ThicknessText;
+		//public SimpleDescriptor toneAsText => ToneText;
+
 		public string ButtSizeAsAdjective() => butt.SizeAsAdjective();
 		public string HipSizeAsAdjective() => hips.SizeAsAdjective();
 
 		public string ButtShortDescription() => butt.ShortDescription();
+		public string ButtSingleItemDescription() => butt.SingleItemDescription();
 		public string HipsShortDescription(bool plural = true) => hips.ShortDescription(plural);
+		public string HipsSingleItemDescription() => hips.SingleItemDescription();
 
 		public string ButtLongDescription(bool alternateFormat) => butt.LongDescription(alternateFormat, muscleTone);
 		public string HipsLongDescription() => hips.LongDescription(thickness);
+		#endregion
 
 		internal BuildData(Build build) : base(build?.creatureID ?? throw new ArgumentNullException(nameof(build)))
 		{

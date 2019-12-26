@@ -46,7 +46,7 @@ namespace CoC.Backend.BodyParts
 		//note that it's possible to have both versions return the same text, if the text works with both "your..." and "you have...". Use whichever makes the most sense.
 
 		//This also works for non-English languages (if ever implemented), though what the alternate form entails in a given language may vary.
-		private readonly LongDescriptor<DataClass> longStr;
+		private readonly PartDescriptor<DataClass> longStr;
 		public string LongDescriptionPrimary(DataClass data)
 		{
 			return longStr(data);
@@ -57,9 +57,9 @@ namespace CoC.Backend.BodyParts
 			return longStr(data, true);
 		}
 
-		public string LongDescription(DataClass data, bool alternateForm)
+		public string LongDescription(DataClass data, bool alternateFormat)
 		{
-			return longStr(data, alternateForm);
+			return longStr(data, alternateFormat);
 		}
 
 		//there are a few rare cases where the body part may be plural - a pair of wings or a pair of antennae, for example. It may be desired to have a single version of those, like
@@ -94,7 +94,7 @@ namespace CoC.Backend.BodyParts
 			return restoredStr(originalData, player);
 		}
 
-		private protected SaveableBehavior(SimpleDescriptor shortDesc, LongDescriptor<DataClass> longDesc,
+		private protected SaveableBehavior(ShortDescriptor shortDesc, PartDescriptor<DataClass> longDesc,
 			PlayerBodyPartDelegate<ContainerClass> playerDesc, ChangeType<DataClass> transformDesc, RestoreType<DataClass> restoreDesc) : base(shortDesc)
 		{
 			longStr = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
@@ -103,11 +103,27 @@ namespace CoC.Backend.BodyParts
 			restoredStr = restoreDesc ?? throw new ArgumentNullException(nameof(restoreDesc));
 		}
 
-		protected static LongDescriptor<T> LongPluralHelper<T>(LongPluralDescriptor<T> longDescWithPluralFlag, bool defaultsToPlural = true)
+		private protected SaveableBehavior(SimpleDescriptor standardShortDesc, SimpleDescriptor singleShortDesc, PartDescriptor<DataClass> longDesc,
+			PlayerBodyPartDelegate<ContainerClass> playerDesc, ChangeType<DataClass> transformDesc, RestoreType<DataClass> restoreDesc) : base(standardShortDesc, singleShortDesc)
+		{
+			longStr = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
+			playerStr = playerDesc ?? throw new ArgumentNullException(nameof(playerDesc));
+			transformFromStr = transformDesc ?? throw new ArgumentNullException(nameof(transformDesc));
+			restoredStr = restoreDesc ?? throw new ArgumentNullException(nameof(restoreDesc));
+		}
+
+		protected static PartDescriptor<T> LongPluralHelper<T>(PluralPartDescriptor<T> longDescWithPluralFlag, bool defaultsToPlural = true)
 		{
 			if (longDescWithPluralFlag is null) throw new ArgumentNullException(nameof(longDescWithPluralFlag));
 
 			return (arg, alternate) => longDescWithPluralFlag(arg, alternate, defaultsToPlural);
+		}
+
+		protected static PartDescriptor<T> LongPluralHelper<T>(MaybePluralPartDescriptor<T> longDescWithPluralFlag, bool defaultsToPlural = true)
+		{
+			if (longDescWithPluralFlag is null) throw new ArgumentNullException(nameof(longDescWithPluralFlag));
+
+			return (arg, alternate) => longDescWithPluralFlag(arg, alternate, defaultsToPlural, out bool _);
 		}
 
 	}

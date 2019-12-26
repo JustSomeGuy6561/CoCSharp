@@ -228,7 +228,7 @@ namespace CoC.Backend.BodyParts
 		internal virtual string postDyeDescription(HairFurColors color) => GenericPostDyeText(color);
 
 		private protected NeckType(byte maxLength,
-			SimpleDescriptor shortDesc, LongDescriptor<NeckData> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
+			ShortDescriptor shortDesc, PartDescriptor<NeckData> longDesc, PlayerBodyPartDelegate<Neck> playerDesc, ChangeType<NeckData> transform,
 			RestoreType<NeckData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;

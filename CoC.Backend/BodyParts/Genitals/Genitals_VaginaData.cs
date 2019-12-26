@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CoC.Backend.Creatures;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
 
@@ -107,6 +108,15 @@ namespace CoC.Backend.BodyParts
 
 			CheckGenderChanged(oldGender);
 			return true;
+		}
+
+		public string AddedVaginaText()
+		{
+			if (numVaginas == 0 || !(creature is PlayerBase player)) return "";
+
+			var lastVagina = _vaginas[_vaginas.Count - 1];
+
+			return lastVagina.type.GrewVaginaText(player, (byte)(_vaginas.Count -1));
 		}
 
 		public int RemoveVagina(int count = 1)

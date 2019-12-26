@@ -31,6 +31,14 @@ namespace CoC.Backend.BodyParts
 		public EpidermalData epidermis => type.ParseEpidermis(bodyData);
 		public EpidermalData secondaryEpidermis => type.ParseSecondaryEpidermis(bodyData);
 
+		public readonly Ovipositor ovipositor;
+
+		public bool canHaveOvipositor => type.allowsOvipositor;
+
+		public bool hasOvipositor => canHaveOvipositor && ovipositorEnabled;
+
+		private bool ovipositorEnabled;
+
 		public byte tailCount
 		{
 			get => _tailCount;
@@ -61,6 +69,16 @@ namespace CoC.Backend.BodyParts
 						regenRate = 0;
 					}
 
+					if (!value.allowsOvipositor)
+					{
+						ovipositorEnabled = false;
+					}
+					else if (!_type.allowsOvipositor)
+					{
+						ovipositorEnabled = false;
+					}
+					//otherwise, keep the same value.
+
 					_tailCount = value.initialTailCount;
 					if (!value.supportsTailPiercing && tailPiercings.isPierced)
 					{
@@ -79,17 +97,26 @@ namespace CoC.Backend.BodyParts
 		}
 
 		internal Tail(Guid creatureID) : this(creatureID, TailType.defaultValue)
+		{ }
+
+		internal Tail(Guid creatureID, TailType tailType) : this(creatureID, tailType, false)
+		{ }
+
+		internal Tail(Guid creatureID, TailType tailType, byte count) : this(creatureID, tailType)
 		{
+			GrowMultipleAdditionalTails(count.subtract(type.initialTailCount));
 		}
 
-		internal Tail(Guid creatureID, TailType tailType) : base(creatureID)
+		internal Tail(Guid creatureID, TailType tailType, bool hasOvipositorIfApplicable) : base(creatureID)
 		{
 			_type = tailType ?? throw new ArgumentNullException(nameof(tailType));
 			_tailCount = _type.initialTailCount;
 			tailPiercings = new Piercing<TailPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+
+			ovipositorEnabled = tailType.allowsOvipositor && hasOvipositorIfApplicable;
 		}
 
-		internal Tail(Guid creatureID, TailType tailType, byte count) : this(creatureID, tailType)
+		internal Tail(Guid creatureID, TailType tailType, byte count, bool hasOvipositorIfApplicable) : this(creatureID, tailType, hasOvipositorIfApplicable)
 		{
 			GrowMultipleAdditionalTails(count.subtract(type.initialTailCount));
 		}
@@ -177,8 +204,6 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		public bool canTreatAsPlural => tailCount != 1;
-
 		//default short description will take into account current number of tails.
 		//if you want the short description without any tail count, use the singletailshortdescription.
 		public override string ShortDescription()
@@ -186,12 +211,47 @@ namespace CoC.Backend.BodyParts
 			return type.ShortDescription(tailCount != 1);
 		}
 
-		public string SingleTailShortDescription() => type.ShortDescription();
+		#region Text
+		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
-		public string SingleTailLongDescription(bool alternateFormat) => type.SingleTailLongDescription(AsReadOnlyData(), alternateFormat);
 
-		public string SingleTailLongPrimaryDescription() => type.SingleTailLongPrimaryDescription(AsReadOnlyData());
-		public string SingleTailLongAlternateDescription() => type.SingleTailLongAlternateDescription(AsReadOnlyData());
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => type.ShortDescription(pluralIfApplicable, out isPlural);
+
+		public string LongDescription(bool alternateFormat, bool pluralIfApplicable) => type.LongDescription(AsReadOnlyData(), alternateFormat, pluralIfApplicable);
+		public string LongDescription(bool alternateFormat, bool pluralIfApplicable, out bool isPlural) => type.LongDescription(AsReadOnlyData(), alternateFormat, pluralIfApplicable, out isPlural);
+
+		public string LongDescriptionPrimary(bool pluralIfApplicable) => type.LongDescriptionPrimary(AsReadOnlyData(), pluralIfApplicable);
+		public string LongDescriptionPrimary(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionPrimary(AsReadOnlyData(), pluralIfApplicable, out isPlural);
+
+		public string LongDescriptionAlternate(bool pluralIfApplicable) => type.LongDescriptionAlternate(AsReadOnlyData(), pluralIfApplicable);
+		public string LongDescriptionAlternate(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionAlternate(AsReadOnlyData(), pluralIfApplicable, out isPlural);
+
+		public string SingleTailDescription() => type.ShortDescription(false);
+		public string SingleTailLongDescription(bool alternateFormat) => type.LongDescription(AsReadOnlyData(), alternateFormat, false);
+		public string SingleTailLongPrimaryDescription() => type.LongDescriptionPrimary(AsReadOnlyData(), false);
+		public string SingleTailLongAlternateDescription() => type.LongDescriptionAlternate(AsReadOnlyData(), false);
+
+		//overload that lets you control whether or not the ovipositor change text appears. by default, any text from a change in ovipositor will be displayed.
+		public string TransformFromText(TailData previousTypeData, bool describeOvipositorChangeIfApplicable)
+		{
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
+			{
+				return type.TransformFrom(previousTypeData, player, describeOvipositorChangeIfApplicable);
+			}
+			else return "";
+		}
+
+		//overload that lets you control whether or not the ovipositor change text appears. by default, any text from a change in ovipositor will be displayed.
+		public string RestoredText(TailData previousTypeData, bool describeOvipositorChangeIfApplicable)
+		{
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
+			{
+				return previousTypeData.type.RestoredString(previousTypeData, player, describeOvipositorChangeIfApplicable);
+			}
+			else return "";
+		}
+		#endregion
+
 
 		private bool PiercingLocationUnlocked(TailPiercings piercingLocation)
 		{
@@ -265,27 +325,54 @@ namespace CoC.Backend.BodyParts
 		public bool hasMultipleTails => maxTailCount > 1;
 
 		public readonly bool isLongTail;
+		public readonly OvipositorType ovipositorType;
 
 		public virtual bool supportsTailPiercing => false;
 
 		public readonly byte initialTailCount;
 		public readonly byte maxTailCount;
 
-		private readonly SimplePluralDescriptor shortPluralDesc;
-		private readonly MultipleTailDescriptor longTailDesc;
+		private readonly ShortMaybePluralDescriptor shortPluralDesc;
+		private readonly MaybePluralPartDescriptor<TailData> longTailDesc;
 
-		protected internal delegate string MultipleTailDescriptor(TailData tail, bool alternateFormat, bool onlyDescribeOneTail);
+		public string ShortDescription(bool pluralIfApplicable) => shortPluralDesc(pluralIfApplicable, out bool _);
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => shortPluralDesc(pluralIfApplicable, out isPlural);
+		public string ShortDescription(out bool isPlural) => shortPluralDesc(true, out isPlural);
+		public string LongDescription(TailData data, bool alternateFormat, out bool isPlural) => longTailDesc(data, alternateFormat, true, out isPlural);
+		public string LongDescription(TailData data, bool alternateFormat, bool pluralIfApplicable) => longTailDesc(data, alternateFormat, pluralIfApplicable, out bool _);
+		public string LongDescription(TailData data, bool alternateFormat, bool pluralIfApplicable, out bool isPlural) => longTailDesc(data, alternateFormat, pluralIfApplicable, out isPlural);
 
-		public string ShortDescription(bool pluralIfApplicable) => shortPluralDesc(pluralIfApplicable);
+		public string LongDescriptionPrimary(TailData data, bool pluralIfApplicable) => longTailDesc(data, false, pluralIfApplicable, out bool _);
+		public string LongDescriptionPrimary(TailData data, bool pluralIfApplicable, out bool isPlural) => longTailDesc(data, false, pluralIfApplicable, out isPlural);
 
-		public string SingleTailLongDescription(TailData tail, bool alternateFormat) => longTailDesc(tail, alternateFormat, true);
+		public string LongDescriptionAlternate(TailData data, bool pluralIfApplicable) => longTailDesc(data, true, pluralIfApplicable, out bool _);
+		public string LongDescriptionAlternate(TailData data, bool pluralIfApplicable, out bool isPlural) => longTailDesc(data, true, pluralIfApplicable, out isPlural);
 
-		public string SingleTailLongPrimaryDescription(TailData tail) => longTailDesc(tail, false, true);
-		public string SingleTailLongAlternateDescription(TailData tail) => longTailDesc(tail, false, true);
+		internal delegate string TailTransform(TailData previousTail, PlayerBase player, bool describeOvipositorChangeIfApplicable = true);
+		internal delegate string TailRestore(TailData previousTail, PlayerBase player, bool describeOvipositorChangeIfApplicable = true);
 
-		private protected TailType(SimpleDescriptor shortDesc, LongDescriptor<TailData> longDesc,
-			PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
-			: base(shortDesc, longDesc, playerDesc, transform, restore)
+		private TailTransform tailTransform;
+		private TailRestore tailRestore;
+
+		public string TransformFrom(TailData previousTail, PlayerBase player, bool describeOvipositorChangeIfApplicable)
+		{
+			return tailTransform(previousTail, player, describeOvipositorChangeIfApplicable);
+		}
+
+
+
+		//this is called on the behavior we transformed from.
+		//requires any old data. it should know how it restores the old data based on what it does internally, but if needed it can just get
+		//any new data from hte player passed in.
+		public string RestoredString(TailData previousTail, PlayerBase player, bool describeOvipositorChangeIfApplicable)
+		{
+			return tailRestore(previousTail, player, describeOvipositorChangeIfApplicable);
+		}
+
+		//no tail
+		private protected TailType(ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc,
+			PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
+			: base(shortDesc, longDesc, playerDesc, ParseTransform(transform), ParseRestore(restore))
 		{
 			epidermisType = EpidermisType.EMPTY;
 			mutable = false;
@@ -293,20 +380,31 @@ namespace CoC.Backend.BodyParts
 			tails.AddAt(this, _index);
 			//attack = attackData ?? AttackBase.NO_ATTACK;
 
-			shortPluralDesc = (x) => ShortDescription();
-			longTailDesc = (x, y, _) => LongDescription(x, y);
+			shortPluralDesc = (bool x, out bool y) =>
+			{
+				y = false;
+				return ShortDescription();
+			};
+			longTailDesc = (TailData x, bool y, bool _, out bool z) =>
+			{
+				z = false;
+				return LongDescription(x, y);
+			};
 
 			this.initialTailCount = 1;
 			this.maxTailCount = 1;
 
 			isLongTail = false;
+
+			tailTransform = transform;
+			tailRestore = restore;
 		}
 
-
-		private protected TailType(EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
-			bool longTail,/*float tailLength,*/ SimpleDescriptor shortDesc, LongDescriptor<TailData> longDesc,
-			PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
-			: base(shortDesc, longDesc, playerDesc, transform, restore)
+		//simple tail (with optional ovipositor)
+		private protected TailType(OvipositorType ovipositor, EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
+			bool longTail,/*float tailLength,*/ ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc,
+			PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
+			: base(shortDesc, longDesc, playerDesc, ParseTransform(transform), ParseRestore(restore))
 		{
 			epidermisType = epidermis;
 			mutable = toneFurMutable;
@@ -314,19 +412,67 @@ namespace CoC.Backend.BodyParts
 			tails.AddAt(this, _index);
 			//attack = attackData ?? AttackBase.NO_ATTACK;
 
-			shortPluralDesc = (x) => ShortDescription();
-			longTailDesc = (x, y, _) => LongDescription(x, y);
+			shortPluralDesc = (bool x, out bool y) =>
+			{
+				y = false;
+				return ShortDescription();
+			};
+
+			longTailDesc = (TailData x, bool y, bool _, out bool z) =>
+			{
+				z = false;
+				return LongDescription(x, y);
+			};
 
 			this.initialTailCount = 1;
 			this.maxTailCount = 1;
 
 			isLongTail = longTail;
+
+			tailTransform = transform;
+			tailRestore = restore;
 		}
 
+		//simple tail
 		private protected TailType(EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
-			bool longTail,/*float tailLength,*/ byte initialTailCount, byte maxTailCount, SimplePluralDescriptor shortDesc, MultipleTailDescriptor longDesc,
-			PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
-			: base(PluralHelper(shortDesc), ParseMultipleTails(longDesc), playerDesc, transform, restore)
+			bool longTail,/*float tailLength,*/ ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc,
+			PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
+			: base(shortDesc, longDesc, playerDesc, ParseTransform(transform), ParseRestore(restore))
+		{
+			epidermisType = epidermis;
+			mutable = toneFurMutable;
+			_index = indexMaker++;
+			tails.AddAt(this, _index);
+			//attack = attackData ?? AttackBase.NO_ATTACK;
+
+			shortPluralDesc = (bool x, out bool y) =>
+			{
+				y = false;
+				return ShortDescription();
+			};
+
+			longTailDesc = (TailData x, bool y, bool _, out bool z) =>
+			{
+				z = false;
+				return LongDescription(x, y);
+			};
+
+			this.initialTailCount = 1;
+			this.maxTailCount = 1;
+
+			isLongTail = longTail;
+
+			ovipositorType = OvipositorType.NONE;
+
+			tailTransform = transform;
+			tailRestore = restore;
+		}
+
+		//multi-tail
+		private protected TailType(EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
+			bool longTail,/*float tailLength,*/ byte initialTailCount, byte maxTailCount, ShortMaybePluralDescriptor shortDesc, SimpleDescriptor singleDesc,
+			MaybePluralPartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
+			: base(PluralHelper(shortDesc), singleDesc, LongPluralHelper(longDesc), playerDesc, ParseTransform(transform), ParseRestore(restore))
 		{
 			epidermisType = epidermis;
 			mutable = toneFurMutable;
@@ -341,16 +487,30 @@ namespace CoC.Backend.BodyParts
 			this.maxTailCount = maxTailCount;
 
 			isLongTail = longTail;
+
+			ovipositorType = OvipositorType.NONE;
+
+			tailTransform = transform;
+			tailRestore = restore;
 		}
 
-		private static LongDescriptor<TailData> ParseMultipleTails(MultipleTailDescriptor multiTailDescriptor)
+		private static ChangeType<TailData> ParseTransform(TailTransform transform)
 		{
-			if (multiTailDescriptor is null) throw new ArgumentNullException(nameof(multiTailDescriptor));
+			if (transform is null) throw new ArgumentNullException(nameof(transform));
 
-			return (x, alternateFormat) => multiTailDescriptor(x, alternateFormat, false);
+			return (x, y) => transform(x, y);
+		}
+
+		private static RestoreType<TailData> ParseRestore(TailRestore restore)
+		{
+			if (restore is null) throw new ArgumentNullException(nameof(restore));
+
+			return (x, y) => restore(x, y);
 		}
 
 		public override int index => _index;
+
+		public bool allowsOvipositor => ovipositorType != OvipositorType.NONE;
 
 		internal static bool Validate(ref TailType tailType, ref byte tailCount, bool correctInvalidData)
 		{
@@ -388,8 +548,8 @@ namespace CoC.Backend.BodyParts
 		public static readonly TailType DEMONIC = new SuccubusTail();
 		public static readonly TailType COW = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultCowFur, true, true, CowShortDesc, CowLongDesc, CowPlayerStr, CowTransformStr, CowRestoreStr);
 
-		public static readonly TailType SPIDER_SPINNERET = new ToneTailWithResourceAttack(SPIDER_ATTACK, EpidermisType.CARAPACE, DefaultValueHelpers.defaultSpiderTone, false, false, SpiderShortDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //webbing, resource-based
-		public static readonly TailType BEE_STINGER = new ToneTailWithResourceAttack(BEE_STING, EpidermisType.CARAPACE, DefaultValueHelpers.defaultBeeTone, false, false, BeeShortDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //sting, resource-based
+		public static readonly TailType SPIDER_SPINNERET = new ToneTailWithResourceAttack(OvipositorType.SPIDER, SPIDER_ATTACK, EpidermisType.CARAPACE, DefaultValueHelpers.defaultSpiderTone, false, false, SpiderShortDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr); //webbing, resource-based
+		public static readonly TailType BEE_STINGER = new ToneTailWithResourceAttack(OvipositorType.BEE, BEE_STING, EpidermisType.CARAPACE, DefaultValueHelpers.defaultBeeTone, false, false, BeeShortDesc, BeeLongDesc, BeePlayerStr, BeeTransformStr, BeeRestoreStr); //sting, resource-based
 
 		public static readonly TailType SHARK = new ToneTailWithSlam(4, EpidermisType.SKIN, DefaultValueHelpers.defaultSharkTone, true, SharkShortDesc, SharkLongDesc, SharkPlayerStr, SharkTransformStr, SharkRestoreStr); //slam
 		public static readonly TailType CAT = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultCatFur, true, true, CatShortDesc, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
@@ -404,7 +564,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly TailType FERRET = new FurryTailWithWhip(EpidermisType.FUR, DefaultValueHelpers.defaultFerretFur, true, true, FerretShortDesc, FerretLongDesc, FerretPlayerStr, FerretTransformStr, FerretRestoreStr); //whip
 		public static readonly TailType BEHEMOTH = new FurryTailWithSlam(5, EpidermisType.FUR, DefaultValueHelpers.defaultBehemothFur, true, BehemothShortDesc, BehemothLongDesc, BehemothPlayerStr, BehemothTransformStr, BehemothRestoreStr); //slam
 		public static readonly TailType PIG = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultPigFur, true, false, PigShortDesc, PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr);
-		public static readonly TailType SCORPION = new ToneTailWithResourceAttack(SCORPION_STING, EpidermisType.CARAPACE, DefaultValueHelpers.defaultScorpionTailTone, false, true, ScorpionShortDesc, ScorpionLongDesc, ScorpionPlayerStr, ScorpionTransformStr, ScorpionRestoreStr); //sting
+		public static readonly TailType SCORPION = new ToneTailWithResourceAttack(OvipositorType.NONE, SCORPION_STING, EpidermisType.CARAPACE, DefaultValueHelpers.defaultScorpionTailTone, false, true, ScorpionShortDesc, ScorpionLongDesc, ScorpionPlayerStr, ScorpionTransformStr, ScorpionRestoreStr); //sting
 		public static readonly TailType SATYR = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultSatyrTailColor, true, false, GoatShortDesc, GoatLongDesc, GoatPlayerStr, GoatTransformStr, GoatRestoreStr);
 		public static readonly TailType RHINO = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultRhinoTailFur, true, false, RhinoShortDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr);
 		public static readonly TailType ECHIDNA = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultEchidnaTailFur, true, false, EchidnaShortDesc, EchidnaLongDesc, EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
@@ -431,17 +591,24 @@ namespace CoC.Backend.BodyParts
 			public readonly FurColor defaultFur;
 			protected FurBasedEpidermisType primaryEpidermis => (FurBasedEpidermisType)epidermisType;
 
-			internal FurryTail(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, bool longTail,
-				SimpleDescriptor shortDesc, LongDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform,
-				RestoreType<TailData> restore) : base(furType, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore)
+			internal FurryTail(OvipositorType ovipositor, FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, bool longTail,
+				ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform,
+				TailRestore restore) : base(ovipositor, furType, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				defaultFur = defaultColor;
 			}
 
 			internal FurryTail(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, bool longTail,
-				byte initialTailCount, byte maxTailCount, SimplePluralDescriptor shortDesc, MultipleTailDescriptor longDesc,
-				PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
-				: base(furType, mutable, longTail, initialTailCount, maxTailCount, shortDesc, longDesc, playerDesc, transform, restore)
+				ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform,
+				TailRestore restore) : base(furType, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore)
+			{
+				defaultFur = defaultColor;
+			}
+
+			internal FurryTail(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, bool longTail,
+				byte initialTailCount, byte maxTailCount, ShortMaybePluralDescriptor shortDesc, SimpleDescriptor singleDesc, MaybePluralPartDescriptor<TailData> longDesc,
+				PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
+				: base(furType, mutable, longTail, initialTailCount, maxTailCount, shortDesc, singleDesc, longDesc, playerDesc, transform, restore)
 			{
 				defaultFur = defaultColor;
 			}
@@ -468,17 +635,24 @@ namespace CoC.Backend.BodyParts
 			public readonly Tones defaultTone;
 			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 
-			internal ToneTail(ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, bool longTail,
-				SimpleDescriptor shortDesc, LongDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform,
-				RestoreType<TailData> restore) : base(toneType, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore)
+			internal ToneTail(OvipositorType ovipositor, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, bool longTail,
+				ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform,
+				TailRestore restore) : base(ovipositor, toneType, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				defaultTone = defaultColor;
 			}
 
 			internal ToneTail(ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, bool longTail,
-				byte initialTailCount, byte maxTailCount, SimplePluralDescriptor shortDesc, MultipleTailDescriptor longDesc,
-				PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
-				: base(toneType, mutable, longTail, initialTailCount, maxTailCount, shortDesc, longDesc, playerDesc, transform, restore)
+				ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform,
+				TailRestore restore) : base(toneType, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore)
+			{
+				defaultTone = defaultColor;
+			}
+
+			internal ToneTail(ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, bool longTail,
+				byte initialTailCount, byte maxTailCount, ShortMaybePluralDescriptor shortDesc, SimpleDescriptor singleDesc, MaybePluralPartDescriptor<TailData> longDesc,
+				PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
+				: base(toneType, mutable, longTail, initialTailCount, maxTailCount, shortDesc, singleDesc, longDesc, playerDesc, transform, restore)
 			{
 				defaultTone = defaultColor;
 			}
@@ -494,9 +668,9 @@ namespace CoC.Backend.BodyParts
 		{
 			private readonly GenerateResourceAttack resourceAttackGetter;
 
-			public ToneTailWithResourceAttack(GenerateResourceAttack attackGetter, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, bool longTail,
-				SimpleDescriptor shortDesc, LongDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform,
-				RestoreType<TailData> restore) : base(toneType, defaultColor, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore)
+			public ToneTailWithResourceAttack(OvipositorType ovipositor, GenerateResourceAttack attackGetter, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable,
+				bool longTail, ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform,
+				TailRestore restore) : base(ovipositor, toneType, defaultColor, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				resourceAttackGetter = attackGetter ?? throw new ArgumentNullException(nameof(attackGetter));
 			}
@@ -512,8 +686,8 @@ namespace CoC.Backend.BodyParts
 
 		private class FurryTailWithWhip : FurryTail
 		{
-			public FurryTailWithWhip(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, bool longTail, SimpleDescriptor shortDesc,
-				LongDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
+			public FurryTailWithWhip(FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, bool longTail, ShortDescriptor shortDesc,
+				PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
 				: base(furType, defaultColor, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
@@ -525,8 +699,8 @@ namespace CoC.Backend.BodyParts
 		private class ToneTailWithWhip : ToneTail
 		{
 			public ToneTailWithWhip(ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, bool longTail,
-				SimpleDescriptor shortDesc, LongDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc,
-				ChangeType<TailData> transform, RestoreType<TailData> restore)
+				ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc,
+				TailTransform transform, TailRestore restore)
 				: base(toneType, defaultColor, mutable, longTail, shortDesc, longDesc, playerDesc, transform, restore) { }
 
 			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
@@ -537,7 +711,8 @@ namespace CoC.Backend.BodyParts
 
 		private class SalamanderTail : ToneTail
 		{
-			public SalamanderTail() : base(EpidermisType.SCALES, DefaultValueHelpers.defaultSalamanderTone, false, false, SalamanderShortDesc, SalamanderLongDesc, SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr)
+			public SalamanderTail() : base(EpidermisType.SCALES, DefaultValueHelpers.defaultSalamanderTone, false, false, SalamanderShortDesc, SalamanderLongDesc,
+				SalamanderPlayerStr, SalamanderTransformStr, SalamanderRestoreStr)
 			{ }
 
 			internal override AttackBase GetAttackOnTransform(Func<ushort> get, Action<ushort> set)
@@ -555,8 +730,8 @@ namespace CoC.Backend.BodyParts
 			}
 
 			private readonly TailSlam _attack;
-			public ToneTailWithSlam(byte attackStrength, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, SimpleDescriptor shortDesc,
-				LongDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
+			public ToneTailWithSlam(byte attackStrength, ToneBasedEpidermisType toneType, Tones defaultColor, bool mutable, ShortDescriptor shortDesc,
+				PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
 				: base(toneType, defaultColor, mutable, true, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				_attack = new TailSlam(shortDesc, attackStrength);
@@ -571,8 +746,8 @@ namespace CoC.Backend.BodyParts
 			}
 
 			private readonly TailSlam _attack;
-			public FurryTailWithSlam(byte attackStrength, FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, SimpleDescriptor shortDesc,
-				LongDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, ChangeType<TailData> transform, RestoreType<TailData> restore)
+			public FurryTailWithSlam(byte attackStrength, FurBasedEpidermisType furType, FurColor defaultColor, bool mutable, ShortDescriptor shortDesc,
+				PartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
 				: base(furType, defaultColor, mutable, true, shortDesc, longDesc, playerDesc, transform, restore)
 			{
 				_attack = new TailSlam(shortDesc, attackStrength);
@@ -585,13 +760,15 @@ namespace CoC.Backend.BodyParts
 
 		private class FoxTail : FurryTail
 		{
-			public FoxTail() : base(EpidermisType.FUR, DefaultValueHelpers.defaultFoxTailFur, true, true, 1, 9, FoxShortDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
+			public FoxTail() : base(EpidermisType.FUR, DefaultValueHelpers.defaultFoxTailFur, true, true, 1, 9, FoxShortDesc,
+				FoxSingleDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
 		}
 
 
 		private class SuccubusTail : ToneTail
 		{
-			public SuccubusTail() : base(EpidermisType.SKIN, DefaultValueHelpers.defaultDemonTone, true, true, DemonShortDesc, DemonLongDesc, DemonPlayerStr, DemonTransformStr, DemonRestoreStr) { }
+			public SuccubusTail() : base(EpidermisType.SKIN, DefaultValueHelpers.defaultDemonTone, true, true, DemonShortDesc, DemonLongDesc, DemonPlayerStr,
+				DemonTransformStr, DemonRestoreStr) { }
 
 			public override bool supportsTailPiercing => true;
 		}
@@ -612,6 +789,8 @@ namespace CoC.Backend.BodyParts
 		public readonly EpidermalData primaryEpidermis;
 		public readonly EpidermalData secondaryEpidermis;
 
+		public readonly OvipositorData ovipositor;
+
 		public bool isLongTail => type.isLongTail;
 
 		public readonly ushort resources;
@@ -627,12 +806,26 @@ namespace CoC.Backend.BodyParts
 			return type.ShortDescription(tailCount != 1);
 		}
 
-		public string SingleTailShortDescription() => type.ShortDescription();
+		#region Text
+		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
-		public string SingleTailLongDescription(bool alternateFormat) => type.SingleTailLongDescription(this, alternateFormat);
 
-		public string SingleTailLongPrimaryDescription() => type.SingleTailLongPrimaryDescription(this);
-		public string SingleTailLongAlternateDescription() => type.SingleTailLongAlternateDescription(this);
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => type.ShortDescription(pluralIfApplicable, out isPlural);
+
+		public string LongDescription(bool alternateFormat, bool pluralIfApplicable) => type.LongDescription(this, alternateFormat, pluralIfApplicable);
+		public string LongDescription(bool alternateFormat, bool pluralIfApplicable, out bool isPlural) => type.LongDescription(this, alternateFormat, pluralIfApplicable, out isPlural);
+
+		public string LongDescriptionPrimary(bool pluralIfApplicable) => type.LongDescriptionPrimary(this, pluralIfApplicable);
+		public string LongDescriptionPrimary(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionPrimary(this, pluralIfApplicable, out isPlural);
+
+		public string LongDescriptionAlternate(bool pluralIfApplicable) => type.LongDescriptionAlternate(this, pluralIfApplicable);
+		public string LongDescriptionAlternate(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionAlternate(this, pluralIfApplicable, out isPlural);
+
+		public string SingleTailDescription() => type.ShortDescription(false);
+		public string SingleTailLongDescription(bool alternateFormat) => type.LongDescription(this, alternateFormat, false);
+		public string SingleTailLongPrimaryDescription() => type.LongDescriptionPrimary(this, false);
+		public string SingleTailLongAlternateDescription() => type.LongDescriptionAlternate(this, false);
+		#endregion
 
 		public override TailData AsCurrentData()
 		{
@@ -649,6 +842,8 @@ namespace CoC.Backend.BodyParts
 			resources = source.resources;
 			regenRate = source.regenRate;
 			maxResources = source.maxCharges;
+
+			ovipositor = source.ovipositor.AsReadOnlyData();
 
 			tailPiercings = source.tailPiercings.AsReadOnlyData();
 		}

@@ -38,9 +38,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		private static string HumanDesc()
+		private static string HumanDesc(bool singleMemberFormat)
 		{
-			return "neck";
+			return Utils.AddArticleIf("neck", singleMemberFormat);
 		}
 		private static string HumanLongDesc(NeckData neck, bool alternateFormat)
 		{
@@ -50,9 +50,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return "";
 		}
-		private static string DragonDesc()
+		private static string DragonDesc(bool singleMemberFormat)
 		{
-			return "draconic neck";
+			return Utils.AddArticleIf("draconic neck", singleMemberFormat);
 		}
 		private static string DragonLongDesc(NeckData neck, bool alternateFormat)
 		{
@@ -142,9 +142,9 @@ namespace CoC.Backend.BodyParts
 			return color.AsString() + " feathers on your neck";
 		}
 
-		private static string CockatriceDesc()
+		private static string CockatriceDesc(bool singleMemberFormat)
 		{
-			return "cockatrice-like neck";
+			return Utils.AddArticleIf("feathered, cockatrice-like neck", singleMemberFormat);
 		}
 		private static string CockatriceLongDesc(NeckData neck, bool alternateFormat)
 		{

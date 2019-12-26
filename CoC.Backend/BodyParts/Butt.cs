@@ -94,13 +94,14 @@ namespace CoC.Backend.BodyParts
 			size = newSize;
 			return size;
 		}
-
+		#region Text
 		public string SizeAsAdjective() => BuildStrings.ButtAdjective(size);
 
-		public string ShortDescription() => BuildStrings.ButtShortDescription(size);
+		public string ShortDescription() => BuildStrings.ButtShortDescription(size, false);
+		public string SingleItemDescription() => BuildStrings.ButtShortDescription(size, true);
 
 		public string LongDescription(bool alternateFormat, byte muscleTone) => BuildStrings.ButtLongDescription(size, muscleTone, alternateFormat);
-
+		#endregion
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -140,11 +141,14 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly byte size;
 
+		#region Text
 		public string SizeAsAdjective() => BuildStrings.ButtAdjective(size);
 
-		public string ShortDescription() => BuildStrings.ButtShortDescription(size);
+		public string ShortDescription() => BuildStrings.ButtShortDescription(size, false);
+		public string SingleItemDescription() => BuildStrings.ButtShortDescription(size, true);
 
 		public string LongDescription(bool alternateFormat, byte muscleTone) => BuildStrings.ButtLongDescription(size, muscleTone, alternateFormat);
+		#endregion
 
 		internal ButtData(Guid creatureID, byte buttSize) : base(creatureID)
 		{

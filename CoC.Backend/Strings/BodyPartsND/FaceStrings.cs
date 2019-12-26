@@ -10,6 +10,9 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Face
 	{
+		/*
+		"\n\nAnother violent sneeze escapes you.  It hurt!  You feel your nose and discover yo    ur face has changed back into a more normal look.  <b>You have a human looking face again!</b>"
+		*/
 		public static string Name()
 		{
 			return "Face";
@@ -138,9 +141,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region Human
-		private static string HumanShortDesc()
+		private static string HumanShortDesc(bool singleItemFormat)
 		{
-			return "face";
+			return Utils.AddArticleIf("face", singleItemFormat);
 		}
 		private static string HumanLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -151,69 +154,78 @@ namespace CoC.Backend.BodyParts
 			string noseStr = face.nosePiercings.isPierced ? "pierced " : "normal ";
 			return " Your face is human in shape and structure, with " + face.primary.DescriptionWithTexture() + " and a " + noseStr + "nose. ";
 		}
-		private static string HumanTransformStr(FaceData face, PlayerBase player)
+		private static string HumanTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanRestoreStr(FaceData face, PlayerBase player)
+		private static string HumanRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Horse
-		private static string HorseShortDesc()
+		private static string HorseShortDesc(bool singleItemFormat)
 		{
-			return "horse-like face";
+			return Utils.AddArticleIf("horse-like face", singleItemFormat);
 		}
-		private static string HorseLongDesc(FaceData face, bool alternateForm)
+		private static string HorseLongDesc(FaceData face, bool alternateFormat)
 		{
-			return $"{(alternateForm ? "a " : "")}longe, equine muzzle covered in {face.primaryEpidermis.LongDescription()}";
+			return $"{(alternateFormat ? "a " : "")}longe, equine muzzle covered in {face.primaryEpidermis.LongDescription()}";
 		}
 		private static string HorsePlayerStr(Face face, PlayerBase player)
 		{
 			return "Your face is almost entirely equine in appearance, even having a" + face.primary.LongDescription() +
 				". Underneath the fur, you believe you have " + face.facialSkin.LongDescription();
 		}
-		private static string HorseTransformStr(FaceData face, PlayerBase player)
+		private static string HorseTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HorseRestoreStr(FaceData face, PlayerBase player)
+		private static string HorseRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Dog
-		private static string DogShortDesc()
+		private static string DogShortDesc(bool singleItemFormat)
 		{
-			return "canine muzzle";
+			return Utils.AddArticleIf("canine muzzle", singleItemFormat);
 		}
-		private static string DogLongDesc(FaceData face, bool alternateForm)
+		private static string DogLongDesc(FaceData face, bool alternateFormat)
 		{
-			return $"{face.primaryEpidermis.LongAdjectiveDescription(alternateForm)} canine face";
+			return $"{face.primaryEpidermis.LongAdjectiveDescription(alternateFormat)} canine face";
 		}
 		private static string DogPlayerStr(Face face, PlayerBase player)
 		{
 			return "You have a dog's face, complete with wet nose and panting tongue.  You've got a" + face.primary.LongDescription() + ", hiding your " + face.facialSkin.LongDescription()
 				+ " underneath your furry visage.";
 		}
-		private static string DogTransformStr(FaceData face, PlayerBase player)
+		private static string DogTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string intro = "Your face is wracked with pain. You throw back your head and scream in agony as you feel your cheekbones breaking and shifting, reforming into something";
+			if (previousFaceData.type == HORSE)
+			{
+				return intro + " else. " + SafelyFormattedString.FormattedText("Your horse-like features rearrange to take on many canine aspects.", StringFormats.BOLD);
+			}
+			else
+			{
+				return intro + "... different. You find a puddle to view your reflection, and realize " + SafelyFormattedString.FormattedText("your face is now a cross " +
+					"between human and canine features.", StringFormats.BOLD);
+			}
 		}
-		private static string DogRestoreStr(FaceData face, PlayerBase player)
+		private static string DogRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Cow/Minotaur
-		private static string CowShortDesc()
+		private static string CowShortDesc(bool singleItemFormat)
 		{
-			return "cow-like face";
+			return Utils.AddArticleIf("cow-like face", singleItemFormat);
 		}
-		private static string MinotaurShortDesc()
+		private static string MinotaurShortDesc(bool singleItemFormat)
 		{
-			return "bovine snout";
+			return Utils.AddArticleIf("bovine snout", singleItemFormat);
 		}
 
 		private static string CowMorphText(bool isStrengthening)
@@ -248,19 +260,19 @@ namespace CoC.Backend.BodyParts
 				return "Your face appears human, though some features show some cow-like traits. " + noseStr;
 			}
 		}
-		private static string Cow_MinotaurTransformStr(FaceData face, PlayerBase player)
+		private static string Cow_MinotaurTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string Cow_MinotaurRestoreStr(FaceData face, PlayerBase player)
+		private static string Cow_MinotaurRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Shark
-		private static string SharkShortDesc()
+		private static string SharkShortDesc(bool singleItemFormat)
 		{
-			return "shark teeth";
+			return Utils.AddArticleIf("shark teeth", singleItemFormat);
 		}
 		private static string SharkLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -271,20 +283,20 @@ namespace CoC.Backend.BodyParts
 			return "Your face is human in shape and structure, covered in " + face.facialSkin.LongDescription() + ". A set of razor-sharp, retractable shark-teeth fill your mouth " +
 				"and give your visage a slightly angular appearance.";
 		}
-		private static string SharkTransformStr(FaceData face, PlayerBase player)
+		private static string SharkTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkRestoreStr(FaceData face, PlayerBase player)
+		private static string SharkRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Snake
 		//Snake? SNAKE?!? SNAAAAAAKE!?!?!?!?!
-		private static string SnakeShortDesc()
+		private static string SnakeShortDesc(bool singleItemFormat)
 		{
-			return "snake fangs";
+			return Utils.AddArticleIf("snake fangs", singleItemFormat);
 		}
 		private static string SnakeLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -295,24 +307,24 @@ namespace CoC.Backend.BodyParts
 			return "Your face is fairly human in shape, but is covered in " + face.primary.LongDescription() + ". In addition, a pair of fangs hang over your lower lip, " +
 				"dripping with venom.";
 		}
-		private static string SnakeTransformStr(FaceData face, PlayerBase player)
+		private static string SnakeTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SnakeRestoreStr(FaceData face, PlayerBase player)
+		private static string SnakeRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Cat
-		private static string CatGirlShortDesc()
+		private static string CatGirlShortDesc(bool singleItemFormat)
 		{
-			return "cat-girl face";
+			return Utils.AddArticleIf("cat-girl face", singleItemFormat);
 
 		}
-		private static string CatMorphShortDesc()
+		private static string CatMorphShortDesc(bool singleItemFormat)
 		{
-			return "feline face";
+			return Utils.AddArticleIf("feline face", singleItemFormat);
 		}
 
 		private static string CatMorphText(bool isStrengthening)
@@ -354,19 +366,19 @@ namespace CoC.Backend.BodyParts
 			}
 
 		}
-		private static string CatTransformStr(FaceData face, PlayerBase player)
+		private static string CatTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatRestoreStr(FaceData face, PlayerBase player)
+		private static string CatRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Lizard
-		private static string LizardShortDesc()
+		private static string LizardShortDesc(bool singleItemFormat)
 		{
-			return "reptilian face";
+			return Utils.AddArticleIf("reptilian face", singleItemFormat);
 		}
 		private static string LizardLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -385,23 +397,23 @@ namespace CoC.Backend.BodyParts
 				return intro + "complete the look, making you look quite fearsome.";
 			}
 		}
-		private static string LizardTransformStr(FaceData face, PlayerBase player)
+		private static string LizardTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardRestoreStr(FaceData face, PlayerBase player)
+		private static string LizardRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Bunny
-		private static string BunnyFirstLevelShortDesc()
+		private static string BunnyFirstLevelShortDesc(bool singleItemFormat)
 		{
-			return "bunny-like teeth";
+			return Utils.AddArticleIf("bunny-like teeth", singleItemFormat);
 		}
-		private static string BunnySecondLevelShortDesc()
+		private static string BunnySecondLevelShortDesc(bool singleItemFormat)
 		{
-			return "bunny face";
+			return Utils.AddArticleIf("bunny face", singleItemFormat);
 		}
 		private static string BunnyMorphText(bool isStrengthening)
 		{
@@ -433,19 +445,19 @@ namespace CoC.Backend.BodyParts
 				"and the length of your incisors gives your visage a hint of bunny - like cuteness.";
 			}
 		}
-		private static string BunnyTransformStr(FaceData face, PlayerBase player)
+		private static string BunnyTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyRestoreStr(FaceData face, PlayerBase player)
+		private static string BunnyRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Kangaroo
-		private static string KangarooShortDesc()
+		private static string KangarooShortDesc(bool singleItemFormat)
 		{
-			return "kangaroo face";
+			return Utils.AddArticleIf("kangaroo face", singleItemFormat);
 		}
 		private static string KangarooLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -456,19 +468,19 @@ namespace CoC.Backend.BodyParts
 			return "Your face is covered with " + face.primary.LongDescription() + " and shaped like that of a kangaroo - somewhat rabbit-like except " +
 				"for the extreme length of your odd visage.";
 		}
-		private static string KangarooTransformStr(FaceData face, PlayerBase player)
+		private static string KangarooTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooRestoreStr(FaceData face, PlayerBase player)
+		private static string KangarooRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Spider
-		private static string SpiderShortDesc()
+		private static string SpiderShortDesc(bool singleItemFormat)
 		{
-			return "spider fangs";
+			return Utils.AddArticleIf("spider fangs", singleItemFormat);
 		}
 		private static string SpiderLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -479,23 +491,23 @@ namespace CoC.Backend.BodyParts
 			return "Your face is mostly human in appearance, though it is covered in " + face.primary.LongDescription() + ". A set of retractable, needle-like fangs " +
 				"sit in place of your canines and are ready to dispense their venom.";
 		}
-		private static string SpiderTransformStr(FaceData face, PlayerBase player)
+		private static string SpiderTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderRestoreStr(FaceData face, PlayerBase player)
+		private static string SpiderRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Fox/Kitsune
-		private static string KitsuneShortDesc()
+		private static string KitsuneShortDesc(bool singleItemFormat)
 		{
-			return "kitsune face";
+			return Utils.AddArticleIf("kitsune face", singleItemFormat);
 		}
-		private static string FoxShortDesc()
+		private static string FoxShortDesc(bool singleItemFormat)
 		{
-			return "fox face";
+			return Utils.AddArticleIf("fox face", singleItemFormat);
 		}
 		private static string FoxMorphText(bool isStrengthening)
 		{
@@ -534,19 +546,19 @@ namespace CoC.Backend.BodyParts
 				return "You have a tapered, shrewd-looking vulpine face with a speckling of downward-curved whiskers just behind the nose." + furStr;
 			}
 		}
-		private static string FoxTransformStr(FaceData face, PlayerBase player)
+		private static string FoxTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxRestoreStr(FaceData face, PlayerBase player)
+		private static string FoxRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Dragon
-		private static string DragonShortDesc()
+		private static string DragonShortDesc(bool singleItemFormat)
 		{
-			return "reptilian face";
+			return Utils.AddArticleIf("reptilian face", singleItemFormat);
 		}
 		private static string DragonLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -561,23 +573,23 @@ namespace CoC.Backend.BodyParts
 			return "Your face is a narrow, reptilian muzzle.  It looks like a predatory lizard's, at first glance, but with an unusual array of spikes along the under-jaw. " +
 				"It gives you a regal but fierce visage. Opening your mouth reveals several rows of dagger-like sharp teeth. The fearsome visage is" + skinStr;
 		}
-		private static string DragonTransformStr(FaceData face, PlayerBase player)
+		private static string DragonTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(FaceData face, PlayerBase player)
+		private static string DragonRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Raccoon
-		private static string RaccoonMaskShortDesc()
+		private static string RaccoonMaskShortDesc(bool singleItemFormat)
 		{
-			return "raccoon mask";
+			return Utils.AddArticleIf("raccoon mask", singleItemFormat);
 		}
-		private static string RaccoonFaceShortDesc()
+		private static string RaccoonFaceShortDesc(bool singleItemFormat)
 		{
-			return "raccoon face";
+			return Utils.AddArticleIf("raccoon face", singleItemFormat);
 		}
 		private static string RaccoonMorphText(bool isStrengthening)
 		{
@@ -611,23 +623,23 @@ namespace CoC.Backend.BodyParts
 					" shades the space around your eyes, set apart from the " + face.primary.DescriptionWithColor() + "covering the rest of your face by a band of white.";
 			}
 		}
-		private static string RaccoonTransformStr(FaceData face, PlayerBase player)
+		private static string RaccoonTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonRestoreStr(FaceData face, PlayerBase player)
+		private static string RaccoonRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Mouse
-		private static string MouseTeethShortDesc()
+		private static string MouseTeethShortDesc(bool singleItemFormat)
 		{
-			return "mouse-like teeth";
+			return Utils.AddArticleIf("mouse-like teeth", singleItemFormat);
 		}
-		private static string MouseFaceShortDesc()
+		private static string MouseFaceShortDesc(bool singleItemFormat)
 		{
-			return "mouse face";
+			return Utils.AddArticleIf("mouse face", singleItemFormat);
 		}
 		//shamelessly pulled from bunny.
 		private static string MouseMorphText(bool isStrengthening)
@@ -661,24 +673,24 @@ namespace CoC.Backend.BodyParts
 					+ face.facialSkin.LongDescription() + ". Two large incisors complete it.";
 			}
 		}
-		private static string MouseTransformStr(FaceData face, PlayerBase player)
+		private static string MouseTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseRestoreStr(FaceData face, PlayerBase player)
+		private static string MouseRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Ferret
-		private static string FerretMaskShortDesc()
+		private static string FerretMaskShortDesc(bool singleItemFormat)
 		{
-			return "ferret mask";
+			return Utils.AddArticleIf("ferret mask", singleItemFormat);
 
 		}
-		private static string FerretFaceShortDesc()
+		private static string FerretFaceShortDesc(bool singleItemFormat)
 		{
-			return "ferret face";
+			return Utils.AddArticleIf("ferret face", singleItemFormat);
 		}
 
 		//shamelessly copied from raccoon.
@@ -712,23 +724,23 @@ namespace CoC.Backend.BodyParts
 					", with patches of white on your muzzle and cheeks. A noticeable mask of " + face.secondary.DescriptionWithColor() + " is shaped around your eyes.";
 			}
 		}
-		private static string FerretTransformStr(FaceData face, PlayerBase player)
+		private static string FerretTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretRestoreStr(FaceData face, PlayerBase player)
+		private static string FerretRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Pig
-		private static string PigShortDesc()
+		private static string PigShortDesc(bool singleItemFormat)
 		{
-			return "pig-like face";
+			return Utils.AddArticleIf("pig-like face", singleItemFormat);
 		}
-		private static string BoarShortDesc()
+		private static string BoarShortDesc(bool singleItemFormat)
 		{
-			return "boar snout";
+			return Utils.AddArticleIf("boar snout", singleItemFormat);
 		}
 		private static string PigMorphText(bool isStrengthening)
 		{
@@ -760,19 +772,19 @@ namespace CoC.Backend.BodyParts
 					"Tusks sprouting from your lower jaw complete the look, along a snout that is always wiggling.";
 			}
 		}
-		private static string PigTransformStr(FaceData face, PlayerBase player)
+		private static string PigTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigRestoreStr(FaceData face, PlayerBase player)
+		private static string PigRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Rhino
-		private static string RhinoShortDesc()
+		private static string RhinoShortDesc(bool singleItemFormat)
 		{
-			return "rhino face";
+			return Utils.AddArticleIf("rhino face", singleItemFormat);
 		}
 		private static string RhinoLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -782,19 +794,19 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Your face is like that of a rhino: " + face.primary.JustColor() + ", with a long muzzle and a horn on your nose.";
 		}
-		private static string RhinoTransformStr(FaceData face, PlayerBase player)
+		private static string RhinoTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoRestoreStr(FaceData face, PlayerBase player)
+		private static string RhinoRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Echidna
-		private static string EchidnaShortDesc()
+		private static string EchidnaShortDesc(bool singleItemFormat)
 		{
-			return "echidna face";
+			return Utils.AddArticleIf("echidna face", singleItemFormat);
 		}
 		private static string EchidnaLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -804,19 +816,19 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Your odd visage consists of a long, thin echidna snout, covered in " + face.primary.LongDescription();
 		}
-		private static string EchidnaTransformStr(FaceData face, PlayerBase player)
+		private static string EchidnaTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaRestoreStr(FaceData face, PlayerBase player)
+		private static string EchidnaRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Deer
-		private static string DeerShortDesc()
+		private static string DeerShortDesc(bool singleItemFormat)
 		{
-			return "deer face";
+			return Utils.AddArticleIf("deer face", singleItemFormat);
 		}
 		private static string DeerLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -836,19 +848,19 @@ namespace CoC.Backend.BodyParts
 				return " " + GlobalStrings.CapitalizeFirstLetter(face.primary.LongDescription()) + "covers your face, hiding the " + face.facialSkin.LongDescription() + " underneath.";
 			}
 		}
-		private static string DeerTransformStr(FaceData face, PlayerBase player)
+		private static string DeerTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerRestoreStr(FaceData face, PlayerBase player)
+		private static string DeerRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Wolf
-		private static string WolfShortDesc()
+		private static string WolfShortDesc(bool singleItemFormat)
 		{
-			return "wolf face";
+			return Utils.AddArticleIf("wolf face", singleItemFormat);
 		}
 		private static string WolfLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -858,19 +870,19 @@ namespace CoC.Backend.BodyParts
 		{
 			return "You have an angular wolf's face complete with a muzzle and black nose and covered in " + face.primary.LongDescription();
 		}
-		private static string WolfTransformStr(FaceData face, PlayerBase player)
+		private static string WolfTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfRestoreStr(FaceData face, PlayerBase player)
+		private static string WolfRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Cockatrice
-		private static string CockatriceShortDesc()
+		private static string CockatriceShortDesc(bool singleItemFormat)
 		{
-			return "cockatrice face";
+			return Utils.AddArticleIf("cockatrice face", singleItemFormat);
 		}
 		private static string CockatriceLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -880,11 +892,11 @@ namespace CoC.Backend.BodyParts
 		{
 			return "You have a cockatrice's face, complete with " + face.primary.DescriptionWithColor() + " and " + face.secondary.DescriptionWithColor();
 		}
-		private static string CockatriceTransformStr(FaceData face, PlayerBase player)
+		private static string CockatriceTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceRestoreStr(FaceData face, PlayerBase player)
+		private static string CockatriceRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -901,18 +913,18 @@ namespace CoC.Backend.BodyParts
 		//{
 		//	return ""
 		//}
-		//private static string BeakTransformStr(FaceData face, PlayerBase player)
+		//private static string BeakTransformStr(FaceData previousFaceData, PlayerBase player)
 		//{
 		//	throw new InDevelopmentExceptionThatBreaksOnRelease();
 		//}
-		//private static string BeakRestoreStr(FaceData face, PlayerBase player)
+		//private static string BeakRestoreStr(FaceData originalFaceData, PlayerBase player)
 		//{
 		//	throw new InDevelopmentExceptionThatBreaksOnRelease();
 		//}
 		#region Red Panda
-		private static string PandaShortDesc()
+		private static string PandaShortDesc(bool singleItemFormat)
 		{
-			return "red panda face";
+			return Utils.AddArticleIf("red panda face", singleItemFormat);
 		}
 		private static string PandaLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -923,19 +935,19 @@ namespace CoC.Backend.BodyParts
 			return "Your face has a distinctive animalistic muzzle, proper from a red-panda, complete with a cute pink nose. A coat of soft, " + face.primary.DescriptionWithColor() +
 				" covers your head, with patches of " + face.secondary.JustColor() + " on your muzzle, cheeks and eyebrows.";
 		}
-		private static string PandaTransformStr(FaceData face, PlayerBase player)
+		private static string PandaTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PandaRestoreStr(FaceData face, PlayerBase player)
+		private static string PandaRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		#region Goo
-		private static string GooShortDesc()
+		private static string GooShortDesc(bool singleItemFormat)
 		{
-			return "gooey, humanoid face";
+			return Utils.AddArticleIf("gooey, humanoid face", singleItemFormat);
 		}
 		private static string GooLongDesc(FaceData face, bool alternateFormat)
 		{
@@ -948,12 +960,12 @@ namespace CoC.Backend.BodyParts
 				"brain or skeleton, yet it retains its shape and you can still think and talk, though your voice warbles slightly, as if underwater.";
 		}
 
-		private static string GooTransformStr(FaceData face, PlayerBase player)
+		private static string GooTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string GooRestoreStr(FaceData face, PlayerBase player)
+		private static string GooRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

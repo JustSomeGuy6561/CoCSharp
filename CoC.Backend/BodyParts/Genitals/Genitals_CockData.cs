@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Engine.Time;
+﻿using CoC.Backend.Creatures;
+using CoC.Backend.Engine.Time;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -82,7 +83,7 @@ namespace CoC.Backend.BodyParts
 		public bool maleCockVirgin => missingCockSexCount > 0 ? false : maleCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
 
 
-		public bool hasSheath => _cocks.Any(x => x.hasSheath);
+		public bool hasSheath => _cocks.Any(x => x.requiresASheath);
 
 		#endregion
 
@@ -247,6 +248,27 @@ namespace CoC.Backend.BodyParts
 		{
 			return _cocks.Sum(x => x.type == type ? 1 : 0);
 		}
+
+		public bool OtherCocksUseSheath(int excludedCockIndex)
+		{
+			return _cocks.Any(x => x.cockIndex != excludedCockIndex && x.requiresASheath);
+		}
+
+		public bool LostSheath(CockData previousCockData)
+		{
+			return previousCockData.currentlyHasSheath && !hasSheath;
+		}
+
+		public bool GainedSheath(CockData previousCockData)
+		{
+			return !previousCockData.currentlyHasSheath && hasSheath;
+		}
+
+		public bool HasSheathChanged(CockData previousCockData)
+		{
+			return previousCockData.currentlyHasSheath != hasSheath;
+		}
+
 		#endregion
 
 		#region Add/Remove Cocks
@@ -276,6 +298,21 @@ namespace CoC.Backend.BodyParts
 
 			CheckGenderChanged(oldGender);
 			return true;
+		}
+
+		public string AddedCockText(CockData addedCock)
+		{
+			int count = CountCocksOfType(addedCock.type);
+			if (count == 0 || numCocks == 0) return "";
+
+			if (creature is PlayerBase player)
+			{
+				return addedCock.type.GrewCockText(player, (byte)(numCocks - 1));
+			}
+			else
+			{
+				return "";
+			}
 		}
 
 		public int RemoveCock(int count = 1)

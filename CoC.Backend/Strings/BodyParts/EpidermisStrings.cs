@@ -74,7 +74,7 @@ namespace CoC.Backend.BodyParts
 	}
 	public partial class Epidermis
 	{
-		
+
 	}
 
 	public partial class EpidermisType
@@ -241,10 +241,31 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-
-		private static string SkinStr()
+		protected static string NothingStr(out bool isPlural)
 		{
+			isPlural = false;
+			return "";
+		}
+
+		protected static string BitOfNothingness()
+		{
+			return "";
+		}
+
+		protected static string NothingAdjectiveStr(bool withArticle)
+		{
+			return "";
+		}
+
+		private static string SkinStr(out bool isPlural)
+		{
+			isPlural = false;
 			return "skin";
+		}
+
+		private static string PieceOfSkin()
+		{
+			return "a bit of skin";
 		}
 
 		private static string SkinAdjectiveStr(bool withArticle)
@@ -253,9 +274,15 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		private static string ScalesStr()
+		private static string ScalesStr(out bool isPlural)
 		{
+			isPlural = true;
 			return "scales";
+		}
+
+		private static string PieceOfScales()
+		{
+			return "a few scales";
 		}
 
 		private static string ScalesAdjectiveStr(bool withArticle)
@@ -264,9 +291,15 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		private static string FeathersStr()
+		private static string FeathersStr(out bool isPlural)
 		{
+			isPlural = true;
 			return "feathers";
+		}
+
+		private static string PieceOfFeathers()
+		{
+			return "a few feathers";
 		}
 
 		private static string FeathersAdjectiveStr(bool withArticle)
@@ -275,9 +308,15 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		private static string FurStr()
+		private static string FurStr(out bool isPlural)
 		{
+			isPlural = false;
 			return "fur";
+		}
+
+		private static string PieceOfFur()
+		{
+			return "a tuft of fur";
 		}
 
 		private static string FurAdjectiveStr(bool withArticle)
@@ -287,9 +326,15 @@ namespace CoC.Backend.BodyParts
 
 
 		//Hard exoskeleton for things like a turtle or spiders or whatever.
-		private static string CarapaceStr()
+		private static string CarapaceStr(out bool isPlural)
 		{
+			isPlural = false;
 			return "carapace";
+		}
+
+		private static string PieceOfCarapace()
+		{
+			return "a pierce of carapace";
 		}
 
 		private static string CarapaceAdjectiveStr(bool withArticle)
@@ -298,9 +343,15 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		private static string GooStr()
+		private static string GooStr(out bool isPlural)
 		{
+			isPlural = false;
 			return "goo";
+		}
+
+		private static string PieceOfGoo()
+		{
+			return "a bit of goo";
 		}
 
 		private static string GooAdjectiveStr(bool withArticle)
@@ -308,9 +359,15 @@ namespace CoC.Backend.BodyParts
 			return "gooey";
 		}
 
-		private static string WoolStr()
+		private static string WoolStr(out bool isPlural)
 		{
+			isPlural = false;
 			return "wool";
+		}
+
+		private static string PieceOfWool()
+		{
+			return "a bit of wool";
 		}
 
 		private static string WoolAdjectiveStr(bool withArticle)
@@ -318,35 +375,20 @@ namespace CoC.Backend.BodyParts
 			return ArticleText(withArticle, false) + "woolen";
 		}
 
-		private static string BarkStr()
+		private static string BarkStr(out bool isPlural)
 		{
+			isPlural = false;
 			return "bark";
+		}
+
+		private static string PieceOfBark()
+		{
+			return "some bark";
 		}
 
 		private static string BarkAdjectiveStr(bool withArticle)
 		{
 			return ArticleText(withArticle, false) + "bark-covered";
-		}
-
-		private static string ExoskeletonStr()
-		{
-			return "exoskeleton";
-		}
-
-		private static string ExoskeletonAdjectiveStr(bool withArticle)
-		{
-			return ArticleText(withArticle, true) + "exoskeleton-covered";
-		}
-
-
-		private static string RubberStr()
-		{
-			return "rubber-skin";
-		}
-
-		private static string RubberAdjectiveStr(bool withArticle)
-		{
-			return ArticleText(withArticle, false) + "rubbery";
 		}
 	}
 

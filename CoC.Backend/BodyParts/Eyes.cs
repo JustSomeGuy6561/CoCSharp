@@ -109,11 +109,14 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//description overloads.
-		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
+
+
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => type.ShortDescription(pluralIfApplicable, out isPlural);
 
 		//eyes can't use the standard overload for long description because they need to know which eye you are talking about for long description in singular form.
 
-		//public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(AsReadOnlyData(), alternateForm, plural);
+		//public string LongDescription(bool alternateFormat, bool plural) => type.LongDescription(AsReadOnlyData(), alternateFormat, plural);
 
 		//public string LongDescriptionPrimary(bool plural) => type.LongDescriptionPrimary(AsReadOnlyData(), plural);
 
@@ -207,19 +210,29 @@ namespace CoC.Backend.BodyParts
 		internal readonly EyeChangeDelegate EyeChangeSpecial;
 
 
-		private readonly SimplePluralDescriptor eyeDesc;
-		private readonly LongDescriptor<EyeData> eyeFullDesc;
+		private readonly ShortPluralDescriptor eyeDesc;
+		private readonly PartDescriptor<EyeData> eyeFullDesc;
 		private readonly SingleEyeDescriptor oneEyeDesc;
 
+		private bool isOneEye => eyeCount == 1;
+
 		protected internal delegate string SingleEyeDescriptor(EyeData eyes, bool alternateFormat, bool useLeftEyeColor = true);
+		protected internal delegate string EyeLongDescriptor(EyeData eyes, bool alternateFormat, out bool isPlural);
 
-		public string ShortDescription(bool plural) => eyeDesc(plural);
-
-		private protected EyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange,
-			SimplePluralDescriptor shortDesc, LongDescriptor<EyeData> longDesc, SingleEyeDescriptor oneEyeDesc, LongDescriptor<EyeData> fullDesc,
-			PlayerBodyPartDelegate<Eyes> playerDesc, ChangeType<EyeData> transform, RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
-			: base(PluralHelper(shortDesc), longDesc, playerDesc, transform, restore)
+		public string ShortDescription(bool pluralIfApplicable = true) => eyeDesc(pluralIfApplicable);
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural)
 		{
+			isPlural = !isOneEye && !pluralIfApplicable;
+			return eyeDesc(pluralIfApplicable);
+		}
+		//i should use maybe plural desriptor here by naming conventions, but in this case i know exactly when it's plural, so i can fake it with the function that
+		//exposes the delegate. probably should do it anyway, but it's easier to implement like this.
+		private protected EyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange,
+		ShortPluralDescriptor shortDesc, SimpleDescriptor singleItemDesc, PartDescriptor<EyeData> longDesc, SingleEyeDescriptor oneEyeDesc, PartDescriptor<EyeData> fullDesc,
+		PlayerBodyPartDelegate<Eyes> playerDesc, ChangeType<EyeData> transform, RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
+		: base(PluralHelper(shortDesc), singleItemDesc, longDesc, playerDesc, transform, restore)
+		{
+
 			EyeChangeSpecial = eyeChange;
 			eyeCount = numEyes;
 			defaultColor = defaultEyeColor;
@@ -271,24 +284,24 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//
-		public static EyeType HUMAN = new EyeType(DefaultValueHelpers.defaultHumanEyeColor, HumanEyeChange, HumanShortStr, HumanLongDesc, HumanSingleDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: ScleraColor.WHITE);
-		public static EyeType SPIDER = new EyeType(DefaultValueHelpers.defaultSpiderEyeColor, SpiderEyeChange, SpiderShortStr, SpiderLongDesc, SpiderSingleDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
-		public static EyeType SAND_TRAP = new EyeType(DefaultValueHelpers.defaultSandTrapEyeColor, SandTrapEyeChange, SandTrapShortStr, SandTrapLongDesc, SandTrapSingleDesc, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: ScleraColor.BLACK);
-		public static EyeType LIZARD = new EyeType(DefaultValueHelpers.defaultLizardEyeColor, LizardEyeChange, LizardShortStr, LizardLongDesc, LizardSingleDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		public static EyeType DRAGON = new EyeType(DefaultValueHelpers.defaultDragonEyeColor, DragonEyeChange, DragonShortStr, DragonLongDesc, DragonSingleDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
-		public static EyeType BASILISK = new StoneStareEyeType(DefaultValueHelpers.defaultBasiliskEyeColor, BasiliskEyeChange, BasiliskShortStr, BasiliskLongDesc, BasiliskSingleDesc, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
-		public static EyeType WOLF = new EyeType(DefaultValueHelpers.defaultWolfEyeColor, WolfEyeChange, WolfShortStr, WolfLongDesc, WolfSingleDesc, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
-		public static EyeType COCKATRICE = new StoneStareEyeType(DefaultValueHelpers.defaultCockatriceEyeColor, CockatriceEyeChange, CockatriceShortStr, CockatriceLongDesc, CockatriceSingleDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
-		public static EyeType CAT = new EyeType(DefaultValueHelpers.defaultCatEyeColor, CatEyeChange, CatShortStr, CatLongDesc, CatSingleDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
+		public static EyeType HUMAN = new EyeType(DefaultValueHelpers.defaultHumanEyeColor, HumanEyeChange, HumanShortStr, HumanSingleDesc, HumanLongDesc, HumanSingleDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr, color: ScleraColor.WHITE);
+		public static EyeType SPIDER = new EyeType(DefaultValueHelpers.defaultSpiderEyeColor, SpiderEyeChange, SpiderShortStr, SpiderSingleDesc, SpiderLongDesc, SpiderSingleDesc, SpiderFullDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr, numEyes: 4);
+		public static EyeType SAND_TRAP = new EyeType(DefaultValueHelpers.defaultSandTrapEyeColor, SandTrapEyeChange, SandTrapShortStr, SandTrapSingleDesc, SandTrapLongDesc, SandTrapSingleDesc, SandTrapFullDesc, SandTrapPlayerStr, SandTrapTransformStr, SandTrapRestoreStr, color: ScleraColor.BLACK);
+		public static EyeType LIZARD = new EyeType(DefaultValueHelpers.defaultLizardEyeColor, LizardEyeChange, LizardShortStr, LizardSingleDesc, LizardLongDesc, LizardSingleDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
+		public static EyeType DRAGON = new EyeType(DefaultValueHelpers.defaultDragonEyeColor, DragonEyeChange, DragonShortStr, DragonSingleDesc, DragonLongDesc, DragonSingleDesc, DragonFullDesc, DragonPlayerStr, DragonTransformStr, DragonRestoreStr);
+		public static EyeType BASILISK = new StoneStareEyeType(DefaultValueHelpers.defaultBasiliskEyeColor, BasiliskEyeChange, BasiliskShortStr, BasiliskSingleDesc, BasiliskLongDesc, BasiliskSingleDesc, BasiliskFullDesc, BasiliskPlayerStr, BasiliskTransformStr, BasiliskRestoreStr);
+		public static EyeType WOLF = new EyeType(DefaultValueHelpers.defaultWolfEyeColor, WolfEyeChange, WolfShortStr, WolfSingleDesc, WolfLongDesc, WolfSingleDesc, WolfFullDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
+		public static EyeType COCKATRICE = new StoneStareEyeType(DefaultValueHelpers.defaultCockatriceEyeColor, CockatriceEyeChange, CockatriceShortStr, CockatriceSingleDesc, CockatriceLongDesc, CockatriceSingleDesc, CockatriceFullDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static EyeType CAT = new EyeType(DefaultValueHelpers.defaultCatEyeColor, CatEyeChange, CatShortStr, CatSingleDesc, CatLongDesc, CatSingleDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 
 		private class StoneStareEyeType : EyeType
 		{
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new BasiliskStare();
-			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, SimplePluralDescriptor shortDesc, LongDescriptor<EyeData> longDesc,
-				SingleEyeDescriptor oneEyeDesc, LongDescriptor<EyeData> fullDesc, PlayerBodyPartDelegate<Eyes> playerDesc, ChangeType<EyeData> transform, RestoreType<EyeData> restore,
-				byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
-				: base(defaultEyeColor, eyeChange, shortDesc, longDesc, oneEyeDesc, fullDesc, playerDesc, transform, restore, numEyes, color) { }
+			public StoneStareEyeType(EyeColor defaultEyeColor, EyeChangeDelegate eyeChange, ShortPluralDescriptor shortDesc, SimpleDescriptor singleItemDesc,
+				PartDescriptor<EyeData> longDesc, SingleEyeDescriptor oneEyeDesc, PartDescriptor<EyeData> fullDesc, PlayerBodyPartDelegate<Eyes> playerDesc,
+				ChangeType<EyeData> transform, RestoreType<EyeData> restore, byte numEyes = 2, ScleraColor color = ScleraColor.CLEAR)
+				: base(defaultEyeColor, eyeChange, shortDesc, singleItemDesc, longDesc, oneEyeDesc, fullDesc, playerDesc, transform, restore, numEyes, color) { }
 		}
 	}
 
@@ -300,7 +313,10 @@ namespace CoC.Backend.BodyParts
 		public readonly byte eyeCount;
 		public readonly ScleraColor scleraColor;
 
-		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
+
+
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => type.ShortDescription(pluralIfApplicable, out isPlural);
 
 		public override EyeData AsCurrentData()
 		{

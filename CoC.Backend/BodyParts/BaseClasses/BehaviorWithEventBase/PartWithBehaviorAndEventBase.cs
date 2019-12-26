@@ -38,6 +38,10 @@ namespace CoC.Backend.BodyParts
 			creatureID = CreatureID;
 		}
 
+		private protected PartWithBehaviorAndEventBase()
+		{
+		}
+
 		protected readonly WeakEventSource<BodyPartChangedEventArg<DataClass, BehaviorClass>> typeChangeSource =
 			new WeakEventSource<BodyPartChangedEventArg<DataClass, BehaviorClass>>();
 

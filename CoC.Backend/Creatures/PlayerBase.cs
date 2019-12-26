@@ -33,7 +33,6 @@ namespace CoC.Backend.Creatures
 
 		internal float hungerGainRate = 1.0f;
 
-
 		private sbyte bonusMinHunger { get; set; }
 		public byte minHunger => DEFAULT_HUNGER.offset(bonusMinHunger);
 
@@ -62,6 +61,44 @@ namespace CoC.Backend.Creatures
 		public string Appearance()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		public string LowerBodyArmorShort(bool both = true)
+		{
+			if (wearingArmor && both && wearingLowerGarment)
+			{
+				return armor.shortName() + " and " + lowerGarment.shortName();
+			}
+			else if (wearingArmor)
+			{
+				return armor.shortName();
+			}
+			else if (wearingLowerGarment)
+			{
+				return lowerGarment.shortName();
+			}
+			return null;
+		}
+
+		public string LowerBodyArmorTextHelper(string armorAndLowerGarmentText, string armorText, string lowerGarmentText, string nakedText)
+		{
+			if (wearingArmor && wearingLowerGarment) return armorAndLowerGarmentText;
+			else if (wearingArmor) return armorText;
+			else if (wearingLowerGarment) return lowerGarmentText;
+			else return nakedText;
+		}
+
+		public string LowerBodyArmorTextHelper(string armorText, string lowerGarmentText, string nakedText)
+		{
+			if (wearingArmor) return armorText;
+			else if (wearingLowerGarment) return lowerGarmentText;
+			else return nakedText;
+		}
+
+		public string ClothingOrNakedTextHelper(string clothingText, string nakedText)
+		{
+			if (wearingAnything) return clothingText;
+			else return nakedText;
 		}
 
 		protected override string PlaceItemInCreatureStorageText(CapacityItem item, byte slot)

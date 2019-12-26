@@ -43,7 +43,21 @@ namespace CoC.Backend.BodyParts
 
 		public virtual int index => type.index;
 
+		//describes the entire body part, concisely. if the body part is made up of multiple members (i.e. the wing part is made of 2 wings), this is plural.
+		//This is virtual because there may be some types where the behavior class cannot determine whether or not it has multiple members unless additional information is
+		//given to it. Notable examples are horns and tails, as some types can have varying amounts based on player choice or NPC design.
+
+		//additionally, in the cases where this body part is made of multiple members, an overload of will be provided that allows you to specify whether or not you want to describe
+		//just one member. this version will not have any special formatting. if you need it with special formatting, use the single item descriptor.
 		public virtual string ShortDescription() => type.ShortDescription();
+
+		//variant of the short description that will always be singular, even if the body part has multiple members. additionally, it will have a unique format specifically
+		//for this singular description.
+		//in english, ths includes the article necessary for the text. (i.e. "a dragon wing" or "an imp wing"). This means you can just call this and not have to worry about
+		//edge cases that would make the grammar sound bad, or need to manually parse it (even worse imo).
+
+		//if you do not want the special formatting, use the short description, and specify it as singular if applicable.
+		public virtual string ShortSingleItemDescription() => type.ShortSingleItemDescription();
 
 		protected internal virtual void PostPerkInit()
 		{ }

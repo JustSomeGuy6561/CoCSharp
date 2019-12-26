@@ -15,6 +15,13 @@ namespace CoC.Backend.Attacks.BodyPartAttacks
 		private readonly byte attackStrength;
 		protected override ushort attackCost => attackStrength.mult(5).add(5);
 		private readonly SimpleDescriptor name;
+		internal TailSlam(ShortDescriptor tailName, byte strength = 1) : base(Attack)
+		{
+			attackStrength = Utils.Clamp2(strength, (byte)0, (byte)5);
+			if (tailName is null) throw new ArgumentNullException(nameof(tailName));
+			name = () => tailName(false);
+		}
+
 		internal TailSlam(SimpleDescriptor tailName, byte strength = 1) : base(Attack)
 		{
 			attackStrength = Utils.Clamp2(strength, (byte)0, (byte)5);

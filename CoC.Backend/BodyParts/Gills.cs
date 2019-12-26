@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //12/27/2018, 7:29 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
@@ -55,11 +56,17 @@ namespace CoC.Backend.BodyParts
 		private static readonly List<GillType> gills = new List<GillType>();
 		public static readonly ReadOnlyCollection<GillType> availableTypes = new ReadOnlyCollection<GillType>(gills);
 
-		protected GillType(SimpleDescriptor shortDesc, LongDescriptor<GillData> longDesc, PlayerBodyPartDelegate<Gills> playerDesc,
-			ChangeType<GillData> transform, RestoreType<GillData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
+		ShortPluralDescriptor pluralDesc;
+
+		public string ShortDescription(bool plural) => pluralDesc(plural);
+
+		protected GillType(ShortPluralDescriptor shortDesc, SimpleDescriptor singleDesc, PartDescriptor<GillData> longDesc, PlayerBodyPartDelegate<Gills> playerDesc,
+			ChangeType<GillData> transform, RestoreType<GillData> restore) : base(PluralHelper(shortDesc), singleDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
 			gills.AddAt(this, _index);
+
+			pluralDesc = shortDesc;
 		}
 
 		internal static GillType Deserialize(int index)
@@ -96,9 +103,12 @@ namespace CoC.Backend.BodyParts
 		protected readonly int _index;
 		public override int index => _index;
 
-		public static readonly GillType NONE = new GillType(GlobalStrings.None, (x,y) => GlobalStrings.None(), (x, y) => GlobalStrings.None(), (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
-		public static readonly GillType ANEMONE = new GillType(AnemoneDescStr, AnemoneLongDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
-		public static readonly GillType FISH = new GillType(FishDescStr, FishLongDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
+		public static readonly GillType NONE = new GillType(NoneDesc, NoneSingleDesc, NoneLongDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
+
+
+
+		public static readonly GillType ANEMONE = new GillType(AnemoneDesc, AnemoneSingleDesc, AnemoneLongDesc, AnemonePlayerStr, AnemoneTransformStr, AnemoneRestoreStr);
+		public static readonly GillType FISH = new GillType(FishDesc, FishSingleDesc, FishLongDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
 	}
 
 	public sealed class GillData : BehavioralSaveablePartData<GillData, Gills, GillType>

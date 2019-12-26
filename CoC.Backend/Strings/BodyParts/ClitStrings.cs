@@ -54,10 +54,16 @@ namespace CoC.Backend.BodyParts
 
 	internal static class ClitStrings
 	{
-		public static string ClitNouns(bool withArticle = false)
+		public static string ClitNoun(bool withArticle = false)
 		{
 			if (SFW_Settings.SFW_Enabled) return (withArticle ? "a " : "") + Utils.RandomChoice("bump", "button");
 			else return (withArticle ? "a " : "") + Utils.RandomChoice("clit", "clitty", "button", "pleasure-buzzer", "clit", "clitty", "button", "clit", "clit", "button");
+		}
+
+		public static string PluralClitNoun()
+		{
+			if (SFW_Settings.SFW_Enabled) return Utils.RandomChoice("bumps", "buttons");
+			else return Utils.RandomChoice("clits", "buttons", "pleasure-buzzers", "clits", "buttons", "clits", "clits", "love-buttons");
 		}
 
 		internal static string ShortDesc(float length)
@@ -161,7 +167,7 @@ namespace CoC.Backend.BodyParts
 
 				if (!full)
 				{
-					return article + size + adjective + " " + ClitNouns();
+					return article + size + adjective + " " + ClitNoun();
 				}
 				else if (clit.clitCockActive)
 				{
@@ -177,12 +183,12 @@ namespace CoC.Backend.BodyParts
 			if (clit.piercings.isPierced)
 			{
 				if (article is null) article = "a ";
-				return article + size + adjective + "pierced " + ClitNouns();
+				return article + size + adjective + "pierced " + ClitNoun();
 			}
 
 
 			//fall through. will rarely hit this, if ever.
-			return ClitNouns(article is null);
+			return ClitNoun(article is null);
 		}
 	}
 }

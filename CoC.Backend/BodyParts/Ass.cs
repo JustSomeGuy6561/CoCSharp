@@ -245,6 +245,8 @@ namespace CoC.Backend.BodyParts
 			return new AssData(this);
 		}
 		public string ShortDescription() => AssStrings.ShortDescription();
+		public string SingleItemDescription() => AssStrings.ShortDescription(true);
+
 		public string LongDescription(bool alternateFormat = false) => AssStrings.LongDescription(this, alternateFormat);
 		public string FullDescription(bool alternateFormat = false) => AssStrings.FullDescription(this, alternateFormat);
 

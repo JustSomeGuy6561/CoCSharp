@@ -92,13 +92,15 @@ namespace CoC.Backend.Creatures
 		//Neck
 		public NeckType neckType;
 		public byte neckLength = NeckType.MIN_NECK_LENGTH; //ignored if type does not support neck length.
-		//Ovipositor
-		public OvipositorType ovipositorType;
 
 		//Tail
 		public byte? tailCount = null;
 		public TailType tailType;
 		public JewelryType[] tailPiercings = null;
+		//Ovipositor - subset of tail, just like hands or feet of arms and legs, respectively. but you can have the tail w/o the ovipositor.
+		//by default, you do not have an ovipositor. if the type does not support an ovipositor and this flag is set to true, it will be ignored.
+		public bool hasOvipositorIfApplicable = false;
+
 		//Tongue
 		public TongueType tongueType;
 		//Wings

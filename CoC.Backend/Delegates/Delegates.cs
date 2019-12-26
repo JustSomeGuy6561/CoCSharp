@@ -14,27 +14,35 @@ namespace CoC.Backend
 {
 
 	public delegate string SimpleDescriptor();
+	//a description that may or may not be plural. it may be important to know from a grammar perspective whether or not this is the case.
+	public delegate string MaybePluralDescriptor(out bool isPlural);
 
-	public delegate string DescriptorWithMetaData(out bool isPlural);
-	//short description delegate where the short description can be plural. by default, it will be plural if the type or behavior has more than one member (or none, see below)
-	//or singular if it does not. if the flag is set to false, it will return a singular format, regardless of whether that type or behavior has more than one member. Note that
-	//the edge case where this flag is set to false when the behavior or type has no members is not defined.
-	public delegate string SimplePluralDescriptor(bool pluralIfApplicable = true);
+
+	public delegate string ShortDescriptor(bool alternateFormat = false);
+
+	public delegate string ShortPluralDescriptor(bool plural = true);
+
+	//short description delegate where the object being described may or may not be plural, depending on the context. for example, a unicorn only has one horn, whereas an imp always has
+	//two horns. it may be necessary to know whether or not it actually is plural so you can use it in a sentence. If plural if applicable is set to false, the value returned will
+	//always be singular.
+	public delegate string ShortMaybePluralDescriptor(bool pluralIfApplicable, out bool isPlural);
 
 	public delegate string DescriptorWithArg<T>(T arg);
 
-
-
 	//standard long description delegate.
-	public delegate string LongDescriptor<T>(T arg, bool alternateForm = false);
+	public delegate string PartDescriptor<T>(T arg, bool alternateFormat = false);
 
-	//long descripton delegate when the long description can be plural. by default, it will be plural if the type or behavior has more than one member (or none, as english treats
-	//no members as plural as opposed to one member); otherwise it will be singular). However, there may be some instance(s) where you only want one member and thus don't want it to be
-	//plural. this delegate allows that. Note that what happens when plural if applicable is false and the type or behavior has no members is not defined.
+	//long descripton delegate when the long description describes more than one member. by default, it will describe all members (none is also plural as far as English is concerned).
+	//However, there may be some instance(s) where you only want one member and thus don't want it to be plural. this delegate allows that.
+	//when plural is set to false, it will always return only one member in singular form, and when true it will always be plural.
 
-	//if a type can be singular or plural (for example, some types of horns only allow 1 horn, while others allow none or multiple horns), and you use this to manually parse complex edge
-	//cases, make sure you check to see if there are more than one members or if it's just one (or none) and react accordingly.
-	public delegate string LongPluralDescriptor<T>(T arg, bool alternateForm = false, bool pluralIfApplicable = true);
+	//if a type can be singular or plural (for example, some types of horns only allow 1 horn, while others allow none or multiple horns), the maybe variant is used instead.
+	public delegate string PluralPartDescriptor<T>(T arg, bool alternateFormat = false, bool plural = true);
+
+	//long description delegate where the object being described may or may not be plural, depending on the context. for example, a unicorn only has one horn, whereas an imp always has
+	//two horns. it may be necessary to know whether or not it actually is plural so you can use it in a sentence. If plural if applicable is set to false, the value returned will
+	//always be singular. If true, it will be plural if possible, and fallback to singular. the isPlural bool represents this result.
+	public delegate string MaybePluralPartDescriptor<T>(T arg, bool alternateFormat, bool pluralIfApplicable, out bool isPlural);
 
 
 	public delegate string AdjectiveDescriptor(bool withArticle);

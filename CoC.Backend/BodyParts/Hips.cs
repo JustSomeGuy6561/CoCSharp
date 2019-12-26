@@ -77,13 +77,14 @@ namespace CoC.Backend.BodyParts
 			size = newSize;
 			return size;
 		}
-
+		#region Text
 		public string SizeAsAdjective() => BuildStrings.HipAdjective(size);
 
 		public string ShortDescription(bool plural = true) => BuildStrings.HipShortDescription(size, plural);
+		public string SingleItemDescription() => BuildStrings.HipSingleDescription(size);
 
 		public string LongDescription(byte thickness) => BuildStrings.HipLongDescription(size, lowerBodyType, bodyType, thickness);
-
+		#endregion
 		internal override bool Validate(bool correctInvalidData)
 		{
 			size = size;
@@ -122,12 +123,14 @@ namespace CoC.Backend.BodyParts
 		internal readonly LowerBodyType lowerBodyType;
 		internal readonly BodyType bodyType;
 
+		#region Text
 		public string SizeAsAdjective() => BuildStrings.HipAdjective(size);
 
 		public string ShortDescription(bool plural = true) => BuildStrings.HipShortDescription(size, plural);
+		public string SingleItemDescription() => BuildStrings.HipSingleDescription(size);
 
 		public string LongDescription(byte thickness) => BuildStrings.HipLongDescription(size, lowerBodyType, bodyType, thickness);
-
+		#endregion
 		internal HipData(Hips source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			size = source.size;

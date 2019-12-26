@@ -2,8 +2,6 @@
 //Description: Implements the strings for the arm and armtype. separation of concerns.
 //Author: JustSomeGuy
 //1/18/2019, 9:30 PM
-using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 using System.Text;
 
@@ -80,49 +78,60 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public static string ButtShortDescription(byte size)
+		public static string ButtShortDescription(byte size, bool singleMemberFormat)
 		{
 			string noun = Utils.RandomChoice("butt ", "ass ");
 			if (size < Butt.TIGHT)
 			{
-				return Utils.RandomChoice("insignificant ", "very small ") + noun;
+				if (singleMemberFormat)
+				{
+					return Utils.RandomChoice("an insignificant ", "a very small ") + noun;
+				}
+				else
+				{
+					return Utils.RandomChoice("insignificant ", "very small ") + noun;
+				}
 			}
 			else if (size < Butt.AVERAGE)
 			{
-				return Utils.RandomChoice("tight ", "firm ", "compact ") + noun;
+				string article = singleMemberFormat ? "a " : "";
+				return article + Utils.RandomChoice("tight ", "firm ", "compact ") + noun;
 			}
 			else if (size < Butt.NOTICEABLE)
 			{
-				return Utils.RandomChoice("regular ", "unremarkable ") + noun;
+				if (singleMemberFormat) return Utils.RandomChoice("a regular ", "an unremarkable ") + noun;
+				else return Utils.RandomChoice("regular ", "unremarkable ") + noun;
 			}
 			else if (size < Butt.LARGE)
 			{
-				if (Utils.Rand(3) == 0) return "handful of ass";
-				return Utils.RandomChoice("full ", "shapely ") + noun;
+				if (Utils.Rand(3) == 0) return (singleMemberFormat ? "a " : "") + "handful of ass";
+				return (singleMemberFormat ? "a " : "") + Utils.RandomChoice("full ", "shapely ") + noun;
 			}
 			else if (size < Butt.JIGGLY)
 			{
-				return Utils.RandomChoice("squeezable ", "large ", "substantial ") + noun;
+				return (singleMemberFormat ? "a " : "") + Utils.RandomChoice("squeezable ", "large ", "substantial ") + noun;
 			}
 			else if (size < Butt.EXPANSIVE)
 			{
-				return Utils.RandomChoice("jiggling ", "spacious ", "heavy ") + noun;
+				return (singleMemberFormat ? "a " : "") + Utils.RandomChoice("jiggling ", "spacious ", "heavy ") + noun;
 			}
 			else if (size < Butt.HUGE)
 			{
-				if (Utils.Rand(3) == 0) return "generous amount of ass";
-				return Utils.RandomChoice("expansive ", "voluminous ") + noun;
+				if (Utils.Rand(3) == 0) return (singleMemberFormat ? "a " : "") + "generous amount of ass";
+				else if (singleMemberFormat) return Utils.RandomChoice("an expansive ", "a voluminous ") + noun;
+				else return Utils.RandomChoice("expansive ", "voluminous ") + noun;
 			}
 			else if (size < Butt.INCONCEIVABLY_BIG)
 			{
-				if (Utils.Rand(3) == 0) return "jiggling expanse of ass";
+				if (Utils.Rand(3) == 0) return (singleMemberFormat ? "a " : "") + "jiggling expanse of ass";
 				return Utils.RandomChoice("huge ", "vast ") + noun;
 			}
 			else //if (buttSize >= Butt.INCONCEIVABLY_BIG)
 			{
-				return Utils.RandomChoice("ginormous ", "colossal ", "tremendous ") + noun;
+				return (singleMemberFormat ? "a " : "") + Utils.RandomChoice("ginormous ", "colossal ", "tremendous ") + noun;
 			}
 		}
+
 
 		public static string ButtLongDescription(byte size, byte muscleTone, bool alternateFormat)
 		{
@@ -302,43 +311,43 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public static string HipAdjective(byte size)
+		public static string HipAdjective(byte size, bool alternateFormat = false)
 		{
 			if (size <= Hips.BOYISH)
 			{
-				return "slim, masculine";
+				return (alternateFormat ? "a " : "") + "slim, masculine";
 			}
 			else if (size < Hips.SLENDER)
 			{
-				return "boyish";
+				return (alternateFormat ? "a " : "") + "boyish";
 			}
 			else if (size < Hips.AVERAGE)
 			{
-				return "slender";
+				return (alternateFormat ? "a " : "") + "slender";
 			}
 			else if (size < Hips.AMPLE)
 			{
-				return "average";
+				return (alternateFormat ? "an " : "") + "average";
 			}
 			else if (size < Hips.CURVY)
 			{
-				return "ample";
+				return (alternateFormat ? "an " : "") + "ample";
 			}
 			else if (size < Hips.PUDGY)
 			{
-				return "curvy";
+				return (alternateFormat ? "a " : "") + "curvy";
 			}
 			else if (size < Hips.FERTILE)
 			{
-				return "very curvy, amost pudgy";
+				return (alternateFormat ? "a " : "") + "very curvy, amost pudgy";
 			}
 			else if (size < Hips.INHUMANLY_WIDE)
 			{
-				return "child-bearing";
+				return (alternateFormat ? "a " : "") + "child-bearing";
 			}
 			else
 			{
-				return "broodmother level";
+				return (alternateFormat ? "a " : "") + "broodmother level";
 			}
 		}
 
@@ -347,7 +356,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return HipAdjective(size) + " hip" + (plural ? "s" : "");
 		}
-
+		public static string HipSingleDescription(byte size)
+		{
+			return HipAdjective(size, true) + " hip";
+		}
 		public static string HipLongDescription(byte size, LowerBodyType lowerBody, BodyType bodyType, byte thickness)
 		{
 

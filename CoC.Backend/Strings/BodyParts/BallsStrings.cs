@@ -117,7 +117,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (plural)
 			{
-				return Utils.RandomChoice("nut", "gonads", "testes", "testicles", "testicles", "balls", "balls", "balls");
+				return Utils.RandomChoice("nuts", "gonads", "testes", "testicles", "testicles", "balls", "balls", "balls");
 			}
 			else
 			{
@@ -125,79 +125,130 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal static string ShortDesc(byte numBalls, bool alternateForm, bool prostateIfNoBalls)
+		public static string SingularBallNoun()
 		{
-			if (numBalls == 0 && alternateForm)
+			return Utils.RandomChoice("a nut", "a gonad", "a testicle");
+		}
+
+		internal static string ShortDesc(byte numBalls, bool prostateIfNoBalls, out bool isPlural)
+		{
+			if (numBalls == 0 && prostateIfNoBalls)
 			{
-				return FallbackProstateText(alternateForm);
+				isPlural = false;
+				return FallbackProstateText(false);
 			}
 			else if (numBalls == 0)
 			{
+				isPlural = true;
 				return "non-existent balls";
 			}
+			else if (numBalls == 1)
+			{
+				isPlural = false;
+				return " uniball";
+			}
+
+			else
+			{
+				isPlural = true;
+				return BallsNoun(true);
+			}
+		}
+
+		//numballs is so we know if it's a uniball
+		internal static string SingleBallDesc(byte numBalls, bool prostateIfNoBalls)
+		{
+			if (numBalls == 0 && prostateIfNoBalls)
+			{
+				return FallbackProstateText(true);
+			}
 			else if (numBalls == 0)
 			{
-				return (alternateForm ? "a " : "") + " uniball";
+				return "a non-existant testicle";
 			}
-			else return BallsNoun(numBalls != 1);
+			else if (numBalls == 1)
+			{
+				return "a uniball";
+			}
+			else
+			{
+				return SingularBallNoun();
+			}
 		}
 
-		internal static string FallbackProstateText(bool alternateForm)
+		internal static string FallbackProstateText(bool alternateFormat)
 		{
-			return alternateForm ? "a prostate" : "prostate";
+			return alternateFormat ? "a prostate" : "prostate";
 		}
 
-		internal static string CountDescription(IBalls balls, bool simplifiedCount, bool alternateForm, bool prostateIfNoBalls = true)
+		internal static string CountDescription(IBalls balls, bool simplifiedCount, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural)
 		{
 			if (balls.count == 0 && prostateIfNoBalls)
 			{
-				return alternateForm ? "a prostate" : "prostate";
+				isPlural = false;
+				return alternateFormat ? "a prostate" : "prostate";
 			}
 			else if (balls.count == 0)
 			{
-				return alternateForm ? "a distinct lack of balls" : "lack of balls";
+				isPlural = true;
+				return alternateFormat ? "a distinct lack of balls" : "lack of balls";
 			}
 			else
 			{
-				return CountText(balls, simplifiedCount, alternateForm) + BallsNoun(balls.count != 1);
+				isPlural = balls.count != 1;
+				return CountText(balls, simplifiedCount, alternateFormat) + BallsNoun(balls.count != 1);
 			}
 		}
 
-		internal static string SizeDescription(IBalls balls, bool preciseSize)
+		internal static string SizeDescription(IBalls balls, bool preciseSize, out bool isPlural)
 		{
 			if (balls.count == 0)
 			{
+				isPlural = true;
 				return "non-existent balls";
 			}
 			else
 			{
+				isPlural = balls.count != 1;
 				return SizeText(balls, preciseSize) + BallsNoun(balls.count != 1);
 			}
 
 		}
 
-		internal static string LongDescription(IBalls balls, bool simplified, bool alternateForm, bool prostateIfNoBalls = true)
+		internal static string LongDescription(IBalls balls, bool simplified, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural)
 		{
 			if (balls.count == 0)
 			{
-				return alternateForm ? "a prostate" : "prostate";
+				isPlural = false;
+				return alternateFormat ? "a prostate" : "prostate";
 			}
 			else
 			{
-				return CountText(balls, simplified, alternateForm) + SizeText(balls, simplified) + BallsNoun(balls.count != 1);
+				isPlural = balls.count != 1;
+				return CountText(balls, simplified, alternateFormat) + SizeText(balls, simplified) + BallsNoun(balls.count != 1);
 			}
 		}
 
-		internal static string FullDescription(IBalls balls, bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true)
+		internal static string FullDescription(IBalls balls, bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural)
 		{
 
-			if (balls.count == 0) return FallbackProstateText(alternateForm);
+			if (balls.count == 0 && prostateIfNoBalls)
+			{
+				isPlural = false;
+				return FallbackProstateText(alternateFormat);
+			}
+			else if (balls.count == 0)
+			{
+				isPlural = true;
+				return alternateFormat ? "a distinct lack of balls" : "lack of balls";
+			}
+
 			bool uniBall = balls.count == 1;
 
 			string description = "";
 
 			//count
-			description += CountText(balls, preciseMeasurements, alternateForm);
+			description += CountText(balls, preciseMeasurements, alternateFormat);
 			//balls.ballSize (normal)
 			if (Utils.Rand(3) <= 1)
 			{
@@ -248,6 +299,7 @@ namespace CoC.Backend.BodyParts
 				else
 					description += " squeezed together into a perky, rounded form";
 			}
+			isPlural = !uniBall;
 			return description;
 		}
 

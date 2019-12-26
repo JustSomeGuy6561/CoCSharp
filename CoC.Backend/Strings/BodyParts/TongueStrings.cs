@@ -20,9 +20,9 @@ namespace CoC.Backend.BodyParts
 
 	public partial class TongueType
 	{
-		private static string HumanDesc()
+		private static string HumanDesc(bool singleMemberFormat)
 		{
-			return "tongue";
+			return Utils.AddArticleIf("tongue", singleMemberFormat);
 			//return "human tongue";
 		}
 		private static string HumanLongDesc(TongueData tongue, bool alternateFormat)
@@ -41,9 +41,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return GlobalStrings.RevertAsDefault(previousTongueData, player);
 		}
-		private static string SnakeDesc()
+		private static string SnakeDesc(bool singleMemberFormat)
 		{
-			return "forked, serpentine tongue";
+			return Utils.AddArticleIf("forked, serpentine tongue", singleMemberFormat);
 		}
 		private static string SnakeLongDesc(TongueData tongue, bool alternateFormat)
 		{
@@ -76,9 +76,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericRestoreStr(previousTongueData, player);
 		}
-		private static string DemonicDesc()
+		private static string DemonicDesc(bool singleMemberFormat)
 		{
-			return "demonic tongue";
+			return Utils.AddArticleIf("demonic tongue", singleMemberFormat);
 		}
 		private static string DemonicLongDesc(TongueData tongue, bool alternateFormat)
 		{
@@ -116,9 +116,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericRestoreStr(previousTongueData, player);
 		}
-		private static string DraconicDesc()
+		private static string DraconicDesc(bool singleMemberFormat)
 		{
-			return "draconic tongue";
+			return Utils.AddArticleIf("draconic tongue", singleMemberFormat);
 		}
 		private static string DraconicLongDesc(TongueData tongue, bool alternateFormat)
 		{
@@ -126,7 +126,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DraconicPlayerStr(Tongue tongue, PlayerBase player)
 		{
-			return "Your mouth contains a thick, fleshy tongue that, if you so desire, can telescope to a distance of about " + Measurement.ToNearestHalfLargeUnit(48, false, true) +"."
+			return "Your mouth contains a thick, fleshy tongue that, if you so desire, can telescope to a distance of about " + Measurement.ToNearestHalfLargeUnit(48, false, true) + "."
 				+ " It has sufficient manual dexterity that you can use it almost like a third arm.";
 		}
 		private static string DraconicTransformStr(TongueData previousTongueData, PlayerBase player)
@@ -139,9 +139,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericRestoreStr(previousTongueData, player);
 		}
-		private static string EchidnaDesc()
+		private static string EchidnaDesc(bool singleMemberFormat)
 		{
-			return "echidna tongue";
+			if (singleMemberFormat) return "an echidna tongue";
+			else return "echidna tongue";
 		}
 		private static string EchidnaLongDesc(TongueData tongue, bool alternateFormat)
 		{
@@ -173,9 +174,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericRestoreStr(previousTongueData, player);
 		}
-		private static string LizardDesc()
+		private static string LizardDesc(bool singleMemberFormat)
 		{
-			return "reptilian tongue";
+			return Utils.AddArticleIf("reptilian tongue", singleMemberFormat);
 		}
 		private static string LizardLongDesc(TongueData tongue, bool alternateFormat)
 		{
@@ -236,9 +237,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return GenericRestoreStr(previousTongueData, player);
 		}
-		private static string CatDesc()
+		private static string CatDesc(bool singleMemberFormat)
 		{
-			return "feline tongue";
+			return Utils.AddArticleIf("feline tongue", singleMemberFormat);
 		}
 		private static string CatLongDesc(TongueData tongue, bool alternateFormat)
 		{

@@ -6,6 +6,7 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
+	//may need to update the text things here to use their own delgates because we need additional info about it.
 	public sealed partial class Feet : PartWithBehaviorAndEventBase<Feet, FootType, FootData>
 	{
 		public override string BodyPartName() => Name();
@@ -32,37 +33,7 @@ namespace CoC.Backend.BodyParts
 
 		public override FootType type { get; protected set; }
 
-		public string FootText(bool plural) => type.FootText(plural);
 
-		public string ShortDescription(bool plural) => type.ShortDescription(plural);
-
-		public string LongDescription() => type.LongDescription(AsReadOnlyData());
-		public string LongDescription(bool alternateForm) => type.LongDescription(AsReadOnlyData(), alternateForm);
-
-		public string LongPrimaryDescription() => type.LongPrimaryDescription(AsReadOnlyData());
-		public string LongAlternateDescription() => type.LongAlternateDescription(AsReadOnlyData());
-
-		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(AsReadOnlyData(), alternateForm, plural);
-
-		public string LongPrimaryDescription(bool plural) => type.LongPrimaryDescription(AsReadOnlyData(), plural);
-		public string LongAlternateDescription(bool plural) => type.LongAlternateDescription(AsReadOnlyData(), plural);
-
-		public string FullDescription() => type.FullDescription(AsReadOnlyData());
-		public string FullDescription(bool alternateForm) => type.FullDescription(AsReadOnlyData(), alternateForm);
-
-		public string FullPrimaryDescription() => type.FullPrimaryDescription(AsReadOnlyData());
-		public string FullAlternateDescription() => type.FullAlternateDescription(AsReadOnlyData());
-
-		public string FullDescription(bool alternateForm, bool plural) => type.FullDescription(AsReadOnlyData(), alternateForm, plural);
-
-		public string FullPrimaryDescription(bool plural) => type.FullPrimaryDescription(AsReadOnlyData(), plural);
-		public string FullAlternateDescription(bool plural) => type.FullAlternateDescription(AsReadOnlyData(), plural);
-
-		public string LongOrFullDescription(bool alternateForm, bool plural, bool isFull)
-		{
-			if (isFull) return FullDescription(alternateForm, plural);
-			else return LongDescription(alternateForm, plural);
-		}
 
 		internal void GetLicked(bool reachOrgasm)
 		{
@@ -109,37 +80,50 @@ namespace CoC.Backend.BodyParts
 
 		private readonly FootStyle footStyle;
 
-		private readonly SimplePluralDescriptor footStr;
-		private readonly SimplePluralDescriptor shortPluralDesc;
-		private readonly LongPluralDescriptor<FootData> longDescription;
-		private readonly LongPluralDescriptor<FootData> fullDescription;
+		//foot text in this case is literally just [noun]
+		//short desc is basically just [noun], but with they type adjective.
+		//long desc is short desc here, but with the option of an article friendly format in singular.
+
+		private readonly ShortMaybePluralDescriptor footStr;
+		private readonly ShortMaybePluralDescriptor shortDesc;
+
+		//note that long desc cannot describe the actualy count b/c we don't know it.
+		//long desc is literally short desc, but if you set the alternate format flag, and plural is false, it adds the correct article.
+		private readonly MaybePluralPartDescriptor<FootData> longDesc;
+		//full desc is long desc + 'toes', if applicable.
+		private readonly MaybePluralPartDescriptor<FootData> fullDesc;
+
+		//strings: noun text. can be plural or singular, unless the type EXPLICITELY PREVENTS PLURAL, at which point it is singular.
+		//short description: same as above.
 
 
-		public string FootText(bool plural) => footStr(plural);
 
-		public string ShortDescription(bool plural) => shortPluralDesc(plural);
+		//and this doesnt even work because it makes no sense.
+		//also we dont need toes, fuck that shit.
 
-		public string LongDescription(FootData footData) => longDescription(footData);
-		public string LongDescription(FootData footData, bool alternateForm) => longDescription(footData, alternateForm);
+		public string FootText(bool pluralIfApplicable) => footStr(pluralIfApplicable, out bool _);
+		public string FootText(bool pluralIfApplicable, out bool isPlural) => footStr(pluralIfApplicable, out isPlural);
 
-		public string LongPrimaryDescription(FootData footData) => longDescription(footData, false);
-		public string LongAlternateDescription(FootData footData) => longDescription(footData, true);
+		public string ShortDescription(bool pluralIfApplicable) => shortDesc(pluralIfApplicable, out bool _);
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => shortDesc(pluralIfApplicable, out isPlural);
 
-		public string LongDescription(FootData footData, bool alternateForm, bool plural) => longDescription(footData, alternateForm, plural);
+		public string LongDescription(FootData foot) => longDesc(foot, false, true, out bool _);
+		public string LongDescription(FootData foot, out bool isPlural) => longDesc(foot, false, true, out isPlural);
 
-		public string LongPrimaryDescription(FootData footData, bool plural) => longDescription(footData, false, plural);
-		public string LongAlternateDescription(FootData footData, bool plural) => longDescription(footData, true, plural);
+		public string LongDescription(FootData foot, bool pluralIfApplicable) => longDesc(foot, false, pluralIfApplicable, out bool _);
+		public string LongDescription(FootData foot, bool pluralIfApplicable, out bool isPlural) => longDesc(foot, false, pluralIfApplicable, out isPlural);
 
-		public string FullDescription(FootData footData) => fullDescription(footData);
-		public string FullDescription(FootData footData, bool alternateForm) => fullDescription(footData, alternateForm);
+		public string LongDescription(FootData foot, bool alternateFormat, bool pluralIfApplicable) => longDesc(foot, false, pluralIfApplicable, out bool _);
+		public string LongDescription(FootData foot, bool alternateFormat, bool pluralIfApplicable, out bool isPlural) => longDesc(foot, false, pluralIfApplicable, out isPlural);
 
-		public string FullPrimaryDescription(FootData footData) => fullDescription(footData, false);
-		public string FullAlternateDescription(FootData footData) => fullDescription(footData, true);
+		public string FullDescription(FootData foot) => fullDesc(foot, false, true, out bool _);
+		public string FullDescription(FootData foot, out bool isPlural) => fullDesc(foot, false, true, out isPlural);
 
-		public string FullDescription(FootData footData, bool alternateForm, bool plural) => fullDescription(footData, alternateForm, plural);
+		public string FullDescription(FootData foot, bool pluralIfApplicable) => fullDesc(foot, false, pluralIfApplicable, out bool _);
+		public string FullDescription(FootData foot, bool pluralIfApplicable, out bool isPlural) => fullDesc(foot, false, pluralIfApplicable, out isPlural);
 
-		public string FullPrimaryDescription(FootData footData, bool plural) => fullDescription(footData, false, plural);
-		public string FullAlternateDescription(FootData footData, bool plural) => fullDescription(footData, true, plural);
+		public string FullDescription(FootData foot, bool alternateFormat, bool pluralIfApplicable) => fullDesc(foot, false, pluralIfApplicable, out bool _);
+		public string FullDescription(FootData foot, bool alternateFormat, bool pluralIfApplicable, out bool isPlural) => fullDesc(foot, false, pluralIfApplicable, out isPlural);
 
 		public bool isFeet => footStyle == FootStyle.FEET;
 		public bool isPaws => footStyle == FootStyle.PAWS;
@@ -148,39 +132,38 @@ namespace CoC.Backend.BodyParts
 		public bool isClaws => footStyle == FootStyle.CLAWS;
 		public bool isOther => !(isFeet || isClaws || isHooves || isInsectoid || isPaws);
 
-		private FootType(FootStyle style, SimplePluralDescriptor nounText, SimplePluralDescriptor shortDesc, LongPluralDescriptor<FootData> longDesc,
-			LongPluralDescriptor<FootData> fullDesc) : base(PluralHelper(shortDesc))
+		private FootType(FootStyle style, ShortMaybePluralDescriptor nounText, ShortMaybePluralDescriptor shortDesc, SimpleDescriptor singleDesc,
+			MaybePluralPartDescriptor<FootData> longDesc) : base(PluralHelper(shortDesc),	singleDesc)
 		{
 			_index = indexMaker++;
 			footStyle = style;
 
-			shortPluralDesc = shortDesc;
-
+			this.shortDesc = shortDesc;
+			this.longDesc = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
+			this.fullDesc = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
 			footStr = nounText ?? throw new ArgumentNullException(nameof(nounText));
-
-			longDescription = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
-			fullDescription = fullDesc ?? throw new ArgumentNullException(nameof(fullDesc));
 		}
 
 		public override int index => _index;
 		private readonly int _index;
 
-		public static FootType HUMAN = new FootType(FootStyle.FEET, HumanNoun, HumanDesc, HumanLongDesc, HumanFullDesc);
-		public static FootType HOOVES = new FootType(FootStyle.HOOVES, HoovesNoun, HoovesDesc, HoovesLongDesc, HoovesFullDesc);
-		public static FootType PAW = new FootType(FootStyle.PAWS, PawNoun, PawDesc, PawLongDesc, PawFullDesc);
-		public static FootType NONE = new FootType(FootStyle.OTHER, NoneNoun, NoneDesc, NoneLongDesc, NoneFullDesc);
-		public static FootType DEMON_HEEL = new FootType(FootStyle.OTHER, DemonHeelNoun, DemonHeelDesc, DemonHeelLongDesc, DemonHeelFullDesc);
-		public static FootType DEMON_CLAW = new FootType(FootStyle.CLAWS, DemonClawNoun, DemonClawDesc, DemonClawLongDesc, DemonClawFullDesc);
-		public static FootType INSECTOID = new FootType(FootStyle.INSECTOID, InsectoidNoun, InsectoidDesc, InsectoidLongDesc, InsectoidFullDesc);
-		public static FootType LIZARD_CLAW = new FootType(FootStyle.CLAWS, LizardClawNoun, LizardClawDesc, LizardClawLongDesc, LizardClawFullDesc);
-		public static FootType BRONY = new FootType(FootStyle.HOOVES, BronyNoun, BronyDesc, BronyLongDesc, BronyFullDesc);
-		public static FootType RABBIT = new FootType(FootStyle.FEET, RabbitNoun, RabbitDesc, RabbitLongDesc, RabbitFullDesc);
-		public static FootType HARPY_TALON = new FootType(FootStyle.CLAWS, HarpyTalonNoun, HarpyTalonDesc, HarpyTalonLongDesc, HarpyTalonFullDesc);
-		public static FootType KANGAROO = new FootType(FootStyle.FEET, KangarooNoun, KangarooDesc, KangarooLongDesc, KangarooFullDesc);
-		public static FootType DRAGON_CLAW = new FootType(FootStyle.CLAWS, DragonClawNoun, DragonClawDesc, DragonClawLongDesc, DragonClawFullDesc);
-		public static FootType MANDER_CLAW = new FootType(FootStyle.CLAWS, ManderClawNoun, ManderClawDesc, ManderClawLongDesc, ManderClawFullDesc);
-		public static FootType IMP_CLAW = new FootType(FootStyle.CLAWS, ImpClawNoun, ImpClawDesc, ImpClawLongDesc, ImpClawFullDesc);
-		public static FootType TENDRIL = new FootType(FootStyle.OTHER, TendrilNoun, TendrilDesc, TendrilLongDesc, TendrilFullDesc);
+		public static FootType HUMAN = new FootType(FootStyle.FEET, HumanNoun, HumanDesc, HumanSingleDesc, HumanLongDesc);
+		public static FootType HOOVES = new FootType(FootStyle.HOOVES, HoovesNoun, HoovesDesc, HoovesSingleDesc, HoovesLongDesc);
+		public static FootType PAW = new FootType(FootStyle.PAWS, PawNoun, PawDesc, PawSingleDesc, PawLongDesc);
+		public static FootType GOO_NONE = new FootType(FootStyle.OTHER, GooNoun, GooDesc, GooSingleDesc, GooLongDesc);
+		public static FootType NAGA_NONE = new FootType(FootStyle.OTHER, NagaNoun, NagaDesc, NagaSingleDesc, NagaLongDesc);
+		public static FootType DEMON_HEEL = new FootType(FootStyle.OTHER, DemonHeelNoun, DemonHeelDesc, DemonHeelSingleDesc, DemonHeelLongDesc);
+		public static FootType DEMON_CLAW = new FootType(FootStyle.CLAWS, DemonClawNoun, DemonClawDesc, DemonClawSingleDesc, DemonClawLongDesc);
+		public static FootType INSECTOID = new FootType(FootStyle.INSECTOID, InsectoidNoun, InsectoidDesc, InsectoidSingleDesc, InsectoidLongDesc);
+		public static FootType LIZARD_CLAW = new FootType(FootStyle.CLAWS, LizardClawNoun, LizardClawDesc, LizardClawSingleDesc, LizardClawLongDesc);
+		public static FootType BRONY = new FootType(FootStyle.HOOVES, BronyNoun, BronyDesc, BronySingleDesc, BronyLongDesc);
+		public static FootType RABBIT = new FootType(FootStyle.FEET, RabbitNoun, RabbitDesc, RabbitSingleDesc, RabbitLongDesc);
+		public static FootType HARPY_TALON = new FootType(FootStyle.CLAWS, HarpyTalonNoun, HarpyTalonDesc, HarpyTalonSingleDesc, HarpyTalonLongDesc);
+		public static FootType KANGAROO = new FootType(FootStyle.FEET, KangarooNoun, KangarooDesc, KangarooSingleDesc, KangarooLongDesc);
+		public static FootType DRAGON_CLAW = new FootType(FootStyle.CLAWS, DragonClawNoun, DragonClawDesc, DragonClawSingleDesc, DragonClawLongDesc);
+		public static FootType MANDER_CLAW = new FootType(FootStyle.CLAWS, ManderClawNoun, ManderClawDesc, ManderClawSingleDesc, ManderClawLongDesc);
+		public static FootType IMP_CLAW = new FootType(FootStyle.CLAWS, ImpClawNoun, ImpClawDesc, ImpClawSingleDesc, ImpClawLongDesc);
+		public static FootType TENDRIL = new FootType(FootStyle.OTHER, TendrilNoun, TendrilDesc, TendrilSingleDesc, TendrilLongDesc);
 	}
 
 	public sealed class FootData : BehavioralPartDataBase<FootType>
@@ -191,38 +174,6 @@ namespace CoC.Backend.BodyParts
 		public bool isInsectoid => type.isInsectoid;
 		public bool isClaws => type.isClaws;
 		public bool isOther => type.isOther;
-
-		public string FootText(bool plural) => type.FootText(plural);
-
-		public string ShortDescription(bool plural) => type.ShortDescription(plural);
-
-		public string LongDescription() => type.LongDescription(this);
-		public string LongDescription(bool alternateForm) => type.LongDescription(this, alternateForm);
-
-		public string LongPrimaryDescription() => type.LongPrimaryDescription(this);
-		public string LongAlternateDescription() => type.LongAlternateDescription(this);
-
-		public string LongDescription(bool alternateForm, bool plural) => type.LongDescription(this, alternateForm, plural);
-
-		public string LongPrimaryDescription(bool plural) => type.LongPrimaryDescription(this, plural);
-		public string LongAlternateDescription(bool plural) => type.LongAlternateDescription(this, plural);
-
-		public string FullDescription() => type.FullDescription(this);
-		public string FullDescription(bool alternateForm) => type.FullDescription(this, alternateForm);
-
-		public string FullPrimaryDescription() => type.FullPrimaryDescription(this);
-		public string FullAlternateDescription() => type.FullAlternateDescription(this);
-
-		public string FullDescription(bool alternateForm, bool plural) => type.FullDescription(this, alternateForm, plural);
-
-		public string FullPrimaryDescription(bool plural) => type.FullPrimaryDescription(this, plural);
-		public string FullAlternateDescription(bool plural) => type.FullAlternateDescription(this, plural);
-
-		public string LongOrFullDescription(bool alternateForm, bool plural, bool isFull)
-		{
-			if (isFull) return FullDescription(alternateForm, plural);
-			else return LongDescription(alternateForm, plural);
-		}
 
 		public FootData(Guid id, FootType currentType) : base(id, currentType)
 		{

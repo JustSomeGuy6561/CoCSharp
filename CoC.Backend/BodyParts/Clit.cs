@@ -252,12 +252,14 @@ namespace CoC.Backend.BodyParts
 			length = length;
 			return clitPiercings.Validate(correctInvalidData);
 		}
-
-		public static string AvailableNouns(bool withArticle = false) => ClitStrings.ClitNouns(withArticle);
+		#region Text
+		public static string PluralClitNoun() => ClitStrings.PluralClitNoun();
+		public static string SingularClitNoun() => ClitStrings.ClitNoun(true);
+		public static string ClitNoun() => ClitStrings.ClitNoun(false);
 		public string ShortDescription() => ClitStrings.ShortDesc(length);
 		public string LongDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, false);
 		public string FullDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, true);
-
+		#endregion
 		#region Piercing Related
 		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
 		{
@@ -345,11 +347,14 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ReadOnlyPiercing<ClitPiercings> clitPiercings;
 
-		public static string AvailableNouns(bool withArticle = false) => ClitStrings.ClitNouns(withArticle);
+		#region Text
+		public static string PluralClitNoun() => ClitStrings.PluralClitNoun();
+		public static string SingularClitNoun() => ClitStrings.ClitNoun(true);
+		public static string ClitNoun() => ClitStrings.ClitNoun(false);
 		public string ShortDescription() => ClitStrings.ShortDesc(length);
 		public string LongDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, false);
 		public string FullDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, true);
-
+		#endregion
 		internal ClitData(Clit source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			length = source.length;

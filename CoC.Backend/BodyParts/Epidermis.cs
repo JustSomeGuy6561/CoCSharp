@@ -475,6 +475,8 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public string ShortDescription(out bool isPlural) => type.ShortDescription(out isPlural);
+
 		public string JustTexture(bool withArticle = false) => EpidermisType.JustTexture(this, withArticle);
 
 		public string JustColor(bool withArticle = false) => EpidermisType.JustColor(this, withArticle);
@@ -538,9 +540,15 @@ namespace CoC.Backend.BodyParts
 		public abstract bool usesTone { get; }
 		public virtual bool usesFur => !usesTone;
 
+		//it may be useful to know if the text is plural - when describing skin, for example, you'd say "it is green" or whatever, whereas with scales, you'd say "they are green"
+		public string ShortDescription(out bool isPlural) => shortDescWithPluralFlag(out isPlural);
+
 		public string AdjectiveDescription(bool withArticle = false) => adjectiveDesc(withArticle);
 
 		private readonly AdjectiveDescriptor adjectiveDesc;
+
+		private readonly MaybePluralDescriptor shortDescWithPluralFlag;
+
 
 		public readonly bool updateable;
 		protected readonly int _index;
@@ -550,12 +558,20 @@ namespace CoC.Backend.BodyParts
 		//public bool furMutable => usesFur && updateable;
 		//public bool toneMutable => usesTone && updateable;
 
-		private protected EpidermisType(SimpleDescriptor nounDescription, AdjectiveDescriptor adjectiveDescription, bool canChange) : base(nounDescription)
+		//<Insert Grand Line reference here>
+		//epidermis almost made me rewrite the base formula (again), because it's generally impossible to have a single member of 'skin' or 'fur', etc.
+		//but then i realize it does make sense to say things like "a bit of fur" or "a piece of skin", and those aren't something you can just write a generic for and hope it sounds good
+		//so, it may be useful to have that actually there.
+		private protected EpidermisType(MaybePluralDescriptor nounDescription, SimpleDescriptor onePieceText,
+			AdjectiveDescriptor adjectiveDescription, bool canChange) : base(PluralHelper(nounDescription), onePieceText)
 		{
 			_index = indexMaker++;
 			epidermi.AddAt(this, _index);
-			this.adjectiveDesc = adjectiveDescription;
+
 			updateable = canChange;
+
+			this.adjectiveDesc = adjectiveDescription ?? throw new ArgumentNullException(nameof(adjectiveDescription));
+			shortDescWithPluralFlag = nounDescription ?? throw new ArgumentNullException(nameof(nounDescription));
 		}
 
 		/// <summary>
@@ -605,14 +621,14 @@ namespace CoC.Backend.BodyParts
 
 		public override int index => _index;
 
-		public static readonly ToneBasedEpidermisType SKIN = new ToneBasedEpidermisType(SkinStr, SkinAdjectiveStr, true, Tones.LIGHT);
-		public static readonly FurBasedEpidermisType FUR = new FurBasedEpidermisType(FurStr, FurAdjectiveStr, true, new FurColor(HairFurColors.BLACK));
-		public static readonly ToneBasedEpidermisType SCALES = new ToneBasedEpidermisType(ScalesStr, ScalesAdjectiveStr, true, Tones.GREEN);
-		public static readonly ToneBasedEpidermisType GOO = new ToneBasedEpidermisType(GooStr, GooAdjectiveStr, true, Tones.DEEP_BLUE);
-		public static readonly FurBasedEpidermisType WOOL = new FurBasedEpidermisType(WoolStr, WoolAdjectiveStr, true, new FurColor(HairFurColors.WHITE)); //i'd like to merge this with fur but it's more trouble than it's worth
-		public static readonly FurBasedEpidermisType FEATHERS = new FurBasedEpidermisType(FeathersStr, FeathersAdjectiveStr, true, new FurColor(HairFurColors.WHITE));
-		public static readonly ToneBasedEpidermisType BARK = new ToneBasedEpidermisType(BarkStr, BarkAdjectiveStr, true, Tones.WOODLY_BROWN); //do you want the bark to change colors? idk? maybe make that false.
-		public static readonly ToneBasedEpidermisType CARAPACE = new ToneBasedEpidermisType(CarapaceStr, CarapaceAdjectiveStr, true, Tones.BLACK);
+		public static readonly ToneBasedEpidermisType SKIN = new ToneBasedEpidermisType(SkinStr, PieceOfSkin, SkinAdjectiveStr, true, Tones.LIGHT);
+		public static readonly FurBasedEpidermisType FUR = new FurBasedEpidermisType(FurStr, PieceOfFur, FurAdjectiveStr, true, new FurColor(HairFurColors.BLACK));
+		public static readonly ToneBasedEpidermisType SCALES = new ToneBasedEpidermisType(ScalesStr, PieceOfScales, ScalesAdjectiveStr, true, Tones.GREEN);
+		public static readonly ToneBasedEpidermisType GOO = new ToneBasedEpidermisType(GooStr, PieceOfGoo, GooAdjectiveStr, true, Tones.DEEP_BLUE);
+		public static readonly FurBasedEpidermisType WOOL = new FurBasedEpidermisType(WoolStr, PieceOfWool, WoolAdjectiveStr, true, new FurColor(HairFurColors.WHITE)); //i'd like to merge this with fur but it's more trouble than it's worth
+		public static readonly FurBasedEpidermisType FEATHERS = new FurBasedEpidermisType(FeathersStr, PieceOfFeathers, FeathersAdjectiveStr, true, new FurColor(HairFurColors.WHITE));
+		public static readonly ToneBasedEpidermisType BARK = new ToneBasedEpidermisType(BarkStr, PieceOfBark, BarkAdjectiveStr, true, Tones.WOODLY_BROWN); //do you want the bark to change colors? idk? maybe make that false.
+		public static readonly ToneBasedEpidermisType CARAPACE = new ToneBasedEpidermisType(CarapaceStr, PieceOfCarapace, CarapaceAdjectiveStr, true, Tones.BLACK);
 		//cannot be changed by lotion. May convert this to a perk, which affects everything.
 		public static readonly EmptyEpidermisType EMPTY = new EmptyEpidermisType();
 	}
@@ -621,8 +637,8 @@ namespace CoC.Backend.BodyParts
 	{
 		public FurColor defaultFur => new FurColor(_defaultFur);
 		private readonly FurColor _defaultFur;
-		internal FurBasedEpidermisType(SimpleDescriptor nounDescription, AdjectiveDescriptor adjectiveDescription, bool canChange, FurColor defaultColor) :
-			base(nounDescription, adjectiveDescription, canChange)
+		internal FurBasedEpidermisType(MaybePluralDescriptor nounDescription, SimpleDescriptor onePieceText, AdjectiveDescriptor adjectiveDescription, bool canChange, FurColor defaultColor) :
+			base(nounDescription, onePieceText, adjectiveDescription, canChange)
 		{
 			_defaultFur = new FurColor(defaultColor);
 		}
@@ -646,8 +662,8 @@ namespace CoC.Backend.BodyParts
 	public class ToneBasedEpidermisType : EpidermisType
 	{
 		public readonly Tones defaultTone;
-		internal ToneBasedEpidermisType(SimpleDescriptor nounDescription, AdjectiveDescriptor adjectiveDescription, bool canChange, Tones defaultColor) :
-			base(nounDescription, adjectiveDescription, canChange)
+		internal ToneBasedEpidermisType(MaybePluralDescriptor nounDescription, SimpleDescriptor onePieceText, AdjectiveDescriptor adjectiveDescription, bool canChange, Tones defaultColor)
+			: base(nounDescription, onePieceText, adjectiveDescription, canChange)
 		{
 			defaultTone = defaultColor;
 		}
@@ -670,7 +686,7 @@ namespace CoC.Backend.BodyParts
 
 	public class EmptyEpidermisType : EpidermisType
 	{
-		internal EmptyEpidermisType() : base(GlobalStrings.None, (x) => GlobalStrings.None(), false) { }
+		internal EmptyEpidermisType() : base(NothingStr, BitOfNothingness, NothingAdjectiveStr, false) { }
 
 		public override bool usesTone => false;
 		public override bool usesFur => false;
@@ -833,6 +849,8 @@ namespace CoC.Backend.BodyParts
 				return first.skinTexture != second.skinTexture;
 			}
 		}
+
+		public string ShortDescription(out bool isPlural) => type.ShortDescription(out isPlural);
 
 		public string JustTexture(bool withArticle = false) => EpidermisType.JustTexture(this, withArticle);
 

@@ -122,6 +122,11 @@ namespace CoC.Backend.BodyParts
 			return "non-existent hair";
 		}
 
+		private static string NoHairStrandsDesc()
+		{
+			return "strands of non-existent hair";
+		}
+
 		private static string NoHairLongDesc(HairData hair, bool alternateFormat)
 		{
 			return alternateFormat ? "no hair" : "lack of hair";
@@ -148,6 +153,11 @@ namespace CoC.Backend.BodyParts
 		private static string NormalDesc()
 		{
 			return "hair";
+		}
+
+		private static string NormalStrandDesc()
+		{
+			return "a few strands of hair";
 		}
 
 		private static string NormalLongDesc(HairData hair, bool alternateFormat)
@@ -177,7 +187,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "hair-feathers";
 		}
-
+		private static string FewFeathersDesc()
+		{
+			throw new NotImplementedException();
+		}
 		private static string FeatherLongDesc(HairData hair, bool alternateFormat)
 		{
 			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("feathered hair", "fluffy plumes for hair", "hair-like basilisk plumes", "shock of feathers for hair"));
@@ -207,7 +220,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "gooey hair";
 		}
-
+		private static string BitOfGooDesc()
+		{
+			throw new NotImplementedException();
+		}
 		private static string GooLongDesc(HairData hair, bool alternateFormat)
 		{
 			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("goo-hair", "gooey hair", "gelatinous hair"));
@@ -235,7 +251,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "hair-like tendrils";
 		}
-
+		private static string FewTendrilsDesc()
+		{
+			throw new NotImplementedException();
+		}
 		private static string AnemoneLongDesc(HairData hair, bool alternateFormat)
 		{
 			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice(AnemoneDesc(), "anemone-hair"));
@@ -263,7 +282,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "quill-hair";
 		}
-
+		private static string FewQuillsDesc()
+		{
+			throw new NotImplementedException();
+		}
 		private static string QuillLongDesc(HairData hair, bool alternateFormat)
 		{
 			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice(QuillDesc(), "hair-like quills"));
@@ -291,6 +313,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "basilisk spines for hair";
 		}
+		private static string BunchOSpinesDesc()
+		{
+			throw new NotImplementedException();
+		}
 
 		private static string SpineLongDesc(HairData hair, bool alternateFormat)
 		{
@@ -306,8 +332,6 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-
-
 		private static string SpineTransformStr(HairData hair, PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -320,7 +344,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "basilisk plumes for hair";
 		}
-
+		private static string SomeOfPlumeDesc()
+		{
+			throw new NotImplementedException();
+		}
 		private static string PlumeLongDesc(HairData hair, bool alternateFormat)
 		{
 			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("feathered hair", "fluffy plumes for hair", "hair-like basilisk plumes", "shock of feathers for hair"));
@@ -348,7 +375,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "woolen hair";
 		}
-
+		private static string BitOfWoolDesc()
+		{
+			throw new NotImplementedException();
+		}
 		private static string WoolLongDesc(HairData hair, bool alternateFormat)
 		{
 			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("woolen hair", "poofy hair", "soft wool-hair"));
@@ -375,7 +405,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return "leafy vines for hair";
 		}
-
+		private static string SomeOfVineDesc()
+		{
+			throw new NotImplementedException();
+		}
 		private static string VineLongDesc(HairData hair, bool alternateFormat)
 		{
 			return GenericLongDesc(hair, alternateFormat, Utils.RandomChoice("leafy hair", "grassy hair", "pine needle hair", "hair-like vines", "leafy vines for hair"));

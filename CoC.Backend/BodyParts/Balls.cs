@@ -18,7 +18,9 @@ namespace CoC.Backend.BodyParts
 	//though this probably needs more thought - is it two per sack, and multiple sacks? or is it all one sack?
 
 	//note for writers: balls are technically plural, but it really doesn't make sense to say 'a ball.' the expected text would be 'one of [pronoun] balls'
-	//
+	//the exception is uniball - if you have a uniball, it's kinda just one ball, i guess. all descriptions have an overload that allows you to query whether or not it's
+	//plural, if you don't want to check the count beforehand. IMO, you should just check for a uniball and handle the text that way, but whatever, it's not really a ton of trouble
+	//to support the out parameter.
 
 	//I'VE GOT BIG BALLS! OH, I'VE GOT BIG BALLS! THERE SUCH BIG BALLS! DIRTY BIG BALLS! HE'S GOT BIG BALLS! AND SHE'S GOT BIG BALLS! BUT WE'VE GOT THE BIGGEST BALLS OF THEM ALL!
 	//i'll see if i can hide this as an easter egg is some text somewhere.
@@ -288,25 +290,54 @@ namespace CoC.Backend.BodyParts
 			return originalSize.subtract(size);
 		}
 		#endregion
+		#region Text
+		//overloads that control the fallback text when the creature has no balls. by default, it goes to prostate, though some text like 'non-existant balls'
+		//exists if you'd prefer that and set the flag accordingly.
+		public string ShortDescription(bool prostateIfNoBalls, out bool isPlural) => BallsStrings.ShortDesc(count, prostateIfNoBalls, out isPlural);
+		public string ShortDescription(bool prostateIfNoBalls) => BallsStrings.ShortDesc(count, prostateIfNoBalls, out bool _);
 
-		public string ShortDescription(bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.ShortDesc(count, alternateForm, prostateIfNoBalls);
+		public string ShortDescription(out bool isPlural) => BallsStrings.ShortDesc(count, true, out isPlural);
+		public string ShortDescription() => BallsStrings.ShortDesc(count, true, out bool _);
 
-		public string DescriptionWithCount(bool preciseCount, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.CountDescription(this, preciseCount, alternateForm, prostateIfNoBalls);
+		public string SingleItemDescription(bool prostateIfNoBalls) => BallsStrings.SingleBallDesc(count, prostateIfNoBalls);
+		public string SingleItemDescription() => BallsStrings.SingleBallDesc(count, true);
 
-		public string DescriptionWithSize(bool preciseSize) => BallsStrings.SizeDescription(this, preciseSize);
+		public string DescriptionWithCount(bool preciseCount, bool alternateFormat, bool prostateIfNoBalls = true) =>
+			BallsStrings.CountDescription(this, preciseCount, alternateFormat, prostateIfNoBalls, out bool _);
+		public string DescriptionWithCount(bool preciseCount, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural) =>
+			BallsStrings.CountDescription(this, preciseCount, alternateFormat, prostateIfNoBalls, out isPlural);
+
+		public string DescriptionWithSize(bool preciseSize) => BallsStrings.SizeDescription(this, preciseSize, out bool _);
+		public string DescriptionWithSize(bool preciseSize, out bool isPlural) => BallsStrings.SizeDescription(this, preciseSize, out isPlural);
 
 		public string DescriptionWithSizeOrProstate(bool preciseSize, bool prostateFallbackUsesAlternateForm = false)
 		{
-			if (hasBalls) return BallsStrings.SizeDescription(this, preciseSize);
+			if (hasBalls) return BallsStrings.SizeDescription(this, preciseSize, out bool _);
 			else return BallsStrings.FallbackProstateText(prostateFallbackUsesAlternateForm);
 		}
 
-		public string LongDescription(bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.LongDescription(this, preciseMeasurements, alternateForm, prostateIfNoBalls);
+		public string DescriptionWithSizeOrProstate(bool preciseSize, bool prostateFallbackUsesAlternateForm, out bool isPlural)
+		{
+			if (hasBalls) return BallsStrings.SizeDescription(this, preciseSize, out isPlural);
+			else
+			{
+				isPlural = false;
+				return BallsStrings.FallbackProstateText(prostateFallbackUsesAlternateForm);
+			}
+		}
+
+		public string LongDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls = true) =>
+			BallsStrings.LongDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out bool _);
+		public string LongDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural) =>
+			BallsStrings.LongDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out isPlural);
 
 		public string SackDescription() => BallsStrings.SackDescription(this);
 
-		public string FullDescription(bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.FullDescription(this, preciseMeasurements, alternateForm, prostateIfNoBalls);
-
+		public string FullDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls = true) =>
+			BallsStrings.FullDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out bool _);
+		public string FullDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural) =>
+			BallsStrings.FullDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out isPlural);
+		#endregion
 		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;
@@ -454,26 +485,54 @@ namespace CoC.Backend.BodyParts
 		internal readonly BodyType bodyType;
 		internal readonly float relativeLust;
 		internal readonly int hoursSinceLastCum;
+		#region Text
+		//overloads that control the fallback text when the creature has no balls. by default, it goes to prostate, though some text like 'non-existant balls'
+		//exists if you'd prefer that and set the flag accordingly.
+		public string ShortDescription(bool prostateIfNoBalls, out bool isPlural) => BallsStrings.ShortDesc(count,  prostateIfNoBalls, out isPlural);
+		public string ShortDescription(bool prostateIfNoBalls) => BallsStrings.ShortDesc(count, prostateIfNoBalls, out bool _);
 
-		public string ShortDescription(bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.ShortDesc(count, alternateForm, prostateIfNoBalls);
+		public string ShortDescription(out bool isPlural) => BallsStrings.ShortDesc(count, true, out isPlural);
+		public string ShortDescription() => BallsStrings.ShortDesc(count, true, out bool _);
 
-		public string DescriptionWithCount(bool preciseCount, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.CountDescription(this, preciseCount, alternateForm, prostateIfNoBalls);
+		public string SingleItemDescription(bool prostateIfNoBalls) => BallsStrings.SingleBallDesc(count, prostateIfNoBalls);
+		public string SingleItemDescription() => BallsStrings.SingleBallDesc(count, true);
 
-		public string DescriptionWithSize(bool preciseSize) => BallsStrings.SizeDescription(this, preciseSize);
+		public string DescriptionWithCount(bool preciseCount, bool alternateFormat, bool prostateIfNoBalls = true) =>
+			BallsStrings.CountDescription(this, preciseCount, alternateFormat, prostateIfNoBalls, out bool _);
+		public string DescriptionWithCount(bool preciseCount, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural) =>
+			BallsStrings.CountDescription(this, preciseCount, alternateFormat, prostateIfNoBalls, out isPlural);
+
+		public string DescriptionWithSize(bool preciseSize) => BallsStrings.SizeDescription(this, preciseSize, out bool _);
+		public string DescriptionWithSize(bool preciseSize, out bool isPlural) => BallsStrings.SizeDescription(this, preciseSize, out isPlural);
 
 		public string DescriptionWithSizeOrProstate(bool preciseSize, bool prostateFallbackUsesAlternateForm = false)
 		{
-			if (hasBalls) return BallsStrings.SizeDescription(this, preciseSize);
+			if (hasBalls) return BallsStrings.SizeDescription(this, preciseSize, out bool _);
 			else return BallsStrings.FallbackProstateText(prostateFallbackUsesAlternateForm);
 		}
 
-		public string LongDescription(bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.LongDescription(this, preciseMeasurements, alternateForm, prostateIfNoBalls);
+		public string DescriptionWithSizeOrProstate(bool preciseSize, bool prostateFallbackUsesAlternateForm, out bool isPlural)
+		{
+			if (hasBalls) return BallsStrings.SizeDescription(this, preciseSize, out isPlural);
+			else
+			{
+				isPlural = false;
+				return BallsStrings.FallbackProstateText(prostateFallbackUsesAlternateForm);
+			}
+		}
+
+		public string LongDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls = true) =>
+			BallsStrings.LongDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out bool _);
+		public string LongDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural) =>
+			BallsStrings.LongDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out isPlural);
 
 		public string SackDescription() => BallsStrings.SackDescription(this);
 
-		public string FullDescription(bool preciseMeasurements, bool alternateForm, bool prostateIfNoBalls = true) => BallsStrings.FullDescription(this, preciseMeasurements, alternateForm, prostateIfNoBalls);
-
-
+		public string FullDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls = true) =>
+			BallsStrings.FullDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out bool _);
+		public string FullDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural) =>
+			BallsStrings.FullDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out isPlural);
+		#endregion
 		internal BallsData(Balls source) : base(GetID(source))
 		{
 			count = source.count;

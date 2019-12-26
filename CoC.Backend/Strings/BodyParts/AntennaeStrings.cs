@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //12/29/2018, 2:02 PM
 using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 
@@ -18,9 +19,34 @@ namespace  CoC.Backend.BodyParts
 
 	public partial class AntennaeType
 	{
+		private static string NoneDesc(bool plural)
+		{
+			return "";
+		}
+
+		private static string NoneSingleDesc()
+		{
+			return "";
+		}
+
+		private static string NoneLongdesc(AntennaeData antennae, bool alternateFormat, bool plural)
+		{
+			return "";
+		}
+
+		private static string NonePlayerStr(Antennae antennae, PlayerBase player)
+		{
+			return "";
+		}
+
 		private static string RemoveAntennaeStr(AntennaeData oldData, PlayerBase p)
 		{
 			return oldData.type.RestoredString(oldData, p);
+		}
+
+		private static string NoneRestoreStr(AntennaeData originalData, PlayerBase p)
+		{
+			return GlobalStrings.RevertAsDefault(originalData, p);
 		}
 
 		private static string BeeDesc(bool plural)
@@ -28,14 +54,19 @@ namespace  CoC.Backend.BodyParts
 			return plural ? "bee antennae" : "bee antenna";
 		}
 
-		private static string BeeLongDesc(AntennaeData antennae, bool plural, bool articleFormat)
+		private static string BeeSingleDesc()
+		{
+			return "a bee antenna";
+		}
+
+		private static string BeeLongDesc(AntennaeData antennae, bool alternateFormat, bool plural)
 		{
 			string article;
-			if (plural && articleFormat)
+			if (plural && alternateFormat)
 			{
 				article = "a pair of ";
 			}
-			else if (articleFormat)
+			else if (alternateFormat)
 			{
 				article = "a ";
 			}
@@ -70,14 +101,19 @@ namespace  CoC.Backend.BodyParts
 			return plural ? "cockatrice antennae" : "cockatrice antenna";
 		}
 
-		private static string CockatriceLongDesc(AntennaeData antennae, bool plural, bool articleFormat)
+		private static string CockatriceSingleDesc()
+		{
+			return "a cockatrice antenna";
+		}
+
+		private static string CockatriceLongDesc(AntennaeData antennae, bool alternateFormat, bool plural)
 		{
 			string article;
-			if (articleFormat && plural)
+			if (alternateFormat && plural)
 			{
 				article = "a pair of ";
 			}
-			else if (articleFormat)
+			else if (alternateFormat)
 			{
 				article = "an ";
 			}

@@ -170,7 +170,7 @@ namespace CoC.Backend.Creatures
 		public readonly Horns horns;
 		public readonly LowerBody lowerBody;
 		public readonly Neck neck;
-		public readonly Ovipositor ovipositor;
+		public Ovipositor ovipositor => tail.ovipositor;
 		public readonly Tail tail;
 		public readonly Tongue tongue;
 		public readonly Wings wings;
@@ -212,7 +212,17 @@ namespace CoC.Backend.Creatures
 
 		//other aliases that are nice.
 
+		public bool hasTail => tail.type != TailType.NONE;
 
+		public bool hasAntennae => antennae.type != AntennaeType.NONE;
+
+		public bool hasHorns => horns.type != HornType.NONE;
+
+		public bool hasOvipositor => ovipositor.type != OvipositorType.NONE;
+
+		public bool hasGills => gills.type != GillType.NONE;
+
+		public bool hasWings => wings.type != WingType.NONE;
 
 		public bool hasBalls => genitals.hasBalls;
 
@@ -224,6 +234,7 @@ namespace CoC.Backend.Creatures
 		public bool clitCockActive => !hasCock && hasClitCock;
 
 		public bool hasVagina => vaginas.Count > 0;
+
 
 		public Gender gender => genitals.gender;
 
@@ -239,6 +250,9 @@ namespace CoC.Backend.Creatures
 		public UpperGarmentBase upperGarment { get; protected set; }
 		public LowerGarmentBase lowerGarment { get; protected set; }
 
+		public bool wearingArmor => armor != null;
+		public bool wearingUpperGarment => upperGarment != null;
+		public bool wearingLowerGarment => lowerGarment != null;
 		public bool wearingAnything => armor != null || upperGarment != null || lowerGarment != null;
 
 
@@ -508,26 +522,26 @@ namespace CoC.Backend.Creatures
 			{
 				neck = new Neck(id, creator.neckType);
 			}
-			//Ovipositor
-			if (creator.ovipositorType is null)
-			{
-				ovipositor = new Ovipositor(id);
-			}
-			else
-			{
-				ovipositor = new Ovipositor(id, creator.ovipositorType);
-			}
 
-
-			//Tail
-
+			//Tail (with ovipositor)
 			if (creator.tailType is null)
 			{
 				tail = new Tail(id);
 			}
 			else if (creator.tailCount != null)
 			{
-				tail = new Tail(id, creator.tailType, (byte)creator.tailCount);
+				if (creator.tailType.allowsOvipositor)
+				{
+					tail = new Tail(id, creator.tailType, (byte)creator.tailCount, creator.hasOvipositorIfApplicable);
+				}
+				else
+				{
+					tail = new Tail(id, creator.tailType, (byte)creator.tailCount);
+				}
+			}
+			else if (creator.tailType.allowsOvipositor)
+			{
+				tail = new Tail(id, creator.tailType, creator.hasOvipositorIfApplicable);
 			}
 			else
 			{

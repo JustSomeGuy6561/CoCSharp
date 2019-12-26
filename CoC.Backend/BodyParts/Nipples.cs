@@ -176,6 +176,26 @@ namespace CoC.Backend.BodyParts
 			length -= shrinkAmount;
 			return oldLength - length;
 		}
+		#region Text
+		public string NounText() => NippleStrings.NounText(this);
+		public string NounText(bool plural, bool allowQuadNippleIfApplicable = false) => NippleStrings.NounText(this, plural, allowQuadNippleIfApplicable);
+
+		public string ShortDescription() => NippleStrings.ShortDescription(this, true, true);
+
+		public string ShortDescription(bool plural, bool allowQuadNippleTextIfApplicable = true) => NippleStrings.ShortDescription(this, plural, allowQuadNippleTextIfApplicable);
+
+		public string SingleItemDescription() => NippleStrings.SingleItemDescription(this, true);
+		public string SingleItemDescription(bool allowQuadNippleIfApplicable) => NippleStrings.SingleItemDescription(this, allowQuadNippleIfApplicable);
+
+		public string LongDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		{
+			return NippleStrings.LongDescription(this, alternateFormat, plural, usePreciseMeasurements);
+		}
+		public string FullDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		{
+			return NippleStrings.FullDescription(this, alternateFormat, plural, usePreciseMeasurements);
+		}
+		#endregion
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -410,7 +430,26 @@ namespace CoC.Backend.BodyParts
 		public readonly float relativeLust;
 
 		internal readonly BodyType bodyType;
+		#region Text
+		public string NounText() => NippleStrings.NounText(this);
+		public string NounText(bool plural, bool allowQuadNippleIfApplicable = false) => NippleStrings.NounText(this, plural, allowQuadNippleIfApplicable);
 
+		public string ShortDescription() => NippleStrings.ShortDescription(this, true, true);
+
+		public string ShortDescription(bool plural, bool allowQuadNippleTextIfApplicable = true) => NippleStrings.ShortDescription(this, plural, allowQuadNippleTextIfApplicable);
+
+		public string SingleItemDescription() => NippleStrings.SingleItemDescription(this, true);
+		public string SingleItemDescription(bool allowQuadNippleIfApplicable) => NippleStrings.SingleItemDescription(this, allowQuadNippleIfApplicable);
+
+		public string LongDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		{
+			return NippleStrings.LongDescription(this, alternateFormat, plural, usePreciseMeasurements);
+		}
+		public string FullDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		{
+			return NippleStrings.FullDescription(this, alternateFormat, plural, usePreciseMeasurements);
+		}
+		#endregion
 		public NippleData(Guid creatureID, float length, int breastIndex, float lactationRate = 0, bool quadNipples = false, bool blackNipples = false,
 			NippleStatus nippleStatus = NippleStatus.NORMAL, ReadOnlyPiercing<NipplePiercings> piercings = null, float relativeLust = Creature.DEFAULT_LUST)
 			: this(creatureID, length, breastIndex, BodyType.defaultValue, lactationRate, quadNipples, blackNipples, nippleStatus, piercings, relativeLust)

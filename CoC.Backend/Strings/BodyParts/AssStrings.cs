@@ -134,15 +134,21 @@ namespace CoC.Backend.BodyParts
 
 	internal static class AssStrings
 	{
-		public static string ShortDescription()
+		//for consistency, you can set it to single item format for special formatting. afaik this probably wont be used but whatever.
+		public static string ShortDescription(bool singleItemFormat = false)
 		{
 			if (SaveData.BackendSessionSave.data.SFW_Mode == true)
 			{
-				return Utils.RandomChoice("rear end", "backdoor");
+				string intro = singleItemFormat ? "a " : "";
+				return intro + Utils.RandomChoice("rear end", "backdoor");
+			}
+			else if (!singleItemFormat)
+			{
+				return Utils.RandomChoice("ass", "anus", "pucker", "backdoor", "asshole", "butthole");
 			}
 			else
 			{
-				return Utils.RandomChoice("ass", "anus", "pucker", "backdoor", "asshole", "butthole");
+				return Utils.RandomChoice("an ass", "an anus", "a pucker", "a backdoor", "an asshole", "a butthole");
 			}
 		}
 
@@ -163,7 +169,7 @@ namespace CoC.Backend.BodyParts
 
 			if (full || ass.virgin || Utils.Rand(4) == 0)
 			{
-				sb.Append(Utils.AddArticle(ass.looseness.AsDescriptor(), alternateFormat));
+				sb.Append(Utils.AddArticleIf(ass.looseness.AsDescriptor(), alternateFormat));
 			}
 			if (ass.wetness > AnalWetness.DAMP && (full || ass.virgin || Utils.Rand(3) != 0))
 			{
@@ -174,7 +180,7 @@ namespace CoC.Backend.BodyParts
 				}
 				else
 				{
-					sb.Append(Utils.AddArticle(ass.wetness.AsDescriptor(), alternateFormat));
+					sb.Append(Utils.AddArticleIf(ass.wetness.AsDescriptor(), alternateFormat));
 				}
 			}
 			if (!ass.everPracticedAnal)

@@ -4,6 +4,7 @@
 //12/29/2018, 8:21 PM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
@@ -139,15 +140,19 @@ namespace CoC.Backend.BodyParts
 		//}
 
 
-		private static string HumanDesc(bool pluralIfApplicable)
+		private static string HumanDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string HumanSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HumanFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string HumanLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string HumanFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -163,15 +168,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HoovedDesc(bool pluralIfApplicable)
+		private static string HoovedDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HoovedLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string HoovedSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HoovedFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string HoovedLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string HoovedFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -187,15 +196,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogDesc(bool pluralIfApplicable)
+		private static string DogDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string DogSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string DogLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string DogFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -205,21 +218,104 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DogTransformStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			//if (previousLowerBodyData.type == HUMAN)
+			//{
+			//	return "You scream in agony as you feel the bones in your feet break and begin to rearrange. It becomes much more comfortable to stand of the balls of your feet, " +
+			//		"so you soon adapt a rather awkward position to dull the feeling until the transformation finishes. As it does, you realize " +
+			//		SafelyFormattedString.FormattedText("you have canine legs, complete with fur-covered paws!", StringFormats.BOLD);
+			//}
+
+			//string legDay = "";
+
+			////handle non-bipedal creatures - convert to multiple legged ness.
+
+			////fun fact: octopi/squids/something may tear off their arms to try to confuse predators into attacking their now dismembered limb. So we're gonna take advantage of that.
+			//if (previousLowerBodyData.type == LowerBodyType.OCTOLING)
+			//{
+
+			//}
+			////pony == 'cute' centaur, so wrap them together.
+			//else if (previousLowerBodyData.type == CENTAUR || previousLowerBodyData.type == PONY)
+			//{
+
+			//}
+			//else if (previousLowerBodyData.type == DRIDER)
+			//{
+
+			//}
+			//else if (previousLowerBodyData.type == GOO)
+			//{
+
+			//}
+			//else if (previousLowerBodyData.type == NAGA)
+			//{
+
+			//}
+			//else if (previousLowerBodyData.type == OCTOLING)
+			//{
+
+			//}
+			////some other non-biped leg type that i missed above.
+			//else if (!previousLowerBodyData.isBiped)
+			//{
+			//	//at this point, i have no idea what's going on. so just pass out from the pain and awake to your new changes.
+			//}
+			//else
+			//{
+
+			//}
+
+			////now handle feet.
+			//if (previousLowerBodyData.footType.isClaws)
+			//{
+
+			//}
+			//else if (previousLowerBodyData.footType.isHooves)
+			//{
+
+			//}
+			//else if (previousLowerBodyData.footType.isInsectoid)
+			//{
+
+			//}
+			//else if (previousLowerBodyData.footType.isPaws)
+			//{
+
+			//}
+			//else if (previousLowerBodyData.footType.isFeet)
+			//{
+
+			//}
+			//else
+			//{
+
+			//}
+
+			//return intro + legDay + Feet +
+
+			////Hooves -> Paws
+			//else if (player.lowerBody.type == LowerBody.HOOFED) outputText("\n\nYou feel your hooves suddenly     splinter, growing into five unique digits.  Their flesh softens as your hooves reshape into furred paws.");
+			//else outputText("\n\nYour lower body is wracked by pain!  Once it passes, you discover that you'r    e standing on fur-covered paws!  <b>You now have paws</b>."
 		}
 		private static string DogRestoreStr(LowerBodyData previousLowerBodyData, PlayerBase player)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaDesc(bool pluralIfApplicable)
+		private static string NagaDesc(bool pluralIfApplicable, out bool isPlural)
+		{
+			isPlural = false;
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string NagaSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string NagaLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string NagaFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string NagaFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -236,15 +332,19 @@ namespace CoC.Backend.BodyParts
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string DemonHiHeelsDesc(bool pluralIfApplicable)
+		private static string DemonHiHeelsDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonHiHeelsLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string DemonHiHeelsSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonHiHeelsFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string DemonHiHeelsLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string DemonHiHeelsFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -262,15 +362,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonClawDesc(bool pluralIfApplicable)
+		private static string DemonClawDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonClawLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string DemonClawSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonClawFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string DemonClawLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string DemonClawFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -286,15 +390,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeDesc(bool pluralIfApplicable)
+		private static string BeeDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string BeeSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BeeFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string BeeLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string BeeFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -310,15 +418,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooDesc(bool pluralIfApplicable)
+		private static string GooDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string GooSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GooFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string GooLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string GooFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -334,15 +446,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatDesc(bool pluralIfApplicable)
+		private static string CatDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string CatSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string CatLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string CatFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -358,15 +474,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardDesc(bool pluralIfApplicable)
+		private static string LizardDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string LizardSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string LizardLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LizardFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -382,15 +502,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PonyDesc(bool pluralIfApplicable)
+		private static string PonyDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PonyLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string PonySingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PonyFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string PonyLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string PonyFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -406,15 +530,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyDesc(bool pluralIfApplicable)
+		private static string BunnyDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string BunnySingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BunnyFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string BunnyLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string BunnyFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -430,15 +558,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HarpyDesc(bool pluralIfApplicable)
+		private static string HarpyDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HarpyLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string HarpySingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HarpyFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string HarpyLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string HarpyFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -454,15 +586,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooDesc(bool pluralIfApplicable)
+		private static string KangarooDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string KangarooSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string KangarooLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string KangarooFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -478,15 +614,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderDesc(bool pluralIfApplicable)
+		private static string SpiderDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string SpiderSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SpiderFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string SpiderLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string SpiderFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -502,15 +642,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DriderDesc(bool pluralIfApplicable)
+		private static string DriderDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DriderLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string DriderSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DriderFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string DriderLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string DriderFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -526,15 +670,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxDesc(bool pluralIfApplicable)
+		private static string FoxDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string FoxSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FoxFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string FoxLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FoxFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -550,15 +698,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonDesc(bool pluralIfApplicable)
+		private static string DragonDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string DragonSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string DragonLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string DragonFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -574,15 +726,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonDesc(bool pluralIfApplicable)
+		private static string RaccoonDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string RaccoonSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string RaccoonLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RaccoonFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -598,15 +754,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretDesc(bool pluralIfApplicable)
+		private static string FerretDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string FerretSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string FerretLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FerretFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -622,15 +782,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ClovenHoofDesc(bool pluralIfApplicable)
+		private static string ClovenHoofDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ClovenHoofLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string ClovenHoofSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ClovenHoofFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string ClovenHoofLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ClovenHoofFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -646,15 +810,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaDesc(bool pluralIfApplicable)
+		private static string EchidnaDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string EchidnaSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string EchidnaLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string EchidnaFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -670,15 +838,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SalamanderDesc(bool pluralIfApplicable)
+		private static string SalamanderDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SalamanderLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string SalamanderSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SalamanderFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string SalamanderLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string SalamanderFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -694,15 +866,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfDesc(bool pluralIfApplicable)
+		private static string WolfDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string WolfSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string WolfLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string WolfFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -718,15 +894,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpDesc(bool pluralIfApplicable)
+		private static string ImpDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string ImpSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string ImpLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ImpFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -742,15 +922,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceDesc(bool pluralIfApplicable)
+		private static string CockatriceDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string CockatriceSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string CockatriceLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string CockatriceFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -766,15 +950,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaDesc(bool pluralIfApplicable)
+		private static string RedPandaDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string RedPandaSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string RedPandaLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RedPandaFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -791,15 +979,19 @@ namespace CoC.Backend.BodyParts
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string OctoDesc(bool pluralIfApplicable)
+		private static string OctoDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string OctoLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable)
+		private static string OctoSingleDesc()
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string OctoFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable)
+		private static string OctoLongDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string OctoFullDesc(LowerBodyData lowerBody, bool alternateFormat, bool pluralIfApplicable, bool includeToesIfApplicable, out bool isPlural)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

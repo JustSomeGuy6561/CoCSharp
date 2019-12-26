@@ -45,7 +45,7 @@ namespace CoC.Backend.BodyParts
 
 	public partial class TailType
 	{
-		protected static string NoTailShortDesc()
+		protected static string NoTailShortDesc(bool alternateFormat)
 		{
 			return "";
 		}
@@ -57,17 +57,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "";
 		}
-		protected static string NoTailTransformStr(TailData previousTailData, PlayerBase player)
+		protected static string NoTailTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			return previousTailData.type.RestoredString(previousTailData, player);
 		}
-		protected static string NoTailRestoreStr(TailData previousTailData, PlayerBase player)
+		protected static string NoTailRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			return GlobalStrings.RevertAsDefault(previousTailData, player);
 		}
-		private static string HorseShortDesc()
+		private static string HorseShortDesc(bool alternateFormat)
 		{
-			return "horse tail";
+			return Utils.AddArticleIf("horse tail", alternateFormat);
 		}
 		private static string HorseLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -77,7 +77,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A long " + tail.epidermis.JustColor() + " horsetail hangs from your butt, smooth and shiny.";
 		}
-		private static string HorseTransformStr(TailData previousTailData, PlayerBase player)
+		private static string HorseTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//StringBuilder sb = new StringBuilder();
@@ -99,13 +99,13 @@ namespace CoC.Backend.BodyParts
 			//sb.Append(" <b>You now have a horse-tail.</b>");
 			//return sb.ToString();
 		}
-		private static string HorseRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string HorseRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DogShortDesc()
+		private static string DogShortDesc(bool alternateFormat)
 		{
-			return "dog tail";
+			return Utils.AddArticleIf("dog tail", alternateFormat);
 		}
 		private static string DogLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -113,10 +113,9 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DogPlayerStr(Tail tail, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-			//return "A fuzzy " + tail.epidermis.justColor() + " dogtail sprouts just above your " + player.butt.shortDescription() + ", wagging to and fro whenever you are happy.";
+			return "A fuzzy " + tail.epidermis.JustColor() + " dogtail sprouts just above your " + player.butt.ShortDescription() + ", wagging to and fro whenever you are happy.";
 		}
-		private static string DogTransformStr(TailData previousTailData, PlayerBase player)
+		private static string DogTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (previousTailData.type == NONE)
@@ -140,13 +139,13 @@ namespace CoC.Backend.BodyParts
 			sb.Append("<b>You now have a dog-tail.</b>");
 			return sb.ToString();
 		}
-		private static string DogRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string DogRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DemonShortDesc()
+		private static string DemonShortDesc(bool alternateFormat)
 		{
-			return "demonic tail";
+			return Utils.AddArticleIf("demonic tail", alternateFormat);
 		}
 		private static string DemonLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -175,7 +174,7 @@ namespace CoC.Backend.BodyParts
 			//retVal += ".";
 			//return retVal;
 		}
-		private static string DemonTransformStr(TailData previousTailData, PlayerBase player)
+		private static string DemonTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			if (previousTailData.type == NONE)
 			{
@@ -190,13 +189,13 @@ namespace CoC.Backend.BodyParts
 				return "You feel a tingling in your tail. You are amazed to discover it has shifted into a flexible demon-tail, complete with a round spaded tip. <b>Your tail is now demonic in appearance.</b> ";
 			}
 		}
-		private static string DemonRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string DemonRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CowShortDesc()
+		private static string CowShortDesc(bool alternateFormat)
 		{
-			return "cow tail";
+			return Utils.AddArticleIf("cow tail", alternateFormat);
 		}
 		private static string CowLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -206,7 +205,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A long cowtail with a puffy tip swishes back and forth as if swatting at flies.";
 		}
-		private static string CowTransformStr(TailData previousTailData, PlayerBase player)
+		private static string CowTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//if (tail.type == NONE)
@@ -222,14 +221,14 @@ namespace CoC.Backend.BodyParts
 			//	return "Your tail bunches uncomfortably, twisting and writhing around itself before flopping straight down, now shaped into a distinctly bovine form. You have a <b>cow tail</b>.";
 			//}
 		}
-		private static string CowRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string CowRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string SpiderShortDesc()
+		private static string SpiderShortDesc(bool alternateFormat)
 		{
-			return "spider abdomen";
+			return Utils.AddArticleIf("spider abdomen", alternateFormat);
 		}
 		private static string SpiderLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -249,7 +248,7 @@ namespace CoC.Backend.BodyParts
 			//					Console.WriteLine("  Your swollen spider-butt is distended with the sheer amount of webbing it's holding.");
 			//return sb.ToString();
 		}
-		private static string SpiderTransformStr(TailData previousTailData, PlayerBase player)
+		private static string SpiderTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//if (tail.type == NONE)
@@ -271,14 +270,14 @@ namespace CoC.Backend.BodyParts
 			//}
 
 		}
-		private static string SpiderRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string SpiderRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string BeeShortDesc()
+		private static string BeeShortDesc(bool alternateFormat)
 		{
-			return "bee abdomen";
+			return Utils.AddArticleIf("bee abdomen", alternateFormat);
 		}
 		private static string BeeLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -298,7 +297,7 @@ namespace CoC.Backend.BodyParts
 			//	Console.WriteLine("  Venom drips from your poisoned stinger regularly.");
 			//return sb.ToString();
 		}
-		private static string BeeTransformStr(TailData previousTailData, PlayerBase player)
+		private static string BeeTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//if (tail.type == NONE)
@@ -315,13 +314,13 @@ namespace CoC.Backend.BodyParts
 			//		+ " grows in place of your old tail. It grows large enough to be impossible to hide, and with a note of finality, your stinger slides free with an audible 'snick'.";
 			//}
 		}
-		private static string BeeRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string BeeRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SharkShortDesc()
+		private static string SharkShortDesc(bool alternateFormat)
 		{
-			return "shark tail";
+			return Utils.AddArticleIf("shark tail", alternateFormat);
 		}
 		private static string SharkLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -333,7 +332,7 @@ namespace CoC.Backend.BodyParts
 			return "A long shark-tail trails down from your backside, swaying to and fro while giving you a dangerous air.";
 
 		}
-		private static string SharkTransformStr(TailData previousTailData, PlayerBase player)
+		private static string SharkTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//if (tail.type == NONE)
@@ -358,13 +357,13 @@ namespace CoC.Backend.BodyParts
 			//		+ "You swish it about experimentally, and find it quite easy to control.";
 			//}
 		}
-		private static string SharkRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string SharkRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CatShortDesc()
+		private static string CatShortDesc(bool alternateFormat)
 		{
-			return "cat tail";
+			return Utils.AddArticleIf("cat tail", alternateFormat);
 		}
 		private static string CatLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -378,7 +377,7 @@ namespace CoC.Backend.BodyParts
 			//player.butt.shortDescription() + ", curling and twisting with every step to maintain perfect balance.";
 
 		}
-		private static string CatTransformStr(TailData previousTailData, PlayerBase player)
+		private static string CatTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//if (tail.type == NONE)
@@ -414,13 +413,13 @@ namespace CoC.Backend.BodyParts
 			//		"narrowing and sprouting glossy fur. <b>You now have a cat tail.</b>";
 			//}
 		}
-		private static string CatRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string CatRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardShortDesc()
+		private static string LizardShortDesc(bool alternateFormat)
 		{
-			return "lizard tail";
+			return Utils.AddArticleIf("lizard tail", alternateFormat);
 		}
 		private static string LizardLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -442,17 +441,17 @@ namespace CoC.Backend.BodyParts
 			//	return "A tapered tail hangs down from just above your " + player.butt.shortDescription() + ". It sways back and forth, assisting you with keeping your balance.";
 			//}
 		}
-		private static string LizardTransformStr(TailData previousTailData, PlayerBase player)
+		private static string LizardTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string LizardRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string LizardRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RabbitShortDesc()
+		private static string RabbitShortDesc(bool alternateFormat)
 		{
-			return "rabbit tail";
+			return Utils.AddArticleIf("rabbit tail", alternateFormat);
 		}
 		private static string RabbitLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -465,17 +464,17 @@ namespace CoC.Backend.BodyParts
 			//return "A short, soft bunny tail sprouts just above your " + player.butt.shortDescription()
 			//+ ", twitching constantly whenever you don't think about it.";
 		}
-		private static string RabbitTransformStr(TailData previousTailData, PlayerBase player)
+		private static string RabbitTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RabbitRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string RabbitRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HarpyShortDesc()
+		private static string HarpyShortDesc(bool alternateFormat)
 		{
-			return "harpy tail";
+			return Utils.AddArticleIf("harpy tail", alternateFormat);
 		}
 		private static string HarpyLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -488,17 +487,17 @@ namespace CoC.Backend.BodyParts
 			//return "A tail of feathers fans out from just above your " + player.butt.shortDescription()
 			//+ ", twitching instinctively to help guide you if you were to take flight.";
 		}
-		private static string HarpyTransformStr(TailData previousTailData, PlayerBase player)
+		private static string HarpyTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string HarpyRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string HarpyRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooShortDesc()
+		private static string KangarooShortDesc(bool alternateFormat)
 		{
-			return "kangaroo tail";
+			return Utils.AddArticleIf("kangaroo tail", alternateFormat);
 		}
 		private static string KangarooLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -511,11 +510,11 @@ namespace CoC.Backend.BodyParts
 			//return "A conical, furry, " + tail.epidermis.justColor() + " tail extends from your " + player.butt.shortDescription()
 			//+ ", bouncing up and down as you move and helping to counterbalance you.";
 		}
-		private static string KangarooTransformStr(TailData previousTailData, PlayerBase player)
+		private static string KangarooTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string KangarooRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string KangarooRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -525,13 +524,21 @@ namespace CoC.Backend.BodyParts
 		/// </summary>
 		/// <param name="treatAsPlural">Flag altering the behavior of the description. if null, use default. if true, treat as plural if applicable. if false, treat as singular.</param>
 		/// <returns></returns>
-		protected static string FoxShortDesc(bool treatAsPlural)
+		protected static string FoxShortDesc(bool treatAsPlural, out bool isPlural)
 		{
+			isPlural = treatAsPlural;
 			if (treatAsPlural) return "kitsune tails";
 			else return "vulpine tail";
 		}
-		protected static string FoxLongDesc(TailData tail, bool alternateFormat, bool pluralIfApplicable)
+
+		protected static string FoxSingleDesc()
 		{
+			return "a fox-like tail";
+		}
+
+		protected static string FoxLongDesc(TailData tail, bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+		{
+			isPlural = tail.tailCount != 1;
 			string intro = alternateFormat ? "a " : "";
 			byte count = tail.tailCount;
 			if (!pluralIfApplicable && count > 1)
@@ -572,18 +579,18 @@ namespace CoC.Backend.BodyParts
 			//else return GlobalStrings.NumberAsText(tail.tailCount) + " swishing " + tail.epidermis.justColor() + " fox's tails extend from your "
 			//		+ player.butt.shortDescription() + ", curling around your body - the soft fur feels lovely.";
 		}
-		protected static string FoxTransformStr(TailData previousTailData, PlayerBase player)
+		protected static string FoxTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		protected static string FoxRestoreStr(TailData previousTailData, PlayerBase player)
+		protected static string FoxRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string DragonShortDesc()
+		private static string DragonShortDesc(bool alternateFormat)
 		{
-			return "draconic tail";
+			return Utils.AddArticleIf("draconic tail", alternateFormat);
 		}
 		private static string DragonLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -608,17 +615,17 @@ namespace CoC.Backend.BodyParts
 						 + " with a single, powerful sweep.";
 			}
 		}
-		private static string DragonTransformStr(TailData previousTailData, PlayerBase player)
+		private static string DragonTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DragonRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string DragonRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonShortDesc()
+		private static string RaccoonShortDesc(bool alternateFormat)
 		{
-			return "raccoon tail";
+			return Utils.AddArticleIf("raccoon tail", alternateFormat);
 		}
 		private static string RaccoonLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -630,17 +637,17 @@ namespace CoC.Backend.BodyParts
 			//may want to check for black.
 			return "A black-and-" + tail.epidermis.JustColor() + "-ringed raccoon tail waves behind you.";
 		}
-		private static string RaccoonTransformStr(TailData previousTailData, PlayerBase player)
+		private static string RaccoonTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RaccoonRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string RaccoonRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseShortDesc()
+		private static string MouseShortDesc(bool alternateFormat)
 		{
-			return "mouse tail";
+			return Utils.AddArticleIf("mouse tail", alternateFormat);
 		}
 		private static string MouseLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -651,17 +658,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A naked, " + tail.epidermis.JustColor() + " mouse tail pokes from your butt, dragging on the ground and twitching occasionally.";
 		}
-		private static string MouseTransformStr(TailData previousTailData, PlayerBase player)
+		private static string MouseTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string MouseRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string MouseRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretShortDesc()
+		private static string FerretShortDesc(bool alternateFormat)
 		{
-			return "ferret tail";
+			return Utils.AddArticleIf("ferret tail", alternateFormat);
 		}
 		private static string FerretLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -673,18 +680,18 @@ namespace CoC.Backend.BodyParts
 			return "Sprouting from your backside, you have a long, bushy tail. It’s covered in a fluffy layer of " + tail.epidermis.DescriptionWithColor()
 				+ " It twitches and moves happily with your body when you are excited.";
 		}
-		private static string FerretTransformStr(TailData previousTailData, PlayerBase player)
+		private static string FerretTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string FerretRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string FerretRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string BehemothShortDesc()
+		private static string BehemothShortDesc(bool alternateFormat)
 		{
-			return "behemoth tail";
+			return Utils.AddArticleIf("behemoth tail", alternateFormat);
 		}
 		private static string BehemothLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -695,17 +702,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A long seemingly-tapering tail pokes from your butt, ending in spikes just like behemoth's.";
 		}
-		private static string BehemothTransformStr(TailData previousTailData, PlayerBase player)
+		private static string BehemothTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string BehemothRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string BehemothRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigShortDesc()
+		private static string PigShortDesc(bool alternateFormat)
 		{
-			return "pig tail";
+			return Utils.AddArticleIf("pig tail", alternateFormat);
 		}
 		private static string PigLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -716,17 +723,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A short, curly pig tail sprouts from just above your butt.";
 		}
-		private static string PigTransformStr(TailData previousTailData, PlayerBase player)
+		private static string PigTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string PigRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string PigRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ScorpionShortDesc()
+		private static string ScorpionShortDesc(bool alternateFormat)
 		{
-			return "scorpion tail";
+			return Utils.AddArticleIf("scorpion tail", alternateFormat);
 		}
 		private static string ScorpionLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -738,17 +745,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A chitinous scorpion tail sprouts from just above your butt, ready to dispense venom.";
 		}
-		private static string ScorpionTransformStr(TailData previousTailData, PlayerBase player)
+		private static string ScorpionTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ScorpionRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string ScorpionRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatShortDesc()
+		private static string GoatShortDesc(bool alternateFormat)
 		{
-			return "goat tail";
+			return Utils.AddArticleIf("goat tail", alternateFormat);
 		}
 		private static string GoatLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -759,17 +766,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A very short, stubby goat tail sprouts from just above your butt.";
 		}
-		private static string GoatTransformStr(TailData previousTailData, PlayerBase player)
+		private static string GoatTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string GoatRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string GoatRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoShortDesc()
+		private static string RhinoShortDesc(bool alternateFormat)
 		{
-			return "rhino tail";
+			return Utils.AddArticleIf("rhino tail", alternateFormat);
 		}
 		private static string RhinoLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -780,17 +787,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A ropey rhino tail sprouts from just above your butt, swishing from time to time.";
 		}
-		private static string RhinoTransformStr(TailData previousTailData, PlayerBase player)
+		private static string RhinoTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RhinoRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string RhinoRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaShortDesc()
+		private static string EchidnaShortDesc(bool alternateFormat)
 		{
-			return "echidna tail";
+			return Utils.AddArticleIf("echidna tail", alternateFormat);
 		}
 		private static string EchidnaLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -802,17 +809,17 @@ namespace CoC.Backend.BodyParts
 			//return "A stumpy echidna tail forms just about your " + player.butt.shortDescription() + ".";
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaTransformStr(TailData previousTailData, PlayerBase player)
+		private static string EchidnaTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string EchidnaRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string EchidnaRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerShortDesc()
+		private static string DeerShortDesc(bool alternateFormat)
 		{
-			return "deer tail";
+			return Utils.AddArticleIf("deer tail", alternateFormat);
 		}
 		private static string DeerLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -823,17 +830,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return "A very short, stubby deer tail sprouts from just above your butt.";
 		}
-		private static string DeerTransformStr(TailData previousTailData, PlayerBase player)
+		private static string DeerTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string DeerRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string DeerRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SalamanderShortDesc()
+		private static string SalamanderShortDesc(bool alternateFormat)
 		{
-			return "salamander tail";
+			return Utils.AddArticleIf("salamander tail", alternateFormat);
 		}
 		private static string SalamanderLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -847,17 +854,17 @@ namespace CoC.Backend.BodyParts
 			//	+ ", hangs down from just above your " + player.butt.shortDescription() + ". It sways back and forth, assisting you with keeping your balance. " +
 			//	"When you are in battle or when you want could set ablaze whole tail in red-hot fire.";
 		}
-		private static string SalamanderTransformStr(TailData previousTailData, PlayerBase player)
+		private static string SalamanderTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SalamanderRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string SalamanderRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfShortDesc()
+		private static string WolfShortDesc(bool alternateFormat)
 		{
-			return "wolf tail";
+			return Utils.AddArticleIf("wolf tail", alternateFormat);
 		}
 		private static string WolfLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -869,17 +876,17 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 			//return "A thick-furred wolf tail hangs above your " + player.butt.shortDescription() + ".";
 		}
-		private static string WolfTransformStr(TailData previousTailData, PlayerBase player)
+		private static string WolfTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string WolfRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string WolfRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepShortDesc()
+		private static string SheepShortDesc(bool alternateFormat)
 		{
-			return "sheep tail";
+			return Utils.AddArticleIf("sheep tail", alternateFormat);
 		}
 		private static string SheepLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -892,17 +899,17 @@ namespace CoC.Backend.BodyParts
 			//return "A fluffy sheep tail hangs down from your " + player.butt.shortDescription() +
 			//". It occasionally twitches and shakes, its puffy fluff begging to be touched.";
 		}
-		private static string SheepTransformStr(TailData previousTailData, PlayerBase player)
+		private static string SheepTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string SheepRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string SheepRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpShortDesc()
+		private static string ImpShortDesc(bool alternateFormat)
 		{
-			return "imp tail";
+			return Utils.AddArticleIf("imp tail", alternateFormat);
 		}
 		private static string ImpLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -916,17 +923,17 @@ namespace CoC.Backend.BodyParts
 			//return "A thin imp tail almost as long as you are tall hangs from above your "
 			//+ player.butt.shortDescription() + ", dotted at the end with a small puff of hair.";
 		}
-		private static string ImpTransformStr(TailData previousTailData, PlayerBase player)
+		private static string ImpTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string ImpRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string ImpRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceShortDesc()
+		private static string CockatriceShortDesc(bool alternateFormat)
 		{
-			return "cockatrice tail";
+			return Utils.AddArticleIf("cockatrice tail", alternateFormat);
 		}
 		private static string CockatriceLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -939,17 +946,17 @@ namespace CoC.Backend.BodyParts
 			//return "A thick, scaly, prehensile reptilian tail hangs from your "
 			//+ player.butt.shortDescription() + ", about half as long as you are tall.";
 		}
-		private static string CockatriceTransformStr(TailData previousTailData, PlayerBase player)
+		private static string CockatriceTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string CockatriceRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string CockatriceRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaShortDesc()
+		private static string RedPandaShortDesc(bool alternateFormat)
 		{
-			return "red-panda tail";
+			return Utils.AddArticleIf("red-panda tail", alternateFormat);
 		}
 		private static string RedPandaLongDesc(TailData tail, bool alternateFormat)
 		{
@@ -962,11 +969,11 @@ namespace CoC.Backend.BodyParts
 				+ tail.epidermis.JustColor() + " and " + tail.secondaryEpidermis.JustColor() + "fluffy fur. "
 				+ "It waves playfully as you walk giving to your step a mesmerizing touch.";
 		}
-		private static string RedPandaTransformStr(TailData previousTailData, PlayerBase player)
+		private static string RedPandaTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private static string RedPandaRestoreStr(TailData previousTailData, PlayerBase player)
+		private static string RedPandaRestoreStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

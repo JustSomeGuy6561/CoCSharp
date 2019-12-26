@@ -322,6 +322,29 @@ namespace CoC.Backend.BodyParts
 			return new BreastData(creatureID, averageCup, new NippleData(creatureID, averageNippleLength, -1, lactationRate, quadNipples, blackNipples, nippleType, null,
 				relativeLust), -1, 1, lactationRate, lactationStatus, overfull, gender);
 		}
+		#region Text
+		//by default, short description simply returns the noun, in plural format.
+		//it's possible via overloads to have this return singular or plural, with/without an article, or any combination thereof.
+		//Note that this description will only assume you're talking about this particular set of breasts, not all of them (if applicable)
+		//use the strings in genitals for descriptions that require all breast rows.
+		//also note: it is possible to describe all breasts by simply using the short description in conjunction with whatever flavor text you want
+		//(i.e. "several pairs of " {ShortDescription()}) in fact, this is how the all rows is done, but with an aggregate of all breast rows.
+
+		public string ShortDescription() => BreastHelpers.ShortDesc(this, true);
+		public string ShortDescription(bool plural) => BreastHelpers.ShortDesc(this, plural);
+
+		public string SingleItemDescription() => BreastHelpers.SingleItemDesc(this);
+
+		public string LongDescription(bool alternateFormat = false, bool plural = true, bool preciseMeasurements = false)
+		{
+			return BreastHelpers.Desc(this, alternateFormat, plural, preciseMeasurements, false);
+		}
+		public string FullDescription(bool alternateFormat = false, bool plural = true, bool preciseMeasurements = false)
+		{
+			return BreastHelpers.Desc(this, alternateFormat, preciseMeasurements, plural, true);
+		}
+
+		#endregion
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -431,6 +454,30 @@ namespace CoC.Backend.BodyParts
 		public readonly bool isOverFull;
 
 		internal readonly Gender gender;
+
+		#region Text
+		//by default, short description simply returns the noun, in plural format.
+		//it's possible via overloads to have this return singular or plural, with/without an article, or any combination thereof.
+		//Note that this description will only assume you're talking about this particular set of breasts, not all of them (if applicable)
+		//use the strings in genitals for descriptions that require all breast rows.
+		//also note: it is possible to describe all breasts by simply using the short description in conjunction with whatever flavor text you want
+		//(i.e. "several pairs of " {ShortDescription()}) in fact, this is how the all rows is done, but with an aggregate of all breast rows.
+
+		public string ShortDescription() => BreastHelpers.ShortDesc(this, true);
+		public string ShortDescription(bool plural) => BreastHelpers.ShortDesc(this, plural);
+
+		public string SingleItemDescription() => BreastHelpers.SingleItemDesc(this);
+
+		public string LongDescription(bool alternateFormat = false, bool plural = true, bool preciseMeasurements = false)
+		{
+			return BreastHelpers.Desc(this, alternateFormat, plural, preciseMeasurements, false);
+		}
+		public string FullDescription(bool alternateFormat = false, bool plural = true, bool preciseMeasurements = false)
+		{
+			return BreastHelpers.Desc(this, alternateFormat, preciseMeasurements, plural, true);
+		}
+
+		#endregion
 
 		internal BreastData(Breasts breasts, int currentBreastRow) : base(breasts?.creatureID ?? throw new ArgumentNullException(nameof(breasts)))
 		{

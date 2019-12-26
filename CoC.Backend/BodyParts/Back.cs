@@ -252,7 +252,7 @@ namespace CoC.Backend.BodyParts
 		internal virtual string postText(HairFurColors hairColor) => GenericPostUseDesc(hairColor);
 		public virtual bool hasSpecialEpidermis => false; //replaces usesHair, as we now have types that can use tones. we've fixed this with a single epidermis here.
 
-		protected BackType(SimpleDescriptor shortDesc, LongDescriptor<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc,
+		protected BackType(ShortDescriptor shortDesc, PartDescriptor<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc,
 			ChangeType<BackData> transform, RestoreType<BackData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -368,7 +368,7 @@ namespace CoC.Backend.BodyParts
 		//BUT, given a callback to the resources, we can generate the attack here, using another callback. Clarity dictates i not do this, but fuck it.
 		private readonly GenerateResourceAttack getAttack; //a callback. takes another callback (that returns a ushort), and returns an attack that requires resources.
 		internal AttackableBackType(GenerateResourceAttack attackGetter, EpidermalData appearance,
-			SimpleDescriptor shortDesc, LongDescriptor<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
+			ShortDescriptor shortDesc, PartDescriptor<BackData> longDesc, PlayerBodyPartDelegate<Back> playerDesc, ChangeType<BackData> transform, RestoreType<BackData> restore)
 			: base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			getAttack = attackGetter ?? throw new ArgumentNullException(nameof(attackGetter));

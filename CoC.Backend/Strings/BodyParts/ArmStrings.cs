@@ -21,6 +21,11 @@ namespace CoC.Backend.BodyParts
 
 	public partial class ArmType
 	{
+		private static string HandsOptionalFingers(HandData hands, bool includeFingers, bool plural = true)
+		{
+			return includeFingers ? hands.ShortDescription(plural) : hands.LongDescription(plural);
+		}
+
 		private static string IntroMaker(bool plural, bool articleFormat, bool useAn)
 		{
 			if (plural && articleFormat) return "a pair of ";
@@ -45,6 +50,11 @@ namespace CoC.Backend.BodyParts
 			return plural ? "arms" : "arm";
 		}
 
+		private static string HumanSingleDesc()
+		{
+			return "an arm";
+		}
+
 		private static string HumanLongDesc(ArmData arm, bool articleForm, bool plural)
 		{
 			if (plural && articleForm) return "a pair of humainoid arms";
@@ -54,7 +64,7 @@ namespace CoC.Backend.BodyParts
 
 		private static string HumanFullDesc(ArmData arm, bool articleForm, bool plural, bool includeFingers)
 		{
-			string hand = Utils.Pluralize("hand", plural);
+			string hand = Utils.PluralizeIf("hand", plural);
 			string handText;
 			if (includeFingers)
 			{
@@ -87,7 +97,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HarpyDesc(bool plural)
 		{
-			return Utils.Pluralize("feathered arm", plural);
+			return Utils.PluralizeIf("feathered arm", plural);
+		}
+
+		private static string HarpySingleDesc()
+		{
+			return "a feathered arm";
 		}
 
 		private static string HarpyLongDesc(ArmData arm, bool articleForm, bool plural)
@@ -112,15 +127,15 @@ namespace CoC.Backend.BodyParts
 			if (plural)
 			{
 				string articleText = articleForm ? "a pair of " : "";
-				return articleText + arm.epidermis.JustColor() + " feathered arms ending in " + arm.hands.LongOrFullDescription(false, true, includeFingers);
+				return articleText + arm.epidermis.JustColor() + " feathered arms ending in " + HandsOptionalFingers(arm.hands, includeFingers, plural);
 			}
 			else if (articleForm)
 			{
-				return $"a {arm.epidermis.JustColor()} feathered arm ending in " + arm.hands.LongOrFullDescription(articleForm, plural, includeFingers);
+				return $"a {arm.epidermis.JustColor()} feathered arm ending in " + HandsOptionalFingers(arm.hands, includeFingers, plural);
 			}
 			else
 			{
-				return "feathered arm with its " + arm.hands.LongOrFullDescription(false, plural, includeFingers);
+				return "feathered arm with its " + HandsOptionalFingers(arm.hands, includeFingers, plural);
 			}
 		}
 
@@ -159,22 +174,27 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SpiderDesc(bool plural)
 		{
-			return Utils.Pluralize("spider arm", plural);
+			return Utils.PluralizeIf("spider arm", plural);
 		}
 
-		private static string SpiderLongDesc(ArmData arm, bool alternateForm, bool plural)
+		private static string SpiderSingleDesc()
+		{
+			return "a spider arm";
+		}
+
+		private static string SpiderLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
 			string intro;
-			if (alternateForm && plural) intro = "a pair of ";
-			else if (alternateForm) intro = "a ";
+			if (alternateFormat && plural) intro = "a pair of ";
+			else if (alternateFormat) intro = "a ";
 			else intro = "";
 
-			return intro + "chitinous " + arm.epidermis.JustColor() + Utils.Pluralize(" spider arm", plural);
+			return intro + "chitinous " + arm.epidermis.JustColor() + Utils.PluralizeIf(" spider arm", plural);
 		}
 
-		private static string SpiderFullDesc(ArmData arm, bool alternateForm, bool plural, bool includeFingers)
+		private static string SpiderFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
 		{
-			return GenericFullDescription(arm, alternateForm, plural, includeFingers);
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 
 		private static string SpiderPlayerStr(Arms arm, PlayerBase player)
@@ -208,17 +228,22 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string BeeDesc(bool plural)
 		{
-			return Utils.Pluralize("fuzzy bee arm", plural);
+			return Utils.PluralizeIf("fuzzy bee arm", plural);
 		}
-		private static string BeeLongDesc(ArmData arm, bool alternateForm, bool plural)
+
+		private static string BeeSingleDesc()
 		{
-			string intro = IntroMaker(plural, alternateForm, false);
+			return "a fuzzy bee arm";
+		}
+		private static string BeeLongDesc(ArmData arm, bool alternateFormat, bool plural)
+		{
+			string intro = IntroMaker(plural, alternateFormat, false);
 			return $"{intro}fuzzy {arm.epidermis.JustColor()} bee-arms";
 		}
 
-		private static string BeeFullDesc(ArmData arm, bool alternateForm, bool plural, bool includeFingers)
+		private static string BeeFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
 		{
-			return GenericFullDescription(arm, alternateForm, plural, includeFingers);
+			return GenericFullDescription(arm, alternateFormat, plural, includeFingers);
 		}
 
 
@@ -266,7 +291,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DragonDesc(bool plural)
 		{
-			return Utils.Pluralize("draconic arm", plural);
+			return Utils.PluralizeIf("draconic arm", plural);
+		}
+
+		private static string DragonSingleDesc()
+		{
+			return "a draconic arm";
 		}
 
 		private static string DragonLongDesc(ArmData arm, bool alternateFormat, bool plural)
@@ -300,7 +330,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string ImpDesc(bool plural)
 		{
-			return Utils.Pluralize("predator arm", plural);
+			return Utils.PluralizeIf("predator arm", plural);
+		}
+
+		private static string ImpSingleDesc()
+		{
+			return "a predator arm";
 		}
 
 		private static string ImpLongDesc(ArmData arm, bool alternateFormat, bool plural)
@@ -346,7 +381,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string LizardDesc(bool plural)
 		{
-			return Utils.Pluralize("predator arm", plural);
+			return Utils.PluralizeIf("predator arm", plural);
+		}
+
+		private static string LizardSingleDesc()
+		{
+			return "a predator arm";
 		}
 		private static string LizardLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
@@ -379,7 +419,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SalamanderDesc(bool plural)
 		{
-			return Utils.Pluralize("salamader arm", plural);
+			return Utils.PluralizeIf("salamader arm", plural);
+		}
+
+		private static string SalamanderSingleDesc()
+		{
+			return "a salamader arm";
 		}
 		private static string SalamanderLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
@@ -408,7 +453,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string WolfDesc(bool plural)
 		{
-			return Utils.Pluralize("wolfen arm", plural);
+			return Utils.PluralizeIf("wolfen arm", plural);
+		}
+
+		private static string WolfSingleDesc()
+		{
+			return "a wolfen arm";
 		}
 		private static string WolfLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
@@ -444,8 +494,14 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CockatriceDesc(bool plural)
 		{
-			return Utils.Pluralize("feathery arm", plural);
+			return Utils.PluralizeIf("feathery arm", plural);
 		}
+
+		private static string CockatriceSingleDesc()
+		{
+			return "a feathery arm";
+		}
+
 		private static string CockatriceLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
 			string intro;
@@ -458,7 +514,7 @@ namespace CoC.Backend.BodyParts
 				intro = arm.epidermis.JustColor(alternateFormat);
 			}
 
-			return intro + Utils.Pluralize(", feathered cockatrice arm", plural);
+			return intro + Utils.PluralizeIf(", feathered cockatrice arm", plural);
 		}
 		private static string CockatriceFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
 		{
@@ -490,7 +546,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RedPandaDesc(bool plural)
 		{
-			return Utils.Pluralize("panda-arm", plural);
+			return Utils.PluralizeIf("panda-arm", plural);
+		}
+
+		private static string RedPandaSingleDesc()
+		{
+			return "a panda-arm";
 		}
 		private static string RedPandaLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
@@ -504,7 +565,7 @@ namespace CoC.Backend.BodyParts
 				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
 			}
 			//smooth, furry, (color)
-			return intro + Utils.Pluralize("panda-arm", plural);
+			return intro + Utils.PluralizeIf("panda-arm", plural);
 		}
 		private static string RedPandaFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
 		{
@@ -525,7 +586,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FerretDesc(bool plural)
 		{
-			return Utils.Pluralize("ferret-arm", plural);
+			return Utils.PluralizeIf("ferret-arm", plural);
+		}
+
+		private static string FerretSingleDesc()
+		{
+			return "a ferret-arm";
 		}
 		private static string FerretLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
@@ -539,7 +605,7 @@ namespace CoC.Backend.BodyParts
 				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
 			}
 			//smooth, furry, (color)
-			return intro + " " + Utils.Pluralize("ferret arm", plural);
+			return intro + " " + Utils.PluralizeIf("ferret arm", plural);
 		}
 		private static string FerretFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
 		{
@@ -550,7 +616,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Soft, " + arm.epidermis.JustColor() + " fluff covers your arms, turning into "
 				+ arm.secondaryEpidermis.LongDescription() + " from elbows to paws."
-				+ " The latter have " + arm.hands.LongDescription();
+				+ " Each arm ends in " + arm.hands.LongDescription(true, false);
 		}
 		private static string FerretTransformStr(ArmData previousArmData, PlayerBase player)
 		{
@@ -563,7 +629,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CatDesc(bool plural)
 		{
-			return Utils.Pluralize("feline arm", plural);
+			return Utils.PluralizeIf("feline arm", plural);
+		}
+
+		private static string CatSingleDesc()
+		{
+			return "a feline arm";
 		}
 		private static string CatLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
@@ -577,7 +648,7 @@ namespace CoC.Backend.BodyParts
 				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
 			}
 			//smooth, furry, (color)
-			return intro + Utils.Pluralize("feline arm", plural);
+			return intro + Utils.PluralizeIf("feline arm", plural);
 		}
 		private static string CatFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
 		{
@@ -597,7 +668,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DogDesc(bool plural)
 		{
-			return Utils.Pluralize("canine arm", plural);
+			return Utils.PluralizeIf("canine arm", plural);
+		}
+
+		private static string DogSingleDesc()
+		{
+			return "a canine arm";
 		}
 
 		private static string DogLongDesc(ArmData arm, bool alternateFormat, bool plural)
@@ -612,7 +688,7 @@ namespace CoC.Backend.BodyParts
 				intro = arm.epidermis.LongAdjectiveDescription(alternateFormat);
 			}
 			//smooth, furry, (color)
-			return intro + Utils.Pluralize("canine arm", plural);
+			return intro + Utils.PluralizeIf("canine arm", plural);
 		}
 		private static string DogFullDesc(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
 		{
@@ -642,7 +718,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FoxDesc(bool plural)
 		{
-			return Utils.Pluralize("vulpine arm", plural);
+			return Utils.PluralizeIf("vulpine arm", plural);
+		}
+
+		private static string FoxSingleDesc()
+		{
+			return "a vulpine arm";
 		}
 		private static string FoxLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
@@ -677,7 +758,12 @@ namespace CoC.Backend.BodyParts
 
 		private static string GooDesc(bool plural)
 		{
-			return Utils.Pluralize("gooey arm", plural);
+			return Utils.PluralizeIf("gooey arm", plural);
+		}
+
+		private static string GooSingleDesc()
+		{
+			return "a gooey arm";
 		}
 		private static string GooLongDesc(ArmData arm, bool alternateFormat, bool plural)
 		{
@@ -828,11 +914,11 @@ namespace CoC.Backend.BodyParts
 				SafelyFormattedString.FormattedText("You have normal human arms again.", StringFormats.BOLD);
 		}
 
-		private static string GenericFullDescription(ArmData arm, bool alternateForm, bool plural, bool includeFingers)
+		private static string GenericFullDescription(ArmData arm, bool alternateFormat, bool plural, bool includeFingers)
 		{
-			string transition = plural || alternateForm ? " ending in " : " with its ";
+			string transition = plural || alternateFormat ? " ending in " : " with its ";
 
-			return arm.type.LongDescription(arm, alternateForm, plural) + transition + arm.hands.LongOrFullDescription(false, plural, includeFingers);
+			return arm.type.LongDescription(arm, alternateFormat, plural) + transition + HandsOptionalFingers(arm.hands, includeFingers, plural);
 		}
 	}
 }

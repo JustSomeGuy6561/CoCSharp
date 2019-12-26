@@ -1,5 +1,6 @@
 ﻿using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Tools;
+using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
@@ -44,44 +45,6 @@ namespace CoC.Backend.BodyParts
 		//	return "nipples";
 		//}
 
-		public string NounText() => NippleStrings.NippleNoun(this, true, false);
-		public string NounText(bool plural, bool allowQuadNippleIfApplicable = false) => NippleStrings.NippleNoun(this, plural, allowQuadNippleIfApplicable);
-
-		public string ShortDescription() => NippleStrings.ShortDescription(this, true, true);
-
-		public string ShortDescription(bool plural, bool allowQuadNippleTextIfApplicable = true) => NippleStrings.ShortDescription(this, plural, allowQuadNippleTextIfApplicable);
-
-		public string LongDescription(bool alternateFormat = false, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, false, false, false);
-		}
-
-		public string FullDescription(bool alternateFormat = false, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, false, false, true);
-		}
-
-		public string LongDescription(bool alternateFormat, bool usePreciseMeasurements, bool singleNipple, bool singleNippleIgnoresQuadNipple)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, singleNipple, singleNippleIgnoresQuadNipple, false);
-		}
-
-		public string FullDescription(bool alternateFormat, bool usePreciseMeasurements, bool singleNipple, bool singleNippleIgnoresQuadNipple)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, singleNipple, singleNippleIgnoresQuadNipple, true);
-		}
-
-		public string SingleNippleLongDescription(bool alternateFormat, bool usePreciseMeasurements = false, bool onlyOneNippleIfQuadNipples = false)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, true, onlyOneNippleIfQuadNipples, false);
-		}
-
-		public string SingleNippleFullDescription(bool alternateFormat, bool usePreciseMeasurements = false, bool onlyOneNippleIfQuadNipples = false)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, true, onlyOneNippleIfQuadNipples, false);
-		}
-
-
 
 		private string NipplesLessInvertedDueToPiercingInThem(bool hasOtherBreastRows)
 		{
@@ -125,49 +88,15 @@ namespace CoC.Backend.BodyParts
 		float INipple.relativeLust => relativeLust;
 
 		BodyType INipple.bodyType => bodyType;
-
-
-		public string NounText() => NippleStrings.NippleNoun(this, true, false);
-		public string NounText(bool plural, bool allowQuadNippleIfApplicable = false) => NippleStrings.NippleNoun(this, plural, allowQuadNippleIfApplicable);
-
-		public string ShortDescription() => NippleStrings.ShortDescription(this, true, true);
-
-		public string ShortDescription(bool plural, bool allowQuadNippleTextIfApplicable = true) => NippleStrings.ShortDescription(this, plural, allowQuadNippleTextIfApplicable);
-
-		public string LongDescription(bool alternateFormat, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, false, false, false);
-		}
-
-		public string FullDescription(bool alternateFormat, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, false, false, true);
-		}
-
-		public string LongDescription(bool alternateFormat, bool usePreciseMeasurements, bool singleNipple, bool singleNippleIgnoresQuadNipple)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, singleNipple, singleNippleIgnoresQuadNipple, false);
-		}
-
-		public string FullDescription(bool alternateFormat, bool usePreciseMeasurements, bool singleNipple, bool singleNippleIgnoresQuadNipple)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, singleNipple, singleNippleIgnoresQuadNipple, true);
-		}
-
-		public string SingleNippleLongDescription(bool alternateFormat, bool usePreciseMeasurements = false, bool onlyOneNippleIfQuadNipples = false)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, true, onlyOneNippleIfQuadNipples, false);
-		}
-
-		public string SingleNippleFullDescription(bool alternateFormat, bool usePreciseMeasurements = false, bool onlyOneNippleIfQuadNipples = false)
-		{
-			return NippleStrings.Desc(this, alternateFormat, usePreciseMeasurements, true, onlyOneNippleIfQuadNipples, false);
-		}
 	}
 
 	internal static class NippleStrings
 	{
-		internal static string NippleNoun(INipple nipple, bool plural, bool allowQuadNippleText)
+		internal static string NounText(INipple nipple, bool plural = true, bool allowQuadNippleText = true) => NippleNoun(nipple, plural, false, allowQuadNippleText);
+
+		internal static string SingleFormatNippleText(INipple nipple, bool allowQuadNippleText = true) => NippleNoun(nipple, false, true, allowQuadNippleText);
+
+		private static string NippleNoun(INipple nipple, bool plural, bool alternateFormatIfSingular, bool allowQuadNippleText)
 		{
 			int choice = Utils.Rand(5);
 
@@ -180,11 +109,11 @@ namespace CoC.Backend.BodyParts
 				{
 					if (doQuadText)
 					{
-						return Utils.Pluralize("quad-dicked nipple", plural);
+						return Utils.PluralizeIf("quad-dicked nipple", plural);
 					}
 					else
 					{
-						return Utils.Pluralize("dick-nipple", plural);
+						return Utils.PluralizeIf("dick-nipple", plural);
 					}
 				}
 
@@ -194,20 +123,20 @@ namespace CoC.Backend.BodyParts
 					{
 						if (doQuadText)
 						{
-							return Utils.Pluralize("fuckable quad-nip", plural);
+							return Utils.PluralizeIf("fuckable quad-nip", plural);
 						}
 						else
 						{
-							return Utils.Pluralize("fuckable nip", plural);
+							return Utils.PluralizeIf("fuckable nip", plural);
 						}
 					}
 					else //if (nipple.status.IsInverted())
 					{
 						if (doQuadText)
 						{
-							return Utils.Pluralize("inverted quad-nip", plural);
+							return Utils.PluralizeIf("inverted quad-nip", plural);
 						}
-						return Utils.Pluralize("inverted nip", plural);
+						return Utils.PluralizeIf("inverted nip", plural);
 					}
 				}
 				else if (choice == 1)
@@ -216,17 +145,17 @@ namespace CoC.Backend.BodyParts
 					{
 						if (doQuadText)
 						{
-							return Utils.Pluralize("quad-holed nipple", plural);
+							return Utils.PluralizeIf("quad-holed nipple", plural);
 						}
-						return Utils.Pluralize("nipple-hole", plural);
+						return Utils.PluralizeIf("nipple-hole", plural);
 					}
 					else //if (nipple.status.IsInverted())
 					{
 						if (doQuadText)
 						{
-							return Utils.Pluralize("inward-facing quad-nipple", plural);
+							return Utils.PluralizeIf("inward-facing quad-nipple", plural);
 						}
-						return Utils.Pluralize("inward-facing nipple", plural);
+						return Utils.PluralizeIf("inward-facing nipple", plural);
 					}
 				}
 				else
@@ -235,25 +164,25 @@ namespace CoC.Backend.BodyParts
 					{
 						if (doQuadText)
 						{
-							return Utils.Pluralize("quad-cunt nipple", plural);
+							return Utils.PluralizeIf("quad-cunt nipple", plural);
 						}
-						return Utils.Pluralize("nipple-cunt", plural);
+						return Utils.PluralizeIf("nipple-cunt", plural);
 					}
 					else if (nipple.status == NippleStatus.FULLY_INVERTED)
 					{
 						if (doQuadText)
 						{
-							return Utils.Pluralize("inverted quad-nipple", plural);
+							return Utils.PluralizeIf("inverted quad-nipple", plural);
 						}
-						return Utils.Pluralize("inverted nipple", plural);
+						return Utils.PluralizeIf("inverted nipple", plural);
 					}
 					else
 					{
 						if (doQuadText)
 						{
-							return Utils.Pluralize("slightly inverted quad-nipple", plural);
+							return Utils.PluralizeIf("slightly inverted quad-nipple", plural);
 						}
-						return Utils.Pluralize("slightly inverted nipple", plural);
+						return Utils.PluralizeIf("slightly inverted nipple", plural);
 					}
 				}
 			}
@@ -261,40 +190,47 @@ namespace CoC.Backend.BodyParts
 			else if (choice < 2 && nipple.lactationRate >= 1.5)
 			{
 				string intro = doQuadText ? "quad-" : "";
-				return intro + Utils.Pluralize("teat", plural);
+				return intro + Utils.PluralizeIf("teat", plural);
 			}
 			//20% chance a non-inverted nipple will get this special description
 			else if (choice == 3 && !nipple.status.IsInverted())
 			{
 				if (nipple.length < 0.5 && doQuadText)
 				{
-					return Utils.Pluralize("perky quad-nipple", plural);
+					return Utils.PluralizeIf("perky quad-nipple", plural);
 				}
 				else if (nipple.length < 0.5)
 				{
-					return Utils.Pluralize("perky nipple", plural);
+					return Utils.PluralizeIf("perky nipple", plural);
 				}
 				else if (doQuadText)
 				{
-					return Utils.Pluralize("four-pronged, cherry-like nub", plural);
+					return Utils.PluralizeIf("four-pronged, cherry-like nub", plural);
 				}
-				return Utils.Pluralize("cherry-like nub", plural);
+				return Utils.PluralizeIf("cherry-like nub", plural);
 			}
 			//default case. Occurs naturally 20% of the time, and any time the we roll something we don't have.
 			else if (doQuadText)
 			{
-				return Utils.Pluralize(Utils.RandomChoice("quad-nipple", "quad-nipple", "quad-nipple", "four-pronged nipple", "four-tipped nipple", "quad-tipped nipple"), plural);
+				return Utils.PluralizeIf(Utils.RandomChoice("quad-nipple", "quad-nipple", "quad-nipple", "four-pronged nipple", "four-tipped nipple", "quad-tipped nipple"), plural);
 			}
-			return Utils.Pluralize("nipple", plural);
+			return Utils.PluralizeIf("nipple", plural);
 		}
 
-		public static string ShortDescription(INipple nipple, bool plural, bool allowQuadNippleText)
+		public static string ShortDescription(INipple nipple, bool plural, bool allowQuadNippleText) => ShortDesc(nipple, plural, false, allowQuadNippleText);
+
+		public static string SingleItemDescription(INipple nipple, bool allowQuadNippleText) => ShortDesc(nipple, false, true, allowQuadNippleText);
+
+		private static string ShortDesc(INipple nipple, bool plural, bool singleMemberFormatIfNotPlural, bool allowQuadNippleText)
 		{
 
-			//start with noun, so we can simply say return adjective+noun as we find the adjective of choice. no need to store the description, which
-			//can get complicated if you mess up somewhere.
+			bool needsArticle = !plural && singleMemberFormatIfNotPlural;
 
-			string noun = NippleNoun(nipple, allowQuadNippleText, plural);
+			//regardless of the above boolean, the noun will not need an article in nearly every instance. therefore, by default, we can simply calculate the
+			//noun ahead of time and just use it when needed. technically, i could write the function call everywhere, but imo it's cleaner to write it this way.
+			//when we do fall through to a case where we need an article on the noun directly, this variable will be incorrect and thus we'll need to overwrite it,
+			//but it's worth trading the slight performance/memory cost (and i mean slight) for much cleaner code.
+			string noun = NounText(nipple, plural, allowQuadNippleText);
 
 
 			int randVal = Utils.Rand(3);
@@ -318,15 +254,17 @@ namespace CoC.Backend.BodyParts
 				{
 					var leftHorJewelry = nipple.piercings[NipplePiercings.LEFT_HORIZONTAL];
 					//if (piercing is nipple chain) return "chained " + nount;
-					return "pierced " + noun;
+
+					return (needsArticle ? "a " : "") + "pierced " + noun;
 				}
 				else if (nipple.bodyType == BodyType.GOO)
 				{
-					return Utils.RandomChoice("slime-slick ", "goopy ", "slippery ") + noun;
+					return (needsArticle ? "a " : "") + Utils.RandomChoice("slime-slick ", "goopy ", "slippery ") + noun;
 				}
 				else
 				{
-					return Utils.RandomChoice("black ", "ebony ", "sable ") + noun;
+					if (needsArticle) return Utils.RandomChoice("a black ", "an ebony ", "a sable ") + noun;
+					else return Utils.RandomChoice("black ", "ebony ", "sable ") + noun;
 				}
 			}
 			else if (randVal == 1 && (isLactating || nipple.status == NippleStatus.DICK_NIPPLE || nipple.status == NippleStatus.FUCKABLE || nipple.relativeLust >= 50))
@@ -337,24 +275,25 @@ namespace CoC.Backend.BodyParts
 					//Fuckable and lactating?
 					if (isLactating)
 					{
-						return Utils.RandomChoice("milk-lubricated ", "lactating ", "lactating ", "milk-slicked ", "milky ") + noun;
+						return (needsArticle ? "a " : "") + Utils.RandomChoice("milk-lubricated ", "lactating ", "lactating ", "milk-slicked ", "milky ") + noun;
 					}
 					//Just fuckable
 					else
 					{
-						return Utils.RandomChoice("wet ", "mutated ", "slimy ", "damp ", "moist ", "slippery ", "oozing ", "sloppy ", "dewy ") + noun;
+						return (needsArticle ? "a " : "") + Utils.RandomChoice("wet ", "mutated ", "slimy ", "damp ", "moist ", "slippery ", "oozing ", "sloppy ", "dewy ") + noun;
 					}
 				}
 				else if (nipple.status == NippleStatus.DICK_NIPPLE)
 				{
 					if (isLactating)
 					{
-						return Utils.RandomChoice("milk-lubricated ", "lactating ", "lactating ", "milk-slicked ", "milky ") + "dick-" + noun;
+						return (needsArticle ? "a " : "") + Utils.RandomChoice("milk-lubricated ", "lactating ", "lactating ", "milk-slicked ", "milky ") + "dick-" + noun;
 					}
 					//Just dick-nipple
 					else
 					{
-						return Utils.RandomChoice("mutant ", "", "large ", "", "upward-curving ") + "dick-" + noun;
+						if (needsArticle) return Utils.RandomChoice("a mutant ", "a ", "a large ", "", "an upward-curving ") + "dick-" + noun;
+						else return Utils.RandomChoice("mutant ", "", "large ", "", "upward-curving ") + "dick-" + noun;
 					}
 				}
 				//Just lactating!
@@ -364,17 +303,17 @@ namespace CoC.Backend.BodyParts
 					//Light lactation
 					if (lactationState < LactationStatus.MODERATE)
 					{
-						return Utils.RandomChoice("milk moistened ", "slightly lactating ", "milk-dampened ") + noun;
+						return (needsArticle ? "a " : "") + Utils.RandomChoice("milk moistened ", "slightly lactating ", "milk-dampened ") + noun;
 					}
 					//Moderate lactation
 					else if (lactationState < LactationStatus.STRONG)
 					{
-						return Utils.RandomChoice("lactating ", "milky ", "milk-seeping ") + noun;
+						return (needsArticle ? "a " : "") + Utils.RandomChoice("lactating ", "milky ", "milk-seeping ") + noun;
 					}
 					//Heavy lactation
 					else
 					{
-						return Utils.RandomChoice("dripping ", "dribbling ", "milk-leaking ", "drooling ") + noun;
+						return (needsArticle ? "a " : "") + Utils.RandomChoice("dripping ", "dribbling ", "milk-leaking ", "drooling ") + noun;
 					}
 				}
 				//horny, none of the above
@@ -382,131 +321,188 @@ namespace CoC.Backend.BodyParts
 				{
 					if (nipple.relativeLust >= 75)
 					{
-						return Utils.RandomChoice("throbbing ", "trembling ", "needy ", "throbbing ") + noun;
+						return (needsArticle ? "a " : "") + Utils.RandomChoice("throbbing ", "trembling ", "needy ", "throbbing ") + noun;
 					}
 					else //(nipple.relativeLust >= 50)
 					{
-						return Utils.RandomChoice("erect ", "perky ", "erect ", "firm ", "tender ") + noun;
+						if (needsArticle) return Utils.RandomChoice("an erect ", "a perky ", "an erect ", "a firm ", "a tender ") + noun;
+						else return Utils.RandomChoice("erect ", "perky ", "erect ", "firm ", "tender ") + noun;
 					}
 
 				}
 			}
 			else if (Utils.Rand(5) != 0) //randVal is a 1 or some above condition failed. Procs
 			{
-				return NippleStrings.NippleSizeAdjective(nipple.length) + noun;
+				string size = NippleStrings.NippleSizeAdjective(nipple.length, true);
+				if (!string.IsNullOrEmpty(size) || !needsArticle)
+				{
+					return size + noun;
+				}
 			}
-			else
+
+			//fall through case.
+			if (!needsArticle)
 			{
 				return noun;
 			}
+			else
+			{
+				return SingleFormatNippleText(nipple, allowQuadNippleText);
+			}
+
 		}
 
-		internal static string Desc(INipple nipple, bool withArticle, bool preciseMeasurements, bool onlyOneNipple, bool singularIfQuadNipples, bool full)
+		internal static string LongDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
 		{
-			bool allowQuadNipple = !onlyOneNipple || !singularIfQuadNipples;
+			return LongFullDesc(nipple, alternateFormat, plural, usePreciseMeasurements, false);
+		}
 
-			string retVal = "";
-			if (full)
+		internal static string FullDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
+		{
+			return LongFullDesc(nipple, alternateFormat, plural, usePreciseMeasurements, true);
+		}
+
+		//note: if plural is set to true, with article is ignored. the alternate format for plural is identical to the regular format.
+		private static string LongFullDesc(INipple nipple, bool withArticle, bool allAvailableNipples, bool preciseMeasurements, bool full)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			if (full && nipple.piercings.wearingJewelry)
 			{
-				if (nipple.piercings.wearingJewelry)
-				{
-					retVal += "pierced";
-				}
+				sb.Append("pierced");
 			}
 
 			if (nipple.blackNipples)
 			{
-				if (!string.IsNullOrWhiteSpace(retVal))
+				if (sb.Length > 0)
 				{
-					retVal += ", ";
-				}
-				retVal = " black";
-			}
-			if (nipple.status.IsInverted())
-			{
-				if (!string.IsNullOrWhiteSpace(retVal))
-				{
-					retVal += ", ";
-				}
-				retVal += (nipple.status == NippleStatus.SLIGHTLY_INVERTED ? "slightly-" : "") + "inverted";
-			}
-			if (nipple.lactationStatus > LactationStatus.NOT_LACTATING)
-			{
-				if (!string.IsNullOrWhiteSpace(retVal))
-				{
-					retVal += ", ";
+					sb.Append(", ");
 				}
 
+				sb.Append("black");
+			}
+
+			if (nipple.lactationStatus > LactationStatus.NOT_LACTATING)
+			{
+				if (sb.Length > 0)
+				{
+					sb.Append(", ");
+				}
 				//creature is not null or islactating would be false.
 				var lactationState = nipple.lactationStatus;
 				//Light lactation
 				if (lactationState < LactationStatus.MODERATE)
 				{
-					retVal += Utils.RandomChoice("milk moistened ", "slightly lactating ", "milk-dampened ");
+					sb.Append(Utils.RandomChoice("milk moistened", "slightly lactating", "milk-dampened"));
 				}
 				//Moderate lactation
 				else if (lactationState < LactationStatus.STRONG)
 				{
-					retVal += Utils.RandomChoice("lactating ", "milky ", "milk-seeping ");
+					sb.Append(Utils.RandomChoice("lactating", "milky", "milk-seeping"));
 				}
 				//Heavy lactation
 				else
 				{
-					retVal += Utils.RandomChoice("dripping ", "dribbling ", "milk-leaking ", "drooling ");
+					sb.Append(Utils.RandomChoice("dripping", "dribbling", "milk-leaking", "drooling"));
 				}
 			}
+			if (nipple.status.IsInverted())
+			{
+				if (sb.Length > 0)
+				{
+					sb.Append(", ");
+				}
+				//else... shit. different articles.
+				if (nipple.status == NippleStatus.SLIGHTLY_INVERTED)
+				{
+					sb.Append("slightly-");
+				}
+				sb.Append("inverted");
+			}
 
-
-			//lust is a fallback if nothing else displays for full or long descriptions.
-			if (string.IsNullOrEmpty(retVal) && nipple.relativeLust > 50)
+			//check if we've added any adjectives. if we have, the length is > 0. if not, try using lust. if that doesn't work, we don't have any adjectives :(.
+			if (sb.Length == 0 && nipple.relativeLust > 50)
 			{
 				if (nipple.relativeLust >= 75)
 				{
-					return Utils.RandomChoice("throbbing ", "trembling ", "needy ", "throbbing ");
+					sb.Append(Utils.RandomChoice("throbbing", "trembling", "needy ", "throbbing "));
 				}
-				else //(nipple.relativeLust >= 50)
+				else
 				{
-					return Utils.RandomChoice("erect ", "perky ", "erect ", "firm ", "tender ");
+					sb.Append(Utils.RandomChoice("erect ", "perky ", "erect ", "firm ", "tender "));
 				}
 			}
+
 
 			if (nipple.status == NippleStatus.DICK_NIPPLE)
 			{
-				retVal += Utils.Pluralize("dick-nipple", !onlyOneNipple);
+				if (nipple.quadNipples)
+				{
+					if (sb.Length > 0)
+					{
+						sb.Append(", ");
+					}
+					sb.Append("quad-tipped");
+				}
+
+				if (sb.Length > 0)
+				{
+					sb.Append(" ");
+				}
+				sb.Append(Utils.PluralizeIf("dick-nipple", allAvailableNipples));
 			}
 			else if (nipple.status == NippleStatus.FUCKABLE)
 			{
-				retVal += Utils.Pluralize("nipple-cunt", !onlyOneNipple);
+				if (nipple.quadNipples)
+				{
+					if (sb.Length > 0)
+					{
+						sb.Append(", ");
+					}
+					sb.Append(Utils.PluralizeIf("quad-fuckable nipple", allAvailableNipples));
+				}
+				else
+				{
+					if (sb.Length > 0)
+					{
+						sb.Append(" ");
+					}
+					sb.Append(Utils.PluralizeIf("nipple-cunt", allAvailableNipples));
+				}
 			}
 			else
 			{
-				retVal += Utils.Pluralize("nipple", !onlyOneNipple);
+				if (sb.Length > 0)
+				{
+					sb.Append(" ");
+				}
+				if (nipple.quadNipples)
+				{
+					sb.Append("quad-");
+				}
+				sb.Append(Utils.PluralizeIf("nipple", allAvailableNipples));
 			}
 
-			string intro = "";
-			if (withArticle && onlyOneNipple)
-			{
-				intro = "a ";
-			}
+			bool needsArticle = !allAvailableNipples && withArticle;
+
 			if (preciseMeasurements)
 			{
-				return intro + Measurement.ToNearestQuarterInchOrMillimeter(nipple.length, false, false) + retVal;
+				//...shit. eight uses an. well, i guess add article if handles that now. not a huge fan but i guess it works.
+				return Utils.AddArticleIf(Measurement.ToNearestQuarterInchOrMillimeter(nipple.length, false, false), needsArticle) + sb.ToString();
 			}
 			else
 			{
-				return intro + NippleSizeAdjective(nipple.length) + retVal;
+				return NippleSizeAdjective(nipple.length, needsArticle) + sb.ToString();
 			}
 		}
 
-		public static string NippleSizeAdjective(float length)
+		public static string NippleSizeAdjective(float length, bool withArticle = false)
 		{
 			//TINAHHHH
 			if (length < .25)
 			{
-				return Utils.RandomChoice("tiny ",
-					"itty-bitty ",
-					"teeny-tiny ",
-					"dainty ");
+				if (withArticle) return Utils.RandomChoice("a tiny ", "an itty-bitty ", "a teeny-tiny ", "a dainty ");
+				return Utils.RandomChoice("tiny ", "itty-bitty ", "teeny-tiny ", "dainty ");
 			}
 			else if (length < 0.4)
 			{
@@ -516,37 +512,25 @@ namespace CoC.Backend.BodyParts
 			//Prominant
 			else if (length < 1)
 			{
-				return Utils.RandomChoice("prominent ",
-					"pencil eraser-sized ",
-					"eye-catching ",
-					"pronounced ",
-					"striking ");
+				if (withArticle) return Utils.RandomChoice("a prominent ", "a pencil eraser-sized ", "an eye-catching ", "a pronounced ", "a striking ");
+				else return Utils.RandomChoice("prominent ", "pencil eraser-sized ", "eye-catching ", "pronounced ", "striking ");
 			}
 			//Big 'uns
 			else if (length < 2)
 			{
-				return Utils.RandomChoice("forward-jutting ",
-					"over-sized ",
-					"fleshy ",
-					"large protruding ");
+				if (withArticle) return Utils.RandomChoice("a forward-jutting ", "an over-sized ", "a fleshy ", "a large, protruding ");
+				return Utils.RandomChoice("forward-jutting ", "over-sized ", "fleshy ", "large, protruding ");
 			}
 			//'Uge
 			else if (length < 3.2)
 			{
-				return Utils.RandomChoice("elongated ",
-					"massive ",
-					"awkward ",
-					"lavish ",
-					"hefty ");
+				if (withArticle) return Utils.RandomChoice("an elongated ", "a massive ", "an awkward ", "a lavish ", "a hefty ");
+				else return Utils.RandomChoice("elongated ", "massive ", "awkward ", "lavish ", "hefty ");
 			}
 			//Massive
 			else //if (length >= 3.2)
 			{
-				return Utils.RandomChoice("bulky ",
-					"ponderous ",
-					"thumb-sized ",
-					"cock-sized ",
-					"cow-like ");
+				return (withArticle ? "a " : "") + Utils.RandomChoice("bulky ", "ponderous ", "thumb-sized ", "cock-sized ", "cow-like ");
 			}
 		}
 	}
