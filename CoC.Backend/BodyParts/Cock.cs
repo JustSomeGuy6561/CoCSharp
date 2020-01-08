@@ -12,17 +12,106 @@ using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
 	public enum CockGroup { HUMAN, MAMMALIAN, CORRUPTED, AQUATIC, REPTILIAN, FLYING, OTHER }
 
-	public enum CockPiercings
+	public sealed partial class CockPiercingLocations : PiercingLocation, IEquatable<CockPiercingLocations>
 	{
-		ALBERT,
-		FRENUM_UPPER_1, FRENUM_UPPER_2, FRENUM_MIDDLE_1, FRENUM_MIDDLE_2,
-		FRENUM_MIDDLE_3, FRENUM_MIDDLE_4, FRENUM_LOWER_1, FRENUM_LOWER_2
+		private static readonly List<CockPiercingLocations> _allLocations = new List<CockPiercingLocations>();
+
+		public static readonly ReadOnlyCollection<CockPiercingLocations> allLocations;
+
+		private readonly byte index;
+
+		static CockPiercingLocations()
+		{
+			allLocations = new ReadOnlyCollection<CockPiercingLocations>(_allLocations);
+		}
+
+		private CockPiercingLocations(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+
+
+		#region Useful Functions
+		public bool Equals(CockPiercingLocations other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is CockPiercingLocations cockPiercing)
+			{
+				return Equals(cockPiercing);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		#endregion
+
+		#region Implementations
+
+		public static readonly CockPiercingLocations PRINCE_ALBERT = new CockPiercingLocations(0, AlbertAllows, AlbertButton, AlbertLocation);
+		public static readonly CockPiercingLocations FRENUM_UPPER_1 = new CockPiercingLocations(1, FrenumAllows, UpperFrenum1Button, UpperFrenum1Location);
+		public static readonly CockPiercingLocations FRENUM_UPPER_2 = new CockPiercingLocations(2, FrenumAllows, UpperFrenum2Button, UpperFrenum2Location);
+		public static readonly CockPiercingLocations FRENUM_MIDDLE_1 = new CockPiercingLocations(3, FrenumAllows, MiddleFrenum1Button, MiddleFrenum1Location);
+		public static readonly CockPiercingLocations FRENUM_MIDDLE_2 = new CockPiercingLocations(4, FrenumAllows, MiddleFrenum2Button, MiddleFrenum2Location);
+		public static readonly CockPiercingLocations FRENUM_MIDDLE_3 = new CockPiercingLocations(5, FrenumAllows, MiddleFrenum3Button, MiddleFrenum3Location);
+		public static readonly CockPiercingLocations FRENUM_MIDDLE_4 = new CockPiercingLocations(6, FrenumAllows, MiddleFrenum4Button, MiddleFrenum4Location);
+		public static readonly CockPiercingLocations FRENUM_LOWER_1 = new CockPiercingLocations(7, FrenumAllows, LowerFrenum1Button, LowerFrenum1Location);
+		public static readonly CockPiercingLocations FRENUM_LOWER_2 = new CockPiercingLocations(8, FrenumAllows, LowerFrenum2Button, LowerFrenum2Location);
+		#endregion
+		#region Implementation Helpers
+		private static bool AlbertAllows(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType == JewelryType.HORSESHOE || jewelryType == JewelryType.RING || jewelryType == JewelryType.SPECIAL;
+		}
+		private static bool FrenumAllows(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType == JewelryType.RING;
+		}
+
+
+		#endregion
 	}
+
+	public sealed class CockPiercing : Piercing<CockPiercingLocations>
+	{
+		internal CockPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public int MaxFrenumPiercings => MaxPiercings - 1;
+
+		public override int MaxPiercings => CockPiercingLocations.allLocations.Count;
+
+		//determines if you have at least 7 different color piercings in your cock. i think i use this for an achievement, idk.
+		public bool rainbow => availableLocations.Where(x => this.WearingJewelryAt(x)).Select(x => this[x].jewelryMaterial.hueDescriptor()).Distinct().Count() >= 7;
+
+		public override IEnumerable<CockPiercingLocations> availableLocations => CockPiercingLocations.allLocations;
+	}
+
+
 	//whoever wrote the AS version of cock, thank you. your cock was awesome. (Obligatory: no homo)
 	//i didn't have to search everywhere for the things that were part of it.
 	//well, mostly. knots were still a pain.
@@ -56,9 +145,6 @@ namespace CoC.Backend.BodyParts
 
 		public const float MIN_URETHRA_WIDTH = (float)(0.5 * Measurement.TO_INCHES);
 		public const float MIN_CUM = 2;
-
-		public const JewelryType SUPPORTED_JEWELRY_FRENUM = JewelryType.BARBELL_STUD | JewelryType.RING;
-		public const JewelryType SUPPORTED_JEWELRY_ALBERT = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
 
 		#endregion
 
@@ -118,7 +204,7 @@ namespace CoC.Backend.BodyParts
 
 		private float resetLength => Math.Max(newCockDefaultSize, minCockLength);
 
-		public readonly Piercing<CockPiercings> cockPiercings;
+		public readonly CockPiercing cockPiercings;
 
 		public float urethraWidth => Math.Max(type.UrethraWidth(girth), MIN_URETHRA_WIDTH);
 
@@ -193,7 +279,7 @@ namespace CoC.Backend.BodyParts
 
 			knotMultiplier = type.baseKnotMultiplier;
 
-			cockPiercings = new Piercing<CockPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			cockPiercings = new CockPiercing(PiercingLocationUnlocked, AllCockPiercingsStr);
 
 			newCockDefaultSize = initialPerkValues.NewCockDefaultSize;
 			minCockLength = initialPerkValues.MinCockLength;
@@ -215,7 +301,7 @@ namespace CoC.Backend.BodyParts
 
 			knotMultiplier = initialKnotMultiplier ?? type.baseKnotMultiplier;
 
-			cockPiercings = new Piercing<CockPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			cockPiercings = new CockPiercing(PiercingLocationUnlocked, AllCockPiercingsStr);
 
 			newCockDefaultSize = initialPerkValues.NewCockDefaultSize;
 			minCockLength = initialPerkValues.MinCockLength;
@@ -233,7 +319,7 @@ namespace CoC.Backend.BodyParts
 
 			knotMultiplier = initialKnotMultiplier ?? type.baseKnotMultiplier;
 
-			cockPiercings = new Piercing<CockPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			cockPiercings = new CockPiercing(PiercingLocationUnlocked, AllCockPiercingsStr);
 
 			newCockDefaultSize = DEFAULT_COCK_LENGTH;
 			minCockLength = MIN_COCK_LENGTH;
@@ -261,7 +347,7 @@ namespace CoC.Backend.BodyParts
 			return new Cock(creatureID, new CockPerkHelper(), CockType.defaultValue, clit.length + 5, DEFAULT_COCK_GIRTH, null, true, null);
 		}
 
-		internal void InitializePiercings(Dictionary<CockPiercings, PiercingJewelry> piercings)
+		internal void InitializePiercings(Dictionary<CockPiercingLocations, PiercingJewelry> piercings)
 		{
 #warning Implement Me!
 			//throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
@@ -553,21 +639,10 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Piercings
-		private bool PiercingLocationUnlocked(CockPiercings piercingLocation)
+		private bool PiercingLocationUnlocked(CockPiercingLocations piercingLocation, out string whyNot)
 		{
+			whyNot = null;
 			return true;
-		}
-
-		private JewelryType SupportedJewelryByLocation(CockPiercings piercingLocation)
-		{
-			if (piercingLocation == CockPiercings.ALBERT)
-			{
-				return SUPPORTED_JEWELRY_ALBERT;
-			}
-			else
-			{
-				return SUPPORTED_JEWELRY_FRENUM;
-			}
 		}
 
 		#endregion
@@ -914,7 +989,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly CockSockBase cockSock;
 
-		public readonly ReadOnlyPiercing<CockPiercings> cockPiercings;
+		public readonly ReadOnlyPiercing<CockPiercingLocations> cockPiercings;
 
 		public readonly bool currentlyHasSheath;
 		public bool requiresSheath => type.usesASheath;

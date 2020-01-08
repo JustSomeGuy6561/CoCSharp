@@ -75,10 +75,7 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-		public override string ShortDescription()
-		{
-			return base.ShortDescription();
-		}
+
 
 		protected internal override void LateInit()
 		{
@@ -188,6 +185,13 @@ namespace CoC.Backend.BodyParts
 		//default restore is fine.
 		#endregion
 		#region Text
+		public override string ShortDescription()
+		{
+			return type.ShortDescription(numHorns != 1);
+		}
+
+		public string ShortDescription(out bool isPlural) => type.ShortDescription(numHorns != 1, out isPlural);
+
 		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
 
@@ -204,6 +208,34 @@ namespace CoC.Backend.BodyParts
 
 		public string SingleHornDescription() => type.ShortDescription(false);
 		public string SingleHornLongDescription(bool alternateFormat) => type.LongDescription(AsReadOnlyData(), alternateFormat, false);
+
+
+		public string OneOfHornsShort(string pronoun = "your")
+		{
+			if (numHorns == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(numHorns > 1, pronoun, ShortDescription());
+		}
+
+		public string EachOfHornsShort(string pronoun = "your")
+		{
+			return EachOfHornsShort(pronoun, out bool _);
+		}
+
+		public string EachOfHornsShort(string pronoun, out bool isPlural)
+		{
+			isPlural = numHorns != 1;
+
+			if (numHorns == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(numHorns > 1, pronoun, ShortDescription());
+		}
 
 		#endregion
 
@@ -322,6 +354,8 @@ namespace CoC.Backend.BodyParts
 
 		public string LongDescriptionAlternate(HornData data, bool pluralIfApplicable) => longPluralDesc(data, true, pluralIfApplicable, out bool _);
 		public string LongDescriptionAlternate(HornData data, bool pluralIfApplicable, out bool isPlural) => longPluralDesc(data, true, pluralIfApplicable, out isPlural);
+
+
 
 		//call the other constructor with defaults set to min.
 		private protected HornType(byte minHorns, byte maximumHorns, byte minLength, byte maxLength, ShortMaybePluralDescriptor shortDesc,
@@ -1477,8 +1511,15 @@ namespace CoC.Backend.BodyParts
 		public readonly byte hornLength;
 		public readonly byte hornCount;
 
-		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
+		#region Text
+		public override string ShortDescription()
+		{
+			return type.ShortDescription(hornCount != 1);
+		}
 
+		public string ShortDescription(out bool isPlural) => type.ShortDescription(hornCount != 1, out isPlural);
+
+		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
 		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => type.ShortDescription(pluralIfApplicable, out isPlural);
 
@@ -1491,8 +1532,36 @@ namespace CoC.Backend.BodyParts
 		public string LongDescriptionAlternate(bool pluralIfApplicable) => type.LongDescriptionAlternate(this, pluralIfApplicable);
 		public string LongDescriptionAlternate(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionAlternate(this, pluralIfApplicable, out isPlural);
 
-		public string SingleHornDescription() => type.ShortDescription(false);
 		public string SingleHornLongDescription(bool alternateFormat) => type.LongDescription(this, alternateFormat, false);
+
+		public string OneOfHornsShort(string pronoun = "your")
+		{
+			if (hornCount == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(hornCount > 1, pronoun, ShortDescription());
+		}
+
+		public string EachOfHornsShort(string pronoun = "your")
+		{
+			return EachOfHornsShort(pronoun, out bool _);
+		}
+
+		public string EachOfHornsShort(string pronoun, out bool isPlural)
+		{
+			isPlural = hornCount != 1;
+
+			if (hornCount == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(hornCount > 1, pronoun, ShortDescription());
+		}
+
+		#endregion
 
 		public override HornData AsCurrentData()
 		{

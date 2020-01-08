@@ -7,11 +7,131 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class LabiaPiercingLocation
+	{
+		private static string Left1Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Left1Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Left2Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Left2Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string Left3Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Left3Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string Left4Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Left4Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string Left5Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Left5Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string Left6Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Left6Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Right1Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Right1Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Right2Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Right2Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string Right3Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Right3Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string Right4Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Right4Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string Right5Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Right5Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string Right6Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string Right6Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
 	public partial class Vagina
 	{
 		public static string Name()
 		{
 			return "Vagina";
+		}
+
+		private string AllLabiaPiercingsStr(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		private string VaginaTightenedUpDueToInactivity(VaginalLooseness oldLooseness)
@@ -415,9 +535,8 @@ namespace CoC.Backend.BodyParts
 			return GenericLoseVaginaDesc(removedVagina, player);
 		}
 
-		private static string GenericDesc(VaginaData vagina, bool alternateFormat, bool fullDesc, string optionalAdjective = null)
+		internal static string VaginaAdjectiveText(VaginaData vagina, bool fullDesc)
 		{
-
 			StringBuilder sb = new StringBuilder();
 			//less confusing way to display values.
 
@@ -445,7 +564,6 @@ namespace CoC.Backend.BodyParts
 				showWetness = Utils.Rand(10) < 3;
 			}
 
-
 			if (showLooseness)
 			{
 				sb.Append(vagina.looseness.AsDescriptor());
@@ -468,35 +586,35 @@ namespace CoC.Backend.BodyParts
 				if (sb.Length != 0) sb.Append(", ");
 				sb.Append(Utils.RandomChoice("gooey", "slimy"));
 			}
-			if (optionalAdjective != null)
-			{
-				if (sb.Length != 0) sb.Append(", ");
-				sb.Append(optionalAdjective);
-			}
 
 			if (!vagina.everPracticedVaginal)
 			{
-				if (sb.Length != 0)
-				{
-					sb.Append(" ");
-				}
+				if (sb.Length != 0) sb.Append(", ");
+
+
 				sb.Append("true virgin");
 			}
 			else if (vagina.isVirgin)
 			{
-				if (sb.Length != 0)
-				{
-					sb.Append(" ");
-				}
+				if (sb.Length != 0) sb.Append(", ");
+
 				sb.Append("virgin");
 			}
+			return sb.ToString();
+		}
 
-			if (sb.Length != 0)
+		private static string GenericDesc(VaginaData vagina, bool alternateFormat, bool fullDesc, string typeAdjective = null)
+		{
+			string baseAdjectives = VaginaAdjectiveText(vagina, fullDesc);
+			if (!string.IsNullOrWhiteSpace(typeAdjective))
 			{
-				sb.Append(" ");
+				typeAdjective = typeAdjective.Trim() + " ";
 			}
 
-			sb.Append(VaginaNoun(false));
+			if (!string.IsNullOrWhiteSpace(baseAdjectives))
+			{
+				baseAdjectives += " ";
+			}
 
 			//NOTE FROM VANILLA:
 			//	Something that would be nice to have but needs a variable in Creature or Character.
@@ -506,7 +624,7 @@ namespace CoC.Backend.BodyParts
 			//possible to add to frontend as an extension method, but would require some edge case detection requiring vag type to be humanoid/normal/whatever the default is called.
 
 
-			return (alternateFormat ? "a " : "") + sb.ToString();
+			return (alternateFormat ? "a " : "") + baseAdjectives + typeAdjective + VaginaNoun(false);
 
 		}
 

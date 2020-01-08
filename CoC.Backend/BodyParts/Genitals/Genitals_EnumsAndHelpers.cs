@@ -81,16 +81,16 @@ namespace CoC.Backend.BodyParts
 
 		public static PiercingJewelry GenerateCockJewelry(this Cock cock, CockPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (cock.cockPiercings.CanWearThisJewelryType(location, jewelryType))
+			if (cock.cockPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
 			return null;
 		}
 
-		public static PiercingJewelry GenerateClitJewelry(this Clit clit, ClitPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		public static PiercingJewelry GenerateClitJewelry(this Clit clit, ClitPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (clit.clitPiercings.CanWearThisJewelryType(location, jewelryType))
+			if (clit.clitPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
@@ -99,16 +99,16 @@ namespace CoC.Backend.BodyParts
 
 		public static PiercingJewelry GenerateLabiaJewelry(this Vagina vagina, LabiaPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (vagina.labiaPiercings.CanWearThisJewelryType(location, jewelryType))
+			if (vagina.labiaPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
 			return null;
 		}
 
-		public static PiercingJewelry GenerateNippleJewelry(this Breasts breasts, NipplePiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		public static PiercingJewelry GenerateNippleJewelry(this Breasts breasts, NipplePiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (breasts.nipples.nipplePiercing.CanWearThisJewelryType(location, jewelryType))
+			if (breasts.nipples.nipplePiercing.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}

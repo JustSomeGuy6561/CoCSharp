@@ -11,6 +11,7 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+#warning Handle GOO TFs so they suck less
 	public partial class Arms
 	{
 		public static string Name()

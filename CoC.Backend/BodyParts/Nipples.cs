@@ -8,6 +8,8 @@ using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -34,8 +36,79 @@ namespace CoC.Backend.BodyParts
 	//Also note: this class is created after perks have been initialized. it's post perk init is never called.
 
 	public enum NippleStatus { NORMAL, FULLY_INVERTED, SLIGHTLY_INVERTED, FUCKABLE, DICK_NIPPLE }
-	public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
+	//public enum NipplePiercings { LEFT_HORIZONTAL, LEFT_VERTICAL, RIGHT_HORIZONTAL, RIGHT_VERTICAL }
 
+	public sealed partial class NipplePiercingLocation : PiercingLocation, IEquatable<NipplePiercingLocation>
+	{
+		private static readonly List<NipplePiercingLocation> _allLocations = new List<NipplePiercingLocation>();
+
+		public static readonly ReadOnlyCollection<NipplePiercingLocation> allLocations;
+
+		private readonly byte index;
+
+		static NipplePiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<NipplePiercingLocation>(_allLocations);
+		}
+
+		public NipplePiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is NipplePiercingLocation nipplePiercing)
+			{
+				return Equals(nipplePiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(NipplePiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public static readonly NipplePiercingLocation LEFT_HORIZONTAL = new NipplePiercingLocation(0, SupportedHorizontalJewelry, LeftHorizontalButton, LeftHorizontalLocation);
+		public static readonly NipplePiercingLocation LEFT_VERTICAL = new NipplePiercingLocation(1, SupportedVerticalJewelry, LeftVerticalButton, LeftVerticalLocation);
+
+		public static readonly NipplePiercingLocation RIGHT_HORIZONTAL = new NipplePiercingLocation(2, SupportedHorizontalJewelry, RightHorizontalButton, RightHorizontalLocation);
+		public static readonly NipplePiercingLocation RIGHT_VERTICAL = new NipplePiercingLocation(3, SupportedVerticalJewelry, RightVerticalButton, RightVerticalLocation);
+
+
+		private static bool SupportedHorizontalJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.RING || jewelryType ==JewelryType.BARBELL_STUD || jewelryType ==JewelryType.SPECIAL || jewelryType ==JewelryType.DANGLER || jewelryType ==JewelryType.HORSESHOE;
+		}
+
+		private static bool SupportedVerticalJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType ==JewelryType.SPECIAL;
+		}
+	}
+
+	public sealed class NipplePiercing : Piercing<NipplePiercingLocation>
+	{
+		public NipplePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => NipplePiercingLocation.allLocations.Count;
+
+		public override IEnumerable<NipplePiercingLocation> availableLocations => NipplePiercingLocation.allLocations;
+	}
 
 	public sealed partial class Nipples : SimpleSaveablePart<Nipples, NippleData>, IGrowable, IShrinkable
 	{
@@ -110,7 +183,7 @@ namespace CoC.Backend.BodyParts
 
 		public float width => length < 1 ? length / 2 : length / 4;
 
-		public readonly Piercing<NipplePiercings> nipplePiercing;
+		public readonly NipplePiercing nipplePiercing;
 
 		public bool isPierced => nipplePiercing.isPierced;
 		public bool wearingJewelry => nipplePiercing.wearingJewelry;
@@ -126,7 +199,7 @@ namespace CoC.Backend.BodyParts
 
 			length = initialPerkData.NewNippleDefaultLength;
 
-			nipplePiercing = new Piercing<NipplePiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			nipplePiercing = new NipplePiercing(PiercingLocationUnlocked, AllNipplePiercingsStr);
 
 			//SetupPiercingMagic();
 
@@ -141,7 +214,7 @@ namespace CoC.Backend.BodyParts
 
 			length = nippleLength;
 
-			nipplePiercing = new Piercing<NipplePiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			nipplePiercing = new NipplePiercing(PiercingLocationUnlocked, AllNipplePiercingsStr);
 
 			//SetupPiercingMagic();
 
@@ -195,6 +268,25 @@ namespace CoC.Backend.BodyParts
 		{
 			return NippleStrings.FullDescription(this, alternateFormat, plural, usePreciseMeasurements);
 		}
+
+		public string OneNippleOrOneOfQuadNipplesShort(string pronoun = "your")
+		{
+			return CommonBodyPartStrings.OneOfDescription(quadNipples, pronoun, ShortDescription());
+		}
+
+		public string OneNippleOrEachOfQuadNipplesShort(string pronoun = "your")
+		{
+			return OneNippleOrEachOfQuadNipplesShort(pronoun, out bool _);
+		}
+
+		public string OneNippleOrEachOfQuadNipplesShort(string pronoun, out bool isPlural)
+		{
+			isPlural = quadNipples;
+
+			return CommonBodyPartStrings.EachOfDescription(quadNipples, pronoun, ShortDescription());
+		}
+
+
 		#endregion
 
 		internal override bool Validate(bool correctInvalidData)
@@ -211,46 +303,32 @@ namespace CoC.Backend.BodyParts
 			if (dryOrgasm) dryOrgasmCount++;
 		}
 
-
-
-		private bool PiercingLocationUnlocked(NipplePiercings piercingLocation)
+		private bool PiercingLocationUnlocked(NipplePiercingLocation piercingLocation, out string whyNot)
 		{
+			whyNot = null;
 			return true;
 		}
 
-		private JewelryType SupportedJewelryByLocation(NipplePiercings piercingLocation)
+		public bool EquipOrPierceAt(NipplePiercingLocation piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
-			switch (piercingLocation)
-			{
-				case NipplePiercings.LEFT_HORIZONTAL:
-				case NipplePiercings.RIGHT_HORIZONTAL:
-					//i guess we'll consider tassels danglers, idk.
-					return JewelryType.RING | JewelryType.BARBELL_STUD | JewelryType.SPECIAL | JewelryType.DANGLER | JewelryType.HORSESHOE;
-				default:
-					return JewelryType.BARBELL_STUD | JewelryType.SPECIAL;
-			}
-		}
-
-		public bool EquipOrPierceAt(NipplePiercings piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
-		{
-			bool retVal = nipplePiercing.EquipPiercingJewelryAndPierceIfNotPierced(piercingLocation, jewelry, forceIfEnabled);
+			bool retVal = nipplePiercing.EquipOrPierceAndEquip(piercingLocation, jewelry, forceIfEnabled);
 			//SetupPiercingMagic();
 			return retVal;
 		}
-		public bool EquipPiercingJewelry(NipplePiercings piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
+		public bool EquipPiercingJewelry(NipplePiercingLocation piercingLocation, PiercingJewelry jewelry, bool forceIfEnabled = false)
 		{
 			bool retVal = nipplePiercing.EquipPiercingJewelry(piercingLocation, jewelry, forceIfEnabled);
 			//SetupPiercingMagic();
 			return retVal;
 		}
-		public bool Pierce(NipplePiercings location, PiercingJewelry jewelry)
+		public bool Pierce(NipplePiercingLocation location)
 		{
-			bool retVal = nipplePiercing.Pierce(location, jewelry);
+			bool retVal = nipplePiercing.Pierce(location);
 			//SetupPiercingMagic();
 			return retVal;
 		}
 
-		public PiercingJewelry RemovePiercingJewelry(NipplePiercings location, bool forceRemove = false)
+		public PiercingJewelry RemovePiercingJewelry(NipplePiercingLocation location, bool forceRemove = false)
 		{
 			PiercingJewelry jewelry = nipplePiercing.RemovePiercingJewelry(location, forceRemove);
 			//SetupPiercingMagic();
@@ -425,7 +503,7 @@ namespace CoC.Backend.BodyParts
 		public readonly float lactationRate;
 		public readonly LactationStatus lactationStatus;
 
-		public readonly ReadOnlyPiercing<NipplePiercings> nipplePiercings;
+		public readonly ReadOnlyPiercing<NipplePiercingLocation> nipplePiercings;
 
 		public readonly float relativeLust;
 
@@ -449,14 +527,31 @@ namespace CoC.Backend.BodyParts
 		{
 			return NippleStrings.FullDescription(this, alternateFormat, plural, usePreciseMeasurements);
 		}
+
+		public string OneNippleOrOneOfQuadNipplesShort(string pronoun = "your")
+		{
+			return CommonBodyPartStrings.OneOfDescription(quadNipples, pronoun, ShortDescription());
+		}
+
+		public string OneNippleOrEachOfQuadNipplesShort(string pronoun = "your")
+		{
+			return OneNippleOrEachOfQuadNipplesShort(pronoun, out bool _);
+		}
+
+		public string OneNippleOrEachOfQuadNipplesShort(string pronoun, out bool isPlural)
+		{
+			isPlural = quadNipples;
+
+			return CommonBodyPartStrings.EachOfDescription(quadNipples, pronoun, ShortDescription());
+		}
 		#endregion
 		public NippleData(Guid creatureID, float length, int breastIndex, float lactationRate = 0, bool quadNipples = false, bool blackNipples = false,
-			NippleStatus nippleStatus = NippleStatus.NORMAL, ReadOnlyPiercing<NipplePiercings> piercings = null, float relativeLust = Creature.DEFAULT_LUST)
+			NippleStatus nippleStatus = NippleStatus.NORMAL, ReadOnlyPiercing<NipplePiercingLocation> piercings = null, float relativeLust = Creature.DEFAULT_LUST)
 			: this(creatureID, length, breastIndex, BodyType.defaultValue, lactationRate, quadNipples, blackNipples, nippleStatus, piercings, relativeLust)
 		{ }
 
 		public NippleData(Guid creatureID, float length, int breastIndex, BodyType bodyType, float lactationRate = 0, bool quadNipples = false, bool blackNipples = false,
-			NippleStatus nippleStatus = NippleStatus.NORMAL, ReadOnlyPiercing<NipplePiercings> piercings = null, float relativeLust = Creature.DEFAULT_LUST) : base(creatureID)
+			NippleStatus nippleStatus = NippleStatus.NORMAL, ReadOnlyPiercing<NipplePiercingLocation> piercings = null, float relativeLust = Creature.DEFAULT_LUST) : base(creatureID)
 		{
 			this.length = length;
 			this.breastRowIndex = breastIndex;
@@ -467,7 +562,7 @@ namespace CoC.Backend.BodyParts
 			this.lactationRate = lactationRate;
 			lactationStatus = Genitals.StatusFromRate(lactationRate);
 
-			nipplePiercings = piercings ?? new ReadOnlyPiercing<NipplePiercings>();
+			nipplePiercings = piercings ?? new ReadOnlyPiercing<NipplePiercingLocation>();
 
 			this.relativeLust = Utils.Clamp2(relativeLust, 0, 100);
 
@@ -485,7 +580,7 @@ namespace CoC.Backend.BodyParts
 			lactationRate = 0;
 			lactationStatus = LactationStatus.NOT_LACTATING;
 
-			nipplePiercings = new ReadOnlyPiercing<NipplePiercings>();
+			nipplePiercings = new ReadOnlyPiercing<NipplePiercingLocation>();
 
 			relativeLust = Creature.DEFAULT_LUST;
 
@@ -507,7 +602,7 @@ namespace CoC.Backend.BodyParts
 			lactationRate = source.lactationRate;
 			lactationStatus = source.lactationStatus;
 
-			nipplePiercings = new ReadOnlyPiercing<NipplePiercings>();
+			nipplePiercings = new ReadOnlyPiercing<NipplePiercingLocation>();
 
 			bodyType = source.bodyType;
 		}

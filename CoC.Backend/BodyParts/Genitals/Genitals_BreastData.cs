@@ -686,7 +686,54 @@ namespace CoC.Backend.BodyParts
 			results = "";
 			return false;
 		}
-			#endregion
+		#endregion
 #warning TODO:  a means to min/max lactationStatus?
+
+
+		#region Text
+
+		public string AllBreastsShortDescription(bool alternateFormat = false)
+		{
+			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().ShortDescription();
+		}
+
+		public string AllBreastsLongDescription(bool alternateFormat = false)
+		{
+			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().LongDescription(false, true);
+		}
+
+		public string AllBreastsFullDescription(bool alternateFormat = false)
+		{
+			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().FullDescription(false, false, true);
+		}
+
+		public string ChestOrAllBreastsShort(bool alternateFormat = false)
+		{
+			if (numBreastRows == 1 && _breasts[0].isMale)
+			{
+				return ChestShortDesc(alternateFormat);
+			}
+			else return AllBreastsShortDescription(alternateFormat);
+		}
+
+		public string ChestOrAllBreastsLong(bool alternateFormat = false)
+		{
+			if (numBreastRows == 1 && _breasts[0].isMale)
+			{
+				return ChestDesc(alternateFormat, false);
+			}
+			else return AllBreastsLongDescription(alternateFormat);
+		}
+
+		public string ChestOrAllBreastsFull(bool alternateFormat = false)
+		{
+			if (numBreastRows == 1 && _breasts[0].isMale)
+			{
+				return ChestDesc(alternateFormat, true);
+			}
+			else return AllBreastsFullDescription(alternateFormat);
+		}
+
+		#endregion
 	}
 }

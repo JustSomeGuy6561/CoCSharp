@@ -176,10 +176,10 @@ namespace CoC.Backend.Creatures
 		public readonly Wings wings;
 
 		//body aliases and helpers
-		public bool hasAnyFur => body.furActive;
+		public bool hasAnyFur => body.hasActiveFurData;
 
-		public bool hasPrimaryFur => body.mainEpidermis.usesFur;
-		public bool hasSupplementaryFur => body.supplementaryEpidermis.usesFur;
+		public bool hasPrimaryFur => body.mainEpidermis.usesFurColor;
+		public bool hasSupplementaryFur => body.supplementaryEpidermis.usesFurColor;
 
 		public bool hasPlainSkin => body.mainEpidermis.type == EpidermisType.SKIN;
 		public FurColor ActiveHairOrFurColor() => body.ActiveHairOrFurColor();

@@ -11,12 +11,108 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class NavelPiercingLocation
+	{
+		private static string TopButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string TopLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string BottomButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string BottomLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
+	public partial class HipPiercingLocation
+	{
+		private static string LeftTopButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftTopLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftCenterButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftCenterLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftBottomButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftBottomLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightTopButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightTopLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightCenterButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightCenterLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightBottomButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightBottomLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
+	//internal static string TopDesc()
+	//{
+	//	return "top of your belly button";
+	//}
+
+	//internal static string BottomDesc()
+	//{
+	//	return "bottom of your belly button";
+	//}
 
 	public partial class Body
 	{
 		public static string Name()
 		{
 			return "Body";
+		}
+
+		private string AllNavelPiercingsStr(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllHipPiercingsStr(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string HipPiercingsRequirePiercingFetish()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 	}
 
@@ -36,7 +132,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public virtual string LongDescriptionWithoutBody(BodyData body) => LongDescriptionWithoutBody(body, out bool _);
+		public string LongDescriptionWithoutBody(BodyData body) => LongDescriptionWithoutBody(body, out bool _);
 		public virtual string LongDescriptionWithoutBody(BodyData body, out bool isPlural)
 		{
 			if (secondary.isEmpty)
@@ -49,7 +145,6 @@ namespace CoC.Backend.BodyParts
 				return $"{body.main.DescriptionWithoutType()} {MainDescription()} and {body.supplementary.DescriptionWithoutType()} {SupplementaryDescription()}";
 			}
 		}
-
 
 		#region Generics
 
@@ -105,8 +200,6 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-
-
 		#region Skin
 
 		private static string SkinDesc(bool alternateFormat)
@@ -123,11 +216,6 @@ namespace CoC.Backend.BodyParts
 		private static string SkinLongDesc(BodyData body, bool alternateFormat)
 		{
 			return $"{body.main.JustColor(alternateFormat)}-skinned body";
-		}
-
-		private static string SkinFullDesc(BodyData body, bool alternateFormat)
-		{
-			return SkinLongDesc(body, alternateFormat);
 		}
 
 		private static string SkinPlayerStr(Body body, PlayerBase player)
@@ -232,18 +320,6 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private static string ReptileFullDesc(BodyData body, bool alternateFormat)
-		{
-			if (EpidermalData.MixedTones(body.main, body.supplementary))
-			{
-				return $"{(alternateFormat ? "a " : "")}predominantly {body.main.JustColor()}, scaley body, with {body.supplementary.DescriptionWithoutType()} ventrals";
-			}
-			else
-			{
-				return body.main.LongAdjectiveDescription(alternateFormat) + " body";
-			}
-		}
-
 		private static string ReptilePlayerStr(Body body, PlayerBase player)
 		{
 			if (EpidermalData.MixedTones(body.mainEpidermis, body.supplementaryEpidermis))
@@ -292,7 +368,6 @@ namespace CoC.Backend.BodyParts
 				{
 					sb.Append("are interlinking together so tightly that they are essentially seamless.");
 				}
-
 
 			}
 			else if (previousBodyData.type == BodyType.HUMANOID || previousBodyData.type == GOO)
@@ -389,25 +464,6 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private static string DragonFullDesc(BodyData body, bool alternateFormat)
-		{
-			if (EpidermalData.MixedTones(body.main, body.supplementary))
-			{
-				if (alternateFormat)
-				{
-					return $"{body.main.DescriptionWithoutType()} draconic scales covering most of your body, shifting to {body.supplementary.DescriptionWithoutType(true)} on your ventrals";
-				}
-				else
-				{
-					return $"body, covered in {body.main.DescriptionWithoutType()} draconic scales that shift to {body.supplementary.DescriptionWithoutType(true)} on your ventrals";
-				}
-			}
-			else
-			{
-				return body.main.AdjectiveDescriptionWithoutType(alternateFormat) + "drakescale-covered body";
-			}
-		}
-
 		private static string DragonPlayerStr(Body body, PlayerBase player)
 		{
 			if (EpidermalData.MixedTones(body.mainEpidermis, body.supplementaryEpidermis))
@@ -500,11 +556,6 @@ namespace CoC.Backend.BodyParts
 			return Utils.AddArticleIf("feathered body and scaly core", alternateFormat);
 		}
 
-		protected static string CockatriceFullDesc(BodyData body, bool alternateFormat)
-		{
-			return Utils.AddArticleIf("predominantly ", alternateFormat) + body.main.LongAdjectiveDescription() + " body with " + body.supplementary.LongDescription() + "around the core";
-		}
-
 		protected static string CockatricePlayerStr(Body body, PlayerBase player)
 		{
 			return GenericBodyPlayerDesc(false) + " Your body is covered in a curious amalgum of feathers and scales. " + body.mainEpidermis.LongDescription().CapitalizeFirstLetter() +
@@ -544,12 +595,12 @@ namespace CoC.Backend.BodyParts
 				legsText = " You fall to your knees in a bout of lightheadedness, ";
 			}
 
-			return GlobalStrings.NewParagraph() + bodyText +legsText + " panting as the pressure increases. Sweat drips from your brow. "
+			return GlobalStrings.NewParagraph() + bodyText + legsText + " panting as the pressure increases. Sweat drips from your brow. "
 				+ "You don't know how long you can take this and soon you drift into unconsciousness." + Environment.NewLine
 				+ "When you awaken you check yourself to see what has changed now that the overwhelming pressure has left your body."
 				+ " The first thing you notice is feathers, lots and lots of feathers that now cover your body in a downy layer."
 				+ " Just below your neck is a ruff of soft fluffy feathers, like you'd see on an exotic bird. As you look down to your " + player.genitals.ChestOrAllBreastsShort()
-				+", you see that from your chest to your groin you are covered in a layer of " + player.body.supplementaryEpidermis.LongDescription() + "."
+				+ ", you see that from your chest to your groin you are covered in a layer of " + player.body.supplementaryEpidermis.LongDescription() + "."
 				+ SafelyFormattedString.FormattedText("Your body is now covered in scales and feathers!", StringFormats.BOLD);
 		}
 		//there is literally nothing to use for reference for this, but that also means i've got complete freedom to do whatever. so i've decided to lean into the cockatrice/basilisk thing
@@ -624,11 +675,6 @@ namespace CoC.Backend.BodyParts
 			return body.main.JustTexture(alternateFormat) + "-skinned body with occasional patches of fur";
 		}
 
-		protected static string KitsuneFullDesc(BodyData body, bool alternateFormat)
-		{
-			return body.main.AdjectiveDescriptionWithoutType(alternateFormat) + "-skinned body with occasional patches of " + body.supplementary.LongDescription();
-		}
-
 		protected static string KitsunePlayerStr(Body body, PlayerBase player)
 		{
 			return GenericBodyPlayerDesc(false) + $"{body.supplementaryEpidermis.LongDescription()} covers parts of your body, though much of your {body.mainEpidermis.LongDescription()}" +
@@ -641,7 +687,6 @@ namespace CoC.Backend.BodyParts
 			bool primaryWasFur = previousBodyData.main.type == EpidermisType.FUR;
 			bool supplementaryWasFur = previousBodyData.supplementary.type == EpidermisType.FUR;
 			bool hadFur = primaryWasFur || supplementaryWasFur;
-
 
 			StringBuilder sb = new StringBuilder(GlobalStrings.NewParagraph());
 
@@ -694,7 +739,10 @@ namespace CoC.Backend.BodyParts
 		//idk if vag of holding is a body perk or a genital perk, but could mention removing it here? idk
 		protected static string KitsuneRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string nailsText = player.hands.NailsText();
+			return "Your skin suddenly feels itchy all over, particularly around your patches of fur. As you scratch, you begin to notice some of that fur " +
+			"stuck beneath your " + nailsText + ". Soon, the rest of it is falling out in large clumps, " +
+				SafelyFormattedString.FormattedText("leaving you with just " + player.body.primarySkin.LongDescription() + "!", StringFormats.BOLD);
 		}
 
 		//the feathers|fur covering parts of your body.
@@ -702,7 +750,6 @@ namespace CoC.Backend.BodyParts
 		{
 			return "the" + epidermis.ShortDescription() + "covering most of your body";
 		}
-
 
 		#endregion
 		#region Bark
@@ -718,26 +765,41 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string BarkLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private static string BarkFullDesc(BodyData body, bool alternateFormat)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return body.main.AdjectiveDescriptionWithoutType(alternateFormat) + ", bark-covered body";
 		}
 
 		private static string BarkPlayerStr(Body body, PlayerBase player)
 		{
-			return $"The {body.mainEpidermis.LongAdjectiveDescription(false)} outer layer of your body contrasts starkly with your form, which remains diestinctly humanoid.";
+			return $"The {body.mainEpidermis.LongAdjectiveDescription(false)} outer layer of your body contrasts starkly with your form, which remains distinctly humanoid. " +
+				$"The thickness varies by location: your vitals are covered in thick, overlapping layers, while your muscles gain a much thinner, flexible, vine-like membrane." +
+				$" Your {player.genitals.ChestOrAllBreastsShort()} and {(player.gender == Gender.GENDERLESS ? "nether region" : "genitals")}, on the other hand, only have a paper-thin" +
+				$" outer-layer, doing little to ";
 
 		}
 		private static string BarkTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (previousBodyData.type == BodyType.WOODEN)
+			{
+				return "";
+			}
+			else
+			{
+				return $"A tingling runs up along your {previousBodyData.LongDescription()}. Suddenly, vines start to sprout from your {previousBodyData.ShortEpidermisDescription()} " +
+					"and begin to wrap themselves around your form. You begin to struggle against your sudden bonds, but you soon realize it is impossible to fight your own body, " +
+					"and decide to paitently wait out the inevitable changes. More foliage flows out of you, eventually covering your entire body. All things considered, " +
+					"it's not the worse situation you've found yourself in - you can still breath fine, and the considerable thickness and density of the vines and foliage that prevents " +
+					"you from moving also prevents anything from getting to you. After what seems like hours (but was probably just a few moments), the foliage begins to unwind and fall " +
+					$"away. Peering down, you notice your recent captivity also caused more persistent changes - your previously {previousBodyData.ShortDescription()} " +
+					SafelyFormattedString.FormattedText("is now covered in something resembling bark!", StringFormats.BOLD) + "It varies in thickness and overall appearance, and provides " +
+					"some natural protection for your vitals, but otherwise functions like normal skin.";
+			}
 		}
 		private static string BarkRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your usually fresh and solid bark suddenly feels a bit dry. Before you get a chance to process it, it begins peeling away, giving you the rough impression of " +
+				"a reptile shedding its skin. You're fairly certain you've never seen fauna do that, though. As if to confirm your observation, your old bark is not replaced with" +
+				"a new layer underneath, but instead a layer of normal " + player.body.mainEpidermis.DescriptionWithColor() + "." +
+				SafelyFormattedString.FormattedText("You have normal, human skin again!", StringFormats.BOLD);
 		}
 		#endregion
 		#region Fur
@@ -830,12 +892,14 @@ namespace CoC.Backend.BodyParts
 
 		private static string FurLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private static string FurFullDesc(BodyData body, bool alternateFormat)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (EpidermalData.MixedFurColors(body.main, body.supplementary))
+			{
+				return Utils.AddArticleIf("multi-colored, furry body. ", alternateFormat);
+			}
+			else
+			{
+				return body.main.LongAdjectiveDescription(alternateFormat) + " body";
+			}
 		}
 
 		//applies to both simple and underbody.
@@ -863,10 +927,117 @@ namespace CoC.Backend.BodyParts
 					$"than the rest.";
 			}
 		}
+		//there is a bunch of these in vanilla; i've taken bits of all of them and made it something generic. feel free to use your own custom text for each tf item as you see fit.
 		private static string FurTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (previousBodyData.type == player.body.type)
+			{
+				return "";
+			}
+			//handle the generic fur bullshit.
+
+			//only has fur. both had underbody or both didnt have underbody. it's just generic text saying nothing really happened.
+			else if (previousBodyData.IsBoth(EpidermisType.FUR) && player.body.IsBoth(EpidermisType.FUR)
+				|| (previousBodyData.OnlyHas(EpidermisType.FUR) && player.body.OnlyHas(EpidermisType.FUR)))
+			{
+				return "Your fur tingles, then shifts slightly. You now have " + player.body.LongEpidermisDescription() + ".";
+			}
+			//only fur. underbody=> no underbody.
+			else if (previousBodyData.IsBoth(EpidermisType.FUR) && player.body.OnlyHas(EpidermisType.FUR))
+			{
+				return "Your fur tingles, then shifts slightly. Your fur is now just " + player.body.mainEpidermis.JustColor() + ".";
+			}
+			//only fur. no underbody => underbody
+			else if (previousBodyData.OnlyHas(EpidermisType.FUR) && player.body.IsBoth(EpidermisType.FUR))
+			{
+				return "Your fur tingles, then shifts slightly. You now have " + player.body.LongEpidermisDescription() + ", instead of just" + previousBodyData.LongEpidermisDescription();
+			}
+			//previously has some fur, but mixed types.
+			else if (previousBodyData.HasAny(EpidermisType.FUR))
+			{
+
+				string nonFurText;
+				EpidermalData nonFurType;
+				EpidermalData furType;
+				bool nonFurIsPlural;
+				if (previousBodyData.main.type == EpidermisType.FUR)
+				{
+					nonFurText = previousBodyData.SupplementaryDescription(out nonFurIsPlural);
+					furType = previousBodyData.main;
+					nonFurType = previousBodyData.supplementary;
+				}
+				else
+				{
+					nonFurText = previousBodyData.MainDescription(out nonFurIsPlural);
+					nonFurType = previousBodyData.main;
+					furType = previousBodyData.supplementary;
+				}
+
+				string furGrowText;
+
+				if (nonFurType.usesFurColor)
+				{
+					furGrowText = "Your " + nonFurText + (nonFurIsPlural ? "fall " : "falls ") + "out, no doubt forced by the fur that is now growing in " +
+						(nonFurIsPlural ? "their " : "its ") + "place. This new fur blends in with the " + furType.DescriptionWithColor() + " your already have, and " +
+						"fur now covers your entire body.";
+				}
+				else if (nonFurType.type != EpidermisType.SKIN && nonFurType.type != EpidermisType.GOO)
+				{
+					furGrowText = "As you scatch, you begin to notice " + nonFurType.type.ShortSingleItemDescription() + " coming away, leaving just skin behind. " +
+						"Fur grows in shortly afterward, matching the fur your already have. Soon, you have fur covering all of your body.";
+				}
+				else
+				{
+					furGrowText = "The feeling intensifies, though your fur is strangely unaffected. As you scratch yourself madly, you notice your fur spreading, growing in until " +
+						"your entire body is covered.";
+				}
+
+				string colorChange = "";
+				//both colors are different (if applicable)
+				if (!furType.fur.Equals(player.body.mainEpidermis.fur) && (!player.body.hasSecondaryEpidermis || !furType.fur.Equals(player.body.supplementaryEpidermis.fur)))
+				{
+					colorChange = ", then changes color. ";
+				}
+				//has two colors and they are both different.
+				else if (!furType.fur.Equals(player.body.mainEpidermis.fur) || (player.body.hasSecondaryEpidermis && !furType.fur.Equals(player.body.supplementaryEpidermis.fur)))
+				{
+					colorChange = ", then partially changes color. ";
+				}
+				else
+				{
+					colorChange = ", but otherwise remains the same. ";
+				}
+				return "Your body itches all over. " + furGrowText + " It shifts slightly, growing in some places while shortening in others" + colorChange + "Once you're certain the " +
+					"changes are complete, you look yourself over and realize " + SafelyFormattedString.FormattedText("You now have " + player.body.LongEpidermisDescription() +
+					"covering your body!", StringFormats.BOLD);
+			}
+			//no fur.
+			//Handle Goo and Skin cases because they're unique like that.
+			else if (previousBodyData.type == HUMANOID)
+			{
+				return "Your skin itches all over, the sudden intensity and uniformity making you too paranoid to scratch. As you hold still through an agony of tiny tingles and pinches, " +
+					" fur sprouts from every bare inch of your skin! " + SafelyFormattedString.FormattedText("You now have " + player.body.LongEpidermisDescription() +
+					" covering your body!", StringFormats.BOLD) + " Looks like you'll have to get used to being furry...";
+			}
+			else if (previousBodyData.type == GOO)
+			{
+				return "Your gooey core tingles. Looking down, you notice it becoming less and less opaque, shifting back until " +
+					SafelyFormattedString.FormattedText("you have a normal body once again.", StringFormats.BOLD) + " Despite this, the sensation intensifies until it feels as though" +
+					" you itch all over. Paranoid your newly formed skin is still too tender and new to scratch, you simply wait in agony for the feeling to pass. " +
+					"Just as you're about to give in and risk damaging your sensative skin, it's replaced with a faint tugging sensation as fur grows in until it covers your body. " +
+					SafelyFormattedString.FormattedText("You now have " + player.body.LongEpidermisDescription() + "!", StringFormats.BOLD)
+					+ " Looks like you'll have to get used to being furry...";
+			}
+			//everything else.
+			else
+			{
+				return $"Your {previousBodyData.ShortEpidermisDescription(out bool isPlural)} {(isPlural ? "begin" : "begins")} to itch insufferably. You reflexively scratch yourself," +
+					$"and notice your {previousBodyData.main.ShortSingleItemDescription()} " + (previousBodyData.hasSupplementaryEpidermis ? "and " +
+					previousBodyData.supplementary.ShortDescription() : "") + "falling away, leaving only the skin beneath. The itching intensifies until you notice a coat of " +
+					"fur behind. " + SafelyFormattedString.FormattedText("You now have " + player.body.LongEpidermisDescription() + " covering your body!", StringFormats.BOLD);
+			}
 		}
+
 		private static string FurRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			return GenericFurRestoreText(EpidermisType.FUR, player);
@@ -909,8 +1080,6 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-
-
 		protected static string PrimaryFeatherDesc(out bool isPlural)
 		{
 			isPlural = true;
@@ -945,16 +1114,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string UnderFeatherDesc()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "downy short-feathers";
 		}
 		private static string FeatherLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private static string FeatherFullDesc(BodyData body, bool alternateFormat)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return body.main.AdjectiveDescription(alternateFormat) + "body" + (EpidermalData.MixedFurColors(body.main, body.supplementary) ? "with " + body.supplementary.JustColor() +
+				UnderFeatherDesc() : "");
 		}
 
 		private static string FeatherPlayerStr(Body body, PlayerBase player)
@@ -981,15 +1146,102 @@ namespace CoC.Backend.BodyParts
 					$"underneath - if anything, you'd say it makes it even more sensitive.";
 			}
 		}
+		//never used in game. i'm just taking fur and reusing it. feel free to change it.
 		private static string FeatherTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (previousBodyData.type == FEATHERED)
+			{
+				return "";
+			}
+			else if (previousBodyData.type == HUMANOID)
+			{
+				return "Your skin itches all over, the sudden intensity and uniformity making you too paranoid to scratch. As you hold still through an agony of tiny tingles and pinches, " +
+					" row after row of feathers sprout from your skin, until it's completely covered. " + SafelyFormattedString.FormattedText("You now have " + player.body.LongEpidermisDescription() +
+					" covering your body!", StringFormats.BOLD);
+			}
+			else if (previousBodyData.type == GOO)
+			{
+				return "Your gooey core tingles. Looking down, you notice it becoming less and less opaque, shifting back until " +
+					SafelyFormattedString.FormattedText("you have a normal body once again.", StringFormats.BOLD) + " Despite this, the sensation intensifies until it feels as though" +
+					" you itch all over. Paranoid your newly formed skin is still too tender and new to scratch, you simply wait in agony for the feeling to pass. " +
+					"Just as you're about to give in and risk damaging your sensative skin, it's replaced with a faint tugging sensation as feathers grow in until they cover your body. " +
+					SafelyFormattedString.FormattedText("You now have " + player.body.LongEpidermisDescription() + "!", StringFormats.BOLD);
+			}
+			else if (previousBodyData.OnlyHas(EpidermisType.FEATHERS))
+			{
+				return "Your feathers tingle, shifting slightly. You now have " + player.body.LongEpidermisDescription() + ".";
+			}
+			else if (previousBodyData.HasAny(EpidermisType.FEATHERS))
+			{
+				string nonFeatherText;
+				EpidermalData nonFeatherType;
+				EpidermalData featherType;
+				bool nonFurIsPlural;
+				if (previousBodyData.main.type == EpidermisType.FEATHERS)
+				{
+					nonFeatherText = previousBodyData.SupplementaryDescription(out nonFurIsPlural);
+					featherType = previousBodyData.main;
+					nonFeatherType = previousBodyData.supplementary;
+				}
+				else
+				{
+					nonFeatherText = previousBodyData.MainDescription(out nonFurIsPlural);
+					nonFeatherType = previousBodyData.main;
+					featherType = previousBodyData.supplementary;
+				}
+
+				string featherGrowText;
+
+				if (nonFeatherType.usesFurColor)
+				{
+					featherGrowText = "Your " + nonFeatherText + (nonFurIsPlural ? "fall " : "falls ") + "out, no doubt forced by the feathers that are now growing in " +
+						(nonFurIsPlural ? "their " : "its ") + "place. The new feathers blend in with the " + featherType.DescriptionWithColor() + " your already have, and " +
+						"feathers now cover your entire body.";
+				}
+				else if (nonFeatherType.type != EpidermisType.SKIN && nonFeatherType.type != EpidermisType.GOO)
+				{
+					featherGrowText = "As you scatch, you begin to notice " + nonFeatherType.type.ShortSingleItemDescription() + " coming away, leaving just skin behind. " +
+						"Feathers grow in shortly afterward, matching the feathers your already have. Soon, you have feathers covering all of your body.";
+				}
+				else
+				{
+					featherGrowText = "The feeling intensifies, though your feathers are strangely unaffected. As you scratch yourself madly, you notice your feathers spreading, " +
+						"growing in until your entire body is covered.";
+				}
+
+				string colorChange = "";
+				//both colors are different (if applicable)
+				if (!featherType.fur.Equals(player.body.mainEpidermis.fur) && (!player.body.hasSecondaryEpidermis || !featherType.fur.Equals(player.body.supplementaryEpidermis.fur)))
+				{
+					colorChange = ", then changes color. ";
+				}
+				//has two colors and they are both different.
+				else if (!featherType.fur.Equals(player.body.mainEpidermis.fur) || (player.body.hasSecondaryEpidermis && !featherType.fur.Equals(player.body.supplementaryEpidermis.fur)))
+				{
+					colorChange = ", then partially changes color. ";
+				}
+				else
+				{
+					colorChange = ", but otherwise remains the same. ";
+				}
+				return "Your body itches all over. " + featherGrowText + " They shifts slightly, growing in some places while shortening in others" + colorChange +
+					"Once you're certain the changes are complete, you look yourself over and realize " + SafelyFormattedString.FormattedText("You now have " +
+					player.body.LongEpidermisDescription() + " covering your body!", StringFormats.BOLD);
+			}
+			//everything else.
+			else
+			{
+				return $"Your {previousBodyData.ShortEpidermisDescription(out bool isPlural)} {(isPlural ? "begin" : "begins")} to itch insufferably. You reflexively scratch yourself," +
+					$"and notice your {previousBodyData.main.ShortSingleItemDescription()} " + (previousBodyData.hasSupplementaryEpidermis ? "and " +
+					previousBodyData.supplementary.ShortDescription() : "") + "falling away, leaving only the skin beneath. The itching intensifies, finally stopping as row after row " +
+					"of feathers grow in, until your entire body is covered. " + SafelyFormattedString.FormattedText("You now have " + player.body.LongEpidermisDescription() + "!",
+					StringFormats.BOLD);
+			}
 		}
 		private static string FeatherRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			return GenericFurRestoreText(EpidermisType.FEATHERS, player);
 		}
-
 
 		#endregion
 		#region Wool
@@ -1041,7 +1293,6 @@ namespace CoC.Backend.BodyParts
 			return "your main wool";
 		}
 
-
 		private static string WoolUnderbodyDesc(out bool isPlural)
 		{
 			isPlural = false;
@@ -1066,12 +1317,8 @@ namespace CoC.Backend.BodyParts
 
 		private static string WoolLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private static string WoolFullDesc(BodyData body, bool alternateFormat)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return body.main.AdjectiveDescription(alternateFormat) + "body" + (EpidermalData.MixedFurColors(body.main, body.supplementary) ? "with " + body.supplementary.JustColor(true) +
+				" underbody" : "");
 		}
 
 		private static string WoolPlayerStr(Body body, PlayerBase player)
@@ -1097,15 +1344,117 @@ namespace CoC.Backend.BodyParts
 					$"Fortunately, it doesn't seem to grow too long or too quickly, so you're able to keep it just the way it is with only a little effort.";
 			}
 		}
+
+		//old text didnt really handle scales. i'm just magically ignoring it, and lampshading by making it disappear.
 		private static string WoolTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			//silently return with wool-> wool.
+			if (previousBodyData.type == WOOL || previousBodyData.OnlyHas(EpidermisType.WOOL))
+			{
+				return "";
+			}
+
+			//handle any type specific intros we need to explain how we're getting the fur.
+			string intro;
+			//handle the actual growing of said fur.
+			string growWoolText;
+
+			if (previousBodyData.HasAny(EpidermisType.WOOL))
+			{
+				intro = "";
+			}
+			//fur or feathers. (or anything that uses fur type)
+			else if (previousBodyData.hasActiveFurType)
+			{
+				if (previousBodyData.OnlyHas(EpidermisType.FUR))
+				{
+					intro = "You feel your fur suddenly stand on end, every follicle suddenly detaching and leaving your skin bare. As you stand with a pile of shed fur around your feet, " +
+						"you feel your entire body tingle, and you're sure it isn't from the sudden exposure. ";
+				}
+				else if (previousBodyData.OnlyHas(EpidermisType.FEATHERS))
+				{
+					intro = "Something seems to rustle your feathers, but you can't find an external source. They suddenly fall out, leaving your skin bare. As you stand, " +
+						"surrounded by shed feathers, you feel your entire body tingle, and you're sure it isn't from the cold. ";
+				}
+				//mixed type or something not implemented when this was written.
+				else
+				{
+					intro = "You feel a tingling sensation in your " + previousBodyData.ShortEpidermisDescription(out bool isPlural) + "and watch " + (isPlural ? "them" : "it") +
+						" fall out around you. Your now bare skin continues to tingle, and you're sure it isn't due to the sudden exposure. ";
+				}
+			}
+			else if (previousBodyData.type == GOO)
+			{
+				intro = "Your gelatenous form begins to solidify, reforming and losing its translucency and flexibility. Once you've regained a more human composition," +
+					" you begin to notice a tingling sensation from most of your body. at first, you think it might just be your body getting used to feeling the elements on your skin, " +
+					"but soon realize that's not the case. ";
+			}
+			//skin or scales or whatever. intro is just going to be left alone. we're gonna do it afterward instead.
+			else
+			{
+				intro = "";
+			}
+
+			//handle weird case with partial wool. should never happen, but could in the future i guess.
+			if (previousBodyData.HasAny(EpidermisType.WOOL))
+			{
+				string otherText = previousBodyData.main.type == EpidermisType.WOOL ? previousBodyData.SupplementaryDescription() : previousBodyData.MainDescription();
+
+				growWoolText = " With an almost audible " + SafelyFormattedString.FormattedText("POMF", StringFormats.ITALIC) + ", a soft fleece erupts from your " + otherText +
+					", matching the wool you already have. Soon, your entire body is covered in a woolen fleece. ";
+			}
+			else
+			{
+				growWoolText = " With an almost audible " + SafelyFormattedString.FormattedText("POMF", StringFormats.ITALIC) + ", a soft fleece erupts from your body. ";
+			}
+
+			string coreText = EpidermalData.MixedFurColors(player.body.mainEpidermis, player.body.supplementaryEpidermis)
+				? ", and shifts to a distinct " + player.body.supplementaryEpidermis.JustColor() + ". It doesn't fully hide your sexual features, instead obscuring "
+				: ", but it doesn't fully hide your sexual features - instead, it obscures ";
+
+			string lampshadeScalesOrWhatever = "";
+			//previously had something that used a tone but wasn't skin or goo. (goo becomes skin before we handle it. )
+			if ((previousBodyData.main.usesTone && previousBodyData.main.isNotSkinOrGoo) ||
+				(previousBodyData.hasSupplementaryEpidermis && previousBodyData.supplementary.usesTone && previousBodyData.supplementary.isNotSkinOrGoo))
+			{
+				//both weren't skin or goo
+				if (previousBodyData.main.usesTone && previousBodyData.main.isNotSkinOrGoo && previousBodyData.hasSupplementaryEpidermis &&
+					previousBodyData.supplementary.usesTone && previousBodyData.supplementary.isNotSkinOrGoo)
+				{
+					lampshadeScalesOrWhatever = "Strangely, when you check under your wool, you notice your " + previousBodyData.LongEpidermisDescription(out bool isPlural) +
+						(isPlural ? "are" : "is") + " gone; you only have " + player.body.primarySkin.DescriptionWithColor() + " underneath your new wool. Weird.";
+				}
+				//supplementary only
+				else if (previousBodyData.hasSupplementaryEpidermis && previousBodyData.supplementary.usesTone && previousBodyData.supplementary.isNotSkinOrGoo)
+				{
+					lampshadeScalesOrWhatever = "Strangely, when you check to see what happened to your " + previousBodyData.SupplementaryDescription(out bool isPlural) +
+						" after " + (isPlural ? "they were" : "it was") + " covered in wool, you notice " + (isPlural ? "they are" : "it is") + "gone; you only " +
+						"have " + player.body.primarySkin.DescriptionWithColor() + " in its place. Weird.";
+				}
+				//primary only. (has supplementary)
+				else if (previousBodyData.hasSupplementaryEpidermis)
+				{
+					lampshadeScalesOrWhatever = "Strangely, when you check to see what happened to your " + previousBodyData.MainDescription(out bool isPlural) +
+						" after " + (isPlural ? "they were" : "it was") + " covered in wool, you notice " + (isPlural ? "they are" : "it is") + "gone; you only " +
+						"have " + player.body.primarySkin.DescriptionWithColor() + " in its place. Weird.";
+				}
+				//whole body (no supplementary)
+				else
+				{
+					lampshadeScalesOrWhatever = "Strangely, when you check under your wool, you notice your " + previousBodyData.LongEpidermisDescription(out bool isPlural) +
+						(isPlural ? "are" : "is") + " gone; you only have " + player.body.primarySkin.DescriptionWithColor() + " underneath your new wool. Weird.";
+				}
+			}
+
+			return intro + growWoolText + "The fleece covers most of your body, and is incredibly thick and fluffy. It's less thick around your " + player.genitals.ChestOrAllBreastsLong()
+				+ "and nethers" + coreText + "them in an enticing manner. You can't help but run your hands over your " + player.body.LongEpidermisDescription() +
+				", reveling in plushness. " + SafelyFormattedString.FormattedText("You now have sheep wool!", StringFormats.BOLD) + lampshadeScalesOrWhatever;
 		}
+
 		private static string WoolRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
 			return GenericFurRestoreText(EpidermisType.WOOL, player);
 		}
-
 
 		#endregion
 		#region Goo
@@ -1129,12 +1478,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string GooLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private static string GooFullDesc(BodyData body, bool alternateFormat)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return body.main.LongAdjectiveDescription(alternateFormat) + " body";
 		}
 
 		private static string GooPlayerStr(Body body, PlayerBase player)
@@ -1162,15 +1506,27 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string GooTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-			//return "A strange feeling in your stomach forces you to pause. Your " + previousBodyData.LongDescription() + " seems to be getting, well, " +
-			//	SafelyFormattedString.FormattedText("soft", StringFormats.ITALIC) + ", for lack of a better word. Stranger still, the feeling isn't limited to your outsides; your " +
-			//	"innards seem to be affected as well. Experimentally, you place a " + player.hands.HandText(false) + " to your stomach, and are shocked when it faces " +
-			//	"almost no resistance. Strangely, your stomach seems to bend ";
+			if (previousBodyData.type == GOO)
+			{
+				return "";
+			}
+			else
+			{
+				return "A strange feeling in your stomach forces you to pause. Your " + previousBodyData.LongDescription() + " seems to be getting, well, " +
+					SafelyFormattedString.FormattedText("soft", StringFormats.ITALIC) + ", for lack of a better word. Stranger still, the feeling isn't limited to your outsides; your " +
+					"innards seem to be affected as well. Experimentally, you place a " + player.hands.HandText(false) + " to your stomach, and are shocked when it faces " +
+					"almost no resistance. Strangely, your stomach seems to bend inward, as if made of some elastic substance. As you pull back your " + player.hands.HandText(false) +
+					", your core returns to its normal shape, but bits of a gelatenous substance remain on your " + player.hands.NailsText() + ". Huh. Looking back down at your body, " +
+					"you notice it's now made entirely of this strange, semi-transparent substance. With a start, you realize " +
+					SafelyFormattedString.FormattedText("you have a flexible, gooey body!", StringFormats.BOLD) + " You're a bit worried when you can't seem to see any internal organs, " +
+					"but considering you can still feel, and breathe, you guess you're fine. Besides, this elasticity could really come in handy!";
+			}
 		}
 		private static string GooRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your gooey core tingles. Looking down, you notice it becoming less and less opaque, shifting back until " +
+				SafelyFormattedString.FormattedText("you have a normal body once again!", StringFormats.BOLD) + " It takes a moment, but you begin to relearn how to use your " +
+				"now human organs and muscles, which are notably not as flexible as their gooey predecessors, though you are otherwise no worse for wear.";
 		}
 		#endregion
 		#region Carapace
@@ -1186,12 +1542,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CarapaceLongDesc(BodyData body, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private static string CarapaceFullDesc(BodyData body, bool alternateFormat)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return body.main.LongAdjectiveDescription(alternateFormat) + " body";
 		}
 
 		private static string CarapacePlayerStr(Body body, PlayerBase player)
@@ -1200,13 +1551,65 @@ namespace CoC.Backend.BodyParts
 				+ "a " + body.mainEpidermis.LongDescription() + ", providing you with a natural defense. It parts around your joints and privates, granting you a full range of motion "
 				+ "and allowing you to handle your business without any difficulty,";
 		}
+
+		//magic! because it's not exactly in game, but could be i guess. your skin just hardens into a shell. if you have fur or whatever, it falls out because there's no pores anymore.
 		private static string CarapaceTransformStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (previousBodyData.type == CARAPACE)
+			{
+				return "";
+			}
+			else
+			{
+				string skinDesc = null;
+				string handleOldTypeFurOrGoo = "";
+				if (previousBodyData.hasActiveFurType)
+				{
+
+
+
+					string furTypeText;
+					bool furTextPlural;
+					if (previousBodyData.main.usesFurColor && (previousBodyData.supplementary.usesFurColor || previousBodyData.supplementary.isEmpty))
+					{
+						furTypeText = previousBodyData.LongEpidermisDescription(out furTextPlural);
+						skinDesc = previousBodyData.mainSkin.LongDescription();
+
+						skinDesc = "the " + previousBodyData.mainSkin.LongDescription() + "under your " + previousBodyData.ShortEpidermisDescription();
+					}
+					else if (previousBodyData.main.usesFurColor)
+					{
+						furTypeText = previousBodyData.MainDescription(out furTextPlural);
+					}
+					else
+					{
+						furTypeText = previousBodyData.SupplementaryDescription(out furTextPlural);
+					}
+
+					handleOldTypeFurOrGoo = "The now solid surfaces pushes away your " + furTypeText + ", which " + (furTextPlural ? "fall" : "falls") + " to the ground around you. ";
+				}
+				else if (previousBodyData.type == GOO)
+				{
+					handleOldTypeFurOrGoo = "The change also radiates inwards, completely restoring you to a non-gelatenous form. ";
+				}
+
+				if (skinDesc is null)
+				{
+					skinDesc = "your " + previousBodyData.mainSkin.LongDescription();
+				}
+
+				return "Your body tingles with an unknown sensation. Suddenly, " + skinDesc + " hardens, forming together into a hard, unblemished surface. " + handleOldTypeFurOrGoo +
+					"It thickens, and becomes slightly reflective. After it finishes, you realize "
+					+ SafelyFormattedString.FormattedText("You now have a sturdy, external carapace!", StringFormats.BOLD) + " It looks a little strange on your otherwise humanoid body, " +
+					"but the natural protection it will provide helps negate that fact.";
+			}
 		}
 		private static string CarapaceRestoreStr(BodyData previousBodyData, PlayerBase player)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Your body begins to feel strange. After a few seconds, you notice the hard outer layer that is your carapace is begining to flake off. Bits and pieces " +
+				"continue to fall away, revealing a more natural skin beneath. The process slows, and some pieces remain stubbornly attached, like a scab, of sorts. You're sure" +
+				"the rest would fall away over some period of time, but it begins to itch and you'd rather just be done with it. You scratch away the remaining carapace, " +
+				SafelyFormattedString.FormattedText("leaving you with completely " + player.body.mainEpidermis.LongDescription() + "!", StringFormats.BOLD);
 		}
 		#endregion
 

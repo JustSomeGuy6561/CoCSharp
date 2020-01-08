@@ -10,7 +10,6 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
-using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -19,11 +18,215 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	//ngl, i can never recall if medusa is top and labret bottom, or if it's the opposite.
-	public enum LipPiercingLocation { LABRET, MEDUSA, MONROE_LEFT, MONROE_RIGHT, LOWER_LEFT_1, LOWER_LEFT_2, LOWER_RIGHT_1, LOWER_RIGHT_2 }
+	public sealed partial class LipPiercingLocation : PiercingLocation, IEquatable<LipPiercingLocation>
+	{
+		private static readonly List<LipPiercingLocation> _allLocations = new List<LipPiercingLocation>();
 
-	public enum EyebrowPiercingLocation { LEFT_1, LEFT_2, RIGHT_1, RIGHT_2 }
-	public enum NosePiercingLocation { LEFT_NOSTRIL, RIGHT_NOSTRIL, SEPTIMUS, BRIDGE }
+		public static readonly ReadOnlyCollection<LipPiercingLocation> allLocations;
 
+		private readonly byte index;
+
+		static LipPiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<LipPiercingLocation>(_allLocations);
+		}
+
+		public LipPiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is LipPiercingLocation lipPiercing)
+			{
+				return Equals(lipPiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(LipPiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public static readonly LipPiercingLocation LABRET  = new LipPiercingLocation(0, SupportedJewelry, LabretButton, LabretLocation);
+		public static readonly LipPiercingLocation MEDUSA  = new LipPiercingLocation(1, SupportedJewelry, MedusaButton, MedusaLocation);
+		public static readonly LipPiercingLocation MONROE_LEFT  = new LipPiercingLocation(2, SupportedJewelry, MonroeLeftButton, MonroeLeftLocation);
+		public static readonly LipPiercingLocation MONROE_RIGHT  = new LipPiercingLocation(3, SupportedJewelry, MonroeRightButton, MonroeRightLocation);
+		public static readonly LipPiercingLocation LOWER_LEFT_1  = new LipPiercingLocation(4, SupportedJewelry, LowerLeft1Button, LowerLeft1Location);
+		public static readonly LipPiercingLocation LOWER_LEFT_2  = new LipPiercingLocation(5, SupportedJewelry, LowerLeft2Button, LowerLeft2Location);
+		public static readonly LipPiercingLocation LOWER_RIGHT_1 = new LipPiercingLocation(6, SupportedJewelry, LowerRight1Button, LowerRight1Location);
+		public static readonly LipPiercingLocation LOWER_RIGHT_2 = new LipPiercingLocation(7, SupportedJewelry, LowerRight2Button, LowerRight2Location);
+
+		private static bool SupportedJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.HORSESHOE || jewelryType == JewelryType.BARBELL_STUD || jewelryType == JewelryType.RING || jewelryType == JewelryType.SPECIAL;
+		}
+	}
+
+	public sealed class LipPiercing : Piercing<LipPiercingLocation>
+	{
+		public LipPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => LipPiercingLocation.allLocations.Count;
+
+		public override IEnumerable<LipPiercingLocation> availableLocations => LipPiercingLocation.allLocations;
+	}
+
+	public sealed partial class EyebrowPiercingLocation : PiercingLocation, IEquatable<EyebrowPiercingLocation>
+	{
+		private static readonly List<EyebrowPiercingLocation> _allLocations = new List<EyebrowPiercingLocation>();
+
+		public static readonly ReadOnlyCollection<EyebrowPiercingLocation> allLocations;
+
+		private readonly byte index;
+
+		static EyebrowPiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<EyebrowPiercingLocation>(_allLocations);
+		}
+
+		public EyebrowPiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is EyebrowPiercingLocation eyebrowPiercing)
+			{
+				return Equals(eyebrowPiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(EyebrowPiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public static readonly EyebrowPiercingLocation LEFT_1 = new EyebrowPiercingLocation(0, SupportedJewelry, Left1Button, Left1Location);
+		public static readonly EyebrowPiercingLocation LEFT_2 = new EyebrowPiercingLocation(1, SupportedJewelry, Left2Button, Left2Location);
+		public static readonly EyebrowPiercingLocation RIGHT_1 = new EyebrowPiercingLocation(2, SupportedJewelry, Right1Button, Right1Location);
+		public static readonly EyebrowPiercingLocation RIGHT_2 = new EyebrowPiercingLocation(3, SupportedJewelry, Right2Button, Right2Location);
+
+		private static bool SupportedJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.HORSESHOE || jewelryType == JewelryType.BARBELL_STUD || jewelryType == JewelryType.RING || jewelryType == JewelryType.SPECIAL;
+		}
+	}
+
+	public sealed class EyebrowPiercing : Piercing<EyebrowPiercingLocation>
+	{
+		public EyebrowPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => EyebrowPiercingLocation.allLocations.Count;
+
+		public override IEnumerable<EyebrowPiercingLocation> availableLocations => EyebrowPiercingLocation.allLocations;
+	}
+
+	public sealed partial class NosePiercingLocation : PiercingLocation, IEquatable<NosePiercingLocation>
+	{
+		private static readonly List<NosePiercingLocation> _allLocations = new List<NosePiercingLocation>();
+
+		public static readonly ReadOnlyCollection<NosePiercingLocation> allLocations;
+
+		private readonly byte index;
+
+		static NosePiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<NosePiercingLocation>(_allLocations);
+		}
+
+		public NosePiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is NosePiercingLocation nosePiercing)
+			{
+				return Equals(nosePiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(NosePiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public static readonly NosePiercingLocation LEFT_NOSTRIL = new NosePiercingLocation(0, SupportedNostrilJewelry, LeftButton, LeftLocation);
+		public static readonly NosePiercingLocation RIGHT_NOSTRIL = new NosePiercingLocation(1, SupportedNostrilJewelry, RightButton, RightLocation);
+		public static readonly NosePiercingLocation SEPTIMUS = new NosePiercingLocation(2, SupportedSeptimusJewelry, SeptimusButton, SeptimusLocation);
+		public static readonly NosePiercingLocation BRIDGE = new NosePiercingLocation(3, SupportedBridgeJewelry, BridgeButton, BridgeLocation);
+
+		private static bool SupportedNostrilJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType ==JewelryType.RING || jewelryType ==JewelryType.SPECIAL;
+		}
+
+		private static bool SupportedBridgeJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD;
+		}
+
+		private static bool SupportedSeptimusJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.HORSESHOE || jewelryType ==JewelryType.RING;
+		}
+
+	}
+
+	public sealed class NosePiercing : Piercing<NosePiercingLocation>
+	{
+		public NosePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => NosePiercingLocation.allLocations.Count;
+
+		public override IEnumerable<NosePiercingLocation> availableLocations => NosePiercingLocation.allLocations;
+	}
 
 	/*
 	 * Faces are another instance of shit that breaks the epidermis stores only one things rule. You can have a two-tone face, but theres also skin underneath,
@@ -39,9 +242,9 @@ namespace CoC.Backend.BodyParts
 		//private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.HORSESHOE; //can't use as nose is a pain.
 		private const JewelryType SUPPORTED_EYEBROW_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
 
-		public readonly Piercing<LipPiercingLocation> lipPiercings;
-		public readonly Piercing<NosePiercingLocation> nosePiercings;
-		public readonly Piercing<EyebrowPiercingLocation> eyebrowPiercings;
+		public readonly LipPiercing lipPiercings;
+		public readonly NosePiercing nosePiercings;
+		public readonly EyebrowPiercing eyebrowPiercings;
 
 		public EpidermalData facialSkin
 		{
@@ -75,6 +278,13 @@ namespace CoC.Backend.BodyParts
 
 		public bool isFullMorph { get; private set; }
 
+		public bool isHumanoid => type.IsHumanoid(isFullMorph);
+
+		public bool hasBeak => type.HasBeak(isFullMorph);
+
+		public bool hasMuzzle => type.HasMuzzle(isFullMorph);
+
+		public bool hasSecondLevel => type.hasSecondLevel;
 
 		public EpidermalData primary => type.ParseEpidermis(bodyData, isFullMorph, skinTexture);
 		public EpidermalData secondary => type.ParseSecondaryEpidermis(bodyData, isFullMorph, skinTexture);
@@ -110,9 +320,9 @@ namespace CoC.Backend.BodyParts
 		{
 			type = faceType ?? throw new ArgumentNullException(nameof(faceType));
 			isFullMorph = false;
-			lipPiercings = new Piercing<LipPiercingLocation>(LipPiercingUnlocked, LipSupportedJewelry);
-			nosePiercings = new Piercing<NosePiercingLocation>(NosePiercingUnlocked, NoseSupportedJewelryByLocation);
-			eyebrowPiercings = new Piercing<EyebrowPiercingLocation>(EyebrowPiercingUnlocked, EyebrowSupportedJewelry);
+			lipPiercings = new LipPiercing(LipPiercingUnlocked, AllLipPiercingsStr);
+			nosePiercings = new NosePiercing(NosePiercingUnlocked, AllNosePiercingsStr);
+			eyebrowPiercings = new EyebrowPiercing(EyebrowPiercingUnlocked, AllEyebrowPiercingsStr);
 		}
 
 		internal Face(Guid creatureID, FaceType faceType, bool? fullMorph = null, SkinTexture complexion = SkinTexture.NONDESCRIPT) : this(creatureID, faceType)
@@ -319,44 +529,24 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private bool LipPiercingUnlocked(LipPiercingLocation piercingLocation)
+		private bool LipPiercingUnlocked(LipPiercingLocation piercingLocation, out string whyNot)
 		{
+			whyNot = null;
 			return true;
-		}
-
-		private JewelryType LipSupportedJewelry(LipPiercingLocation piercingLocation)
-		{
-			return SUPPORTED_LIP_JEWELRY;
 		}
 
 		public bool wearingCowNoseRing => nosePiercings.WearingJewelryAt(NosePiercingLocation.SEPTIMUS) && nosePiercings[NosePiercingLocation.SEPTIMUS].jewelryType == JewelryType.RING;
 
-		private bool NosePiercingUnlocked(NosePiercingLocation piercingLocation)
+		private bool NosePiercingUnlocked(NosePiercingLocation piercingLocation, out string whyNot)
 		{
+			whyNot = null;
 			return true;
 		}
 
-		private JewelryType NoseSupportedJewelryByLocation(NosePiercingLocation piercingLocation)
+		private bool EyebrowPiercingUnlocked(EyebrowPiercingLocation piercingLocation, out string whyNot)
 		{
-			switch (piercingLocation)
-			{
-				case NosePiercingLocation.BRIDGE:
-					return JewelryType.BARBELL_STUD;
-				case NosePiercingLocation.SEPTIMUS:
-					return JewelryType.HORSESHOE | JewelryType.RING;
-				default:
-					return JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
-			}
-		}
-
-		private bool EyebrowPiercingUnlocked(EyebrowPiercingLocation piercingLocation)
-		{
+			whyNot = null;
 			return true;
-		}
-
-		private JewelryType EyebrowSupportedJewelry(EyebrowPiercingLocation piercingLocation)
-		{
-			return SUPPORTED_EYEBROW_JEWELRY;
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -379,7 +569,7 @@ namespace CoC.Backend.BodyParts
 			}
 			return valid;
 		}
-		private bool ValidatePiercing<T>(bool valid, Piercing<T> piercing, bool correctInvalidData) where T : Enum
+		private bool ValidatePiercing<T>(bool valid, Piercing<T> piercing, bool correctInvalidData) where T : PiercingLocation
 		{
 			if (!valid && !correctInvalidData)
 			{
@@ -432,9 +622,20 @@ namespace CoC.Backend.BodyParts
 		AttackBase ICanAttackWith.attack => type.attack;
 	}
 
-	//we run checks for beak and muzzle - idk if you want more types than that. default type is humanoid, though you could call it other or something.
 	//feel free to add more types. if you need a single instance to support multiple types at once, you could mark this with the [flags] attribute.
-	public enum FacialStructure { HUMANOID, MUZZLE, BEAK}
+	//if you do that, the default (which should be 0) is UNIQUE. You'll need to change the checks to use HasFlag instead of '=='
+	//if this becomes necessary and you need more info, it can be found here: https://docs.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=netframework-4.8
+
+	//humanoid: does this face appear human, but with (possibly) some non-human characteristics like abnormal teeth or additional patches of fur or scales?
+	//muzzle: does this creature have a long, animalistic muzzle in place of a nose, and thus is distinctly different from a human's
+	//beak: does this creature have something that would classify as a beak for mouth and/or nose? this (probably) would make it distinctly not human
+	//unique: default, uncategorized. use this when none of the others apply.
+
+	//generally, if the face type has two levels, the first is some human-type hybrid (like cat-girl, or kitsune, etc), which would appear humanoid, then the second level is a full tf
+	//which would not. note that there are some exceptions to this (pig, for example, is not human on any level)
+	//it's also possible for a single level face type to be any of these values, including humanoid for non-human types. examples include the spider/snake types, which are just human
+	//faces with fangs. shark is the same way, but with shark-teeth instead.
+	public enum FacialStructure { UNIQUE, HUMANOID, MUZZLE, BEAK }
 
 
 	public abstract partial class FaceType : SaveableBehavior<FaceType, Face, FaceData>
@@ -462,12 +663,17 @@ namespace CoC.Backend.BodyParts
 
 		public bool HasMuzzle(bool isSecondLevel)
 		{
-			return isSecondLevel ? secondLevelFacialStructure == FacialStructure.MUZZLE : firstLevelFacialStructure == FacialStructure.MUZZLE;
+			return hasSecondLevel && isSecondLevel ? secondLevelFacialStructure == FacialStructure.MUZZLE : firstLevelFacialStructure == FacialStructure.MUZZLE;
 		}
 
 		public bool HasBeak(bool isSecondLevel)
 		{
-			return isSecondLevel ? secondLevelFacialStructure == FacialStructure.BEAK : firstLevelFacialStructure == FacialStructure.BEAK;
+			return hasSecondLevel && isSecondLevel ? secondLevelFacialStructure == FacialStructure.BEAK : firstLevelFacialStructure == FacialStructure.BEAK;
+		}
+
+		public bool IsHumanoid(bool isSecondLevel)
+		{
+			return hasSecondLevel && isSecondLevel ? secondLevelFacialStructure == FacialStructure.HUMANOID : firstLevelFacialStructure == FacialStructure.HUMANOID;
 		}
 
 		private protected FaceType(EpidermisType epidermisType, ShortDescriptor firstLevelShortDesc, ShortDescriptor secondLevelShortDesc,
@@ -500,23 +706,7 @@ namespace CoC.Backend.BodyParts
 
 			faces.AddAt(this, _index);
 		}
-		internal virtual bool isHumanoid(bool isSecondLevel)
-		{
-			if (hasSecondLevel)
-			{
-				return !isSecondLevel;
-			}
-			return false;
-		}
 
-		internal virtual bool isMuzzleShaped(bool isSecondLevel)
-		{
-			if (hasSecondLevel)
-			{
-				return isSecondLevel;
-			}
-			return false;
-		}
 
 		//by default, just converts it to first level.
 		internal virtual bool MorphStrengthPostTransform(FaceType previousType, bool previousWasFullMorph)
@@ -581,7 +771,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly FaceType SNAKE = new SnakeFace();
 		public static readonly FaceType CAT = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultCatFur, FacialStructure.HUMANOID, FacialStructure.MUZZLE, CatGirlShortDesc,
 			CatMorphShortDesc, CatMorphText, CatLongDesc, CatPlayerStr, CatTransformStr, CatRestoreStr); //muzzle, second level.
-		public static readonly FaceType LIZARD = new MultiToneFace(EpidermisType.SCALES, Tones.NOT_APPLICABLE, FacialStructure.MUZZLE, LizardShortDesc, LizardLongDesc,
+		public static readonly FaceType LIZARD = new MultiToneFace(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, FacialStructure.MUZZLE, LizardShortDesc, LizardLongDesc,
 			LizardPlayerStr, LizardTransformStr, LizardRestoreStr); //muzzle.);
 		public static readonly FaceType BUNNY = new BunnyMouseFace(DefaultValueHelpers.defaultBunnyFur, FacialStructure.MUZZLE, BunnyFirstLevelShortDesc,
 			BunnySecondLevelShortDesc, BunnyMorphText, BunnyLongDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
@@ -589,15 +779,16 @@ namespace CoC.Backend.BodyParts
 			KangarooLongDesc, KangarooPlayerStr, KangarooTransformStr, KangarooRestoreStr);
 		public static readonly FaceType SPIDER = new SpiderFace();
 		public static readonly FaceType FOX = new FoxFace();
-		public static readonly FaceType DRAGON = new MultiToneFace(EpidermisType.SCALES, Tones.NOT_APPLICABLE, FacialStructure.MUZZLE, DragonShortDesc, DragonLongDesc, DragonPlayerStr,
+		public static readonly FaceType DRAGON = new MultiToneFace(EpidermisType.SCALES, DefaultValueHelpers.defaultDragonTone, FacialStructure.MUZZLE, DragonShortDesc, DragonLongDesc, DragonPlayerStr,
 			DragonTransformStr, DragonRestoreStr);
-		public static readonly FaceType RACCOON = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultRaccoonFur, FacialStructure.HUMANOID, FacialStructure.HUMANOID, RaccoonMaskShortDesc,
+		public static readonly FaceType RACCOON = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultRaccoonFur, FacialStructure.HUMANOID, FacialStructure.UNIQUE, RaccoonMaskShortDesc,
 			RaccoonFaceShortDesc, RaccoonMorphText, RaccoonLongDesc, RaccoonPlayerStr, RaccoonTransformStr, RaccoonRestoreStr);
-		public static readonly FaceType MOUSE = new BunnyMouseFace(DefaultValueHelpers.defaultMouseFur, FacialStructure.HUMANOID, MouseTeethShortDesc, MouseFaceShortDesc,
+		public static readonly FaceType MOUSE = new BunnyMouseFace(DefaultValueHelpers.defaultMouseFur, FacialStructure.UNIQUE, MouseTeethShortDesc, MouseFaceShortDesc,
 			MouseMorphText, MouseLongDesc, MousePlayerStr, MouseTransformStr, MouseRestoreStr);
 		public static readonly FaceType FERRET = new FerretFace();
-		public static readonly FaceType PIG = new PigFace(); //both pig and boar are not humanoid.
-		public static readonly FaceType RHINO = new ToneFace(EpidermisType.SKIN, FacialStructure.HUMANOID, RhinoShortDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr); //muzzle
+		public static readonly FaceType PIG = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultPigFur, FacialStructure.UNIQUE, FacialStructure.UNIQUE, PigShortDesc, BoarShortDesc, PigMorphText,
+				PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr); //both pig and boar are not humanoid.
+		public static readonly FaceType RHINO = new ToneFace(EpidermisType.SKIN, FacialStructure.UNIQUE, RhinoShortDesc, RhinoLongDesc, RhinoPlayerStr, RhinoTransformStr, RhinoRestoreStr); //muzzle
 		public static readonly FaceType ECHIDNA = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultEchidnaFur, FacialStructure.MUZZLE, EchidnaShortDesc, EchidnaLongDesc,
 			EchidnaPlayerStr, EchidnaTransformStr, EchidnaRestoreStr);
 		public static readonly FaceType DEER = new FurFace(EpidermisType.FUR, DefaultValueHelpers.defaultDeerFur, FacialStructure.MUZZLE, DeerShortDesc, DeerLongDesc, DeerPlayerStr,
@@ -608,7 +799,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly FaceType RED_PANDA = new MultiFurFace(EpidermisType.FUR, DefaultValueHelpers.defaultRedPandaFur, DefaultValueHelpers.defaultRedPandaFaceEarTailFur,
 			FacialStructure.MUZZLE, PandaShortDesc, PandaLongDesc, PandaPlayerStr, PandaTransformStr, PandaRestoreStr);
 		//new type, broken out from standard because goo is now a full set or body parts.
-		public static readonly FaceType GOO = new ToneFace(EpidermisType.GOO, FacialStructure.HUMANOID, GooShortDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
+		public static readonly FaceType GOO = new ToneFace(EpidermisType.GOO, FacialStructure.UNIQUE, GooShortDesc, GooLongDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 		//placeholder.
 		//public static readonly FaceType BEAK = new FurFace(EpidermisType.FEATHERS, new FurColor(HairFurColors.WHITE), FacialStructure.BEAK, BeakShortDesc, BeakLongDesc,
 		//	BeakPlayerStr, BeakTransformStr, BeakRestoreStr);
@@ -622,7 +813,8 @@ namespace CoC.Backend.BodyParts
 			public ToneFace(ToneBasedEpidermisType epidermisType, FacialStructure firstLevelStructure, FacialStructure secondLevelStructure, ShortDescriptor firstLevelShortDesc,
 				ShortDescriptor secondLevelShortDesc, DescriptorWithArg<bool> strengthenWeakenMorphText, PartDescriptor<FaceData> longDesc, PlayerBodyPartDelegate<Face> playerStr,
 				ChangeType<FaceData> transform, RestoreType<FaceData> restore) : base(epidermisType, firstLevelShortDesc, secondLevelShortDesc, firstLevelStructure,
-					secondLevelStructure, strengthenWeakenMorphText, longDesc, playerStr, transform, restore) { }
+					secondLevelStructure, strengthenWeakenMorphText, longDesc, playerStr, transform, restore)
+			{ }
 
 			protected ToneBasedEpidermisType primaryEpidermis => (ToneBasedEpidermisType)epidermisType;
 
@@ -748,24 +940,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private sealed class PigFace : FurFace
-		{
-			public PigFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultPigFur, FacialStructure.HUMANOID, FacialStructure.HUMANOID, PigShortDesc, BoarShortDesc, PigMorphText,
-				PigLongDesc, PigPlayerStr, PigTransformStr, PigRestoreStr) { }
-
-			internal override bool isHumanoid(bool isSecondLevel)
-			{
-				return false;
-			}
-		}
 		private sealed class SpiderFace : ToneFace
 		{
 			public SpiderFace() : base(EpidermisType.SKIN, FacialStructure.HUMANOID, SpiderShortDesc, SpiderLongDesc, SpiderPlayerStr, SpiderTransformStr, SpiderRestoreStr) { }
-
-			internal override bool isHumanoid(bool isSecondLevel)
-			{
-				return true;
-			}
 
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new SpiderBite();
@@ -774,22 +951,12 @@ namespace CoC.Backend.BodyParts
 		{
 			public SharkFace() : base(EpidermisType.SKIN, FacialStructure.HUMANOID, SharkShortDesc, SharkLongDesc, SharkPlayerStr, SharkTransformStr, SharkRestoreStr) { }
 
-			internal override bool isHumanoid(bool isSecondLevel)
-			{
-				return true;
-			}
-
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new GenericBite(SharkShortDesc, 4);
 		}
 		private sealed class SnakeFace : ToneFace
 		{
 			public SnakeFace() : base(EpidermisType.SCALES, FacialStructure.HUMANOID, SnakeShortDesc, SnakeLongDesc, SnakePlayerStr, SnakeTransformStr, SnakeRestoreStr) { }
-
-			internal override bool isHumanoid(bool isSecondLevel)
-			{
-				return true;
-			}
 
 			internal override AttackBase attack => _attack;
 			private static readonly AttackBase _attack = new NagaBite();
@@ -835,7 +1002,8 @@ namespace CoC.Backend.BodyParts
 		{
 			private FurColor defaultKitsuneFur => DefaultValueHelpers.defaultKitsuneFacialFur;
 			public FoxFace() : base(EpidermisType.FUR, DefaultValueHelpers.defaultFoxFacialFur, DefaultValueHelpers.defaultFoxSecondaryFacialFur, FacialStructure.HUMANOID,
-				FacialStructure.MUZZLE, KitsuneShortDesc, FoxShortDesc, FoxMorphText, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
+				FacialStructure.MUZZLE, KitsuneShortDesc, FoxShortDesc, FoxMorphText, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr)
+			{ }
 
 			internal override EpidermalData ParseEpidermis(BodyData bodyData, bool isFullMorph, SkinTexture complexion)
 			{
@@ -892,7 +1060,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public static PiercingJewelry GenerateEyebrowJewelry(this Face face, EyebrowPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (face.eyebrowPiercings.CanWearThisJewelryType(location, jewelryType))
+			if (face.eyebrowPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
@@ -901,7 +1069,7 @@ namespace CoC.Backend.BodyParts
 
 		public static PiercingJewelry GenerateLipJewelry(this Face face, LipPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (face.lipPiercings.CanWearThisJewelryType(location, jewelryType))
+			if (face.lipPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
@@ -910,7 +1078,7 @@ namespace CoC.Backend.BodyParts
 
 		public static PiercingJewelry GenerateNoseJewelry(this Face face, NosePiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (face.nosePiercings.CanWearThisJewelryType(location, jewelryType))
+			if (face.nosePiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
@@ -937,6 +1105,14 @@ namespace CoC.Backend.BodyParts
 			if (isFullMorph) return type.secondLevelShortDescription();
 			else return type.ShortDescription();
 		}
+
+		public bool isHumanoid => type.IsHumanoid(isFullMorph);
+
+		public bool hasBeak => type.HasBeak(isFullMorph);
+
+		public bool hasMuzzle => type.HasMuzzle(isFullMorph);
+
+		public bool hasSecondLevel => type.hasSecondLevel;
 
 		public override FaceData AsCurrentData()
 		{

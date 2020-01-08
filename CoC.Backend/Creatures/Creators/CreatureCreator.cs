@@ -118,7 +118,7 @@ namespace CoC.Backend.Creatures
 		//may add hip piercings because that's a thing (more common in art than reality in my experience but whatever) Edit: added.
 		public Dictionary<HipPiercingLocation, PiercingJewelry> hipPiercings = null;
 		//Ears
-		public Dictionary<EarPiercings, PiercingJewelry> earPiercings = null;
+		public Dictionary<EarPiercingLocation, PiercingJewelry> earPiercings = null;
 		//Face
 		public Dictionary<EyebrowPiercingLocation, PiercingJewelry> eyebrowPiercings = null; //Eyebrow
 		public Dictionary<LipPiercingLocation, PiercingJewelry> lipPiercings = null; //Lip

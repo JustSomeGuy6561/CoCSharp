@@ -14,289 +14,305 @@ using WeakEvent;
 namespace CoC.Backend.BodyParts.SpecialInteraction
 {
 
-
-	public class Piercing<Locations> where Locations : Enum
-	{
-		//tbh, not the cleanest tool, but idgaf. it works. As far as anyone implementing this shit will know or care, it's basically identical to the standard event.
-		private readonly WeakEventSource<PiercingDataChangedEventArgs<Locations>> piercingChangeSource = new WeakEventSource<PiercingDataChangedEventArgs<Locations>>();
-		public event EventHandler<PiercingDataChangedEventArgs<Locations>> OnPiercingChange
-		{
-			add { piercingChangeSource.Subscribe(value); }
-			remove { piercingChangeSource.Unsubscribe(value); }
-		}
+#warning consider turning this into a java "Enum" instead of enum. problem is the callbacks allow me to use the body part itself, this wouldnt. could hybrid it with the callback
+	//for just applying to piercings for location available.
 
 
-		public bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
+//	public class Piercing<Locations> where Locations : Enum
+//	{
+//		//short description, button. used for piercings and equipping jewelry.
+//		public delegate string LocationDescriptor(Locations location);
 
-		public static int maxPiercingCount => EnumHelper.Length<Locations>();
-
-		protected readonly Dictionary<Locations, bool> piercedAt = new Dictionary<Locations, bool>();
-		protected readonly Dictionary<Locations, PiercingJewelry> jewelryEquipped = new Dictionary<Locations, PiercingJewelry>();
-
-		private readonly Func<Locations, bool> piercingUnlocked;
-		private readonly Func<Locations, JewelryType> jewelryTypesAllowed;
-
-		internal Piercing(Func<Locations, bool> piercingUnlockedFunction, Func<Locations, JewelryType> supportedJewelryTypesFunction)
-		{
-			jewelryTypesAllowed = supportedJewelryTypesFunction ?? throw new ArgumentNullException(nameof(supportedJewelryTypesFunction));
-			piercingUnlocked = piercingUnlockedFunction ?? throw new ArgumentNullException(nameof(piercingUnlockedFunction));
-		}
-
-		public ReadOnlyPiercing<Locations> AsReadOnlyData()
-		{
-			return new ReadOnlyPiercing<Locations>(piercedAt, jewelryEquipped);
-		}
-
-		public PiercingJewelry this[Locations location]
-		{
-			get => jewelryEquipped[location];
-		}
-
-		public int piercingCount => piercedAt.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
-		public bool isPierced => piercedAt.Values.Any((x) => x);
-		public bool isPiercedAt(Locations location)
-		{
-			if (location == null)
-			{
-				return false;
-			}
-			piercedAt.TryGetValue(location, out bool isPierced);
-			return isPierced;
-		}
-
-		public int jewelryCount => jewelryEquipped.Values.Aggregate(0, (x, y) => { if (y != null) x++; return x; });
-		public bool wearingJewelry => jewelryEquipped.Values.Any((x) => x != null);
-		public bool WearingJewelryAt(Locations location)
-		{
-			if (location == null)
-			{
-				return false;
-			}
-			piercedAt.TryGetValue(location, out bool jewelryAt);
-			return jewelryAt;
-		}
-
-		internal bool EquipPiercingJewelry(Locations piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
-		{
-			if (jewelry == null) throw new ArgumentNullException(nameof(jewelry));
-			//if it's an unknown location: fail. occurs when people do arithmatic on an enum.
-			//consider having this throw. I'm thinking index out of range, but idk.
-			if (!Enum.IsDefined(typeof(Locations), piercingLocation))
-			{
-				return false;
-			}
-			//if we can't pierce this location: fail
-			else if (!CanPierce(piercingLocation))
-			{
-				return false;
-			}
-			//or we can't equip this type of piercing: fail.
-			else if (!jewelryTypesAllowed(piercingLocation).HasFlag(jewelry.jewelryType))
-			{
-				return false;
-			}
-			//or it isn't pierced and we aren't forcing it: fail.
-			else if (!isPiercedAt(piercingLocation) && !forceEquip)
-			{
-				return false;
-			}
-			//but if it isn't pierced and we are forcing it, run that function. should return true.
-			else if (!isPiercedAt(piercingLocation))
-			{
-				return Pierce(piercingLocation, jewelry);
-			}
-			//if we are already wearing jewelry at that location and not force, fail
-			else if (WearingJewelryAt(piercingLocation) && !forceEquip)
-			{
-				return false;
-			}
-			//if we are already wearing jewelry at that location and force
-			else if (!WearingJewelryAt(piercingLocation))
-			{
-				//swap out the jewelry
-				jewelryEquipped.Add(piercingLocation, jewelry);
-				ProcChange(piercingLocation, jewelry);
-				return jewelryEquipped.ContainsKey(piercingLocation); //should always return true, but i'd like to proc it on unit tests if we somehow broke Dictionaries.
-			}
-			//final case - we are pierced at this location and don't have any jewelry here and our jewelry type is valid for this location.
-			else
-			{
-				//put in the jewelry.
-				jewelryEquipped[piercingLocation] = jewelry;
-				ProcChange(piercingLocation, jewelryEquipped[piercingLocation], jewelry);
-				return jewelryEquipped[piercingLocation] == jewelry;
-			}
-		}
+//		public delegate bool LocationUnlocked(Locations location);
+//		public delegate JewelryType JewelryTypeAllowed(Locations locations);
 
 
+//		//tbh, not the cleanest tool, but idgaf. it works. As far as anyone implementing this shit will know or care, it's basically identical to the standard event.
+//		private readonly WeakEventSource<PiercingDataChangedEventArgs<Locations>> piercingChangeSource = new WeakEventSource<PiercingDataChangedEventArgs<Locations>>();
+//		public event EventHandler<PiercingDataChangedEventArgs<Locations>> OnPiercingChange
+//		{
+//			add { piercingChangeSource.Subscribe(value); }
+//			remove { piercingChangeSource.Unsubscribe(value); }
+//		}
 
-		internal PiercingJewelry RemovePiercingJewelry(Locations piercingLocation, bool forceRemove = false)
-		{
-			if (!jewelryEquipped.ContainsKey(piercingLocation))
-			{
-				return null;
-			}
-			else if (!jewelryEquipped[piercingLocation].removable && !forceRemove)
-			{
-				return null;
-			}
-			else
-			{
-				PiercingJewelry jewelry = jewelryEquipped[piercingLocation];
-				jewelryEquipped.Remove(piercingLocation);
-				ProcChange(piercingLocation, jewelry, null);
-				return jewelry;
-			}
 
-		}
+//		public bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
 
-		internal bool Pierce(Locations piercingLocation, PiercingJewelry jewelry)
-		{
-			if (jewelry == null) throw new ArgumentNullException(nameof(jewelry));
+//		public static int maxPiercingCount => EnumHelper.Length<Locations>();
 
-			if (!CanPierce(piercingLocation))
-			{
-				return false;
-			}
-			if (isPiercedAt(piercingLocation))
-			{
-				return false;
-			}
+//		protected readonly Dictionary<Locations, bool> piercedAt = new Dictionary<Locations, bool>();
+//		protected readonly Dictionary<Locations, PiercingJewelry> jewelryEquipped = new Dictionary<Locations, PiercingJewelry>();
 
-			if (piercedAt.ContainsKey(piercingLocation))
-			{
-				piercedAt[piercingLocation] = true;
-			}
-			else
-			{
-				piercedAt.Add(piercingLocation, true);
-			}
-			if (jewelryEquipped.ContainsKey(piercingLocation))
-			{
-				jewelryEquipped[piercingLocation] = jewelry;
-			}
-			else
-			{
-				jewelryEquipped.Add(piercingLocation, jewelry);
-			}
 
-			ProcChange(piercingLocation, true, jewelry);
+//		protected readonly PlayerStr allPiercingsDescription;
+//		protected readonly LocationDescriptor locationButton;
+//		protected readonly LocationDescriptor locationDescription;
 
-			return piercedAt[piercingLocation];
+//#warning Consider adding hint text delegates (defined below) for equiping/removing jewerly, and attempting a piercing.
+//		//would need more booleans to define what we're doing - are we trying to add, replace, or remove?
+//		//protected readonly LocationDescriptor locationJewelryHint;
+//		//protected readonly LocationDescriptor locationPiercingHint;
 
-		}
 
-		internal bool EquipPiercingJewelryAndPierceIfNotPierced(Locations piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
-		{
-			if (!isPiercedAt(piercingLocation))
-			{
-				return Pierce(piercingLocation, jewelry);
-			}
-			else
-			{
-				return EquipPiercingJewelry(piercingLocation, jewelry, forceEquip);
-			}
-		}
+//		protected readonly LocationUnlocked piercingUnlocked;
+//		protected readonly JewelryTypeAllowed jewelryTypesAllowed;
 
-		public bool CanPierce(Locations piercingLocation)
-		{
-			return piercingUnlocked(piercingLocation);
-		}
+//		internal Piercing(PlayerStr piercingText, LocationDescriptor locationBtn, LocationDescriptor locationDesc,
+//			LocationUnlocked piercingUnlockedFunction, JewelryTypeAllowed supportedJewelryTypesFunction)
+//		{
 
-		public bool CanWearThisJewelryType(Locations piercingLocation, JewelryType jewelryType)
-		{
-			return jewelryTypesAllowed(piercingLocation).HasFlag(jewelryType);
-		}
+//			allPiercingsDescription = piercingText ?? throw new ArgumentNullException(nameof(piercingText));
 
-		internal bool Validate(bool correctInvalidData)
-		{
-			bool valid = true;
-			foreach (Locations entry in Enum.GetValues(typeof(Locations)).Cast<Locations>())
-			{
+//			locationButton = locationBtn ?? throw new ArgumentNullException(nameof(locationBtn));
+//			locationDescription = locationDesc ?? throw new ArgumentNullException(nameof(locationDesc));
 
-				//if not pierced at current location and there is jewelry there.
-				if ((!piercedAt.TryGetValue(entry, out bool x) || x == false) && jewelryEquipped.TryGetValue(entry, out PiercingJewelry y) && y != null)
-				{
-					if (correctInvalidData)
-					{
-						jewelryEquipped.Remove(entry);
-					}
-					valid = false;
-				}
-				//if you can't pierce there.
-				if (piercedAt.ContainsKey(entry) && !CanPierce(entry))
-				{
-					if (correctInvalidData)
-					{
-						piercedAt.Remove(entry);
-						jewelryEquipped.Remove(entry);
-					}
-					valid = false;
-				}
-			}
-			return valid;
-		}
+//			jewelryTypesAllowed = supportedJewelryTypesFunction ?? throw new ArgumentNullException(nameof(supportedJewelryTypesFunction));
+//			piercingUnlocked = piercingUnlockedFunction ?? throw new ArgumentNullException(nameof(piercingUnlockedFunction));
+//		}
 
-		internal void Reset()
-		{
-			ProcChange(piercedAt, jewelryEquipped);
-			piercedAt.Clear();
-			jewelryEquipped.Clear();
-		}
+//		public ReadOnlyPiercing<Locations> AsReadOnlyData()
+//		{
+//			return new ReadOnlyPiercing<Locations>(piercedAt, jewelryEquipped);
+//		}
 
-		private void ProcChange(Dictionary<Locations, bool> piercedAt, Dictionary<Locations, PiercingJewelry> jewelryEquipped)
-		{
-			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercedAt, jewelryEquipped));
-		}
+//		public PiercingJewelry this[Locations location]
+//		{
+//			get => jewelryEquipped[location];
+//		}
 
-		//if theres some magic in the future that lets you un-pierce a location and reject any jewelry inside, this will handle it. but it's mostly for the other way - piercing something with new jewelry.
-		private void ProcChange(Locations piercingLocation, bool isNowPierced, PiercingJewelry deltaJewelry)
-		{
-			if (isNowPierced)
-			{
-				if (deltaJewelry != null)
-				{
-					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, null, deltaJewelry, piercingCount, jewelryCount));
-				}
-				else
-				{
-					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
-				}
-			}
-			else
-			{
-				if (deltaJewelry != null)
-				{
-					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, deltaJewelry, null, piercingCount, jewelryCount));
-				}
-				else
-				{
-					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
-				}
-			}
-		}
+//		public int piercingCount => piercedAt.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
+//		public bool isPierced => piercedAt.Values.Any((x) => x);
+//		public bool isPiercedAt(Locations location)
+//		{
+//			if (location == null)
+//			{
+//				return false;
+//			}
+//			piercedAt.TryGetValue(location, out bool isPierced);
+//			return isPierced;
+//		}
 
-		//oldJewelry assumed to be null.
-		private void ProcChange(Locations piercingLocation, PiercingJewelry newJewelry)
-		{
-			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, null, newJewelry, piercingCount, jewelryCount));
-		}
+//		public int jewelryCount => jewelryEquipped.Values.Aggregate(0, (x, y) => { if (y != null) x++; return x; });
+//		public bool wearingJewelry => jewelryEquipped.Values.Any((x) => x != null);
+//		public bool WearingJewelryAt(Locations location)
+//		{
+//			if (location == null)
+//			{
+//				return false;
+//			}
+//			return jewelryEquipped.TryGetValue(location, out PiercingJewelry jewelry) && jewelry != null;
+//		}
 
-		private void ProcChange(Locations piercingLocation, PiercingJewelry oldJewelry, PiercingJewelry newJewelry)
-		{
-			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, oldJewelry, newJewelry, piercingCount, jewelryCount));
-		}
+//		internal bool EquipPiercingJewelry(Locations piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
+//		{
+//			if (jewelry == null) throw new ArgumentNullException(nameof(jewelry));
+//			//if it's an unknown location: fail. occurs when people do arithmatic on an enum.
+//			//consider having this throw. I'm thinking index out of range, but idk.
+//			if (!Enum.IsDefined(typeof(Locations), piercingLocation))
+//			{
+//				return false;
+//			}
+//			//if we can't pierce this location: fail
+//			else if (!CanPierce(piercingLocation))
+//			{
+//				return false;
+//			}
+//			//if we aren't already pierced at this location: fail
+//			else if (!isPiercedAt(piercingLocation))
+//			{
+//				return false;
+//			}
+//			//or we can't equip this type of jewelry at this location: fail.
+//			else if (!CanWearThisJewelry(piercingLocation, jewelry))
+//			{
+//				return false;
+//			}
+//			//if we are already wearing jewelry at that location and not force, fail
+//			else if (WearingJewelryAt(piercingLocation) && !forceEquip)
+//			{
+//				return false;
+//			}
+//			//if we are already wearing jewelry at that location and force
+//			else if (!WearingJewelryAt(piercingLocation))
+//			{
+//				//swap out the jewelry
+//				jewelryEquipped.Add(piercingLocation, jewelry);
+//				ProcChange(piercingLocation, jewelry);
+//				return jewelryEquipped.ContainsKey(piercingLocation); //should always return true, but i'd like to proc it on unit tests if we somehow broke Dictionaries.
+//			}
+//			//final case - we are pierced at this location and don't have any jewelry here and our jewelry type is valid for this location.
+//			else
+//			{
+//				//put in the jewelry.
+//				jewelryEquipped[piercingLocation] = jewelry;
+//				ProcChange(piercingLocation, jewelryEquipped[piercingLocation], jewelry);
+//				return jewelryEquipped[piercingLocation] == jewelry;
+//			}
+//		}
 
-		internal Piercing(Dictionary<Locations, PiercingJewelry> creatorPairs)
-		{
+//		internal PiercingJewelry RemovePiercingJewelry(Locations piercingLocation, bool forceRemove = false)
+//		{
+//			if (!jewelryEquipped.ContainsKey(piercingLocation))
+//			{
+//				return null;
+//			}
+//			else if (!jewelryEquipped[piercingLocation].removable && !forceRemove)
+//			{
+//				return null;
+//			}
+//			else
+//			{
+//				PiercingJewelry jewelry = jewelryEquipped[piercingLocation];
+//				jewelryEquipped.Remove(piercingLocation);
+//				ProcChange(piercingLocation, jewelry, null);
+//				return jewelry;
+//			}
 
-		}
+//		}
 
-		public static IEnumerable<Locations> AsIteratable()
-		{
-			return Enum.GetValues(typeof(Locations)).Cast<Locations>();
-		}
-	}
+//		internal bool Pierce(Locations piercingLocation)
+//		{
+//			if (!CanPierce(piercingLocation))
+//			{
+//				return false;
+//			}
+//			if (isPiercedAt(piercingLocation))
+//			{
+//				return false;
+//			}
+
+//			if (piercedAt.ContainsKey(piercingLocation))
+//			{
+//				piercedAt[piercingLocation] = true;
+//			}
+//			else
+//			{
+//				piercedAt.Add(piercingLocation, true);
+//			}
+
+
+//			ProcChange(piercingLocation, true, null);
+
+//			return piercedAt[piercingLocation];
+
+//		}
+
+//		internal bool EquipOrPierceAndEquip(Locations piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
+//		{
+//			bool isPierced = true;
+//			if (!isPiercedAt(piercingLocation))
+//			{
+//				isPierced = Pierce(piercingLocation);
+//			}
+//			return isPierced && EquipPiercingJewelry(piercingLocation, jewelry, forceEquip);
+//		}
+
+//		//does not take into account whether or not this is already pierced, simply say if this location can be pierced.
+//		public bool CanPierce(Locations piercingLocation)
+//		{
+//			return piercingUnlocked(piercingLocation);
+//		}
+
+//		//does not check if it can currently be equipped, just if it is possible.
+//		public bool CanWearThisJewelry(Locations piercingLocation, PiercingJewelry jewelry)
+//		{
+//			return jewelryTypesAllowed(piercingLocation).HasFlag(jewelry.jewelryType) && jewelry.CanEquipAt<Piercing<Locations>, Locations>(this);
+//		}
+
+//		public bool CanWearGenericJewelryOfType(Locations piercingLocation, JewelryType jewelryType)
+//		{
+//			return jewelryTypesAllowed(piercingLocation).HasFlag(jewelryType);
+//		}
+
+//		internal bool Validate(bool correctInvalidData)
+//		{
+//			bool valid = true;
+//			foreach (Locations entry in Enum.GetValues(typeof(Locations)).Cast<Locations>())
+//			{
+
+//				//if not pierced at current location and there is jewelry there.
+//				if ((!piercedAt.TryGetValue(entry, out bool x) || x == false) && jewelryEquipped.TryGetValue(entry, out PiercingJewelry y) && y != null)
+//				{
+//					if (correctInvalidData)
+//					{
+//						jewelryEquipped.Remove(entry);
+//					}
+//					valid = false;
+//				}
+//				//if you can't pierce there.
+//				if (piercedAt.ContainsKey(entry) && !CanPierce(entry))
+//				{
+//					if (correctInvalidData)
+//					{
+//						piercedAt.Remove(entry);
+//						jewelryEquipped.Remove(entry);
+//					}
+//					valid = false;
+//				}
+//			}
+//			return valid;
+//		}
+
+//		internal void Reset()
+//		{
+//			ProcChange(piercedAt, jewelryEquipped);
+//			piercedAt.Clear();
+//			jewelryEquipped.Clear();
+//		}
+
+//		private void ProcChange(Dictionary<Locations, bool> piercedAt, Dictionary<Locations, PiercingJewelry> jewelryEquipped)
+//		{
+//			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercedAt, jewelryEquipped));
+//		}
+
+//		//if theres some magic in the future that lets you un-pierce a location and reject any jewelry inside, this will handle it. but it's mostly for the other way - piercing something with new jewelry.
+//		private void ProcChange(Locations piercingLocation, bool isNowPierced, PiercingJewelry deltaJewelry)
+//		{
+//			if (isNowPierced)
+//			{
+//				if (deltaJewelry != null)
+//				{
+//					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, null, deltaJewelry, piercingCount, jewelryCount));
+//				}
+//				else
+//				{
+//					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
+//				}
+//			}
+//			else
+//			{
+//				if (deltaJewelry != null)
+//				{
+//					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, deltaJewelry, null, piercingCount, jewelryCount));
+//				}
+//				else
+//				{
+//					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
+//				}
+//			}
+//		}
+
+//		//oldJewelry assumed to be null.
+//		private void ProcChange(Locations piercingLocation, PiercingJewelry newJewelry)
+//		{
+//			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, null, newJewelry, piercingCount, jewelryCount));
+//		}
+
+//		private void ProcChange(Locations piercingLocation, PiercingJewelry oldJewelry, PiercingJewelry newJewelry)
+//		{
+//			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Locations>(piercingLocation, oldJewelry, newJewelry, piercingCount, jewelryCount));
+//		}
+
+//		internal Piercing(Dictionary<Locations, PiercingJewelry> creatorPairs)
+//		{
+
+//		}
+
+//		public static IEnumerable<Locations> AsIteratable()
+//		{
+//			return Enum.GetValues(typeof(Locations)).Cast<Locations>();
+//		}
+//	}
 
 	public delegate void PiercingDataChangedEventHandler<T>(object sender, PiercingDataChangedEventArgs<T> args) where T : Enum;
 
@@ -405,7 +421,360 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		}
 	}
 
-	public sealed class ReadOnlyPiercing<Location> where Location : Enum
+	//public sealed class ReadOnlyPiercing<Location> where Location : Enum
+	//{
+	//	private readonly Dictionary<Location, bool> piercedAt = new Dictionary<Location, bool>();
+	//	private readonly Dictionary<Location, PiercingJewelry> jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
+
+	//	public readonly int piercingCount;
+	//	public bool isPierced => piercingCount != 0;
+
+	//	public bool isPiercedAt(Location location)
+	//	{
+	//		if (location == null)
+	//		{
+	//			return false;
+	//		}
+	//		piercedAt.TryGetValue(location, out bool isPierced);
+	//		return isPierced;
+	//	}
+
+	//	public readonly int jewelryCount;
+	//	public bool wearingJewelry => jewelryCount > 0;
+	//	public bool WearingJewelryAt(Location location)
+	//	{
+	//		if (location == null)
+	//		{
+	//			return false;
+	//		}
+	//		piercedAt.TryGetValue(location, out bool jewelryAt);
+	//		return jewelryAt;
+	//	}
+
+	//	public PiercingJewelry this[Location location]
+	//	{
+	//		get => jewelryEquipped[location];
+	//	}
+
+	//	public ReadOnlyPiercing(Dictionary<Location, bool> piercedAt, Dictionary<Location, PiercingJewelry> jewelryEquipped)
+	//	{
+	//		this.piercedAt = new Dictionary<Location, bool>(piercedAt);
+	//		this.jewelryEquipped = new Dictionary<Location, PiercingJewelry>(jewelryEquipped);
+
+	//		piercingCount = piercedAt.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
+
+	//		jewelryCount = jewelryEquipped.Values.Aggregate(0, (x, y) => { if (y != null) x++; return x; });
+	//	}
+
+	//	public ReadOnlyPiercing()
+	//	{
+	//		piercedAt = new Dictionary<Location, bool>();
+	//		jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
+
+	//		piercingCount = 0;
+	//		jewelryCount = 0;
+	//	}
+	//}
+
+#warning Maybe give piercing interface that returns a list of piercing locations? problem is it's not possible to store a list of different generics safely, and even harder to cast.
+
+
+	public abstract class PiercingLocation
+	{
+		public delegate bool CompatibleWith(JewelryType jewelryType);
+
+		protected readonly SimpleDescriptor buttonText;
+		protected readonly SimpleDescriptor description;
+
+		protected readonly CompatibleWith compatibleWith;
+
+
+		public string Description() => description();
+
+		public string Button() => buttonText();
+
+		public bool AllowsJewelryOfType(JewelryType jewelryType) => compatibleWith(jewelryType);
+
+		private protected PiercingLocation(CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+		{
+			compatibleWith = allowsJewelryOfType ?? throw new ArgumentNullException(nameof(allowsJewelryOfType));
+			buttonText = btnText ?? throw new ArgumentNullException(nameof(btnText));
+			description = locationDesc ?? throw new ArgumentNullException(nameof(locationDesc));
+		}
+	}
+
+	public abstract class Piercing<Location> where Location : PiercingLocation
+	{
+		public delegate bool PiercingUnlocked(Location location, out string whyNot);
+		public delegate JewelryType JewelryTypeAllowed(Location locations);
+
+		protected readonly PlayerStr allPiercingsDescription;
+
+		protected readonly PiercingUnlocked piercingUnlocked;
+
+		//tbh, not the cleanest tool, but idgaf. it works. As far as anyone implementing this shit will know or care, it's basically identical to the standard event.
+		private readonly WeakEventSource<PiercingDataChangedEventArgs<Location>> piercingChangeSource = new WeakEventSource<PiercingDataChangedEventArgs<Location>>();
+		public event EventHandler<PiercingDataChangedEventArgs<Location>> OnPiercingChange
+		{
+			add { piercingChangeSource.Subscribe(value); }
+			remove { piercingChangeSource.Unsubscribe(value); }
+		}
+
+
+		public bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
+
+		protected readonly Dictionary<Location, bool> piercedAt = new Dictionary<Location, bool>();
+		protected readonly Dictionary<Location, PiercingJewelry> jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
+
+		internal Piercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc)
+		{
+			piercingUnlocked = LocationUnlocked ?? throw new ArgumentNullException(nameof(LocationUnlocked));
+			allPiercingsDescription = playerDesc ?? throw new ArgumentNullException(nameof(playerDesc));
+		}
+
+		public ReadOnlyPiercing<Location> AsReadOnlyData()
+		{
+			return new ReadOnlyPiercing<Location>(piercedAt, jewelryEquipped);
+		}
+
+		public PiercingJewelry this[Location location]
+		{
+			get => jewelryEquipped[location];
+		}
+
+		public int piercingCount => piercedAt.Values.Aggregate(0, (x, y) => { if (y) x++; return x; });
+		public bool isPierced => piercedAt.Values.Any((x) => x);
+		public bool isPiercedAt(Location location)
+		{
+			if (location == null)
+			{
+				return false;
+			}
+			piercedAt.TryGetValue(location, out bool isPierced);
+			return isPierced;
+		}
+
+		public int jewelryCount => jewelryEquipped.Values.Aggregate(0, (x, y) => { if (y != null) x++; return x; });
+		public bool wearingJewelry => jewelryEquipped.Values.Any((x) => x != null);
+		public bool WearingJewelryAt(Location location)
+		{
+			if (location == null)
+			{
+				return false;
+			}
+			return jewelryEquipped.TryGetValue(location, out PiercingJewelry jewelry) && jewelry != null;
+		}
+
+		internal bool EquipPiercingJewelry(Location piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
+		{
+			if (jewelry == null) throw new ArgumentNullException(nameof(jewelry));
+			if (piercingLocation is null) throw new ArgumentNullException(nameof(piercingLocation));
+
+			//if we can't pierce this location: fail
+			else if (!CanPierce(piercingLocation))
+			{
+				return false;
+			}
+			//if we aren't already pierced at this location: fail
+			else if (!isPiercedAt(piercingLocation))
+			{
+				return false;
+			}
+			//or we can't equip this type of jewelry at this location: fail.
+			else if (!CanWearThisJewelry(piercingLocation, jewelry))
+			{
+				return false;
+			}
+			//if we are already wearing jewelry at that location and not force, fail
+			else if (WearingJewelryAt(piercingLocation) && !forceEquip)
+			{
+				return false;
+			}
+			//if we are already wearing jewelry at that location and force
+			else if (!WearingJewelryAt(piercingLocation))
+			{
+				//swap out the jewelry
+				jewelryEquipped.Add(piercingLocation, jewelry);
+				ProcChange(piercingLocation, jewelry);
+				return jewelryEquipped.ContainsKey(piercingLocation); //should always return true, but i'd like to proc it on unit tests if we somehow broke Dictionaries.
+			}
+			//final case - we are pierced at this location and don't have any jewelry here and our jewelry type is valid for this location.
+			else
+			{
+				//put in the jewelry.
+				jewelryEquipped[piercingLocation] = jewelry;
+				ProcChange(piercingLocation, jewelryEquipped[piercingLocation], jewelry);
+				return jewelryEquipped[piercingLocation] == jewelry;
+			}
+		}
+
+		internal PiercingJewelry RemovePiercingJewelry(Location piercingLocation, bool forceRemove = false)
+		{
+			if (!jewelryEquipped.ContainsKey(piercingLocation))
+			{
+				return null;
+			}
+			else if (!jewelryEquipped[piercingLocation].removable && !forceRemove)
+			{
+				return null;
+			}
+			else
+			{
+				PiercingJewelry jewelry = jewelryEquipped[piercingLocation];
+				jewelryEquipped.Remove(piercingLocation);
+				ProcChange(piercingLocation, jewelry, null);
+				return jewelry;
+			}
+
+		}
+
+		internal bool Pierce(Location piercingLocation)
+		{
+			if (!CanPierce(piercingLocation))
+			{
+				return false;
+			}
+			if (isPiercedAt(piercingLocation))
+			{
+				return false;
+			}
+
+			if (piercedAt.ContainsKey(piercingLocation))
+			{
+				piercedAt[piercingLocation] = true;
+			}
+			else
+			{
+				piercedAt.Add(piercingLocation, true);
+			}
+
+
+			ProcChange(piercingLocation, true, null);
+
+			return piercedAt[piercingLocation];
+
+		}
+
+		internal bool EquipOrPierceAndEquip(Location piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
+		{
+			bool isPierced = true;
+			if (!isPiercedAt(piercingLocation))
+			{
+				isPierced = Pierce(piercingLocation);
+			}
+			return isPierced && EquipPiercingJewelry(piercingLocation, jewelry, forceEquip);
+		}
+
+		//does not take into account whether or not this is already pierced, simply say if this location can be pierced.
+		public bool CanPierce(Location piercingLocation)
+		{
+			return piercingUnlocked(piercingLocation, out string _);
+		}
+
+		public bool CanPierceWithHint(Location piercingLocation, out string whyNot)
+		{
+			return piercingUnlocked(piercingLocation, out whyNot);
+		}
+
+		//does not check if it can currently be equipped, just if it is possible.
+		public bool CanWearThisJewelry(Location piercingLocation, PiercingJewelry jewelry)
+		{
+			return piercingLocation.AllowsJewelryOfType(jewelry.jewelryType) && jewelry.CanEquipAtVersion2<Piercing<Location>, Location>(this);
+		}
+
+		public bool CanWearGenericJewelryOfType(Location piercingLocation, JewelryType jewelryType)
+		{
+			return piercingLocation.AllowsJewelryOfType(jewelryType);
+		}
+
+		internal bool Validate(bool correctInvalidData)
+		{
+			bool valid = true;
+			foreach (Location entry in Enum.GetValues(typeof(Location)).Cast<Location>())
+			{
+
+				//if not pierced at current location and there is jewelry there.
+				if ((!piercedAt.TryGetValue(entry, out bool x) || x == false) && jewelryEquipped.TryGetValue(entry, out PiercingJewelry y) && y != null)
+				{
+					if (correctInvalidData)
+					{
+						jewelryEquipped.Remove(entry);
+					}
+					valid = false;
+				}
+				//if you can't pierce there.
+				if (piercedAt.ContainsKey(entry) && !CanPierce(entry))
+				{
+					if (correctInvalidData)
+					{
+						piercedAt.Remove(entry);
+						jewelryEquipped.Remove(entry);
+					}
+					valid = false;
+				}
+			}
+			return valid;
+		}
+
+		internal void Reset()
+		{
+			ProcChange(piercedAt, jewelryEquipped);
+			piercedAt.Clear();
+			jewelryEquipped.Clear();
+		}
+
+		public abstract int MaxPiercings { get; }
+
+		public abstract IEnumerable<Location> availableLocations { get; }
+		//do hint for attempting to pierce. could mark it virtual for override opportunity.
+
+
+		private void ProcChange(Dictionary<Location, bool> piercedAt, Dictionary<Location, PiercingJewelry> jewelryEquipped)
+		{
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercedAt, jewelryEquipped));
+		}
+
+		//if theres some magic in the future that lets you un-pierce a location and reject any jewelry inside, this will handle it. but it's mostly for the other way - piercing something with new jewelry.
+		private void ProcChange(Location piercingLocation, bool isNowPierced, PiercingJewelry deltaJewelry)
+		{
+			if (isNowPierced)
+			{
+				if (deltaJewelry != null)
+				{
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, isNowPierced, null, deltaJewelry, piercingCount, jewelryCount));
+				}
+				else
+				{
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
+				}
+			}
+			else
+			{
+				if (deltaJewelry != null)
+				{
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, isNowPierced, deltaJewelry, null, piercingCount, jewelryCount));
+				}
+				else
+				{
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
+				}
+			}
+		}
+
+		//oldJewelry assumed to be null.
+		private void ProcChange(Location piercingLocation, PiercingJewelry newJewelry)
+		{
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, null, newJewelry, piercingCount, jewelryCount));
+		}
+
+		private void ProcChange(Location piercingLocation, PiercingJewelry oldJewelry, PiercingJewelry newJewelry)
+		{
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, oldJewelry, newJewelry, piercingCount, jewelryCount));
+		}
+
+	}
+
+	public sealed class ReadOnlyPiercing<Location> where Location : PiercingLocation
 	{
 		private readonly Dictionary<Location, bool> piercedAt = new Dictionary<Location, bool>();
 		private readonly Dictionary<Location, PiercingJewelry> jewelryEquipped = new Dictionary<Location, PiercingJewelry>();

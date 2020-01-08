@@ -1,9 +1,47 @@
 ﻿using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class NipplePiercingLocation
+	{
+		private static string LeftHorizontalButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftHorizontalLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftVerticalButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftVerticalLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightHorizontalButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightHorizontalLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightVerticalButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightVerticalLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
+
 	internal interface INipple
 	{
 		float length { get; }
@@ -11,7 +49,7 @@ namespace CoC.Backend.BodyParts
 		NippleStatus status { get; }
 		bool quadNipples { get; }
 
-		ReadOnlyPiercing<NipplePiercings> piercings { get; }
+		ReadOnlyPiercing<NipplePiercingLocation> piercings { get; }
 
 		LactationStatus lactationStatus { get; }
 		float lactationRate { get; }
@@ -23,6 +61,11 @@ namespace CoC.Backend.BodyParts
 	}
 	public sealed partial class Nipples : INipple
 	{
+		private string AllNipplePiercingsStr(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		float INipple.length => length;
 
 		bool INipple.blackNipples => blackNipples;
@@ -33,7 +76,7 @@ namespace CoC.Backend.BodyParts
 
 		BodyType INipple.bodyType => bodyType;
 
-		ReadOnlyPiercing<NipplePiercings> INipple.piercings => this.nipplePiercing.AsReadOnlyData();
+		ReadOnlyPiercing<NipplePiercingLocation> INipple.piercings => this.nipplePiercing.AsReadOnlyData();
 
 		public static string Name()
 		{
@@ -79,7 +122,7 @@ namespace CoC.Backend.BodyParts
 
 		bool INipple.quadNipples => quadNipples;
 
-		ReadOnlyPiercing<NipplePiercings> INipple.piercings => nipplePiercings;
+		ReadOnlyPiercing<NipplePiercingLocation> INipple.piercings => nipplePiercings;
 
 		LactationStatus INipple.lactationStatus => lactationStatus;
 
@@ -252,7 +295,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (wearingJewelry)
 				{
-					var leftHorJewelry = nipple.piercings[NipplePiercings.LEFT_HORIZONTAL];
+					var leftHorJewelry = nipple.piercings[NipplePiercingLocation.LEFT_HORIZONTAL];
 					//if (piercing is nipple chain) return "chained " + nount;
 
 					return (needsArticle ? "a " : "") + "pierced " + noun;

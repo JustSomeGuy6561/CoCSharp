@@ -87,13 +87,13 @@ namespace CoC.Backend.BodyParts
 		}
 		private FurTexture _furTexture;
 
-		public bool usesFur => type.usesFur;
+		public bool usesFurColor => type.usesFurColor;
 		public bool usesTone => type.usesTone;
 
 		public bool mutable => type.updateable;
 
 		public bool toneMutable => usesTone && mutable;
-		public bool furMutable => usesFur && mutable;
+		public bool furMutable => usesFurColor && mutable;
 
 		public override EpidermisType type { get; protected set; }
 
@@ -141,6 +141,8 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public bool isEmpty => type == EpidermisType.EMPTY;
+
+		public bool isNotSkinOrGoo => type != EpidermisType.GOO && type != EpidermisType.SKIN;
 
 		FurColor IEpidermis.furColor => fur;
 
@@ -242,7 +244,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			else if (first.type.usesFur)
+			else if (first.type.usesFurColor)
 			{
 				return false;
 			}
@@ -392,7 +394,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool ChangeTexture(FurTexture newTexture)
 		{
-			if (furTexture == newTexture || !usesFur) return false;
+			if (furTexture == newTexture || !usesFurColor) return false;
 			furTexture = newTexture;
 			return true;
 		}
@@ -505,7 +507,7 @@ namespace CoC.Backend.BodyParts
 
 		public override EpidermalData AsReadOnlyData()
 		{
-			if (type.usesFur) return new EpidermalData((FurBasedEpidermisType)type, fur, furTexture);
+			if (type.usesFurColor) return new EpidermalData((FurBasedEpidermisType)type, fur, furTexture);
 			else if (type.usesTone) return new EpidermalData((ToneBasedEpidermisType)type, tone, skinTexture);
 			else return new EpidermalData();
 		}
@@ -515,7 +517,7 @@ namespace CoC.Backend.BodyParts
 			//other not null and types match.
 			return !(other is null) && this.type == other.type && (
 				//and fur/texture matches and we use fur OR
-				(this.usesFur && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
+				(this.usesFurColor && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
 				//tone/texture matches and we use tone.
 				(this.usesTone && this.tone == other.tone && this.skinTexture == other.skinTexture));
 		}
@@ -524,7 +526,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return !(other is null) && this.type == other.type && (
 				//and fur/texture matches and we use fur OR
-				(this.usesFur && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
+				(this.usesFurColor && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
 				//tone/texture matches and we use tone.
 				(this.usesTone && this.tone == other.tone && this.skinTexture == other.skinTexture));
 		}
@@ -538,7 +540,7 @@ namespace CoC.Backend.BodyParts
 		private static readonly List<EpidermisType> epidermi = new List<EpidermisType>();
 		public static readonly ReadOnlyCollection<EpidermisType> availableTypes = new ReadOnlyCollection<EpidermisType>(epidermi);
 		public abstract bool usesTone { get; }
-		public virtual bool usesFur => !usesTone;
+		public virtual bool usesFurColor => !usesTone;
 
 		//it may be useful to know if the text is plural - when describing skin, for example, you'd say "it is green" or whatever, whereas with scales, you'd say "they are green"
 		public string ShortDescription(out bool isPlural) => shortDescWithPluralFlag(out isPlural);
@@ -689,7 +691,7 @@ namespace CoC.Backend.BodyParts
 		internal EmptyEpidermisType() : base(NothingStr, BitOfNothingness, NothingAdjectiveStr, false) { }
 
 		public override bool usesTone => false;
-		public override bool usesFur => false;
+		public override bool usesFurColor => false;
 
 		private protected override bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData)
 		{
@@ -763,16 +765,18 @@ namespace CoC.Backend.BodyParts
 		EpidermisType IEpidermis.epidermisType => type;
 
 
-		public bool usesFur => type.usesFur;
+		public bool usesFurColor => type.usesFurColor;
 		public bool usesTone => type.usesTone;
 
 		public bool isEmpty => type == EpidermisType.EMPTY;
 
-		public FurColor fur => type.usesFur ? _fur : new FurColor();
+		public FurColor fur => type.usesFurColor ? _fur : new FurColor();
 		public Tones tone => type.usesTone ? _tone : Tones.NOT_APPLICABLE;
 
-		public FurTexture furTexture => type.usesFur ? _furTexture : FurTexture.NONDESCRIPT;
+		public FurTexture furTexture => type.usesFurColor ? _furTexture : FurTexture.NONDESCRIPT;
 		public SkinTexture skinTexture => type.usesTone ? _skinTexture : SkinTexture.NONDESCRIPT;
+
+		public bool isNotSkinOrGoo => type != EpidermisType.GOO && type != EpidermisType.SKIN;
 
 		public static bool IsNullOrEmpty(EpidermalData epidermis)
 		{
@@ -823,7 +827,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			else if (first.type.usesFur)
+			else if (first.type.usesFurColor)
 			{
 				return false;
 			}
@@ -840,7 +844,7 @@ namespace CoC.Backend.BodyParts
 				//if the types are mixed, return true if we do not require the same type for this check, false otherwise.
 				return !requireSameType;
 			}
-			else if (first.usesFur)
+			else if (first.usesFurColor)
 			{
 				return first.furTexture != second.furTexture;
 			}
@@ -890,7 +894,7 @@ namespace CoC.Backend.BodyParts
 			//other not null and types match.
 			return !(other is null) && this.type == other.type && (
 				//and fur/texture matches and we use fur OR
-				(this.usesFur && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
+				(this.usesFurColor && this.fur.Equals(other.fur) && this.furTexture == other.furTexture) ||
 				//tone/texture matches and we use tone.
 				(this.usesTone && this.tone == other.tone && this.skinTexture == other.skinTexture));
 		}

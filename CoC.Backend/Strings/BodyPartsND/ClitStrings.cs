@@ -11,25 +11,108 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class ClitPiercingLocation
+	{
+		private static string ChristinaButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ChristinaLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string VerticalHoodButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string VerticalHoodLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string HorizontalHoodButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string HorizontalHoodLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string TriangleButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string TriangleLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ThroughClitButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ThroughClitLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ThroughLargeClit1Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ThroughLargeClit1Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ThroughLargeClit2Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ThroughLargeClit2Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ThroughLargeClit3Button()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ThroughLargeClit3Location()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
 	internal interface IClit
 	{
 		float length { get; }
 
 		bool clitCockActive { get; }
 
-		ReadOnlyPiercing<ClitPiercings> piercings { get; }
+		ReadOnlyPiercing<ClitPiercingLocation> piercings { get; }
 
 		Guid creatureID { get; }
 	}
 
 	public partial class Clit : IClit
 	{
+		private string RequiresPiercingFetish()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllClitPiercingsStr(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string RequiresClitBeAtLeastThisLong(float length)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		float IClit.length => length;
 
 
 		bool IClit.clitCockActive => omnibusClit && omnibusActive;
 
-		ReadOnlyPiercing<ClitPiercings> IClit.piercings => clitPiercings.AsReadOnlyData();
+		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => clitPiercings.AsReadOnlyData();
 
 		Guid IClit.creatureID => creatureID;
 
@@ -47,7 +130,7 @@ namespace CoC.Backend.BodyParts
 
 		bool IClit.clitCockActive => clitCockActive;
 
-		ReadOnlyPiercing<ClitPiercings> IClit.piercings => clitPiercings;
+		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => clitPiercings;
 
 		Guid IClit.creatureID => CreatureID;
 	}

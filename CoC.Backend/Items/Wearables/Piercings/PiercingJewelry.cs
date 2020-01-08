@@ -2,17 +2,13 @@
 //Description:
 //Author: JustSomeGuy
 //4/11/2019, 9:22 PM
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Items.Materials;
 using System;
 
 namespace CoC.Backend.Items.Wearables.Piercings
 {
-	//to whom it may concern: I know a "horseshoe" is a "curved barbell" and that may annoy certain people. 
-	//but from a descriptive/simple standpoint we treat studs and straight barbells identically. Additionally, barbells that are curved due to the anatomy
-	//but otherwise appear straight (vch, navel piercings, prince albert, etc) are also treated as straight barbells, event though they are actually curved barbells. 
-	//To avoid confusion between slightly curved barbells and really curved barbells, i'm using "horseshoe."
-	[Flags]
-	public enum JewelryType { BARBELL_STUD = 1, RING = 2, DANGLER = 4, HOOP = 8, HORSESHOE = 16, /*CHAIN = 32, SPECIAL = 64*/ SPECIAL = 32 }
+	public enum JewelryType { BARBELL_STUD, RING, DANGLER, HOOP, HORSESHOE, /*CHAIN,*/ SPECIAL}
 
 	public class PiercingJewelry : IEquatable<PiercingJewelry>
 	{
@@ -27,13 +23,25 @@ namespace CoC.Backend.Items.Wearables.Piercings
 		{
 			removable = canRemove;
 			this.jewelryMaterial = jewelryMaterial ?? throw new ArgumentNullException(nameof(jewelryMaterial));
-			if (!Enum.IsDefined(typeof(JewelryType), jewelryType)) throw new ArgumentException("A single pierce of piercing jewelry can only have one, valid jewelry type.");
+			if (!Enum.IsDefined(typeof(JewelryType), jewelryType)) throw new ArgumentException("A single piece of piercing jewelry can only have one, valid jewelry type.");
 			this.jewelryType = jewelryType;
 		}
 
 		public bool Equals(PiercingJewelry other)
 		{
 			return other != null && removable == other.removable && jewelryMaterial == other.jewelryMaterial && jewelryType == other.jewelryType;
+		}
+
+		//This allows you to limit a piece of jewelry to specific piercing locations - i.e. a nipple chain would only make sense in nipple piercings. Note this does not take into
+		//account existing piercings or currently equipped jewelry, just the location.
+		public virtual bool CanEquipAt<T, U>(T piercable) where T : Piercing<U> where U : Enum
+		{
+			return true;
+		}
+
+		public virtual bool CanEquipAtVersion2<T, U>(T piercable) where T : Piercing<U> where U : PiercingLocation
+		{
+			return true;
 		}
 	}
 }

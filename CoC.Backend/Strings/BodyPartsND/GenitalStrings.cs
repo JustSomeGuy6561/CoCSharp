@@ -175,82 +175,7 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 }
 */
 
-		public string AllCocksShortDescription()
-		{
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
-			else if (cocks.Count == 1)
-			{
-				return cocks[0].ShortDescription();
-			}
-			bool mismatched = _cocks.Exists(x => x.type != _cocks[0].type);
 
-			return mismatched ? CockType.GenericCockNoun(true) : cocks[0].ShortDescription(false, true);
-		}
-
-		public string OneCockOrCocksNoun(string pronoun = "your")
-		{
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
-			else if (cocks.Count == 1)
-			{
-				return pronoun + " " + CockType.GenericCockNoun();
-			}
-			else return "one of " + pronoun + " " + CockType.GenericCockNoun(true);
-		}
-
-		public string OneCockOrCocksShort(string pronoun = "your")
-		{
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
-			else if (cocks.Count == 1)
-			{
-				return pronoun + " " + AllCocksShortDescription();
-			}
-			else return "one of " + pronoun + " " + AllCocksShortDescription();
-		}
-
-		public string EachCockOrCocksNoun(string pronoun = "your")
-		{
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
-			else if (cocks.Count == 1)
-			{
-				return pronoun + " " + CockType.GenericCockNoun(false);
-			}
-			else return "each of " + pronoun + " " + CockType.GenericCockNoun(true);
-		}
-
-		public string EachCockOrCocksShort(string pronoun = "your")
-		{
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
-			else if (cocks.Count == 1)
-			{
-				return pronoun + " " + AllCocksShortDescription();
-			}
-			else return "each of " + pronoun + " " + AllCocksShortDescription();
-		}
-
-		public string AllCocksLongDescription()
-		{
-			return AllCocksDesc(false);
-		}
-
-		public string AllCocksFullDescription()
-		{
-			return AllCocksDesc(true);
-		}
 
 		private string AllCocksDesc(bool full)
 		{
@@ -283,13 +208,13 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 					countOptions = lottaDicksOptions;
 				}
 
-				description = mismatched ? Utils.RandomChoice(mismatchedDicksTextOptions) : cocks[0].ShortDescription() + "s";
+				description = mismatched ? Utils.RandomChoice(mismatchedDicksTextOptions) : cocks[0].ShortDescription(false, true);
 
 				return Utils.RandomChoice(countOptions) + AverageCock().AdjectiveText(full) + description;
 			}
 		}
 
-		public string AllCocksPlayerDescription()
+		private string AllCocksPlayerDesc()
 		{
 			if (!CreatureStore.TryGetCreature(creatureID, out Creature creature) || !(creature is PlayerBase player))
 			{
@@ -360,24 +285,12 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			return sb.ToString();
 		}
 
-		public string SheathOrBaseText()
+		private string SheathOrBaseStr()
 		{
 			return hasSheath ? "sheath" : "base";
 		}
 
-		public string AllVaginasShortDescription()
-		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		public string AllVaginasLongDescription()
-		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-
-
-		public string AllVaginasPlayerText()
+		private string AllVaginasPlayerText()
 		{
 			if (!CreatureStore.TryGetCreature(creatureID, out Creature creature) || !(creature is PlayerBase player))
 			{
@@ -453,6 +366,28 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 
 			return sb.ToString();
+		}
+
+		private string AllVaginasDesc(bool full)
+		{
+			if (_vaginas.Count == 0)
+			{
+				return "";
+			}
+			//If one, return normal cock descript
+			else if (_vaginas.Count == 1)
+			{
+				return _vaginas[0].ShortDescription();
+			}
+			else
+			{
+				bool mismatched = _vaginas.Exists(x => x.type != _vaginas[0].type);
+
+				string[] countOptions = mismatched ? mismatchedPairOptions : matchedPairOptions;
+				string description = mismatched ? Utils.RandomChoice(mismatchedDicksTextOptions) : _vaginas[0].ShortDescription(true);
+
+				return Utils.RandomChoice(countOptions) + AverageVagina().AdjectiveText(full) + description;
+			}
 		}
 
 		private string WetnessLoosenessText(PlayerBase player)
@@ -775,48 +710,24 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 		}
 
-
-		public string AllBreastsShortDescription(bool alternateFormat = false)
+		private string ChestShortDesc(bool withArticle)
 		{
-			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().ShortDescription();
+			return (withArticle ? "a " : "") + "chest";
 		}
 
-		public string AllBreastsLongDescription(bool alternateFormat = false)
+		private string ChestDesc(bool withArticle, bool full)
 		{
-			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().LongDescription(false, true);
-		}
-
-		public string AllBreastsFullDescription(bool alternateFormat = false)
-		{
-			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().FullDescription(false, false, true);
-		}
-
-		public string ChestOrAllBreastsShort(bool alternateFormat = false)
-		{
-			if (numBreastRows == 1 && _breasts[0].isMale)
+			string chest = withArticle ? "a flat chest" : "flat chest";
+			if (full)
 			{
-				return alternateFormat ? "a chest" : "chest";
+				return chest + " with " + NippleStrings.NippleSizeAdjective(_breasts[0].nipples.length) + " nipples";
 			}
-			else return AllBreastsShortDescription(alternateFormat);
+			else
+			{
+				return chest;
+			}
 		}
 
-		public string ChestOrAllBreastsLong(bool alternateFormat = false)
-		{
-			if (numBreastRows == 1 && _breasts[0].isMale)
-			{
-				return alternateFormat ? "a flat chest" : "flat chest";
-			}
-			else return AllBreastsLongDescription(alternateFormat);
-		}
-
-		public string ChestOrAllBreastsFull(bool alternateFormat = false)
-		{
-			if (numBreastRows == 1 && _breasts[0].isMale)
-			{
-				return (alternateFormat ? "a flat chest" : "flat chest") + " with " + NippleStrings.NippleSizeAdjective(_breasts[0].nipples.length) + " nipples";
-			}
-			else return AllBreastsFullDescription(alternateFormat);
-		}
 
 		private string LactationSlowedDownDueToInactivity(bool becameOverFullThisPass, LactationStatus oldLevel)
 		{

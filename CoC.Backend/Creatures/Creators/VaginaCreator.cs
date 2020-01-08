@@ -14,7 +14,7 @@ namespace CoC.Backend.Creatures
 		public readonly VaginaType type;
 
 		public float? clitLength;
-		public readonly ReadOnlyDictionary<ClitPiercings, PiercingJewelry> clitPiercings;
+		public readonly ReadOnlyDictionary<ClitPiercingLocation, PiercingJewelry> clitPiercings;
 		public readonly ReadOnlyDictionary<LabiaPiercings, PiercingJewelry> labiaPiercings;
 		public VaginalWetness wetness;
 		public VaginalLooseness looseness;
@@ -24,18 +24,18 @@ namespace CoC.Backend.Creatures
 
 		public VaginaCreator(float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL,
 			VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool omnibusClit = false, bool isVirgin = true,
-			Dictionary<ClitPiercings, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
+			Dictionary<ClitPiercingLocation, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
 			: this(VaginaType.HUMAN, clitLengthInInches, vaginalWetness, vaginalLooseness, omnibusClit, isVirgin, clitJewelry, labiaJewelry) { }
 		public VaginaCreator(VaginaType vaginaType, float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL,
 			VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool omnibusClit = false, bool isVirgin = true,
-			Dictionary<ClitPiercings, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
+			Dictionary<ClitPiercingLocation, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercings, PiercingJewelry> labiaJewelry = null)
 		{
 			type = vaginaType;
 			clitLength = clitLengthInInches;
 			wetness = vaginalWetness;
 			looseness = vaginalLooseness;
 			hasClitCock = omnibusClit;
-			clitPiercings = clitJewelry == null ? null : new ReadOnlyDictionary<ClitPiercings, PiercingJewelry>(clitJewelry);
+			clitPiercings = clitJewelry == null ? null : new ReadOnlyDictionary<ClitPiercingLocation, PiercingJewelry>(clitJewelry);
 			labiaPiercings = labiaJewelry == null ? null : new ReadOnlyDictionary<LabiaPiercings, PiercingJewelry>(labiaJewelry);
 			virgin = isVirgin;
 		}

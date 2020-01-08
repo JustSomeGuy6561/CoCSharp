@@ -12,7 +12,7 @@ using System;
 
 namespace CoC.Backend
 {
-
+	#region Text
 	public delegate string SimpleDescriptor();
 	//a description that may or may not be plural. it may be important to know from a grammar perspective whether or not this is the case.
 	public delegate string MaybePluralDescriptor(out bool isPlural);
@@ -58,6 +58,7 @@ namespace CoC.Backend
 
 	//these may be changed or removed.
 	public delegate string AdjColorDescriptor(string adj, CoCColors color);
+	#endregion
 	public delegate void CombatDelegate(Creature player, Creature enemy);
 
 	//every function that uses a button will follow this format. note that with lambdas they can take virtually anything.

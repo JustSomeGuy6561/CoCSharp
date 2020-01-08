@@ -41,7 +41,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string SpiderLongDesc(OvipositorData ovipositor, bool alternateFormat)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return Utils.AddArticleIf("large, retractible spider ovipositor", alternateFormat);
 		}
 		private static string SpiderPlayerStr(Ovipositor ovipositor, PlayerBase player)
 		{

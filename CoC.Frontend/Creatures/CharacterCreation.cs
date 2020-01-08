@@ -100,7 +100,7 @@ namespace CoC.Frontend.Creatures
 				creator.furColor = creator.underFurColor;
 			}
 
-			furLocked = (creator.bodyType?.epidermisType.usesFur != true && creator.bodyType?.secondaryEpidermisType.usesFur != true) || !FurColor.IsNullOrEmpty(creator.furColor);
+			furLocked = (creator.bodyType?.epidermisType.usesFurColor != true && creator.bodyType?.secondaryEpidermisType.usesFurColor != true) || !FurColor.IsNullOrEmpty(creator.furColor);
 
 			if (creator.defaultGender != null && creator.forceDefaultGender == true)
 			{
@@ -843,8 +843,8 @@ namespace CoC.Frontend.Creatures
 			}
 		}
 
-		private bool hasFur => creator.bodyType?.epidermisType.usesFur == true || creator.bodyType?.secondaryEpidermisType.usesFur == true;
-		private bool multiFurred => creator.bodyType?.epidermisType.usesFur == true && creator.bodyType?.secondaryEpidermisType.usesFur == true;
+		private bool hasFur => creator.bodyType?.epidermisType.usesFurColor == true || creator.bodyType?.secondaryEpidermisType.usesFurColor == true;
+		private bool multiFurred => creator.bodyType?.epidermisType.usesFurColor == true && creator.bodyType?.secondaryEpidermisType.usesFurColor == true;
 
 		private void FurOptions()
 		{

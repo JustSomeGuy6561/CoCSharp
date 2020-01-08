@@ -9,15 +9,56 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	//full desc adds "pierced " 30% of the time, if pierced.
+	public partial class TonguePiercingLocation
+	{
+		private static string FrontButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string FrontLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string MiddleButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string MiddleLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string BackButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string BackLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
 	public partial class Tongue
 	{
 		public static string Name()
 		{
 			return "Tongue";
 		}
+
+		private string OnlyOneTonguePiercingWithoutFetish()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllTonguePiercingsStr(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 	}
 
+	//full desc adds "pierced " 30% of the time, if pierced.
 	public partial class TongueType
 	{
 		private static string HumanDesc(bool singleMemberFormat)

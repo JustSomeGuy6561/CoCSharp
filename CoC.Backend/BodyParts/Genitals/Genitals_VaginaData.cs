@@ -295,6 +295,21 @@ namespace CoC.Backend.BodyParts
 			return _vaginas.MinItem(x => x.clit.length).clit;
 		}
 
+		public VaginaData AverageVagina()
+		{
+			if (_vaginas.Count == 0)
+			{
+				return null;
+			}
+
+			VaginaType type = _vaginas[0].type;
+			bool virgin = _vaginas.All(x => x.isVirgin == true);
+			bool chaste = _vaginas.All(x => x.everPracticedVaginal == true);
+
+			return Vagina.GenerateAggregate(creatureID, type, Clit.GenerateAggregate(creatureID, AverageClitSize(), hasClitCock, !hasCock), AverageVaginalLooseness(),
+				AverageVaginalWetness(), virgin, chaste, AverageVaginalCapacity());
+		}
+
 		#endregion
 
 		#region Vagina Sex-Related Functions
@@ -398,6 +413,90 @@ namespace CoC.Backend.BodyParts
 			{
 				_vaginas[vaginaIndex].OrgasmGeneric(false);
 			}
+		}
+		#endregion
+
+		#region Text
+		public string AllVaginasShortDescription()
+		{
+			if (_vaginas.Count == 0)
+			{
+				return "";
+			}
+			else if (_vaginas.Count == 1)
+			{
+				return _vaginas[0].ShortDescription();
+			}
+			bool mismatched = _vaginas.Exists(x => x.type != _vaginas[0].type);
+
+			return mismatched ? VaginaType.VaginaNoun(true) : _vaginas[0].ShortDescription(false);
+		}
+
+		public string AllVaginasLongDescription()
+		{
+			return AllVaginasDesc(false);
+		}
+
+		public string AllVaginasFullDescription()
+		{
+			return AllVaginasDesc(true);
+		}
+
+		public string OneVaginaOrVaginasNoun(string pronoun = "your")
+		{
+			if (_vaginas.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(_vaginas.Count > 1, pronoun, VaginaType.VaginaNoun(_vaginas.Count > 1));
+		}
+
+		public string OneVaginaOrVaginasShort(string pronoun = "your")
+		{
+			if (_vaginas.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(_vaginas.Count > 1, pronoun, AllVaginasShortDescription());
+		}
+
+		public string EachVaginaOrVaginasNoun(string pronoun = "your")
+		{
+			return EachVaginaOrVaginasNoun(pronoun, out bool _);
+		}
+
+		public string EachVaginaOrVaginasShort(string pronoun = "your")
+		{
+			return EachVaginaOrVaginasShort(pronoun, out bool _);
+		}
+
+		public string EachVaginaOrVaginasNoun(string pronoun, out bool isPlural)
+		{
+			isPlural = _vaginas.Count != 1;
+			if (_vaginas.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(_vaginas.Count > 1, pronoun, VaginaType.VaginaNoun(_vaginas.Count > 1));
+		}
+
+		public string EachVaginaOrVaginasShort(string pronoun, out bool isPlural)
+		{
+			isPlural = _vaginas.Count != 1;
+			if (_vaginas.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(_vaginas.Count > 1, pronoun, AllVaginasShortDescription());
+		}
+
+		public string AllVaginasPlayerDescription()
+		{
+			return AllVaginasPlayerText();
 		}
 		#endregion
 	}

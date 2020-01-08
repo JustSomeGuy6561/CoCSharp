@@ -13,7 +13,74 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
-	public enum TonguePiercingLocation { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
+	//public enum TonguePiercingLocation { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
+
+	public sealed partial class TonguePiercingLocation : PiercingLocation, IEquatable<TonguePiercingLocation>
+	{
+		private static readonly List<TonguePiercingLocation> _allLocations = new List<TonguePiercingLocation>();
+
+		public static readonly ReadOnlyCollection<TonguePiercingLocation> allLocations;
+
+		private readonly byte index;
+
+		static TonguePiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<TonguePiercingLocation>(_allLocations);
+		}
+
+		public TonguePiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is TonguePiercingLocation tonguePiercing)
+			{
+				return Equals(tonguePiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(TonguePiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public static readonly TonguePiercingLocation FRONT = new TonguePiercingLocation(0, SupportedJewelry, FrontButton, FrontLocation);
+		public static readonly TonguePiercingLocation MIDDLE = new TonguePiercingLocation(1, SupportedJewelry, MiddleButton, MiddleLocation);
+		public static readonly TonguePiercingLocation BACK = new TonguePiercingLocation(2, SupportedJewelry, BackButton, BackLocation);
+
+		//these are the piercings for standard gameplay - if you want to create a scene where it's a giant ring and the PC gets dragged around by it
+		//because you're into German dungeon porn, that's fine. just do it via text and give them a stud afterward. or just pierce it and leave it open
+		//so the next time your kinky scene is called you can omit the bit where you pierce their tongue or whatever.
+		private static bool SupportedJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD;
+		}
+	}
+
+	public sealed class TonguePiercing : Piercing<TonguePiercingLocation>
+	{
+		public TonguePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => TonguePiercingLocation.allLocations.Count;
+
+		public override IEnumerable<TonguePiercingLocation> availableLocations => TonguePiercingLocation.allLocations;
+	}
 
 	//ugh. i guess this fires on tongue length/width change? idk why, but whatever - overruled. i guess if you want to unlock some achievement when your tongue can cosplay
 	//for KISS, you can now easily do that.
@@ -21,11 +88,8 @@ namespace CoC.Backend.BodyParts
 	{
 		public override string BodyPartName() => Name();
 
-		public const JewelryType TongueJewelry = JewelryType.BARBELL_STUD;
-		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 
-		public readonly Piercing<TonguePiercingLocation> tonguePiercings;
-		public readonly Piercing<LipPiercingLocation> lipPiercings;
+		public readonly TonguePiercing tonguePiercings;
 
 		public override TongueType type { get; protected set; }
 		public override TongueType defaultType => TongueType.defaultValue;
@@ -45,7 +109,7 @@ namespace CoC.Backend.BodyParts
 		{
 			type = tongueType ?? throw new ArgumentNullException(nameof(tongueType));
 
-			tonguePiercings = new Piercing<TonguePiercingLocation>(TonguePiercingUnlocked, TongueSupportedJewelry);
+			tonguePiercings = new TonguePiercing(TonguePiercingUnlocked, AllTonguePiercingsStr);
 		}
 
 		public override TongueData AsReadOnlyData()
@@ -94,26 +158,25 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//could be a one-liner. written this way because maybe people wanna change it, idk.
-		private bool TonguePiercingUnlocked(TonguePiercingLocation piercingLocation)
+		private bool TonguePiercingUnlocked(TonguePiercingLocation piercingLocation, out string whyNot)
 		{
 			if (tonguePiercings.piercingFetish)
 			{
+				whyNot = null;
 				return true;
 			}
 			//allow one tongue piercing. must have fetish for more than that.
 			else if (tonguePiercings.piercingCount > 0 && !tonguePiercings.isPiercedAt(piercingLocation))
 			{
+				whyNot = OnlyOneTonguePiercingWithoutFetish();
 				return false;
 			}
-			else return true;
-		}
 
-		//these are the piercings for standard gameplay - if you want to create a scene where it's a giant ring and the PC gets dragged around by it
-		//because you're into German dungeon porn, that's fine. just do it via text and give them a stud afterward. or just pierce it and leave it open
-		//so the next time your kinky scene is called you can omit the bit where you pierce their tongue or whatever.
-		private JewelryType TongueSupportedJewelry(TonguePiercingLocation piercingLocation)
-		{
-			return JewelryType.BARBELL_STUD;
+			else
+			{
+				whyNot = null;
+				return true;
+			}
 		}
 
 		internal void Reset()
@@ -206,7 +269,6 @@ namespace CoC.Backend.BodyParts
 		public bool isLongTongue => type.longTongue;
 
 		public readonly ReadOnlyPiercing<TonguePiercingLocation> tonguePiercings;
-		public readonly ReadOnlyPiercing<LipPiercingLocation> lipPiercings;
 
 		public override TongueData AsCurrentData()
 		{
@@ -216,7 +278,6 @@ namespace CoC.Backend.BodyParts
 		internal TongueData(Tongue tongue) : base(GetID(tongue), GetBehavior(tongue))
 		{
 			tonguePiercings = tongue.tonguePiercings.AsReadOnlyData();
-			lipPiercings = tongue.lipPiercings.AsReadOnlyData();
 		}
 	}
 }

@@ -155,13 +155,13 @@ namespace CoC.Frontend.Races
 				beeCounter++;
 			}
 			//if has fur and it's black or midnight black
-			if (source.body.mainEpidermis.usesFur && (source.body.mainEpidermis.fur.IsIdenticalTo(HairFurColors.BLACK) ||
+			if (source.body.mainEpidermis.usesFurColor && (source.body.mainEpidermis.fur.IsIdenticalTo(HairFurColors.BLACK) ||
 				source.body.mainEpidermis.fur.IsIdenticalTo(HairFurColors.MIDNIGHT_BLACK)))
 			{
 				beeCounter++;
 			}
 			//if has fur and it's black and yellow striped.
-			else if (source.body.mainEpidermis.usesFur && source.body.mainEpidermis.fur.Equals(defaultFur))
+			else if (source.body.mainEpidermis.usesFurColor && source.body.mainEpidermis.fur.Equals(defaultFur))
 			{
 				beeCounter += 2;
 			}

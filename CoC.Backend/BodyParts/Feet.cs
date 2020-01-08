@@ -147,23 +147,23 @@ namespace CoC.Backend.BodyParts
 		public override int index => _index;
 		private readonly int _index;
 
-		public static FootType HUMAN = new FootType(FootStyle.FEET, HumanNoun, HumanDesc, HumanSingleDesc, HumanLongDesc);
-		public static FootType HOOVES = new FootType(FootStyle.HOOVES, HoovesNoun, HoovesDesc, HoovesSingleDesc, HoovesLongDesc);
-		public static FootType PAW = new FootType(FootStyle.PAWS, PawNoun, PawDesc, PawSingleDesc, PawLongDesc);
-		public static FootType GOO_NONE = new FootType(FootStyle.OTHER, GooNoun, GooDesc, GooSingleDesc, GooLongDesc);
-		public static FootType NAGA_NONE = new FootType(FootStyle.OTHER, NagaNoun, NagaDesc, NagaSingleDesc, NagaLongDesc);
-		public static FootType DEMON_HEEL = new FootType(FootStyle.OTHER, DemonHeelNoun, DemonHeelDesc, DemonHeelSingleDesc, DemonHeelLongDesc);
-		public static FootType DEMON_CLAW = new FootType(FootStyle.CLAWS, DemonClawNoun, DemonClawDesc, DemonClawSingleDesc, DemonClawLongDesc);
-		public static FootType INSECTOID = new FootType(FootStyle.INSECTOID, InsectoidNoun, InsectoidDesc, InsectoidSingleDesc, InsectoidLongDesc);
-		public static FootType LIZARD_CLAW = new FootType(FootStyle.CLAWS, LizardClawNoun, LizardClawDesc, LizardClawSingleDesc, LizardClawLongDesc);
-		public static FootType BRONY = new FootType(FootStyle.HOOVES, BronyNoun, BronyDesc, BronySingleDesc, BronyLongDesc);
-		public static FootType RABBIT = new FootType(FootStyle.FEET, RabbitNoun, RabbitDesc, RabbitSingleDesc, RabbitLongDesc);
-		public static FootType HARPY_TALON = new FootType(FootStyle.CLAWS, HarpyTalonNoun, HarpyTalonDesc, HarpyTalonSingleDesc, HarpyTalonLongDesc);
-		public static FootType KANGAROO = new FootType(FootStyle.FEET, KangarooNoun, KangarooDesc, KangarooSingleDesc, KangarooLongDesc);
-		public static FootType DRAGON_CLAW = new FootType(FootStyle.CLAWS, DragonClawNoun, DragonClawDesc, DragonClawSingleDesc, DragonClawLongDesc);
-		public static FootType MANDER_CLAW = new FootType(FootStyle.CLAWS, ManderClawNoun, ManderClawDesc, ManderClawSingleDesc, ManderClawLongDesc);
-		public static FootType IMP_CLAW = new FootType(FootStyle.CLAWS, ImpClawNoun, ImpClawDesc, ImpClawSingleDesc, ImpClawLongDesc);
-		public static FootType TENDRIL = new FootType(FootStyle.OTHER, TendrilNoun, TendrilDesc, TendrilSingleDesc, TendrilLongDesc);
+		public static readonly FootType HUMAN = new FootType(FootStyle.FEET, HumanNoun, HumanDesc, HumanSingleDesc, HumanLongDesc);
+		public static readonly FootType HOOVES = new FootType(FootStyle.HOOVES, HoovesNoun, HoovesDesc, HoovesSingleDesc, HoovesLongDesc);
+		public static readonly FootType PAW = new FootType(FootStyle.PAWS, PawNoun, PawDesc, PawSingleDesc, PawLongDesc);
+		public static readonly FootType GOO_NONE = new FootType(FootStyle.OTHER, GooNoun, GooDesc, GooSingleDesc, GooLongDesc);
+		public static readonly FootType NAGA_NONE = new FootType(FootStyle.OTHER, NagaNoun, NagaDesc, NagaSingleDesc, NagaLongDesc);
+		public static readonly FootType DEMON_HEEL = new FootType(FootStyle.OTHER, DemonHeelNoun, DemonHeelDesc, DemonHeelSingleDesc, DemonHeelLongDesc);
+		public static readonly FootType DEMON_CLAW = new FootType(FootStyle.CLAWS, DemonClawNoun, DemonClawDesc, DemonClawSingleDesc, DemonClawLongDesc);
+		public static readonly FootType INSECTOID = new FootType(FootStyle.INSECTOID, InsectoidNoun, InsectoidDesc, InsectoidSingleDesc, InsectoidLongDesc);
+		public static readonly FootType LIZARD_CLAW = new FootType(FootStyle.CLAWS, LizardClawNoun, LizardClawDesc, LizardClawSingleDesc, LizardClawLongDesc);
+		public static readonly FootType BRONY = new FootType(FootStyle.HOOVES, BronyNoun, BronyDesc, BronySingleDesc, BronyLongDesc);
+		public static readonly FootType RABBIT = new FootType(FootStyle.FEET, RabbitNoun, RabbitDesc, RabbitSingleDesc, RabbitLongDesc);
+		public static readonly FootType HARPY_TALON = new FootType(FootStyle.CLAWS, HarpyTalonNoun, HarpyTalonDesc, HarpyTalonSingleDesc, HarpyTalonLongDesc);
+		public static readonly FootType KANGAROO = new FootType(FootStyle.FEET, KangarooNoun, KangarooDesc, KangarooSingleDesc, KangarooLongDesc);
+		public static readonly FootType DRAGON_CLAW = new FootType(FootStyle.CLAWS, DragonClawNoun, DragonClawDesc, DragonClawSingleDesc, DragonClawLongDesc);
+		public static readonly FootType MANDER_CLAW = new FootType(FootStyle.CLAWS, ManderClawNoun, ManderClawDesc, ManderClawSingleDesc, ManderClawLongDesc);
+		public static readonly FootType IMP_CLAW = new FootType(FootStyle.CLAWS, ImpClawNoun, ImpClawDesc, ImpClawSingleDesc, ImpClawLongDesc);
+		public static readonly FootType TENDRIL = new FootType(FootStyle.OTHER, TendrilNoun, TendrilDesc, TendrilSingleDesc, TendrilLongDesc);
 	}
 
 	public sealed class FootData : BehavioralPartDataBase<FootType>

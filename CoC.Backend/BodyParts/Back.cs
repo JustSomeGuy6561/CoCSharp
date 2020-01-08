@@ -334,7 +334,7 @@ namespace CoC.Backend.BodyParts
 
 		internal override void ParseEpidermis(Epidermis epidermis)
 		{
-			if (!epidermis.usesFur)
+			if (!epidermis.usesFurColor)
 			{
 				epidermis.UpdateOrChange(EpidermisType.FUR, new FurColor(defaultHair));
 			}
@@ -355,7 +355,7 @@ namespace CoC.Backend.BodyParts
 
 		internal override void ParseEpidermis(Epidermis epidermis)
 		{
-			if (!epidermis.usesFur)
+			if (!epidermis.usesFurColor)
 			{
 				epidermis.UpdateOrChange(EpidermisType.FUR, new FurColor(defaultHair));
 			}
@@ -382,7 +382,7 @@ namespace CoC.Backend.BodyParts
 			{
 				epidermis.Reset();
 			}
-			else if (baseAppearance.usesFur)
+			else if (baseAppearance.usesFurColor)
 			{
 				epidermis.UpdateOrChange((FurBasedEpidermisType)baseAppearance.type, baseAppearance.fur, baseAppearance.furTexture);
 			}

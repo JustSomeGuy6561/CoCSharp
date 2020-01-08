@@ -2,9 +2,7 @@
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Tools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
@@ -67,6 +65,7 @@ namespace CoC.Backend.BodyParts
 		#region Public Cock Computed Values
 		public int numCocks => _cocks.Count + (hasClitCock ? _vaginas.Count : 0);
 
+		public bool hasCock => _cocks.Count > 0;
 		public uint anyCockSoundedCount => maleCockSoundedCount.add(clitCockSoundedCount);
 		public uint maleCockSoundedCount => missingCockSoundCount + (uint)cocks.Sum(x => x.soundCount);
 
@@ -334,7 +333,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				this.missingCockSexCount += (uint)cocks.Skip(numCocks-count).Sum(x => x.sexCount);
+				this.missingCockSexCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.sexCount);
 				this.missingCockSoundCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.soundCount);
 				this.missingCockOrgasmCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.orgasmCount);
 				this.missingCockDryOrgasmCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.dryOrgasmCount);
@@ -662,6 +661,95 @@ namespace CoC.Backend.BodyParts
 			timeLastCum = GameDateTime.Now;
 		}
 
+		#endregion
+
+		#region Text
+		public string AllCocksShortDescription()
+		{
+			if (cocks.Count == 0)
+			{
+				return "";
+			}
+			else if (cocks.Count == 1)
+			{
+				return cocks[0].ShortDescription();
+			}
+			bool mismatched = _cocks.Exists(x => x.type != _cocks[0].type);
+
+			return mismatched ? CockType.GenericCockNoun(true) : cocks[0].ShortDescription(false, true);
+		}
+
+		public string AllCocksLongDescription()
+		{
+			return AllCocksDesc(false);
+		}
+
+		public string AllCocksFullDescription()
+		{
+			return AllCocksDesc(true);
+		}
+
+		public string OneCockOrCocksNoun(string pronoun = "your")
+		{
+			if (cocks.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(cocks.Count > 1, pronoun, CockType.GenericCockNoun(cocks.Count > 1));
+		}
+
+		public string OneCockOrCocksShort(string pronoun = "your")
+		{
+			if (cocks.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(cocks.Count > 1, pronoun, AllCocksShortDescription());
+		}
+
+		public string EachCockOrCocksNoun(string pronoun = "your")
+		{
+			return EachCockOrCocksNoun(pronoun, out bool _);
+		}
+
+		public string EachCockOrCocksShort(string pronoun = "your")
+		{
+			return EachCockOrCocksShort(pronoun, out bool _);
+		}
+
+		public string EachCockOrCocksNoun(string pronoun, out bool isPlural)
+		{
+			isPlural = cocks.Count != 1;
+			if (cocks.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(cocks.Count > 1, pronoun, CockType.GenericCockNoun(cocks.Count > 1));
+		}
+
+		public string EachCockOrCocksShort(string pronoun, out bool isPlural)
+		{
+			isPlural = cocks.Count != 1;
+			if (cocks.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(cocks.Count > 1, pronoun, AllCocksShortDescription());
+		}
+
+		public string SheathOrBase()
+		{
+			return SheathOrBaseStr();
+		}
+
+		public string AllCocksPlayerDescription()
+		{
+			return AllCocksPlayerDesc();
+		}
 		#endregion
 	}
 }

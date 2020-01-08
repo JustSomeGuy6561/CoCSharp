@@ -146,7 +146,7 @@ namespace CoC.Frontend.Creatures
 
 		private string ChooseFurStr(bool isPrimary)
 		{
-			bool multiFur = creator.bodyType?.secondaryEpidermisType.usesFur == true && creator.bodyType?.epidermisType.usesFur == true;
+			bool multiFur = creator.bodyType?.secondaryEpidermisType.usesFurColor == true && creator.bodyType?.epidermisType.usesFurColor == true;
 
 			string whereFur;
 			if (isPrimary && multiFur)

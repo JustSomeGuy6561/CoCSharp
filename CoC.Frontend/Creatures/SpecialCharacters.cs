@@ -204,7 +204,7 @@ namespace CoC.Frontend.Creatures
 				vaginas = new VaginaCreator[]
 				{
 					new VaginaCreator(vaginalLooseness: VaginalLooseness.NORMAL, isVirgin: false,
-						clitJewelry: new PiercingData<ClitPiercings>(){ [ClitPiercings.HOOD_HORIZONTAL] = new PiercingJewelry(JewelryType.RING, new Emerald(), true)},
+						clitJewelry: new PiercingData<ClitPiercingLocation>(){ [ClitPiercingLocation.HOOD_HORIZONTAL] = new PiercingJewelry(JewelryType.RING, new Emerald(), true)},
 						labiaJewelry: new PiercingData<LabiaPiercings>()
 						{
 							[LabiaPiercings.LEFT_1] = labiaPiercing(), [LabiaPiercings.LEFT_2] = labiaPiercing(), [LabiaPiercings.LEFT_5] = labiaPiercing(), [LabiaPiercings.LEFT_6] = labiaPiercing(),
@@ -218,10 +218,10 @@ namespace CoC.Frontend.Creatures
 				breasts = new BreastCreator[]
 				{
 					new BreastCreator(CupSize.DD, null,
-						new PiercingData<NipplePiercings>()
+						new PiercingData<NipplePiercingLocation>()
 						{
-						[NipplePiercings.LEFT_HORIZONTAL] = new CeraphNipplePiercings(),
-						[NipplePiercings.RIGHT_HORIZONTAL] = new CeraphNipplePiercings()
+						[NipplePiercingLocation.LEFT_HORIZONTAL] = new CeraphNipplePiercings(),
+						[NipplePiercingLocation.RIGHT_HORIZONTAL] = new CeraphNipplePiercings()
 						})
 				},
 				lowerBodyType = LowerBodyType.DEMONIC_HIGH_HEELS,
@@ -234,10 +234,10 @@ namespace CoC.Frontend.Creatures
 				hipSize = 5,
 				buttSize = 5,
 				thickness = 10,
-				earPiercings = new PiercingData<EarPiercings>()
+				earPiercings = new PiercingData<EarPiercingLocation>()
 				{
-					[EarPiercings.LEFT_LOBE_1] = new Handcuffs(),
-					[EarPiercings.RIGHT_LOBE_1] = new Handcuffs()
+					[EarPiercingLocation.LEFT_LOBE_1] = new Handcuffs(),
+					[EarPiercingLocation.RIGHT_LOBE_1] = new Handcuffs()
 				},
 
 			};
@@ -295,7 +295,7 @@ namespace CoC.Frontend.Creatures
 				//vagina defined to allow players to override gender and still keep the whole piercing theme. will be ignored if male.
 				vaginas = new VaginaCreator[]
 				{
-					new VaginaCreator(2.0f, isVirgin:true, clitJewelry:new Dictionary<ClitPiercings, PiercingJewelry>(){[ClitPiercings.HOOD_VERTICAL] = new PiercingJewelry(JewelryType.HORSESHOE, new Silver(), true) })
+					new VaginaCreator(2.0f, isVirgin:true, clitJewelry:new Dictionary<ClitPiercingLocation, PiercingJewelry>(){[ClitPiercingLocation.HOOD_VERTICAL] = new PiercingJewelry(JewelryType.HORSESHOE, new Silver(), true) })
 				},
 				//"Androgynous face, large brown eyes, long black hair down to about ass level, full lips, pirced with one silver ring ass itself is round and thick, chest is flat, only two nipples, about nickel sized pierced with silver studs, skin of a pale ghostly transparent complexion, rest of the body is not notably muscular or chubby in any definite way, feet seem to taper off into full transparency. Full body housed in the lewd Inquisitor Armor, wielding a Wizard Staff. Starting at level 5 with tank, regeneration, healing, smarts, channeling, mage and incorperability perks, a full knowledge of
 				heightInInches = 72,
@@ -308,10 +308,10 @@ namespace CoC.Frontend.Creatures
 				hipSize = 8,
 				breasts = new BreastCreator[]
 				{
-					new BreastCreator(CupSize.FLAT, 1.0f,new PiercingData<NipplePiercings>()
+					new BreastCreator(CupSize.FLAT, 1.0f,new PiercingData<NipplePiercingLocation>()
 					{
-						[NipplePiercings.LEFT_HORIZONTAL] = silverStuds(),
-						[NipplePiercings.RIGHT_HORIZONTAL] = silverStuds()
+						[NipplePiercingLocation.LEFT_HORIZONTAL] = silverStuds(),
+						[NipplePiercingLocation.RIGHT_HORIZONTAL] = silverStuds()
 					})
 				},
 
@@ -1578,9 +1578,9 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor EtisFlavorText => SpecialCharacterStrings.EtisText;
 		private static PlayerCreator customEtis()
 		{
-			Dictionary<EarPiercings, PiercingJewelry> makeEarPiercings(params EarPiercings[] locations)
+			Dictionary<EarPiercingLocation, PiercingJewelry> makeEarPiercings(params EarPiercingLocation[] locations)
 			{
-				Dictionary<EarPiercings, PiercingJewelry> retVal = new Dictionary<EarPiercings, PiercingJewelry>();
+				Dictionary<EarPiercingLocation, PiercingJewelry> retVal = new Dictionary<EarPiercingLocation, PiercingJewelry>();
 				foreach (var location in locations)
 				{
 					retVal.Add(location, new PiercingJewelry(JewelryType.RING, new Crimstone(), true));
@@ -1633,8 +1633,8 @@ namespace CoC.Frontend.Creatures
 				earType = EarType.FOX,
 				earPiercings = makeEarPiercings
 				(
-					EarPiercings.LEFT_LOBE_1, EarPiercings.LEFT_LOBE_2, EarPiercings.LEFT_UPPER_LOBE,
-					EarPiercings.RIGHT_LOBE_1, EarPiercings.RIGHT_LOBE_3, EarPiercings.RIGHT_HELIX_1
+					EarPiercingLocation.LEFT_LOBE_1, EarPiercingLocation.LEFT_LOBE_2, EarPiercingLocation.LEFT_UPPER_LOBE,
+					EarPiercingLocation.RIGHT_LOBE_1, EarPiercingLocation.RIGHT_LOBE_3, EarPiercingLocation.RIGHT_HELIX_1
 				),
 				armType = ArmType.FOX,
 				eyeType = EyeType.DRAGON,
@@ -2000,15 +2000,15 @@ namespace CoC.Frontend.Creatures
 				facialSkinTexture = SkinTexture.FRECKLED,
 
 				//three studs in the upper part of left ear. rings in both lobes. an industrial bar in the right ear.
-				earPiercings = new PiercingData<EarPiercings>()
+				earPiercings = new PiercingData<EarPiercingLocation>()
 				{
-					[EarPiercings.LEFT_HELIX_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Ruby(), true),
-					[EarPiercings.LEFT_HELIX_2] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Sapphire(), true),
-					[EarPiercings.LEFT_HELIX_3] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Emerald(), true),
-					[EarPiercings.LEFT_LOBE_1] = new PiercingJewelry(JewelryType.RING, new Obsidian(), true),
-					[EarPiercings.RIGHT_LOBE_1] = new PiercingJewelry(JewelryType.RING, new Obsidian(), true),
-					[EarPiercings.RIGHT_AURICAL_3] = new Industrial(new Steel()),
-					[EarPiercings.RIGHT_ANTI_HELIX] = new Industrial(new Steel())
+					[EarPiercingLocation.LEFT_HELIX_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Ruby(), true),
+					[EarPiercingLocation.LEFT_HELIX_2] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Sapphire(), true),
+					[EarPiercingLocation.LEFT_HELIX_3] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Emerald(), true),
+					[EarPiercingLocation.LEFT_LOBE_1] = new PiercingJewelry(JewelryType.RING, new Obsidian(), true),
+					[EarPiercingLocation.RIGHT_LOBE_1] = new PiercingJewelry(JewelryType.RING, new Obsidian(), true),
+					[EarPiercingLocation.RIGHT_AURICAL_3] = new Industrial(new Steel()),
+					[EarPiercingLocation.RIGHT_ANTI_HELIX] = new Industrial(new Steel())
 				},
 
 				//hair: neck length, dirty blonde or brown with red streaks. But as it's kinda curly/wavy, it poofs up a bit

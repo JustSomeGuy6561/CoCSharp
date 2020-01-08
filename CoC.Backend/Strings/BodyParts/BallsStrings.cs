@@ -47,7 +47,7 @@ namespace CoC.Backend.BodyParts
 					}
 					else if (!player.hasCock)
 					{
-						if (bodyType.primaryIsFur)
+						if (bodyType.primaryIsFurBased)
 						{
 							return "A fuzzy " + SackDescription() + " filled with " + LongDescription(false, true) + " swings low under where a penis would normally grow." + fNale;
 						}
@@ -66,7 +66,7 @@ namespace CoC.Backend.BodyParts
 					}
 					else
 					{
-						if (bodyType.primaryIsFur)
+						if (bodyType.primaryIsFurBased)
 						{
 							return "A fuzzy " + SackDescription() + " filled with " + LongDescription(false, false) + " swings low under your " + player.genitals.AllCocksLongDescription() + "." + fNale;
 						}

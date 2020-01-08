@@ -18,7 +18,73 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
-	public enum TailPiercings { SUCCUBUS_SPADE }
+	//public enum TailPiercingLocations { SUCCUBUS_SPADE }
+
+	public sealed partial class TailPiercingLocation : PiercingLocation, IEquatable<TailPiercingLocation>
+	{
+		private static readonly List<TailPiercingLocation> _allLocations = new List<TailPiercingLocation>();
+
+		public static readonly ReadOnlyCollection<TailPiercingLocation> allLocations;
+
+		private readonly byte index;
+
+		static TailPiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<TailPiercingLocation>(_allLocations);
+		}
+
+		public TailPiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is TailPiercingLocation tailPiercing)
+			{
+				return Equals(tailPiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(TailPiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public static readonly TailPiercingLocation SUCCUBUS_SPADE = new TailPiercingLocation(0, SupportedJewelry, SpadeButton, SpadeLocation);
+
+		private static bool SupportedJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.RING;
+		}
+
+
+	}
+
+	public sealed class TailPiercing : Piercing<TailPiercingLocation>
+	{
+		public TailPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => TailPiercingLocation.allLocations.Count;
+
+		public override IEnumerable<TailPiercingLocation> availableLocations => TailPiercingLocation.allLocations;
+	}
+
+
 	public sealed partial class Tail : BehavioralSaveablePart<Tail, TailType, TailData>, ICanAttackWith, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
@@ -48,7 +114,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool isLongTail => type.isLongTail;
 
-		public readonly Piercing<TailPiercings> tailPiercings;
+		public readonly TailPiercing tailPiercings;
 		public bool isPierced => tailPiercings.isPierced;
 		public override TailType type
 		{
@@ -111,10 +177,12 @@ namespace CoC.Backend.BodyParts
 		{
 			_type = tailType ?? throw new ArgumentNullException(nameof(tailType));
 			_tailCount = _type.initialTailCount;
-			tailPiercings = new Piercing<TailPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			tailPiercings = new TailPiercing(PiercingLocationUnlocked, AllTailPiercingsStr);
 
 			ovipositorEnabled = tailType.allowsOvipositor && hasOvipositorIfApplicable;
 		}
+
+
 
 		internal Tail(Guid creatureID, TailType tailType, byte count, bool hasOvipositorIfApplicable) : this(creatureID, tailType, hasOvipositorIfApplicable)
 		{
@@ -204,6 +272,7 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		#region Text
 		//default short description will take into account current number of tails.
 		//if you want the short description without any tail count, use the singletailshortdescription.
 		public override string ShortDescription()
@@ -211,7 +280,6 @@ namespace CoC.Backend.BodyParts
 			return type.ShortDescription(tailCount != 1);
 		}
 
-		#region Text
 		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
 
@@ -250,26 +318,52 @@ namespace CoC.Backend.BodyParts
 			}
 			else return "";
 		}
+
+		public string OneOfTailsShort(string pronoun = "your")
+		{
+			if (tailCount == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(tailCount > 1, pronoun, ShortDescription());
+		}
+
+		public string EachOfTailsShort(string pronoun = "your")
+		{
+			return EachOfTailsShort(pronoun, out bool _);
+		}
+
+		public string EachOfTailsShort(string pronoun, out bool isPlural)
+		{
+			isPlural = tailCount != 1;
+
+			if (tailCount == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(tailCount > 1, pronoun, ShortDescription());
+		}
+
 		#endregion
 
-
-		private bool PiercingLocationUnlocked(TailPiercings piercingLocation)
+		private bool PiercingLocationUnlocked(TailPiercingLocation piercingLocation, out string whyNot)
 		{
 			bool piercingFetish = BackendSessionSave.data.piercingFetishEnabled;
-			return type.supportsTailPiercing && piercingFetish;
+			if (!type.supportsTailPiercing)
+			{
+				whyNot = CurrentTailTypeDoesntSupportPiercings();
+				return false;
+			}
+			else if (!piercingFetish)
+			{
+				whyNot = TailPiercingsRequirePiercingFetish();
+				return false;
+			}
+			whyNot = null;
+			return true;
 		}
-
-		private JewelryType SupportedJewelryByLocation(TailPiercings piercingLocation)
-		{
-			return JewelryType.RING;
-		}
-
-		//public bool canAttackWith()
-		//{
-		//	return type.canAttackWith;
-		//}
-
-		//public AttackBase attack => type.attack;
 
 		AttackBase ICanAttackWith.attack => _attack;
 		bool ICanAttackWith.canAttackWith() => _attack != AttackBase.NO_ATTACK && _attack != null;
@@ -617,7 +711,7 @@ namespace CoC.Backend.BodyParts
 				FurColor color = this.defaultFur;
 				if (mutable)
 				{
-					if (bodyData.main.usesFur && !FurColor.IsNullOrEmpty(bodyData.main.fur))
+					if (bodyData.main.usesFurColor && !FurColor.IsNullOrEmpty(bodyData.main.fur))
 					{
 						color = bodyData.main.fur;
 					}
@@ -797,8 +891,9 @@ namespace CoC.Backend.BodyParts
 		public readonly ushort regenRate;
 		public readonly ushort maxResources;
 
-		public readonly ReadOnlyPiercing<TailPiercings> tailPiercings;
+		public readonly ReadOnlyPiercing<TailPiercingLocation> tailPiercings;
 
+		#region Text
 		//default short description will take into account current number of tails.
 		//if you want the short description without any tail count, use the singletailshortdescription.
 		public override string ShortDescription()
@@ -806,7 +901,6 @@ namespace CoC.Backend.BodyParts
 			return type.ShortDescription(tailCount != 1);
 		}
 
-		#region Text
 		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
 
@@ -825,6 +919,54 @@ namespace CoC.Backend.BodyParts
 		public string SingleTailLongDescription(bool alternateFormat) => type.LongDescription(this, alternateFormat, false);
 		public string SingleTailLongPrimaryDescription() => type.LongDescriptionPrimary(this, false);
 		public string SingleTailLongAlternateDescription() => type.LongDescriptionAlternate(this, false);
+
+		//overload that lets you control whether or not the ovipositor change text appears. by default, any text from a change in ovipositor will be displayed.
+		public string TransformFromText(TailData previousTypeData, bool describeOvipositorChangeIfApplicable)
+		{
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
+			{
+				return type.TransformFrom(previousTypeData, player, describeOvipositorChangeIfApplicable);
+			}
+			else return "";
+		}
+
+		//overload that lets you control whether or not the ovipositor change text appears. by default, any text from a change in ovipositor will be displayed.
+		public string RestoredText(TailData previousTypeData, bool describeOvipositorChangeIfApplicable)
+		{
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
+			{
+				return previousTypeData.type.RestoredString(previousTypeData, player, describeOvipositorChangeIfApplicable);
+			}
+			else return "";
+		}
+
+		public string OneOfTailsShort(string pronoun = "your")
+		{
+			if (tailCount == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(tailCount > 1, pronoun, ShortDescription());
+		}
+
+		public string EachOfTailsShort(string pronoun = "your")
+		{
+			return EachOfTailsShort(pronoun, out bool _);
+		}
+
+		public string EachOfTailsShort(string pronoun, out bool isPlural)
+		{
+			isPlural = tailCount != 1;
+
+			if (tailCount == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(tailCount > 1, pronoun, ShortDescription());
+		}
+
 		#endregion
 
 		public override TailData AsCurrentData()

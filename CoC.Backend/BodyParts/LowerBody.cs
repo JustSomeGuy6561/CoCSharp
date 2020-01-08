@@ -88,9 +88,54 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
-		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+		#region Text
+		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => type.ShortDescription(pluralIfApplicable, out isPlural);
 
+		public string LongDescription(bool alternateFormat, out bool isPlural) => type.LongDescription(AsReadOnlyData(), alternateFormat, out isPlural);
+		public string LongDescription(bool alternateFormat, bool pluralIfApplicable) => type.LongDescription(AsReadOnlyData(), alternateFormat, pluralIfApplicable);
+		public string LongDescription(bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+			=> type.LongDescription(AsReadOnlyData(), alternateFormat, pluralIfApplicable, out isPlural);
+
+		public string LongDescriptionPrimary(bool pluralIfApplicable) => type.LongDescriptionPrimary(AsReadOnlyData(), pluralIfApplicable);
+		public string LongDescriptionPrimary(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionPrimary(AsReadOnlyData(), pluralIfApplicable, out isPlural);
+
+		public string LongDescriptionAlternate(bool pluralIfApplicable) => type.LongDescriptionAlternate(AsReadOnlyData(), pluralIfApplicable);
+		public string LongDescriptionAlternate(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionAlternate(AsReadOnlyData(), pluralIfApplicable, out isPlural);
+
+		public string FullDescription(bool alternateFormat, bool plural, bool includeToes, out bool isPlural)
+			=> type.FullDescription(AsReadOnlyData(), alternateFormat, plural, includeToes, out isPlural);
+
+		public string FullDescriptionPrimary(bool plural, bool includeToes, out bool isPlural) => type.FullDescriptionPrimary(AsReadOnlyData(), plural, includeToes, out isPlural);
+
+		public string FullDescriptionAlternate(bool plural, bool includeToes, out bool isPlural) => type.FullDescriptionAlternate(AsReadOnlyData(), plural, includeToes, out isPlural);
+
+		public string FullDescription(bool alternateFormat = false, bool plural = true, bool includeToes = false)
+			=> type.FullDescription(AsReadOnlyData(), alternateFormat, plural, includeToes);
+
+		public string FullDescriptionPrimary(bool plural = true, bool includeToes = false) => type.FullDescriptionPrimary(AsReadOnlyData(), plural, includeToes);
+
+		public string FullDescriptionAlternate(bool plural = true, bool includeToes = false) => type.FullDescriptionAlternate(AsReadOnlyData(), plural, includeToes);
+
+		public string OneOfLegsShort(string pronoun = "your")
+		{
+			return CommonBodyPartStrings.OneOfDescription(legCount > 1, pronoun, ShortDescription());
+		}
+
+		public string EachOfLegsShort(string pronoun = "your")
+		{
+			return EachOfLegsShort(pronoun, out bool _);
+		}
+
+		public string EachOfLegsShort(string pronoun, out bool isPlural)
+		{
+			isPlural = legCount != 1;
+
+			return CommonBodyPartStrings.EachOfDescription(legCount > 1, pronoun, ShortDescription());
+		}
+
+		#endregion
 
 		AttackBase ICanAttackWith.attack => type.attack;
 		bool ICanAttackWith.canAttackWith() => type.canAttackWith;
@@ -149,21 +194,15 @@ namespace CoC.Backend.BodyParts
 			return descriptionWithFeet(lowerBodys, true, plural, includeToes, out isPlural);
 		}
 
-		public string FullDescription(LowerBodyData lowerBody, out bool isPlural)
-		{
-#warning implement me!
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		public string FullDescription(LowerBodyData lowerBody, bool alternateFormat, bool plural, bool includeToes)
+		public string FullDescription(LowerBodyData lowerBody, bool alternateFormat = false, bool plural = true, bool includeToes = false)
 		{
 			return descriptionWithFeet(lowerBody, alternateFormat, plural, includeToes, out bool _);
 		}
-		public string FullDescriptionPrimary(LowerBodyData lowerBody, bool plural, bool includeToes)
+		public string FullDescriptionPrimary(LowerBodyData lowerBody, bool plural = true, bool includeToes = false)
 		{
 			return descriptionWithFeet(lowerBody, false, plural, includeToes, out bool _);
 		}
-		public string FullDescriptionAlternate(LowerBodyData lowerBodys, bool plural, bool includeToes)
+		public string FullDescriptionAlternate(LowerBodyData lowerBodys, bool plural = true, bool includeToes = false)
 		{
 			return descriptionWithFeet(lowerBodys, true, plural, includeToes, out bool _);
 		}
@@ -256,7 +295,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly LowerBodyType GOO = new ToneLowerBody(FootType.GOO_NONE, EpidermisType.GOO, MONOPED, DefaultValueHelpers.defaultGooTone, SkinTexture.NONDESCRIPT, true, GooDesc, GooSingleDesc, GooLongDesc, GooFullDesc, GooPlayerStr, GooTransformStr, GooRestoreStr);
 		public static readonly LowerBodyType CAT = new FurLowerBody(FootType.PAW, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultCatFur, FurTexture.NONDESCRIPT, true, CatDesc, CatSingleDesc, CatLongDesc, CatFullDesc, CatPlayerStr, CatTransformStr, CatRestoreStr);
 		public static readonly LowerBodyType LIZARD = new ToneLowerBody(FootType.LIZARD_CLAW, EpidermisType.SCALES, BIPED, DefaultValueHelpers.defaultLizardTone, SkinTexture.NONDESCRIPT, true, LizardDesc, LizardSingleDesc, LizardLongDesc, LizardFullDesc, LizardPlayerStr, LizardTransformStr, LizardRestoreStr);
-		//these things are a MLP easter egg for the bronies (just threw up in my mouth a little). I'm treating it like a centaur with rainbow butt tattooes or whatever they are called.
+		//these things are a MLP easter egg for the bronies (just threw up in my mouth a little). I'm treating it like a centaur with rainbow butt tattoos or whatever they are called.
 		//(or a lightning bolt or whatever - i've seen like 20 seconds of the show.) So, 4 legs, text basically identical to centaur but with 'cuter' flavor text (hurl).
 		public static readonly LowerBodyType PONY = new FurLowerBodyWithKick(FootType.BRONY, EpidermisType.FUR, QUADRUPED, DefaultValueHelpers.defaultBronyFur, FurTexture.NONDESCRIPT, true, PonyDesc, PonySingleDesc, PonyLongDesc, PonyFullDesc, PonyPlayerStr, PonyTransformStr, PonyRestoreStr);
 		public static readonly LowerBodyType BUNNY = new FurLowerBodyWithKick(FootType.RABBIT, EpidermisType.FUR, BIPED, DefaultValueHelpers.defaultBunnyFur, FurTexture.NONDESCRIPT, true, BunnyDesc, BunnySingleDesc, BunnyLongDesc, BunnyFullDesc, BunnyPlayerStr, BunnyTransformStr, BunnyRestoreStr);
@@ -301,7 +340,7 @@ namespace CoC.Backend.BodyParts
 				FurTexture texture = this.defaultTexture;
 				if (mutable)
 				{
-					if (bodyData.supplementary.usesFur && !FurColor.IsNullOrEmpty(bodyData.supplementary.fur))
+					if (bodyData.supplementary.usesFurColor && !FurColor.IsNullOrEmpty(bodyData.supplementary.fur))
 					{
 						color = bodyData.supplementary.fur;
 					}
@@ -314,11 +353,11 @@ namespace CoC.Backend.BodyParts
 						color = new FurColor(bodyData.hairColor);
 					}
 
-					if (bodyData.supplementary.usesFur && bodyData.supplementary.furTexture != FurTexture.NONDESCRIPT)
+					if (bodyData.supplementary.usesFurColor && bodyData.supplementary.furTexture != FurTexture.NONDESCRIPT)
 					{
 						texture = bodyData.supplementary.furTexture;
 					}
-					else if (bodyData.main.usesFur && bodyData.main.furTexture != FurTexture.NONDESCRIPT)
+					else if (bodyData.main.usesFurColor && bodyData.main.furTexture != FurTexture.NONDESCRIPT)
 					{
 						texture = bodyData.main.furTexture;
 					}
@@ -426,8 +465,8 @@ namespace CoC.Backend.BodyParts
 
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				FurColor color = bodyData.supplementary.usesFur && !FurColor.IsNullOrEmpty(bodyData.supplementary.fur) ? bodyData.supplementary.fur : defaultColor;
-				FurTexture texture = bodyData.supplementary.usesFur && bodyData.supplementary.furTexture != FurTexture.NONDESCRIPT ? bodyData.supplementary.furTexture : defaultTexture;
+				FurColor color = bodyData.supplementary.usesFurColor && !FurColor.IsNullOrEmpty(bodyData.supplementary.fur) ? bodyData.supplementary.fur : defaultColor;
+				FurTexture texture = bodyData.supplementary.usesFurColor && bodyData.supplementary.furTexture != FurTexture.NONDESCRIPT ? bodyData.supplementary.furTexture : defaultTexture;
 				return new EpidermalData(primaryEpidermis, color, texture);
 			}
 		}
@@ -452,9 +491,54 @@ namespace CoC.Backend.BodyParts
 			return this;
 		}
 
-		public string ShortDescription(bool plural) => type.ShortDescription(plural);
+		#region Text
+		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
+		public string ShortDescription(bool pluralIfApplicable, out bool isPlural) => type.ShortDescription(pluralIfApplicable, out isPlural);
 
+		public string LongDescription(bool alternateFormat, out bool isPlural) => type.LongDescription(this, alternateFormat, out isPlural);
+		public string LongDescription(bool alternateFormat, bool pluralIfApplicable) => type.LongDescription(this, alternateFormat, pluralIfApplicable);
+		public string LongDescription(bool alternateFormat, bool pluralIfApplicable, out bool isPlural)
+			=> type.LongDescription(this, alternateFormat, pluralIfApplicable, out isPlural);
+
+		public string LongDescriptionPrimary(bool pluralIfApplicable) => type.LongDescriptionPrimary(this, pluralIfApplicable);
+		public string LongDescriptionPrimary(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionPrimary(this, pluralIfApplicable, out isPlural);
+
+		public string LongDescriptionAlternate(bool pluralIfApplicable) => type.LongDescriptionAlternate(this, pluralIfApplicable);
+		public string LongDescriptionAlternate(bool pluralIfApplicable, out bool isPlural) => type.LongDescriptionAlternate(this, pluralIfApplicable, out isPlural);
+
+		public string FullDescription(bool alternateFormat, bool plural, bool includeToes, out bool isPlural)
+			=> type.FullDescription(this, alternateFormat, plural, includeToes, out isPlural);
+
+		public string FullDescriptionPrimary(bool plural, bool includeToes, out bool isPlural) => type.FullDescriptionPrimary(this, plural, includeToes, out isPlural);
+
+		public string FullDescriptionAlternate(bool plural, bool includeToes, out bool isPlural) => type.FullDescriptionAlternate(this, plural, includeToes, out isPlural);
+
+		public string FullDescription(bool alternateFormat = false, bool plural = true, bool includeToes = false)
+			=> type.FullDescription(this, alternateFormat, plural, includeToes);
+
+		public string FullDescriptionPrimary(bool plural = true, bool includeToes = false) => type.FullDescriptionPrimary(this, plural, includeToes);
+
+		public string FullDescriptionAlternate(bool plural = true, bool includeToes = false) => type.FullDescriptionAlternate(this, plural, includeToes);
+
+		public string OneOfLegsShort(string pronoun = "your")
+		{
+			return CommonBodyPartStrings.OneOfDescription(legCount > 1, pronoun, ShortDescription());
+		}
+
+		public string EachOfLegsShort(string pronoun = "your")
+		{
+			return EachOfLegsShort(pronoun, out bool _);
+		}
+
+		public string EachOfLegsShort(string pronoun, out bool isPlural)
+		{
+			isPlural = legCount != 1;
+
+			return CommonBodyPartStrings.EachOfDescription(legCount > 1, pronoun, ShortDescription());
+		}
+
+		#endregion
 
 		internal LowerBodyData(Guid id, LowerBodyType type, EpidermalData epidermis, EpidermalData secondary) : base(id, type)
 		{

@@ -16,28 +16,126 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
-	/*
-	 * Here's to looking half of this shit up. Following your ear from bottom up around the edge:
-	 * LOBE, AURICLE, HELIX, ANTI_HELIX.
-	 * LOBE: Lowest part of ear. AURICLE: Thin part of the outside of the ear around the middle
-	 * HELIX: the thin upper outside part of your ear. ANTI-HELIX: the thin upper inside part of your ear.
-	 * I had more that i looked up but i can't realisticly make them part of anything not human.
-	 * I am aware everyone's ears are different and you may have tiny lobes and long-ass helix bits
-	 * (which i suppose is also true for elfin ears); i did what i could, sue me.
-	 * Also, each ear has a max of 14 values, as 14 is our max for one screen. right now, I use 13.
-	 * I suppose 13 is the max, assuming you want the option to switch ears at the same time as cancel. alternatively, you could use the provided list button tool
-	 * to create multiple pages if you want more than can fit on one page.
-	 */
-	public enum EarPiercings
+
+	public sealed partial class EarPiercingLocation : PiercingLocation, IEquatable<EarPiercingLocation>
 	{
-		LEFT_LOBE_1, LEFT_LOBE_2, LEFT_LOBE_3, LEFT_UPPER_LOBE,
-		LEFT_AURICAL_1, LEFT_AURICAL_2, LEFT_AURICAL_3, LEFT_AURICAL_4,
-		LEFT_HELIX_1, LEFT_HELIX_2, LEFT_HELIX_3, LEFT_HELIX_4,
-		LEFT_ANTI_HELIX,
-		RIGHT_LOBE_1, RIGHT_LOBE_2, RIGHT_LOBE_3, RIGHT_UPPER_LOBE,
-		RIGHT_AURICAL_1, RIGHT_AURICAL_2, RIGHT_AURICAL_3, RIGHT_AURICAL_4,
-		RIGHT_HELIX_1, RIGHT_HELIX_2, RIGHT_HELIX_3, RIGHT_HELIX_4,
-		RIGHT_ANTI_HELIX
+		private static readonly List<EarPiercingLocation> _allLocations = new List<EarPiercingLocation>();
+
+		public static readonly ReadOnlyCollection<EarPiercingLocation> allLocations;
+
+		private readonly byte index;
+
+		static EarPiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<EarPiercingLocation>(_allLocations);
+		}
+
+		public EarPiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is EarPiercingLocation earPiercing)
+			{
+				return Equals(earPiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(EarPiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+		/*
+		* Here's to looking half of this shit up. Following your ear from bottom up around the edge:
+		* LOBE, AURICLE, HELIX, ANTI_HELIX.
+		* LOBE: Lowest part of ear. AURICLE: Thin part of the outside of the ear around the middle
+		* HELIX: the thin upper outside part of your ear. ANTI-HELIX: the thin upper inside part of your ear.
+		* I had more that i looked up but i can't realisticly make them part of anything not human.
+		* I am aware everyone's ears are different and you may have tiny lobes and long-ass helix bits
+		* (which i suppose is also true for elfin ears); i did what i could, sue me.
+		* Also, each ear has a max of 14 values, as 14 is our max for one screen. right now, I use 13.
+		* I suppose 13 is the max, assuming you want the option to switch ears at the same time as cancel. alternatively, you could use the provided list button tool
+		* to create multiple pages if you want more than can fit on one page.
+		*/
+
+		public static readonly EarPiercingLocation LEFT_LOBE_1 = new EarPiercingLocation(0, SupportedLowerLobeJewelry, LeftLobe1Button, LeftLobe1Location);
+		public static readonly EarPiercingLocation LEFT_LOBE_2 = new EarPiercingLocation(1, SupportedLowerLobeJewelry, LeftLobe2Button, LeftLobe2Location);
+		public static readonly EarPiercingLocation LEFT_LOBE_3 = new EarPiercingLocation(2, SupportedUpperLobeJewelry, LeftLobe3Button, LeftLobe3Location);
+		public static readonly EarPiercingLocation LEFT_UPPER_LOBE = new EarPiercingLocation(3, SupportedUpperLobeJewelry, LeftUpperLobeButton, LeftUpperLobeLocation);
+		public static readonly EarPiercingLocation LEFT_AURICAL_1 = new EarPiercingLocation(4, SupportedAuricalJewelry, LeftAurical1Button, LeftAurical1Location);
+		public static readonly EarPiercingLocation LEFT_AURICAL_2 = new EarPiercingLocation(5, SupportedAuricalJewelry, LeftAurical2Button, LeftAurical2Location);
+		public static readonly EarPiercingLocation LEFT_AURICAL_3 = new EarPiercingLocation(6, SupportedAuricalJewelry, LeftAurical3Button, LeftAurical3Location);
+		public static readonly EarPiercingLocation LEFT_AURICAL_4 = new EarPiercingLocation(7, SupportedAuricalJewelry, LeftAurical4Button, LeftAurical4Location);
+		public static readonly EarPiercingLocation LEFT_HELIX_1 = new EarPiercingLocation(8, SupportedHelixJewelry, LeftHelix1Button, LeftHelix1Location);
+		public static readonly EarPiercingLocation LEFT_HELIX_2 = new EarPiercingLocation(9, SupportedHelixJewelry, LeftHelix2Button, LeftHelix2Location);
+		public static readonly EarPiercingLocation LEFT_HELIX_3 = new EarPiercingLocation(10, SupportedHelixJewelry, LeftHelix3Button, LeftHelix3Location);
+		public static readonly EarPiercingLocation LEFT_HELIX_4 = new EarPiercingLocation(11, SupportedHelixJewelry, LeftHelix4Button, LeftHelix4Location);
+		public static readonly EarPiercingLocation LEFT_ANTI_HELIX = new EarPiercingLocation(12, SupportedAntiHelixJewelry, LeftAntiHelixButton, LeftAntiHelixLocation);
+
+		public static readonly EarPiercingLocation RIGHT_LOBE_1 = new EarPiercingLocation(13, SupportedLowerLobeJewelry, RightLobe1Button, RightLobe1Location);
+		public static readonly EarPiercingLocation RIGHT_LOBE_2 = new EarPiercingLocation(14, SupportedLowerLobeJewelry, RightLobe2Button, RightLobe2Location);
+		public static readonly EarPiercingLocation RIGHT_LOBE_3 = new EarPiercingLocation(15, SupportedUpperLobeJewelry, RightLobe3Button, RightLobe3Location);
+		public static readonly EarPiercingLocation RIGHT_UPPER_LOBE = new EarPiercingLocation(16, SupportedUpperLobeJewelry, RightUpperLobeButton, RightUpperLobeLocation);
+		public static readonly EarPiercingLocation RIGHT_AURICAL_1 = new EarPiercingLocation(17, SupportedAuricalJewelry, RightAurical1Button, RightAurical1Location);
+		public static readonly EarPiercingLocation RIGHT_AURICAL_2 = new EarPiercingLocation(18, SupportedAuricalJewelry, RightAurical2Button, RightAurical2Location);
+		public static readonly EarPiercingLocation RIGHT_AURICAL_3 = new EarPiercingLocation(19, SupportedAuricalJewelry, RightAurical3Button, RightAurical3Location);
+		public static readonly EarPiercingLocation RIGHT_AURICAL_4 = new EarPiercingLocation(20, SupportedAuricalJewelry, RightAurical4Button, RightAurical4Location);
+		public static readonly EarPiercingLocation RIGHT_HELIX_1 = new EarPiercingLocation(21, SupportedHelixJewelry, RightHelix1Button, RightHelix1Location);
+		public static readonly EarPiercingLocation RIGHT_HELIX_2 = new EarPiercingLocation(22, SupportedHelixJewelry, RightHelix2Button, RightHelix2Location);
+		public static readonly EarPiercingLocation RIGHT_HELIX_3 = new EarPiercingLocation(23, SupportedHelixJewelry, RightHelix3Button, RightHelix3Location);
+		public static readonly EarPiercingLocation RIGHT_HELIX_4 = new EarPiercingLocation(24, SupportedHelixJewelry, RightHelix4Button, RightHelix4Location);
+		public static readonly EarPiercingLocation RIGHT_ANTI_HELIX = new EarPiercingLocation(25, SupportedAntiHelixJewelry, RightAntiHelixButton, RightAntiHelixLocation);
+
+		//these are grouped by "location." so some return identical things, but it's done this way to make it easier to update it if needed.
+		private static bool SupportedLowerLobeJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType ==JewelryType.DANGLER || jewelryType ==JewelryType.HOOP || jewelryType ==JewelryType.HORSESHOE || jewelryType ==JewelryType.RING || jewelryType ==JewelryType.SPECIAL;
+		}
+
+		private static bool SupportedUpperLobeJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType ==JewelryType.DANGLER || jewelryType ==JewelryType.HORSESHOE || jewelryType ==JewelryType.RING || jewelryType ==JewelryType.SPECIAL;
+		}
+
+		private static bool SupportedAuricalJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType == JewelryType.DANGLER || jewelryType == JewelryType.HORSESHOE || jewelryType == JewelryType.RING || jewelryType == JewelryType.SPECIAL;
+		}
+
+		private static bool SupportedHelixJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType ==JewelryType.DANGLER || jewelryType ==JewelryType.HORSESHOE || jewelryType ==JewelryType.RING || jewelryType ==JewelryType.SPECIAL;
+		}
+
+		private static bool SupportedAntiHelixJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType ==JewelryType.HORSESHOE || jewelryType ==JewelryType.RING || jewelryType ==JewelryType.SPECIAL;
+		}
+	}
+
+	public sealed class EarPiercing : Piercing<EarPiercingLocation>
+	{
+		public EarPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => EarPiercingLocation.allLocations.Count;
+
+		public override IEnumerable<EarPiercingLocation> availableLocations => EarPiercingLocation.allLocations;
 	}
 
 	//lazy, so it actually wont fire any data changed events, even though the ear fur can change.
@@ -52,14 +150,14 @@ namespace CoC.Backend.BodyParts
 
 		public ReadOnlyFurColor earFurColor => new ReadOnlyFurColor(earFur);
 
-		public readonly Piercing<EarPiercings> earPiercings;
+		public readonly EarPiercing earPiercings;
 
 		internal Ears(Guid creatureID) : this(creatureID, EarType.defaultValue) { }
 
 		internal Ears(Guid creatureID, EarType earType) : base(creatureID)
 		{
 			type = earType ?? throw new ArgumentNullException(nameof(earType));
-			earPiercings = new Piercing<EarPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			earPiercings = new EarPiercing(PiercingLocationUnlocked, AllEarPiercingsStr);
 		}
 
 		public override EarData AsReadOnlyData()
@@ -104,39 +202,10 @@ namespace CoC.Backend.BodyParts
 		public string LongDescriptionAlternate(bool plural) => type.LongDescriptionAlternate(AsReadOnlyData(), plural);
 
 
-		private bool PiercingLocationUnlocked(EarPiercings piercingLocation)
+		private bool PiercingLocationUnlocked(EarPiercingLocation piercingLocation, out string whyNot)
 		{
+			whyNot = null;
 			return true;
-		}
-
-		private JewelryType SupportedJewelryByLocation(EarPiercings piercingLocation)
-		{
-			switch (piercingLocation)
-			{
-				//these are grouped by "location." so some return identical things, but it's done this way to make it easier to update it if needed.
-				case EarPiercings.LEFT_LOBE_1:
-				case EarPiercings.RIGHT_LOBE_1:
-				case EarPiercings.LEFT_LOBE_2:
-				case EarPiercings.RIGHT_LOBE_2:
-					return JewelryType.BARBELL_STUD | JewelryType.DANGLER | JewelryType.HOOP | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
-				case EarPiercings.LEFT_LOBE_3:
-				case EarPiercings.RIGHT_LOBE_3:
-				case EarPiercings.LEFT_UPPER_LOBE:
-				case EarPiercings.RIGHT_UPPER_LOBE:
-					return JewelryType.BARBELL_STUD | JewelryType.DANGLER | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
-				case EarPiercings.LEFT_HELIX_1:
-				case EarPiercings.RIGHT_HELIX_1:
-				case EarPiercings.LEFT_HELIX_2:
-				case EarPiercings.RIGHT_HELIX_2:
-				case EarPiercings.LEFT_HELIX_3:
-				case EarPiercings.RIGHT_HELIX_3:
-					return JewelryType.BARBELL_STUD | JewelryType.DANGLER | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
-				case EarPiercings.LEFT_ANTI_HELIX:
-				case EarPiercings.RIGHT_ANTI_HELIX:
-					return JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
-				default:
-					return JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
-			}
 		}
 	}
 
@@ -269,7 +338,7 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly ReadOnlyFurColor earFurColor;
 
-		public readonly ReadOnlyPiercing<EarPiercings> earPiercings;
+		public readonly ReadOnlyPiercing<EarPiercingLocation> earPiercings;
 
 		public bool isInternalEar => type.isInternalEar;
 
@@ -297,9 +366,9 @@ namespace CoC.Backend.BodyParts
 
 	public static class EarHelpers
 	{
-		public static PiercingJewelry GenerateEarJewelry(this Ears ears, EarPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		public static PiercingJewelry GenerateEarJewelry(this Ears ears, EarPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (ears.earPiercings.CanWearThisJewelryType(location, jewelryType))
+			if (ears.earPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}

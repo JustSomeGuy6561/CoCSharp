@@ -1,0 +1,39 @@
+﻿
+Piercings/Tattoos
+
+Piercings have been revamped, and Tattoos have been added. both follow the same (general) format, but piercings are a bit more complicated - you can have a piercing, but not be wearing any jewelry.
+
+Common Behavior:
+
+Body parts define places for a tattoo/piercing via an enum.
+
+A single tattoo or a single pierce of jewelry can be used in multiple of these locations, but generally is limited to just one. what happens when they are updated is unique for piercings and tattoos.
+
+A single place for a tattoo/piercing can only have one tattoo or piercing there.
+
+Any place for a tattoo or piercing may limit exactly what is there. For piercings, a piercing may limit what type of jewelry is allowed there, so you can't put a big-ass hoop in your tongue, for example. For tattoos, a location may limit the size of the tattoo, so you can't put 'The Mona Lisa' on your wrist, for example.
+
+A tattoo or piece of piercing jewelry may further limit where they can be placed. Each has a virtual function that takes a potential piercing/tattoo body part and location, and it can be overridden to limit it to only one body part or area within. . This lets us create special jewelry (like, say, a nipple chain) or special tattoos (no idea, someone will think of something)
+
+Each has an event system attached for when a tattoo or piercing is removed, added, or replaced.
+
+Both are required to explain themselves, but only for the player. It may be possible (and helpful) to generalize this for all creatures, using different pronouns, but this is not expressly required. (Note: if you do, maybe take a Gender a plural bool, and bool for if to include the player. (you = player && !plural. he/she/it = !player && !plural && gender, etc.)
+Since it may possible for a tattoo or piercing jewelry to cover multiple locations, it's recommended that you go in logic order, but check to see if the equipped tattoo or piercing is used elsewhere, and describe that one too. when that one comes up later, it can (and probably should) be skipped over.
+
+Tattoo Exclusive:
+
+Tattoos are magic - we can remove them or add them or replace them and not have to worry about the physical costs of doing so - when it's removed, it's as if it wasn't there; when it's replaced, no evidence of the previous tattoo remains. Additionally, they exist, regardless of the epidermis type they are applied to. so you don't need to worry if the tattoo is applied to goo or skin or fur or whatever - it's just there. You may, however, decide to describe it differently based on this epidermis type, if you want.
+
+As noted above, it's possible for a tattoo to cover more than one location of a body part. When part of a tattoo is removed or replaced, the entire thing is removed. A notable exception is the optional 'full' tattoos, which cover the entire part. only one of these should exist per body part, and it's possible for a body part to have none at all.
+
+Piercings:
+
+a body part can be pierced, but not have any jewelry in it. By default, piercings are permanent - once you have the hole, you always have the hole, regardless of if there's jewelry in it. I don't believe i've provided a way of closing the holes, but if its needed in the future, it could be added, idk.
+
+the current design is to allow jewelry to be removed or replaced, just like normal clothing or accessories. This means if you have the jewelry, you can change piercings as you see fit, unless the jewelry is "seamless", noted below:
+
+some jewelry can be marked as "seamless". seamless jewelry cannot be removed via natural means, though of course if it is attached to a body part that no longer exists, it obviously is removed. Additionally, it may be possible for seamless jewelry to be removed or replaced via certain interactions (Ceraph, Yara, notably), if implemented as such.
+
+The piercing revamp means some piercings are far more exotic than vanilla. if you don't like that, you can turn it off via a fetish setting.
+
+It is not necessary to describe a piercing hole that does not have any jewelry for the player description.

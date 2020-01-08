@@ -14,11 +14,83 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public enum LabiaPiercings
+	public sealed partial class LabiaPiercingLocation : PiercingLocation, IEquatable<LabiaPiercingLocation>
 	{
-		LEFT_1, LEFT_2, LEFT_3, LEFT_4, LEFT_5, LEFT_6,
-		RIGHT_1, RIGHT_2, RIGHT_3, RIGHT_4, RIGHT_5, RIGHT_6
+		private static readonly List<LabiaPiercingLocation> _allLocations = new List<LabiaPiercingLocation>();
+
+		public static readonly ReadOnlyCollection<LabiaPiercingLocation> allLocations;
+
+		private readonly byte index;
+
+		static LabiaPiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<LabiaPiercingLocation>(_allLocations);
+		}
+
+		public LabiaPiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is LabiaPiercingLocation labiaPiercing)
+			{
+				return Equals(labiaPiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(LabiaPiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public static readonly LabiaPiercingLocation LEFT_1 = new LabiaPiercingLocation(0, SupportedJewelry, Left1Button, Left1Location);
+		public static readonly LabiaPiercingLocation LEFT_2 = new LabiaPiercingLocation(1, SupportedJewelry, Left2Button, Left2Location);
+		public static readonly LabiaPiercingLocation LEFT_3 = new LabiaPiercingLocation(2, SupportedJewelry, Left3Button, Left3Location);
+		public static readonly LabiaPiercingLocation LEFT_4 = new LabiaPiercingLocation(3, SupportedJewelry, Left4Button, Left4Location);
+		public static readonly LabiaPiercingLocation LEFT_5 = new LabiaPiercingLocation(4, SupportedJewelry, Left5Button, Left5Location);
+		public static readonly LabiaPiercingLocation LEFT_6 = new LabiaPiercingLocation(5, SupportedJewelry, Left6Button, Left6Location);
+
+		public static readonly LabiaPiercingLocation RIGHT_1 = new LabiaPiercingLocation(6, SupportedJewelry, Right1Button, Right1Location);
+		public static readonly LabiaPiercingLocation RIGHT_2 = new LabiaPiercingLocation(7, SupportedJewelry, Right2Button, Right2Location);
+		public static readonly LabiaPiercingLocation RIGHT_3 = new LabiaPiercingLocation(8, SupportedJewelry, Right3Button, Right3Location);
+		public static readonly LabiaPiercingLocation RIGHT_4 = new LabiaPiercingLocation(9, SupportedJewelry, Right4Button, Right4Location);
+		public static readonly LabiaPiercingLocation RIGHT_5 = new LabiaPiercingLocation(10, SupportedJewelry,Right5Button, Right5Location );
+		public static readonly LabiaPiercingLocation RIGHT_6 = new LabiaPiercingLocation(11, SupportedJewelry,Right6Button, Right6Location );
+
+
+		private static bool SupportedJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType == JewelryType.RING || jewelryType == JewelryType.SPECIAL;
+		}
+
+
 	}
+
+	public sealed class LabiaPiercing : Piercing<LabiaPiercingLocation>
+	{
+		public LabiaPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => LabiaPiercingLocation.allLocations.Count;
+
+		public override IEnumerable<LabiaPiercingLocation> availableLocations => LabiaPiercingLocation.allLocations;
+	}
+
 
 	//Note: this class is created after perks have been initialized, so its post perk init is never called.
 
@@ -35,8 +107,6 @@ namespace CoC.Backend.BodyParts
 			return Name();
 		}
 
-
-		private const JewelryType SUPPORTED_LABIA_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
 
 		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
 		public const ushort MAX_VAGINAL_CAPACITY = ushort.MaxValue;
@@ -197,7 +267,7 @@ namespace CoC.Backend.BodyParts
 		private const ushort LOOSENESS_GAPING_TIMER = 70;
 		private const ushort LOOSENESS_CLOWN_CAR_TIMER = 50;
 		private ushort vaginaTightenTimer = 0;
-		public readonly Piercing<LabiaPiercings> labiaPiercings;
+		public readonly LabiaPiercing labiaPiercings;
 		public override VaginaType type { get; protected set; }
 		public override VaginaType defaultType => VaginaType.defaultValue;
 
@@ -213,7 +283,7 @@ namespace CoC.Backend.BodyParts
 			_wetness = initialPerkData.defaultWetnessNew;
 			_looseness = initialPerkData.defaultLoosenessNew;
 
-			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			labiaPiercings = new LabiaPiercing(PiercingLocationUnlocked, AllLabiaPiercingsStr);
 		}
 
 		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType, float clitLength,
@@ -239,7 +309,7 @@ namespace CoC.Backend.BodyParts
 			_wetness = vaginalWetness ?? initialPerkData.defaultWetnessNew;
 			_looseness = vaginalLooseness ?? initialPerkData.defaultLoosenessNew;
 
-			labiaPiercings = new Piercing<LabiaPiercings>(PiercingLocationUnlocked, SupportedJewelryByLocation);
+			labiaPiercings = new LabiaPiercing(PiercingLocationUnlocked, AllLabiaPiercingsStr);
 		}
 
 		#endregion
@@ -250,18 +320,28 @@ namespace CoC.Backend.BodyParts
 			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(creatureID, initialPerkData);
 			else return null;
 		}
-		#endregion
 
+		public static VaginaData GenerateAggregate(Guid creatureID, VaginaType vaginaType, ClitData averageClit, VaginalLooseness looseness, VaginalWetness wetness, bool isVirgin,
+			bool everPracticedVaginal, ushort averageCapacity)
+		{
+			return new VaginaData(creatureID, vaginaType, averageClit, looseness, wetness, isVirgin, everPracticedVaginal, -1, averageCapacity, new ReadOnlyPiercing<LabiaPiercingLocation>());
+		}
+
+		#endregion
+		#region Text
 		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
-
+		public string AdjectiveText(bool multipleAdjectives)
+		{
+			return VaginaType.VaginaAdjectiveText(AsReadOnlyData(), multipleAdjectives);
+		}
 
 		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(AsReadOnlyData());
 
 		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(AsReadOnlyData());
 
 		public string FullDescription(bool alternateFormat) => type.FullDescription(AsReadOnlyData(), alternateFormat);
-
+		#endregion
 
 		public override VaginaData AsReadOnlyData()
 		{
@@ -532,14 +612,10 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Piercing-Related
-		private bool PiercingLocationUnlocked(LabiaPiercings piercingLocation)
+		private bool PiercingLocationUnlocked(LabiaPiercingLocation piercingLocation, out string whyNot)
 		{
+			whyNot = null;
 			return true;
-		}
-
-		private JewelryType SupportedJewelryByLocation(LabiaPiercings piercingLocation)
-		{
-			return SUPPORTED_LABIA_JEWELRY;
 		}
 
 		public bool isPierced => clit.isPierced || labiaPiercings.isPierced;
@@ -550,7 +626,7 @@ namespace CoC.Backend.BodyParts
 		public bool clitWearingJewelry => clit.wearingJewelry;
 		public bool labiaWearingJewelry => labiaPiercings.wearingJewelry;
 
-		internal void InitializePiercings(Dictionary<ClitPiercings, PiercingJewelry> clitPiercings, Dictionary<LabiaPiercings, PiercingJewelry> labiaPiercings)
+		internal void InitializePiercings(Dictionary<ClitPiercingLocation, PiercingJewelry> clitPiercings, Dictionary<LabiaPiercing, PiercingJewelry> labiaPiercings)
 		{
 #warning Implement Me!
 			//throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
@@ -849,7 +925,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ushort capacity;
 
-		public readonly ReadOnlyPiercing<LabiaPiercings> labiaPiercings;
+		public readonly ReadOnlyPiercing<LabiaPiercingLocation> labiaPiercings;
 
 		public override VaginaData AsCurrentData()
 		{
@@ -858,7 +934,10 @@ namespace CoC.Backend.BodyParts
 
 		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
-
+		public string AdjectiveText(bool multipleAdjectives)
+		{
+			return VaginaType.VaginaAdjectiveText(this, multipleAdjectives);
+		}
 
 		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(this);
 
@@ -878,6 +957,19 @@ namespace CoC.Backend.BodyParts
 			vaginaIndex = currIndex;
 
 			labiaPiercings = source.labiaPiercings.AsReadOnlyData();
+		}
+
+		public VaginaData(Guid creatureID, VaginaType vaginaType, ClitData clit, VaginalLooseness looseness, VaginalWetness wetness, bool isVirgin, bool everPracticedVaginal,
+			int vaginaIndex, ushort capacity, ReadOnlyPiercing<LabiaPiercingLocation> labiaPiercings) : base(creatureID, vaginaType)
+		{
+			this.clit = clit ?? throw new ArgumentNullException(nameof(clit));
+			this.looseness = looseness;
+			this.wetness = wetness;
+			this.isVirgin = isVirgin;
+			this.everPracticedVaginal = everPracticedVaginal;
+			this.vaginaIndex = vaginaIndex;
+			this.capacity = capacity;
+			this.labiaPiercings = labiaPiercings ?? throw new ArgumentNullException(nameof(labiaPiercings));
 		}
 	}
 }

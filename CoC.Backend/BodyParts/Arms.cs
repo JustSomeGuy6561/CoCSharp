@@ -3,9 +3,11 @@
 //Author: JustSomeGuy
 //12/26/2018, 7:58 PM
 
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Items.Wearables.Tattoos;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,13 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
+#warning all of these need to implement tattooable part. first, rework tattooable part to be like piercings so its flexible enough to work with. then go through them.
+	//I'm considering putting hand and feet tattoos in their parent (arm/lowerbody, respectively). Similarly, consider cock/vagina tattoos as part of genitals.
+	//similarly, nipples in breast, and MAYBE? breasts in body???? or in Genitals ???? (do the latter, i guess)
+	//also, hips in body, i guess. b/c the hip piercings are already there.
+	//can't think of a good spot for butt tattoos anywhere but the butt, so that can stay.
+
+
 	/*
 	 * Arm covering (skin, scales, etc) Note:
 	 * Arms now have a consistent logic - if the arm is furry, it will first try to use the secondary (underbody) color, if the body has one. if not, it will fallback to the
@@ -33,6 +42,10 @@ namespace CoC.Backend.BodyParts
 	 */
 
 	//Note: Never fires a data change event, as it has no data that can be changed. Note that technically claws could fire a change, but whatever.
+
+	//ordered by size. all are compatible except sleeve, which is incompatible with everything.
+	public enum ArmTattoos { WRIST, INNER_ARM, OUTER_ARM, SHOULDER, SLEEVE }
+
 	public sealed partial class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
 	{
 		public override string BodyPartName() => Name();
@@ -55,6 +68,10 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private ArmType _type;
+
+		public readonly TattooablePart<ArmTattoos> tattoos;
+
+
 
 		public override ArmType defaultType => ArmType.defaultValue;
 
@@ -87,6 +104,24 @@ namespace CoC.Backend.BodyParts
 		{
 			_type = armType ?? throw new ArgumentNullException(nameof(armType));
 			hands = new Hands(creatureID, type.handType, (x) => x ? epidermis : secondaryEpidermis);
+
+			tattoos = new TattooablePart<ArmTattoos>(TattooSize);
+		}
+
+		private TattooSize TattooSize(ArmTattoos tattoo)
+		{
+			switch (tattoo)
+			{
+				case ArmTattoos.WRIST:
+					return Items.Wearables.Tattoos.TattooSize.SMALL;
+				case ArmTattoos.SHOULDER:
+				case ArmTattoos.INNER_ARM:
+				case ArmTattoos.OUTER_ARM:
+					return Items.Wearables.Tattoos.TattooSize.MEDIUM;
+				case ArmTattoos.SLEEVE:
+				default:
+					return Items.Wearables.Tattoos.TattooSize.FULL;
+			}
 		}
 
 		//default implementation of update and restore are fine
@@ -250,7 +285,7 @@ namespace CoC.Backend.BodyParts
 			internal override EpidermalData GetPrimaryEpidermis(in BodyData bodyData)
 			{
 				FurColor color = defaultColor;
-				if (bodyData.main.usesFur && !bodyData.main.fur.isEmpty)
+				if (bodyData.main.usesFurColor && !bodyData.main.fur.isEmpty)
 				{
 					color = bodyData.main.fur;
 				}
@@ -266,7 +301,7 @@ namespace CoC.Backend.BodyParts
 			internal override EpidermalData GetSecondaryEpidermis(in BodyData bodyData)
 			{
 				FurColor color = defaultColor;
-				if (bodyData.supplementary.usesFur && !bodyData.supplementary.fur.isEmpty)
+				if (bodyData.supplementary.usesFurColor && !bodyData.supplementary.fur.isEmpty)
 				{
 					color = bodyData.main.fur;
 				}
@@ -350,11 +385,11 @@ namespace CoC.Backend.BodyParts
 
 			if (mutable)
 			{
-				if (bodyData.supplementary.usesFur && !bodyData.supplementary.fur.isEmpty) // can't be null
+				if (bodyData.supplementary.usesFurColor && !bodyData.supplementary.fur.isEmpty) // can't be null
 				{
 					color = bodyData.supplementary.fur;
 				}
-				else if (bodyData.main.usesFur && !bodyData.main.fur.isEmpty) //can't be null
+				else if (bodyData.main.usesFurColor && !bodyData.main.fur.isEmpty) //can't be null
 				{
 					color = bodyData.main.fur;
 				}

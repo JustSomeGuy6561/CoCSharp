@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //4/11/2019, 9:22 PM
 
+using System;
+
 namespace CoC.Backend.Items.Materials
 {
 

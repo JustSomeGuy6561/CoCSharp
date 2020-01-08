@@ -13,15 +13,15 @@ namespace CoC.Backend.Creatures
 	{
 		public CupSize cupSize;
 		public float? nippleLength;
-		public readonly ReadOnlyDictionary<NipplePiercings, PiercingJewelry> nipplePiercings;
+		public readonly ReadOnlyDictionary<NipplePiercingLocation, PiercingJewelry> nipplePiercings;
 
 		public float validNippleLength => nippleLength ?? (cupSize < CupSize.B ? 0.25f : 0.5f);
 
-		public BreastCreator(CupSize cup, float? nippleLengthInInches = null, Dictionary<NipplePiercings, PiercingJewelry> nippleJewelry = null)
+		public BreastCreator(CupSize cup, float? nippleLengthInInches = null, Dictionary<NipplePiercingLocation, PiercingJewelry> nippleJewelry = null)
 		{
 			cupSize = cup;
 			nippleLength = nippleLengthInInches;
-			nipplePiercings = nippleJewelry == null ? null : new ReadOnlyDictionary<NipplePiercings, PiercingJewelry>(nippleJewelry);
+			nipplePiercings = nippleJewelry == null ? null : new ReadOnlyDictionary<NipplePiercingLocation, PiercingJewelry>(nippleJewelry);
 		}
 	}
 }

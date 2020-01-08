@@ -64,7 +64,7 @@ namespace CoC.Backend.BodyParts
 
 		public static PiercingJewelry GenerateNavelJewelry(this Body body, NavelPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (body.navelPiercings.CanWearThisJewelryType(location, jewelryType))
+			if (body.navelPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}

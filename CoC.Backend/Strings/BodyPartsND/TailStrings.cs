@@ -9,8 +9,37 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class TailPiercingLocation
+	{
+		private static string SpadeButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private static string SpadeLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
+
 	public partial class Tail
 	{
+		private string CurrentTailTypeDoesntSupportPiercings()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string TailPiercingsRequirePiercingFetish()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllTailPiercingsStr(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
 		public string OneTailShortDescription(string pronoun = "your")
 		{
 			if (tailCount == 0)
@@ -600,7 +629,7 @@ namespace CoC.Backend.BodyParts
 		private static string DragonPlayerStr(Tail tail, PlayerBase player)
 		{
 			if (tail.epidermis.type != tail.secondaryEpidermis.type
-				|| (tail.epidermis.usesFur && !tail.epidermis.fur.Equals(tail.secondaryEpidermis.fur))
+				|| (tail.epidermis.usesFurColor && !tail.epidermis.fur.Equals(tail.secondaryEpidermis.fur))
 				|| (tail.epidermis.usesTone && tail.epidermis.tone != tail.secondaryEpidermis.tone))
 			{
 				return "A thick, muscular, reptilian tail covered in " + tail.epidermis.LongDescription() + " with "

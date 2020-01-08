@@ -11,11 +11,179 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+#warning Handle GOO TFs so they suck less
+
+	public partial class CockPiercingLocations
+	{
+		private static string AlbertButton()
+		{
+			return "PrinceAlbert";
+		}
+
+		private static string AlbertLocation()
+		{
+			return "cock-head";
+		}
+
+		private static string UpperFrenum1Button()
+		{
+			return UpperFrenumButton(1);
+		}
+		private static string UpperFrenum1Location()
+		{
+			return UpperFrenumLocation(1);
+		}
+
+		private static string UpperFrenum2Button()
+		{
+			return UpperFrenumButton(2);
+		}
+		private static string UpperFrenum2Location()
+		{
+			return UpperFrenumLocation(2);
+		}
+
+		private static string MiddleFrenum1Button()
+		{
+			return MiddleFrenumButton(1);
+		}
+		private static string MiddleFrenum1Location()
+		{
+			return MiddleFrenumLocation(1);
+		}
+
+		private static string MiddleFrenum2Button()
+		{
+			return MiddleFrenumButton(2);
+		}
+		private static string MiddleFrenum2Location()
+		{
+			return MiddleFrenumLocation(2);
+		}
+
+		private static string MiddleFrenum3Button()
+		{
+			return MiddleFrenumButton(3);
+		}
+		private static string MiddleFrenum3Location()
+		{
+			return MiddleFrenumLocation(3);
+		}
+
+		private static string MiddleFrenum4Button()
+		{
+			return MiddleFrenumButton(4);
+		}
+		private static string MiddleFrenum4Location()
+		{
+			return MiddleFrenumLocation(4);
+		}
+
+		private static string LowerFrenum1Button()
+		{
+			return LowerFrenumButton(1);
+		}
+		private static string LowerFrenum1Location()
+		{
+			return LowerFrenumLocation(1);
+		}
+
+		private static string LowerFrenum2Button()
+		{
+			return LowerFrenumButton(2);
+		}
+		private static string LowerFrenum2Location()
+		{
+			return LowerFrenumLocation(2);
+		}
+
+		private static string LowerFrenumButton(byte index)
+		{
+			return $"L.Frenum({index})";
+		}
+
+		private static string MiddleFrenumButton(byte index)
+		{
+			return $"M.Frenum({index})";
+		}
+
+		private static string UpperFrenumButton(byte index)
+		{
+			return "upper frenum";
+		}
+
+		private static string LowerFrenumLocation(byte index)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			//return $"L.Frenum({index})";
+		}
+
+		private static string MiddleFrenumLocation(byte index)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			//return $"M.Frenum({index})";
+		}
+
+		private static string UpperFrenumLocation(byte index)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			//return $"U.Frenum({index})";
+		}
+	}
+
 	public partial class Cock
 	{
 		public static string Name()
 		{
 			return "Cock";
+		}
+
+		private string AllCockPiercingsStr(PlayerBase player)
+		{
+			StringBuilder sb = new StringBuilder();
+			//full piercings, or full piercings without prince albert.
+			//if (cockPiercings.jewelryCount == cockPiercings.MaxPiercings)
+			//{
+			//	sb.Append("Piercings run down the entire length of your cock, crowned by a " + cockPiercings[CockPiercingLocations.PRINCE_ALBERT].LongDescription() + "in its " +
+			//		HeadDescription() + ". You have little doubt it'll make an impression on your partners. ");
+			//}
+			//else if (cockPiercings.jewelryCount == cockPiercings.MaxPiercings - 1 && !cockPiercings.WearingJewelryAt(CockPiercingLocations.PRINCE_ALBERT))
+			//{
+			//
+			//}
+			int frenumJewelryCount = cockPiercings.jewelryCount;
+			bool hasPA = cockPiercings.WearingJewelryAt(CockPiercingLocations.PRINCE_ALBERT);
+			if (hasPA)
+			{
+				frenumJewelryCount--;
+				//sb.Append("Looking positively pervese, " + cockPiercings[CockPiercingLocations.PRINCE_ALBERT].LongDescription(true) + "adorns your " + HeadDescription() + ".");
+			}
+
+			if (frenumJewelryCount == cockPiercings.MaxFrenumPiercings)
+			{
+				string intro, outro;
+				if (hasPA)
+				{
+					intro = " Additional piercings ";
+					outro = ", completing the look";
+				}
+				else
+				{
+					intro = "Piercings, ";
+					sb.Append("Piercings ");
+				}
+				sb.Append("run down the entire length of your cock");
+
+				//if (hasPA, giving you a full ladder. You have little doubt they'll make ")
+			}
+
+
+			if (cockPiercings.jewelryCount > 1 || (cockPiercings.wearingJewelry && !cockPiercings.WearingJewelryAt(CockPiercingLocations.PRINCE_ALBERT)))
+			{
+
+			}
+
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		public static string GenericCockNoun(bool plural = false) => CockType.GenericCockNoun(plural);
@@ -915,7 +1083,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return Utils.RandomChoice("a coerl ", "an alien ", "an almost-canine ", "an animal ", "a displacer-") +GenericCockNoun(false);
+				return Utils.RandomChoice("a coerl ", "an alien ", "an almost-canine ", "an animal ", "a displacer-") + GenericCockNoun(false);
 			}
 		}
 

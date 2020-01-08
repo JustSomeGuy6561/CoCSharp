@@ -9,13 +9,86 @@ using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
 
-	public enum ClitPiercings { CHRISTINA, HOOD_VERTICAL, HOOD_HORIZONTAL, HOOD_TRIANGLE, CLIT_ITSELF, LARGE_CLIT_1, LARGE_CLIT_2, LARGE_CLIT_3 }
+	//public enum ClitPiercings {
+
+	//}
+
+	public sealed partial class ClitPiercingLocation : PiercingLocation, IEquatable<ClitPiercingLocation>
+	{
+		private static readonly List<ClitPiercingLocation> _allLocations = new List<ClitPiercingLocation>();
+
+		public static readonly ReadOnlyCollection<ClitPiercingLocation> allLocations;
+
+		private readonly byte index;
+
+		static ClitPiercingLocation()
+		{
+			allLocations = new ReadOnlyCollection<ClitPiercingLocation>(_allLocations);
+		}
+
+		public ClitPiercingLocation(byte index, CompatibleWith allowsJewelryOfType, SimpleDescriptor btnText, SimpleDescriptor locationDesc)
+			: base(allowsJewelryOfType, btnText, locationDesc)
+		{
+			this.index = index;
+
+			if (!_allLocations.Contains(this))
+			{
+				_allLocations.Add(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is ClitPiercingLocation clitPiercing)
+			{
+				return Equals(clitPiercing);
+			}
+			else return false;
+		}
+
+		public bool Equals(ClitPiercingLocation other)
+		{
+			return !(other is null) && other.index == index;
+		}
+
+		public override int GetHashCode()
+		{
+			return index.GetHashCode();
+		}
+
+		public static readonly ClitPiercingLocation CHRISTINA = new ClitPiercingLocation(0, SupportedJewelry, ChristinaButton, ChristinaLocation);
+		public static readonly ClitPiercingLocation HOOD_VERTICAL = new ClitPiercingLocation(1, SupportedJewelry, VerticalHoodButton, VerticalHoodLocation);
+		public static readonly ClitPiercingLocation HOOD_HORIZONTAL = new ClitPiercingLocation(2, SupportedJewelry, HorizontalHoodButton, HorizontalHoodLocation);
+		public static readonly ClitPiercingLocation HOOD_TRIANGLE = new ClitPiercingLocation(3, SupportedJewelry, TriangleButton, TriangleLocation);
+		public static readonly ClitPiercingLocation CLIT_ITSELF = new ClitPiercingLocation(4, SupportedJewelry, ThroughClitButton, ThroughClitLocation);
+		public static readonly ClitPiercingLocation LARGE_CLIT_1 = new ClitPiercingLocation(5, SupportedJewelry, ThroughLargeClit1Button, ThroughLargeClit1Location);
+		public static readonly ClitPiercingLocation LARGE_CLIT_2 = new ClitPiercingLocation(6, SupportedJewelry, ThroughLargeClit2Button, ThroughLargeClit2Location);
+		public static readonly ClitPiercingLocation LARGE_CLIT_3 = new ClitPiercingLocation(7, SupportedJewelry, ThroughLargeClit3Button, ThroughLargeClit3Location);
+
+		private static bool SupportedJewelry(JewelryType jewelryType)
+		{
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType == JewelryType.RING || jewelryType == JewelryType.SPECIAL;
+		}
+	}
+
+	public sealed class ClitPiercing : Piercing<ClitPiercingLocation>
+	{
+		public ClitPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		{
+		}
+
+		public override int MaxPiercings => ClitPiercingLocation.allLocations.Count;
+
+		public override IEnumerable<ClitPiercingLocation> availableLocations => ClitPiercingLocation.allLocations;
+	}
 
 	//note: perks are guarenteed to be valid by the time this is created, so it's post perk init won't be called.
 	public sealed partial class Clit : SimpleSaveablePart<Clit, ClitData>, IGrowable, IShrinkable
@@ -49,8 +122,7 @@ namespace CoC.Backend.BodyParts
 		private readonly Vagina parent;
 		private int vaginaIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.vaginas.IndexOf(parent) : 0;
 
-		private static readonly ClitPiercings[] requiresFetish = { ClitPiercings.LARGE_CLIT_1, ClitPiercings.LARGE_CLIT_2, ClitPiercings.LARGE_CLIT_3 };
-		private const JewelryType SUPPORTED_CLIT_PIERCINGS = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
+		private static readonly ClitPiercingLocation[] requiresFetish = { ClitPiercingLocation.LARGE_CLIT_1, ClitPiercingLocation.LARGE_CLIT_2, ClitPiercingLocation.LARGE_CLIT_3 };
 
 		private bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
 
@@ -105,7 +177,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private bool _omnibusClit;
-		public readonly Piercing<ClitPiercings> clitPiercings;
+		public readonly ClitPiercing clitPiercings;
 
 		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false)
 			: this(creatureID, source, initialPerkData, null, isOmnibusClit)
@@ -125,7 +197,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			_omnibusClit = isOmnibusClit;
-			clitPiercings = new Piercing<ClitPiercings>(PiercingLocationUnlocked, JewelryTypeSupported);
+			clitPiercings = new ClitPiercing(PiercingLocationUnlocked, AllClitPiercingsStr);
 
 			_minClitSize = initialPerkData.MinClitSize;
 			minNewClitSize = initialPerkData.DefaultNewClitSize;
@@ -137,6 +209,12 @@ namespace CoC.Backend.BodyParts
 		{
 			return new ClitData(this, vaginaIndex);
 		}
+
+		public static ClitData GenerateAggregate(Guid creatureID, float averageSize, bool clitCockCurrentlyAvailable, bool clitCockCurrentlyActive)
+		{
+			return new ClitData(creatureID, -1, averageSize, clitCockCurrentlyAvailable, clitCockCurrentlyActive, new ReadOnlyPiercing<ClitPiercingLocation>());
+		}
+
 
 		public bool omnibusActive => CreatureStore.GetCreatureClean(creatureID)?.cocks.Count == 0 && omnibusClit;
 
@@ -261,38 +339,34 @@ namespace CoC.Backend.BodyParts
 		public string FullDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, true);
 		#endregion
 		#region Piercing Related
-		private bool PiercingLocationUnlocked(ClitPiercings piercingLocation)
+		private bool PiercingLocationUnlocked(ClitPiercingLocation piercingLocation, out string whyNot)
 		{
 
 			if (!requiresFetish.Contains(piercingLocation))
 			{
+				whyNot = null;
 				return true;
 			}
 			else if (!piercingFetish)
 			{
+				whyNot = RequiresPiercingFetish();
 				return false;
 			}
-			else if (piercingLocation == ClitPiercings.LARGE_CLIT_1)
+			else if (piercingLocation == ClitPiercingLocation.LARGE_CLIT_1)
 			{
+				whyNot = RequiresClitBeAtLeastThisLong(3);
 				return length >= 3;
 			}
-			else if (piercingLocation == ClitPiercings.LARGE_CLIT_2)
+			else if (piercingLocation == ClitPiercingLocation.LARGE_CLIT_2)
 			{
+				whyNot = RequiresClitBeAtLeastThisLong(5);
 				return length >= 5;
 			}
-			else if (piercingLocation == ClitPiercings.LARGE_CLIT_3)
+			else //if (piercingLocation == ClitPiercingLocation.LARGE_CLIT_3)
 			{
+				whyNot = RequiresClitBeAtLeastThisLong(7);
 				return length >= 7;
 			}
-#if DEBUG
-			Debug.WriteLine("Hit some edge case. probably should fix this as it always returns false.");
-#endif
-			return false;
-		}
-
-		private JewelryType JewelryTypeSupported(ClitPiercings piercingLocation)
-		{
-			return SUPPORTED_CLIT_PIERCINGS;
 		}
 
 		public bool isPierced => clitPiercings.isPierced;
@@ -343,9 +417,9 @@ namespace CoC.Backend.BodyParts
 		public readonly float length;
 		public readonly bool isClitCock;
 		public readonly bool clitCockActive;
-		public readonly int VaginaIndex;
+		public readonly int vaginaIndex;
 
-		public readonly ReadOnlyPiercing<ClitPiercings> clitPiercings;
+		public readonly ReadOnlyPiercing<ClitPiercingLocation> clitPiercings;
 
 		#region Text
 		public static string PluralClitNoun() => ClitStrings.PluralClitNoun();
@@ -359,10 +433,21 @@ namespace CoC.Backend.BodyParts
 		{
 			length = source.length;
 			isClitCock = source.omnibusClit;
-			isClitCock = source.omnibusActive;
-			VaginaIndex = currIndex;
+			clitCockActive = source.omnibusActive;
+			vaginaIndex = currIndex;
 
 			clitPiercings = source.clitPiercings.AsReadOnlyData();
+		}
+
+		public ClitData(Guid creatureID, int currentIndex, float length, bool canBeClitCock, bool isClitCock, ReadOnlyPiercing<ClitPiercingLocation> piercings) : base(creatureID)
+		{
+			this.length = length;
+			this.isClitCock = isClitCock;
+			clitCockActive = canBeClitCock;
+
+			vaginaIndex = currentIndex;
+
+			clitPiercings = piercings;
 		}
 	}
 }
