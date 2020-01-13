@@ -7,13 +7,57 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
-	//it's literally just a wrapper for an int.
-	//but now it has validation! woo!
-	//oh, and a descriptor.
+	//was originally just a wrapper for int.
+	//but now it has validation! and a descriptor!
+	//and tattoos (what a joy)
+
+	public sealed partial class ButtTattooLocation : TattooLocation
+	{
+
+		private static readonly List<ButtTattooLocation> _allLocations = new List<ButtTattooLocation>();
+
+		public static readonly ReadOnlyCollection<ButtTattooLocation> allLocations;
+
+		private readonly byte index;
+
+		static ButtTattooLocation()
+		{
+			allLocations = new ReadOnlyCollection<ButtTattooLocation>(_allLocations);
+		}
+
+		private ButtTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
+
+		public static ButtTattooLocation LEFT_CHEEK = new ButtTattooLocation(0, MediumTattoosOrSmaller, LeftCheekButton, LeftCheekLocation);
+		public static ButtTattooLocation RIGHT_CHEEK = new ButtTattooLocation(1, MediumTattoosOrSmaller, RightCheekButton, RightCheekLocation);
+
+		public static bool LocationsCompatible(ButtTattooLocation first, ButtTattooLocation second)
+		{
+			return true;
+		}
+	}
+
+	public sealed class ButtTattoo : TattooablePart<ButtTattooLocation>
+	{
+		public ButtTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		{
+		}
+
+		public override int MaxTattoos => ButtTattooLocation.allLocations.Count;
+
+		public override IEnumerable<ButtTattooLocation> availableLocations => ButtTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(ButtTattooLocation first, ButtTattooLocation second) => ButtTattooLocation.LocationsCompatible(first, second);
+	}
+
 	public sealed partial class Butt : SimpleSaveablePart<Butt, ButtData>, IShrinkable //Gro+ doesnt work on butt.
 	{
 		public const byte BUTTLESS = 0;
@@ -49,6 +93,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _buttSize;
 
+		public readonly ButtTattoo tattoos;
+
 		internal Butt(Guid creatureID, byte size) : base(creatureID)
 		{
 			if (size < TIGHT)
@@ -61,6 +107,8 @@ namespace CoC.Backend.BodyParts
 				hasButt = true;
 				_buttSize = Utils.Clamp2(size, TIGHT, INCONCEIVABLY_BIG);
 			}
+
+			tattoos = new ButtTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
 		internal static Butt GenerateButtless(Guid creatureID)

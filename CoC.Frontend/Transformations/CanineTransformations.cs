@@ -6,7 +6,6 @@ using CoC.Frontend.Creatures;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Races;
 using System;
-using System.Collections;
 using System.Linq;
 using System.Text;
 
@@ -43,7 +42,7 @@ namespace CoC.Frontend.Transformations
 
 			bool DoKnotChanges(float delta)
 			{
-				if (target.hasMaleCock)
+				if (target.hasCock)
 				{
 					bool changed = false;
 					var dogCockCount = target.genitals.CountCocksOfType(CockType.DOG);
@@ -66,7 +65,7 @@ namespace CoC.Frontend.Transformations
 						float knotMultiplierDelta = smallestKnot.IncreaseKnotMultiplier(delta);
 						if (knotMultiplierDelta != 0)
 						{
-							sb.Append(EnlargedSmallestKnotText(target, smallestKnot, knotMultiplierDelta, target.cocks.IndexOf(smallestKnot), dogCockCount > 1));
+							sb.Append(EnlargedSmallestKnotText(target, target.cocks.IndexOf(smallestKnot), knotMultiplierDelta, dogCockCount > 1));
 							changed = true;
 						}
 					}
@@ -98,10 +97,10 @@ namespace CoC.Frontend.Transformations
 			}
 
 
-
+			sb.Append(InitialTransformationText(modifiers, hasCrit()));
 
 			//bad end related checks
-			if (hasCrit() && target.body.furActive && target.face.type == FaceType.DOG && target.ears.type == EarType.DOG &&
+			if (hasCrit() && target.body.hasActiveFurData && target.face.type == FaceType.DOG && target.ears.type == EarType.DOG &&
 				target.lowerBody.type == LowerBodyType.DOG && target.tail.type == TailType.DOG && target is IExtendedCreature extended)
 			{
 				//can get bad end.
@@ -112,7 +111,7 @@ namespace CoC.Frontend.Transformations
 					{
 						sb.Append(BadEndText(target));
 						isBadEnd = true;
-						return SafeReturn(target, sb, 0);
+						return ApplyChangesAndReturn(target, sb, 0);
 					}
 					//get lucky, but warn that they got lucky
 					else
@@ -164,7 +163,7 @@ namespace CoC.Frontend.Transformations
 				//already has 2+ dog cocks.
 				if (dogCocks >= 2)
 				{
-					//just treat it like a large. so we'll just bitwise or the 
+					//just treat it like a large. so we'll just bitwise or the
 					//large flag in.
 					modifiers |= CanineModifiers.LARGE;
 				}
@@ -212,7 +211,7 @@ namespace CoC.Frontend.Transformations
 						sb.Append(ConvertedTwoCocksToDog(target, firstOldData, secondOldData));
 					}
 				}
-				//one dog cock. 
+				//one dog cock.
 				else
 				{
 					if (target.cocks.Count == 1)
@@ -269,7 +268,7 @@ namespace CoC.Frontend.Transformations
 				else if (target.balls.uniBall)
 				{
 					var oldData = target.balls.AsReadOnlyData();
-					target.genitals.ChangeBallsNormal();
+					target.genitals.ConvertToNormalBalls();
 					target.DeltaCreatureStats(lib: 1, lus: 1);
 
 					sb.Append(EnlargedBallsText(target, oldData));
@@ -290,10 +289,11 @@ namespace CoC.Frontend.Transformations
 			//restore neck
 			if (target.neck.type != NeckType.defaultValue && Utils.Rand(4) == 0)
 			{
+				var oldNeck = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
 
-				sb.Append(RestoredNeckText(target));
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				sb.Append(RestoredNeckText(target, oldNeck));
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			//remove oviposition
@@ -302,7 +302,7 @@ namespace CoC.Frontend.Transformations
 				if (((PlayerWomb)target.womb).ClearOviposition())
 				{
 					sb.Append(RemovedOvipositionText(target));
-					if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 				}
 			}
 
@@ -310,7 +310,7 @@ namespace CoC.Frontend.Transformations
 			if (RemoveFeatheryHair(target))
 			{
 				sb.Append(RemovedFeatheryHairText(target));
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			//knot multiplier (but not knotty)
@@ -319,7 +319,7 @@ namespace CoC.Frontend.Transformations
 				var delta = ((Utils.Rand(2) + 1) / 20f) * crit;
 				if (DoKnotChanges(delta))
 				{
-					if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 				}
 			}
 
@@ -335,37 +335,46 @@ namespace CoC.Frontend.Transformations
 
 					target.genitals.UpdateCock(index, CockType.DOG);
 
-					if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 				}
 				else
 				{
 					var demonSpecialCase = target.cocks.FirstOrDefault(x => x.type == CockType.DEMON);
-					var index = demonSpecialCase.index;
+					var index = demonSpecialCase.cockIndex;
 					if (demonSpecialCase != null)
 					{
-						var delta = demonSpecialCase.ThickenCock(2);
+						float delta = demonSpecialCase.ThickenCock(2);
 
-						sb.Append(CouldntConvertDemonCockThickenedInstead(target, demonSpecialCase, index, delta));
-						if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+						if (delta != 0)
+						{
+							sb.Append(CouldntConvertDemonCockThickenedInstead(target, index, delta));
+							if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+						}
 					}
 				}
 			}
 
 			//update cum
-			if (target.hasCock && target.genitals.cumMultiplier < 1.5f && Utils.RandBool())
+			if (target.hasCock && (target.genitals.cumMultiplier < 1.5f || target.genitals.additionalCum < 500) && Utils.RandBool())
 			{
-				float delta = target.genitals.IncreaseCumMultiplier(0.05f * crit);
-				sb.Append(AddedCumText(target, delta, true));
-			}
-			else if (target.genitals.additionalCum < 500)
-			{
-				float delta = target.genitals.AddFlatCumAmount(50);
-				sb.Append(AddedCumText(target, delta, false));
+				float delta;
+				bool wasMultiplier;
+				if (target.genitals.cumMultiplier < 1.5f)
+				{
+					delta = target.genitals.IncreaseCumMultiplier(0.05f * crit);
+					wasMultiplier = true;
+				}
+				else
+				{
+					delta = target.genitals.AddFlatCumAmount(50);
+					wasMultiplier = false;
+				}
+				sb.Append(AddedCumText(target, delta, wasMultiplier));
 			}
 
-			if (target.hasMaleCock && modifiers.HasFlag(CanineModifiers.LARGE))
+			if (target.hasCock && modifiers.HasFlag(CanineModifiers.LARGE))
 			{
-				var smallest = target.genitals.SmallestCock(false);
+				var smallest = target.genitals.SmallestCock();
 				var oldData = smallest.AsReadOnlyData();
 
 				smallest.LengthenCock(Utils.Rand(4) + 3);
@@ -374,7 +383,7 @@ namespace CoC.Frontend.Transformations
 					var delta = 1 - smallest.girth;
 					smallest.ThickenCock(delta);
 				}
-				sb.Append(GrewSmallestCockText(target, smallest, smallest.index, oldData));
+				sb.Append(GrewSmallestCockText(target, smallest.cockIndex, oldData));
 			}
 
 			//do female changes.
@@ -391,13 +400,13 @@ namespace CoC.Frontend.Transformations
 							var delta = breast.GrowBreasts((CupSize)breastCount - breast.cupSize);
 							if (delta != 0)
 							{
-								sb.Append(GrowCurrentBreastRowText(target, breast, breast.index, delta));
+								sb.Append(GrowCurrentBreastRowText(target, breast.index, delta));
 							}
 						}
 					}
 
 					target.genitals.AddBreastRow(target.breasts[breastCount - 1].cupSize.ByteEnumSubtract(1));
-					sb.Append(GrewAdditionalBreastRowText(target, target.breasts[breastCount], breastCount));
+					sb.Append(GrewAdditionalBreastRowText(target));
 
 					target.IncreaseCreatureStats(lus: 5, sens: 6);
 				}
@@ -410,7 +419,7 @@ namespace CoC.Frontend.Transformations
 					{
 						if (target.breasts[x].cupSize != oldSizes[x])
 						{
-							sb.Append(NormalizedBreastSizeText(target, target.breasts[x], x, target.breasts[x].cupSize - oldSizes[x]));
+							sb.Append(NormalizedBreastSizeText(target, x, ((byte)target.breasts[x].cupSize).delta((byte)oldSizes[x])));
 						}
 					}
 				}
@@ -420,7 +429,7 @@ namespace CoC.Frontend.Transformations
 					if (crit > 2) target.IncreaseCreatureStats(sens: 6, lus: 15);
 					else target.IncreaseCreatureStats(sens: 3, lus: 10);
 				}
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			//Go into heat
@@ -428,7 +437,7 @@ namespace CoC.Frontend.Transformations
 			{
 				sb.Append(EnterOrIncreaseHeatText(target, increased));
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 
 			}
 
@@ -439,25 +448,25 @@ namespace CoC.Frontend.Transformations
 				sb.Append(DoggoFantasyText(target));
 				target.IncreaseLust(5 + (target.libidoTrue / 20f));
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			//doggo tfs.
 
 			if (!target.eyes.isDefault && Utils.Rand(5) == 0)
 			{
-				var oldType = target.eyes.type;
+				var oldData = target.eyes.AsReadOnlyData();
 
 				target.RestoreEyes();
 
-				sb.Append(RestoredEyesText(target, oldType));
+				sb.Append(RestoredEyesText(target, oldData));
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			if (modifiers.HasFlag(CanineModifiers.BLACK) && !target.body.mainEpidermis.fur.IsIdenticalTo(HairFurColors.BLACK))
 			{
-				//for now, we're ignoring underbody, apparently. 
+				//for now, we're ignoring underbody, apparently.
 				if (target.body.type != BodyType.SIMPLE_FUR)
 				//if (target.body.mainEpidermis.currentType != EpidermisType.FUR)
 				{
@@ -465,19 +474,20 @@ namespace CoC.Frontend.Transformations
 
 					target.UpdateBody(BodyType.SIMPLE_FUR, new FurColor(HairFurColors.BLACK), FurTexture.THICK);
 
-					sb.Append(ChangedBodyTypeText(target, oldBodyData, target.body.AsReadOnlyData()));
+					sb.Append(ChangedBodyTypeText(target, oldBodyData));
 				}
 				else
 				{
+					var oldFur = target.body.mainEpidermis.fur.AsReadOnly();
 					target.body.ChangeMainFur(new FurColor(HairFurColors.MIDNIGHT_BLACK), FurTexture.THICK);
-					sb.Append(ChangedFurText(target));
+					sb.Append(ChangedFurText(target, oldFur));
 				}
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 			//again, we're ignoring underbody for now, idk.
 			else if (target.lowerBody.type == LowerBodyType.DOG && target.tail.type == TailType.DOG &&
-				//target.body.mainEpidermis.currentType != EpidermisType.FUR 
+				//target.body.mainEpidermis.currentType != EpidermisType.FUR
 				target.body.type != BodyType.SIMPLE_FUR
 				&& Utils.Rand(4) == 0)
 			{
@@ -487,63 +497,63 @@ namespace CoC.Frontend.Transformations
 
 				target.UpdateBody(BodyType.SIMPLE_FUR, Utils.RandomChoice(Species.DOG.availableColors));
 
-				sb.Append(ChangedBodyTypeText(target, oldBodyData, target.body.AsReadOnlyData()));
+				sb.Append(ChangedBodyTypeText(target, oldBodyData));
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			if (target.lowerBody.type != LowerBodyType.DOG && target.tail.type == TailType.DOG && target.ears.type == EarType.DOG && Utils.Rand(3) == 0)
 			{
-				var oldType = target.lowerBody.type;
+				var oldData = target.lowerBody.AsReadOnlyData();
 
 				target.UpdateLowerBody(LowerBodyType.DOG);
-				sb.Append(ChangedLowerBodyText(target, oldType));
+				sb.Append(ChangedLowerBodyText(target, oldData));
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			if (target.ears.type != EarType.DOG && target.tail.type == TailType.DOG && Utils.RandBool())
 			{
-				var oldType = target.ears.type;
+				var oldData = target.ears.AsReadOnlyData();
 
 				target.UpdateEar(EarType.DOG);
 
-				sb.Append(ChangedEarsText(target, oldType));
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				sb.Append(ChangedEarsText(target, oldData));
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			if (target.tail.type != TailType.DOG && Utils.Rand(3) == 0)
 			{
-				var oldType = target.tail.type;
+				var oldData = target.tail.AsReadOnlyData();
 
 				target.UpdateTail(TailType.DOG);
 
-				sb.Append(ChangedTailText(target, oldType));
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				sb.Append(ChangedTailText(target, oldData));
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
-			if (target.arms.type != ArmType.DOG && target.body.IsFurry() && target.tail.type == TailType.DOG
+			if (target.arms.type != ArmType.DOG && target.body.isFurry && target.tail.type == TailType.DOG
 				&& target.lowerBody.type == LowerBodyType.DOG && Utils.Rand(4) == 0)
 			{
-				var oldArmType = target.arms.type;
+				var oldArmData = target.arms.AsReadOnlyData();
 
 				target.UpdateArms(ArmType.DOG);
 
-				sb.Append(ChangedArmsText(target, oldArmType));
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				sb.Append(ChangedArmsText(target, oldArmData));
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			if (!target.gills.isDefault && Utils.Rand(4) == 0)
 			{
-				var oldGillType = target.gills.type;
+				var oldGillData = target.gills.AsReadOnlyData();
 
 				target.RestoreGills();
 
-				sb.Append(RemovedGillsText(target, oldGillType));
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				sb.Append(RemovedGillsText(target, oldGillData));
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
-			if (target is CombatCreature cc && target.body.furActive && Utils.Rand(3) == 0)
+			if (target is CombatCreature cc && target.body.isFurry && Utils.Rand(3) == 0)
 			{
 
 				cc.DeltaCombatCreatureStats(tou: 4, sens: -3);
@@ -551,7 +561,7 @@ namespace CoC.Frontend.Transformations
 
 				sb.Append(FallbackToughenUpText(target));
 
-				if (--remainingChanges <= 0) return SafeReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			if (target is CombatCreature cc2 && remainingChanges == changeLimit)
@@ -561,43 +571,72 @@ namespace CoC.Frontend.Transformations
 				target.IncreaseLust(3);
 			}
 
-			return SafeReturn(target, sb, changeLimit - remainingChanges);
-			
+			return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+
 		}
+
+		protected abstract string InitialTransformationText(CanineModifiers modifiers, bool crit);
 		protected abstract string BadEndText(Creature target);
 		protected abstract string DoggoWarningText(Creature target, bool wasPreviouslyWarned);
 		protected abstract string StatChangeText(Creature target, float strengthIncrease, float speedIncrease, float intelligenceDecrease);
-		protected abstract string EnlargedSmallestKnotText(Creature target, Cock smallestKnot, float knotMultiplierDelta, int v1, bool v2);
+		protected abstract string EnlargedSmallestKnotText(Creature target, int indexOfSmallestKnotCock, float knotMultiplierDelta, bool hasOtherDogCocks);
 		protected abstract string GrewTwoDogCocksHadNone(Creature target);
 		protected abstract string ConvertedFirstDogCockGrewSecond(Creature target, CockData oldCockData);
 		protected abstract string ConvertedTwoCocksToDog(Creature target, CockData firstOldData, CockData secondOldData);
 		protected abstract string GrewSecondDogCockHadOne(Creature target);
 		protected abstract string GrewBallsText(Creature target);
 		protected abstract string EnlargedBallsText(Creature target, BallsData oldData);
-		protected abstract string RestoredNeckText(Creature target);
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldNeck)
+		{
+			return target.neck.RestoredText(oldNeck);
+		}
 		protected virtual string RemovedOvipositionText(Creature target)
 		{
 			return RemovedOvipositionTextGeneric(target);
 		}
-		protected abstract string RemovedFeatheryHairText(Creature target);
+		protected virtual string RemovedFeatheryHairText(Creature target)
+		{
+			return RemovedFeatheryHairTextGeneric(target);
+		}
 		protected abstract string ConvertedOneCockToDog(Creature target, int index, CockData oldData);
-		protected abstract string CouldntConvertDemonCockThickenedInstead(Creature target, Cock demonSpecialCase, int index, float delta);
-		protected abstract string AddedCumText(Creature target, float delta, bool v);
-		protected abstract string GrewSmallestCockText(Creature target, Cock smallest, int index, CockData oldData);
-		protected abstract string GrowCurrentBreastRowText(Creature target, Breasts breast, int index, byte delta);
-		protected abstract string GrewAdditionalBreastRowText(Creature target, Breasts breasts, int breastCount);
-		protected abstract string NormalizedBreastSizeText(Creature target, Breasts breasts, int x, byte v);
+		protected abstract string CouldntConvertDemonCockThickenedInstead(Creature target, int index, float delta);
+		protected abstract string AddedCumText(Creature target, float delta, bool deltaIsMultiplier);
+		protected abstract string GrewSmallestCockText(Creature target, int index, CockData oldData);
+		protected abstract string GrowCurrentBreastRowText(Creature target, int index, byte delta);
+		protected abstract string GrewAdditionalBreastRowText(Creature target);
+		protected abstract string NormalizedBreastSizeText(Creature target, int index, short cupSizeDelta);
 		protected abstract string EnterOrIncreaseHeatText(Creature target, bool isIncrease);
 		protected abstract string DoggoFantasyText(Creature target);
-		protected abstract string RestoredEyesText(Creature target, EyeType oldType);
-		protected abstract string ChangedFurText(Creature target);
-		protected abstract string ChangedBodyTypeText(Creature target, BodyData oldBodyData, BodyData bodyData);
-		protected abstract string ChangedLowerBodyText(Creature target, LowerBodyType oldType);
-		protected abstract string ChangedEarsText(Creature target, EarType oldType);
-		protected abstract string ChangedTailText(Creature target, TailType oldType);
-		protected abstract string ChangedArmsText(Creature target, ArmType oldArmType);
-		protected abstract string RemovedGillsText(Creature target, GillType oldGillType);
-
+		protected virtual string RestoredEyesText(Creature target, EyeData oldEyes)
+		{
+			return target.eyes.RestoredText(oldEyes);
+		}
+		protected abstract string ChangedFurText(Creature target, ReadOnlyFurColor oldFurColor);
+		protected virtual string ChangedBodyTypeText(Creature target, BodyData oldBodyData)
+		{
+			return target.body.TransformFromText(oldBodyData);
+		}
+		protected virtual string ChangedLowerBodyText(Creature target, LowerBodyData oldLegs)
+		{
+			return target.lowerBody.TransformFromText(oldLegs);
+		}
+		protected virtual string ChangedEarsText(Creature target, EarData oldData)
+		{
+			return target.ears.TransformFromText(oldData);
+		}
+		protected virtual string ChangedTailText(Creature target, TailData oldData)
+		{
+			return target.tail.TransformFromText(oldData);
+		}
+		protected virtual string ChangedArmsText(Creature target, ArmData oldArmData)
+		{
+			return target.arms.TransformFromText(oldArmData);
+		}
+		protected virtual string RemovedGillsText(Creature target, GillData oldGillData)
+		{
+			return target.gills.RestoredText(oldGillData);
+		}
 		protected abstract string FallbackToughenUpText(Creature target);
 
 		protected abstract string NothingHappenedGainHpText(Creature target);

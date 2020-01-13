@@ -2,15 +2,159 @@
 using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	partial class Genitals
+	public partial class GenitalTattooLocation
 	{
-		public static string Name()
+		private static string LeftChestButton()
 		{
-			return "Genitals";
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftChestLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftBreastButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftBreastLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftUnderBreastButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftUnderBreastLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftNippleButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftNippleLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightChestButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightChestLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightBreastButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightBreastLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightUnderBreastButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightUnderBreastLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightNippleButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightNippleLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ChestButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ChestLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string GroinButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string GroinLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string CockButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string CockLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string VulvaButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string VulvaLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string AssButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string AssLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FullButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FullLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
+	internal interface IGenitals
+	{
+		ReadOnlyCollection<CockData> cocks { get; }
+		ReadOnlyCollection<VaginaData> vaginas { get; }
+		ReadOnlyCollection<BreastData> breasts { get; }
+
+		CockData AverageCock();
+		VaginaData AverageVagina();
+		BreastData AverageBreasts();
+
+		bool hasSheath { get; }
+	}
+
+
+
+	internal static class GenitalStrings
+	{
+		private static int NumCocks(this IGenitals genitals)
+		{
+			return genitals.cocks.Count;
+		}
+
+		private static int NumVaginas(this IGenitals genitals)
+		{
+			return genitals.vaginas.Count;
+		}
+
+		private static int NumBreasts(this IGenitals genitals)
+		{
+			return genitals.breasts.Count;
 		}
 
 		private static readonly string[] matchedPairOptions = new string[] { "pair of ", "two ", "brace of ", "matching ", "twin " };
@@ -28,178 +172,240 @@ namespace CoC.Backend.BodyParts
 
 		private static readonly string[] mismatchedDicksTextOptions = new string[] { "mutated cocks", "mutated dicks", "mixed cocks", "mismatched dicks" };
 
-		/*
-		public static function multiCockDescript(creature:Creature):String
-		{
-			//Get cock counts
-			var descript = "";
-		var currCock = 0;
-		var totCock = creature.cocks.length;
-		var dogCocks = 0;
-		var wolfCocks = 0;
-		var horseCocks = 0;
-		var normalCocks = 0;
-		var normalCockKey = 0;
-		var dogCockKey = 0;
-		var wolfCockKey = 0;
-		var horseCockKey = 0;
-		var averageLength = 0;
-		var averageThickness = 0;
-		var same = true;
-		//For temp14 random values
-		var rando = 0;
-		var descripted = false;
-			//Count cocks & Prep average totals
-			while (currCock <= totCock - 1) {
-				if (creature.cocks[currCock].cockType == CockTypesEnum.HUMAN) {
-					normalCocks++;
-					normalCockKey = currCock;
-				}
-				if (creature.cocks[currCock].cockType == CockTypesEnum.HORSE) {
-					horseCocks++;
-					horseCockKey = currCock;
-				}
-				if (creature.cocks[currCock].cockType == CockTypesEnum.DOG) {
-					dogCocks++;
-					dogCockKey = currCock;
-				}
-				if (creature.cocks[currCock].cockType == CockTypesEnum.WOLF) {
-					wolfCocks++;
-					wolfCockKey = currCock;
-				}
-				averageLength += creature.cocks[currCock].cockLength;
-				averageThickness += creature.cocks[currCock].cockThickness;
-				//If cocks are matched make sure they still are
-				if (same && currCock > 0 && creature.cocks[currCock].cockType != creature.cocks[currCock - 1].cockType) same = false;
-				currCock++;
-			}
-			//Crunch averages
-			averageLength /= currCock;
-			averageThickness /= currCock;
-			//Quantity descriptors
-			if (currCock == 1) {
-				if (dogCocks == 1) return cockNoun(CockTypesEnum.DOG);
-				if (wolfCocks == 1) return cockNoun(CockTypesEnum.WOLF);
-				if (horseCocks == 1) return cockNoun(CockTypesEnum.HORSE);
-				if (normalCocks == 1) return cockDescript(creature,0);
-				//Catch-all for when I add more cocks.  Let cock descript do the sorting.
-				if (creature.cocks.length == 1) return cockDescript(creature,0);
-			}
-			if (currCock == 2) {
-				//For cocks that are the same
-				if (same) {
-					descript += randomChoice("a pair of ", "two ", "a brace of ", "matching ", "twin ");
-descript += cockAdjectives(averageLength, averageThickness, creature.cocks[0].cockType, creature);
-					if (normalCocks == 2) descript += " " + cockNoun(CockTypesEnum.HUMAN) + "s";
-					if (horseCocks == 2) descript += ", " + cockNoun(CockTypesEnum.HORSE) + "s";
-					if (dogCocks == 2) descript += ", " + cockNoun(CockTypesEnum.DOG) + "s";
-					if (wolfCocks == 2) descript += ", " + cockNoun(CockTypesEnum.WOLF) + "s";
-					//Tentacles
-					if (creature.cocks[0].cockType.Index > 2)
-						descript += ", " + cockNoun(creature.cocks[0].cockType) + "s";
-				}
-				//Nonidentical
-				else {
-					descript += randomChoice("a pair of ", "two ", "a brace of ");
-descript += cockAdjectives(averageLength, averageThickness, creature.cocks[0].cockType, creature) + ", ";
-					descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "mismatched dicks");
-				}
-			}
-			if (currCock == 3) {
-				//For samecocks
-				if (same) {
-					descript += randomChoice("three ", "a group of ", "a <i>ménage à trois</i> of ", "a triad of ", "a triumvirate of ");
-descript += cockAdjectives(averageLength, averageThickness, creature.cocks[currCock - 1].cockType, creature);
-					if (normalCocks == 3)
-						descript += " " + cockNoun(CockTypesEnum.HUMAN) + "s";
-					if (horseCocks == 3)
-						descript += ", " + cockNoun(CockTypesEnum.HORSE) + "s";
-					if (dogCocks == 3)
-						descript += ", " + cockNoun(CockTypesEnum.DOG) + "s";
-					if (wolfCocks == 3)
-						descript += ", " + cockNoun(CockTypesEnum.WOLF) + "s";
-					//Tentacles
-					if (creature.cocks[0].cockType.Index > 2) descript += ", " + cockNoun(creature.cocks[0].cockType) + "s";   // Not sure what's going on here, referencing index *may* be a bug.
 
-				}
-				else {
-					descript += randomChoice("three ", "a group of ");
-descript += cockAdjectives(averageLength, averageThickness, creature.cocks[0].cockType, creature);
-descript += randomChoice(", mutated cocks", ", mutated dicks", ", mixed cocks", ", mismatched dicks");
-				}
-			}
-			//Large numbers of cocks!
-			if (currCock > 3) {
-				descript += randomChoice("a bundle of ", "an obscene group of ", "a cluster of ", "a wriggling group of ");
-//Cock adjectives and nouns
-descripted = false;
-				//If same types...
-				if (same) {
-					if (creature.cocks[0].cockType == CockTypesEnum.HUMAN) {
-						descript += cockAdjectives(averageLength, averageThickness, CockTypesEnum.HUMAN, creature) + " ";
-						descript += cockNoun(CockTypesEnum.HUMAN) + "s";
-						descripted = true;
-					}
-					if (creature.cocks[0].cockType == CockTypesEnum.DOG) {
-						descript += cockAdjectives(averageLength, averageThickness, CockTypesEnum.DOG, creature) + ", ";
-						descript += cockNoun(CockTypesEnum.DOG) + "s";
-						descripted = true;
-					}
-					if (creature.cocks[0].cockType == CockTypesEnum.WOLF) {
-						descript += cockAdjectives(averageLength, averageThickness, CockTypesEnum.WOLF, creature) + ", ";
-						descript += cockNoun(CockTypesEnum.WOLF) + "s";
-						descripted = true;
-					}
-					if (creature.cocks[0].cockType == CockTypesEnum.HORSE) {
-						descript += cockAdjectives(averageLength, averageThickness, CockTypesEnum.HORSE, creature) + ", ";
-						descript += cockNoun(CockTypesEnum.HORSE) + "s";
-						descripted = true;
-					}
-					//TODO More group cock type descriptions!
-					if (creature.cocks[0].cockType.Index > 2) {
-						descript += cockAdjectives(averageLength, averageThickness, CockTypesEnum.HUMAN, creature) + ", ";
-						descript += cockNoun(creature.cocks[0].cockType) + "s";
-						descripted = true;
-					}
-				}
-				//If mixed
-				if (!descripted) {
-					descript += cockAdjectives(averageLength, averageThickness, creature.cocks[0].cockType, creature) + ", ";
-					rando = rand(4);
-descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "mismatched dicks");
-				}
-			}
-			return descript;
+		#region Breast Text
+
+		internal static string AllBreastsShortDescription(IGenitals genitals, bool alternateFormat = false)
+		{
+			return BreastRowCountText(genitals, alternateFormat, true) + genitals.AverageBreasts().ShortDescription();
 		}
-	}
-}
-*/
 
-
-
-		private string AllCocksDesc(bool full)
+		internal static string AllBreastsLongDescription(IGenitals genitals, bool alternateFormat = false)
 		{
-			if (cocks.Count == 0)
+			return BreastRowCountText(genitals, alternateFormat, true) + genitals.AverageBreasts().LongDescription(false, true);
+		}
+
+		internal static string AllBreastsFullDescription(IGenitals genitals, bool alternateFormat = false)
+		{
+			return BreastRowCountText(genitals, alternateFormat, true) + genitals.AverageBreasts().FullDescription(false, false, true);
+		}
+
+		internal static string ChestOrAllBreastsShort(IGenitals genitals, bool alternateFormat = false)
+		{
+			if (genitals.NumBreasts() == 1 && genitals.breasts[0].isMaleBreasts)
+			{
+				return ChestShortDesc(genitals, alternateFormat);
+			}
+			else return AllBreastsShortDescription(genitals, alternateFormat);
+		}
+
+		internal static string ChestOrAllBreastsLong(IGenitals genitals, bool alternateFormat = false)
+		{
+			if (genitals.NumBreasts() == 1 && genitals.breasts[0].isMaleBreasts)
+			{
+				return ChestDesc(genitals, alternateFormat, false);
+			}
+			else return AllBreastsLongDescription(genitals, alternateFormat);
+		}
+
+		internal static string ChestOrAllBreastsFull(IGenitals genitals, bool alternateFormat = false)
+		{
+			if (genitals.NumBreasts() == 1 && genitals.breasts[0].isMaleBreasts)
+			{
+				return ChestDesc(genitals, alternateFormat, true);
+			}
+			else return AllBreastsFullDescription(genitals, alternateFormat);
+		}
+
+		#endregion
+
+		#region Cock Text
+		internal static string SheathOrBaseStr(IGenitals genitals)
+		{
+			return genitals.hasSheath ? "sheath" : "base";
+		}
+
+		internal static string AllCocksShortDescription(IGenitals genitals)
+		{
+			if (genitals.cocks.Count == 0)
+			{
+				return "";
+			}
+			else if (genitals.cocks.Count == 1)
+			{
+				return genitals.cocks[0].ShortDescription();
+			}
+			bool mismatched = genitals.cocks.Any(x => x.type != genitals.cocks[0].type);
+
+			return mismatched ? CockType.GenericCockNoun(true) : genitals.cocks[0].ShortDescription(false, true);
+		}
+
+		internal static string AllCocksLongDescription(IGenitals genitals)
+		{
+			return AllCocksDesc(genitals, false);
+		}
+
+		internal static string AllCocksFullDescription(IGenitals genitals)
+		{
+			return AllCocksDesc(genitals, true);
+		}
+
+		internal static string OneCockOrCocksNoun(IGenitals genitals, string pronoun = "your")
+		{
+			if (genitals.cocks.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(genitals.cocks.Count > 1, pronoun, CockType.GenericCockNoun(genitals.cocks.Count > 1));
+		}
+
+		internal static string OneCockOrCocksShort(IGenitals genitals, string pronoun = "your")
+		{
+			if (genitals.cocks.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(genitals.cocks.Count > 1, pronoun, AllCocksShortDescription(genitals));
+		}
+
+		internal static string EachCockOrCocksNoun(IGenitals genitals, string pronoun = "your")
+		{
+			return EachCockOrCocksNoun(genitals, pronoun, out bool _);
+		}
+
+		internal static string EachCockOrCocksShort(IGenitals genitals, string pronoun = "your")
+		{
+			return EachCockOrCocksShort(genitals, pronoun, out bool _);
+		}
+
+		internal static string EachCockOrCocksNoun(IGenitals genitals, string pronoun, out bool isPlural)
+		{
+			isPlural = genitals.cocks.Count != 1;
+			if (genitals.cocks.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(genitals.cocks.Count > 1, pronoun, CockType.GenericCockNoun(genitals.cocks.Count > 1));
+		}
+
+		internal static string EachCockOrCocksShort(IGenitals genitals, string pronoun, out bool isPlural)
+		{
+			isPlural = genitals.cocks.Count != 1;
+			if (genitals.cocks.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(genitals.cocks.Count > 1, pronoun, AllCocksShortDescription(genitals));
+		}
+		#endregion
+
+		#region Vagina Text
+		internal static string AllVaginasShortDescription(IGenitals genitals)
+		{
+			if (genitals.vaginas.Count == 0)
+			{
+				return "";
+			}
+			else if (genitals.vaginas.Count == 1)
+			{
+				return genitals.vaginas[0].ShortDescription();
+			}
+			bool mismatched = genitals.vaginas.Any(x => x.type != genitals.vaginas[0].type);
+
+			return mismatched ? VaginaType.VaginaNoun(true) : genitals.vaginas[0].ShortDescription(false);
+		}
+
+		internal static string AllVaginasLongDescription(IGenitals genitals)
+		{
+			return AllVaginasDesc(genitals, false);
+		}
+
+		internal static string AllVaginasFullDescription(IGenitals genitals)
+		{
+			return AllVaginasDesc(genitals, true);
+		}
+
+		internal static string OneVaginaOrVaginasNoun(IGenitals genitals, string pronoun = "your")
+		{
+			if (genitals.vaginas.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(genitals.vaginas.Count > 1, pronoun, VaginaType.VaginaNoun(genitals.vaginas.Count > 1));
+		}
+
+		internal static string OneVaginaOrVaginasShort(IGenitals genitals, string pronoun = "your")
+		{
+			if (genitals.vaginas.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.OneOfDescription(genitals.vaginas.Count > 1, pronoun, AllVaginasShortDescription(genitals));
+		}
+
+		internal static string EachVaginaOrVaginasNoun(IGenitals genitals, string pronoun = "your")
+		{
+			return EachVaginaOrVaginasNoun(genitals, pronoun, out bool _);
+		}
+
+		internal static string EachVaginaOrVaginasShort(IGenitals genitals, string pronoun = "your")
+		{
+			return EachVaginaOrVaginasShort(genitals, pronoun, out bool _);
+		}
+
+		internal static string EachVaginaOrVaginasNoun(IGenitals genitals, string pronoun, out bool isPlural)
+		{
+			isPlural = genitals.vaginas.Count != 1;
+			if (genitals.vaginas.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(genitals.vaginas.Count > 1, pronoun, VaginaType.VaginaNoun(genitals.vaginas.Count > 1));
+		}
+
+		internal static string EachVaginaOrVaginasShort(IGenitals genitals, string pronoun, out bool isPlural)
+		{
+			isPlural = genitals.vaginas.Count != 1;
+			if (genitals.vaginas.Count == 0)
+			{
+				return "";
+			}
+
+			return CommonBodyPartStrings.EachOfDescription(genitals.vaginas.Count > 1, pronoun, AllVaginasShortDescription(genitals));
+		}
+		#endregion
+
+		#region Private Helpers
+		private static string AllCocksDesc(IGenitals genitals, bool full)
+		{
+			if (genitals.cocks.Count == 0)
 			{
 				return "";
 			}
 			//If one, return normal cock descript
-			else if (cocks.Count == 1)
+			else if (genitals.cocks.Count == 1)
 			{
-				return cocks[0].ShortDescription();
+				return genitals.cocks[0].ShortDescription();
 			}
 			else
 			{
-				bool mismatched = _cocks.Exists(x => x.type != _cocks[0].type);
+				bool mismatched = genitals.cocks.Any(x => x.type != genitals.cocks[0].type);
 
 				string[] countOptions;
 				string description;
 
-				if (cocks.Count == 2)
+				if (genitals.cocks.Count == 2)
 				{
 					countOptions = mismatched ? mismatchedPairOptions : matchedPairOptions;
 				}
-				else if (cocks.Count == 3)
+				else if (genitals.cocks.Count == 3)
 				{
 					countOptions = mismatched ? mismatchedTripleOptions : mismatchedTripleOptions;
 				}
@@ -208,10 +414,99 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 					countOptions = lottaDicksOptions;
 				}
 
-				description = mismatched ? Utils.RandomChoice(mismatchedDicksTextOptions) : cocks[0].ShortDescription(false, true);
+				description = mismatched ? Utils.RandomChoice(mismatchedDicksTextOptions) : genitals.cocks[0].ShortDescription(false, true);
 
-				return Utils.RandomChoice(countOptions) + AverageCock().AdjectiveText(full) + description;
+				return Utils.RandomChoice(countOptions) + genitals.AverageCock().AdjectiveText(full) + description;
 			}
+		}
+
+		private static string AllVaginasDesc(IGenitals genitals, bool full)
+		{
+			if (genitals.vaginas.Count == 0)
+			{
+				return "";
+			}
+			//If one, return normal cock descript
+			else if (genitals.vaginas.Count == 1)
+			{
+				return genitals.vaginas[0].ShortDescription();
+			}
+			else
+			{
+				bool mismatched = genitals.vaginas.Any(x => x.type != genitals.vaginas[0].type);
+
+				string[] countOptions = mismatched ? mismatchedPairOptions : matchedPairOptions;
+				string description = mismatched ? Utils.RandomChoice(mismatchedDicksTextOptions) : genitals.vaginas[0].ShortDescription(true);
+
+				return Utils.RandomChoice(countOptions) + genitals.AverageVagina().AdjectiveText(full) + description;
+			}
+		}
+
+		private static string BreastRowCountText(IGenitals genitals, bool alternateFormat, bool withEven)
+		{
+			string evenStr = withEven ? (genitals.breasts.Any(x => x.cupSize != genitals.breasts[0].cupSize) ? "uneven " : "even ") : "";
+			if (genitals.breasts.Count <= 1)
+			{
+				if (alternateFormat) return "a pair of ";
+				else return "";
+			}
+			else if (genitals.breasts.Count == 2)
+			{
+				return "two " + evenStr + "rows of ";
+			}
+			else if (genitals.breasts.Count == 3)
+			{
+				return Utils.RandBool() ? "three " + evenStr + "rows of " : (!string.IsNullOrEmpty(evenStr) ? evenStr + ", " : "") + "multi-layered ";
+			}
+			else //if (creature.genitals.breasts.Count == 4)
+			{
+				return Utils.RandBool() ? "four " + evenStr + "rows of " : (!string.IsNullOrEmpty(evenStr) ? evenStr + ", " : "") + "four-tiered ";
+			}
+		}
+
+		private static string ChestShortDesc(IGenitals genitals, bool withArticle)
+		{
+			return (withArticle ? "a " : "") + "chest";
+		}
+
+		private static string ChestDesc(IGenitals genitals, bool withArticle, bool full)
+		{
+			string chest = withArticle ? "a flat chest" : "flat chest";
+			if (full)
+			{
+				return chest + " with " + NippleStrings.NippleSizeAdjective(genitals.breasts[0].nipples.length) + " nipples";
+			}
+			else
+			{
+				return chest;
+			}
+		}
+		#endregion
+	}
+
+	partial class Genitals : IGenitals
+	{
+		ReadOnlyCollection<CockData> IGenitals.cocks => this._cocks.Select(x => x.AsReadOnlyData()).ToList().AsReadOnly();
+
+		ReadOnlyCollection<VaginaData> IGenitals.vaginas => this._vaginas.Select(x => x.AsReadOnlyData()).ToList().AsReadOnly();
+
+		ReadOnlyCollection<BreastData> IGenitals.breasts => this._breasts.Select(x => x.AsReadOnlyData()).ToList().AsReadOnly();
+
+		bool IGenitals.hasSheath => this.hasSheath;
+
+		public static string Name()
+		{
+			return "Genitals";
+		}
+
+		private string AllTattoosShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllTattoosLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		private string AllCocksPlayerDesc()
@@ -283,11 +578,6 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 
 			return sb.ToString();
-		}
-
-		private string SheathOrBaseStr()
-		{
-			return hasSheath ? "sheath" : "base";
 		}
 
 		private string AllVaginasPlayerText()
@@ -366,28 +656,6 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 
 			return sb.ToString();
-		}
-
-		private string AllVaginasDesc(bool full)
-		{
-			if (_vaginas.Count == 0)
-			{
-				return "";
-			}
-			//If one, return normal cock descript
-			else if (_vaginas.Count == 1)
-			{
-				return _vaginas[0].ShortDescription();
-			}
-			else
-			{
-				bool mismatched = _vaginas.Exists(x => x.type != _vaginas[0].type);
-
-				string[] countOptions = mismatched ? mismatchedPairOptions : matchedPairOptions;
-				string description = mismatched ? Utils.RandomChoice(mismatchedDicksTextOptions) : _vaginas[0].ShortDescription(true);
-
-				return Utils.RandomChoice(countOptions) + AverageVagina().AdjectiveText(full) + description;
-			}
 		}
 
 		private string WetnessLoosenessText(PlayerBase player)
@@ -688,47 +956,6 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			}
 		}
 
-		private string BreastRowCountText(bool alternateFormat, bool withEven)
-		{
-			string evenStr = withEven ? (_breasts.Exists(x => x.cupSize != _breasts[0].cupSize) ? "uneven " : "even ") : "";
-			if (_breasts.Count <= 1)
-			{
-				if (alternateFormat) return "a pair of ";
-				else return "";
-			}
-			else if (_breasts.Count == 2)
-			{
-				return "two " + evenStr + "rows of ";
-			}
-			else if (_breasts.Count == 3)
-			{
-				return Utils.RandBool() ? "three " + evenStr + "rows of " : (!string.IsNullOrEmpty(evenStr) ? evenStr + ", " : "") + "multi-layered ";
-			}
-			else //if (creature.breasts.Count == 4)
-			{
-				return Utils.RandBool() ? "four " + evenStr + "rows of " : (!string.IsNullOrEmpty(evenStr) ? evenStr + ", " : "") + "four-tiered ";
-			}
-		}
-
-		private string ChestShortDesc(bool withArticle)
-		{
-			return (withArticle ? "a " : "") + "chest";
-		}
-
-		private string ChestDesc(bool withArticle, bool full)
-		{
-			string chest = withArticle ? "a flat chest" : "flat chest";
-			if (full)
-			{
-				return chest + " with " + NippleStrings.NippleSizeAdjective(_breasts[0].nipples.length) + " nipples";
-			}
-			else
-			{
-				return chest;
-			}
-		}
-
-
 		private string LactationSlowedDownDueToInactivity(bool becameOverFullThisPass, LactationStatus oldLevel)
 		{
 			int delta = oldLevel - lactationStatus;
@@ -767,4 +994,16 @@ descript += randomChoice("mutated cocks", "mutated dicks", "mixed cocks", "misma
 			return Environment.NewLine + "<b>Your " + breastRows[0].nipples.ShortDescription() + "s feel swollen and bloated, needing to be milked.</b>" + Environment.NewLine;
 		}
 	}
+
+	partial class GenitalsData : IGenitals
+	{
+		ReadOnlyCollection<CockData> IGenitals.cocks => this.cocks;
+
+		ReadOnlyCollection<VaginaData> IGenitals.vaginas => this.vaginas;
+
+		ReadOnlyCollection<BreastData> IGenitals.breasts => breasts;
+
+		bool IGenitals.hasSheath => this.hasSheath;
+	}
+
 }

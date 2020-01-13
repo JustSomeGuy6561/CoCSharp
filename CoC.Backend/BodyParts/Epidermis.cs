@@ -483,13 +483,16 @@ namespace CoC.Backend.BodyParts
 
 		public string JustColor(bool withArticle = false) => EpidermisType.JustColor(this, withArticle);
 
-		public string DescriptionWithColor() => EpidermisType.DescriptionWithColor(this);
+		public string DescriptionWithColor() => EpidermisType.DescriptionWithColor(this, out bool _);
+		public string DescriptionWithColor(out bool isPlural) => EpidermisType.DescriptionWithColor(this, out isPlural);
 
-		public string DescriptionWithTexture() => EpidermisType.DescriptionWithTexture(this);
+		public string DescriptionWithTexture() => EpidermisType.DescriptionWithTexture(this, out bool _);
+		public string DescriptionWithTexture(out bool isPlural) => EpidermisType.DescriptionWithTexture(this, out isPlural);
 
 		public string DescriptionWithoutType(bool withArticle = false) => EpidermisType.DescriptionWithoutType(this, withArticle);
 
-		public string LongDescription() => EpidermisType.LongDescription(this);
+		public string LongDescription() => EpidermisType.LongDescription(this, out bool _);
+		public string LongDescription(out bool isPlural) => EpidermisType.LongDescription(this, out isPlural);
 
 		public string AdjectiveDescription(bool withArticle = false) => type.AdjectiveDescription(withArticle);
 
@@ -502,6 +505,7 @@ namespace CoC.Backend.BodyParts
 		public string LongAdjectiveDescription(bool withArticle = false) => EpidermisType.LongAdjectiveDescription(this, withArticle);
 
 		public string DescriptionWith(bool noTexture = false, bool noColor = false) => EpidermisType.DescriptionWith(this, noTexture, noColor);
+		public string DescriptionWith(bool noTexture, bool noColor, out bool isPlural) => EpidermisType.DescriptionWith(this, noTexture, noColor, out isPlural);
 
 		public string AdjectiveWith(bool noTexture = false, bool noColor = false, bool withArticle = false) => EpidermisType.AdjectiveWith(this, noTexture, noColor, withArticle);
 
@@ -621,7 +625,7 @@ namespace CoC.Backend.BodyParts
 
 		private protected abstract bool ValidateData(FurColor fur, ref Tones tone, bool correctInvalidData);
 
-		public override int index => _index;
+		public override int id => _index;
 
 		public static readonly ToneBasedEpidermisType SKIN = new ToneBasedEpidermisType(SkinStr, PieceOfSkin, SkinAdjectiveStr, true, Tones.LIGHT);
 		public static readonly FurBasedEpidermisType FUR = new FurBasedEpidermisType(FurStr, PieceOfFur, FurAdjectiveStr, true, new FurColor(HairFurColors.BLACK));
@@ -860,13 +864,16 @@ namespace CoC.Backend.BodyParts
 
 		public string JustColor(bool withArticle = false) => EpidermisType.JustColor(this, withArticle);
 
-		public string DescriptionWithColor() => EpidermisType.DescriptionWithColor(this);
+		public string DescriptionWithColor() => EpidermisType.DescriptionWithColor(this, out bool _);
+		public string DescriptionWithColor(out bool isPlural) => EpidermisType.DescriptionWithColor(this, out isPlural);
 
-		public string DescriptionWithTexture() => EpidermisType.DescriptionWithTexture(this);
+		public string DescriptionWithTexture() => EpidermisType.DescriptionWithTexture(this, out bool _);
+		public string DescriptionWithTexture(out bool isPlural) => EpidermisType.DescriptionWithTexture(this, out isPlural);
 
 		public string DescriptionWithoutType(bool withArticle = false) => EpidermisType.DescriptionWithoutType(this, withArticle);
 
-		public string LongDescription() => EpidermisType.LongDescription(this);
+		public string LongDescription() => EpidermisType.LongDescription(this, out bool _);
+		public string LongDescription(out bool isPlural) => EpidermisType.LongDescription(this, out isPlural);
 
 		public string AdjectiveDescription(bool withArticle = false) => type.AdjectiveDescription(withArticle);
 
@@ -878,11 +885,10 @@ namespace CoC.Backend.BodyParts
 
 		public string LongAdjectiveDescription(bool withArticle = false) => EpidermisType.LongAdjectiveDescription(this, withArticle);
 
-
 		public string DescriptionWith(bool noTexture = false, bool noColor = false) => EpidermisType.DescriptionWith(this, noTexture, noColor);
+		public string DescriptionWith(bool noTexture, bool noColor, out bool isPlural) => EpidermisType.DescriptionWith(this, noTexture, noColor, out isPlural);
 
 		public string AdjectiveWith(bool noTexture = false, bool noColor = false, bool withArticle = false) => EpidermisType.AdjectiveWith(this, noTexture, noColor, withArticle);
-
 		public bool Equals(EpidermalData other)
 		{
 			return ReferenceEquals(this, other) || (!(other is null) && type == other.type && fur.Equals(other.fur) && furTexture == other.furTexture &&

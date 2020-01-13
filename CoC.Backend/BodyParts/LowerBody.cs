@@ -17,6 +17,82 @@ using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
+	public sealed partial class LowerBodyTattooLocation : TattooLocation
+	{
+
+		private static readonly List<LowerBodyTattooLocation> _allLocations = new List<LowerBodyTattooLocation>();
+
+		public static readonly ReadOnlyCollection<LowerBodyTattooLocation> allLocations;
+
+		private readonly byte index;
+
+		static LowerBodyTattooLocation()
+		{
+			allLocations = new ReadOnlyCollection<LowerBodyTattooLocation>(_allLocations);
+		}
+
+		private LowerBodyTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
+
+		public static LowerBodyTattooLocation LEFT_FOOT = new LowerBodyTattooLocation(0, SmallTattoosOnly, LeftFootButton, LeftFootLocation);
+		public static LowerBodyTattooLocation LEFT_ANKLE = new LowerBodyTattooLocation(1, SmallTattoosOnly, LeftAnkleButton, LeftAnkleLocation);
+		public static LowerBodyTattooLocation LEFT_OUTER_THIGH = new LowerBodyTattooLocation(2, MediumTattoosOrSmaller, LeftOuterThighButton, LeftOuterThighLocation);
+		public static LowerBodyTattooLocation LEFT_INNER_THIGH = new LowerBodyTattooLocation(3, MediumTattoosOrSmaller, LeftInnerThighButton, LeftInnerThighLocation);
+		public static LowerBodyTattooLocation LEFT_THIGH = new LowerBodyTattooLocation(4, MediumTattoosOrSmaller, LeftThighButton, LeftThighLocation);
+		public static LowerBodyTattooLocation LEFT_CALF = new LowerBodyTattooLocation(5, MediumTattoosOrSmaller, LeftCalfButton, LeftCalfLocation);
+		public static LowerBodyTattooLocation LEFT_FULL = new LowerBodyTattooLocation(6, FullPartTattoo, LeftFullButton, LeftFullLocation);
+
+		public static LowerBodyTattooLocation RIGHT_FOOT = new LowerBodyTattooLocation(7, SmallTattoosOnly, RightFootButton, RightFootLocation);
+		public static LowerBodyTattooLocation RIGHT_ANKLE = new LowerBodyTattooLocation(8, SmallTattoosOnly, RightAnkleButton, RightAnkleLocation);
+		public static LowerBodyTattooLocation RIGHT_OUTER_THIGH = new LowerBodyTattooLocation(9, MediumTattoosOrSmaller, RightOuterThighButton, RightOuterThighLocation);
+		public static LowerBodyTattooLocation RIGHT_INNER_THIGH = new LowerBodyTattooLocation(10, MediumTattoosOrSmaller, RightInnerThighButton, RightInnerThighLocation);
+		public static LowerBodyTattooLocation RIGHT_THIGH = new LowerBodyTattooLocation(11, MediumTattoosOrSmaller, RightThighButton, RightThighLocation);
+		public static LowerBodyTattooLocation RIGHT_CALF = new LowerBodyTattooLocation(12, MediumTattoosOrSmaller, RightCalfButton, RightCalfLocation);
+		public static LowerBodyTattooLocation RIGHT_FULL = new LowerBodyTattooLocation(13, FullPartTattoo, RightFullButton, RightFullLocation);
+
+		public static bool LocationsCompatible(LowerBodyTattooLocation first, LowerBodyTattooLocation second)
+		{
+			//thigh and inner thigh are incompatible.
+			//thigh and outer thigh are incompatible.
+			//inner and outer thigh are compatible.
+			//the remainder of these are compatible.run these checks accordingly.
+
+			//if one is left thigh.
+			if (first == LEFT_THIGH || second == LEFT_THIGH)
+			{
+				//check to see if other is left inner or left outer thigh.
+				LowerBodyTattooLocation other = (first == LEFT_THIGH) ? second : first;
+				return other != LEFT_INNER_THIGH && other != LEFT_OUTER_THIGH;
+			}
+			//ditto for right thigh.
+			else if (first == RIGHT_THIGH || second == RIGHT_THIGH)
+			{
+				LowerBodyTattooLocation other = (first == RIGHT_THIGH) ? second : first;
+				return other != RIGHT_INNER_THIGH && other != RIGHT_OUTER_THIGH;
+			}
+			//otherwise, we're good.s
+			else
+			{
+				return true;
+			}
+		}
+	}
+
+	public sealed class LowerBodyTattoo : TattooablePart<LowerBodyTattooLocation>
+	{
+		public LowerBodyTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		{
+		}
+
+		public override int MaxTattoos => LowerBodyTattooLocation.allLocations.Count;
+
+		public override IEnumerable<LowerBodyTattooLocation> availableLocations => LowerBodyTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(LowerBodyTattooLocation first, LowerBodyTattooLocation second) => LowerBodyTattooLocation.LocationsCompatible(first, second);
+	}
+
 	//data changed event will never fire.
 	public sealed partial class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType, LowerBodyData>, ICanAttackWith
 	{
@@ -59,10 +135,14 @@ namespace CoC.Backend.BodyParts
 		public bool isSextoped => legCount == SEXTOPED_LEG_COUNT;
 		public bool isOctoped => legCount == OCTOPED_LEG_COUNT;
 
+		public readonly LowerBodyTattoo tattoos;
+
 		internal LowerBody(Guid creatureID, LowerBodyType type) : base(creatureID)
 		{
 			_type = type ?? throw new ArgumentNullException(nameof(type));
 			feet = new Feet(creatureID, type.footType);
+
+			tattoos = new LowerBodyTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
 		internal LowerBody(Guid creatureID) : this(creatureID, LowerBodyType.defaultValue)
@@ -280,7 +360,7 @@ namespace CoC.Backend.BodyParts
 		internal virtual bool canAttackWith => attack != AttackBase.NO_ATTACK;
 		//internal abstract bool canAttackWith { get; }
 
-		public override int index => _index;
+		public override int id => _index;
 		private readonly int _index;
 
 

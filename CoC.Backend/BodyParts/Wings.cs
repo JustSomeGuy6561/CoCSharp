@@ -605,7 +605,7 @@ namespace CoC.Backend.BodyParts
 			return () => wingSingle(null);
 		}
 
-		public override int index => _index;
+		public override int id => _index;
 
 		internal static WingType Deserialize(int index)
 		{

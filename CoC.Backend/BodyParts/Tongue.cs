@@ -73,7 +73,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TonguePiercing : Piercing<TonguePiercingLocation>
 	{
-		public TonguePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public TonguePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -109,7 +109,7 @@ namespace CoC.Backend.BodyParts
 		{
 			type = tongueType ?? throw new ArgumentNullException(nameof(tongueType));
 
-			tonguePiercings = new TonguePiercing(TonguePiercingUnlocked, AllTonguePiercingsStr);
+			tonguePiercings = new TonguePiercing(TonguePiercingUnlocked, AllTonguePiercingsShort, AllTonguePiercingsLong);
 		}
 
 		public override TongueData AsReadOnlyData()
@@ -209,7 +209,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public bool longTongue => length >= 12;
-		public override int index => _index;
+		public override int id => _index;
 
 		internal static TongueType Deserialize(int index)
 		{

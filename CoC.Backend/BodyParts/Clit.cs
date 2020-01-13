@@ -81,7 +81,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class ClitPiercing : Piercing<ClitPiercingLocation>
 	{
-		public ClitPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public ClitPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -197,7 +197,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			_omnibusClit = isOmnibusClit;
-			clitPiercings = new ClitPiercing(PiercingLocationUnlocked, AllClitPiercingsStr);
+			clitPiercings = new ClitPiercing(PiercingLocationUnlocked, AllClitPiercingsShort, AllClitPiercingsLong);
 
 			_minClitSize = initialPerkData.MinClitSize;
 			minNewClitSize = initialPerkData.DefaultNewClitSize;

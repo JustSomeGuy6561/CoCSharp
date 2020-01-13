@@ -35,11 +35,14 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTailPiercingsStr(PlayerBase player)
+		private string AllTailPiercingsShort(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-
+		private string AllTailPiercingsLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 		public string OneTailShortDescription(string pronoun = "your")
 		{
 			if (tailCount == 0)

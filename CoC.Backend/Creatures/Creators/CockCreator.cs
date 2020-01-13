@@ -16,7 +16,7 @@ namespace CoC.Backend.Creatures
 		public float? length;
 		public float? girth;
 		public float? knot;
-		public readonly ReadOnlyDictionary<CockPiercings, PiercingJewelry> piercings;
+		public readonly ReadOnlyDictionary<CockPiercingLocation, PiercingJewelry> piercings;
 
 		public float validLength => length ?? Cock.DEFAULT_COCK_LENGTH;
 		public float validGirth => girth ?? Cock.DEFAULT_COCK_GIRTH;
@@ -38,15 +38,15 @@ namespace CoC.Backend.Creatures
 				}
 			}
 		}
-		public CockCreator(float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, Dictionary<CockPiercings, PiercingJewelry> cockJewelry = null)
+		public CockCreator(float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, Dictionary<CockPiercingLocation, PiercingJewelry> cockJewelry = null)
 			: this(CockType.HUMAN, cockLength, cockGirth, knotMultiplier, cockJewelry) { }
-		public CockCreator(CockType cockType, float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, Dictionary<CockPiercings, PiercingJewelry> cockJewelry = null)
+		public CockCreator(CockType cockType, float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, Dictionary<CockPiercingLocation, PiercingJewelry> cockJewelry = null)
 		{
 			type = cockType;
 			length = cockLength;
 			girth = cockGirth;
 			knot = knotMultiplier;
-			piercings = cockJewelry == null ? null : new ReadOnlyDictionary<CockPiercings, PiercingJewelry>(cockJewelry);
+			piercings = cockJewelry == null ? null : new ReadOnlyDictionary<CockPiercingLocation, PiercingJewelry>(cockJewelry);
 		}
 	}
 }

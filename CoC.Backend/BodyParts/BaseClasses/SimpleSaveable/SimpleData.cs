@@ -6,11 +6,11 @@ namespace CoC.Backend.BodyParts
 {
 	public abstract class SimpleData
 	{
-		public readonly Guid CreatureID;
+		public readonly Guid creatureID;
 
 		protected SimpleData(Guid creatureID)
 		{
-			CreatureID = creatureID;
+			this.creatureID = creatureID;
 		}
 	}
 }

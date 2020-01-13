@@ -101,7 +101,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 		protected readonly int _index;
-		public override int index => _index;
+		public override int id => _index;
 
 		public static readonly GillType NONE = new GillType(NoneDesc, NoneSingleDesc, NoneLongDesc, NonePlayerStr, NoneTransformStr, NoneRestoreStr);
 

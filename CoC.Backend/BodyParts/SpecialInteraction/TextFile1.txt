@@ -7,9 +7,7 @@ Common Behavior:
 
 Body parts define places for a tattoo/piercing via an enum.
 
-A single tattoo or a single pierce of jewelry can be used in multiple of these locations, but generally is limited to just one. what happens when they are updated is unique for piercings and tattoos.
-
-A single place for a tattoo/piercing can only have one tattoo or piercing there.
+A single place for a tattoo/piercing can only have one tattoo or piercing there. Tattoos cannot exist in more than one location at once; piercing jewelry _MAY_ (but makes life complicated). More on this below.
 
 Any place for a tattoo or piercing may limit exactly what is there. For piercings, a piercing may limit what type of jewelry is allowed there, so you can't put a big-ass hoop in your tongue, for example. For tattoos, a location may limit the size of the tattoo, so you can't put 'The Mona Lisa' on your wrist, for example.
 
@@ -18,13 +16,15 @@ A tattoo or piece of piercing jewelry may further limit where they can be placed
 Each has an event system attached for when a tattoo or piercing is removed, added, or replaced.
 
 Both are required to explain themselves, but only for the player. It may be possible (and helpful) to generalize this for all creatures, using different pronouns, but this is not expressly required. (Note: if you do, maybe take a Gender a plural bool, and bool for if to include the player. (you = player && !plural. he/she/it = !player && !plural && gender, etc.)
-Since it may possible for a tattoo or piercing jewelry to cover multiple locations, it's recommended that you go in logic order, but check to see if the equipped tattoo or piercing is used elsewhere, and describe that one too. when that one comes up later, it can (and probably should) be skipped over.
+
+The flexibility of multiple tattoos/piercings per body part also makes this far more complicated than the vanilla game. An 'advanced piercings and tattoos' gameplay setting lets you toggle on or off the more detailed options - when off, only one option is allowed per piercing/tattoo group, and it functions nearly identically to the original. When in advanced mode, additional menus allow for more unique and varied piercings, though of course this does make it slightly less user-friendly. Note this only applies to User-Interaction; it does not apply to existing tattoos the player or any NPC has, nor does it prevent advanced tattoos/piercings from being granted via items, transformations, or NPC interactions.
 
 Tattoo Exclusive:
 
 Tattoos are magic - we can remove them or add them or replace them and not have to worry about the physical costs of doing so - when it's removed, it's as if it wasn't there; when it's replaced, no evidence of the previous tattoo remains. Additionally, they exist, regardless of the epidermis type they are applied to. so you don't need to worry if the tattoo is applied to goo or skin or fur or whatever - it's just there. You may, however, decide to describe it differently based on this epidermis type, if you want.
 
-As noted above, it's possible for a tattoo to cover more than one location of a body part. When part of a tattoo is removed or replaced, the entire thing is removed. A notable exception is the optional 'full' tattoos, which cover the entire part. only one of these should exist per body part, and it's possible for a body part to have none at all.
+As noted above, it's not possible for a tattoo to take up multiple slots - i tried to support this (via a one-many relationship), but it was nearly impossible to describe these tattoos cleanly. As an alternative, tattoo locations can overlap, or in some cases, act as a combination between two other locations. For example, the 'Tramp Stamp' functions like a combination between left and right lower back tattoos. You cannot have overlapping tattoos simultaneously; forcibly adding a tattoo at a location will remove all conflicting tattoos. This lets us simulate multiple-slot tattoos by simply using another slot that combines them, and have unique flavor text for these 'combined' tattoo locations.
+For the most part, i've tried to make tattoo slots not overlap, even when you could make the argument they should. feel free to alter these as needed.
 
 Piercings:
 
@@ -33,6 +33,8 @@ a body part can be pierced, but not have any jewelry in it. By default, piercing
 the current design is to allow jewelry to be removed or replaced, just like normal clothing or accessories. This means if you have the jewelry, you can change piercings as you see fit, unless the jewelry is "seamless", noted below:
 
 some jewelry can be marked as "seamless". seamless jewelry cannot be removed via natural means, though of course if it is attached to a body part that no longer exists, it obviously is removed. Additionally, it may be possible for seamless jewelry to be removed or replaced via certain interactions (Ceraph, Yara, notably), if implemented as such.
+
+some jewelry CAN use multiple piercing slots at once. Nipple Chains and industrial bars (in the ear) are notable examples of this. all piercing texts should therefore check the piercing jewelry to see if it is connected to multiple piercing slots, and omit any additional slots that have already been described. this requires storing either a hashset, linked list, or bitflag for the various locations and removing them as they are described. Like i noted earlier, not ideal, but that's the price you pay for flexibility, i guess. NGL, i've really tried to remove this, but can't think of a good way to do so. My recommendation is to take something that already exists and just copy-paste it and alter it to fit the current body part.
 
 The piercing revamp means some piercings are far more exotic than vanilla. if you don't like that, you can turn it off via a fetish setting.
 

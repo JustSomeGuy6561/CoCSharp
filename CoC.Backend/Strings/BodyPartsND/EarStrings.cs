@@ -228,7 +228,12 @@ namespace CoC.Backend.BodyParts
 			return "Ears";
 		}
 
-		private string AllEarPiercingsStr(PlayerBase player)
+		private string AllEarPiercingsShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllEarPiercingsLong(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

@@ -61,7 +61,12 @@ namespace CoC.Backend.BodyParts
 	}
 	public sealed partial class Nipples : INipple
 	{
-		private string AllNipplePiercingsStr(PlayerBase player)
+		private string AllNipplePiercingsShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllNipplePiercingsLong(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

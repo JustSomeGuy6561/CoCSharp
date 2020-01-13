@@ -101,7 +101,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NipplePiercing : Piercing<NipplePiercingLocation>
 	{
-		public NipplePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public NipplePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -199,7 +199,7 @@ namespace CoC.Backend.BodyParts
 
 			length = initialPerkData.NewNippleDefaultLength;
 
-			nipplePiercing = new NipplePiercing(PiercingLocationUnlocked, AllNipplePiercingsStr);
+			nipplePiercing = new NipplePiercing(PiercingLocationUnlocked, AllNipplePiercingsShort, AllNipplePiercingsLong);
 
 			//SetupPiercingMagic();
 
@@ -214,7 +214,7 @@ namespace CoC.Backend.BodyParts
 
 			length = nippleLength;
 
-			nipplePiercing = new NipplePiercing(PiercingLocationUnlocked, AllNipplePiercingsStr);
+			nipplePiercing = new NipplePiercing(PiercingLocationUnlocked, AllNipplePiercingsShort, AllNipplePiercingsLong);
 
 			//SetupPiercingMagic();
 

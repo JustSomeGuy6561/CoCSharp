@@ -2,6 +2,7 @@
 //Description: Implements the strings for the arm and armtype. separation of concerns.
 //Author: JustSomeGuy
 //1/18/2019, 9:30 PM
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System.Text;
 
@@ -23,11 +24,41 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	public partial class ButtTattooLocation
+	{
+		private static string LeftCheekButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftCheekLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightCheekButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightCheekLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
 	public partial class Butt
 	{
 		public static string Name()
 		{
 			return "Butt";
+		}
+
+		private string AllTattoosShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllTattoosLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 	}
 

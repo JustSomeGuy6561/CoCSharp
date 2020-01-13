@@ -15,7 +15,7 @@ namespace CoC
 {
 	//default operators not in c#. idk why. i'm tired of rewriting this shit.
 
-	//NOTE: these also have the benefit of being overflow and underflow safe. 
+	//NOTE: these also have the benefit of being overflow and underflow safe.
 	//by default, unsigned variables in c# wrap when going beyond their bounds.
 	//the backend is checked in debug mode. try to bulletproof the backend as much as possible - it's not a front end dev's job to correct the backend shit
 	//just as much as it's not your (backend dev) job to correct theirs. If they break something in the frontend, that's on them for not running tests. if it's the backend's fault, everyone's fucked.
@@ -26,8 +26,8 @@ namespace CoC
 		//add: a+b. result is the same type as the source. does not overflow.
 		//sub: a-b. result is the same type as the source. does not overflow.
 		//diff: abs(a-b). if a is signed, returns unsigned equivalent. otherwise, returns original type.
-		//delta a-b. result is a type ranging from type.MinValue - type.MaxValue to type.MaxValue - type.MinValue. i.e. byte.delta(byte) is short. 
-		//offset a+b. a is unsigned. b is signed. result is the same type as a. 
+		//delta a-b. result is a type ranging from type.MinValue - type.MaxValue to type.MaxValue - type.MinValue. i.e. byte.delta(byte) is short.
+		//offset a+b. a is unsigned. b is signed. result is the same type as a.
 
 		public static byte add(this byte first, byte second)
 		{
@@ -288,6 +288,24 @@ namespace CoC
 
 	public static class CollectionHelpers
 	{
+		public static bool IsNullOrEmpty<T>(IEnumerable<T> collection)
+		{
+			//true or null (null is true)
+			return collection?.IsEmpty() != false;
+		}
+
+		public static bool IsEmpty<T>(this IEnumerable<T> collection)
+		{
+			bool retVal;
+
+			using (IEnumerator<T> item = collection.GetEnumerator())
+			{
+				retVal = !item.MoveNext();
+			}
+
+			return retVal;
+		}
+
 		public static void ForEach<T>(this ReadOnlyCollection<T> collection, Action<T> callback)
 		{
 			foreach (T item in collection)
@@ -306,7 +324,7 @@ namespace CoC
 
 		public static T MaxItem<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : IComparable<U>
 		{
-			if (collection is null || collection.Count() == 0)
+			if (IsNullOrEmpty(collection))
 			{
 				return default;
 			}
@@ -320,7 +338,7 @@ namespace CoC
 
 		public static T MinItem<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : IComparable<U>
 		{
-			if (collection is null || collection.Count() == 0)
+			if (IsNullOrEmpty(collection))
 			{
 				return default;
 			}
@@ -332,9 +350,65 @@ namespace CoC
 			});
 		}
 
+		public static bool All<T>(this IEnumerable<T> collection, Func<T, int, bool> checkWithIndex)
+		{
+			if (collection is null)
+			{
+				return false;
+			}
+			if (checkWithIndex is null) throw new ArgumentNullException(nameof(checkWithIndex));
+
+
+			var enumerator = collection.GetEnumerator();
+			if (!enumerator.MoveNext())
+			{
+				return false;
+			}
+			int x = 0;
+			do
+			{
+				if (!checkWithIndex(enumerator.Current, x))
+				{
+					return false;
+				}
+				x++;
+			}
+			while (enumerator.MoveNext());
+
+			return true;
+		}
+
+		public static bool Any<T>(this IEnumerable<T> collection, Func<T, int, bool> checkWithIndex)
+		{
+			if (collection is null)
+			{
+				return false;
+			}
+			if (checkWithIndex is null) throw new ArgumentNullException(nameof(checkWithIndex));
+
+
+			var enumerator = collection.GetEnumerator();
+			if (!enumerator.MoveNext())
+			{
+				return false;
+			}
+			int x = 0;
+			do
+			{
+				if (checkWithIndex(enumerator.Current, x))
+				{
+					return true;
+				}
+				x++;
+			}
+			while (enumerator.MoveNext());
+
+			return false;
+		}
+
 		public static T MinItem<T, U>(this IEnumerable<T> collection, Func<T, U?> getValue) where U : struct, IComparable<U>
 		{
-			if (collection is null || collection.Count() == 0)
+			if (IsNullOrEmpty(collection))
 			{
 				return default;
 			}
@@ -395,5 +469,12 @@ namespace CoC
 			return count;
 
 		}
+
+		public static U GetItemClean<T, U>(this IDictionary<T, U> dictionary, T location)
+		{
+			dictionary.TryGetValue(location, out U retVal);
+			return retVal;
+		}
 	}
+
 }

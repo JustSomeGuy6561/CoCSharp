@@ -70,7 +70,7 @@ namespace CoC.Backend.BodyParts
 
 		public float LargestNippleSize()
 		{
-			if (nipples.Count == 0)
+			if (nipples.IsEmpty())
 			{
 				return 0;
 			}
@@ -79,7 +79,7 @@ namespace CoC.Backend.BodyParts
 
 		public Nipples LargestNipples()
 		{
-			if (_breasts.Count == 0)
+			if (nipples.IsEmpty())
 			{
 				return null;
 			}
@@ -88,7 +88,7 @@ namespace CoC.Backend.BodyParts
 
 		public float SmallestNippleSize()
 		{
-			if (nipples.Count == 0)
+			if (nipples.IsEmpty())
 			{
 				return 0;
 			}
@@ -97,7 +97,7 @@ namespace CoC.Backend.BodyParts
 
 		public Nipples SmallestNipples()
 		{
-			if (_breasts.Count == 0)
+			if (nipples.IsEmpty())
 			{
 				return null;
 			}
@@ -106,7 +106,7 @@ namespace CoC.Backend.BodyParts
 
 		public float AverageNippleSize()
 		{
-			if (_breasts.Count == 0)
+			if (nipples.IsEmpty())
 			{
 				return 0;
 			}
@@ -115,7 +115,7 @@ namespace CoC.Backend.BodyParts
 
 		public NippleData AverageNipple()
 		{
-			if (_breasts.Count == 0)
+			if (nipples.IsEmpty())
 			{
 				return null;
 			}
@@ -170,5 +170,84 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 #warning Add a means of preventing lactation decrease due to pregnancy that doesn't require pregnancy set the perk value.
+	}
+
+	public partial class GenitalsData
+	{
+		#region Public Nipple Related Members
+		public readonly bool blackNipples;
+		public readonly bool quadNipples;
+
+		public readonly NippleStatus nippleType;
+
+		public readonly bool unlockedDickNipples;
+		#endregion
+
+		public int nippleCount => numBreasts * (quadNipples ? 4 : 1);
+
+		public readonly uint nippleFuckCount;
+		public readonly uint dickNippleSexCount;
+
+		public readonly uint nippleOrgasmCount;
+		public readonly uint nippleDryOrgasmCount;
+
+		#region Nipple Aggregate Functions
+
+		public float LargestNippleSize()
+		{
+			if (nipples.IsEmpty())
+			{
+				return 0;
+			}
+			return nipples.Max(x => x.length);
+		}
+
+		public NippleData LargestNipples()
+		{
+			if (nipples.IsEmpty())
+			{
+				return null;
+			}
+			return nipples.MaxItem(x => x.length);
+		}
+
+		public float SmallestNippleSize()
+		{
+			if (nipples.IsEmpty())
+			{
+				return 0;
+			}
+			return nipples.Min(x => x.length);
+		}
+
+		public NippleData SmallestNipples()
+		{
+			if (nipples.IsEmpty())
+			{
+				return null;
+			}
+			return nipples.MinItem(x => x.length);
+		}
+
+		public float AverageNippleSize()
+		{
+			if (nipples.IsEmpty())
+			{
+				return 0;
+			}
+			return nipples.Average(x => x.length);
+		}
+
+		public NippleData AverageNipple()
+		{
+			if (nipples.IsEmpty())
+			{
+				return null;
+			}
+
+			return new NippleData(creatureID, AverageNippleSize(), -1, lactationRate, quadNipples, blackNipples, nippleType, null, relativeLust);
+		}
+
+		#endregion
 	}
 }

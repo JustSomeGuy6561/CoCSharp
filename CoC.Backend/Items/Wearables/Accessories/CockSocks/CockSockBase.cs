@@ -9,9 +9,9 @@ namespace CoC.Backend.Items.Wearables.Accessories.CockSocks
 {
 	public abstract class CockSockBase : WearableItemBase<CockSockBase>
 	{
-		protected CockSockBase(SimpleDescriptor shortName, SimpleDescriptor fullName, SimpleDescriptor description) : base(shortName, fullName, description)
-		{
-		}
+		protected CockSockBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
+			: base(abbreviate, itemName, shortDesc, appearance)
+		{}
 
 		protected override bool CanWearWithBodyData(Creature creature, out string whyNot)
 		{

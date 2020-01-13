@@ -93,6 +93,82 @@ namespace CoC.Backend.BodyParts
 	//	return "bottom of your belly button";
 	//}
 
+	public partial class BodyTattooLocation
+	{
+		private static string LeftShoulderbladeButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftShoulderbladeLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftRibsButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftRibsLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftLowerStomachButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftLowerStomachLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightShoulderbladeButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightShoulderbladeLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightRibsButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightRibsLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightLowerStomachButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightLowerStomachLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string NavelButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string NavelLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string CoreButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string CoreLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FullButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FullLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
 	public partial class Body
 	{
 		public static string Name()
@@ -100,17 +176,33 @@ namespace CoC.Backend.BodyParts
 			return "Body";
 		}
 
-		private string AllNavelPiercingsStr(PlayerBase player)
+		private string AllNavelPiercingsShort(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-
-		private string AllHipPiercingsStr(PlayerBase player)
+		private string AllNavelPiercingsLong(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-
+		private string AllHipPiercingsShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private string AllHipPiercingsLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 		private string HipPiercingsRequirePiercingFetish()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllTattoosShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllTattoosLong(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -196,7 +288,7 @@ namespace CoC.Backend.BodyParts
 
 		protected static string GenericPostDesc(Body body)
 		{
-			return body.FullDescription(true);
+			return body.LongDescription(true);
 		}
 		#endregion
 
@@ -731,7 +823,7 @@ namespace CoC.Backend.BodyParts
 			{
 				sb.Append(" Patches of " + player.body.supplementaryEpidermis.JustColor() + "fur begin to grow in some areas along your body, giving you an alluring, exotic look.");
 			}
-			sb.Append("You now have " + SafelyFormattedString.FormattedText(player.body.FullDescription(true), StringFormats.BOLD));
+			sb.Append("You now have " + SafelyFormattedString.FormattedText(player.body.LongDescription(true), StringFormats.BOLD));
 
 			return sb.ToString();
 		}

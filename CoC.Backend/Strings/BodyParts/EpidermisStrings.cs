@@ -10,9 +10,9 @@ namespace CoC.Backend.BodyParts
 {
 	public static class EpidermisHelper
 	{
-		public static string AsString(this FurTexture furTexture, bool withArticle = false)
+		public static string AsString(this FurTexture furTexture, bool singularFormat = false)
 		{
-			if (!withArticle)
+			if (!singularFormat)
 			{
 				switch (furTexture)
 				{
@@ -38,9 +38,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public static string AsString(this SkinTexture skinTexture, bool withArticle = false)
+		public static string AsString(this SkinTexture skinTexture, bool singularFormat = false)
 		{
-			if (!withArticle)
+			if (!singularFormat)
 			{
 				switch (skinTexture)
 				{
@@ -79,9 +79,9 @@ namespace CoC.Backend.BodyParts
 
 	public partial class EpidermisType
 	{
-		private static string ArticleText(bool withArticle, bool startsWitVowel)
+		private static string ArticleText(bool singularFormat, bool startsWitVowel)
 		{
-			if (!withArticle)
+			if (!singularFormat)
 			{
 				return "";
 			}
@@ -90,75 +90,63 @@ namespace CoC.Backend.BodyParts
 				return GlobalStrings.Article(startsWitVowel);
 			}
 		}
+
 		#region Common Epidermis Related Strings
-		internal static string JustTexture(IEpidermis epidermis, bool withArticle = false)
+		internal static string JustTexture(IEpidermis epidermis, bool singularFormat = false)
 		{
 			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return epidermis.skinTexture.AsString(withArticle);
-			else return epidermis.furTexture.AsString(withArticle);
+			else if (epidermis.epidermisType.usesTone) return epidermis.skinTexture.AsString(singularFormat);
+			else return epidermis.furTexture.AsString(singularFormat);
 		}
 
-		internal static string JustColor(IEpidermis epidermis, bool withArticle = false)
+		internal static string JustColor(IEpidermis epidermis, bool singularFormat = false)
 		{
 			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return epidermis.tone.AsString(withArticle);
-			else return epidermis.furColor.AsString(withArticle);
+			else if (epidermis.epidermisType.usesTone) return epidermis.tone.AsString(singularFormat);
+			else return epidermis.furColor.AsString(singularFormat);
 		}
 
-		internal static string DescriptionWithColor(IEpidermis epidermis)
+		internal static string DescriptionWithColor(IEpidermis epidermis, out bool isPlural)
+		{
+			return ColoredStr(epidermis, false, false, out isPlural);
+		}
+
+		internal static string DescriptionWithTexture(IEpidermis epidermis, out bool isPlural)
+		{
+			return TexturedStr(epidermis, false, false, out isPlural);
+		}
+
+		internal static string DescriptionWithoutType(IEpidermis epidermis, bool singularFormat)
 		{
 			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return ColoredStr(epidermis.tone, epidermis.epidermisType.ShortDescription(), false);
-			else return ColoredStr(epidermis.furColor, epidermis.epidermisType.ShortDescription(), false);
+			else if (epidermis.epidermisType.usesTone) return epidermis.skinTexture.AsString(singularFormat) + epidermis.tone.AsString();
+			else return epidermis.furTexture.AsString(singularFormat) + epidermis.furColor.AsString();
 		}
 
-		internal static string DescriptionWithTexture(IEpidermis epidermis)
+		internal static string LongDescription(IEpidermis epidermis, out bool isPlural)
 		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return TexturedStr(epidermis.skinTexture, epidermis.epidermisType.ShortDescription(), false);
-			else return TexturedStr(epidermis.furTexture, epidermis.epidermisType.ShortDescription(), false);
+			return fullStr(epidermis, false, false, out isPlural);
 		}
 
-		internal static string DescriptionWithoutType(IEpidermis epidermis, bool withArticle)
+		internal static string AdjectiveWithColor(IEpidermis epidermis, bool singularFormat)
 		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return epidermis.skinTexture.AsString(withArticle) + epidermis.tone.AsString();
-			else return epidermis.furTexture.AsString(withArticle) + epidermis.furColor.AsString();
+			return ColoredStr(epidermis, singularFormat, true, out bool _);
 		}
 
-		internal static string LongDescription(IEpidermis epidermis)
+		internal static string AdjectiveWithTexture(IEpidermis epidermis, bool singularFormat)
 		{
-			if (epidermis.epidermisType == EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return fullStr(epidermis.skinTexture.AsString(), epidermis.tone, epidermis.epidermisType.ShortDescription());
-			else return fullStr(epidermis.furTexture.AsString(), epidermis.furColor, epidermis.epidermisType.ShortDescription());
+			return TexturedStr(epidermis, singularFormat, true, out bool _);
 		}
 
-		internal static string AdjectiveWithColor(IEpidermis epidermis, bool withArticle)
-		{
-
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return ColoredStr(epidermis.tone, epidermis.epidermisType.AdjectiveDescription(), withArticle, true);
-			else return ColoredStr(epidermis.furColor, epidermis.epidermisType.AdjectiveDescription(), withArticle, true);
-		}
-
-		internal static string AdjectiveWithTexture(IEpidermis epidermis, bool withArticle)
-		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return TexturedStr(epidermis.skinTexture, epidermis.epidermisType.AdjectiveDescription(), withArticle, true);
-			else return TexturedStr(epidermis.furTexture, epidermis.epidermisType.AdjectiveDescription(), withArticle, true);
-		}
-
-		internal static string AdjectiveDescriptionWithoutType(IEpidermis epidermis, bool withArticle)
+		internal static string AdjectiveDescriptionWithoutType(IEpidermis epidermis, bool singularFormat)
 		{
 			//identical, afaik.
-			return DescriptionWithoutType(epidermis, withArticle);
+			return DescriptionWithoutType(epidermis, singularFormat);
 		}
 
-		internal static string LongAdjectiveDescription(IEpidermis epidermis, bool withArticle)
+		internal static string LongAdjectiveDescription(IEpidermis epidermis, bool singularFormat)
 		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return fullStr(epidermis.skinTexture.AsString(withArticle), epidermis.tone, epidermis.epidermisType.AdjectiveDescription(false), true);
-			else return fullStr(epidermis.furTexture.AsString(withArticle), epidermis.furColor, epidermis.epidermisType.AdjectiveDescription(false), true);
+			return fullStr(epidermis, singularFormat, true, out bool _);
 		}
 
 
@@ -171,73 +159,125 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (noTexture)
 			{
-				return DescriptionWithColor(epidermis);
+				return DescriptionWithColor(epidermis, out bool _);
 			}
 			else if (noColor)
 			{
-				return DescriptionWithTexture(epidermis);
+				return DescriptionWithTexture(epidermis, out bool _);
 			}
 			else
 			{
-				return LongDescription(epidermis);
+				return LongDescription(epidermis, out bool _);
 			}
 		}
 
-		internal static string AdjectiveWith(IEpidermis epidermis, bool noTexture = false, bool noColor = false, bool withArticle = false)
+		internal static string DescriptionWith(IEpidermis epidermis, bool noTexture, bool noColor, out bool isPlural)
+		{
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				isPlural = false;
+				return "";
+			}
+			else if (noTexture && noColor)
+			{
+				return epidermis.epidermisType.ShortDescription(out isPlural);
+			}
+			else if (noTexture)
+			{
+				return DescriptionWithColor(epidermis, out isPlural);
+			}
+			else if (noColor)
+			{
+				return DescriptionWithTexture(epidermis, out isPlural);
+			}
+			else
+			{
+				return LongDescription(epidermis, out isPlural);
+			}
+		}
+
+		internal static string AdjectiveWith(IEpidermis epidermis, bool noTexture = false, bool noColor = false, bool singularFormat = false)
 		{
 			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
 			else if (noTexture && noColor)
 			{
-				return epidermis.epidermisType.AdjectiveDescription(withArticle);
+				return epidermis.epidermisType.AdjectiveDescription(singularFormat);
 			}
 			else if (noTexture)
 			{
-				return AdjectiveWithColor(epidermis, withArticle);
+				return AdjectiveWithColor(epidermis, singularFormat);
 			}
 			else if (noColor)
 			{
-				return AdjectiveWithTexture(epidermis, withArticle);
+				return AdjectiveWithTexture(epidermis, singularFormat);
 			}
 			else
 			{
-				return LongAdjectiveDescription(epidermis, withArticle);
+				return LongAdjectiveDescription(epidermis, singularFormat);
 			}
 		}
 		#endregion
 		#region Helpers
-		private static string fullStr(string adj, Tones tone, string descriptor, bool commaBeforeDescriptor = false)
+
+		private static string fullStr(IEpidermis epidermis, bool singularFormat, bool adjectiveDesc, out bool isPlural)
 		{
-			string preDesc = commaBeforeDescriptor ? ", " : " ";
-			return adj + (string.IsNullOrWhiteSpace(adj) ? "" : " ") + tone.AsString() + preDesc + descriptor;
+			string preDesc = adjectiveDesc ? ", " : " ";
+
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				isPlural = false;
+				return "";
+			}
+			else if (epidermis.epidermisType.usesFurColor)
+			{
+				string adj = epidermis.furTexture.AsString(singularFormat);
+				return adj + (string.IsNullOrWhiteSpace(adj) ? "" : preDesc) + epidermis.furColor.AsString() + preDesc + epidermis.epidermisType.ShortDescription(out isPlural);
+			}
+			else
+			{
+				string adj = epidermis.skinTexture.AsString(singularFormat);
+				return adj + (string.IsNullOrWhiteSpace(adj) ? "" : preDesc) + epidermis.tone.AsString() + preDesc + epidermis.epidermisType.ShortDescription(out isPlural);
+			}
 		}
 
-		private static string fullStr(string adj, FurColor fur, string descriptor, bool commaBeforeDescriptor = false)
+		private static string ColoredStr(IEpidermis epidermis, bool singularFormat, bool adjectiveDesc, out bool isPlural)
 		{
-			string preDesc = commaBeforeDescriptor ? ", " : " ";
-			return adj + (string.IsNullOrWhiteSpace(adj) ? "" : " ") + fur.AsString() + preDesc + descriptor;
+			string preDesc = adjectiveDesc ? ", " : " ";
+
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				isPlural = false;
+				return "";
+			}
+			else if (epidermis.epidermisType.usesFurColor)
+			{
+				return epidermis.furColor.AsString(singularFormat) + preDesc + epidermis.epidermisType.ShortDescription(out isPlural);
+			}
+			else
+			{
+				return epidermis.tone.AsString(singularFormat) + preDesc + epidermis.epidermisType.ShortDescription(out isPlural);
+			}
 		}
 
+		private static string TexturedStr(IEpidermis epidermis, bool singularFormat, bool adjectiveDesc, out bool isPlural)
+		{
+			string preDesc = adjectiveDesc ? ", " : " ";
 
-		private static string ColoredStr(FurColor color, string descriptor, bool withArticle, bool commaBeforeDescriptor = false)
-		{
-			string preDesc = commaBeforeDescriptor ? ", " : " ";
-			return color.AsString(withArticle) + " " + descriptor;
-		}
-		private static string ColoredStr(Tones color, string descriptor, bool withArticle, bool commaBeforeDescriptor = false)
-		{
-			string preDesc = commaBeforeDescriptor ? ", " : " ";
-			return color.AsString(withArticle) + " " + descriptor;
-		}
-
-		private static string TexturedStr(FurTexture texture, string descriptor, bool withArticle, bool commaBeforeDescriptor = false)
-		{
-			string preDesc = commaBeforeDescriptor ? ", " : " ";
-			return texture.AsString(withArticle) + " " + descriptor;
-		}
-		private static string TexturedStr(SkinTexture texture, string descriptor, bool withArticle, bool commaBeforeDescriptor = false)
-		{
-			string preDesc = commaBeforeDescriptor ? ", " : " ";
-			return texture.AsString(withArticle) + " " + descriptor;
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				isPlural = false;
+				return "";
+			}
+			else if (epidermis.epidermisType.usesFurColor)
+			{
+				string adj = epidermis.furTexture.AsString(singularFormat);
+				return adj + (string.IsNullOrWhiteSpace(adj) ? "" : preDesc) + epidermis.epidermisType.ShortDescription(out isPlural);
+			}
+			else
+			{
+				string adj = epidermis.skinTexture.AsString(singularFormat);
+				return adj + (string.IsNullOrWhiteSpace(adj) ? "" : preDesc) + epidermis.epidermisType.ShortDescription(out isPlural);
+			}
 		}
 		#endregion
 
@@ -252,7 +292,7 @@ namespace CoC.Backend.BodyParts
 			return "";
 		}
 
-		protected static string NothingAdjectiveStr(bool withArticle)
+		protected static string NothingAdjectiveStr(bool singularFormat)
 		{
 			return "";
 		}
@@ -268,9 +308,9 @@ namespace CoC.Backend.BodyParts
 			return "a bit of skin";
 		}
 
-		private static string SkinAdjectiveStr(bool withArticle)
+		private static string SkinAdjectiveStr(bool singularFormat)
 		{
-			return ArticleText(withArticle, false) + "standard";
+			return ArticleText(singularFormat, false) + "standard";
 		}
 
 
@@ -285,9 +325,9 @@ namespace CoC.Backend.BodyParts
 			return "a few scales";
 		}
 
-		private static string ScalesAdjectiveStr(bool withArticle)
+		private static string ScalesAdjectiveStr(bool singularFormat)
 		{
-			return ArticleText(withArticle, false) + "scaly";
+			return ArticleText(singularFormat, false) + "scaly";
 		}
 
 
@@ -302,9 +342,9 @@ namespace CoC.Backend.BodyParts
 			return "a few feathers";
 		}
 
-		private static string FeathersAdjectiveStr(bool withArticle)
+		private static string FeathersAdjectiveStr(bool singularFormat)
 		{
-			return ArticleText(withArticle, false) + "feathery";
+			return ArticleText(singularFormat, false) + "feathery";
 		}
 
 
@@ -319,9 +359,9 @@ namespace CoC.Backend.BodyParts
 			return "a tuft of fur";
 		}
 
-		private static string FurAdjectiveStr(bool withArticle)
+		private static string FurAdjectiveStr(bool singularFormat)
 		{
-			return ArticleText(withArticle, false) + "furry";
+			return ArticleText(singularFormat, false) + "furry";
 		}
 
 
@@ -337,9 +377,9 @@ namespace CoC.Backend.BodyParts
 			return "a pierce of carapace";
 		}
 
-		private static string CarapaceAdjectiveStr(bool withArticle)
+		private static string CarapaceAdjectiveStr(bool singularFormat)
 		{
-			return ArticleText(withArticle, false) + "carapace-covered";
+			return ArticleText(singularFormat, false) + "carapace-covered";
 		}
 
 
@@ -354,7 +394,7 @@ namespace CoC.Backend.BodyParts
 			return "a bit of goo";
 		}
 
-		private static string GooAdjectiveStr(bool withArticle)
+		private static string GooAdjectiveStr(bool singularFormat)
 		{
 			return "gooey";
 		}
@@ -370,9 +410,9 @@ namespace CoC.Backend.BodyParts
 			return "a bit of wool";
 		}
 
-		private static string WoolAdjectiveStr(bool withArticle)
+		private static string WoolAdjectiveStr(bool singularFormat)
 		{
-			return ArticleText(withArticle, false) + "woolen";
+			return ArticleText(singularFormat, false) + "woolen";
 		}
 
 		private static string BarkStr(out bool isPlural)
@@ -386,9 +426,9 @@ namespace CoC.Backend.BodyParts
 			return "some bark";
 		}
 
-		private static string BarkAdjectiveStr(bool withArticle)
+		private static string BarkAdjectiveStr(bool singularFormat)
 		{
-			return ArticleText(withArticle, false) + "bark-covered";
+			return ArticleText(singularFormat, false) + "bark-covered";
 		}
 	}
 

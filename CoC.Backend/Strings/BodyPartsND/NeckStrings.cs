@@ -11,11 +11,57 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class NeckTattooLocation
+	{
+		private static string FrontButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FrontLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string BackButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string BackLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
 	public partial class Neck
 	{
 		public static string Name()
 		{
 			return "Neck";
+		}
+
+		private string AllTattoosShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllTattoosLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 	}
 

@@ -61,12 +61,12 @@ namespace CoC.Backend.BodyParts
 			return index.GetHashCode();
 		}
 
-		public static readonly LipPiercingLocation LABRET  = new LipPiercingLocation(0, SupportedJewelry, LabretButton, LabretLocation);
-		public static readonly LipPiercingLocation MEDUSA  = new LipPiercingLocation(1, SupportedJewelry, MedusaButton, MedusaLocation);
-		public static readonly LipPiercingLocation MONROE_LEFT  = new LipPiercingLocation(2, SupportedJewelry, MonroeLeftButton, MonroeLeftLocation);
-		public static readonly LipPiercingLocation MONROE_RIGHT  = new LipPiercingLocation(3, SupportedJewelry, MonroeRightButton, MonroeRightLocation);
-		public static readonly LipPiercingLocation LOWER_LEFT_1  = new LipPiercingLocation(4, SupportedJewelry, LowerLeft1Button, LowerLeft1Location);
-		public static readonly LipPiercingLocation LOWER_LEFT_2  = new LipPiercingLocation(5, SupportedJewelry, LowerLeft2Button, LowerLeft2Location);
+		public static readonly LipPiercingLocation LABRET = new LipPiercingLocation(0, SupportedJewelry, LabretButton, LabretLocation);
+		public static readonly LipPiercingLocation MEDUSA = new LipPiercingLocation(1, SupportedJewelry, MedusaButton, MedusaLocation);
+		public static readonly LipPiercingLocation MONROE_LEFT = new LipPiercingLocation(2, SupportedJewelry, MonroeLeftButton, MonroeLeftLocation);
+		public static readonly LipPiercingLocation MONROE_RIGHT = new LipPiercingLocation(3, SupportedJewelry, MonroeRightButton, MonroeRightLocation);
+		public static readonly LipPiercingLocation LOWER_LEFT_1 = new LipPiercingLocation(4, SupportedJewelry, LowerLeft1Button, LowerLeft1Location);
+		public static readonly LipPiercingLocation LOWER_LEFT_2 = new LipPiercingLocation(5, SupportedJewelry, LowerLeft2Button, LowerLeft2Location);
 		public static readonly LipPiercingLocation LOWER_RIGHT_1 = new LipPiercingLocation(6, SupportedJewelry, LowerRight1Button, LowerRight1Location);
 		public static readonly LipPiercingLocation LOWER_RIGHT_2 = new LipPiercingLocation(7, SupportedJewelry, LowerRight2Button, LowerRight2Location);
 
@@ -78,7 +78,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LipPiercing : Piercing<LipPiercingLocation>
 	{
-		public LipPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public LipPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -143,7 +143,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class EyebrowPiercing : Piercing<EyebrowPiercingLocation>
 	{
-		public EyebrowPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public EyebrowPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -202,7 +202,7 @@ namespace CoC.Backend.BodyParts
 
 		private static bool SupportedNostrilJewelry(JewelryType jewelryType)
 		{
-			return jewelryType == JewelryType.BARBELL_STUD || jewelryType ==JewelryType.RING || jewelryType ==JewelryType.SPECIAL;
+			return jewelryType == JewelryType.BARBELL_STUD || jewelryType == JewelryType.RING || jewelryType == JewelryType.SPECIAL;
 		}
 
 		private static bool SupportedBridgeJewelry(JewelryType jewelryType)
@@ -212,20 +212,71 @@ namespace CoC.Backend.BodyParts
 
 		private static bool SupportedSeptimusJewelry(JewelryType jewelryType)
 		{
-			return jewelryType == JewelryType.HORSESHOE || jewelryType ==JewelryType.RING;
+			return jewelryType == JewelryType.HORSESHOE || jewelryType == JewelryType.RING;
 		}
 
 	}
 
 	public sealed class NosePiercing : Piercing<NosePiercingLocation>
 	{
-		public NosePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public NosePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
 		public override int MaxPiercings => NosePiercingLocation.allLocations.Count;
 
 		public override IEnumerable<NosePiercingLocation> availableLocations => NosePiercingLocation.allLocations;
+	}
+
+	public sealed partial class FaceTattooLocation : TattooLocation
+	{
+
+		private static readonly List<FaceTattooLocation> _allLocations = new List<FaceTattooLocation>();
+
+		public static readonly ReadOnlyCollection<FaceTattooLocation> allLocations;
+
+		private readonly byte index;
+
+		static FaceTattooLocation()
+		{
+			allLocations = new ReadOnlyCollection<FaceTattooLocation>(_allLocations);
+		}
+
+		private FaceTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
+
+		public static FaceTattooLocation LEFT_CHEEKBONE = new FaceTattooLocation(0, SmallTattoosOnly, LeftCheekButton, LeftCheekLocation);
+		//face, around eye. i don't know what else to call it lol.
+		public static FaceTattooLocation LEFT_TYSON = new FaceTattooLocation(1, MediumTattoosOrSmaller, LeftTysonButton, LeftTysonLocation);
+
+		public static FaceTattooLocation RIGHT_CHEEKBONE = new FaceTattooLocation(2, SmallTattoosOnly, RightCheekButton, RightCheekLocation);
+		public static FaceTattooLocation RIGHT_TYSON = new FaceTattooLocation(3, MediumTattoosOrSmaller, RightTysonButton, RightTysonLocation);
+
+		//there could be some combo tattoo that wraps along the cheekbones to the lower jaw or something. if so, mark it incompatible with them and add it here or whatever.
+
+		public static FaceTattooLocation LOWER_JAW = new FaceTattooLocation(4, SmallTattoosOnly, LowerJawButton, LowerJawLocation);
+		public static FaceTattooLocation FOREHEAD = new FaceTattooLocation(5, MediumTattoosOrSmaller, ForeheadButton, ForeheadLocation);
+		public static FaceTattooLocation FULL_FACE = new FaceTattooLocation(6, FullPartTattoo, FullFaceButton, FullFaceLocation);
+
+		public static bool LocationsCompatible(FaceTattooLocation first, FaceTattooLocation second)
+		{
+			return true;
+		}
+	}
+
+	public sealed class FaceTattoo : TattooablePart<FaceTattooLocation>
+	{
+		public FaceTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		{
+		}
+
+		public override int MaxTattoos => FaceTattooLocation.allLocations.Count;
+
+		public override IEnumerable<FaceTattooLocation> availableLocations => FaceTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(FaceTattooLocation first, FaceTattooLocation second) => FaceTattooLocation.LocationsCompatible(first, second);
 	}
 
 	/*
@@ -311,6 +362,8 @@ namespace CoC.Backend.BodyParts
 		//public int hoursSinceIngestedCum => timeLastIngestedCum.hoursToNow();
 		//public float lastCumIngestAmount { get; private set; } = 0;
 
+		public readonly FaceTattoo tattoos;
+
 		public FacialStructure facialStructure => type.GetFacialStructure(isFullMorph);
 
 		internal Face(Guid creatureID) : this(creatureID, FaceType.defaultValue)
@@ -320,9 +373,11 @@ namespace CoC.Backend.BodyParts
 		{
 			type = faceType ?? throw new ArgumentNullException(nameof(faceType));
 			isFullMorph = false;
-			lipPiercings = new LipPiercing(LipPiercingUnlocked, AllLipPiercingsStr);
-			nosePiercings = new NosePiercing(NosePiercingUnlocked, AllNosePiercingsStr);
-			eyebrowPiercings = new EyebrowPiercing(EyebrowPiercingUnlocked, AllEyebrowPiercingsStr);
+			lipPiercings = new LipPiercing(LipPiercingUnlocked, AllLipPiercingsShort, AllLipPiercingsLong);
+			nosePiercings = new NosePiercing(NosePiercingUnlocked, AllNosePiercingsShort, AllNosePiercingsLong);
+			eyebrowPiercings = new EyebrowPiercing(EyebrowPiercingUnlocked, AllEyebrowPiercingsShort, AllEyebrowPiercingsLong);
+
+			tattoos = new FaceTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
 		internal Face(Guid creatureID, FaceType faceType, bool? fullMorph = null, SkinTexture complexion = SkinTexture.NONDESCRIPT) : this(creatureID, faceType)
@@ -726,7 +781,7 @@ namespace CoC.Backend.BodyParts
 			return new EpidermalData();
 		}
 
-		public override int index => _index;
+		public override int id => _index;
 
 		public static FaceType defaultValue => HUMAN;
 

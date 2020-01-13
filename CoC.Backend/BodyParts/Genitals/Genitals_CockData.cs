@@ -66,6 +66,9 @@ namespace CoC.Backend.BodyParts
 		public int numCocks => _cocks.Count + (hasClitCock ? _vaginas.Count : 0);
 
 		public bool hasCock => _cocks.Count > 0;
+
+
+
 		public uint anyCockSoundedCount => maleCockSoundedCount.add(clitCockSoundedCount);
 		public uint maleCockSoundedCount => missingCockSoundCount + (uint)cocks.Sum(x => x.soundCount);
 
@@ -663,93 +666,226 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-		#region Text
-		public string AllCocksShortDescription()
-		{
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
-			else if (cocks.Count == 1)
-			{
-				return cocks[0].ShortDescription();
-			}
-			bool mismatched = _cocks.Exists(x => x.type != _cocks[0].type);
 
-			return mismatched ? CockType.GenericCockNoun(true) : cocks[0].ShortDescription(false, true);
-		}
+		#region Cock Text
+		public string SheathOrBaseStr() => GenitalStrings.SheathOrBaseStr(this);
 
-		public string AllCocksLongDescription()
-		{
-			return AllCocksDesc(false);
-		}
 
-		public string AllCocksFullDescription()
-		{
-			return AllCocksDesc(true);
-		}
+		public string AllCocksShortDescription() => GenitalStrings.AllCocksShortDescription(this);
 
-		public string OneCockOrCocksNoun(string pronoun = "your")
-		{
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
 
-			return CommonBodyPartStrings.OneOfDescription(cocks.Count > 1, pronoun, CockType.GenericCockNoun(cocks.Count > 1));
-		}
+		public string AllCocksLongDescription() => GenitalStrings.AllCocksLongDescription(this);
 
-		public string OneCockOrCocksShort(string pronoun = "your")
-		{
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
 
-			return CommonBodyPartStrings.OneOfDescription(cocks.Count > 1, pronoun, AllCocksShortDescription());
-		}
+		public string AllCocksFullDescription() => GenitalStrings.AllCocksFullDescription(this);
 
-		public string EachCockOrCocksNoun(string pronoun = "your")
-		{
-			return EachCockOrCocksNoun(pronoun, out bool _);
-		}
 
-		public string EachCockOrCocksShort(string pronoun = "your")
-		{
-			return EachCockOrCocksShort(pronoun, out bool _);
-		}
+		public string OneCockOrCocksNoun(string pronoun = "your") => GenitalStrings.OneCockOrCocksNoun(this, pronoun);
 
-		public string EachCockOrCocksNoun(string pronoun, out bool isPlural)
-		{
-			isPlural = cocks.Count != 1;
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
 
-			return CommonBodyPartStrings.EachOfDescription(cocks.Count > 1, pronoun, CockType.GenericCockNoun(cocks.Count > 1));
-		}
+		public string OneCockOrCocksShort(string pronoun = "your") => GenitalStrings.OneCockOrCocksShort(this, pronoun);
 
-		public string EachCockOrCocksShort(string pronoun, out bool isPlural)
-		{
-			isPlural = cocks.Count != 1;
-			if (cocks.Count == 0)
-			{
-				return "";
-			}
 
-			return CommonBodyPartStrings.EachOfDescription(cocks.Count > 1, pronoun, AllCocksShortDescription());
-		}
+		public string EachCockOrCocksNoun(string pronoun = "your") => GenitalStrings.EachCockOrCocksNoun(this, pronoun);
 
-		public string SheathOrBase()
-		{
-			return SheathOrBaseStr();
-		}
 
-		public string AllCocksPlayerDescription()
-		{
-			return AllCocksPlayerDesc();
-		}
+		public string EachCockOrCocksShort(string pronoun = "your") => GenitalStrings.EachCockOrCocksShort(this, pronoun);
+
+
+		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => GenitalStrings.EachCockOrCocksNoun(this, pronoun, out isPlural);
+
+
+		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => GenitalStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
+
 		#endregion
+
+	}
+
+	public partial class GenitalsData
+	{
+		public readonly float cumMultiplierTrue;
+
+		public float additionalCumTrue;
+
+		#region Public Cock Computed Values
+		public readonly int numCocks;
+
+		public bool hasCock => numCocks > 0;
+
+		public readonly uint anyCockSoundedCount;
+		public readonly uint maleCockSoundedCount;
+
+		public readonly uint maleCockSexCount;
+		public readonly uint anyCockSexCount;
+
+		public readonly uint maleCockOrgasmCount;
+		public readonly uint anyCockOrgasmCount;
+
+		public readonly uint maleCockDryOrgasmCount;
+		public readonly uint anyCockDryOrgasmCount;
+
+		public bool cockVirgin => anyCockSexCount == 0;
+		public bool maleCockVirgin => maleCockSexCount == 0;
+
+
+		public bool hasSheath => cocks.Any(x => x.requiresSheath);
+
+		#endregion
+
+		#region Public Balls Computed Values
+		public bool hasBalls => balls.hasBalls;
+		public bool uniBall => balls.uniBall;
+
+		public byte numberOfBalls => balls.count;
+		public byte ballSize => balls.size;
+		#endregion
+
+		#region Public Cum Related Computed Values
+		public ushort cumMultiplier => (ushort)Math.Round(cumMultiplierTrue); //0-65535 seems like a valid range imo. i don't think i need to cap it.
+
+		public ushort additionalCum => (ushort)additionalCumTrue;
+
+		public readonly int hoursSinceLastCum;
+
+		//we use mL for amount here, but store ball size in inches. Let's do it right, no? 1cm^3 = 1mL
+		public readonly int totalCum;
+		#endregion
+
+		#region CockData Aggregate Functions
+		public float BiggestCockSize()
+		{
+			return cocks.Max(x => x.area);
+		}
+
+		public float LongestCockLength()
+		{
+			return cocks.Max(x => x.length);
+		}
+
+		public float WidestCockMeasure()
+		{
+			return cocks.Max(x => x.girth);
+		}
+
+		public CockData BiggestCock()
+		{
+			return cocks.MaxItem(x => x.area);
+		}
+
+		public CockData LongestCock()
+		{
+			return cocks.MaxItem(x => x.length);
+		}
+
+		public CockData WidestCock()
+		{
+			return cocks.MaxItem(x => x.girth);
+		}
+
+		public float AverageCockSize()
+		{
+			return cocks.Average(x => x.area);
+		}
+
+		public float AverageCockLength()
+		{
+			return cocks.Average(x => x.length);
+		}
+
+		public float AverageCockGirth()
+		{
+			return cocks.Average(x => x.girth);
+		}
+
+		public CockData AverageCock()
+		{
+			if (cocks.Count == 0)
+			{
+				return null;
+			}
+			var averageLength = cocks.Average(x => x.length);
+			var averageGirth = cocks.Average(x => x.girth);
+			var averageKnot = cocks.Average(x => x.knotMultiplier);
+			var averageKnotSize = cocks.Average(x => x.knotSize);
+			//first initially gets the first group. the second call to first gets the first element of the first group.
+			CockType type = cocks.GroupBy(x => x.type).OrderByDescending(y => y.Count()).First().First().type;
+			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth);
+		}
+
+		public float SmallestCockSize()
+		{
+			return cocks.Min(x => x.area);
+		}
+
+		public float ShortestCockLength()
+		{
+			return cocks.Min(x => x.length);
+		}
+
+		public float ThinnestCockMeasure()
+		{
+			return cocks.Min(x => x.girth);
+		}
+
+		public CockData SmallestCock()
+		{
+			return cocks.MinItem(x => x.area);
+		}
+
+		public CockData ShortestCock()
+		{
+			return cocks.MinItem(x => x.length);
+		}
+
+		public CockData ThinnestCock()
+		{
+			return cocks.MinItem(x => x.girth);
+		}
+
+		public int CountCocksOfType(CockType type)
+		{
+			return cocks.Sum(x => x.type == type ? 1 : 0);
+		}
+
+		public bool OtherCocksUseSheath(int excludedCockIndex)
+		{
+			return cocks.Any(x => x.cockIndex != excludedCockIndex && x.requiresSheath);
+		}
+
+
+		#endregion
+
+		#region Cock Text
+		public string SheathOrBaseStr() => GenitalStrings.SheathOrBaseStr(this);
+
+
+		public string AllCocksShortDescription() => GenitalStrings.AllCocksShortDescription(this);
+
+
+		public string AllCocksLongDescription() => GenitalStrings.AllCocksLongDescription(this);
+
+
+		public string AllCocksFullDescription() => GenitalStrings.AllCocksFullDescription(this);
+
+
+		public string OneCockOrCocksNoun(string pronoun = "your") => GenitalStrings.OneCockOrCocksNoun(this, pronoun);
+
+
+		public string OneCockOrCocksShort(string pronoun = "your") => GenitalStrings.OneCockOrCocksShort(this, pronoun);
+
+
+		public string EachCockOrCocksNoun(string pronoun = "your") => GenitalStrings.EachCockOrCocksNoun(this, pronoun);
+
+
+		public string EachCockOrCocksShort(string pronoun = "your") => GenitalStrings.EachCockOrCocksShort(this, pronoun);
+
+
+		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => GenitalStrings.EachCockOrCocksNoun(this, pronoun, out isPlural);
+
+
+		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => GenitalStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
+
+		#endregion
+
 	}
 }

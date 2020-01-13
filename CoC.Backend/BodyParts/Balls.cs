@@ -482,6 +482,8 @@ namespace CoC.Backend.BodyParts
 
 		public bool hasBalls => count != 0;
 
+		public bool uniBall => count == Balls.UNIBALL_COUNT;
+
 		internal readonly BodyType bodyType;
 		internal readonly float relativeLust;
 		internal readonly int hoursSinceLastCum;

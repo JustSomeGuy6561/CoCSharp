@@ -80,7 +80,7 @@ namespace CoC.Backend.BodyParts
 		public string LongPrimaryDescription(HandData handData, bool plural) => longDescription(handData, false, plural);
 		public string LongAlternateDescription(HandData handData, bool plural) => longDescription(handData, true, plural);
 
-		public override int index => _index;
+		public override int id => _index;
 		protected readonly int _index;
 
 		public virtual bool canTone()

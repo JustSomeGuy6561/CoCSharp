@@ -41,7 +41,7 @@ namespace CoC.Backend.BodyParts
 		public abstract DataClass AsReadOnlyData();
 
 
-		public virtual int index => type.index;
+		public virtual int id => type.id;
 
 		//describes the entire body part, concisely. if the body part is made up of multiple members (i.e. the wing part is made of 2 wings), this is plural.
 		//This is virtual because there may be some types where the behavior class cannot determine whether or not it has multiple members unless additional information is

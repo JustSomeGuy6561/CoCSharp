@@ -117,6 +117,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private HairFurColors _highlightColor = HairFurColors.NO_HAIR_FUR;
 
+		public bool hasHighlights => !HairFurColors.IsNullOrEmpty(highlightColor);
+
 		public bool isGrowing => type?.growsOverTime == true && !growthArtificallyDisabled;
 
 		//in theory, this bool would allow players to "magically" stop hair growth, allowing them, for example, to grow cornrows or a mohawk
@@ -703,7 +705,7 @@ namespace CoC.Backend.BodyParts
 		public readonly float defaultHairLength;
 
 
-		public override int index => _index;
+		public override int id => _index;
 		private readonly int _index;
 
 		//a boolean that determines if hair can change length at all.

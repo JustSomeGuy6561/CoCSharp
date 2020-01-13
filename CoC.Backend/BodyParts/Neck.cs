@@ -14,6 +14,49 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
+	public sealed partial class NeckTattooLocation : TattooLocation
+	{
+
+		private static readonly List<NeckTattooLocation> _allLocations = new List<NeckTattooLocation>();
+
+		public static readonly ReadOnlyCollection<NeckTattooLocation> allLocations;
+
+		private readonly byte index;
+
+		static NeckTattooLocation()
+		{
+			allLocations = new ReadOnlyCollection<NeckTattooLocation>(_allLocations);
+		}
+
+		private NeckTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
+
+		public static NeckTattooLocation FRONT = new NeckTattooLocation(0, MediumTattoosOrSmaller, FrontButton, FrontLocation);
+		public static NeckTattooLocation BACK = new NeckTattooLocation(1, MediumTattoosOrSmaller, BackButton, BackLocation);
+		public static NeckTattooLocation LEFT = new NeckTattooLocation(2, MediumTattoosOrSmaller, LeftButton, LeftLocation);
+		public static NeckTattooLocation RIGHT = new NeckTattooLocation(3, MediumTattoosOrSmaller, RightButton, RightLocation);
+
+		public static bool LocationsCompatible(NeckTattooLocation first, NeckTattooLocation second)
+		{
+			return true;
+		}
+	}
+
+	public sealed class NeckTattoo : TattooablePart<NeckTattooLocation>
+	{
+		public NeckTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		{
+		}
+
+		public override int MaxTattoos => NeckTattooLocation.allLocations.Count;
+
+		public override IEnumerable<NeckTattooLocation> availableLocations => NeckTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(NeckTattooLocation first, NeckTattooLocation second) => NeckTattooLocation.LocationsCompatible(first, second);
+	}
+
 	//NOTE: Removed a boolean (very adequately named pos - i can tell exactly what it does from that name.)
 	//that was used to determine if the neck was positioned out of the bottom of the head or out the back. however,
 	//despite the fact that most lizards have their neck out the back of the their head (and most fish, for that matter)
@@ -50,6 +93,8 @@ namespace CoC.Backend.BodyParts
 
 		public override NeckType defaultType => NeckType.defaultValue;
 
+		public readonly NeckTattoo tattoos;
+
 		public override NeckData AsReadOnlyData()
 		{
 			return new NeckData(this);
@@ -60,6 +105,8 @@ namespace CoC.Backend.BodyParts
 		internal Neck(Guid creatureID, NeckType neckType) : base(creatureID)
 		{
 			type = neckType ?? throw new ArgumentNullException(nameof(neckType));
+
+			tattoos = new NeckTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
 		internal Neck(Guid creatureID, NeckType neckType, HairFurColors initialNeckColor = null, byte neckLength = NeckType.MIN_NECK_LENGTH) : this(creatureID, neckType)
@@ -247,7 +294,7 @@ namespace CoC.Backend.BodyParts
 		//	necks.AddAt(this, _index);
 		//}
 
-		public override int index => _index;
+		public override int id => _index;
 
 		internal virtual bool canGrowNeck(int currNeckLength)
 		{

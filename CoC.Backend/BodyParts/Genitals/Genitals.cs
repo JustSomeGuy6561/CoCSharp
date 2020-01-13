@@ -23,6 +23,77 @@ namespace CoC.Backend.BodyParts
 	// every time we get a vagina set its default wetness, looseness, and clitSize to defaults, unless provided.
 	// breasts - figure out how the fuck we're gonna add new breast rows.
 
+	public sealed partial class GenitalTattooLocation : TattooLocation
+	{
+
+		private static readonly List<GenitalTattooLocation> _allLocations = new List<GenitalTattooLocation>();
+
+		public static readonly ReadOnlyCollection<GenitalTattooLocation> allLocations;
+
+		private readonly byte index;
+
+		static GenitalTattooLocation()
+		{
+			allLocations = new ReadOnlyCollection<GenitalTattooLocation>(_allLocations);
+		}
+
+		private GenitalTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
+
+		public static GenitalTattooLocation LEFT_CHEST = new GenitalTattooLocation(0, MediumTattoosOrSmaller, LeftChestButton, LeftChestLocation);
+		public static GenitalTattooLocation LEFT_BREAST = new GenitalTattooLocation(1, MediumTattoosOrSmaller, LeftBreastButton, LeftBreastLocation);
+		public static GenitalTattooLocation LEFT_UNDER_BREAST = new GenitalTattooLocation(2, SmallTattoosOnly, LeftUnderBreastButton, LeftUnderBreastLocation);
+		public static GenitalTattooLocation LEFT_NIPPLE_TEAT = new GenitalTattooLocation(3, SmallTattoosOnly, LeftNippleButton, LeftNippleLocation);
+
+		public static GenitalTattooLocation RIGHT_CHEST = new GenitalTattooLocation(4, MediumTattoosOrSmaller, RightChestButton, RightChestLocation);
+		public static GenitalTattooLocation RIGHT_BREAST = new GenitalTattooLocation(5, MediumTattoosOrSmaller, RightBreastButton, RightBreastLocation);
+		public static GenitalTattooLocation RIGHT_UNDER_BREAST = new GenitalTattooLocation(6, SmallTattoosOnly, RightUnderBreastButton, RightUnderBreastLocation);
+		public static GenitalTattooLocation RIGHT_NIPPLE_TEAT = new GenitalTattooLocation(7, SmallTattoosOnly, RightNippleButton, RightNippleLocation);
+
+		public static GenitalTattooLocation CHEST = new GenitalTattooLocation(8, MediumTattoosOrSmaller, ChestButton, ChestLocation);
+		public static GenitalTattooLocation GROIN = new GenitalTattooLocation(9, MediumTattoosOrSmaller, GroinButton, GroinLocation);
+		public static GenitalTattooLocation ALL_AVAILABLE_COCKS = new GenitalTattooLocation(10, FullPartTattoo, CockButton, CockLocation);
+		public static GenitalTattooLocation ALL_AVAILABLE_VULVA = new GenitalTattooLocation(11, MediumTattoosOrSmaller, VulvaButton, VulvaLocation);
+		public static GenitalTattooLocation ASS = new GenitalTattooLocation(12, SmallTattoosOnly, AssButton, AssLocation);
+		public static GenitalTattooLocation FULL_GENITALS = new GenitalTattooLocation(13, FullPartTattoo, FullButton, FullLocation);
+
+		public static bool LocationsCompatible(GenitalTattooLocation first, GenitalTattooLocation second)
+		{
+			//chest and left chest are incompatible.
+			//chest and right chest are incompatible.
+			//left and right chest are compatible.
+			//the remainder of these are compatible.run these checks accordingly.
+
+			//if one is left chest.
+			if (first == CHEST || second == CHEST)
+			{
+				//check to see if other is left left or left right chest.
+				var other = (first == CHEST) ? second : first;
+				return other != LEFT_CHEST && other != RIGHT_CHEST;
+			}
+			//otherwise, we're good.s
+			else
+			{
+				return true;
+			}
+		}
+	}
+
+	public sealed class GenitalTattoo : TattooablePart<GenitalTattooLocation>
+	{
+		public GenitalTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		{
+		}
+
+		public override int MaxTattoos => GenitalTattooLocation.allLocations.Count;
+
+		public override IEnumerable<GenitalTattooLocation> availableLocations => GenitalTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(GenitalTattooLocation first, GenitalTattooLocation second) => GenitalTattooLocation.LocationsCompatible(first, second);
+	}
+
 	//I had the relatively brilliant idea of storing the GameTime for when something happened - last milking, etc. it means we don't need to update it every hour - we just need to update it when it happens.
 	//it's a relatively simple calculation to get the current hours since - we just diff GameTime now and stored time. Granted, it's now a byte and int instead of just one int, but w/e. I'll trade
 	//an extra byte of memory (or 4 bytes if C# does the whole align things to word boundaries, idk on its optimizations) for less maintenance and less cycles managing the data.
@@ -69,6 +140,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ReadOnlyCollection<Breasts> breastRows;
 
+		public readonly GenitalTattoo tattoos;
 		#endregion
 
 		#region Private ReadOnly Members
@@ -86,8 +158,9 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Public Derived/Helper Properties
-		public ReadOnlyCollection<Clit> clits => new ReadOnlyCollection<Clit>(_vaginas.ConvertAll(x => x.clit));
-		public ReadOnlyCollection<Nipples> nipples => new ReadOnlyCollection<Nipples>(_breasts.ConvertAll(x => x.nipples));
+		public IEnumerable<Clit> clits => new ReadOnlyCollection<Clit>(_vaginas.ConvertAll(x => x.clit));
+		public int numClits => numVaginas;
+		public IEnumerable<Nipples> nipples => new ReadOnlyCollection<Nipples>(_breasts.ConvertAll(x => x.nipples));
 		#endregion
 
 		#region Private Derived/Helper Properties
@@ -100,6 +173,7 @@ namespace CoC.Backend.BodyParts
 		internal float relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
 
 		#endregion
+
 		#region Pregnancy Related Computed Properties
 
 		public bool isPregnant => womb.isPregnant;
@@ -250,9 +324,12 @@ namespace CoC.Backend.BodyParts
 			fertility = new Fertility(creatureID, initialGender);
 
 			this.womb = womb ?? throw new ArgumentNullException(nameof(womb));
+
+			tattoos = new GenitalTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
-		internal Genitals(Guid creatureID, Ass ass, BreastCreator[] breasts, CockCreator[] cocks, Balls balls, VaginaCreator[] vaginas, Womb womb, byte? femininity, Fertility fertility) : base(creatureID)
+		internal Genitals(Guid creatureID, Ass ass, BreastCreator[] breasts, CockCreator[] cocks, Balls balls, VaginaCreator[] vaginas, Womb womb, byte? femininity,
+			Fertility fertility) : base(creatureID)
 		{
 			this.ass = ass ?? throw new ArgumentNullException(nameof(ass));
 			breastCreators = breasts?.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(breastCreators));
@@ -280,6 +357,8 @@ namespace CoC.Backend.BodyParts
 			this.fertility = fertility ?? throw new ArgumentNullException(nameof(fertility));
 
 			this.womb = womb ?? throw new ArgumentNullException(nameof(womb));
+
+			tattoos = new GenitalTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
 #warning make sure this is up to date when the genitals are finally finished.
@@ -462,7 +541,7 @@ namespace CoC.Backend.BodyParts
 	}
 
 
-	public sealed class GenitalsData : SimpleData
+	public sealed partial class GenitalsData : SimpleData
 	{
 		internal readonly CockPerkHelper cockPerks;
 		internal readonly BreastPerkHelper breastPerks;
@@ -483,92 +562,75 @@ namespace CoC.Backend.BodyParts
 		public readonly AssData ass;
 		public readonly BallsData balls;
 
-		public byte numberOfBalls => balls.count;
-		public byte ballSize => balls.size;
+		public readonly float relativeLust;
 
-		public int numCocks => cocks.Count;
+		public readonly ReadOnlyTattooablePart<GenitalTattooLocation> tattoos;
 
-		public int numBreastRows => breasts.Count;
-		public int numVaginas => vaginas.Count;
-
-		public int breastCount => breasts.Sum(x => x.numberOfBreasts);
-
-		public int nippleCount => breastCount * (quadNipples ? 4 : 1);
-
-		public readonly bool blackNipples;
-		public readonly bool quadNipples;
-		public readonly NippleStatus nippleType;
-
-		public readonly bool unlockedDickNipples;
-
-		public readonly bool hasClitCockAvailable;
-
-		public bool hasCock => numCocks != 0;
-		public bool hasVagina => numVaginas != 0;
-
-		public bool hasClitCock => hasClitCockAvailable && !hasCock && hasVagina;
-
-		public bool hasCockOrClitCock => hasCock || hasClitCock;
-
-		//cum amount
-
-		public readonly int totalCum;
-
-		public readonly int hoursSinceLastCum;
-
-		//lactation amount
-		public readonly float lactationRate;
-		public readonly bool isOverfull;
-
-		public readonly int hoursOverfull;
-
-		public readonly float maximumLactationCapacity;
-		public readonly float currentLactationCapacity;
-
-		public readonly LactationStatus lactationStatus;
-		public readonly float currentLactationAmount;
-		public readonly bool isLactating;
-		public readonly int hoursSinceLastMilked;
-
-		internal GenitalsData(Genitals source, CockPerkHelper cockData, VaginaPerkHelper vaginaData, BreastPerkHelper breastData)
-			: base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		internal GenitalsData(Genitals source, CockPerkHelper cockData, VaginaPerkHelper vaginaData, BreastPerkHelper breastData) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			cockPerks = cockData ?? throw new ArgumentNullException(nameof(cockData));
-			vaginaPerks = vaginaData ?? throw new ArgumentNullException(nameof(vaginaData));
-			breastPerks = breastData ?? throw new ArgumentNullException(nameof(breastData));
+			this.cockPerks = cockData ?? throw new ArgumentNullException(nameof(cockData));
+			this.breastPerks = breastData ?? throw new ArgumentNullException(nameof(breastData));
+			this.vaginaPerks = vaginaData ?? throw new ArgumentNullException(nameof(vaginaData));
+			this.cocks = source.cocks.Select(x=>x.AsReadOnlyData()).ToList().AsReadOnly();
+			this.vaginas = source.vaginas.Select(x => x.AsReadOnlyData()).ToList().AsReadOnly();
+			this.breasts = source.breastRows.Select(x => x.AsReadOnlyData()).ToList().AsReadOnly();
+			this.gender = source.gender;
+			this.femininity = source.femininity.AsReadOnlyData();
+			this.fertility = source.fertility.AsReadOnlyData();
+			this.ass = source.ass.AsReadOnlyData();
+			this.balls = source.balls.AsReadOnlyData();
+			this.cumMultiplierTrue = source.cumMultiplierTrue;
+			this.additionalCumTrue = source.additionalCumTrue;
+			this.numCocks = source.numCocks;
+			this.anyCockSoundedCount = source.anyCockSoundedCount;
+			this.maleCockSoundedCount = source.maleCockSoundedCount;
+			this.maleCockSexCount = source.maleCockSexCount;
+			this.anyCockSexCount = source.anyCockSexCount;
+			this.maleCockOrgasmCount = source.maleCockOrgasmCount;
+			this.anyCockOrgasmCount = source.anyCockOrgasmCount;
+			this.maleCockDryOrgasmCount = source.maleCockDryOrgasmCount;
+			this.anyCockDryOrgasmCount = source.anyCockDryOrgasmCount;
+			this.hoursSinceLastCum = source.hoursSinceLastCum;
+			this.totalCum = source.totalCum;
+			this.hasClitCock = source.hasClitCock;
+			this.vaginalSexCount = source.vaginalSexCount;
+			this.vaginaPenetratedCount = source.vaginaPenetratedCount;
+			this.vaginalOrgasmCount = source.vaginalOrgasmCount;
+			this.vaginalDryOrgasmCount = source.vaginalDryOrgasmCount;
+			this.clitCockSexCount = source.clitCockSexCount;
+			this.clitCockSoundedCount = source.clitCockSoundedCount;
+			this.clitCockVirgin = source.clitCockVirgin;
+			this.clitCockOrgasmCount = source.clitCockOrgasmCount;
+			this.clitCockDryOrgasmCount = source.clitCockDryOrgasmCount;
+			this.clitUsedAsPenetratorCount = source.clitUsedAsPenetratorCount;
+			this.blackNipples = source.blackNipples;
+			this.quadNipples = source.quadNipples;
+			this.nippleType = source.nippleType;
+			this.unlockedDickNipples = source.unlockedDickNipples;
+			this.nippleFuckCount = source.nippleFuckCount;
+			this.dickNippleSexCount = source.dickNippleSexCount;
+			this.nippleOrgasmCount = source.nippleOrgasmCount;
+			this.nippleDryOrgasmCount = source.nippleDryOrgasmCount;
+			this.lactation_TotalCapacityMultiplier = source.lactation_TotalCapacityMultiplier;
+			this.lactation_CapacityMultiplier = source.lactation_CapacityMultiplier;
+			this.lactationProductionModifier = source.lactationProductionModifier;
+			this.overfullBuffer = source.overfullBuffer;
+			this.currentLactationAmount = source.currentLactationAmount;
+			this.titFuckCount = source.titFuckCount;
+			this.breastOrgasmCount = source.breastOrgasmCount;
+			this.breastDryOrgasmCount = source.breastDryOrgasmCount;
+			this.canLessenCurrentLactationLevels = source.canLessenCurrentLactationLevels;
+			this.hoursSinceLastMilked = source.hoursSinceLastMilked;
+			this.isOverfull = source.isOverfull;
+			this.hoursOverfull = source.hoursOverfull;
+			this.maximumLactationCapacity = source.maximumLactationCapacity;
+			this.currentLactationCapacity = source.currentLactationCapacity;
+			this.lactationRate = source.lactationRate;
+			this.lactationStatus = source.lactationStatus;
 
-			gender = source.gender;
+			this.relativeLust = source.relativeLust;
 
-			cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x => x.AsReadOnlyData()).ToList());
-			vaginas = new ReadOnlyCollection<VaginaData>(source.vaginas.Select(x => x.AsReadOnlyData()).ToList());
-			breasts = new ReadOnlyCollection<BreastData>(source.breastRows.Select(x => x.AsReadOnlyData()).ToList());
-
-			ass = source.ass.AsReadOnlyData();
-			balls = source.balls.AsReadOnlyData();
-
-			femininity = source.femininity.AsReadOnlyData();
-			fertility = source.fertility.AsReadOnlyData();
-
-			blackNipples = source.blackNipples;
-			quadNipples = source.quadNipples;
-			nippleType = source.nippleType;
-
-			unlockedDickNipples = source.unlockedDickNipples;
-			hasClitCockAvailable = source.hasClitCock;
-
-			totalCum = source.totalCum;
-
-			hoursSinceLastCum = source.hoursSinceLastCum;
-
-			lactationRate = source.lactationRate;
-			isOverfull = source.isOverfull;
-			hoursOverfull = source.hoursOverfull;
-			maximumLactationCapacity = source.maximumLactationCapacity;
-			currentLactationCapacity = source.currentLactationCapacity;
-			lactationStatus = source.lactationStatus;
-			currentLactationAmount = source.currentLactationAmount;
-			isLactating = source.isLactating;
-			hoursSinceLastMilked = source.hoursSinceLastMilked;
+			tattoos = source.tattoos.AsReadOnlyData();
 		}
 	}
 }

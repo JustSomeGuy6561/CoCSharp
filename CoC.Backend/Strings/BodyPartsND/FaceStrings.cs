@@ -150,6 +150,66 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	public partial class FaceTattooLocation
+	{
+		private static string LeftCheekButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftCheekLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftTysonButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftTysonLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightCheekButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightCheekLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightTysonButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightTysonLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LowerJawButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LowerJawLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ForeheadButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string ForeheadLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FullFaceButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string FullFaceLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
+
 	public partial class Face
 	{
 		//NOTE To future implementers: GOO is kindof a bitch, because it's not solid like literally everything else. this means literally anywhere it gets a unique type it requires
@@ -233,19 +293,39 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private string AllLipPiercingsStr(PlayerBase player)
+		private string AllLipPiercingsShort(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllNosePiercingsStr(PlayerBase player)
+		private string AllNosePiercingsShort(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllEyebrowPiercingsStr(PlayerBase player)
+		private string AllEyebrowPiercingsShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private string AllLipPiercingsLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private string AllNosePiercingsLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private string AllEyebrowPiercingsLong(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
+		private string AllTattoosShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private string AllTattoosLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 	}
 
 	public partial class FaceType
@@ -1200,7 +1280,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RaccoonTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
-
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string RaccoonRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1257,6 +1337,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string MouseTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string MouseRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1289,6 +1370,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FerretLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string FerretPlayerStr(Face face, PlayerBase player)
 		{
@@ -1306,6 +1388,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string FerretTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string FerretRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1337,6 +1420,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string PigLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string PigPlayerStr(Face face, PlayerBase player)
 		{
@@ -1352,6 +1436,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string PigTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string PigRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1365,6 +1450,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RhinoLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string RhinoPlayerStr(Face face, PlayerBase player)
 		{
@@ -1372,6 +1458,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string RhinoTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string RhinoRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1385,6 +1472,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string EchidnaLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string EchidnaPlayerStr(Face face, PlayerBase player)
 		{
@@ -1392,6 +1480,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string EchidnaTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string EchidnaRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1405,6 +1494,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DeerLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string DeerPlayerStr(Face face, PlayerBase player)
 		{
@@ -1422,6 +1512,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DeerTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string DeerRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1435,6 +1526,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string WolfLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string WolfPlayerStr(Face face, PlayerBase player)
 		{
@@ -1442,6 +1534,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string WolfTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string WolfRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1455,6 +1548,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CockatriceLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string CockatricePlayerStr(Face face, PlayerBase player)
 		{
@@ -1462,6 +1556,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string CockatriceTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string CockatriceRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1495,6 +1590,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string PandaLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string PandaPlayerStr(Face face, PlayerBase player)
 		{
@@ -1503,6 +1599,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string PandaTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		private static string PandaRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
@@ -1516,6 +1613,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string GooLongDesc(FaceData face, bool alternateFormat)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		private static string GooPlayerStr(Face face, PlayerBase player)
@@ -1526,11 +1624,12 @@ namespace CoC.Backend.BodyParts
 
 		private static string GooTransformStr(FaceData previousFaceData, PlayerBase player)
 		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		private static string GooRestoreStr(FaceData originalFaceData, PlayerBase player)
 		{
-
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 		#endregion
 		//not part of face: the text that merges between face and neck or face and body.

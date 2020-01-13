@@ -12,16 +12,10 @@ using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
-#warning all of these need to implement tattooable part. first, rework tattooable part to be like piercings so its flexible enough to work with. then go through them.
-	//I'm considering putting hand and feet tattoos in their parent (arm/lowerbody, respectively). Similarly, consider cock/vagina tattoos as part of genitals.
-	//similarly, nipples in breast, and MAYBE? breasts in body???? or in Genitals ???? (do the latter, i guess)
-	//also, hips in body, i guess. b/c the hip piercings are already there.
-	//can't think of a good spot for butt tattoos anywhere but the butt, so that can stay.
-
-
 	/*
 	 * Arm covering (skin, scales, etc) Note:
 	 * Arms now have a consistent logic - if the arm is furry, it will first try to use the secondary (underbody) color, if the body has one. if not, it will fallback to the
@@ -44,7 +38,244 @@ namespace CoC.Backend.BodyParts
 	//Note: Never fires a data change event, as it has no data that can be changed. Note that technically claws could fire a change, but whatever.
 
 	//ordered by size. all are compatible except sleeve, which is incompatible with everything.
-	public enum ArmTattoos { WRIST, INNER_ARM, OUTER_ARM, SHOULDER, SLEEVE }
+
+	public sealed partial class ArmTattooLocation : TattooLocation
+	{
+
+		private static readonly List<ArmTattooLocation> _allLocations = new List<ArmTattooLocation>();
+
+		public static readonly ReadOnlyCollection<ArmTattooLocation> allLocations;
+
+		public static IList<ArmTattooLocation> allLeftArmTattoos
+		{
+			get
+			{
+				if (_leftArmTattoos is null)
+				{
+					_leftArmTattoos = new ArmTattooLocation[] { LEFT_HAND, LEFT_WRIST, LEFT_INNER_FOREARM, LEFT_OUTER_FOREARM, LEFT_FOREARM, LEFT_UPPER_ARM, LEFT_SHOULDER, LEFT_SLEEVE };
+				}
+				return _leftArmTattoos;
+			}
+		}
+		private static ArmTattooLocation[] _leftArmTattoos = null;
+
+		public static IList<ArmTattooLocation> allRightArmTattoos
+		{
+			get
+			{
+				if (_rightArmTattoos is null)
+				{
+					_rightArmTattoos = new ArmTattooLocation[] { RIGHT_HAND, RIGHT_WRIST, RIGHT_INNER_FOREARM, RIGHT_OUTER_FOREARM, RIGHT_FOREARM, RIGHT_UPPER_ARM, RIGHT_SHOULDER, RIGHT_SLEEVE };
+				}
+				return _rightArmTattoos;
+			}
+		}
+		private static ArmTattooLocation[] _rightArmTattoos = null;
+
+		public static IList<ArmTattooLocation> LeftArmTattoos(bool fullForearm)
+		{
+			if (fullForearm)
+			{
+				return new ArmTattooLocation[] { LEFT_HAND, LEFT_WRIST, LEFT_FOREARM, LEFT_UPPER_ARM, LEFT_SHOULDER, LEFT_SLEEVE };
+			}
+			else //if (!fullForearm)
+			{
+				return new ArmTattooLocation[] { LEFT_HAND, LEFT_WRIST, LEFT_INNER_FOREARM, LEFT_OUTER_FOREARM, LEFT_UPPER_ARM, LEFT_SHOULDER, LEFT_SLEEVE };
+			}
+		}
+
+		public static IList<ArmTattooLocation> RightArmTattoos(bool fullForearm)
+		{
+			if (fullForearm)
+			{
+				return new ArmTattooLocation[] { RIGHT_HAND, RIGHT_WRIST, RIGHT_FOREARM, RIGHT_UPPER_ARM, RIGHT_SHOULDER, RIGHT_SLEEVE };
+			}
+			else //if (!fullForearm)
+			{
+				return new ArmTattooLocation[] { RIGHT_HAND, RIGHT_WRIST, RIGHT_INNER_FOREARM, RIGHT_OUTER_FOREARM, RIGHT_UPPER_ARM, RIGHT_SHOULDER, RIGHT_SLEEVE };
+			}
+		}
+
+		private readonly byte index;
+
+		static ArmTattooLocation()
+		{
+			allLocations = new ReadOnlyCollection<ArmTattooLocation>(_allLocations);
+		}
+
+		private ArmTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
+
+		public static ArmTattooLocation LEFT_HAND = new ArmTattooLocation(0, SmallTattoosOnly, LeftHandButton, LeftHandLocation);
+		public static ArmTattooLocation LEFT_WRIST = new ArmTattooLocation(1, SmallTattoosOnly, LeftWristButton, LeftWristLocation);
+		public static ArmTattooLocation LEFT_INNER_FOREARM = new ArmTattooLocation(2, MediumTattoosOrSmaller, LeftInnerArmButton, LeftInnerArmLocation);
+		public static ArmTattooLocation LEFT_OUTER_FOREARM = new ArmTattooLocation(3, MediumTattoosOrSmaller, LeftOuterArmButton, LeftOuterArmLocation);
+		public static ArmTattooLocation LEFT_FOREARM = new ArmTattooLocation(4, MediumTattoosOrSmaller, LeftForearmButton, LeftForearmLocation);
+		public static ArmTattooLocation LEFT_UPPER_ARM = new ArmTattooLocation(5, MediumTattoosOrSmaller, LeftUpperArmButton, LeftUpperArmLocation);
+		public static ArmTattooLocation LEFT_SHOULDER = new ArmTattooLocation(6, MediumTattoosOrSmaller, LeftShoulderButton, LeftShoulderLocation);
+		public static ArmTattooLocation LEFT_SLEEVE = new ArmTattooLocation(7, FullPartTattoo, LeftSleeveButton, LeftSleeveLocation);
+
+		public static ArmTattooLocation RIGHT_HAND = new ArmTattooLocation(8, SmallTattoosOnly, RightHandButton, RightHandLocation);
+		public static ArmTattooLocation RIGHT_WRIST = new ArmTattooLocation(9, SmallTattoosOnly, RightWristButton, RightWristLocation);
+		public static ArmTattooLocation RIGHT_INNER_FOREARM = new ArmTattooLocation(10, MediumTattoosOrSmaller, RightInnerArmButton, RightInnerArmLocation);
+		public static ArmTattooLocation RIGHT_OUTER_FOREARM = new ArmTattooLocation(11, MediumTattoosOrSmaller, RightOuterArmButton, RightOuterArmLocation);
+		public static ArmTattooLocation RIGHT_FOREARM = new ArmTattooLocation(12, MediumTattoosOrSmaller, RightForearmButton, RightForearmLocation);
+		public static ArmTattooLocation RIGHT_UPPER_ARM = new ArmTattooLocation(13, MediumTattoosOrSmaller, RightUpperArmButton, RightUpperArmLocation);
+		public static ArmTattooLocation RIGHT_SHOULDER = new ArmTattooLocation(14, MediumTattoosOrSmaller, RightShoulderButton, RightShoulderLocation);
+		public static ArmTattooLocation RIGHT_SLEEVE = new ArmTattooLocation(15, FullPartTattoo, RightSleeveButton, RightSleeveLocation);
+
+		public static bool LocationsCompatible(ArmTattooLocation first, ArmTattooLocation second)
+		{
+			//forearm and inner forearm are incompatible.
+			//forearm and outer forearm are incompatible.
+			//inner and outer forearm are compatible.
+			//the remainder of these are compatible.run these checks accordingly.
+
+			//if one is left forearm.
+			if (first == LEFT_FOREARM || second == LEFT_FOREARM)
+			{
+				//check to see if other is left inner or left outer forearm.
+				ArmTattooLocation other = (first == LEFT_FOREARM) ? second : first;
+				return other != LEFT_INNER_FOREARM && other != LEFT_OUTER_FOREARM;
+			}
+			//ditto for right forearm.
+			else if (first == RIGHT_FOREARM || second == RIGHT_FOREARM)
+			{
+				ArmTattooLocation other = (first == RIGHT_FOREARM) ? second : first;
+				return other != RIGHT_INNER_FOREARM && other != RIGHT_OUTER_FOREARM;
+			}
+			//otherwise, we're good.s
+			else
+			{
+				return true;
+			}
+		}
+
+	}
+
+	public sealed class ArmTattoo : TattooablePart<ArmTattooLocation>
+	{
+
+
+		public ArmTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		{
+		}
+
+		public override int MaxTattoos => ArmTattooLocation.allLocations.Count;
+
+		public int MaxLeftArmCount => ArmTattooLocation.LeftArmTattoos(TattooedAt(ArmTattooLocation.LEFT_FOREARM)).Count;
+		public int MaxRightArmCount => ArmTattooLocation.RightArmTattoos(TattooedAt(ArmTattooLocation.RIGHT_FOREARM)).Count;
+
+		public override bool LocationsCompatible(ArmTattooLocation first, ArmTattooLocation second) => ArmTattooLocation.LocationsCompatible(first, second);
+
+		public override IEnumerable<ArmTattooLocation> availableLocations => ArmTattooLocation.allLocations;
+
+		public ArmTattooLocation[] currentLeftArmTattoos => currentTattoos.Intersect(ArmTattooLocation.allLeftArmTattoos).ToArray();
+		public ArmTattooLocation[] currentRightArmTattoos => currentTattoos.Intersect(ArmTattooLocation.allRightArmTattoos).ToArray();
+
+		public bool onlyOnLeftArm => currentTattooCount > 0 && ArmTattooLocation.allRightArmTattoos.All(x => !TattooedAt(x));
+
+		public bool onlyOnRightArm => currentTattooCount > 0 && ArmTattooLocation.allLeftArmTattoos.All(x => !TattooedAt(x));
+
+		public bool allOnLeftArm => currentTattooCount == currentLeftArmTattoos.Length && onlyOnLeftArm;
+		public bool allOnRightArm => currentTattooCount == currentRightArmTattoos.Length && onlyOnRightArm;
+
+		public bool OnlySleeveTattoos => currentTattooCount == 2 && TattooedAt(ArmTattooLocation.LEFT_SLEEVE) && TattooedAt(ArmTattooLocation.RIGHT_SLEEVE);
+		public bool OnlyShoulderTattoos => currentTattooCount == 2 && TattooedAt(ArmTattooLocation.LEFT_SHOULDER) && TattooedAt(ArmTattooLocation.RIGHT_SHOULDER);
+		public bool OnlyInnerForearmTattoos => currentTattooCount == 2 && TattooedAt(ArmTattooLocation.LEFT_INNER_FOREARM) && TattooedAt(ArmTattooLocation.RIGHT_INNER_FOREARM);
+		public bool OnlyOuterForearmTattoos => currentTattooCount == 2 && TattooedAt(ArmTattooLocation.LEFT_OUTER_FOREARM) && TattooedAt(ArmTattooLocation.RIGHT_OUTER_FOREARM);
+		public bool OnlyForearmTattoos => currentTattooCount == 2 && TattooedAt(ArmTattooLocation.LEFT_FOREARM) && TattooedAt(ArmTattooLocation.RIGHT_FOREARM);
+		public bool OnlyUpperArmTattoos => currentTattooCount == 2 && TattooedAt(ArmTattooLocation.LEFT_UPPER_ARM) && TattooedAt(ArmTattooLocation.RIGHT_UPPER_ARM);
+		public bool OnlyWristTattoos => currentTattooCount == 2 && TattooedAt(ArmTattooLocation.LEFT_WRIST) && TattooedAt(ArmTattooLocation.RIGHT_WRIST);
+		public bool OnlyHandTattoos => currentTattooCount == 2 && TattooedAt(ArmTattooLocation.LEFT_HAND) && TattooedAt(ArmTattooLocation.RIGHT_HAND);
+
+		public bool MatchingSleeveTattoos()
+		{
+			return TattooBase.MatchingTattoos(this[ArmTattooLocation.LEFT_SLEEVE], this[ArmTattooLocation.RIGHT_SLEEVE]);
+		}
+
+		public bool MatchingSleeveTattoosIgnoreColor()
+		{
+			return TattooBase.MatchingTattoosIgnoreColor(this[ArmTattooLocation.LEFT_SLEEVE], this[ArmTattooLocation.RIGHT_SLEEVE]);
+		}
+
+		public bool MatchingShoulderTattoos()
+		{
+			return TattooBase.MatchingTattoos(this[ArmTattooLocation.LEFT_SHOULDER], this[ArmTattooLocation.RIGHT_SHOULDER]);
+		}
+
+		public bool MatchingShoulderTattoosIgnoreColor()
+		{
+			return TattooBase.MatchingTattoosIgnoreColor(this[ArmTattooLocation.LEFT_SHOULDER], this[ArmTattooLocation.RIGHT_SHOULDER]);
+		}
+
+		public bool MatchingUpperArmTattoos()
+		{
+			return TattooBase.MatchingTattoos(this[ArmTattooLocation.LEFT_UPPER_ARM], this[ArmTattooLocation.RIGHT_UPPER_ARM]);
+		}
+
+		public bool MatchingUpperArmTattoosIgnoreColor()
+		{
+			return TattooBase.MatchingTattoosIgnoreColor(this[ArmTattooLocation.LEFT_UPPER_ARM], this[ArmTattooLocation.RIGHT_UPPER_ARM]);
+		}
+
+		public bool MatchingForearmTattoos()
+		{
+			return TattooBase.MatchingTattoos(this[ArmTattooLocation.LEFT_FOREARM], this[ArmTattooLocation.RIGHT_FOREARM]);
+		}
+
+		public bool MatchingForearmTattoosIgnoreColor()
+		{
+			return TattooBase.MatchingTattoosIgnoreColor(this[ArmTattooLocation.LEFT_FOREARM], this[ArmTattooLocation.RIGHT_FOREARM]);
+		}
+
+		public bool MatchingOuterForearmTattoos()
+		{
+			return TattooBase.MatchingTattoos(this[ArmTattooLocation.LEFT_OUTER_FOREARM], this[ArmTattooLocation.RIGHT_OUTER_FOREARM]);
+		}
+
+		public bool MatchingOuterForearmTattoosIgnoreColor()
+		{
+			return TattooBase.MatchingTattoosIgnoreColor(this[ArmTattooLocation.LEFT_OUTER_FOREARM], this[ArmTattooLocation.RIGHT_OUTER_FOREARM]);
+		}
+
+		public bool MatchingInnerForearmTattoos()
+		{
+			return TattooBase.MatchingTattoos(this[ArmTattooLocation.LEFT_INNER_FOREARM], this[ArmTattooLocation.RIGHT_INNER_FOREARM]);
+		}
+
+		public bool MatchingInnerForearmTattoosIgnoreColor()
+		{
+			return TattooBase.MatchingTattoosIgnoreColor(this[ArmTattooLocation.LEFT_INNER_FOREARM], this[ArmTattooLocation.RIGHT_INNER_FOREARM]);
+		}
+
+		public bool MatchingWristTattoos()
+		{
+			return TattooBase.MatchingTattoos(this[ArmTattooLocation.LEFT_WRIST], this[ArmTattooLocation.RIGHT_WRIST]);
+		}
+
+		public bool MatchingWristTattoosIgnoreColor()
+		{
+			return TattooBase.MatchingTattoosIgnoreColor(this[ArmTattooLocation.LEFT_WRIST], this[ArmTattooLocation.RIGHT_WRIST]);
+		}
+
+		//matching tattoos.
+		public bool MatchingHandTattoos()
+		{
+			return TattooBase.MatchingTattoos(this[ArmTattooLocation.LEFT_HAND], this[ArmTattooLocation.RIGHT_HAND]);
+		}
+
+		//matching tattoos, but different colors.
+		public bool MatchingHandTattooIgnoreColor()
+		{
+			return TattooBase.MatchingTattoosIgnoreColor(this[ArmTattooLocation.LEFT_HAND], this[ArmTattooLocation.RIGHT_HAND]);
+		}
+
+
+
+	}
 
 	public sealed partial class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
 	{
@@ -69,7 +300,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private ArmType _type;
 
-		public readonly TattooablePart<ArmTattoos> tattoos;
+		public readonly ArmTattoo tattoos;
 
 
 
@@ -105,23 +336,7 @@ namespace CoC.Backend.BodyParts
 			_type = armType ?? throw new ArgumentNullException(nameof(armType));
 			hands = new Hands(creatureID, type.handType, (x) => x ? epidermis : secondaryEpidermis);
 
-			tattoos = new TattooablePart<ArmTattoos>(TattooSize);
-		}
-
-		private TattooSize TattooSize(ArmTattoos tattoo)
-		{
-			switch (tattoo)
-			{
-				case ArmTattoos.WRIST:
-					return Items.Wearables.Tattoos.TattooSize.SMALL;
-				case ArmTattoos.SHOULDER:
-				case ArmTattoos.INNER_ARM:
-				case ArmTattoos.OUTER_ARM:
-					return Items.Wearables.Tattoos.TattooSize.MEDIUM;
-				case ArmTattoos.SLEEVE:
-				default:
-					return Items.Wearables.Tattoos.TattooSize.FULL;
-			}
+			tattoos = new ArmTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
 		//default implementation of update and restore are fine
@@ -198,7 +413,7 @@ namespace CoC.Backend.BodyParts
 		public abstract bool hasPrimaryTone { get; }
 		public virtual bool hasSecondaryTone => false;
 
-		public override int index => _index;
+		public override int id => _index;
 		private readonly int _index;
 
 		protected internal delegate string ArmAndHandsDescriptor(ArmData arms, bool alternateFormat, bool plural, bool includeFingers);

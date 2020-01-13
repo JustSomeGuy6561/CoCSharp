@@ -11,16 +11,34 @@ namespace CoC.Backend.Items
 
 	public abstract class CapacityItem
 	{
-		public readonly SimpleDescriptor shortName;
-		public readonly SimpleDescriptor fullName;
-		public readonly SimpleDescriptor description;
+		//abbreviated name, for buttons and such.
+		private readonly SimpleDescriptor abbreviatedName;
+		//Non-abbreviated name. useful when the player has an item and we don't want to describe it again, but can't use the abbreviated name because that doesn't work in a sentence.
+		private readonly SimpleDescriptor name;
+		//concise description of the item. this is used basically everywhere.
+		private readonly SimpleDescriptor description;
+		//a full sentence description of the item, with appearance and smells or whatever. used for tooltips, primarily.
+		private readonly SimpleDescriptor apperanceSentence;
 
-		protected CapacityItem(SimpleDescriptor shortName, SimpleDescriptor fullName, SimpleDescriptor desc)
+
+		protected CapacityItem(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
 		{
-			this.shortName = shortName ?? throw new ArgumentNullException(nameof(shortName));
-			this.fullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
-			description = desc;
+			this.abbreviatedName = abbreviate ?? throw new ArgumentNullException(nameof(abbreviate));
+			this.name = itemName ?? throw new ArgumentNullException(nameof(itemName));
+
+			description = shortDesc ?? throw new ArgumentNullException(nameof(shortDesc));
+			apperanceSentence = appearance ?? throw new ArgumentNullException(nameof(appearance));
 		}
+
+		//name used for buttons and such.
+		public string AbbreviatedName() => abbreviatedName();
+
+		//name used when we don't have any character limit.
+		public string ItemName() => name();
+
+		public string ItemDescription() => description();
+
+		public string Appearance() => apperanceSentence();
 
 		public abstract byte maxCapacityPerSlot { get; }
 
@@ -47,7 +65,7 @@ namespace CoC.Backend.Items
 
 		public int buyPrice => Math.Max(monetaryValue, 0);
 
-		//by default, items that can be bought are given a positive value. you may override this if you want an item that can be sold and thus has a price, 
+		//by default, items that can be bought are given a positive value. you may override this if you want an item that can be sold and thus has a price,
 		public virtual bool canBuy => buyPrice > 0;
 		public virtual bool canSell => true;
 

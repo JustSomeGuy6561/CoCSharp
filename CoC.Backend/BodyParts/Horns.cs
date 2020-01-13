@@ -336,7 +336,7 @@ namespace CoC.Backend.BodyParts
 		//properties
 		public bool allowsHorns => maxHorns > 0;
 
-		public override int index => _index;
+		public override int id => _index;
 
 		private readonly ShortMaybePluralDescriptor shortPluralDesc;
 		private readonly MaybePluralPartDescriptor<HornData> longPluralDesc;

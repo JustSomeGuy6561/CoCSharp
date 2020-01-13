@@ -9,9 +9,9 @@ namespace CoC.Backend.Items.Wearables.Armor
 {
 	public abstract class ArmorBase : WearableItemBase<ArmorBase>
 	{
-		protected ArmorBase(SimpleDescriptor shortName, SimpleDescriptor fullName, SimpleDescriptor description) : base(shortName, fullName, description)
-		{
-		}
+		protected ArmorBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
+			: base(abbreviate, itemName, shortDesc, appearance)
+		{}
 
 		//only called if can use returns true.
 

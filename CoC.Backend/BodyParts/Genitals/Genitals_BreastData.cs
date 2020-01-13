@@ -305,6 +305,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			int oldCount = numBreastRows;
+
 			//if over the number of breasts, reset the first one and set the number to remove to one less than the total.
 			if (count >= numBreastRows)
 			{
@@ -689,50 +690,140 @@ namespace CoC.Backend.BodyParts
 		#endregion
 #warning TODO:  a means to min/max lactationStatus?
 
+		#region Breast Text
 
-		#region Text
+		public string AllBreastsShortDescription(bool alternateFormat = false) => GenitalStrings.AllBreastsShortDescription(this, alternateFormat);
 
-		public string AllBreastsShortDescription(bool alternateFormat = false)
+		public string AllBreastsLongDescription(bool alternateFormat = false) => GenitalStrings.AllBreastsLongDescription(this, alternateFormat);
+
+		public string AllBreastsFullDescription(bool alternateFormat = false) => GenitalStrings.AllBreastsFullDescription(this, alternateFormat);
+
+		public string ChestOrAllBreastsShort(bool alternateFormat = false) => GenitalStrings.ChestOrAllBreastsShort(this, alternateFormat);
+
+		public string ChestOrAllBreastsLong(bool alternateFormat = false) => GenitalStrings.ChestOrAllBreastsLong(this, alternateFormat);
+
+		public string ChestOrAllBreastsFull(bool alternateFormat = false) => GenitalStrings.ChestOrAllBreastsFull(this, alternateFormat);
+
+
+		#endregion
+
+	}
+
+	public partial class GenitalsData
+	{
+		#region Public Lactation Related Members
+
+		//multiplies capacity volume by this value to determine actual amount you can lactate. completely breaks physics, but so does most of this game, so...
+		public readonly float lactation_TotalCapacityMultiplier;
+
+		public readonly float lactation_CapacityMultiplier;
+		public readonly float lactationProductionModifier;
+
+		//how much time does this character have at full capacity before their lactation modifier starts decreasing, stored in hours. Note that at epic level, this value is halved, rounded up.
+		public readonly uint overfullBuffer;
+
+		public readonly float currentLactationAmount;
+
+		public float lactationAmountPerBreast => currentLactationAmount / numBreasts;
+		#endregion
+
+		#region Public Breast Related Computed Values
+		public int numBreastRows => breasts.Count;
+
+		public int numBreasts => breasts.Sum(x => x.numberOfBreasts);
+
+		public readonly uint titFuckCount;
+
+		public readonly uint breastOrgasmCount;
+		public readonly uint breastDryOrgasmCount;
+
+		#endregion
+
+		#region Public Lactation Related Computed Values
+		public readonly bool canLessenCurrentLactationLevels;
+
+		public readonly int hoursSinceLastMilked;
+
+		public readonly bool isOverfull;
+
+		public readonly int hoursOverfull;
+
+		public readonly float maximumLactationCapacity;
+		//current maximum capacity. if you aren't lactating, this is 0.
+		public readonly float currentLactationCapacity;
+
+		public readonly float lactationRate;
+
+		public readonly LactationStatus lactationStatus;
+
+		public bool isLactating => lactationStatus != LactationStatus.NOT_LACTATING;
+		#endregion
+
+		#region Breast Aggregate Functions
+
+		public CupSize BiggestCupSize()
 		{
-			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().ShortDescription();
+			return (CupSize)breasts.Max(x => (byte?)x?.cupSize);
 		}
 
-		public string AllBreastsLongDescription(bool alternateFormat = false)
+		public CupSize AverageCupSize()
 		{
-			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().LongDescription(false, true);
+			return (CupSize)(byte)Math.Ceiling(breasts.Average(x => (double)x.cupSize));
 		}
 
-		public string AllBreastsFullDescription(bool alternateFormat = false)
+		public CupSize SmallestCupSize()
 		{
-			return BreastRowCountText(alternateFormat, true) + this.AverageBreasts().FullDescription(false, false, true);
+			return (CupSize)breasts.Min(x => (byte?)x?.cupSize);
 		}
 
-		public string ChestOrAllBreastsShort(bool alternateFormat = false)
+		public BreastData LargestBreast()
 		{
-			if (numBreastRows == 1 && _breasts[0].isMale)
+			return breasts.MaxItem(x => (byte)x.cupSize);
+		}
+
+		public BreastData SmallestBreast()
+		{
+			return breasts.MinItem(x => (byte)x.cupSize);
+		}
+
+		public BreastData SmallestBreastByNippleLength()
+		{
+			return breasts.MinItem(x => x.nipples.length);
+		}
+
+		public BreastData LargestBreastByNippleLength()
+		{
+			return breasts.MaxItem(x => x.nipples.length);
+		}
+
+		public BreastData AverageBreasts()
+		{
+			if (breasts.Count == 0)
 			{
-				return ChestShortDesc(alternateFormat);
+				return null;
 			}
-			else return AllBreastsShortDescription(alternateFormat);
+			var averageCup = AverageCupSize();
+			var averageNippleLength = AverageNippleSize();
+			return Breasts.GenerateAggregate(creatureID, averageCup, averageNippleLength, blackNipples, quadNipples, nippleType, lactationRate, lactationStatus,
+				isOverfull, gender, relativeLust);
 		}
 
-		public string ChestOrAllBreastsLong(bool alternateFormat = false)
-		{
-			if (numBreastRows == 1 && _breasts[0].isMale)
-			{
-				return ChestDesc(alternateFormat, false);
-			}
-			else return AllBreastsLongDescription(alternateFormat);
-		}
+		#endregion
 
-		public string ChestOrAllBreastsFull(bool alternateFormat = false)
-		{
-			if (numBreastRows == 1 && _breasts[0].isMale)
-			{
-				return ChestDesc(alternateFormat, true);
-			}
-			else return AllBreastsFullDescription(alternateFormat);
-		}
+		#region Breast Text
+
+		public string AllBreastsShortDescription(bool alternateFormat = false) => GenitalStrings.AllBreastsShortDescription(this, alternateFormat);
+
+		public string AllBreastsLongDescription(bool alternateFormat = false) => GenitalStrings.AllBreastsLongDescription(this, alternateFormat);
+
+		public string AllBreastsFullDescription(bool alternateFormat = false) => GenitalStrings.AllBreastsFullDescription(this, alternateFormat);
+
+		public string ChestOrAllBreastsShort(bool alternateFormat = false) => GenitalStrings.ChestOrAllBreastsShort(this, alternateFormat);
+
+		public string ChestOrAllBreastsLong(bool alternateFormat = false) => GenitalStrings.ChestOrAllBreastsLong(this, alternateFormat);
+
+		public string ChestOrAllBreastsFull(bool alternateFormat = false) => GenitalStrings.ChestOrAllBreastsFull(this, alternateFormat);
+
 
 		#endregion
 	}

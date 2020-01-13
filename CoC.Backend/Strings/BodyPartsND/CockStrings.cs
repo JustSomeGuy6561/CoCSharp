@@ -13,7 +13,7 @@ namespace CoC.Backend.BodyParts
 {
 #warning Handle GOO TFs so they suck less
 
-	public partial class CockPiercingLocations
+	public partial class CockPiercingLocation
 	{
 		private static string AlbertButton()
 		{
@@ -138,7 +138,11 @@ namespace CoC.Backend.BodyParts
 			return "Cock";
 		}
 
-		private string AllCockPiercingsStr(PlayerBase player)
+		private string AllCockPiercingsShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private string AllCockPiercingsLong(PlayerBase player)
 		{
 			StringBuilder sb = new StringBuilder();
 			//full piercings, or full piercings without prince albert.
@@ -152,7 +156,7 @@ namespace CoC.Backend.BodyParts
 			//
 			//}
 			int frenumJewelryCount = cockPiercings.jewelryCount;
-			bool hasPA = cockPiercings.WearingJewelryAt(CockPiercingLocations.PRINCE_ALBERT);
+			bool hasPA = cockPiercings.WearingJewelryAt(CockPiercingLocation.PRINCE_ALBERT);
 			if (hasPA)
 			{
 				frenumJewelryCount--;
@@ -170,15 +174,15 @@ namespace CoC.Backend.BodyParts
 				else
 				{
 					intro = "Piercings, ";
-					sb.Append("Piercings ");
+					outro = ", giving you a full ladder";
 				}
-				sb.Append("run down the entire length of your cock");
+				sb.Append(intro + "run down the entire length of your cock" + outro);
 
 				//if (hasPA, giving you a full ladder. You have little doubt they'll make ")
 			}
 
 
-			if (cockPiercings.jewelryCount > 1 || (cockPiercings.wearingJewelry && !cockPiercings.WearingJewelryAt(CockPiercingLocations.PRINCE_ALBERT)))
+			if (cockPiercings.jewelryCount > 1 || (cockPiercings.wearingJewelry && !cockPiercings.WearingJewelryAt(CockPiercingLocation.PRINCE_ALBERT)))
 			{
 
 			}

@@ -14,9 +14,9 @@ namespace CoC.Backend.Items.Consumables
 	{
 		protected const int DEFAULT_VALUE = 6;
 
-		protected ConsumableBase(SimpleDescriptor shortName, SimpleDescriptor fullName, SimpleDescriptor description) : base(shortName, fullName, description)
-		{
-		}
+		protected ConsumableBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
+			: base(abbreviate, itemName, shortDesc, appearance)
+		{ }
 
 		//does this consumable count as liquid for slimes?
 		public abstract bool countsAsLiquid { get; }

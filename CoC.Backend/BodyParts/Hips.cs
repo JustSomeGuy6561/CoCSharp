@@ -12,6 +12,7 @@ using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
+	//hip tattoos are part of lower body. it makes sense there, i guess.
 	public sealed partial class Hips : SimpleSaveablePart<Hips, HipData>, IShrinkable //Gro+ doesn't work on hips.
 	{
 		public override string BodyPartName() => Name();

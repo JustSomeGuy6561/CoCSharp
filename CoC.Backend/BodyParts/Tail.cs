@@ -75,7 +75,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TailPiercing : Piercing<TailPiercingLocation>
 	{
-		public TailPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public TailPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -177,7 +177,7 @@ namespace CoC.Backend.BodyParts
 		{
 			_type = tailType ?? throw new ArgumentNullException(nameof(tailType));
 			_tailCount = _type.initialTailCount;
-			tailPiercings = new TailPiercing(PiercingLocationUnlocked, AllTailPiercingsStr);
+			tailPiercings = new TailPiercing(PiercingLocationUnlocked, AllTailPiercingsShort, AllTailPiercingsLong);
 
 			ovipositorEnabled = tailType.allowsOvipositor && hasOvipositorIfApplicable;
 		}
@@ -602,7 +602,7 @@ namespace CoC.Backend.BodyParts
 			return (x, y) => restore(x, y);
 		}
 
-		public override int index => _index;
+		public override int id => _index;
 
 		public bool allowsOvipositor => ovipositorType != OvipositorType.NONE;
 

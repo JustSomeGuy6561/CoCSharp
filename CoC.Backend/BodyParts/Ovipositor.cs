@@ -46,7 +46,7 @@ namespace CoC.Backend.BodyParts
 	//while already having the prerequisite tail?
 	public sealed partial class OvipositorType : BehaviorBase
 	{
-		public override int index => throw new NotImplementedException();
+		public override int id => throw new NotImplementedException();
 
 		public static OvipositorType defaultValue => NONE;
 

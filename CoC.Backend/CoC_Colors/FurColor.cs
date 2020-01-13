@@ -193,6 +193,11 @@ namespace CoC.Backend.CoC_Colors
 				return hashCode;
 			}
 		}
+
+		public ReadOnlyFurColor AsReadOnly()
+		{
+			return new ReadOnlyFurColor(this);
+		}
 	}
 
 	public static class FurColorHelper

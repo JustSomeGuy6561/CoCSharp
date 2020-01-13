@@ -97,7 +97,11 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllClitPiercingsStr(PlayerBase player)
+		private string AllClitPiercingsShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private string AllClitPiercingsLong(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -132,7 +136,7 @@ namespace CoC.Backend.BodyParts
 
 		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => clitPiercings;
 
-		Guid IClit.creatureID => CreatureID;
+		Guid IClit.creatureID => creatureID;
 	}
 
 	internal static class ClitStrings

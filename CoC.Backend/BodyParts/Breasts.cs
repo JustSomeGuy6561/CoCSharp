@@ -35,6 +35,9 @@ namespace CoC.Backend.BodyParts
 	}
 
 	//Note: Breasts aren't generated until after perks have been created. Thus, their post perk init is never called, but initial constructor can use perk data without fail.
+
+	//breast tattoos in genitals.
+
 	public sealed partial class Breasts : SimpleSaveablePart<Breasts, BreastData>, IGrowable, IShrinkable
 	{
 		public override string BodyPartName() => Name();
@@ -147,7 +150,7 @@ namespace CoC.Backend.BodyParts
 		public uint nippleDryOrgasmCount => nipples.dryOrgasmCount;
 
 		public readonly Nipples nipples;
-		public bool isMale => cupSize == CupSize.FLAT && nipples.length <= .5f;
+		public bool isMale => cupSize == maleMinCup && nipples.length <= .5f;
 
 		internal Breasts(Guid creatureID, BreastPerkHelper initialPerkData, Gender initialGender) : base(creatureID)
 		{
@@ -451,9 +454,14 @@ namespace CoC.Backend.BodyParts
 
 		public readonly byte numberOfBreasts;
 
+		public readonly CupSize maleMinSize;
+		public readonly CupSize femaleMinSize;
+
 		public readonly bool isOverFull;
 
 		internal readonly Gender gender;
+
+		public bool isMaleBreasts => cupSize == maleMinSize && nipples.length <= 0.5f;
 
 		#region Text
 		//by default, short description simply returns the noun, in plural format.

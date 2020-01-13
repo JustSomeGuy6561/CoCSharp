@@ -144,7 +144,7 @@ namespace CoC.Backend.BodyParts
 			footStr = nounText ?? throw new ArgumentNullException(nameof(nounText));
 		}
 
-		public override int index => _index;
+		public override int id => _index;
 		private readonly int _index;
 
 		public static readonly FootType HUMAN = new FootType(FootStyle.FEET, HumanNoun, HumanDesc, HumanSingleDesc, HumanLongDesc);

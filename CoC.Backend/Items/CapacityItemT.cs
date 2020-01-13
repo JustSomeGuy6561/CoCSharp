@@ -6,17 +6,17 @@ namespace CoC.Backend.Items
 {
 	public abstract class CapacityItem<T> : CapacityItem where T : CapacityItem<T>
 	{
-		protected CapacityItem(SimpleDescriptor shortName, SimpleDescriptor fullName, SimpleDescriptor description) : base(shortName, fullName, description)
-		{
-		}
+		protected CapacityItem(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
+			: base(abbreviate, itemName, shortDesc, appearance)
+		{ }
 
 		public override void AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
 		{
 			AttemptToUseSafe(target, (x, y, z) => postItemUseCallback(x, y, z));
 		}
 
-		//safe variant that ensures T->T when item is used. this allows us to enforce inventories that require a certain Base Item Type. 
-		//for example: the weapon rack will always have weapons; you can't pull a fast one and swap in a non-weapon when equipping a weapon off the rack.  
+		//safe variant that ensures T->T when item is used. this allows us to enforce inventories that require a certain Base Item Type.
+		//for example: the weapon rack will always have weapons; you can't pull a fast one and swap in a non-weapon when equipping a weapon off the rack.
 		public virtual void AttemptToUseSafe(Creature target, UseItemCallbackSafe<T> postItemUseCallbackSafe)
 		{
 			if (!CanUse(target, out string whyNot))

@@ -14,9 +14,76 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
-	//Moved abdomens for bee, spider here. I dunno, it seemed like that made more sense, though i'm not exactly familiar with the anatomy of anthropomorphized spiders.
-	//tail now has the ovipositors. ovipositors are no longer perks. in the event bees and spiders need some back type (remember, wings and back are separate), i could just
-	//add an ovipositor type. for now i don't think i need to. the scorpion is still a tail, but i may move it here for ease of coding, though technically it's a tail. idk man.
+	public sealed partial class BackTattooLocation : TattooLocation
+	{
+
+		private static readonly List<BackTattooLocation> _allLocations = new List<BackTattooLocation>();
+
+		public static readonly ReadOnlyCollection<BackTattooLocation> allLocations;
+
+		private readonly byte index;
+
+		static BackTattooLocation()
+		{
+			allLocations = new ReadOnlyCollection<BackTattooLocation>(_allLocations);
+		}
+
+		private BackTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
+
+		//tramp stamp = LeftLower + RightLower
+		//upper back = LeftShoulderblade + Rightshoulderblade
+
+		public static BackTattooLocation LEFT_SHOULDERBLADE = new BackTattooLocation(0, SmallTattoosOnly, LeftShoulderbladeButton, LeftShoulderbladeLocation);
+		public static BackTattooLocation RIGHT_SHOULDERBLADE = new BackTattooLocation(1, SmallTattoosOnly, RightShoulderbladeButton, RightShoulderbladeLocation);
+		public static BackTattooLocation UPPER_BACK = new BackTattooLocation(2, MediumTattoosOrSmaller, UpperBackButton, UpperBackLocation);
+		public static BackTattooLocation LEFT_LOWER_BACK = new BackTattooLocation(3, SmallTattoosOnly, LeftLowerBackButton, LeftLowerBackLocation);
+		public static BackTattooLocation RIGHT_LOWER_BACK = new BackTattooLocation(4, SmallTattoosOnly, RightLowerBackButton, RightLowerBackLocation);
+		public static BackTattooLocation TRAMP_STAMP = new BackTattooLocation(5, MediumTattoosOrSmaller, LowerBackButton, LowerBackLocation);
+		public static BackTattooLocation LARGE_BACK = new BackTattooLocation(6, LargeTattoosOrSmaller, LargeBackButton, LargeBackLocation);
+		public static BackTattooLocation FULL_BACK = new BackTattooLocation(7, FullPartTattoo, FullBackButton, FullBackLocation);
+
+		public static bool LocationsCompatible(BackTattooLocation first, BackTattooLocation second)
+		{
+			//upper back is not compatible with the shoulderblades (it basically is a combo of them)
+			//lower back (tramp stamp or slag tag) is not compatible with the left/right lower back (it basically combines them)
+			//the remainder of these are compatible.run these checks accordingly.
+
+			//if one is left forearm.
+			if (first == UPPER_BACK || second == UPPER_BACK)
+			{
+				//check to see if other is left inner or left outer forearm.
+				var other = (first == UPPER_BACK) ? second : first;
+				return other != LEFT_SHOULDERBLADE && other != RIGHT_SHOULDERBLADE;
+			}
+			//ditto for right forearm.
+			else if (first == TRAMP_STAMP || second == TRAMP_STAMP)
+			{
+				var other = (first == TRAMP_STAMP) ? second : first;
+				return other != LEFT_LOWER_BACK && other != RIGHT_LOWER_BACK;
+			}
+			//otherwise, we're good.s
+			else
+			{
+				return true;
+			}
+		}
+	}
+
+	public sealed class BackTattoo : TattooablePart<BackTattooLocation>
+	{
+		public BackTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		{
+		}
+
+		public override int MaxTattoos => BackTattooLocation.allLocations.Count;
+
+		public override IEnumerable<BackTattooLocation> availableLocations => BackTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(BackTattooLocation first, BackTattooLocation second) => BackTattooLocation.LocationsCompatible(first, second);
+	}
 
 	//only way data changes is due to dye. i figure that's rare enough not to deal with it.
 	public sealed partial class Back : BehavioralSaveablePart<Back, BackType, BackData>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
@@ -64,9 +131,13 @@ namespace CoC.Backend.BodyParts
 
 		public override BackType defaultType => BackType.defaultValue;
 
+		public readonly BackTattoo tattoos;
+
 		internal Back(Guid creatureID, BackType backType) : base(creatureID)
 		{
 			type = backType ?? throw new ArgumentNullException();
+
+			tattoos = new BackTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
 		internal Back(Guid creatureID) : this(creatureID, BackType.defaultValue) { }
@@ -228,7 +299,7 @@ namespace CoC.Backend.BodyParts
 		private static readonly List<BackType> backs = new List<BackType>();
 		public static readonly ReadOnlyCollection<BackType> availableTypes = new ReadOnlyCollection<BackType>(backs);
 		private readonly int _index;
-		public override int index => _index;
+		public override int id => _index;
 
 		public static BackType defaultValue => NORMAL;
 

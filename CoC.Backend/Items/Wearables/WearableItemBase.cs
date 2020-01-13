@@ -7,14 +7,14 @@ namespace CoC.Backend.Items.Wearables
 {
 	public abstract class WearableItemBase<T> : CapacityItem<T> where T:WearableItemBase<T>
 	{
-		protected WearableItemBase(SimpleDescriptor shortName, SimpleDescriptor fullName, SimpleDescriptor description) : base(shortName, fullName, description)
-		{
-		}
+		protected WearableItemBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
+			: base(abbreviate, itemName, shortDesc, appearance)
+		{}
 
 		protected abstract bool CanWearWithBodyData(Creature creature, out string whyNot);
 
 		/// <summary>
-		/// Equip the item. At this point, CanUse has been called. It's assumed that this will always succeed at this point. 
+		/// Equip the item. At this point, CanUse has been called. It's assumed that this will always succeed at this point.
 		/// Additionally, apply any perks, reactions, and/or status effects as necessary.
 		/// </summary>
 		/// <param name="wearer">The creature equipping this wearable item.</param>

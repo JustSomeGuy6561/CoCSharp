@@ -246,7 +246,7 @@ namespace CoC.Backend.BodyParts
 			scleraColor = color;
 		}
 
-		public override int index => _index;
+		public override int id => _index;
 
 		internal virtual AttackBase attack => AttackBase.NO_ATTACK;
 

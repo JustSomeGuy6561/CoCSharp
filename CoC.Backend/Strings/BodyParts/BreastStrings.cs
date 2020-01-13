@@ -180,6 +180,12 @@ namespace CoC.Backend.BodyParts
 			//2 of 10 on the tits require a size - 1st >4, 2nd >6, or fall through to breasts.
 			//udders requires lactation; falls through to breasts.
 
+			if (breast.cupSize == CupSize.FLAT)
+			{
+				return "flat breasts";
+			}
+
+
 			int rand = Utils.Rand(10);
 
 

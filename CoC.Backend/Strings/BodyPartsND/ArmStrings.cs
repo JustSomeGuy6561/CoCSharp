@@ -11,6 +11,143 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class ArmTattooLocation
+	{
+		private static string LeftHandButton()
+		{
+			return "Left Hand";
+		}
+		private static string LeftHandLocation()
+		{
+			return "left hand";
+		}
+
+		private static string LeftWristButton()
+		{
+			return "Left Wrist";
+		}
+		private static string LeftWristLocation()
+		{
+			return "left wrist";
+		}
+		private static string LeftInnerArmButton()
+		{
+			return "L.Inner Fore";
+		}
+		private static string LeftInnerArmLocation()
+		{
+			return "left inner forearm";
+		}
+		private static string LeftOuterArmButton()
+		{
+			return "L.Outer Fore";
+		}
+		private static string LeftOuterArmLocation()
+		{
+			return "left outer forearm";
+		}
+
+		private static string LeftForearmButton()
+		{
+			return "L. Forearm";
+		}
+		private static string LeftForearmLocation()
+		{
+			return "left forearm";
+		}
+
+		private static string LeftUpperArmButton()
+		{
+			return "L. Upper Arm";
+		}
+		private static string LeftUpperArmLocation()
+		{
+			return "left upper arm";
+		}
+		private static string LeftShoulderButton()
+		{
+			return "L. Shoulder";
+		}
+		private static string LeftShoulderLocation()
+		{
+			return "left shoulder";
+		}
+		private static string LeftSleeveButton()
+		{
+			return "Left Sleeve";
+		}
+		private static string LeftSleeveLocation()
+		{
+			return "entire left arm";
+		}
+
+		private static string RightHandButton()
+		{
+			return "Right Hand";
+		}
+		private static string RightHandLocation()
+		{
+			return "right hand";
+		}
+
+		private static string RightWristButton()
+		{
+			return "Right Wrist";
+		}
+		private static string RightWristLocation()
+		{
+			return "right wrist";
+		}
+		private static string RightInnerArmButton()
+		{
+			return "R.Inner Fore";
+		}
+		private static string RightInnerArmLocation()
+		{
+			return "right inner forearm";
+		}
+		private static string RightOuterArmButton()
+		{
+			return "R.Outer Fore";
+		}
+		private static string RightOuterArmLocation()
+		{
+			return "right outer forearm";
+		}
+		private static string RightForearmButton()
+		{
+			return "R. Forearm";
+		}
+		private static string RightForearmLocation()
+		{
+			return "right forearm";
+		}
+		private static string RightUpperArmButton()
+		{
+			return "R. Upper Arm";
+		}
+		private static string RightUpperArmLocation()
+		{
+			return "right upper arm";
+		}
+		private static string RightShoulderButton()
+		{
+			return "R. Shoulder";
+		}
+		private static string RightShoulderLocation()
+		{
+			return "right shoulder";
+		}
+		private static string RightSleeveButton()
+		{
+			return "Right Sleeve";
+		}
+		private static string RightSleeveLocation()
+		{
+			return "entire right arm";
+		}
+	}
+
 #warning Handle GOO TFs so they suck less
 	public partial class Arms
 	{
@@ -18,6 +155,252 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Arms";
 		}
+
+		private string AllTattoosShort(PlayerBase player)
+		{
+			//feel free to alter this flavor text or rewrite some of these to use other flavor text.
+			string armFlavorText = ", visible for all to see.";
+
+			//first, see if we have no tats.
+			if (tattoos.currentTattooCount == 0)
+			{
+				return "";
+			}
+			//start with the tattoo-heavy options and work our way down
+			//full tats.
+			if (tattoos.currentTattooCount == tattoos.MaxTattoos)
+			{
+				return "A myriad of tattoos cover both of your arms from shoulder to " + hands.HandText(false) + armFlavorText;
+			}
+			//full tat (left arm)
+			else if (tattoos.allOnLeftArm)
+			{
+				return "A myriad of tattoos cover your left arm" + armFlavorText + " They contrast sharply with your right arm, which has none.";
+			}
+			//full tat (right arm)
+			else if (tattoos.allOnRightArm)
+			{
+				return "A myriad of tattoos cover your right arm" + armFlavorText + " They contrast sharply with your left arm, which has none.";
+			}
+			//more than a couple of tats.
+			else if (tattoos.currentTattooCount > 2)
+			{
+				string armsText;
+
+				if (tattoos.onlyOnLeftArm)
+				{
+					armsText = "covering your left arm, contrasting your right, which has none.";
+				}
+				else if (tattoos.onlyOnRightArm)
+				{
+					armsText = "covering your right arm, contrasting your right, which has none.";
+				}
+				else
+				{
+					var leftTats = tattoos.currentLeftArmTattoos;
+					var rightTats = tattoos.currentRightArmTattoos;
+
+					if (leftTats.Length > rightTats.Length)
+					{
+						armsText = "on both your arms, though you have more on your left.";
+					}
+					else if (leftTats.Length < rightTats.Length)
+					{
+						armsText = "on both your arms, though you have more on your right.";
+					}
+					else
+					{
+						return "on each of your arms.";
+					}
+				}
+
+				return "You have several tattoos clearly visibile " + armsText;
+			}
+			//2 tats or less.
+
+			//start with the sleeves.
+			else if (tattoos.OnlySleeveTattoos)
+			{
+				if (tattoos.MatchingSleeveTattoosIgnoreColor())
+				{
+					return "Each one of your arms is covered in " + tattoos[ArmTattooLocation.LEFT_SLEEVE].ShortDescription(true) + armFlavorText;
+				}
+				else
+				{
+					return "You have a pair of distinctly different tattoos running along your arms" + armFlavorText;
+				}
+			}
+			else if (tattoos.OnlyShoulderTattoos)
+			{
+				if (tattoos.MatchingShoulderTattoosIgnoreColor())
+				{
+					return "You have a pair of " + tattoos[ArmTattooLocation.LEFT_SLEEVE].ShortDescription(false) + "tattoos on your shoulders" + armFlavorText;
+				}
+				else
+				{
+					return "You have a pair of tattoos on your arms, one on each shoulder" + armFlavorText;
+				}
+			}
+			else if (tattoos.OnlyForearmTattoos)
+			{
+				if (tattoos.MatchingForearmTattoosIgnoreColor())
+				{
+					return "You have a pair of " + tattoos[ArmTattooLocation.LEFT_SLEEVE].ShortDescription(false) + "tattoos covering your forearms" + armFlavorText;
+				}
+				else
+				{
+					return "You have a pair of tattoos covering your forearms" + armFlavorText;
+				}
+			}
+			else if (tattoos.OnlyOuterForearmTattoos)
+			{
+				if (tattoos.MatchingOuterForearmTattoosIgnoreColor())
+				{
+					return "You have a pair of " + tattoos[ArmTattooLocation.LEFT_SLEEVE].ShortDescription(false) + "on your upper arms" + armFlavorText;
+				}
+				else
+				{
+					return "You have a pair of tattoos on your upper arms" + armFlavorText;
+				}
+			}
+			else if (tattoos.OnlyInnerForearmTattoos)
+			{
+				if (tattoos.MatchingInnerForearmTattoosIgnoreColor())
+				{
+					return "You have a pair of " + tattoos[ArmTattooLocation.LEFT_SLEEVE].ShortDescription(false) + "tattoos along the inner half of your forearms" + armFlavorText;
+				}
+				else
+				{
+					return "You have a pair of tattoos on the inner halves of your forarms" + armFlavorText;
+				}
+			}
+
+			else if (tattoos.OnlyWristTattoos)
+			{
+				if (tattoos.MatchingWristTattoosIgnoreColor())
+				{
+					return "You have a pair of " + tattoos[ArmTattooLocation.LEFT_SLEEVE].ShortDescription(false) + "tattoos on your wrists" + armFlavorText;
+				}
+				else
+				{
+					return "You have a pair of tattoos on your wrists" + armFlavorText;
+				}
+			}
+			else if (tattoos.OnlyHandTattoos)
+			{
+				if (tattoos.MatchingWristTattoosIgnoreColor())
+				{
+					return "You have a pair of " + tattoos[ArmTattooLocation.LEFT_SLEEVE].ShortDescription(false) + "tattoos, one on each " + hands.HandText(false) + armFlavorText;
+				}
+				else
+				{
+					return "You have a tattoo on each " + hands.HandText(false) + armFlavorText;
+				}
+			}
+
+			else if (tattoos.currentTattooCount > 1)
+			{
+				return "A pair of tattoos adorn your arms" + armFlavorText + " The first is on your " + tattoos.currentTattoos[0].Description() + ", the other on your "
+					+ tattoos.currentTattoos[1].Description() + ".";
+			}
+			else
+			{
+				return "You have " + tattoos[tattoos.currentTattoos[0]].LongDescription(true) + "tattoo on your " + tattoos.currentTattoos[0].Description() + armFlavorText;
+			}
+		}
+
+		private string AllTattoosLong(PlayerBase player)
+		{
+			StringBuilder sb = new StringBuilder("Your " + ShortDescription());
+			if (tattoos.currentTattooCount == tattoos.MaxTattoos)
+			{
+				sb.Append("are covered in a myriad of tattoos: " + Environment.NewLine);
+			}
+			else if (tattoos.currentTattooCount > tattoos.MaxTattoos / 2.0)
+			{
+				sb.Append("are covered with tattoos: " + Environment.NewLine);
+			}
+			else if (tattoos.currentTattooCount > tattoos.MaxTattoos / 4.0)
+			{
+				sb.Append("have a few tattoos covering them in various places: " + Environment.NewLine);
+			}
+			else if (tattoos.currentTattooCount > 0)
+			{
+				sb.Append("are not completely devoid of tattoos: " + Environment.NewLine);
+			}
+			//generally, we won't ever see this - we just skip empty tattoos. But, if it's called, we have something that works and lets us exit quickly.
+			else
+			{
+				sb.Append("are completely devoid of tattoos." + Environment.NewLine);
+				return sb.ToString();
+			}
+
+			//start with the hands.
+			if (tattoos.TattooedAt(ArmTattooLocation.LEFT_HAND) || tattoos.TattooedAt(ArmTattooLocation.RIGHT_HAND))
+			{
+				if (tattoos.MatchingHandTattoos())
+				{
+					sb.Append("You have matching " + tattoos[ArmTattooLocation.LEFT_HAND].LongDescription(false) + "tattoos on your " + hands.HandText() + ".");
+				}
+				else if (tattoos.MatchingHandTattooIgnoreColor())
+				{
+					sb.Append("You have " + tattoos[ArmTattooLocation.LEFT_HAND].ShortDescription(true) + "tattoo on each " + hands.HandText(false) + " - the left is " +
+						tattoos[ArmTattooLocation.LEFT_HAND].tattooColor.AsString() + "; the right " + tattoos[ArmTattooLocation.RIGHT_HAND].tattooColor.AsString() + ".");
+				}
+				else
+				{
+					sb.Append("Your ");
+					if (tattoos.TattooedAt(ArmTattooLocation.LEFT_HAND))
+					{
+						sb.Append("left hand has " + tattoos[ArmTattooLocation.LEFT_HAND].LongDescription(true) + "on it");
+						if (tattoos.TattooedAt(ArmTattooLocation.RIGHT_HAND))
+						{
+							sb.Append(", and your ");
+						}
+					}
+
+					if (tattoos.TattooedAt(ArmTattooLocation.RIGHT_HAND))
+					{
+						sb.Append("right hand has " + tattoos[ArmTattooLocation.LEFT_HAND].LongDescription(true) + "on it");
+					}
+					sb.Append("." + Environment.NewLine);
+				}
+			}
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			//then the wrists.
+			//if (tattoos.TattooedAt(ArmTattooLocation.LEFT_HAND) || tattoos.TattooedAt(ArmTattooLocation.RIGHT_HAND))
+			//{
+			//	if (tattoos.MatchingHandTattoos())
+			//	{
+			//		sb.Append("You have matching " + tattoos[ArmTattooLocation.LEFT_HAND].LongDescription(false) + "tattoos on your " + hands.HandText() + ".");
+			//	}
+			//	else if (tattoos.MatchingHandTattooIgnoreColor())
+			//	{
+			//		sb.Append("You have " + tattoos[ArmTattooLocation.LEFT_HAND].ShortDescription(true) + " on each " + hands.HandText(false) + " - the left is " +
+			//			tattoos[ArmTattooLocation.LEFT_HAND].tattooColor.AsString() + "; the right " + tattoos[ArmTattooLocation.RIGHT_HAND].tattooColor.AsString() + ".");
+			//	}
+			//	else
+			//	{
+			//		sb.Append("Your ");
+			//		if (tattoos.TattooedAt(ArmTattooLocation.LEFT_HAND))
+			//		{
+			//			sb.Append("left hand has " + tattoos[ArmTattooLocation.LEFT_HAND].LongDescription(true) + "on it");
+			//			if (tattoos.TattooedAt(ArmTattooLocation.RIGHT_HAND))
+			//			{
+			//				sb.Append(", and your ");
+			//			}
+			//		}
+
+			//		if (tattoos.TattooedAt(ArmTattooLocation.RIGHT_HAND))
+			//		{
+			//			sb.Append("right hand has " + tattoos[ArmTattooLocation.LEFT_HAND].LongDescription(true) + "on it");
+			//		}
+			//		sb.Append("." + Environment.NewLine);
+			//	}
+			//}
+		}
+
+
 	}
 
 	public partial class ArmType

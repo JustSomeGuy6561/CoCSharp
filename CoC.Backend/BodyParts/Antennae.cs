@@ -88,7 +88,7 @@ namespace CoC.Backend.BodyParts
 
 		public string LongDescriptionAlternate(AntennaeData data, bool plural) => longPluralDesc(data, true, plural);
 
-		public override int index => _index;
+		public override int id => _index;
 		private readonly int _index;
 
 		internal static AntennaeType Deserialize(int index)

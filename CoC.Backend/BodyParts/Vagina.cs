@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LabiaPiercing : Piercing<LabiaPiercingLocation>
 	{
-		public LabiaPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public LabiaPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -91,6 +91,7 @@ namespace CoC.Backend.BodyParts
 		public override IEnumerable<LabiaPiercingLocation> availableLocations => LabiaPiercingLocation.allLocations;
 	}
 
+	//tattoos here are part of genitals class.
 
 	//Note: this class is created after perks have been initialized, so its post perk init is never called.
 
@@ -283,7 +284,7 @@ namespace CoC.Backend.BodyParts
 			_wetness = initialPerkData.defaultWetnessNew;
 			_looseness = initialPerkData.defaultLoosenessNew;
 
-			labiaPiercings = new LabiaPiercing(PiercingLocationUnlocked, AllLabiaPiercingsStr);
+			labiaPiercings = new LabiaPiercing(PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
 		}
 
 		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType, float clitLength,
@@ -309,7 +310,7 @@ namespace CoC.Backend.BodyParts
 			_wetness = vaginalWetness ?? initialPerkData.defaultWetnessNew;
 			_looseness = vaginalLooseness ?? initialPerkData.defaultLoosenessNew;
 
-			labiaPiercings = new LabiaPiercing(PiercingLocationUnlocked, AllLabiaPiercingsStr);
+			labiaPiercings = new LabiaPiercing(PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
 		}
 
 		#endregion
@@ -903,7 +904,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		public override int index => _index;
+		public override int id => _index;
 		private readonly int _index;
 
 		public static readonly VaginaType HUMAN = new VaginaType(0, false, HumanShortDesc, HumanSingleDesc, HumanLongDesc, HumanFullDesc, HumanPlayerStr, HumanTransformStr, HumanGrewVaginaStr, HumanRestoreStr, HumanRemovedVaginaStr);

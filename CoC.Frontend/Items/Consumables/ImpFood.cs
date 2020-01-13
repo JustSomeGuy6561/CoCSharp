@@ -15,29 +15,14 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed class ImpFood : ConsumableBase
+	public sealed partial class ImpFood : ConsumableBase
 	{
-		public ImpFood() : base(Short, Full, Desc)
-		{
-		}
+		public ImpFood() : base(Abbreviated, Name, Desc, AppearanceStr) {}
 
-		private static string Short()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
 
-		private static string Full()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private static string Desc()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
 
 		//does this consumable count as liquid for slimes?
-		public override bool countsAsSlimeLiquid => false;
+		public override bool countsAsLiquid => false;
 		//does this consumable count as cum for succubi?
 		public override bool countsAsCum => false;
 		//how much hunger does consuming this sate?
@@ -64,104 +49,49 @@ namespace CoC.Frontend.Items.Consumables
 			{
 			}
 
-			protected override string ChangeArmText(Creature target, ArmType oldType)
+			protected override string ChangeSkinColorText(Creature target, Tones oldSkinTone)
 			{
-				throw new NotImplementedException();
+				return ImpFood.ChangeSkinColorText(target, oldSkinTone);
 			}
 
-			protected override string ChangeEarsText(Creature target, EarType oldType)
+			protected override string CurrentBreastRowChanged(Creature target, int index, byte cupSizesShrunk, byte rowsPreviouslyModified)
 			{
-				throw new NotImplementedException();
-			}
-
-			protected override string ChangeLowerBodyText(Creature target, LowerBodyType oldType)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override string ChangeOrGrowHornsText(Creature target, EarType oldType)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override string ChangeSkinColorText(Creature target, Tones oldSkinTone, Tones tone)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override string CurrentBreastRowChanged(Creature target, Breasts breast, byte delta, byte rowsModified, bool wasLargeChange)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override string EnlargenedImpWingsText(Creature target)
-			{
-				throw new NotImplementedException();
+				return ImpFood.CurrentBreastRowChanged(target, index, cupSizesShrunk, rowsPreviouslyModified);
 			}
 
 			protected override string GainVitalityText(Creature target)
 			{
-				throw new NotImplementedException();
+				return ImpFood.GainVitalityText(target);
 			}
 
 			protected override string GetShorterText(Creature target, byte heightDelta)
 			{
-				throw new NotImplementedException();
+				return ImpFood.GetShorterText(target, heightDelta);
 			}
 
-			protected override string GrowOrChangeTailText(Creature target, TailType oldType)
+			protected override string HairChangedText(Creature target, HairData oldHairData)
 			{
-				throw new NotImplementedException();
+				return ImpFood.HairChangedText(target, oldHairData);
 			}
 
-			protected override string GrowOrChangeWingsText(Creature target, WingType oldType)
+			protected override string ImpifiedText(Creature target, GenitalsData previousGenitals)
 			{
-				throw new NotImplementedException();
-			}
-
-			protected override string HairChangedText(Creature target, HairData oldHairData, HairFurColors hairColor, float hairLength)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override string ImpifiedText(Creature target, int breastRowsRemoved, bool madeFinalBreastRowMale, bool grewCock, bool grewBalls)
-			{
-				throw new NotImplementedException();
+				return ImpFood.ImpifyText(target, previousGenitals);
 			}
 
 			protected override string InitialTransformText(Creature target)
 			{
-				throw new NotImplementedException();
+				return ImpFood.InitialTransformText(target);
 			}
 
-			protected override string OneCockGrewLarger(Creature target, Cock cock, float temp)
+			protected override string OneCockGrewLarger(Creature target, Cock cock, float delta)
 			{
-				throw new NotImplementedException();
-			}
-
-			protected override string RemovedAdditionalBreasts(Creature target, int removeCount)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override string RemovedOvipositionText(Creature target)
-			{
-				throw new NotImplementedException();
+				return GenericChangeOneCockLengthText(target, cock, delta);
 			}
 
 			protected override string RemovedQuadNippleText(Creature target)
 			{
-				throw new NotImplementedException();
-			}
-
-			protected override string RestoredBackText(Creature target, NeckType oldType)
-			{
-				throw new NotImplementedException();
-			}
-
-			protected override string RestoredNeckText(Creature target, NeckType oldType)
-			{
-				throw new NotImplementedException();
+				return ImpFood.RemovedQuadNippleText(target);
 			}
 		}
 

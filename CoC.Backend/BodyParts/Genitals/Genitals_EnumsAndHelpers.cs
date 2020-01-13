@@ -79,7 +79,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public static PiercingJewelry GenerateCockJewelry(this Cock cock, CockPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		public static PiercingJewelry GenerateCockJewelry(this Cock cock, CockPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
 			if (cock.cockPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
@@ -97,7 +97,7 @@ namespace CoC.Backend.BodyParts
 			return null;
 		}
 
-		public static PiercingJewelry GenerateLabiaJewelry(this Vagina vagina, LabiaPiercings location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
+		public static PiercingJewelry GenerateLabiaJewelry(this Vagina vagina, LabiaPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
 			if (vagina.labiaPiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{

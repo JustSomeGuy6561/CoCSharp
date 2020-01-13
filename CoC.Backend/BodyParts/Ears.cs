@@ -129,7 +129,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class EarPiercing : Piercing<EarPiercingLocation>
 	{
-		public EarPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public EarPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -157,7 +157,7 @@ namespace CoC.Backend.BodyParts
 		internal Ears(Guid creatureID, EarType earType) : base(creatureID)
 		{
 			type = earType ?? throw new ArgumentNullException(nameof(earType));
-			earPiercings = new EarPiercing(PiercingLocationUnlocked, AllEarPiercingsStr);
+			earPiercings = new EarPiercing(PiercingLocationUnlocked, AllEarPiercingsShort, AllEarPiercingsLong);
 		}
 
 		public override EarData AsReadOnlyData()
@@ -239,7 +239,7 @@ namespace CoC.Backend.BodyParts
 			longPluralDesc = longDesc;
 
 			_index = indexMaker++;
-			ears.AddAt(this, index);
+			ears.AddAt(this, id);
 
 			isInternalEar = internalEar;
 		}
@@ -282,7 +282,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		public override int index => _index;
+		public override int id => _index;
 
 		public static readonly EarType HUMAN = new EarType(false, HumanDesc, HumanSingleDesc, HumanLongDesc, HumanPlayerStr, HumanTransformStr, HumanRestoreStr);
 		public static readonly EarType HORSE = new EarType(false, HorseDesc, HorseSingleDesc, HorseLongDesc, HorsePlayerStr, HorseTransformStr, HorseRestoreStr);

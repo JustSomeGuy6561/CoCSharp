@@ -129,7 +129,12 @@ namespace CoC.Backend.BodyParts
 			return "Vagina";
 		}
 
-		private string AllLabiaPiercingsStr(PlayerBase player)
+		private string AllLabiaPiercingsShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string AllLabiaPiercingsLong(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

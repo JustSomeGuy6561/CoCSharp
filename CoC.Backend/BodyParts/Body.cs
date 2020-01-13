@@ -134,7 +134,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NavelPiercing : Piercing<NavelPiercingLocation>
 	{
-		public NavelPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public NavelPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -142,8 +142,6 @@ namespace CoC.Backend.BodyParts
 
 		public override IEnumerable<NavelPiercingLocation> availableLocations => NavelPiercingLocation.allLocations;
 	}
-
-
 
 	//i mean, i don't actually know how you'd do dermal piercings in the land of swords and such, but, uhhh... video game logic. It seems to be important to people in some
 	//circles, and i'm not going to prevent anyone from recreating their OC because i'm worried about plausibility in a video game.
@@ -213,13 +211,63 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class HipPiercing : Piercing<HipPiercingLocation>
 	{
-		public HipPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerDesc) : base(LocationUnlocked, playerDesc)
+		public HipPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
 		public override int MaxPiercings => HipPiercingLocation.allLocations.Count;
 
 		public override IEnumerable<HipPiercingLocation> availableLocations => HipPiercingLocation.allLocations;
+	}
+
+	public sealed partial class BodyTattooLocation : TattooLocation
+	{
+
+		private static readonly List<BodyTattooLocation> _allLocations = new List<BodyTattooLocation>();
+
+		public static readonly ReadOnlyCollection<BodyTattooLocation> allLocations;
+
+		private readonly byte index;
+
+		static BodyTattooLocation()
+		{
+			allLocations = new ReadOnlyCollection<BodyTattooLocation>(_allLocations);
+		}
+
+		private BodyTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
+
+		public static BodyTattooLocation LEFT_SHOULDERBLADE = new BodyTattooLocation(0, SmallTattoosOnly, LeftShoulderbladeButton, LeftShoulderbladeLocation);
+		public static BodyTattooLocation LEFT_RIBS = new BodyTattooLocation(1, MediumTattoosOrSmaller, LeftRibsButton, LeftRibsLocation);
+		public static BodyTattooLocation LEFT_LOWER_STOMACH = new BodyTattooLocation(2, MediumTattoosOrSmaller, LeftLowerStomachButton, LeftLowerStomachLocation);
+
+		public static BodyTattooLocation RIGHT_SHOULDERBLADE = new BodyTattooLocation(3, SmallTattoosOnly, RightShoulderbladeButton, RightShoulderbladeLocation);
+		public static BodyTattooLocation RIGHT_RIBS = new BodyTattooLocation(4, MediumTattoosOrSmaller, RightRibsButton, RightRibsLocation);
+		public static BodyTattooLocation RIGHT_LOWER_STOMACH = new BodyTattooLocation(5, MediumTattoosOrSmaller, RightLowerStomachButton, RightLowerStomachLocation);
+
+		public static BodyTattooLocation NAVEL = new BodyTattooLocation(6, SmallTattoosOnly, NavelButton, NavelLocation);
+		public static BodyTattooLocation CORE = new BodyTattooLocation(7, LargeTattoosOrSmaller, CoreButton, CoreLocation);
+		public static BodyTattooLocation FULL_FRONTAL = new BodyTattooLocation(8, FullPartTattoo, FullButton, FullLocation);
+
+		public static bool LocationsCompatible(BodyTattooLocation first, BodyTattooLocation second)
+		{
+			return true;
+		}
+	}
+
+	public sealed class BodyTattoo : TattooablePart<BodyTattooLocation>
+	{
+		public BodyTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		{
+		}
+
+		public override int MaxTattoos => BodyTattooLocation.allLocations.Count;
+
+		public override IEnumerable<BodyTattooLocation> availableLocations => BodyTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(BodyTattooLocation first, BodyTattooLocation second) => BodyTattooLocation.LocationsCompatible(first, second);
 	}
 
 	internal enum ToneDyeLotionLocations : byte { EVERYTHING, PRIMARY, ALTERNATE }
@@ -301,10 +349,13 @@ namespace CoC.Backend.BodyParts
 		//though there is nothing that expressly requires this. regardless, any value in main fur will not be used when inactive.
 		private readonly Epidermis mainFur;
 		public bool hasActiveFurData => ReferenceEquals(mainFur, primary) || ReferenceEquals(mainFur, secondary);
+
+		public bool isFurry => hasActiveFurData && mainFur.type == EpidermisType.FUR;
+
 		public EpidermalData primarySkin => mainSkin.AsReadOnlyData();
 		public EpidermalData activeFur => hasActiveFurData ? mainFur.AsReadOnlyData() : new EpidermalData();
 
-		private bool skinActive => ReferenceEquals(mainSkin, primary) || ReferenceEquals(mainSkin, secondary);
+		public bool skinActive => ReferenceEquals(mainSkin, primary) || ReferenceEquals(mainSkin, secondary);
 
 		private Epidermis primary => type.primaryIsFurBased ? mainFur : mainSkin;
 		//secondary is completely determined by the body type itself. Note that there's nothing stopping primary and secondary pointing to the same object, though this should never happen.
@@ -330,6 +381,8 @@ namespace CoC.Backend.BodyParts
 
 		public override BodyType defaultType => BodyType.defaultValue;
 
+		public readonly BodyTattoo tattoos;
+
 		internal Body(Guid creatureID) : this(creatureID, BodyType.defaultValue) { }
 
 		internal Body(Guid creatureID, BodyType bodyType) : base(creatureID)
@@ -338,8 +391,10 @@ namespace CoC.Backend.BodyParts
 
 			bodyType.Init(out mainSkin, out mainFur, out secondary);
 
-			navelPiercings = new NavelPiercing(NavelLocationUnlocked, AllNavelPiercingsStr);
-			hipPiercings = new HipPiercing(HipLocationUnlocked, AllHipPiercingsStr);
+			navelPiercings = new NavelPiercing(NavelLocationUnlocked, AllNavelPiercingsShort, AllNavelPiercingsLong);
+			hipPiercings = new HipPiercing(HipLocationUnlocked, AllHipPiercingsShort, AllHipPiercingsLong);
+
+			tattoos = new BodyTattoo(AllTattoosShort, AllTattoosLong);
 		}
 
 		internal Body(Guid creatureID, BodyType bodyType, FurColor primaryFurColor = null, FurTexture? primaryFurTexture = null, Tones primarySkinTone = null,
@@ -821,12 +876,6 @@ namespace CoC.Backend.BodyParts
 		{
 			return new BodyData(this);
 		}
-
-		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(AsReadOnlyData());
-
-		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(AsReadOnlyData());
-
-		public string FullDescription(bool alternateFormat = false) => type.FullDescription(AsReadOnlyData(), alternateFormat);
 
 		//describe the main epidermis (no body)
 		public string MainDescription() => type.MainDescription();
@@ -1333,7 +1382,12 @@ namespace CoC.Backend.BodyParts
 		private IMultiToneable toneable => this;
 		#endregion
 		#region Tone and Lotion Helpers
-		private string AllToneText(out bool isPlural) => type.AllToneDescription(out isPlural);
+
+		public string ToneBasedOrSkinUnderFurBasedEpidermisText(out bool isPlural) => type.AllTonableDescription(out isPlural);
+
+		public string ToneBasedOrSkinUnderFurBasedEpidermisText() => type.AllTonableDescription(out bool _);
+
+		private string AllToneText(out bool isPlural) => type.AllTonableDescription(out isPlural);
 		private string PrimaryToneText(out bool isPlural) => type.PrimaryToneDescription(out isPlural);
 		private string SecondaryToneText(out bool isPlural) => type.SecondaryToneDescription(out isPlural);
 		#endregion
@@ -1380,7 +1434,7 @@ namespace CoC.Backend.BodyParts
 
 		public static BodyType defaultValue => HUMANOID;
 
-		public override int index => _index;
+		public override int id => _index;
 		private readonly int _index;
 
 		private protected readonly BodyMember primary;
@@ -1412,17 +1466,6 @@ namespace CoC.Backend.BodyParts
 
 
 		//the same as the standard long descriptor, but without the 'body' text. this is useful if you just want to say "your fur and scales" or whatever.
-
-		private readonly PartDescriptor<BodyData> fullDescriptor;
-
-		public string FullDescription(BodyData bodyData, bool alternateFormat = false)
-		{
-			return fullDescriptor(bodyData, alternateFormat);
-		}
-
-		public string FullDescriptionPrimary(BodyData body) => fullDescriptor(body, false);
-
-		public string FullDescriptionAlternate(BodyData body) => fullDescriptor(body, true);
 
 
 		//allows you to rename the buttons for dyeing and toning. by default, they are "body" and "underbody". For example, Cockatrice uses this to say "feathers"
@@ -1516,7 +1559,7 @@ namespace CoC.Backend.BodyParts
 
 		internal abstract string SecondaryDyeDescription(out bool isPlural);
 
-		internal abstract string AllToneDescription(out bool isPlural);
+		internal abstract string AllTonableDescription(out bool isPlural);
 
 		internal abstract string PrimaryToneDescription(out bool isPlural);
 
@@ -1858,7 +1901,7 @@ namespace CoC.Backend.BodyParts
 			return primary.FurLocationDescription(out isPlural);
 		}
 
-		internal override string AllToneDescription(out bool isPlural)
+		internal override string AllTonableDescription(out bool isPlural)
 		{
 			return primary.ToneLocationDescription(out isPlural);
 		}
@@ -2147,7 +2190,7 @@ namespace CoC.Backend.BodyParts
 			return allDyeLocation(out isPlural);
 		}
 
-		internal override string AllToneDescription(out bool isPlural)
+		internal override string AllTonableDescription(out bool isPlural)
 		{
 			return allToneLocation(out isPlural);
 		}
@@ -2273,7 +2316,7 @@ namespace CoC.Backend.BodyParts
 			return "";
 		}
 
-		internal override string AllToneDescription(out bool isPlural)
+		internal override string AllTonableDescription(out bool isPlural)
 		{
 			return allToneLocation(out isPlural);
 		}
@@ -2323,7 +2366,7 @@ namespace CoC.Backend.BodyParts
 			return secondary.FurLocationDescription(out isPlural);
 		}
 
-		internal override string AllToneDescription(out bool isPlural)
+		internal override string AllTonableDescription(out bool isPlural)
 		{
 			return primary.ToneLocationDescription(out isPlural);
 		}
@@ -2375,7 +2418,7 @@ namespace CoC.Backend.BodyParts
 			return primary.FurLocationDescription(out isPlural);
 		}
 
-		internal override string AllToneDescription(out bool isPlural)
+		internal override string AllTonableDescription(out bool isPlural)
 		{
 			return secondary.ToneLocationDescription(out isPlural);
 		}
@@ -2409,12 +2452,6 @@ namespace CoC.Backend.BodyParts
 		public readonly ReadOnlyPiercing<NavelPiercingLocation> navelPiercings;
 		public readonly ReadOnlyPiercing<HipPiercingLocation> hipPiercings;
 
-		public string FullDescriptionPrimary() => type.FullDescriptionPrimary(this);
-
-		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(this);
-
-		public string FullDescription(bool alternateFormat = false) => type.FullDescription(this, alternateFormat);
-
 		//describe the main epidermis (no body)
 		public string MainDescription() => type.MainDescription();
 		public string MainDescription(out bool isPlural) => type.MainDescription(out isPlural);
@@ -2432,6 +2469,9 @@ namespace CoC.Backend.BodyParts
 		public string LongEpidermisDescription(out bool isPlural) => type.LongDescriptionWithoutBody(this, out isPlural);
 
 		public bool hasActiveFurType => !activeFur.isEmpty;
+
+		public bool isFurry => hasActiveFurType && activeFur.type == EpidermisType.FUR;
+
 
 		public bool HasAny(EpidermisType epidermisType) => type.HasAny(epidermisType);
 		public bool IsBoth(EpidermisType epidermisType) => type.IsBoth(epidermisType);
