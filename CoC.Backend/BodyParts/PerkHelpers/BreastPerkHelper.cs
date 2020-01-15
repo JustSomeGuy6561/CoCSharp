@@ -43,7 +43,6 @@ namespace CoC.Backend.BodyParts
 		internal float NippleGrowthMultiplier = 1;
 		internal float NippleShrinkMultiplier = 1;
 		internal float NewNippleDefaultLength = Nipples.MIN_NIPPLE_LENGTH;
-		internal bool unlockedDickNipples = false;
 
 		public BreastPerkHelper()
 		{
@@ -51,7 +50,7 @@ namespace CoC.Backend.BodyParts
 
 		public BreastPerkHelper(sbyte femaleNewCupDelta, CupSize femaleNewDefaultCup, sbyte maleNewCupDelta, CupSize maleNewDefaultCup,
 			CupSize femaleMinCup, CupSize maleMinCup, float titsGrowthMultiplier, float titsShrinkMultiplier, float newNippleSizeDelta,
-			float nippleGrowthMultiplier, float nippleShrinkMultiplier, float newNippleDefaultLength, bool unlockedDickNipples)
+			float nippleGrowthMultiplier, float nippleShrinkMultiplier, float newNippleDefaultLength)
 		{
 			FemaleNewCupDelta = femaleNewCupDelta;
 			FemaleNewDefaultCup = femaleNewDefaultCup;
@@ -65,7 +64,6 @@ namespace CoC.Backend.BodyParts
 			NippleGrowthMultiplier = nippleGrowthMultiplier;
 			NippleShrinkMultiplier = nippleShrinkMultiplier;
 			NewNippleDefaultLength = newNippleDefaultLength;
-			this.unlockedDickNipples = unlockedDickNipples;
 		}
 	}
 }

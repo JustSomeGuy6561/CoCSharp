@@ -34,7 +34,7 @@ namespace CoC.Backend.Items.Wearables
 
 		protected internal virtual string OnRemoveText()
 		{
-			return "You remove your " + this.shortName();
+			return "You remove your " + this.ItemName();
 		}
 
 		public override byte maxCapacityPerSlot => 1;

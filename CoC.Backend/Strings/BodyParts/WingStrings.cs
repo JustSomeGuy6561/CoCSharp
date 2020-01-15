@@ -164,11 +164,11 @@ namespace CoC.Backend.BodyParts
 					: " Unfortunately you can't seem to flap your little wings fast enough to fly, but they would certainly slow a fall. ";
 
 				string armorText = player.wearingArmor
-					? "You hastily remove the top portion of your " + player.armor.shortName() + " and marvel as "
+					? "You hastily remove the top portion of your " + player.armor.ItemName() + " and marvel as "
 					: "Checking your exposed back, you can't help but marvel as ";
 
 				string modifyText = player.wearingArmor
-					? "A few quick modifications to your " + player.armor.shortName() + " later and"
+					? "A few quick modifications to your " + player.armor.ItemName() + " later and"
 					: "Once you figure out how to handle your wings when you aren't using them,";
 
 				return "You feel an itching between your shoulder-blades as something begins growing there."
@@ -383,7 +383,7 @@ namespace CoC.Backend.BodyParts
 			if (previousWingData.type == NONE)
 			{
 				string armorText = player.wearingArmor
-					? "ripping a pair of holes in the back of your " + player.armor.shortName() + "."
+					? "ripping a pair of holes in the back of your " + player.armor.ItemName() + "."
 					: "and you're glad you aren't wearing any armor because they might've ripped through it.";
 
 				return "A knot of pain forms in your shoulders as they tense up. With a surprising force, " + player.wings.LongDescription(true, true) + " sprout from your back, "
@@ -701,7 +701,7 @@ namespace CoC.Backend.BodyParts
 			if (previousWingData.type == NONE)
 			{
 				string armorText = player.wearingArmor
-					? "ripping a pair of holes in the back of your " + player.armor.shortName() + "."
+					? "ripping a pair of holes in the back of your " + player.armor.ItemName() + "."
 					: "and you're glad you aren't wearing any armor because they might've ripped through it.";
 
 				return "A knot of pain forms in your shoulders as they tense up. With a surprising force, " + player.wings.LongDescription(true, true) + " sprout from your back, "

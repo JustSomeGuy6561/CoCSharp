@@ -123,7 +123,7 @@ namespace CoC.Frontend.Inventory
 			for (byte x = 0; x < slots.Count; x++)
 			{
 				var slot = slots[x];
-				DoButton(x, slot.item.shortName() + 'x' + slot.itemCount, () => ReplaceItem(x, item));
+				DoButton(x, slot.item.ItemName() + 'x' + slot.itemCount, () => ReplaceItem(x, item));
 			}
 			if (returnCallback != null)
 			{
@@ -268,7 +268,7 @@ namespace CoC.Frontend.Inventory
 			for (byte x = 0; x < slots.Count; x++)
 			{
 				var slot = slots[x];
-				DoButton(x, slot.item.shortName() + 'x' + slot.itemCount, () => ReplaceItem(x, item));
+				DoButton(x, slot.item.ItemName() + 'x' + slot.itemCount, () => ReplaceItem(x, item));
 			}
 			if (returnCallback != null)
 			{

@@ -67,15 +67,15 @@ namespace CoC.Backend.Creatures
 		{
 			if (wearingArmor && both && wearingLowerGarment)
 			{
-				return armor.shortName() + " and " + lowerGarment.shortName();
+				return armor.ItemName() + " and " + lowerGarment.ItemName();
 			}
 			else if (wearingArmor)
 			{
-				return armor.shortName();
+				return armor.ItemName();
 			}
 			else if (wearingLowerGarment)
 			{
-				return lowerGarment.shortName();
+				return lowerGarment.ItemName();
 			}
 			return null;
 		}
@@ -103,17 +103,17 @@ namespace CoC.Backend.Creatures
 
 		protected override string PlaceItemInCreatureStorageText(CapacityItem item, byte slot)
 		{
-			return "You place the " + item.shortName() + " in your " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+			return "You place the " + item.ItemName() + " in your " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
 		}
 
 		protected override string ReturnItemToCreatureStorageText(CapacityItem item, byte slot)
 		{
-			return "You return the " + item.shortName() + " to your " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+			return "You return the " + item.ItemName() + " to your " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
 		}
 
 		protected override string ReplaceItemInCreatureStorageWithNewItemText(CapacityItem newItem, byte slot)
 		{
-			return "You replace the " + inventory[slot].item.shortName() + " in your " + Tools.Utils.NumberAsPlace(slot) + " pouch with " + newItem.shortName() + ". ";
+			return "You replace the " + inventory[slot].item.ItemName() + " in your " + Tools.Utils.NumberAsPlace(slot) + " pouch with " + newItem.ItemName() + ". ";
 		}
 
 #warning NYI

@@ -287,17 +287,17 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (back.type != BackType.NORMAL)
 			{
-				string removeArmorText = player.wearingAnything ? " You hastily remove your " + player.armor.shortName() + " and " : "You ";
+				string removeArmorText = player.wearingAnything ? " You hastily remove your " + player.armor.ItemName() + " and " : "You ";
 
 				return introText + removeArmorText + "notice your back isn't the same anymore - in fact, it appears normal. But it doesn't remain that way for long when a strange fin-like " +
-					"structure bursts from in-between your shoulders. You examine it carefully and make a few modifications to your " + player.armor.shortName() + " to accommodate your new fin.";
+					"structure bursts from in-between your shoulders. You examine it carefully and make a few modifications to your " + player.armor.ItemName() + " to accommodate your new fin.";
 			}
 			else
 			{
-				string removeArmorText = player.wearingAnything ? " You hastily remove your " + player.armor.shortName() + " barely getting it off before a " : "A ";
+				string removeArmorText = player.wearingAnything ? " You hastily remove your " + player.armor.ItemName() + " barely getting it off before a " : "A ";
 
 				return introText + removeArmorText + "strange fin-like structure bursts from in-between your shoulders. You examine it carefully and make a few modifications to your " +
-					player.armor.shortName() + " to accommodate your new fin.";
+					player.armor.ItemName() + " to accommodate your new fin.";
 			}
 		}
 		private static string SharkFinRestoreStr(BackData back, PlayerBase player)

@@ -83,8 +83,6 @@ namespace CoC.Backend.BodyParts
 	{
 		float length { get; }
 
-		bool clitCockActive { get; }
-
 		ReadOnlyPiercing<ClitPiercingLocation> piercings { get; }
 
 		Guid creatureID { get; }
@@ -114,8 +112,6 @@ namespace CoC.Backend.BodyParts
 		float IClit.length => length;
 
 
-		bool IClit.clitCockActive => omnibusClit && omnibusActive;
-
 		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => clitPiercings.AsReadOnlyData();
 
 		Guid IClit.creatureID => creatureID;
@@ -131,8 +127,6 @@ namespace CoC.Backend.BodyParts
 
 
 		float IClit.length => length;
-
-		bool IClit.clitCockActive => clitCockActive;
 
 		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => clitPiercings;
 
@@ -246,20 +240,20 @@ namespace CoC.Backend.BodyParts
 						if (article is null) article = "a ";
 					}
 				}
-				else if (clit.clitCockActive && Utils.RandBool())
-				{
-					adjective = separator + Utils.RandomChoice("mutated", "corrupted");
-					if (article is null) article = "a ";
-				}
+				//else if (clit.clitCockActive && Utils.RandBool())
+				//{
+				//	adjective = separator + Utils.RandomChoice("mutated", "corrupted");
+				//	if (article is null) article = "a ";
+				//}
 
 				if (!full)
 				{
 					return article + size + adjective + " " + ClitNoun();
 				}
-				else if (clit.clitCockActive)
-				{
-					adjective += separator + Utils.RandomChoice("mutated ", "corrupted ");
-				}
+				//else if (clit.clitCockActive)
+				//{
+				//	adjective += separator + Utils.RandomChoice("mutated ", "corrupted ");
+				//}
 				else
 				{
 					adjective += " ";

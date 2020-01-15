@@ -466,7 +466,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (player.wearingArmor)
 				{
-					sb.Append(" out of your " + player.armor.shortName());
+					sb.Append(" out of your " + player.armor.ItemName());
 				}
 				else if (previousBodyData.type == GOO)
 				{
@@ -510,7 +510,7 @@ namespace CoC.Backend.BodyParts
 			}
 			if (player.wearingArmor)
 			{
-				sb.Append("You peel back your " + player.armor.shortName() + " and the transformation has already finished on the rest of your body.");
+				sb.Append("You peel back your " + player.armor.ItemName() + " and the transformation has already finished on the rest of your body.");
 			}
 			else
 			{

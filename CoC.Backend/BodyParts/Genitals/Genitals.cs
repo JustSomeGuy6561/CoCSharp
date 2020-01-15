@@ -7,6 +7,8 @@ using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Engine.Time;
+using CoC.Backend.Pregnancies;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,12 +18,7 @@ using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
-	// this is a fucking mess.
-	// need to: handle a late init to use correct minDefault values for cock, vagina, breasts, nipples.
-	// alias every fucking function to make values here there and everywhere increase.
-	// every time we get a new cock, set it to default length if one not provided. increase length by delta, regardless.
-	// every time we get a vagina set its default wetness, looseness, and clitSize to defaults, unless provided.
-	// breasts - figure out how the fuck we're gonna add new breast rows.
+
 
 	public sealed partial class GenitalTattooLocation : TattooLocation
 	{
@@ -100,28 +97,49 @@ namespace CoC.Backend.BodyParts
 
 #warning Make sure to raise events for gender change and pass it along to femininity. Then implement all the various data changes. theres a ton of them.
 
+	//Genitals is the new master class for all things related to sexual endowments and whatever they entail. That said, it's broken into several sub-classes because
+	//it's hard to manage otherwise, and i was going insane. Genitals is primarily responsible for taking each of these subclasses and making them interact with one another
+	//when the situation requires. for example, any vaginal sex will deal with the cock (or object) that is doing the penetrating, the vagina being penentrated, and the womb
+	//if not pregnant and pregnancy is possible. Another example is gender - altering gender will affect breast, cock, and vagina collections. Some appearance related checks will
+	//also factor in femininity, not just endowments. Basically, there's a lot of shit that needs all of this to play nice, so this is where we make that all happen.
 
-	//Genitals is the new "master class" for all things sex-related. Note that the old breast store and breast rows have been combined, so there's new behavior for everyone,
-	//but it's even more flexible. Lactation now works like cum - it builds with time, and the amount produced is altered by a multiplier and adder. additionally, it has a fill rate,
-	//which mimicks the old breast store levels 'enum'. To allow some leniency in time before overfull causes fill rate to drop, a buffer timer has been added.
+	//90% of this class basically aliases the various body parts. it's not ideal, but it's a decent compromise so you don't have to go 4 levels in just to get the largest breast row.
+	//Some things, however, are not. these are defined here:
 
-	//all sex related functions are available here, with exception to the one that handles receiving oral sex. These are much more specific than the original, but this allows us
-	//to store more metadata and statistics for various achievements, perks, or whatever you may need them for. I'll try to provide helpers where i can, but specific cases like gangbangs/threesomes
-	//and/or strage sexual situations may require you to deal with these directly. Generally, there are two functions that will need to be called - one for each creature involved, with the corresponding part.
-	//so if A is sticking their cock in B's ass, you'd call A.HandleCockPenetrate and B.HandleAnalPenetration. This will handle everything for you, even knockup, if you provide a spawn type.
-	//you can handle specifics, like if the penetrator or penetratee orgasms or not, and whether or not to count this towards the creature's orgasm count (useful for when multiple body parts
-	//orgasm simultaneously, which should only count as one orgasm). This also applies to group sex or penetration free sex (tribbing, hotdogging, etc)
+	//Sex related functionality is primarily handled here, though there are some body parts not included here that are used sexually (oral, for example). Generally speaking,
+	//we don't
 
-	//note that orgasms without the corresponding part being penetrated or penetrating, as the situation requires, is called a "dry" orgasm.
-
-
-	//some variables are available in here to allow PC behavior (namely, 48 hours until full breasts, regardless of how high the lactation multiplier is) or normal behavior (breasts fill quicker
-	//the higher the lactation multiplier is). Remember, this ruleset works across all NPCs, because lactation amount dependant on breast size, breast count, and lactation multiplier.
-	//which means that despite the fact that Marble and Katherine can have the same lactation multiplier, Marble would take longer to fill up and not be complaining every 3 hours she needs a milking.
-	//RIP katherine, lol.
 
 	public sealed partial class Genitals : SimpleSaveablePart<Genitals, GenitalsData>, IBodyPartTimeLazy //for now all the stuff it contains is lazy, so that's all we need.
 	{
+		#region Vagina Related Constants
+		//Not gonna lie, supporting double twats is a huge pain in the ass. (PHRASING! BOOM!)
+		public const int MAX_VAGINAS = VaginaCollection.MAX_VAGINAS;
+		#endregion
+
+		#region Breast Constants
+		//max in game that i can find is 5, but they only ever use 4 rows.
+		//apparently Fenoxo said 3 rows, but then after it went open, some shit got 4 rows.
+		//i'm not being a dick and reverting that. 4 it is.
+		public const int MAX_BREAST_ROWS = BreastCollection.MAX_BREAST_ROWS;
+		#endregion
+
+		#region Lactation Related Constants
+
+		public const float MIN_LACTATION_MODIFIER = BreastCollection.MIN_LACTATION_MODIFIER;
+		public const float LACTATION_THRESHOLD = BreastCollection.LACTATION_THRESHOLD; //below this: not lactating. above this: lactating.
+		public const float MODERATE_LACTATION_THRESHOLD = BreastCollection.MODERATE_LACTATION_THRESHOLD;
+		public const float STRONG_LACTATION_THRESHOLD = BreastCollection.STRONG_LACTATION_THRESHOLD;
+		public const float HEAVY_LACTATION_THRESHOLD = BreastCollection.HEAVY_LACTATION_THRESHOLD;
+		public const float EPIC_LACTATION_THRESHOLD = BreastCollection.EPIC_LACTATION_THRESHOLD;
+		public const float MAX_LACTATION_MODIFIER = BreastCollection.MAX_LACTATION_MODIFIER;
+
+		#endregion
+
+		#region Cock Related Constants
+		public const int MAX_COCKS = CockCollection.MAX_COCKS;
+		#endregion
+
 		#region Public ReadOnly Members
 
 		public readonly Ass ass;
@@ -134,13 +152,17 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Womb womb;
 
-		public readonly ReadOnlyCollection<Cock> cocks;
-
-		public readonly ReadOnlyCollection<Vagina> vaginas;
-
-		public readonly ReadOnlyCollection<Breasts> breastRows;
+		public readonly BreastCollection allBreasts;
+		public readonly CockCollection allCocks;
+		public readonly VaginaCollection allVaginas;
 
 		public readonly GenitalTattoo tattoos;
+		#endregion
+
+		#region NonPublic ReadOnly Members
+
+		internal readonly GenitalPerkData perkData;
+
 		#endregion
 
 		#region Private ReadOnly Members
@@ -151,16 +173,19 @@ namespace CoC.Backend.BodyParts
 		private readonly VaginaCreator[] vaginaCreators;
 
 		//using list, because it's easier to keep track of count when it does it for you. array would work, but it has the problem of counting nulls, and keeping track of that manually is tedious.
-		private readonly List<Breasts> _breasts = new List<Breasts>(MAX_BREAST_ROWS);
-		private readonly List<Cock> _cocks = new List<Cock>(MAX_COCKS);
-		private readonly List<Vagina> _vaginas = new List<Vagina>(MAX_VAGINAS);
 
 		#endregion
 
 		#region Public Derived/Helper Properties
-		public IEnumerable<Clit> clits => new ReadOnlyCollection<Clit>(_vaginas.ConvertAll(x => x.clit));
+		public ReadOnlyCollection<Breasts> breastRows => allBreasts.breastRows;
+
+		public ReadOnlyCollection<Cock> cocks => allCocks.cocks;
+
+		public ReadOnlyCollection<Vagina> vaginas => allVaginas.vaginas;
+
+		public Clit[] clits => vaginas.Select(x => x.clit).ToArray();
+
 		public int numClits => numVaginas;
-		public IEnumerable<Nipples> nipples => new ReadOnlyCollection<Nipples>(_breasts.ConvertAll(x => x.nipples));
 		#endregion
 
 		#region Private Derived/Helper Properties
@@ -168,9 +193,165 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Common Derived/Helper Properties
-		public int numCocksOrClitCocks => _cocks.Count == 0 ? (hasClitCock ? 1 : 0) : _cocks.Count;
+
+		//public int numCocksOrClitCocks => _cocks.Count == 0 ? (hasClitCock ? 1 : 0) : _cocks.Count;
 
 		internal float relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
+
+		#endregion
+
+		#region Ass Aliases
+		//ass is readonly, always exists. we don't need any alias magic for it.
+
+		public uint analSexCount => ass.sexCount;
+		public uint analPenetrationCount => ass.penetrateCount;
+		public uint analOrgasmCount => ass.orgasmCount;
+		public uint analDryOrgasmCount => ass.dryOrgasmCount;
+
+		#endregion
+
+		#region Balls Aliases
+
+		public bool hasBalls => balls.hasBalls;
+		public bool uniBall => balls.uniBall;
+
+		public byte numberOfBalls => balls.count;
+		public byte ballSize => balls.size;
+
+		#endregion
+
+		#region CockCollection Aliases
+
+		public bool hasCock => allCocks.hasCock;
+
+		public int numCocks => allCocks.numCocks;
+
+		public uint cockSoundedCount => allCocks.cockSoundedCount;
+		public uint cockSexCount => allCocks.cockSexCount;
+
+		public uint cockOrgasmCount => allCocks.cockOrgasmCount;
+
+		public uint cockDryOrgasmCount => allCocks.cockDryOrgasmCount;
+
+		public bool cockVirgin => allCocks.cockVirgin;
+
+		public bool hasSheath => allCocks.hasSheath;
+
+		#region Public Cum Related Members
+		public float cumMultiplierTrue => allCocks.cumMultiplierTrue;
+
+		public ushort additionalCum => allCocks.additionalCum;
+
+		public float additionalCumTrue => allCocks.additionalCumTrue;
+
+		#endregion
+		#region Public Cum Related Computed Values
+		public ushort cumMultiplier => allCocks.cumMultiplier;
+
+		public int hoursSinceLastCum => allCocks.hoursSinceLastCum;
+
+		public int totalCum => allCocks.totalCum;
+
+
+		#endregion
+
+
+		#endregion
+
+		#region BreastCollection Aliases
+
+		#region Public Nipple Related Members
+		public bool blackNipples => allBreasts.blackNipples;
+
+		public bool quadNipples => allBreasts.quadNipples;
+
+		public NippleStatus nippleType => allBreasts.nippleType;
+
+
+		public bool unlockedDickNipples => allBreasts.unlockedDickNipples;
+
+
+		#endregion
+
+		#region Public Lactation Related Members
+
+		public float lactation_TotalCapacityMultiplier => allBreasts.lactation_TotalCapacityMultiplier;
+		public float lactation_CapacityMultiplier => allBreasts.lactation_CapacityMultiplier;
+		public float lactationProductionModifier => allBreasts.lactationProductionModifier;
+
+		public uint overfullBuffer => allBreasts.overfullBuffer;
+		public float currentLactationAmount => allBreasts.currentLactationAmount;
+
+		public float lactationAmountPerBreast => allBreasts.lactationAmountPerBreast;
+		#endregion
+
+		#region Public Breast Related Computed Values
+		public int numBreastRows => allBreasts.numBreastRows;
+
+		public int numBreasts => allBreasts.numBreasts;
+
+		public uint titFuckCount => allBreasts.titFuckCount;
+
+		public uint breastOrgasmCount => allBreasts.breastOrgasmCount;
+		public uint breastDryOrgasmCount => allBreasts.breastDryOrgasmCount;
+
+		#endregion
+
+		#region Public Nipple Related Computed Properties
+		public Nipples[] nipples => breastRows.Select(x => x.nipples).ToArray();
+
+		public int nippleCount => allBreasts.nippleCount;
+
+
+		public uint nippleFuckCount => allBreasts.nippleFuckCount;
+		public uint dickNippleSexCount => allBreasts.dickNippleSexCount;
+
+		public uint nippleOrgasmCount => allBreasts.nippleOrgasmCount;
+		public uint nippleDryOrgasmCount => allBreasts.nippleDryOrgasmCount;
+
+		#endregion
+
+		#region Public Lactation Related Computed Values
+		public bool canLessenCurrentLactationLevels => allBreasts.canLessenCurrentLactationLevels;
+
+		public int hoursSinceLastMilked => allBreasts.hoursSinceLastMilked;
+
+		public bool isOverfull => allBreasts.isOverfull;
+
+		public int hoursOverfull => allBreasts.hoursOverfull;
+
+		public float maximumLactationCapacity => allBreasts.maximumLactationCapacity;
+		public float currentLactationCapacity => allBreasts.currentLactationCapacity;
+
+		public float lactationRate => allBreasts.lactationRate;
+
+		public LactationStatus lactationStatus => allBreasts.lactationStatus;
+
+		public bool isLactating => allBreasts.isLactating;
+		#endregion
+
+		#endregion
+
+		#region VaginaCollection Aliases
+
+		#region Public Vagina Related Computed Values
+
+
+		#region Public Clit Related Members
+		#endregion
+
+		public int numVaginas => allVaginas.numVaginas;
+
+		public uint vaginalSexCount => allVaginas.vaginalSexCount;
+		public uint vaginaPenetratedCount => allVaginas.vaginaPenetratedCount;
+		public uint vaginalOrgasmCount => allVaginas.vaginalOrgasmCount;
+		public uint vaginalDryOrgasmCount => allVaginas.vaginalDryOrgasmCount;
+
+		#endregion
+
+		#region Public Clit Related Computed Values
+		public uint clitUsedAsPenetratorCount => allVaginas.clitUsedAsPenetratorCount;
+		#endregion
 
 		#endregion
 
@@ -188,103 +369,130 @@ namespace CoC.Backend.BodyParts
 			{
 				Gender retVal = Gender.GENDERLESS;
 				retVal |= numVaginas > 0 ? Gender.FEMALE : Gender.GENDERLESS;
-				retVal |= numCocks > 0 || hasClitCock ? Gender.MALE : Gender.GENDERLESS;
+				retVal |= numCocks > 0 ? Gender.MALE : Gender.GENDERLESS;
 				return retVal;
 			}
 		}
 
-		public Gender genderTreatClitCockAsHerm
-		{
-			get
-			{
-				Gender baseGender = gender;
-				if (baseGender == Gender.FEMALE && hasClitCock)
-				{
-					return Gender.HERM;
-				}
-				else
-				{
-					return baseGender;
-				}
-			}
-		}
-
-		/* Trap check. use this where player appearance is more important than actual assets, or for trappy sex, idk.
+		/* Trap check. This combines the feminity value and the physical endowments to determine how this creature appears.
 		 *
-		 * Female: C-cup breasts and >35 masculinity OR <6in Dick and >65 masculinity
-		 * Male: 6in+ Dick and <65 masculinity OR B-Cup or smaller breasts and <35 masculinity
-		 * Genderless: <6in Dick, B-cup or smaller breasts, and 35-65 masculinity.
-		 * Herm: everything else.
+		 * Start with the most obvious
+		 * - if the creature very obviously has both sets of endowments (C-Cup+ breasts and 6in+ cock) : herm
+		 * - if the creature has obvious female endowments, no obvious male endowments, and appears to be androgynous or female: female
+		 * - if the creature has obvious male endowments, no obvious female endowments, and appears to be androgynous or male: male
 		 *
-		 * How you deal with androgynous and herm is up to you. Note that b/c this is a trap check, something may appear
-		 * to be a herm, but not be (large breasts and a dick, for example, but no vag).
+		 * Now on to the trap checks.
+		 * - if the creature has one set endowments but their femininity/masculinity is very distinctly that of the other gender: herm.
+		 * - if the player has no obvious endowments either way, but appears female : female
+		 * - if the player has no obvious endowments either way, but appears male : male
+		 * - if the player has no obvious endowments either way and looks the part : genderless.
+		 *
+		 * How you deal with this is up to you, especially when dealing with herm and genderless. A binary version of this exists for male/female if you want it to force a decision
 		 *
 		 */
-		public Gender trappyGender
+		public Gender ApparentGender()
 		{
-			get
+			//noticable bulge and breasts
+			if (BiggestCupSize() > CupSize.B && BiggestCockSize() >= 6)
 			{
-				//noticable bulge and breasts
-				if (BiggestCupSize() > CupSize.B && BiggestCockSize() >= 6)
-				{
-					return Gender.HERM;
-				}
-				//noticable breasts and sufficiently female
-				else if (BiggestCupSize() > CupSize.B && !femininity.atLeastSlightlyMasculine)
-				{
-					return Gender.FEMALE;
-				}
-				//noticable dick and sufficiently male
-				else if (BiggestCockSize() >= 6 && !femininity.atLeastSlightlyFeminine)
-				{
-					return Gender.MALE;
-				}
-				//not noticable assets - go by appearance
-				else if (BiggestCockSize() < 6 && BiggestCupSize() <= CupSize.B)
-				{
-					if (femininity.atLeastSlightlyFeminine) return Gender.FEMALE;
-					else if (femininity.atLeastSlightlyMasculine) return Gender.MALE;
-					return Gender.GENDERLESS;
-				}
-				//noticable breasts or dick, but too masculine or feminine.
 				return Gender.HERM;
 			}
+			//noticable breasts and sufficiently female
+			else if (BiggestCupSize() > CupSize.B && !femininity.atLeastSlightlyMasculine)
+			{
+				return Gender.FEMALE;
+			}
+			//noticable dick and sufficiently male
+			else if (BiggestCockSize() >= 6 && !femininity.atLeastSlightlyFeminine)
+			{
+				return Gender.MALE;
+			}
+			//not noticable assets - go by appearance
+			else if (BiggestCockSize() < 6 && BiggestCupSize() <= CupSize.B)
+			{
+				if (femininity.atLeastSlightlyFeminine) return Gender.FEMALE;
+				else if (femininity.atLeastSlightlyMasculine) return Gender.MALE;
+				return Gender.GENDERLESS;
+			}
+			//noticable breasts or dick, but too masculine or feminine.
+			return Gender.HERM;
 		}
 
-		//Parses the current gender information, to determine if the player appears more male than they do female.
-		//Tiebreaker goes to male.
+		//Variant of the apparent gender that limits the results to male/female. This is done in the following order of preference: significant bust size, significant cock size,
+		//overly feminine, somewhat masculine. If we still don't have a result, the result is determined by whether or not we have a cock and/or any bust at all.
+		//this is functionally equivalent to the old mf function in vanilla, but with a bool result. this means i don't need to see mf("m", "f") == "m" because that's dumb.
 		public bool AppearsMoreMaleThanFemale()
 		{
-			Gender trapGender = trappyGender;
-			if (trapGender == Gender.HERM)
-			{
-				return BiggestCupSize() < CupSize.B && femininity < 50 || BiggestCupSize() == CupSize.FLAT && femininity < 75;
-			}
-			else if (trapGender == Gender.MALE)
+			Gender trapGender = ApparentGender();
+			//easy checks - appears mostly male
+			if (trapGender == Gender.MALE)
 			{
 				return true;
 			}
+			//appears mostly female.
 			else if (trapGender == Gender.FEMALE)
 			{
 				return false;
 			}
+			//appears either herm or genderless.
 			else
 			{
-				return (BiggestCupSize() < CupSize.C && femininity < 75);
+				CupSize LargestCup = BiggestCupSize();
+				float longestCock = BiggestCockSize();
+
+				//at this point, we are either herm or genderless appearing. there are 3 cases for herm: truly apparent breasts and cock bulge, appears male but with breasts,
+				//and appears female but with a rather obvious dick bulge. genderless is everything else. Originally this was a lot more concise, but this way of writing it is
+				//way more verbose; it tells you exactly what it's checking for. personally, i actually liked it being concise, but had no clue why those values were chosen.
+				//written this way, each choice is explained and the end result is the same.
+
+				//breasts get hightest priority - if rather large bust, we treat as female, even if it also has a large dick-bulge. This is because herms are treated as female
+				//in this game.
+				if (LargestCup > CupSize.B)
+				{
+					return false;
+				}
+				//if we're here, we don't have a large bust. at this point, dick takes priority. if it has a large bulge, treat as male.
+				else if (longestCock >= 6)
+				{
+					return true;
+				}
+				//if we're here, we don't have a large bust or a large bulge. thus, we can only go by femininity.
+
+				//if overly female, return false.
+				else if (femininity >= 75)
+				{
+					return false;
+				}
+				//if at least slightly male, return true.
+				else if (femininity < 45)
+				{
+					return true;
+				}
+				//if we've fallen through to this point, we have a small bust, small or no cock, and a relatively androgynous build that may be approaching feminine at most.
+
+				//first, check if we have any bulge and any bust
+				else if (LargestCup > CupSize.FLAT && cocks.Count > 0)
+				{
+					//skew toward male slightly.
+					return femininity <= 55;
+				}
+				//failing that, see if we have any bust. if we do, female. if we don't, male.
+				else
+				{
+					return LargestCup == CupSize.FLAT;
+				}
 			}
 
 		}
+
 		#endregion
-
-
-
 
 		//despite my attempts to remove status effects wherever possible, i'm not crazy. Heat/Rut/Dsyfunction seem like ideal status effects.
 		//in that they are temporary effects. as such, i'm not putting them here.
 
 
 
-		private void CheckGenderChanged(Gender oldGender)
+		internal void CheckGenderChanged(Gender oldGender)
 		{
 			if (gender != oldGender)
 			{
@@ -318,7 +526,10 @@ namespace CoC.Backend.BodyParts
 			}
 			breastCreators = new BreastCreator[1] { new BreastCreator(initialGender.HasFlag(Gender.FEMALE) ? CupSize.C : CupSize.FLAT) };
 
-			initHelper(out cocks, out vaginas, out breastRows);
+			allBreasts = new BreastCollection(this);
+			allCocks = new CockCollection(this);
+			allVaginas = new VaginaCollection(this);
+
 
 			femininity = new Femininity(creatureID, initialGender);
 			fertility = new Fertility(creatureID, initialGender);
@@ -351,7 +562,9 @@ namespace CoC.Backend.BodyParts
 				breastCreators = new BreastCreator[1] { new BreastCreator(computedGender.HasFlag(Gender.FEMALE) ? CupSize.C : CupSize.FLAT) };
 			}
 
-			initHelper(out this.cocks, out this.vaginas, out this.breastRows);
+			allBreasts = new BreastCollection(this);
+			allCocks = new CockCollection(this);
+			allVaginas = new VaginaCollection(this);
 
 			this.femininity = femininity != null ? new Femininity(creatureID, computedGender, (byte)femininity) : new Femininity(creatureID, computedGender);
 			this.fertility = fertility ?? throw new ArgumentNullException(nameof(fertility));
@@ -374,20 +587,9 @@ namespace CoC.Backend.BodyParts
 			ass.PostPerkInit();
 			balls.PostPerkInit();
 
-			CockPerkHelper CockPerkWrapper = GetCockPerkWrapper();
-			BreastPerkHelper BreastPerkWrapper = GetBreastPerkWrapper();
-			VaginaPerkHelper VaginaPerkWrapper = GetVaginaPerkWrapper();
-
-			if (cockCreators != null)
-			{
-				_cocks.AddRange(cockCreators.Where(x => x != null).Select(x => new Cock(creatureID, CockPerkWrapper, x.type, x.validLength, x.validGirth, x.knot)).Take(MAX_COCKS));
-			}
-			if (vaginaCreators != null)
-			{
-				_vaginas.AddRange(vaginaCreators.Where(x => x != null).Select(x => new Vagina(creatureID, VaginaPerkWrapper, x.type, x.validClitLength, x.looseness,
-					x.wetness, x.virgin, x.hasClitCock)).Take(MAX_VAGINAS));
-			}
-			_breasts.AddRange(breastCreators.Where(x => x != null).Select(x => new Breasts(creatureID, BreastPerkWrapper, x.cupSize, x.validNippleLength)).Take(MAX_BREAST_ROWS));
+			allBreasts.Initialize(breastCreators);
+			allCocks.Initialize(cockCreators);
+			allVaginas.Initialize(vaginaCreators);
 
 			femininity.PostPerkInit();
 			fertility.PostPerkInit();
@@ -416,6 +618,7 @@ namespace CoC.Backend.BodyParts
 		{ }
 
 		private readonly WeakEventSource<GenderChangedEventArgs> genderChangedHandler = new WeakEventSource<GenderChangedEventArgs>();
+
 		public event EventHandler<GenderChangedEventArgs> onGenderChanged
 		{
 			add => genderChangedHandler.Subscribe(value);
@@ -427,24 +630,17 @@ namespace CoC.Backend.BodyParts
 			genderChangedHandler.Raise(this, new GenderChangedEventArgs(oldGender, gender));
 		}
 
-		private void initHelper(out ReadOnlyCollection<Cock> cocks, out ReadOnlyCollection<Vagina> vaginas, out ReadOnlyCollection<Breasts> breasts)
-		{
-			cocks = new ReadOnlyCollection<Cock>(_cocks);
-			vaginas = new ReadOnlyCollection<Vagina>(_vaginas);
-			breasts = new ReadOnlyCollection<Breasts>(_breasts);
-		}
-
 		#endregion
 
 		public override GenitalsData AsReadOnlyData()
 		{
-			return new GenitalsData(this, GetCockPerkWrapper(), GetVaginaPerkWrapper(), GetBreastPerkWrapper());
+			return new GenitalsData(this);
 		}
 
 		#region Genital Exclusive
 		internal bool MakeFemale()
 		{
-			if (numCocks == 0 && !hasClitCock && numVaginas > 0)
+			if (numCocks == 0 && numVaginas > 0)
 			{
 				return false;
 			}
@@ -453,13 +649,12 @@ namespace CoC.Backend.BodyParts
 			{
 				AddVagina(VaginaType.HUMAN);
 			}
-			hasClitCock = false;
 			return true;
 		}
 
 		internal bool MakeMale()
 		{
-			if (numVaginas == 0 && numBreastRows == 1 && _breasts[0].isMale && numCocks > 0)
+			if (numVaginas == 0 && numBreastRows == 1 && breastRows[0].isMale && numCocks > 0)
 			{
 				return false;
 			}
@@ -475,8 +670,21 @@ namespace CoC.Backend.BodyParts
 		#region Validation
 		internal override bool Validate(bool correctInvalidWrapper)
 		{
-#warning FIX ME!
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+#warning correct invalid game date times for last cock cum, milk full, last orgasm.
+			if (correctInvalidWrapper)
+			{
+				return ass.Validate(correctInvalidWrapper) & allBreasts.Validate(correctInvalidWrapper) & allCocks.Validate(correctInvalidWrapper) &
+					allVaginas.Validate(correctInvalidWrapper) & femininity.Validate(correctInvalidWrapper) & fertility.Validate(correctInvalidWrapper)
+					& womb.Validate(correctInvalidWrapper) & balls.Validate(correctInvalidWrapper);
+			}
+			else
+			{
+				return ass.Validate(correctInvalidWrapper) && allBreasts.Validate(correctInvalidWrapper) && allCocks.Validate(correctInvalidWrapper) &&
+					allVaginas.Validate(correctInvalidWrapper) && femininity.Validate(correctInvalidWrapper) && fertility.Validate(correctInvalidWrapper)
+					&& womb.Validate(correctInvalidWrapper) && balls.Validate(correctInvalidWrapper);
+			}
+
+
 		}
 
 		#endregion
@@ -504,7 +712,7 @@ namespace CoC.Backend.BodyParts
 			StringBuilder outputBuilder = new StringBuilder();
 			string outputHelper;
 			//i have no clue how this would work for multi-snatch configs.
-			foreach (var vagina in _vaginas)
+			foreach (var vagina in vaginas)
 			{
 				if (DoLazy(vagina, isPlayer, hoursPassed, out outputHelper))
 				{
@@ -522,7 +730,7 @@ namespace CoC.Backend.BodyParts
 				outputBuilder.Append(outputHelper);
 			}
 
-			if (DoLazyLactationCheck(isPlayer, hoursPassed, out outputHelper))
+			if (allBreasts.DoLazyLactationCheck(isPlayer, hoursPassed, out outputHelper))
 			{
 				outputBuilder.Append(outputHelper);
 			}
@@ -538,18 +746,794 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
+
+		//Genitals Exclusive
+
+		#region Non-Data Cock Aliases
+
+		public bool LostSheath(CockData previousCockData) => allCocks.LostSheath(previousCockData);
+
+
+		public bool GainedSheath(CockData previousCockData) => allCocks.GainedSheath(previousCockData);
+
+
+		public bool HasSheathChanged(CockData previousCockData) => allCocks.HasSheathChanged(previousCockData);
+
+		#endregion
+
+		#region Add/Remove Breasts
+
+		public bool AddBreastRow() => allBreasts.AddBreastRow();
+
+		public bool AddBreastRowAverage() => allBreasts.AddBreastRowAverage();
+
+
+		public bool AddBreastRow(CupSize cup) => allBreasts.AddBreastRow(cup);
+
+
+		public int RemoveBreastRows(int count = 1) => allBreasts.RemoveBreastRows(count);
+
+
+		public int RemoveExtraBreastRows() => allBreasts.RemoveExtraBreastRows();
+
+
+		#endregion
+
+		#region Update All Breasts Functions
+		public void NormalizeBreasts(bool untilEven = false) => allBreasts.NormalizeBreasts(untilEven);
+
+
+
+		public void AnthropomorphizeBreasts(bool untilEven = false) => allBreasts.AnthropomorphizeBreasts(untilEven);
+
+
+		#endregion
+
+		#region Nipple Mutators
+		public void SetQuadNipples(bool active) => allBreasts.SetQuadNipples(active);
+
+
+		public void SetBlackNipples(bool active) => allBreasts.SetBlackNipples(active);
+
+
+		#endregion
+
+		#region Lactation Update Functions
+		public LactationStatus setLactationTo(LactationStatus newStatus) => allBreasts.setLactationTo(newStatus);
+
+
+		public bool clearLactation() => allBreasts.clearLactation();
+
+
+		public float boostLactation(float byAmount = 0.1f) => allBreasts.boostLactation(byAmount);
+
+
+		public void StartOrBoostLactation() => allBreasts.StartOrBoostLactation();
+
+		#endregion
+
+		#region Add/Remove Balls
+
+		/// <summary>
+		/// Tries to grow a pair of balls, failing if the creature already has balls.
+		/// </summary>
+		/// <returns>True if the creature gained a pair of balls, false if they already had them.</returns>
+		public bool GrowBalls()
+		{
+			return balls.growBalls();
+		}
+
+		/// <summary>
+		/// Tries to grow the number of balls provided, rounded down to the nearest even number, at the given size, if applicable. This will create a minimum of two balls if successful.
+		/// Fails if the target already has balls of any kind.
+		/// </summary>
+		/// <param name="numberOfBalls"></param>
+		/// <param name="ballSize"></param>
+		/// <returns>true if the target didn't previously have balls and now does, false otherwise.</returns>
+		/// <remarks>this function will never create a Uniball. If this is desired, use either GrowUniBall or GrowBallsAny.</remarks>
+		public bool GrowBalls(byte numberOfBalls, byte ballSize = Balls.DEFAULT_BALLS_SIZE)
+		{
+			return balls.growBalls(numberOfBalls, ballSize);
+		}
+
+		/// <summary>
+		/// Tries to grow a uniball. Fails if the target already has balls.
+		/// </summary>
+		/// <returns>True if the target did not have balls and now has a uniball, false otherwise.</returns>
+		public bool GrowUniBall()
+		{
+			return balls.growUniBall();
+		}
+
+		/// <summary>
+		/// Tries to grow the number of balls provided, at the given size, if applicable and possible.
+		/// </summary>
+		/// <param name="numBalls"></param>
+		/// <param name="newSize"></param>
+		/// <returns></returns>
+		/// <remarks>Any odd number of balls provided that is not 1 will be rounded down to the nearest even number. </remarks>
+		public bool GrowBallsAny(byte numBalls, byte newSize = Balls.DEFAULT_BALLS_SIZE)
+		{
+			if (numBalls == 1)
+			{
+				return balls.growUniBall();
+			}
+			else
+			{
+				return balls.growBalls(numBalls, newSize);
+			}
+		}
+
+		/// <summary>
+		/// Grows the given amount of balls, even if the target currently does not have any balls. if they do, the two are added, then rounded down to the nearest even number.
+		/// The total amount grown is returned.
+		/// </summary>
+		/// <param name="ballsToAdd">The number of balls to add.</param>
+		/// <returns>The number of balls successfully added.</returns>
+		/// <remarks> The number of balls a target can have is capped; The return value will differ from the given value if this cap is reached.</remarks>
+		public byte AddBalls(byte ballsToAdd, bool ignoreIfUniball = false)
+		{
+			if (balls.uniBall && !ignoreIfUniball)
+			{
+				return 0;
+			}
+			else
+			{
+				return balls.AddBalls(ballsToAdd);
+			}
+		}
+
+		/// <summary>
+		/// Adds the given total of balls to the current amount. If the target does not have balls or the target has a uniball and the optional ignore if uniball flag is set,
+		/// this will fail to add any balls. Returns the number of balls added.
+		/// </summary>
+		/// <param name="additionalBalls">Number of balls to add.</param>
+		/// <param name="ignoreIfUniball">Should this function respect a uniball, if applicable?</param>
+		/// <returns>The number of balls successfully added.</returns>
+		/// <remarks> The number of balls a target can have is capped; The return value will differ from the given value if this cap is reached.</remarks>
+		public byte AddAdditionalBalls(byte additionalBalls, bool ignoreIfUniball = false)
+		{
+			if (!hasBalls || (balls.uniBall && !ignoreIfUniball))
+			{
+				return 0;
+			}
+			else
+			{
+				return balls.AddBalls(additionalBalls);
+			}
+		}
+
+		public byte RemoveBalls(byte removeAmount)
+		{
+			return balls.RemoveBalls(removeAmount);
+		}
+
+		public byte RemoveExtraBalls()
+		{
+			return balls.RemoveExtraBalls();
+		}
+
+		public bool RemoveAllBalls()
+		{
+			return balls.removeAllBalls();
+		}
+		#endregion
+
+		#region Convert Ball Type
+		public bool ConvertToNormalBalls()
+		{
+			return balls.makeStandard();
+		}
+
+		public bool ConvertToUniball()
+		{
+			return balls.makeUniBall();
+		}
+
+		#endregion
+
+		#region Grow or Convert Balls
+		public bool GrowOrConvertToUniball()
+		{
+			if (hasBalls)
+			{
+				return ConvertToUniball();
+			}
+			else
+			{
+				return GrowUniBall();
+			}
+		}
+
+		public bool GrowOrConvertToNormalBalls()
+		{
+			if (hasBalls)
+			{
+				return ConvertToNormalBalls();
+			}
+			else
+			{
+				return GrowBalls();
+			}
+		}
+		#endregion
+
+		#region Change Balls Data
+
+		public byte EnlargeBalls(byte enlargeAmount, bool respectUniball = false, bool ignorePerks = false)
+		{
+			if (!hasBalls || (balls.uniBall && respectUniball))
+			{
+				return 0;
+			}
+			else
+			{
+				return balls.EnlargeBalls(enlargeAmount, ignorePerks);
+			}
+		}
+
+		public byte ShrinkBalls(byte shrinkAmount, bool ignorePerks = false)
+		{
+			if (!hasBalls)
+			{
+				return 0;
+			}
+			else
+			{
+				return balls.ShrinkBalls(shrinkAmount, ignorePerks);
+			}
+		}
+
+		#endregion
+
+		#region Add/Remove Cocks
+		public bool AddCock(CockType newCockType) => allCocks.AddCock(newCockType);
+
+
+		public bool AddCock(CockType newCockType, float length, float girth, float? knotMultiplier = null) => allCocks.AddCock(newCockType, length, girth, knotMultiplier);
+
+
+		public string AddedCockText(CockData addedCock) => allCocks.AddedCockText(addedCock);
+
+
+		public int RemoveCock(int count = 1) => allCocks.RemoveCock(count);
+
+
+		public int RemoveExtraCocks() => allCocks.RemoveExtraCocks();
+
+
+		public int RemoveAllCocks() => allCocks.RemoveAllCocks();
+
+		#endregion
+
+		#region Update Cock Type
+
+		public bool UpdateCock(int index, CockType newType) => allCocks.UpdateCock(index, newType);
+
+
+		public bool UpdateCockWithLength(int index, CockType newType, float newLength) => allCocks.UpdateCockWithLength(index, newType, newLength);
+
+
+		public bool UpdateCockWithLengthAndGirth(int index, CockType newType, float newLength, float newGirth) => allCocks.UpdateCockWithLengthAndGirth(index, newType, newLength, newGirth);
+
+
+		public bool UpdateCockWithKnot(int index, CockType newType, float newKnotMultiplier) => allCocks.UpdateCockWithKnot(index, newType, newKnotMultiplier);
+
+
+		public bool UpdateCockWithAll(int index, CockType newType, float newLength, float newGirth, float newKnotMultiplier) => allCocks.UpdateCockWithAll(index, newType, newLength, newGirth, newKnotMultiplier);
+
+
+		#endregion
+
+		#region AllCocks Update Functions
+		public void NormalizeDicks(bool untilEven = false) => allCocks.NormalizeDicks(untilEven);
+
+		#endregion
+
+		#region Cum Update Functions
+		public float IncreaseCumMultiplier(float additionalMultiplier) => allCocks.IncreaseCumMultiplier(additionalMultiplier);
+
+
+		public float AddFlatCumAmount(float additionalCum) => allCocks.AddFlatCumAmount(additionalCum);
+
+		#endregion
+
+		#region Add/Remove Vaginas
+
+		public bool AddVagina(VaginaType newVaginaType) => allVaginas.AddVagina(newVaginaType);
+
+
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, bool omnibus = false) => allVaginas.AddVagina(newVaginaType, clitLength, omnibus);
+
+
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness, bool omnibus = false) => allVaginas.AddVagina(newVaginaType, clitLength, looseness, wetness, omnibus);
+
+
+		public string AddedVaginaText() => allVaginas.AddedVaginaText();
+
+
+		public int RemoveVagina(int count = 1) => allVaginas.RemoveVagina(count);
+
+
+		public int RemoveExtraVaginas() => allVaginas.RemoveExtraVaginas();
+
+
+		public int RemoveAllVaginas() => allVaginas.RemoveAllVaginas();
+
+		#endregion
+
+		#region Ass Sex Related Functions
+
+		//ass doesn't have a collection because it always exists, so we don't need any magic to handle it. thus, we do everything here.
+
+		internal bool HandleAnalPenetration(float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount,
+			byte virilityBonus, bool takeAnalVirginity, bool reachOrgasm)
+		{
+			//tell the ass itself to handle an insertion, and become looser if necessary.
+			ass.PenetrateAsshole((ushort)(length * girth), knotWidth, cumAmount, takeAnalVirginity, reachOrgasm);
+			//then try to do an anal knockup.
+			if (knockupType != null && knockupType is SpawnTypeIncludeAnal analSpawn && womb.canGetAnallyPregnant(true, analSpawn.ignoreAnalPregnancyPreferences))
+			{
+				return womb.analPregnancy.attemptKnockUp(knockupRate(virilityBonus), knockupType);
+			}
+			return false;
+		}
+
+		internal bool HandleAnalPenetration(Cock source, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm)
+		{
+			return HandleAnalPenetration(source.length, source.girth, source.knotSize, knockupType, cumAmountOverride, source.virility, true, reachOrgasm);
+		}
+
+		internal bool HandleAnalPenetration(Cock source, StandardSpawnType knockupType, bool reachOrgasm)
+		{
+			return HandleAnalPenetration(source.length, source.girth, source.knotSize, knockupType, source.cumAmount, source.virility, true, reachOrgasm);
+		}
+
+		internal void HandleAnalPenetration(float length, float girth, float knotWidth, float cumAmount, bool takeAnalVirginity, bool reachOrgasm)
+		{
+			HandleAnalPenetration(length, girth, knotWidth, null, cumAmount, 0, takeAnalVirginity, reachOrgasm);
+		}
+
+		internal bool HandleAnalPregnancyOverride(StandardSpawnType knockupType, float knockupRate)
+		{
+			if (knockupType != null && knockupType is SpawnTypeIncludeAnal analSpawn && womb.canGetAnallyPregnant(true, analSpawn.ignoreAnalPregnancyPreferences))
+			{
+				return womb.analPregnancy.attemptKnockUp(knockupRate, knockupType);
+			}
+			return false;
+		}
+
+		internal void HandleAnalOrgasmGeneric(bool dryOrgasm)
+		{
+			ass.OrgasmGeneric(dryOrgasm);
+		}
+
+
+		#endregion
+
+		#region Vagina Sex-Related Functions
+		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool takeVirginity, bool reachOrgasm)
+		{
+			return HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, null, cumAmount, 0, takeVirginity, reachOrgasm);
+		}
+		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus, bool takeVirginity,
+			bool reachOrgasm)
+		{
+			allVaginas.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, cumAmount, takeVirginity, reachOrgasm);
+
+			if (vaginaIndex == 0 && womb.canGetPregnant(true) && knockupType != null)
+			{
+				return womb.normalPregnancy.attemptKnockUp(knockupRate(virilityBonus), knockupType);
+			}
+			else if (vaginaIndex == 1 && womb.canGetSecondaryNormalPregnant(true) && knockupType != null)
+			{
+				return womb.secondaryNormalPregnancy.attemptKnockUp(knockupRate(virilityBonus), knockupType);
+
+			}
+			return false;
+		}
+
+		internal bool HandleVaginalPenetration(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, bool reachOrgasm)
+		{
+			return HandleVaginalPenetration(vaginaIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, knockupType, sourceCock.cumAmount, sourceCock.virility, true, reachOrgasm);
+		}
+
+		internal bool HandleVaginalPenetration(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm)
+		{
+			return HandleVaginalPenetration(vaginaIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, knockupType, cumAmountOverride, sourceCock.virility, true, reachOrgasm);
+		}
+
+		internal bool HandleVaginalPregnancyOverride(int vaginaIndex, StandardSpawnType knockupType, float knockupRate)
+		{
+			if (vaginaIndex == 0 && womb.canGetPregnant(vaginas.Count > 0))
+			{
+				return womb.normalPregnancy.attemptKnockUp(knockupRate, knockupType);
+			}
+			else if (vaginaIndex == 1 && womb.canGetPregnant(vaginas.Count > 1))
+			{
+				return womb.secondaryNormalPregnancy.attemptKnockUp(knockupRate, knockupType);
+			}
+			return false;
+		}
+
+		//'Dry' orgasm is orgasm without stimulation.
+		internal void HandleVaginaOrgasmGeneric(int vaginaIndex, bool dryOrgasm)
+		{
+			allVaginas.HandleVaginaOrgasmGeneric(vaginaIndex, dryOrgasm);
+		}
+
+		#endregion
+
+		#region Clit Sex-Related Functions
+
+		internal void HandleClitPenetrate(int vaginaIndex, bool reachOrgasm)
+		{
+			allVaginas.HandleClitPenetrate(vaginaIndex, reachOrgasm);
+		}
+		#endregion
+
+		#region Cock Sex Related Functions
+
+		internal void HandleCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, float knotSize, float cumAmount, bool reachOrgasm)
+		{
+			allCocks.HandleCockSounding(cockIndex, penetratorLength, penetratorWidth, knotSize, cumAmount, reachOrgasm);
+		}
+
+		internal void HandleCockSounding(int cockIndex, Cock sourceCock, bool reachOrgasm)
+		{
+			HandleCockSounding(cockIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm);
+		}
+
+		internal void HandleCockSounding(int cockIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm)
+		{
+			HandleCockSounding(cockIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm);
+		}
+
+		internal void HandleCockPenetrate(int cockIndex, bool reachOrgasm)
+		{
+			allCocks.HandleCockPenetrate(cockIndex, reachOrgasm);
+		}
+
+		internal void DoCockOrgasmGeneric(int cockIndex, bool dryOrgasm)
+		{
+			allCocks.DoCockOrgasmGeneric(cockIndex, dryOrgasm);
+		}
+
+		#endregion
+
+		#region Breast Sex Related Functions
+
+		public bool CanTitFuck()
+		{
+			return breastRows.Any(x => x.TittyFuckable());
+		}
+
+		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
+		internal void HandleTittyFuck(int breastIndex, Cock sourceCock, bool reachOrgasm)
+		{
+			HandleTittyFuck(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm);
+		}
+
+		internal void HandleTittyFuck(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm)
+		{
+			HandleTittyFuck(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm);
+		}
+
+		internal void HandleTittyFuck(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm)
+		{
+			allBreasts.HandleTittyFuck(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm);
+		}
+
+		internal void HandleTitOrgasmGeneric(int breastIndex, bool dryOrgasm)
+		{
+			allBreasts.HandleTitOrgasmGeneric(breastIndex, dryOrgasm);
+		}
+		#endregion
+
+		#region Nipple Sex Related Functions
+
+		internal void HandleNipplePenetration(int breastIndex, Cock sourceCock, bool reachOrgasm)
+		{
+			HandleNipplePenetration(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm);
+		}
+
+		internal void HandleNipplePenetration(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm)
+		{
+			HandleNipplePenetration(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm);
+		}
+
+		internal void HandleNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm)
+		{
+			allBreasts.HandleNipplePenetration(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm);
+		}
+
+		internal void HandleNippleDickPenetrate(int breastIndex, bool reachOrgasm)
+		{
+			allBreasts.HandleNippleDickPenetrate(breastIndex, reachOrgasm);
+		}
+
+		internal void HandleNippleOrgasmGeneric(int breastIndex, bool dryOrgasm)
+		{
+			allBreasts.HandleNippleOrgasmGeneric(breastIndex, dryOrgasm);
+		}
+
+		#endregion
+
+		#region Lactation Sex Related Functions
+
+		public float MilkOrSuckle() => allBreasts.MilkOrSuckle();
+
+		public float MilkOrSuckle(float maxAmount) => allBreasts.MilkOrSuckle(maxAmount);
+
+		#endregion
+
+		//Genitals and Genitals Data
+
+		#region Breast Text
+
+		public string AllBreastsShortDescription(bool alternateFormat = false) => allBreasts.AllBreastsShortDescription(alternateFormat);
+		public string AllBreastsLongDescription(bool alternateFormat = false) => allBreasts.AllBreastsLongDescription(alternateFormat);
+		public string AllBreastsFullDescription(bool alternateFormat = false) => allBreasts.AllBreastsFullDescription(alternateFormat);
+		public string ChestOrAllBreastsShort(bool alternateFormat = false) => allBreasts.ChestOrAllBreastsShort(alternateFormat);
+		public string ChestOrAllBreastsLong(bool alternateFormat = false) => allBreasts.ChestOrAllBreastsLong(alternateFormat);
+		public string ChestOrAllBreastsFull(bool alternateFormat = false) => allBreasts.ChestOrAllBreastsFull(alternateFormat);
+
+		#endregion
+
+		#region Cock Text
+		public string SheathOrBaseStr() => allCocks.SheathOrBaseStr();
+
+
+		public string AllCocksShortDescription() => allCocks.AllCocksShortDescription();
+
+
+		public string AllCocksLongDescription() => allCocks.AllCocksLongDescription();
+
+
+		public string AllCocksFullDescription() => allCocks.AllCocksFullDescription();
+
+
+		public string OneCockOrCocksNoun(string pronoun = "your") => allCocks.OneCockOrCocksNoun(pronoun);
+
+
+		public string OneCockOrCocksShort(string pronoun = "your") => allCocks.OneCockOrCocksShort(pronoun);
+
+
+		public string EachCockOrCocksNoun(string pronoun = "your") => allCocks.EachCockOrCocksNoun(pronoun);
+
+
+		public string EachCockOrCocksShort(string pronoun = "your") => allCocks.EachCockOrCocksShort(pronoun);
+
+
+		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => allCocks.EachCockOrCocksNoun(pronoun, out isPlural);
+
+
+		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => allCocks.EachCockOrCocksShort(pronoun, out isPlural);
+
+		#endregion
+
+		#region Vagina Text
+		public string AllVaginasShortDescription() => allVaginas.AllVaginasShortDescription();
+
+		public string AllVaginasLongDescription() => allVaginas.AllVaginasLongDescription();
+
+		public string AllVaginasFullDescription() => allVaginas.AllVaginasFullDescription();
+
+
+		public string OneVaginaOrVaginasNoun(string pronoun = "your") => allVaginas.OneVaginaOrVaginasNoun(pronoun);
+
+
+		public string OneVaginaOrVaginasShort(string pronoun = "your") => allVaginas.OneVaginaOrVaginasShort(pronoun);
+
+
+		public string EachVaginaOrVaginasNoun(string pronoun = "your") => allVaginas.EachVaginaOrVaginasNoun(pronoun);
+
+
+		public string EachVaginaOrVaginasShort(string pronoun = "your") => allVaginas.EachVaginaOrVaginasShort(pronoun);
+
+
+		public string EachVaginaOrVaginasNoun(string pronoun, out bool isPlural) => allVaginas.EachVaginaOrVaginasNoun(pronoun, out isPlural);
+
+
+		public string EachVaginaOrVaginasShort(string pronoun, out bool isPlural) => allVaginas.EachVaginaOrVaginasShort(pronoun, out isPlural);
+
+		#endregion
+
+		#region Breast Aggregate Functions
+
+		public CupSize BiggestCupSize() => allBreasts.BiggestCupSize();
+
+
+		public CupSize AverageCupSize() => allBreasts.AverageCupSize();
+
+
+		public CupSize SmallestCupSize() => allBreasts.SmallestCupSize();
+
+
+		public Breasts LargestBreast() => allBreasts.LargestBreast();
+
+
+		public Breasts SmallestBreast() => allBreasts.SmallestBreast();
+
+
+		public Breasts SmallestBreastByNippleLength() => allBreasts.SmallestBreastByNippleLength();
+
+
+		public Breasts LargestBreastByNippleLength() => allBreasts.LargestBreastByNippleLength();
+
+
+		public BreastData AverageBreasts() => allBreasts.AverageBreasts();
+
+
+		#endregion
+
+		#region Nipple Aggregate Functions
+
+		public float LargestNippleSize() => allBreasts.LargestNippleSize();
+
+
+		public Nipples LargestNipples() => allBreasts.LargestNipples();
+
+
+		public float SmallestNippleSize() => allBreasts.SmallestNippleSize();
+
+
+		public Nipples SmallestNipples() => allBreasts.SmallestNipples();
+
+
+		public float AverageNippleSize() => allBreasts.AverageNippleSize();
+
+
+		public NippleData AverageNipple() => allBreasts.AverageNipple();
+
+
+		#endregion
+
+		#region Cock Aggregate Functions
+		public float BiggestCockSize() => allCocks.BiggestCockSize();
+
+
+		public float LongestCockLength() => allCocks.LongestCockLength();
+
+
+		public float WidestCockMeasure() => allCocks.WidestCockMeasure();
+
+
+		public Cock BiggestCock() => allCocks.BiggestCock();
+
+
+		public Cock LongestCock() => allCocks.LongestCock();
+
+
+		public Cock WidestCock() => allCocks.WidestCock();
+
+
+		public float AverageCockSize() => allCocks.AverageCockSize();
+
+
+		public float AverageCockLength() => allCocks.AverageCockLength();
+
+
+		public float AverageCockGirth() => allCocks.AverageCockGirth();
+
+
+		public CockData AverageCock() => allCocks.AverageCock();
+
+
+		public float SmallestCockSize() => allCocks.SmallestCockSize();
+
+
+		public float ShortestCockLength() => allCocks.ShortestCockLength();
+
+
+		public float ThinnestCockMeasure() => allCocks.ThinnestCockMeasure();
+
+
+		public Cock SmallestCock() => allCocks.SmallestCock();
+
+
+		public Cock ShortestCock() => allCocks.ShortestCock();
+
+
+		public Cock ThinnestCock() => allCocks.ThinnestCock();
+
+
+		public int CountCocksOfType(CockType type) => allCocks.CountCocksOfType(type);
+
+
+
+
+		public bool OtherCocksUseSheath(int excludedCockIndex) => allCocks.OtherCocksUseSheath(excludedCockIndex);
+		#endregion
+
+		#region Vagina Related Aggregate Functions
+
+		public ushort LargestVaginalCapacity() => allVaginas.LargestVaginalCapacity();
+
+
+		public Vagina LargestVaginalByCapacity() => allVaginas.LargestVaginalByCapacity();
+
+		public ushort SmallestVaginalCapacity() => allVaginas.SmallestVaginalCapacity();
+
+
+		public Vagina SmallestVaginalByCapacity() => allVaginas.SmallestVaginalByCapacity();
+
+
+		public ushort AverageVaginalCapacity() => allVaginas.AverageVaginalCapacity();
+
+
+		public VaginalWetness LargestVaginalWetness() => allVaginas.LargestVaginalWetness();
+
+
+		public Vagina LargestVaginalByWetness() => allVaginas.LargestVaginalByWetness();
+
+		public VaginalWetness SmallestVaginalWetness() => allVaginas.SmallestVaginalWetness();
+
+
+		public Vagina SmallestVaginalByWetness() => allVaginas.SmallestVaginalByWetness();
+
+
+		public VaginalWetness AverageVaginalWetness() => allVaginas.AverageVaginalWetness();
+
+
+		public VaginalLooseness LargestVaginalLooseness() => allVaginas.LargestVaginalLooseness();
+
+
+		public Vagina LargestVaginalByLooseness() => allVaginas.LargestVaginalByLooseness();
+
+		public VaginalLooseness SmallestVaginalLooseness() => allVaginas.SmallestVaginalLooseness();
+
+
+		public Vagina SmallestVaginalByLooseness() => allVaginas.SmallestVaginalByLooseness();
+
+
+		public VaginalLooseness AverageVaginalLooseness() => allVaginas.AverageVaginalLooseness();
+
+
+		public Vagina LargestVaginaByClitSize() => allVaginas.LargestVaginaByClitSize();
+
+
+		public Vagina SmallestVaginaByClitSize() => allVaginas.SmallestVaginaByClitSize();
+
+
+		public int CountVaginasOfType(VaginaType vaginaType) => allVaginas.CountVaginasOfType(vaginaType);
+
+
+		#endregion
+
+		#region Clit Aggregate Functions
+
+		public float LargestClitSize() => allVaginas.LargestClitSize();
+
+
+		public float SmallestClitSize() => allVaginas.SmallestClitSize();
+
+
+		public float AverageClitSize() => allVaginas.AverageClitSize();
+
+
+		public Clit LargestClit() => allVaginas.LargestClit();
+
+
+		public Clit SmallestClit() => allVaginas.SmallestClit();
+
+
+		public VaginaData AverageVagina() => allVaginas.AverageVagina();
+
+
+		#endregion
 	}
 
 
 	public sealed partial class GenitalsData : SimpleData
 	{
-		internal readonly CockPerkHelper cockPerks;
-		internal readonly BreastPerkHelper breastPerks;
-		internal readonly VaginaPerkHelper vaginaPerks;
+		public readonly CockCollectionData allCockData;
+		public readonly VaginaCollectionData allVaginaData;
+		public readonly BreastCollectionData allBreastData;
 
-		public readonly ReadOnlyCollection<CockData> cocks;
-		public readonly ReadOnlyCollection<VaginaData> vaginas;
-		public readonly ReadOnlyCollection<BreastData> breasts;
+		public ReadOnlyCollection<CockData> cocks => allCockData.cocks;
+		public ReadOnlyCollection<VaginaData> vaginas => allVaginaData.vaginas;
+		public ReadOnlyCollection<BreastData> breasts => allBreastData.breasts;
 
 		public readonly Gender gender;
 
@@ -566,72 +1550,280 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ReadOnlyTattooablePart<GenitalTattooLocation> tattoos;
 
-		internal GenitalsData(Genitals source, CockPerkHelper cockData, VaginaPerkHelper vaginaData, BreastPerkHelper breastData) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		internal GenitalsData(Genitals source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			this.cockPerks = cockData ?? throw new ArgumentNullException(nameof(cockData));
-			this.breastPerks = breastData ?? throw new ArgumentNullException(nameof(breastData));
-			this.vaginaPerks = vaginaData ?? throw new ArgumentNullException(nameof(vaginaData));
-			this.cocks = source.cocks.Select(x=>x.AsReadOnlyData()).ToList().AsReadOnly();
-			this.vaginas = source.vaginas.Select(x => x.AsReadOnlyData()).ToList().AsReadOnly();
-			this.breasts = source.breastRows.Select(x => x.AsReadOnlyData()).ToList().AsReadOnly();
+			this.allBreastData = source.allBreasts.AsReadOnlyData();
+			allCockData = source.allCocks.AsReadOnlyData();
+			allVaginaData = source.allVaginas.AsReadOnlyData();
+
 			this.gender = source.gender;
 			this.femininity = source.femininity.AsReadOnlyData();
 			this.fertility = source.fertility.AsReadOnlyData();
 			this.ass = source.ass.AsReadOnlyData();
 			this.balls = source.balls.AsReadOnlyData();
-			this.cumMultiplierTrue = source.cumMultiplierTrue;
-			this.additionalCumTrue = source.additionalCumTrue;
-			this.numCocks = source.numCocks;
-			this.anyCockSoundedCount = source.anyCockSoundedCount;
-			this.maleCockSoundedCount = source.maleCockSoundedCount;
-			this.maleCockSexCount = source.maleCockSexCount;
-			this.anyCockSexCount = source.anyCockSexCount;
-			this.maleCockOrgasmCount = source.maleCockOrgasmCount;
-			this.anyCockOrgasmCount = source.anyCockOrgasmCount;
-			this.maleCockDryOrgasmCount = source.maleCockDryOrgasmCount;
-			this.anyCockDryOrgasmCount = source.anyCockDryOrgasmCount;
-			this.hoursSinceLastCum = source.hoursSinceLastCum;
-			this.totalCum = source.totalCum;
-			this.hasClitCock = source.hasClitCock;
-			this.vaginalSexCount = source.vaginalSexCount;
-			this.vaginaPenetratedCount = source.vaginaPenetratedCount;
-			this.vaginalOrgasmCount = source.vaginalOrgasmCount;
-			this.vaginalDryOrgasmCount = source.vaginalDryOrgasmCount;
-			this.clitCockSexCount = source.clitCockSexCount;
-			this.clitCockSoundedCount = source.clitCockSoundedCount;
-			this.clitCockVirgin = source.clitCockVirgin;
-			this.clitCockOrgasmCount = source.clitCockOrgasmCount;
-			this.clitCockDryOrgasmCount = source.clitCockDryOrgasmCount;
-			this.clitUsedAsPenetratorCount = source.clitUsedAsPenetratorCount;
-			this.blackNipples = source.blackNipples;
-			this.quadNipples = source.quadNipples;
-			this.nippleType = source.nippleType;
-			this.unlockedDickNipples = source.unlockedDickNipples;
-			this.nippleFuckCount = source.nippleFuckCount;
-			this.dickNippleSexCount = source.dickNippleSexCount;
-			this.nippleOrgasmCount = source.nippleOrgasmCount;
-			this.nippleDryOrgasmCount = source.nippleDryOrgasmCount;
-			this.lactation_TotalCapacityMultiplier = source.lactation_TotalCapacityMultiplier;
-			this.lactation_CapacityMultiplier = source.lactation_CapacityMultiplier;
-			this.lactationProductionModifier = source.lactationProductionModifier;
-			this.overfullBuffer = source.overfullBuffer;
-			this.currentLactationAmount = source.currentLactationAmount;
-			this.titFuckCount = source.titFuckCount;
-			this.breastOrgasmCount = source.breastOrgasmCount;
-			this.breastDryOrgasmCount = source.breastDryOrgasmCount;
-			this.canLessenCurrentLactationLevels = source.canLessenCurrentLactationLevels;
-			this.hoursSinceLastMilked = source.hoursSinceLastMilked;
-			this.isOverfull = source.isOverfull;
-			this.hoursOverfull = source.hoursOverfull;
-			this.maximumLactationCapacity = source.maximumLactationCapacity;
-			this.currentLactationCapacity = source.currentLactationCapacity;
-			this.lactationRate = source.lactationRate;
-			this.lactationStatus = source.lactationStatus;
 
 			this.relativeLust = source.relativeLust;
 
 			tattoos = source.tattoos.AsReadOnlyData();
 		}
+
+
+
+		//Genitals and Genitals Data
+
+		#region Breast Text
+
+		public string AllBreastsShortDescription(bool alternateFormat = false) => allBreastData.AllBreastsShortDescription(alternateFormat);
+		public string AllBreastsLongDescription(bool alternateFormat = false) => allBreastData.AllBreastsLongDescription(alternateFormat);
+		public string AllBreastsFullDescription(bool alternateFormat = false) => allBreastData.AllBreastsFullDescription(alternateFormat);
+		public string ChestOrAllBreastsShort(bool alternateFormat = false) => allBreastData.ChestOrAllBreastsShort(alternateFormat);
+		public string ChestOrAllBreastsLong(bool alternateFormat = false) => allBreastData.ChestOrAllBreastsLong(alternateFormat);
+		public string ChestOrAllBreastsFull(bool alternateFormat = false) => allBreastData.ChestOrAllBreastsFull(alternateFormat);
+
+		#endregion
+
+		#region Cock Text
+		public string SheathOrBaseStr() => allCockData.SheathOrBaseStr();
+
+
+		public string AllCocksShortDescription() => allCockData.AllCocksShortDescription();
+
+
+		public string AllCocksLongDescription() => allCockData.AllCocksLongDescription();
+
+
+		public string AllCocksFullDescription() => allCockData.AllCocksFullDescription();
+
+
+		public string OneCockOrCocksNoun(string pronoun = "your") => allCockData.OneCockOrCocksNoun(pronoun);
+
+
+		public string OneCockOrCocksShort(string pronoun = "your") => allCockData.OneCockOrCocksShort(pronoun);
+
+
+		public string EachCockOrCocksNoun(string pronoun = "your") => allCockData.EachCockOrCocksNoun(pronoun);
+
+
+		public string EachCockOrCocksShort(string pronoun = "your") => allCockData.EachCockOrCocksShort(pronoun);
+
+
+		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => allCockData.EachCockOrCocksNoun(pronoun, out isPlural);
+
+
+		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => allCockData.EachCockOrCocksShort(pronoun, out isPlural);
+
+		#endregion
+
+		#region Vagina Text
+		public string AllVaginasShortDescription() => allVaginaData.AllVaginasShortDescription();
+
+		public string AllVaginasLongDescription() => allVaginaData.AllVaginasLongDescription();
+
+		public string AllVaginasFullDescription() => allVaginaData.AllVaginasFullDescription();
+
+
+		public string OneVaginaOrVaginasNoun(string pronoun = "your") => allVaginaData.OneVaginaOrVaginasNoun(pronoun);
+
+
+		public string OneVaginaOrVaginasShort(string pronoun = "your") => allVaginaData.OneVaginaOrVaginasShort(pronoun);
+
+
+		public string EachVaginaOrVaginasNoun(string pronoun = "your") => allVaginaData.EachVaginaOrVaginasNoun(pronoun);
+
+
+		public string EachVaginaOrVaginasShort(string pronoun = "your") => allVaginaData.EachVaginaOrVaginasShort(pronoun);
+
+
+		public string EachVaginaOrVaginasNoun(string pronoun, out bool isPlural) => allVaginaData.EachVaginaOrVaginasNoun(pronoun, out isPlural);
+
+
+		public string EachVaginaOrVaginasShort(string pronoun, out bool isPlural) => allVaginaData.EachVaginaOrVaginasShort(pronoun, out isPlural);
+
+		#endregion
+
+		#region Breast Aggregate Functions
+
+		public CupSize BiggestCupSize() => allBreastData.BiggestCupSize();
+
+
+		public CupSize AverageCupSize() => allBreastData.AverageCupSize();
+
+
+		public CupSize SmallestCupSize() => allBreastData.SmallestCupSize();
+
+
+		public BreastData LargestBreast() => allBreastData.LargestBreast();
+
+
+		public BreastData SmallestBreast() => allBreastData.SmallestBreast();
+
+
+		public BreastData SmallestBreastByNippleLength() => allBreastData.SmallestBreastByNippleLength();
+
+
+		public BreastData LargestBreastByNippleLength() => allBreastData.LargestBreastByNippleLength();
+
+
+		public BreastData AverageBreasts() => allBreastData.AverageBreasts();
+
+
+		#endregion
+
+		#region Nipple Aggregate Functions
+
+		public float LargestNippleSize() => allBreastData.LargestNippleSize();
+
+
+		public NippleData LargestNipples() => allBreastData.LargestNipples();
+
+
+		public float SmallestNippleSize() => allBreastData.SmallestNippleSize();
+
+
+		public NippleData SmallestNipples() => allBreastData.SmallestNipples();
+
+
+		public float AverageNippleSize() => allBreastData.AverageNippleSize();
+
+
+		public NippleData AverageNipple() => allBreastData.AverageNipple();
+
+
+		#endregion
+
+		#region Cock Aggregate Functions
+		public float BiggestCockSize() => allCockData.BiggestCockSize();
+
+
+		public float LongestCockLength() => allCockData.LongestCockLength();
+
+
+		public float WidestCockMeasure() => allCockData.WidestCockMeasure();
+
+
+		public CockData BiggestCock() => allCockData.BiggestCock();
+
+
+		public CockData LongestCock() => allCockData.LongestCock();
+
+
+		public CockData WidestCock() => allCockData.WidestCock();
+
+
+		public float AverageCockSize() => allCockData.AverageCockSize();
+
+
+		public float AverageCockLength() => allCockData.AverageCockLength();
+
+
+		public float AverageCockGirth() => allCockData.AverageCockGirth();
+
+
+		public CockData AverageCock() => allCockData.AverageCock();
+
+
+		public float SmallestCockSize() => allCockData.SmallestCockSize();
+
+
+		public float ShortestCockLength() => allCockData.ShortestCockLength();
+
+
+		public float ThinnestCockMeasure() => allCockData.ThinnestCockMeasure();
+
+
+		public CockData SmallestCock() => allCockData.SmallestCock();
+
+
+		public CockData ShortestCock() => allCockData.ShortestCock();
+
+
+		public CockData ThinnestCock() => allCockData.ThinnestCock();
+
+
+		public int CountCocksOfType(CockType type) => allCockData.CountCocksOfType(type);
+
+
+
+
+		public bool OtherCocksUseSheath(int excludedCockIndex) => allCockData.OtherCocksUseSheath(excludedCockIndex);
+		#endregion
+
+		#region Vagina Related Aggregate Functions
+
+		public ushort LargestVaginalCapacity() => allVaginaData.LargestVaginalCapacity();
+
+
+		public VaginaData LargestVaginalByCapacity() => allVaginaData.LargestVaginalByCapacity();
+
+		public ushort SmallestVaginalCapacity() => allVaginaData.SmallestVaginalCapacity();
+
+
+		public VaginaData SmallestVaginalByCapacity() => allVaginaData.SmallestVaginalByCapacity();
+
+
+		public ushort AverageVaginalCapacity() => allVaginaData.AverageVaginalCapacity();
+
+
+		public VaginalWetness LargestVaginalWetness() => allVaginaData.LargestVaginalWetness();
+
+
+		public VaginaData LargestVaginalByWetness() => allVaginaData.LargestVaginalByWetness();
+
+		public VaginalWetness SmallestVaginalWetness() => allVaginaData.SmallestVaginalWetness();
+
+
+		public VaginaData SmallestVaginalByWetness() => allVaginaData.SmallestVaginalByWetness();
+
+
+		public VaginalWetness AverageVaginalWetness() => allVaginaData.AverageVaginalWetness();
+
+
+		public VaginalLooseness LargestVaginalLooseness() => allVaginaData.LargestVaginalLooseness();
+
+
+		public VaginaData LargestVaginalByLooseness() => allVaginaData.LargestVaginalByLooseness();
+
+		public VaginalLooseness SmallestVaginalLooseness() => allVaginaData.SmallestVaginalLooseness();
+
+
+		public VaginaData SmallestVaginalByLooseness() => allVaginaData.SmallestVaginalByLooseness();
+
+
+		public VaginalLooseness AverageVaginalLooseness() => allVaginaData.AverageVaginalLooseness();
+
+
+		public VaginaData LargestVaginaByClitSize() => allVaginaData.LargestVaginaByClitSize();
+
+
+		public VaginaData SmallestVaginaByClitSize() => allVaginaData.SmallestVaginaByClitSize();
+
+
+		public int CountVaginasOfType(VaginaType vaginaType) => allVaginaData.CountVaginasOfType(vaginaType);
+
+
+		#endregion
+
+		#region Clit Aggregate Functions
+
+		public float LargestClitSize() => allVaginaData.LargestClitSize();
+
+
+		public float SmallestClitSize() => allVaginaData.SmallestClitSize();
+
+
+		public float AverageClitSize() => allVaginaData.AverageClitSize();
+
+
+		public ClitData LargestClit() => allVaginaData.LargestClit();
+
+
+		public ClitData SmallestClit() => allVaginaData.SmallestClit();
+
+
+		public VaginaData AverageVagina() => allVaginaData.AverageVagina();
+
+
+		#endregion
 	}
 }
 

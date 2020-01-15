@@ -69,6 +69,13 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			allPiercingsLongDescription = playerLongDesc ?? throw new ArgumentNullException(nameof(playerLongDesc));
 		}
 
+		//internal Piercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc, ReadOnlyPiercing<Location> initialData)
+		//{
+		//	piercingUnlocked = LocationUnlocked ?? throw new ArgumentNullException(nameof(LocationUnlocked));
+		//	allPiercingsShortDescription = playerShortDesc ?? throw new ArgumentNullException(nameof(playerShortDesc));
+		//	allPiercingsLongDescription = playerLongDesc ?? throw new ArgumentNullException(nameof(playerLongDesc));
+		//}
+
 		public virtual ReadOnlyPiercing<Location> AsReadOnlyData()
 		{
 			return new ReadOnlyPiercing<Location>(piercedAt, jewelryEquipped);
@@ -253,6 +260,27 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			return valid;
 		}
 
+		internal void InitializePiercings(IEnumerable<KeyValuePair<Location, PiercingJewelry>> piercings)
+		{
+			if (piercings is null)
+			{
+				return;
+			}
+
+			foreach (var pair in piercings)
+			{
+				Location loc = pair.Key;
+				piercedAt[loc] = true;
+
+				var jewelry = pair.Value;
+
+				if (CanWearThisJewelry(loc, jewelry))
+				{
+					jewelryEquipped[loc] = jewelry;
+				}
+			}
+		}
+
 		internal void Reset()
 		{
 			ProcChange(piercedAt, jewelryEquipped);
@@ -368,7 +396,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 	public delegate void PiercingDataChangedEventHandler<T>(object sender, PiercingDataChangedEventArgs<T> args) where T : PiercingLocation;
 
-	public class PiercingDataChangedEventArgs<T> : EventArgs where T:PiercingLocation
+	public class PiercingDataChangedEventArgs<T> : EventArgs where T : PiercingLocation
 	{
 		public readonly ReadOnlyDictionary<T, ValueDifference<bool>> piercingDiffs;
 		public readonly ReadOnlyDictionary<T, ValueDifference<PiercingJewelry>> jewelryDiffs;

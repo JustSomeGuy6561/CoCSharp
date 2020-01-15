@@ -131,7 +131,37 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class Cock
+	internal interface ICock
+	{
+		string ShortDescription();
+
+		string HeadDescription();
+
+		string AdjectiveText(bool multipleAdjectives);
+
+		string ShortDescriptionNoAdjective();
+		string ShortDescriptionNoAdjective(bool plural);
+
+		string ShortDescription(bool noAdjective, bool plural);
+
+		string LongDescription(bool alternateFormat = false);
+
+		string LongDescriptionPrimary();
+
+		string LongDescriptionAlternate();
+
+		string FullDescription(bool alternateFormat);
+
+		string FullDescription();
+
+		string FullDescriptionPrimary();
+
+		string FullDescriptionAlternate();
+
+		CockType type { get; }
+	}
+
+	public partial class Cock : ICock
 	{
 		public static string Name()
 		{
@@ -455,7 +485,7 @@ namespace CoC.Backend.BodyParts
 
 			if (player.wearingAnything)
 			{
-				sb.Append("as it presses against your " + player.armor.shortName() + ".You rip open your gear and watch,");
+				sb.Append("as it presses against your " + player.armor.ItemName() + ".You rip open your gear and watch,");
 			}
 			else
 			{
@@ -843,7 +873,7 @@ namespace CoC.Backend.BodyParts
 		private static string LizardTransformStr(CockData previousCockData, PlayerBase player)
 		{
 			string armorText = player.wearingArmor || player.wearingLowerGarment ? "Before it can progress any further, you yank back your " +
-				(player.wearingArmor ? player.armor.shortName() : player.lowerGarment.shortName()) + " to investigate."
+				(player.wearingArmor ? player.armor.ItemName() : player.lowerGarment.ItemName()) + " to investigate."
 				: " After a quick look around to make sure you're relatively safe, you focus your eyes on the source of the sensation.";
 
 			string corruptionText;
@@ -1028,12 +1058,12 @@ namespace CoC.Backend.BodyParts
 			string armorText;
 			if (player.wearingArmor)
 			{
-				string lowerText = player.wearingLowerGarment ? " and remove your " + player.lowerGarment.shortName() : "";
-				armorText = "You pull open your " + player.armor.shortName() + lowerText;
+				string lowerText = player.wearingLowerGarment ? " and remove your " + player.lowerGarment.ItemName() : "";
+				armorText = "You pull open your " + player.armor.ItemName() + lowerText;
 			}
 			else if (player.wearingLowerGarment)
 			{
-				armorText = "You remove your " + player.lowerGarment.shortName();
+				armorText = "You remove your " + player.lowerGarment.ItemName();
 			}
 			else
 			{
@@ -1195,11 +1225,11 @@ namespace CoC.Backend.BodyParts
 			string armorText;
 			if (player.wearingArmor)
 			{
-				armorText = "You tear off your " + player.armor.shortName() + (player.wearingLowerGarment ? "and " + player.lowerGarment.shortName() : "");
+				armorText = "You tear off your " + player.armor.ItemName() + (player.wearingLowerGarment ? "and " + player.lowerGarment.ItemName() : "");
 			}
 			else if (player.wearingLowerGarment)
 			{
-				armorText = "You tear off your " + player.lowerGarment.shortName();
+				armorText = "You tear off your " + player.lowerGarment.ItemName();
 			}
 			else
 			{
@@ -1362,7 +1392,7 @@ namespace CoC.Backend.BodyParts
 				: "Your sheath tightens around your member as it enlarges. ";
 
 			return "You feel a stirring in your loins as " + cockText + " rock hard. You " +
-				player.LowerBodyArmorTextHelper("pull it out from under your " + player.armor.shortName(), "pull it out of your " + player.lowerGarment.shortName(), "lean over") +
+				player.LowerBodyArmorTextHelper("pull it out from under your " + player.armor.ItemName(), "pull it out of your " + player.lowerGarment.ItemName(), "lean over") +
 				" to take a look. You watch as the " + previousCockData.LongDescription() + "shifts, the skin becoming smooth, tough and pink. It takes on a long and narrow shape " +
 				"with an oval shaped bulge along the center. " + sheathText + "The transformation finishes, and the thick flared head leaks a steady stream of funky animal-cum. " +
 				SafelyFormattedString.FormattedText("You now have a rhino-dick!", StringFormats.BOLD);
@@ -1406,7 +1436,7 @@ namespace CoC.Backend.BodyParts
 		private static string EchidnaTransformStr(CockData previousCockData, PlayerBase player)
 		{
 			return player.genitals.OneCockOrCocksNoun().CapitalizeFirstLetter() + " suddenly becomes rock hard out of nowhere. You " +
-				player.LowerBodyArmorTextHelper("pull it out from under your " + player.armor.shortName() + " and watch", "pull it out of your " + player.lowerGarment.shortName() +
+				player.LowerBodyArmorTextHelper("pull it out from under your " + player.armor.ItemName() + " and watch", "pull it out of your " + player.lowerGarment.ItemName() +
 				" and watch", "watch") + " as the " + previousCockData.LongDescription() + " begins to shift and change. It becomes pink in color, and you feel a pinch at the head " +
 				"as it splits to become four heads. " + (previousCockData.currentlyHasSheath ? "" : "The transformation finishes off with a fleshy sheath forming at the base.") +
 				" It ejaculates before going limp, retreating into your sheath. " + SafelyFormattedString.FormattedText("You now have an echidna penis!", StringFormats.BOLD);
@@ -1421,7 +1451,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string WolfGrewCockStr(PlayerBase player, byte grownCockIndex)
 		{
-			string armorText = player.wearingArmor ? ", and you take off your " + player.armor.shortName() + " just in time to watch" : "and you watch in disbelief as";
+			string armorText = player.wearingArmor ? ", and you take off your " + player.armor.ItemName() + " just in time to watch" : "and you watch in disbelief as";
 			return "You double over as a pain fills your groin " + armorText + " a bulge push out of your body. The skin folds back and bunches up into a sheath, " +
 				"revealing a red, knotted wolf cock drooling pre-cum underneath it. You take a shuddering breath as the pain dies down, " +
 				"leaving you with only a vague sense of lust and quiet admiration for your new endowment. " +
@@ -1739,7 +1769,7 @@ namespace CoC.Backend.BodyParts
 		private static string GenericRestoreCockText(CockData previousCock, PlayerBase player)
 		{
 			string armorText = player.wearingArmor
-				? "You resist the urge to undo your " + player.armor.shortName() + " to check, but by the feel of it, your penis is shifting form."
+				? "You resist the urge to undo your " + player.armor.ItemName() + " to check, but by the feel of it, your penis is shifting form."
 				: "A quick look down confirms what you suspected: your penis is shifting form.";
 
 			return "A strange tingling begins behind your " + previousCock.LongDescription() + ", slowly crawling up across its entire length. While neither particularly " +

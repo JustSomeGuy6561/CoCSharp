@@ -15,7 +15,7 @@ namespace CoC.Frontend.Transformations
 	public enum CanineModifiers { STANDARD = 0, LARGE = 1, DOUBLE = 2, BLACK = 4, KNOTTY = 8, BULBY = 16 }
 	internal abstract class CanineTransformations : GenericTransformationBase
 	{
-		private CanineModifiers modifiers;
+		protected CanineModifiers modifiers { get; private set; }
 
 		public CanineTransformations(CanineModifiers canineModifiers)
 		{
@@ -388,48 +388,69 @@ namespace CoC.Frontend.Transformations
 
 			//do female changes.
 
-			if (target.hasVagina && target.genitals.SmallestCupSize() > CupSize.FLAT)
+			//if we have a vag and > flat breasts.
+			if (target.hasVagina && target.genitals.BiggestCupSize() > CupSize.FLAT)
 			{
-				var breastCount = target.breasts.Count;
+				byte breastCount = (byte)target.breasts.Count;
 				if (breastCount < 3)
 				{
-					foreach (var breast in target.breasts)
+					var oldGenitalData = target.genitals.AsReadOnlyData();
+
+					//in vanilla code, we had some strange checks here that required the first row (and only the first row) be a certain size.
+					//now, we check all the rows, but no longer require any of them to be a certain size. instead, if it's not the right size, we make it that size,
+					//then add the row. so, for two rows, your first row must be at least a B-Cup. for 3: first must be a C cup, second an A cup.
+					//if we supported 4 rows, it'd be D, B, A.
+
+					for (int x = 0; x < target.breasts.Count; x++)
 					{
-						if (breast.cupSize < (CupSize)breastCount)
+						CupSize requiredSize = (CupSize)(byte)(target.breasts.Count - x);
+						if (x == 0)
 						{
-							var delta = breast.GrowBreasts((CupSize)breastCount - breast.cupSize);
-							if (delta != 0)
-							{
-								sb.Append(GrowCurrentBreastRowText(target, breast.index, delta));
-							}
+							requiredSize++;
+						}
+						if (target.breasts[x].cupSize < requiredSize)
+						{
+							target.breasts[x].SetCupSize(requiredSize);
 						}
 					}
 
 					target.genitals.AddBreastRow(target.breasts[breastCount - 1].cupSize.ByteEnumSubtract(1));
-					sb.Append(GrewAdditionalBreastRowText(target));
 
-					target.IncreaseCreatureStats(lus: 5, sens: 6);
+
+					bool doCrit = false, uberCrit = false;
+					if (target.breasts.Count == 2)
+					{
+						target.IncreaseCreatureStats(lus: 5, sens: 6);
+					}
+					else if (hasCrit())
+					{
+						doCrit = true;
+						if (crit > 2)
+						{
+							target.IncreaseCreatureStats(sens: 6, lus: 15);
+							uberCrit = true;
+						}
+						else
+						{
+							target.IncreaseCreatureStats(sens: 3, lus: 10);
+						}
+
+					}
+
+					sb.Append(UpdateAndGrowAdditionalRowText(target, oldGenitalData, doCrit, uberCrit));
+
+
+					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+
 				}
 				else
 				{
-					var oldSizes = target.breasts.Select(x => x.cupSize).ToArray();
-					target.genitals.NormalizeBreasts();
+					var oldGenitalData = target.genitals.AsReadOnlyData();
 
-					for (int x = 0; x < target.breasts.Count; x++)
-					{
-						if (target.breasts[x].cupSize != oldSizes[x])
-						{
-							sb.Append(NormalizedBreastSizeText(target, x, ((byte)target.breasts[x].cupSize).delta((byte)oldSizes[x])));
-						}
-					}
-				}
+					target.genitals.AnthropomorphizeBreasts();
 
-				if (hasCrit())
-				{
-					if (crit > 2) target.IncreaseCreatureStats(sens: 6, lus: 15);
-					else target.IncreaseCreatureStats(sens: 3, lus: 10);
+					sb.Append(NormalizedBreastSizeText(target, oldGenitalData));
 				}
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 			}
 
 			//Go into heat
@@ -604,8 +625,9 @@ namespace CoC.Frontend.Transformations
 		protected abstract string AddedCumText(Creature target, float delta, bool deltaIsMultiplier);
 		protected abstract string GrewSmallestCockText(Creature target, int index, CockData oldData);
 		protected abstract string GrowCurrentBreastRowText(Creature target, int index, byte delta);
-		protected abstract string GrewAdditionalBreastRowText(Creature target);
-		protected abstract string NormalizedBreastSizeText(Creature target, int index, short cupSizeDelta);
+		protected abstract string UpdateAndGrowAdditionalRowText(Creature target, GenitalsData oldGenitalData, bool crit, bool uberCrit);
+
+		protected abstract string NormalizedBreastSizeText(Creature target, GenitalsData oldGenitalData);
 		protected abstract string EnterOrIncreaseHeatText(Creature target, bool isIncrease);
 		protected abstract string DoggoFantasyText(Creature target);
 		protected virtual string RestoredEyesText(Creature target, EyeData oldEyes)

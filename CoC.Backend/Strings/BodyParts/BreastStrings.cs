@@ -26,6 +26,8 @@ namespace CoC.Backend.BodyParts
 		LactationStatus lactationStatus { get; }
 
 		bool isOverFull { get; }
+
+		bool isMaleBreasts { get; }
 	}
 
 	public partial class Breasts : IBreast
@@ -42,6 +44,8 @@ namespace CoC.Backend.BodyParts
 		byte IBreast.numberOfBreasts => numBreasts;
 
 		Gender IBreast.gender => currGender;
+
+		bool IBreast.isMaleBreasts => isMale;
 
 	}
 
@@ -60,6 +64,8 @@ namespace CoC.Backend.BodyParts
 		bool IBreast.isOverFull => isOverFull;
 
 		Gender IBreast.gender => gender;
+
+		bool IBreast.isMaleBreasts => isMaleBreasts;
 	}
 
 	public static class BreastHelpers

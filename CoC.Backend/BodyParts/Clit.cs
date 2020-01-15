@@ -127,7 +127,6 @@ namespace CoC.Backend.BodyParts
 		private bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
 
 		public const float MIN_CLIT_SIZE = 0.25f;
-		public const float MIN_CLITCOCK_SIZE = 2f;
 		public const float DEFAULT_CLIT_SIZE = 0.25f;
 		public const float MAX_CLIT_SIZE = 100f;
 
@@ -136,10 +135,6 @@ namespace CoC.Backend.BodyParts
 			get
 			{
 				float currMin = minClitSize;
-				if (omnibusClit && currMin < MIN_CLITCOCK_SIZE)
-				{
-					return MIN_CLITCOCK_SIZE;
-				}
 				return Math.Max(MIN_CLIT_SIZE, currMin);
 			}
 		}
@@ -159,24 +154,6 @@ namespace CoC.Backend.BodyParts
 		}
 		private float _length;
 
-		public bool omnibusClit
-		{
-			get => _omnibusClit;
-			private set
-			{
-				if (_omnibusClit != value)
-				{
-					ClitData oldData = AsReadOnlyData();
-					_omnibusClit = value;
-					if (length < minSize)
-					{
-						_length = minSize; //don't let the length fire the event. we'll handle it.
-					}
-					NotifyDataChanged(oldData);
-				}
-			}
-		}
-		private bool _omnibusClit;
 		public readonly ClitPiercing clitPiercings;
 
 		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false)
@@ -191,12 +168,7 @@ namespace CoC.Backend.BodyParts
 		{
 			parent = source ?? throw new ArgumentNullException(nameof(source));
 			_length = initialPerkData.NewClitSize(clitSize);
-			if (isOmnibusClit && MIN_CLITCOCK_SIZE > length)
-			{
-				_length = MIN_CLITCOCK_SIZE;
-			}
 
-			_omnibusClit = isOmnibusClit;
 			clitPiercings = new ClitPiercing(PiercingLocationUnlocked, AllClitPiercingsShort, AllClitPiercingsLong);
 
 			_minClitSize = initialPerkData.MinClitSize;
@@ -210,42 +182,42 @@ namespace CoC.Backend.BodyParts
 			return new ClitData(this, vaginaIndex);
 		}
 
-		public static ClitData GenerateAggregate(Guid creatureID, float averageSize, bool clitCockCurrentlyAvailable, bool clitCockCurrentlyActive)
+		public static ClitData GenerateAggregate(Guid creatureID, float averageSize)
 		{
-			return new ClitData(creatureID, -1, averageSize, clitCockCurrentlyAvailable, clitCockCurrentlyActive, new ReadOnlyPiercing<ClitPiercingLocation>());
+			return new ClitData(creatureID, -1, averageSize, new ReadOnlyPiercing<ClitPiercingLocation>());
 		}
 
 
-		public bool omnibusActive => CreatureStore.GetCreatureClean(creatureID)?.cocks.Count == 0 && omnibusClit;
+		//public bool omnibusActive => CreatureStore.GetCreatureClean(creatureID)?.cocks.Count == 0 && omnibusClit;
 
-		public Cock AsClitCock()
-		{
-			if (!omnibusClit)
-			{
-				return null;
-			}
+		//public Cock AsClitCock()
+		//{
+		//	if (!omnibusClit)
+		//	{
+		//		return null;
+		//	}
 
-			if (clitCock == null)
-			{
-				clitCock = Cock.GenerateClitCock(creatureID, this);
-			}
-			else
-			{
-				clitCock.SetLength(length + 5);
-			}
-			return clitCock;
-		}
-		private Cock clitCock = null;
+		//	if (clitCock == null)
+		//	{
+		//		clitCock = Cock.GenerateClitCock(creatureID, this);
+		//	}
+		//	else
+		//	{
+		//		clitCock.SetLength(length + 5);
+		//	}
+		//	return clitCock;
+		//}
+		//private Cock clitCock = null;
 
-		internal uint asCockSexCount => clitCock?.sexCount ?? 0;
-		internal uint asCockSoundCount => clitCock?.soundCount ?? 0;
-		internal uint asCockOrgasmCount => clitCock?.orgasmCount ?? 0;
-		internal uint asCockDryOrgasmCount => clitCock?.dryOrgasmCount ?? 0;
+		//internal uint asCockSexCount => clitCock?.sexCount ?? 0;
+		//internal uint asCockSoundCount => clitCock?.soundCount ?? 0;
+		//internal uint asCockOrgasmCount => clitCock?.orgasmCount ?? 0;
+		//internal uint asCockDryOrgasmCount => clitCock?.dryOrgasmCount ?? 0;
 
 
 		public void Restore()
 		{
-			omnibusClit = false;
+			//omnibusClit = false;
 			length = MIN_CLIT_SIZE;
 		}
 
@@ -255,25 +227,25 @@ namespace CoC.Backend.BodyParts
 			clitPiercings.Reset();
 		}
 
-		internal bool ActivateOmnibusClit()
-		{
-			if (omnibusClit)
-			{
-				return false;
-			}
-			omnibusClit = true;
-			return true;
-		}
+		//internal bool ActivateOmnibusClit()
+		//{
+		//	if (omnibusClit)
+		//	{
+		//		return false;
+		//	}
+		//	omnibusClit = true;
+		//	return true;
+		//}
 
-		internal bool DeactivateOmnibusClit()
-		{
-			if (!omnibusClit)
-			{
-				return false;
-			}
-			omnibusClit = false;
-			return true;
-		}
+		//internal bool DeactivateOmnibusClit()
+		//{
+		//	if (!omnibusClit)
+		//	{
+		//		return false;
+		//	}
+		//	omnibusClit = false;
+		//	return true;
+		//}
 
 		internal float growClit(float amount, bool ignorePerks = false)
 		{
@@ -415,8 +387,6 @@ namespace CoC.Backend.BodyParts
 	public sealed partial class ClitData : SimpleData
 	{
 		public readonly float length;
-		public readonly bool isClitCock;
-		public readonly bool clitCockActive;
 		public readonly int vaginaIndex;
 
 		public readonly ReadOnlyPiercing<ClitPiercingLocation> clitPiercings;
@@ -432,18 +402,14 @@ namespace CoC.Backend.BodyParts
 		internal ClitData(Clit source, int currIndex) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			length = source.length;
-			isClitCock = source.omnibusClit;
-			clitCockActive = source.omnibusActive;
 			vaginaIndex = currIndex;
 
 			clitPiercings = source.clitPiercings.AsReadOnlyData();
 		}
 
-		public ClitData(Guid creatureID, int currentIndex, float length, bool canBeClitCock, bool isClitCock, ReadOnlyPiercing<ClitPiercingLocation> piercings) : base(creatureID)
+		public ClitData(Guid creatureID, int currentIndex, float length, ReadOnlyPiercing<ClitPiercingLocation> piercings) : base(creatureID)
 		{
 			this.length = length;
-			this.isClitCock = isClitCock;
-			clitCockActive = canBeClitCock;
 
 			vaginaIndex = currentIndex;
 

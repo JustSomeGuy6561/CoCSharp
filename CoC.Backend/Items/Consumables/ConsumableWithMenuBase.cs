@@ -9,9 +9,8 @@ namespace CoC.Backend.Items.Consumables
 {
 	public abstract class ConsumableWithMenuBase : ConsumableBase
 	{
-		protected ConsumableWithMenuBase(SimpleDescriptor shortName, SimpleDescriptor fullName, SimpleDescriptor description) : base(shortName, fullName, description)
-		{
-		}
+		protected ConsumableWithMenuBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
+			: base(abbreviate, itemName, shortDesc, appearance) { }
 
 		//Note to implementers: OnConsumeAttempt is not used in this class. if you do not need it in your implementation because you did it manually, simply throw a NotSupported or NotImplemented
 		//as it will never be called (and if it is somehow, we'd probably want to know).

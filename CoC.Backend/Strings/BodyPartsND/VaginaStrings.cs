@@ -122,7 +122,34 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class Vagina
+	internal interface IVagina
+	{
+		#region Text
+		string ShortDescription(bool plural);
+
+		string ShortDescription();
+
+		string LongDescription(bool alternateFormat = false);
+
+		string LongDescriptionPrimary();
+
+		string LongDescriptionAlternate();
+
+		string AdjectiveText(bool multipleAdjectives);
+
+		string FullDescriptionPrimary();
+
+		string FullDescriptionAlternate();
+
+		string FullDescription(bool alternateFormat);
+
+		VaginaType type { get; }
+		#endregion
+
+
+	}
+
+	public partial class Vagina : IVagina
 	{
 		public static string Name()
 		{

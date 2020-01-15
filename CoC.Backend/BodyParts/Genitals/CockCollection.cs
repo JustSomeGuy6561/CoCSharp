@@ -1,12 +1,15 @@
 ﻿using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Tools;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
-	public partial class Genitals
+	public sealed partial class CockCollection : BodyParts.SimpleSaveablePart<CockCollection, CockCollectionData>
 	{
 		#region Notes:
 
@@ -28,6 +31,12 @@ namespace CoC.Backend.BodyParts
 		public const int MAX_COCKS = 10;
 		#endregion
 
+		#region Public Cock Related Members
+
+		public readonly ReadOnlyCollection<Cock> cocks;
+
+		#endregion
+
 		#region Public Cum Related Members
 		public float cumMultiplierTrue
 		{
@@ -47,6 +56,9 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Private Cock Related Members
+
+		private readonly List<Cock> _cocks = new List<Cock>(MAX_COCKS);
+
 		//the number of times had sex with cocks that no longer exist;
 		private uint missingCockSexCount;
 		//number of times had cock sounded for cocks that no longer exist.
@@ -63,38 +75,23 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Public Cock Computed Values
-		public int numCocks => _cocks.Count + (hasClitCock ? _vaginas.Count : 0);
-
 		public bool hasCock => _cocks.Count > 0;
 
+		public int numCocks => _cocks.Count;
 
+		public uint cockSoundedCount => missingCockSoundCount + (uint)cocks.Sum(x => x.soundCount);
 
-		public uint anyCockSoundedCount => maleCockSoundedCount.add(clitCockSoundedCount);
-		public uint maleCockSoundedCount => missingCockSoundCount + (uint)cocks.Sum(x => x.soundCount);
+		public uint cockSexCount => missingCockSexCount + (uint)cocks.Sum(x => x.sexCount);
 
-		public uint maleCockSexCount => missingCockSexCount + (uint)cocks.Sum(x => x.sexCount);
-		public uint anyCockSexCount => maleCockSexCount.add(clitCockSexCount);
+		public uint cockOrgasmCount => missingCockOrgasmCount.add((uint)cocks.Sum(x => x.orgasmCount));
 
-		public uint maleCockOrgasmCount => missingCockOrgasmCount.add((uint)cocks.Sum(x => x.orgasmCount));
-		public uint anyCockOrgasmCount => maleCockOrgasmCount.add(clitCockOrgasmCount);
+		public uint cockDryOrgasmCount => missingCockDryOrgasmCount.add((uint)cocks.Sum(x => x.dryOrgasmCount));
 
-		public uint maleCockDryOrgasmCount => missingCockDryOrgasmCount.add((uint)cocks.Sum(x => x.dryOrgasmCount));
-		public uint anyCockDryOrgasmCount => maleCockDryOrgasmCount.add(clitCockDryOrgasmCount);
-
-		public bool cockVirgin => missingCockSexCount > 0 || missingClitCockSexCount > 0 ? false : anyCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
-		public bool maleCockVirgin => missingCockSexCount > 0 ? false : maleCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
+		public bool cockVirgin => missingCockSexCount > 0 ? false : cockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
 
 
 		public bool hasSheath => _cocks.Any(x => x.requiresASheath);
 
-		#endregion
-
-		#region Public Balls Computed Values
-		public bool hasBalls => balls.hasBalls;
-		public bool uniBall => balls.uniBall;
-
-		public byte numberOfBalls => balls.count;
-		public byte ballSize => balls.size;
 		#endregion
 
 		#region Public Cum Related Computed Values
@@ -125,7 +122,7 @@ namespace CoC.Backend.BodyParts
 				{
 					multiplier = 0.25;
 				}
-				if (hoursSinceLastCum < 12 && !alwaysProducesMaxCum) //i'd do 24 but this is Mareth, so.
+				if (hoursSinceLastCum < 12 && !perkData.alwaysProducesMaxCum) //i'd do 24 but this is Mareth, so.
 				{
 					int hoursOffset = hoursSinceLastCum;
 					if (hoursSinceLastCum <= 0) //0 is possible and likely valid, but below 0 means we broke shit. this is just a catch-all.
@@ -134,8 +131,8 @@ namespace CoC.Backend.BodyParts
 					}
 					multiplier *= hoursOffset / 12.0;
 				}
-				multiplier *= bonusCumMultiplier;
-				baseValue = baseValue * multiplier + bonusCumAdded;
+				multiplier *= perkData.bonusCumMultiplier;
+				baseValue = baseValue * multiplier + perkData.bonusCumAdded;
 
 				if (baseValue > int.MaxValue)
 				{
@@ -154,6 +151,72 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
+
+		private Genitals source;
+
+		private GenitalPerkData perkData => source.perkData;
+
+		internal Balls balls => source.balls;
+
+		public Gender gender => source.gender;
+
+		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
+
+		#region Constructor
+		internal CockCollection(Genitals parent) : base(parent?.creatureID ?? throw new ArgumentNullException(nameof(parent)))
+		{
+			source = parent;
+
+			cocks = new ReadOnlyCollection<Cock>(_cocks);
+		}
+		#endregion
+
+		#region Simple Part Data
+		public override CockCollectionData AsReadOnlyData()
+		{
+			return new CockCollectionData(this);
+		}
+
+		public override string BodyPartName()
+		{
+			return Name();
+		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			bool valid = true;
+			if (_cocks.Count > MAX_COCKS)
+			{
+				if (!correctInvalidData)
+				{
+					return false;
+				}
+
+				valid = false;
+				_cocks.RemoveRange(MAX_COCKS, _cocks.Count - MAX_COCKS);
+			}
+
+			foreach (var breast in _cocks)
+			{
+				valid |= breast.Validate(correctInvalidData);
+				if (!valid && !correctInvalidData)
+				{
+					return false;
+				}
+			}
+
+
+			return valid;
+		}
+		#endregion
+
+		internal void Initialize(CockCreator[] cockCreators)
+		{
+			CockPerkHelper cockPerkWrapper = perkData.GetCockPerkWrapper();
+
+			_cocks.AddRange(cockCreators.Where(x => x != null).Select(x => new Cock(creatureID, cockPerkWrapper,x.type, x.validLength, x.validGirth,
+				x.knot, x.cockSock, x.piercings)).Take(MAX_COCKS));
+		}
 
 		#region Cock Aggregate Functions
 		public float BiggestCockSize()
@@ -282,9 +345,9 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_cocks.Add(new Cock(creatureID, GetCockPerkWrapper(), newCockType));
+			_cocks.Add(new Cock(creatureID, perkData.GetCockPerkWrapper(), newCockType));
 
-			CheckGenderChanged(oldGender);
+			source.CheckGenderChanged(oldGender);
 			return true;
 		}
 
@@ -296,9 +359,9 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_cocks.Add(new Cock(creatureID, GetCockPerkWrapper(), newCockType, length, girth, knotMultiplier));
+			_cocks.Add(new Cock(creatureID, perkData.GetCockPerkWrapper(), newCockType, length, girth, knotMultiplier));
 
-			CheckGenderChanged(oldGender);
+			source.CheckGenderChanged(oldGender);
 			return true;
 		}
 
@@ -344,7 +407,7 @@ namespace CoC.Backend.BodyParts
 				_cocks.RemoveRange(numCocks - count, count);
 			}
 
-			CheckGenderChanged(oldGender);
+			source.CheckGenderChanged(oldGender);
 			return oldCount - numCocks;
 		}
 
@@ -356,113 +419,6 @@ namespace CoC.Backend.BodyParts
 		public int RemoveAllCocks()
 		{
 			return RemoveCock(numCocks);
-		}
-		#endregion
-
-		#region Add/Remove Balls
-
-		/// <summary>
-		/// Tries to grow a pair of balls, failing if the creature already has balls.
-		/// </summary>
-		/// <returns>True if the creature gained a pair of balls, false if they already had them.</returns>
-		public bool GrowBalls()
-		{
-			return balls.growBalls();
-		}
-
-		/// <summary>
-		/// Tries to grow the number of balls provided, rounded down to the nearest even number, at the given size, if applicable. This will create a minimum of two balls if successful.
-		/// Fails if the target already has balls of any kind.
-		/// </summary>
-		/// <param name="numberOfBalls"></param>
-		/// <param name="ballSize"></param>
-		/// <returns>true if the target didn't previously have balls and now does, false otherwise.</returns>
-		/// <remarks>this function will never create a Uniball. If this is desired, use either GrowUniBall or GrowBallsAny.</remarks>
-		public bool GrowBalls(byte numberOfBalls, byte ballSize = Balls.DEFAULT_BALLS_SIZE)
-		{
-			return balls.growBalls(numberOfBalls, ballSize);
-		}
-
-		/// <summary>
-		/// Tries to grow a uniball. Fails if the target already has balls.
-		/// </summary>
-		/// <returns>True if the target did not have balls and now has a uniball, false otherwise.</returns>
-		public bool GrowUniBall()
-		{
-			return balls.growUniBall();
-		}
-
-		/// <summary>
-		/// Tries to grow the number of balls provided, at the given size, if applicable and possible.
-		/// </summary>
-		/// <param name="numBalls"></param>
-		/// <param name="newSize"></param>
-		/// <returns></returns>
-		/// <remarks>Any odd number of balls provided that is not 1 will be rounded down to the nearest even number. </remarks>
-		public bool GrowBallsAny(byte numBalls, byte newSize = Balls.DEFAULT_BALLS_SIZE)
-		{
-			if (numBalls == 1)
-			{
-				return balls.growUniBall();
-			}
-			else
-			{
-				return balls.growBalls(numBalls, newSize);
-			}
-		}
-
-		/// <summary>
-		/// Grows the given amount of balls, even if the target currently does not have any balls. if they do, the two are added, then rounded down to the nearest even number.
-		/// The total amount grown is returned.
-		/// </summary>
-		/// <param name="ballsToAdd">The number of balls to add.</param>
-		/// <returns>The number of balls successfully added.</returns>
-		/// <remarks> The number of balls a target can have is capped; The return value will differ from the given value if this cap is reached.</remarks>
-		public byte AddBalls(byte ballsToAdd, bool ignoreIfUniball = false)
-		{
-			if (balls.uniBall && !ignoreIfUniball)
-			{
-				return 0;
-			}
-			else
-			{
-				return balls.AddBalls(ballsToAdd);
-			}
-		}
-
-		/// <summary>
-		/// Adds the given total of balls to the current amount. If the target does not have balls or the target has a uniball and the optional ignore if uniball flag is set,
-		/// this will fail to add any balls. Returns the number of balls added.
-		/// </summary>
-		/// <param name="additionalBalls">Number of balls to add.</param>
-		/// <param name="ignoreIfUniball">Should this function respect a uniball, if applicable?</param>
-		/// <returns>The number of balls successfully added.</returns>
-		/// <remarks> The number of balls a target can have is capped; The return value will differ from the given value if this cap is reached.</remarks>
-		public byte AddAdditionalBalls(byte additionalBalls, bool ignoreIfUniball = false)
-		{
-			if (!hasBalls || (balls.uniBall && !ignoreIfUniball))
-			{
-				return 0;
-			}
-			else
-			{
-				return balls.AddBalls(additionalBalls);
-			}
-		}
-
-		public byte RemoveBalls(byte removeAmount)
-		{
-			return balls.RemoveBalls(removeAmount);
-		}
-
-		public byte RemoveExtraBalls()
-		{
-			return balls.RemoveExtraBalls();
-		}
-
-		public bool RemoveAllBalls()
-		{
-			return balls.removeAllBalls();
 		}
 		#endregion
 
@@ -493,45 +449,6 @@ namespace CoC.Backend.BodyParts
 			return _cocks[index].UpdateCockTypeWithAll(newType, newLength, newGirth, newKnotMultiplier);
 		}
 
-		#endregion
-
-		#region Convert Ball Type
-		public bool ConvertToNormalBalls()
-		{
-			return balls.makeStandard();
-		}
-
-		public bool ConvertToUniball()
-		{
-			return balls.makeUniBall();
-		}
-
-		#endregion
-
-		#region Grow or Convert Balls
-		public bool GrowOrConvertToUniball()
-		{
-			if (hasBalls)
-			{
-				return ConvertToUniball();
-			}
-			else
-			{
-				return GrowUniBall();
-			}
-		}
-
-		public bool GrowOrConvertToNormalBalls()
-		{
-			if (hasBalls)
-			{
-				return ConvertToNormalBalls();
-			}
-			else
-			{
-				return GrowBalls();
-			}
-		}
 		#endregion
 
 		#region AllCocks Update Functions
@@ -584,34 +501,6 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-		#region Change Balls Data
-
-		public byte EnlargeBalls(byte enlargeAmount, bool respectUniball = false, bool ignorePerks = false)
-		{
-			if (!hasBalls || (balls.uniBall && respectUniball))
-			{
-				return 0;
-			}
-			else
-			{
-				return balls.EnlargeBalls(enlargeAmount, ignorePerks);
-			}
-		}
-
-		public byte ShrinkBalls(byte shrinkAmount, bool ignorePerks = false)
-		{
-			if (!hasBalls)
-			{
-				return 0;
-			}
-			else
-			{
-				return balls.ShrinkBalls(shrinkAmount, ignorePerks);
-			}
-		}
-
-		#endregion
-
 		#region Cum Update Functions
 		public float IncreaseCumMultiplier(float additionalMultiplier)
 		{
@@ -632,26 +521,16 @@ namespace CoC.Backend.BodyParts
 
 		internal void HandleCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, float knotSize, float cumAmount, bool reachOrgasm)
 		{
-			_cocks[cockIndex].SoundCock(penetratorLength, penetratorWidth, knotSize, reachOrgasm);
+			cocks[cockIndex].SoundCock(penetratorLength, penetratorWidth, knotSize, reachOrgasm);
 			if (reachOrgasm)
 			{
 				timeLastCum = GameDateTime.Now;
 			}
 		}
 
-		internal void HandleCockSounding(int cockIndex, Cock sourceCock, bool reachOrgasm)
-		{
-			HandleCockSounding(cockIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm);
-		}
-
-		internal void HandleCockSounding(int cockIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm)
-		{
-			HandleCockSounding(cockIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm);
-		}
-
 		internal void HandleCockPenetrate(int cockIndex, bool reachOrgasm)
 		{
-			_cocks[cockIndex].DoSex(reachOrgasm);
+			cocks[cockIndex].DoSex(reachOrgasm);
 			if (reachOrgasm)
 			{
 				timeLastCum = GameDateTime.Now;
@@ -660,72 +539,72 @@ namespace CoC.Backend.BodyParts
 
 		internal void DoCockOrgasmGeneric(int cockIndex, bool dryOrgasm)
 		{
-			_cocks[cockIndex].OrgasmGeneric(dryOrgasm);
+			cocks[cockIndex].OrgasmGeneric(dryOrgasm);
 			timeLastCum = GameDateTime.Now;
 		}
 
 		#endregion
 
-
 		#region Cock Text
-		public string SheathOrBaseStr() => GenitalStrings.SheathOrBaseStr(this);
+		public string SheathOrBaseStr() => CockCollectionStrings.SheathOrBaseStr(this);
 
 
-		public string AllCocksShortDescription() => GenitalStrings.AllCocksShortDescription(this);
+		public string AllCocksShortDescription() => CockCollectionStrings.AllCocksShortDescription(this);
 
 
-		public string AllCocksLongDescription() => GenitalStrings.AllCocksLongDescription(this);
+		public string AllCocksLongDescription() => CockCollectionStrings.AllCocksLongDescription(this);
 
 
-		public string AllCocksFullDescription() => GenitalStrings.AllCocksFullDescription(this);
+		public string AllCocksFullDescription() => CockCollectionStrings.AllCocksFullDescription(this);
 
 
-		public string OneCockOrCocksNoun(string pronoun = "your") => GenitalStrings.OneCockOrCocksNoun(this, pronoun);
+		public string OneCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksNoun(this, pronoun);
 
 
-		public string OneCockOrCocksShort(string pronoun = "your") => GenitalStrings.OneCockOrCocksShort(this, pronoun);
+		public string OneCockOrCocksShort(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksShort(this, pronoun);
 
 
-		public string EachCockOrCocksNoun(string pronoun = "your") => GenitalStrings.EachCockOrCocksNoun(this, pronoun);
+		public string EachCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.EachCockOrCocksNoun(this, pronoun);
 
 
-		public string EachCockOrCocksShort(string pronoun = "your") => GenitalStrings.EachCockOrCocksShort(this, pronoun);
+		public string EachCockOrCocksShort(string pronoun = "your") => CockCollectionStrings.EachCockOrCocksShort(this, pronoun);
 
 
-		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => GenitalStrings.EachCockOrCocksNoun(this, pronoun, out isPlural);
+		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksNoun(this, pronoun, out isPlural);
 
 
-		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => GenitalStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
+		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
 
 		#endregion
 
 	}
 
-	public partial class GenitalsData
+	public sealed partial class CockCollectionData : SimpleData, ICockCollection<CockData>
 	{
 		public readonly float cumMultiplierTrue;
 
 		public float additionalCumTrue;
+
+		ReadOnlyCollection<CockData> ICockCollection<CockData>.cocks => cocks;
+
+		public readonly ReadOnlyCollection<CockData> cocks;
+
+		public readonly BallsData balls;
 
 		#region Public Cock Computed Values
 		public readonly int numCocks;
 
 		public bool hasCock => numCocks > 0;
 
-		public readonly uint anyCockSoundedCount;
-		public readonly uint maleCockSoundedCount;
+		public readonly uint cockSoundedCount;
 
-		public readonly uint maleCockSexCount;
-		public readonly uint anyCockSexCount;
+		public readonly uint cockSexCount;
 
-		public readonly uint maleCockOrgasmCount;
-		public readonly uint anyCockOrgasmCount;
+		public readonly uint cockOrgasmCount;
 
-		public readonly uint maleCockDryOrgasmCount;
-		public readonly uint anyCockDryOrgasmCount;
+		public readonly uint cockDryOrgasmCount;
 
-		public bool cockVirgin => anyCockSexCount == 0;
-		public bool maleCockVirgin => maleCockSexCount == 0;
+		public bool cockVirgin => cockSexCount == 0;
 
 
 		public bool hasSheath => cocks.Any(x => x.requiresSheath);
@@ -749,6 +628,28 @@ namespace CoC.Backend.BodyParts
 
 		//we use mL for amount here, but store ball size in inches. Let's do it right, no? 1cm^3 = 1mL
 		public readonly int totalCum;
+
+		public CockCollectionData(CockCollection source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		{
+			this.balls = source.balls.AsReadOnlyData();
+
+			this.cumMultiplierTrue = source.cumMultiplierTrue;
+			this.additionalCumTrue = source.additionalCumTrue;
+			this.cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x=>x.AsReadOnlyData()).ToList());
+			this.numCocks = source.numCocks;
+			//this.anyCockSoundedCount = source.anyCockSoundedCount;
+			this.cockSoundedCount = source.cockSoundedCount;
+			this.cockSexCount = source.cockSexCount;
+			//this.anyCockSexCount = source.anyCockSexCount;
+			this.cockOrgasmCount = source.cockOrgasmCount;
+			//this.anyCockOrgasmCount = source.anyCockOrgasmCount;
+			this.cockDryOrgasmCount = source.cockDryOrgasmCount;
+			//this.anyCockDryOrgasmCount = source.anyCockDryOrgasmCount;
+			this.hoursSinceLastCum = source.hoursSinceLastCum;
+			this.totalCum = source.totalCum;
+
+
+		}
 		#endregion
 
 		#region CockData Aggregate Functions
@@ -856,35 +757,34 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Cock Text
-		public string SheathOrBaseStr() => GenitalStrings.SheathOrBaseStr(this);
+		public string SheathOrBaseStr() => CockCollectionStrings.SheathOrBaseStr(this);
 
 
-		public string AllCocksShortDescription() => GenitalStrings.AllCocksShortDescription(this);
+		public string AllCocksShortDescription() => CockCollectionStrings.AllCocksShortDescription(this);
 
 
-		public string AllCocksLongDescription() => GenitalStrings.AllCocksLongDescription(this);
+		public string AllCocksLongDescription() => CockCollectionStrings.AllCocksLongDescription(this);
 
 
-		public string AllCocksFullDescription() => GenitalStrings.AllCocksFullDescription(this);
+		public string AllCocksFullDescription() => CockCollectionStrings.AllCocksFullDescription(this);
 
 
-		public string OneCockOrCocksNoun(string pronoun = "your") => GenitalStrings.OneCockOrCocksNoun(this, pronoun);
+		public string OneCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksNoun(this, pronoun);
 
 
-		public string OneCockOrCocksShort(string pronoun = "your") => GenitalStrings.OneCockOrCocksShort(this, pronoun);
+		public string OneCockOrCocksShort(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksShort(this, pronoun);
 
 
-		public string EachCockOrCocksNoun(string pronoun = "your") => GenitalStrings.EachCockOrCocksNoun(this, pronoun);
+		public string EachCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.EachCockOrCocksNoun(this, pronoun);
 
 
-		public string EachCockOrCocksShort(string pronoun = "your") => GenitalStrings.EachCockOrCocksShort(this, pronoun);
+		public string EachCockOrCocksShort(string pronoun = "your") => CockCollectionStrings.EachCockOrCocksShort(this, pronoun);
 
 
-		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => GenitalStrings.EachCockOrCocksNoun(this, pronoun, out isPlural);
+		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksNoun(this, pronoun, out isPlural);
 
 
-		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => GenitalStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
-
+		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
 		#endregion
 
 	}

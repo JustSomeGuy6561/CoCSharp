@@ -27,8 +27,10 @@ using System.Text;
 
 namespace CoC.Backend.Creatures
 {
-	//creature class breaks with non-standard creatures - it's generall
-	public enum CreatureType { STANDARD, PRIMITIVE, ARTIFICIAL }
+	//The master class for any creature. It's responsible for exposing any internal functions related to all of its body parts, and providing common functionality that links them all
+	//together.
+
+
 
 	public abstract class Creature : ITimeActiveListenerSimple, ITimeDayMultiListenerSimple, ITimeLazyListener, IInteractiveStorage<CapacityItem>
 	{
@@ -195,8 +197,8 @@ namespace CoC.Backend.Creatures
 		public ReadOnlyCollection<Vagina> vaginas => genitals.vaginas;
 		public Balls balls => genitals.balls;
 
-		public ReadOnlyCollection<Clit> clits => genitals.clits;
-		public ReadOnlyCollection<Nipples> nipples => genitals.nipples;
+		public Clit[] clits => genitals.clits;
+		public Nipples[] nipples => genitals.nipples;
 
 		//aliases for arms/legs
 		public Hands hands => arms.hands;
@@ -227,11 +229,11 @@ namespace CoC.Backend.Creatures
 		public bool hasBalls => genitals.hasBalls;
 
 		public bool hasCock => cocks.Count > 0;
-		public bool hasCockOrClitCock => hasCock || hasClitCock;
+		//public bool hasCockOrClitCock => hasCock || hasClitCock;
 
-		public bool hasClitCock => genitals.hasClitCock;
+		//public bool hasClitCock => genitals.hasClitCock;
 
-		public bool clitCockActive => !hasCock && hasClitCock;
+		//public bool clitCockActive => !hasCock && hasClitCock;
 
 		public bool hasVagina => vaginas.Count > 0;
 
@@ -1851,41 +1853,6 @@ namespace CoC.Backend.Creatures
 				Orgasmed();
 			}
 		}
-
-		public void HaveClitCockSounded(int vaginaIndex, float penetratorLength, float penetratorWidth, float penetratorKnotSize, float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			if (genitals.hasClitCock)
-			{
-				genitals.HandleClitCockSounding(vaginaIndex, penetratorLength, penetratorWidth, penetratorKnotSize, cumAmount, reachOrgasm);
-				if (reachOrgasm && countTowardOrgasmTotal)
-				{
-					Orgasmed();
-				}
-			}
-		}
-
-		public void HaveClitCockSounded(int vaginaIndex, Cock source, bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			if (genitals.hasClitCock)
-			{
-				genitals.HandleClitCockSounding(vaginaIndex, source, reachOrgasm);
-				if (reachOrgasm && countTowardOrgasmTotal)
-				{
-					Orgasmed();
-				}
-			}
-		}
-		public void HaveClitCockSounded(int vaginaIndex, Cock source, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			if (genitals.hasClitCock)
-			{
-				genitals.HandleClitCockSounding(vaginaIndex, source, cumAmountOverride, reachOrgasm);
-				if (reachOrgasm && countTowardOrgasmTotal)
-				{
-					Orgasmed();
-				}
-			}
-		}
 		//
 
 		#endregion
@@ -1906,30 +1873,6 @@ namespace CoC.Backend.Creatures
 
 		#endregion
 		#region Vaginal Penetrates
-
-		public void PenetrateSomethingWithAClitCock(int vaginaIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			if (genitals.hasClitCock)
-			{
-				genitals.HandleClitCockPenetrate(vaginaIndex, reachOrgasm);
-				if (reachOrgasm && countTowardOrgasmTotal)
-				{
-					Orgasmed();
-				}
-			}
-		}
-
-		public void HaveGenericClitCockOrgasm(int vaginaIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
-		{
-			if (genitals.hasClitCock)
-			{
-				genitals.DoClitCockOrgasmGeneric(vaginaIndex, dryOrgasm);
-				if (countTowardOrgasmTotal)
-				{
-					Orgasmed();
-				}
-			}
-		}
 
 		internal void PenetrateSomethingWithAClit(int vaginaIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{

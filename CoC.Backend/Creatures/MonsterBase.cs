@@ -52,17 +52,17 @@ namespace CoC.Backend.Creatures
 
 		protected override string PlaceItemInCreatureStorageText(CapacityItem item, byte slot)
 		{
-			return "The monster places the " + item.shortName() + " in its " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+			return "The monster places the " + item.ItemName() + " in its " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
 		}
 
 		protected override string ReturnItemToCreatureStorageText(CapacityItem item, byte slot)
 		{
-			return "The monster returns the " + item.shortName() + " to its " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
+			return "The monster returns the " + item.ItemName() + " to its " + Tools.Utils.NumberAsPlace(slot) + " pouch. ";
 		}
 
 		protected override string ReplaceItemInCreatureStorageWithNewItemText(CapacityItem newItem, byte slot)
 		{
-			return "The monster replaces the " + inventory[slot].item.shortName() + " in its " + Tools.Utils.NumberAsPlace(slot) + " pouch with " + newItem.shortName() + ". ";
+			return "The monster replaces the " + inventory[slot].item.ItemName() + " in its " + Tools.Utils.NumberAsPlace(slot) + " pouch with " + newItem.ItemName() + ". ";
 		}
 	}
 }

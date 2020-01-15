@@ -520,31 +520,31 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Clit Helpers
-		public bool omnibusClit => clit.omnibusClit;
+		//public bool omnibusClit => clit.omnibusClit;
 
-		public bool ActivateOmnibusClit()
-		{
-			if (!clit.omnibusClit)
-			{
-				var oldData = AsReadOnlyData();
-				bool retVal = clit.ActivateOmnibusClit();
-				NotifyDataChanged(oldData);
-				return retVal;
-			}
-			return false;
-		}
+		//public bool ActivateOmnibusClit()
+		//{
+		//	if (!clit.omnibusClit)
+		//	{
+		//		var oldData = AsReadOnlyData();
+		//		bool retVal = clit.ActivateOmnibusClit();
+		//		NotifyDataChanged(oldData);
+		//		return retVal;
+		//	}
+		//	return false;
+		//}
 
-		public bool DeactivateOmnibusClit()
-		{
-			if (clit.omnibusClit)
-			{
-				var oldData = AsReadOnlyData();
-				var retVal = clit.DeactivateOmnibusClit();
-				NotifyDataChanged(oldData);
-				return retVal;
-			}
-			return false;
-		}
+		//public bool DeactivateOmnibusClit()
+		//{
+		//	if (clit.omnibusClit)
+		//	{
+		//		var oldData = AsReadOnlyData();
+		//		var retVal = clit.DeactivateOmnibusClit();
+		//		NotifyDataChanged(oldData);
+		//		return retVal;
+		//	}
+		//	return false;
+		//}
 
 		public float growClit(float amount, bool ignorePerks = false)
 		{
@@ -627,10 +627,10 @@ namespace CoC.Backend.BodyParts
 		public bool clitWearingJewelry => clit.wearingJewelry;
 		public bool labiaWearingJewelry => labiaPiercings.wearingJewelry;
 
-		internal void InitializePiercings(Dictionary<ClitPiercingLocation, PiercingJewelry> clitPiercings, Dictionary<LabiaPiercing, PiercingJewelry> labiaPiercings)
+		internal void InitializePiercings(Dictionary<ClitPiercingLocation, PiercingJewelry> clitPiercings, Dictionary<LabiaPiercingLocation, PiercingJewelry> labiaPiercings)
 		{
-#warning Implement Me!
-			//throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			clit.clitPiercings.InitializePiercings(clitPiercings);
+			this.labiaPiercings.InitializePiercings(labiaPiercings);
 		}
 
 		#endregion
@@ -914,7 +914,7 @@ namespace CoC.Backend.BodyParts
 
 	}
 
-	public sealed partial class VaginaData : BehavioralSaveablePartData<VaginaData, Vagina, VaginaType>
+	public sealed partial class VaginaData : BehavioralSaveablePartData<VaginaData, Vagina, VaginaType>, IVagina
 	{
 
 		public readonly ClitData clit;
@@ -927,6 +927,8 @@ namespace CoC.Backend.BodyParts
 		public readonly ushort capacity;
 
 		public readonly ReadOnlyPiercing<LabiaPiercingLocation> labiaPiercings;
+
+		VaginaType IVagina.type => type;
 
 		public override VaginaData AsCurrentData()
 		{

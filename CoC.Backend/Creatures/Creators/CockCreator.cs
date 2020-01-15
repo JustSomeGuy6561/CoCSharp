@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //6/13/2019, 8:39 PM
 using CoC.Backend.BodyParts;
+using CoC.Backend.Items.Wearables.Accessories.CockSocks;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace CoC.Backend.Creatures
 		public float? girth;
 		public float? knot;
 		public readonly ReadOnlyDictionary<CockPiercingLocation, PiercingJewelry> piercings;
+		public readonly CockSockBase cockSock;
 
 		public float validLength => length ?? Cock.DEFAULT_COCK_LENGTH;
 		public float validGirth => girth ?? Cock.DEFAULT_COCK_GIRTH;
@@ -38,14 +40,16 @@ namespace CoC.Backend.Creatures
 				}
 			}
 		}
-		public CockCreator(float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, Dictionary<CockPiercingLocation, PiercingJewelry> cockJewelry = null)
-			: this(CockType.HUMAN, cockLength, cockGirth, knotMultiplier, cockJewelry) { }
-		public CockCreator(CockType cockType, float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, Dictionary<CockPiercingLocation, PiercingJewelry> cockJewelry = null)
+		public CockCreator(float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, CockSockBase cockSock = null,
+			Dictionary<CockPiercingLocation, PiercingJewelry> cockJewelry = null) : this(CockType.HUMAN, cockLength, cockGirth, knotMultiplier, cockSock, cockJewelry) { }
+		public CockCreator(CockType cockType, float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, CockSockBase cockSock = null,
+			Dictionary<CockPiercingLocation, PiercingJewelry> cockJewelry = null)
 		{
 			type = cockType;
 			length = cockLength;
 			girth = cockGirth;
 			knot = knotMultiplier;
+			this.cockSock = cockSock;
 			piercings = cockJewelry == null ? null : new ReadOnlyDictionary<CockPiercingLocation, PiercingJewelry>(cockJewelry);
 		}
 	}

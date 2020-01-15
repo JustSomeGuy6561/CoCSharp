@@ -62,7 +62,7 @@ namespace CoC.Backend.BodyParts
 				string corruptionText;
 				if (player.corruption > 80)
 				{
-					corruptionText = "Looks like you have something " + (player.hasCockOrClitCock ? "else " : "") + "to use to punish your enemies with.";
+					corruptionText = "Looks like you have something " + (player.hasCock ? "else " : "") + "to use to punish your enemies with.";
 				}
 				else if (player.corruption > 50)
 				{
@@ -112,7 +112,7 @@ namespace CoC.Backend.BodyParts
 				string corruptionText;
 				if (player.corruption > 80)
 				{
-					corruptionText = "Looks like you have something " + (player.hasCockOrClitCock ? "else " : "") + "to use to punish your enemies with.";
+					corruptionText = "Looks like you have something " + (player.hasCock ? "else " : "") + "to use to punish your enemies with.";
 				}
 				else if (player.corruption > 50)
 				{

@@ -560,7 +560,7 @@ namespace CoC.Backend.BodyParts
 			this.status = nippleStatus;
 
 			this.lactationRate = lactationRate;
-			lactationStatus = Genitals.StatusFromRate(lactationRate);
+			lactationStatus = BreastCollection.StatusFromRate(lactationRate);
 
 			nipplePiercings = piercings ?? new ReadOnlyPiercing<NipplePiercingLocation>();
 
