@@ -21,7 +21,7 @@ namespace CoC.Frontend.Items.Consumables
 	{
 		private readonly HairFurColors color;
 
-		public HairDye(HairFurColors dyeColor) : base(Short(dyeColor), Full(dyeColor), Desc)
+		public HairDye(HairFurColors dyeColor) : base(Short(dyeColor), Short(dyeColor), Full(dyeColor), Desc)
 		{
 			color = dyeColor ?? throw new ArgumentNullException(nameof(dyeColor));
 		}

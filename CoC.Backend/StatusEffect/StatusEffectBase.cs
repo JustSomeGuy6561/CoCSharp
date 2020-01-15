@@ -39,9 +39,9 @@ namespace CoC.Backend.StatusEffect
 		protected abstract void OnRemoval();
 
 
-		public abstract SimpleDescriptor obtainText { get; }
+		public abstract string ObtainText();
 
-		public abstract SimpleDescriptor ShortDescription { get; }
-		public abstract SimpleDescriptor LongDescription { get; }
+		public abstract string ShortDescription();
+		public abstract string LongDescription();
 	}
 }

@@ -69,26 +69,7 @@ namespace CoC.Frontend.Transformations
 							changed = true;
 						}
 					}
-					else
-					{
-						changed = true;
 
-						var oldCockData = target.cocks[0].AsReadOnlyData();
-
-						var knotSize = 1.75f;
-
-						if (target.cocks[0].hasKnot)
-						{
-							knotSize = Math.Max(2.1f, target.cocks[0].knotMultiplier);
-						}
-
-						target.genitals.UpdateCockWithKnot(0, CockType.DOG, knotSize);
-						if (target.cocks[0].length < 10)
-						{
-							target.cocks[0].SetLength(10);
-						}
-						sb.Append(ConvertedOneCockToDog(target, 0, oldCockData));
-					}
 
 					target.DeltaCreatureStats(sens: 0.5f, lus: 5 * crit);
 					return changed;
@@ -229,7 +210,7 @@ namespace CoC.Frontend.Transformations
 							{
 								target.cocks[1].SetLength(10);
 							}
-							sb.Append(ConvertedOneCockToDog(target, 1, oldData));
+							sb.Append(ConvertedOneCockToDogHadOne(target, 1, oldData));
 						}
 						else
 						{
@@ -240,7 +221,7 @@ namespace CoC.Frontend.Transformations
 							{
 								target.cocks[0].SetLength(10);
 							}
-							sb.Append(ConvertedOneCockToDog(target, 0, oldData));
+							sb.Append(ConvertedOneCockToDogHadOne(target, 0, oldData));
 
 						}
 					}
@@ -249,11 +230,39 @@ namespace CoC.Frontend.Transformations
 				target.IncreaseCreatureStats(lib: 2, lus: 50);
 			}
 
-			//knotty, by default, or large, or with random chance. This has a cost if not knotty.
+			//there are two ways to proc this - either via a knotty modifier (written here), or via random chance and/or with a large pepper (written later)
+			//however, a knotty pepper modifier has no tf cost, the other check does. also, this will modify a cock if none have a dog knot, the other will not.
 			if (modifiers.HasFlag(CanineModifiers.KNOTTY))
 			{
 				float delta = ((Utils.Rand(2) + 5) / 20f) * crit;
-				DoKnotChanges(delta);
+
+				if (!DoKnotChanges(delta))
+				{
+					if (target.hasCock)
+					{
+						var oldCockData = target.cocks[0].AsReadOnlyData();
+
+						var knotSize = 1.75f;
+
+						if (target.cocks[0].hasKnot)
+						{
+							knotSize = Math.Max(2.1f, target.cocks[0].knotMultiplier);
+						}
+
+						target.genitals.UpdateCockWithKnot(0, CockType.DOG, knotSize);
+						if (target.cocks[0].length < 10)
+						{
+							target.cocks[0].SetLength(10);
+						}
+						sb.Append(ConvertedOneCockToDog(target, 0, oldCockData));
+					}
+
+
+					else
+					{
+						sb.Append(WastedKnottyText(target));
+					}
+				}
 			}
 
 			//bulby
@@ -331,9 +340,10 @@ namespace CoC.Frontend.Transformations
 				{
 					var oldData = nonDoggo.AsReadOnlyData();
 					var index = target.cocks.IndexOf(nonDoggo);
+					target.genitals.UpdateCock(index, CockType.DOG);
+
 					sb.Append(ConvertedOneCockToDog(target, index, oldData));
 
-					target.genitals.UpdateCock(index, CockType.DOG);
 
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
 				}
@@ -394,7 +404,7 @@ namespace CoC.Frontend.Transformations
 				byte breastCount = (byte)target.breasts.Count;
 				if (breastCount < 3)
 				{
-					var oldGenitalData = target.genitals.AsReadOnlyData();
+					var oldBreastData = target.genitals.allBreasts.AsReadOnlyData();
 
 					//in vanilla code, we had some strange checks here that required the first row (and only the first row) be a certain size.
 					//now, we check all the rows, but no longer require any of them to be a certain size. instead, if it's not the right size, we make it that size,
@@ -437,7 +447,7 @@ namespace CoC.Frontend.Transformations
 
 					}
 
-					sb.Append(UpdateAndGrowAdditionalRowText(target, oldGenitalData, doCrit, uberCrit));
+					sb.Append(UpdateAndGrowAdditionalRowText(target, oldBreastData, doCrit, uberCrit));
 
 
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
@@ -445,11 +455,11 @@ namespace CoC.Frontend.Transformations
 				}
 				else
 				{
-					var oldGenitalData = target.genitals.AsReadOnlyData();
+					var oldBreastData = target.genitals.allBreasts.AsReadOnlyData();
 
 					target.genitals.AnthropomorphizeBreasts();
 
-					sb.Append(NormalizedBreastSizeText(target, oldGenitalData));
+					sb.Append(NormalizedBreastSizeText(target, oldBreastData));
 				}
 			}
 
@@ -596,6 +606,7 @@ namespace CoC.Frontend.Transformations
 
 		}
 
+		protected abstract string WastedKnottyText(Creature target);
 		protected abstract string InitialTransformationText(CanineModifiers modifiers, bool crit);
 		protected abstract string BadEndText(Creature target);
 		protected abstract string DoggoWarningText(Creature target, bool wasPreviouslyWarned);
@@ -605,6 +616,7 @@ namespace CoC.Frontend.Transformations
 		protected abstract string ConvertedFirstDogCockGrewSecond(Creature target, CockData oldCockData);
 		protected abstract string ConvertedTwoCocksToDog(Creature target, CockData firstOldData, CockData secondOldData);
 		protected abstract string GrewSecondDogCockHadOne(Creature target);
+		protected abstract string ConvertedOneCockToDogHadOne(Creature target, int index, CockData oldData);
 		protected abstract string GrewBallsText(Creature target);
 		protected abstract string EnlargedBallsText(Creature target, BallsData oldData);
 
@@ -620,15 +632,20 @@ namespace CoC.Frontend.Transformations
 		{
 			return RemovedFeatheryHairTextGeneric(target);
 		}
-		protected abstract string ConvertedOneCockToDog(Creature target, int index, CockData oldData);
+		protected virtual string ConvertedOneCockToDog(Creature target, int index, CockData oldData)
+		{
+			return target.cocks[index].TransformFromText(oldData);
+		}
 		protected abstract string CouldntConvertDemonCockThickenedInstead(Creature target, int index, float delta);
 		protected abstract string AddedCumText(Creature target, float delta, bool deltaIsMultiplier);
 		protected abstract string GrewSmallestCockText(Creature target, int index, CockData oldData);
-		protected abstract string GrowCurrentBreastRowText(Creature target, int index, byte delta);
-		protected abstract string UpdateAndGrowAdditionalRowText(Creature target, GenitalsData oldGenitalData, bool crit, bool uberCrit);
+		protected abstract string UpdateAndGrowAdditionalRowText(Creature target, BreastCollectionData oldBreasts, bool crit, bool uberCrit);
 
-		protected abstract string NormalizedBreastSizeText(Creature target, GenitalsData oldGenitalData);
-		protected abstract string EnterOrIncreaseHeatText(Creature target, bool isIncrease);
+		protected abstract string NormalizedBreastSizeText(Creature target, BreastCollectionData oldBreasts);
+		protected virtual string EnterOrIncreaseHeatText(Creature target, bool isIncrease)
+		{
+			return GainedOrEnteredHeatTextGeneric(target, isIncrease);
+		}
 		protected abstract string DoggoFantasyText(Creature target);
 		protected virtual string RestoredEyesText(Creature target, EyeData oldEyes)
 		{

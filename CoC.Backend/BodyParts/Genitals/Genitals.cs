@@ -1532,7 +1532,10 @@ namespace CoC.Backend.BodyParts
 		public readonly BreastCollectionData allBreastData;
 
 		public ReadOnlyCollection<CockData> cocks => allCockData.cocks;
+		public int numCocks => cocks.Count;
 		public ReadOnlyCollection<VaginaData> vaginas => allVaginaData.vaginas;
+		public int numVaginas => vaginas.Count;
+
 		public ReadOnlyCollection<BreastData> breasts => allBreastData.breasts;
 
 		public readonly Gender gender;

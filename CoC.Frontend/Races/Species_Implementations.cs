@@ -2064,7 +2064,7 @@ namespace CoC.Frontend.Races
 			{
 				nagaCounter++;
 			}
-			if (source.body.type == BodyType.NAGA)
+			if (source.body.type == BodyType.REPTILE)
 			{
 				nagaCounter += 2;
 			}

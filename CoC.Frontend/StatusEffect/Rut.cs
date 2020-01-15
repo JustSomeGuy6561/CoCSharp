@@ -28,11 +28,11 @@ namespace CoC.Frontend.StatusEffect
 		{
 		}
 
-		public override SimpleDescriptor obtainText => GainedRutText;
+		public override string ObtainText() => GainedRutText();
 
-		public override SimpleDescriptor ShortDescription => throw new NotImplementedException();
+		public override string ShortDescription() => throw new NotImplementedException();
 
-		public override SimpleDescriptor LongDescription => throw new NotImplementedException();
+		public override string LongDescription() => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{

@@ -205,10 +205,10 @@ namespace CoC.Frontend.Creatures
 				{
 					new VaginaCreator(vaginalLooseness: VaginalLooseness.NORMAL, isVirgin: false,
 						clitJewelry: new PiercingData<ClitPiercingLocation>(){ [ClitPiercingLocation.HOOD_HORIZONTAL] = new PiercingJewelry(JewelryType.RING, new Emerald(), true)},
-						labiaJewelry: new PiercingData<LabiaPiercings>()
+						labiaJewelry: new PiercingData<LabiaPiercingLocation>()
 						{
-							[LabiaPiercings.LEFT_1] = labiaPiercing(), [LabiaPiercings.LEFT_2] = labiaPiercing(), [LabiaPiercings.LEFT_5] = labiaPiercing(), [LabiaPiercings.LEFT_6] = labiaPiercing(),
-							[LabiaPiercings.RIGHT_1] = labiaPiercing(), [LabiaPiercings.RIGHT_2] = labiaPiercing(), [LabiaPiercings.RIGHT_5] = labiaPiercing(), [LabiaPiercings.RIGHT_6] = labiaPiercing()
+							[LabiaPiercingLocation.LEFT_1] = labiaPiercing(), [LabiaPiercingLocation.LEFT_2] = labiaPiercing(), [LabiaPiercingLocation.LEFT_5] = labiaPiercing(), [LabiaPiercingLocation.LEFT_6] = labiaPiercing(),
+							[LabiaPiercingLocation.RIGHT_1] = labiaPiercing(), [LabiaPiercingLocation.RIGHT_2] = labiaPiercing(), [LabiaPiercingLocation.RIGHT_5] = labiaPiercing(), [LabiaPiercingLocation.RIGHT_6] = labiaPiercing()
 						})
 				},
 				analLooseness = AnalLooseness.LOOSE,
@@ -277,8 +277,8 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor CeveoFlavorText => SpecialCharacterStrings.CeveoText;
 		private static PlayerCreator customCeveo()
 		{
-			//Pair<CockPiercings, PiercingJewelry> silverAlbert = [CockPiercings.ALBERT] );
-			CockCreator createCock() => new CockCreator(CockType.HUMAN, 12, 5.5f, cockJewelry: new PiercingData<CockPiercings> { [CockPiercings.ALBERT] = new PiercingJewelry(JewelryType.RING, new Silver(), true) });
+			//Pair<CockPiercingLocation, PiercingJewelry> silverAlbert = [CockPiercingLocation.PRINCE_ALBERT] );
+			CockCreator createCock() => new CockCreator(CockType.HUMAN, 12, 5.5f, cockJewelry: new PiercingData<CockPiercingLocation> { [CockPiercingLocation.PRINCE_ALBERT] = new PiercingJewelry(JewelryType.RING, new Silver(), true) });
 			PiercingJewelry silverStuds() => new PiercingJewelry(JewelryType.BARBELL_STUD, new Silver(), true);
 
 			//finally, a character with a description that can reasonably allow the player to choose their gender.
@@ -359,7 +359,7 @@ namespace CoC.Frontend.Creatures
 				defaultGender = Gender.HERM,
 				forceDefaultGender = true,
 
-				cocks = new CockCreator[] { new CockCreator(CockType.FOX, 27, 1.4f, 3.6f) },
+				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 27, 1.4f, 3.6f) },
 				numBalls = 0,
 				ballSize = 0,
 				cumMultiplier = 7500,
@@ -572,12 +572,12 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor IsaacFlavorText => SpecialCharacterStrings.IsaacText;
 		private static PlayerCreator customIsaac()
 		{
-			Dictionary<CockPiercings, PiercingJewelry> ladderPiercings(JewelryMaterial material)
+			Dictionary<CockPiercingLocation, PiercingJewelry> ladderPiercings(JewelryMaterial material)
 			{
-				Dictionary<CockPiercings, PiercingJewelry> retVal = new Dictionary<CockPiercings, PiercingJewelry>();
-				foreach (CockPiercings location in Piercing<CockPiercings>.AsIteratable())
+				Dictionary<CockPiercingLocation, PiercingJewelry> retVal = new Dictionary<CockPiercingLocation, PiercingJewelry>();
+				foreach (CockPiercingLocation location in CockPiercingLocation.allLocations)
 				{
-					if (location == CockPiercings.ALBERT)
+					if (location == CockPiercingLocation.PRINCE_ALBERT)
 					{
 						continue;
 					}
@@ -604,8 +604,8 @@ namespace CoC.Frontend.Creatures
 				//heh, ribbed for their pleasure ;d lol
 				cocks = new CockCreator[]
 				{
-					new CockCreator(CockType.FOX, 12, 2.8f, 1.8f, ladderPiercings(new Fertite())),
-					new CockCreator(CockType.CAT, 10, 2.5f, null, ladderPiercings(new Emerald()))
+					new CockCreator(CockType.DOG, 12, 2.8f, 1.8f, cockJewelry:ladderPiercings(new Fertite())),
+					new CockCreator(CockType.CAT, 10, 2.5f, null, cockJewelry:ladderPiercings(new Emerald()))
 				},
 				//- and one tight asshole
 				analLooseness = AnalLooseness.NORMAL,
@@ -1402,7 +1402,7 @@ namespace CoC.Frontend.Creatures
 
 				//Character Creation	Female,virgin	A kitsune with a snake-like tongue	Sora
 				vaginas = new VaginaCreator[] { new VaginaCreator() },
-				cocks = new CockCreator[] { new CockCreator(CockType.FOX) },
+				cocks = new CockCreator[] { new CockCreator(CockType.DOG) },
 				tongueType = TongueType.SNAKE,
 				earType = EarType.FOX,
 				tailType = TailType.FOX,
@@ -1447,7 +1447,7 @@ namespace CoC.Frontend.Creatures
 				//added a tongue piercing because seemed relevant to demon tongue and whorish nature, idk.
 				tonguePiercings = new PiercingData<TonguePiercingLocation>()
 				{
-					[TonguePiercingLocation.MIDDLE_CENTER] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), true)
+					[TonguePiercingLocation.MIDDLE] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), true)
 				},
 				earType = EarType.CAT,
 				//Body: Very muscular, average weight, plump ass, above average thighs, cat tail and cat paws
@@ -1973,8 +1973,8 @@ namespace CoC.Frontend.Creatures
 				//7 inch cock, relatively normal thickness, well used, with a steel frenum barbell at the top as a result of a drunken dare
 				cocks = new CockCreator[]
 				{
-					new CockCreator(7, 1.2f, null, new PiercingData<CockPiercings>(){
-					[CockPiercings.FRENUM_UPPER_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), true) })
+					new CockCreator(7, 1.2f, null, cockJewelry:new PiercingData<CockPiercingLocation>(){
+					[CockPiercingLocation.FRENUM_UPPER_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), true) })
 				},
 				cockVirgin = false,
 

@@ -10,7 +10,7 @@ namespace CoC.Frontend.Items.Consumables
 {
 	public sealed class AkbalSaliva : ConsumableBase
 	{
-		public AkbalSaliva() : base(Short, Full, Desc)
+		public AkbalSaliva() : base(Short, Name, Full, Desc)
 		{
 
 		}
@@ -18,6 +18,11 @@ namespace CoC.Frontend.Items.Consumables
 		private static string Short()
 		{
 			return "AkbalSlv";
+		}
+
+		private static string Name()
+		{
+			return "Akbal Saliva";
 		}
 
 		private static string Full()

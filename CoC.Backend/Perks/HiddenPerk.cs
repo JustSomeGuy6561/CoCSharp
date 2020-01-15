@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CoC.Backend.Perks
 {
-	//Hidden perks aren't attainable via leveling. They don't require any sort of unlock specific text. 
+	//Hidden perks aren't attainable via leveling. They don't require any sort of unlock specific text.
 
 	public abstract class HiddenPerk : PerkBase
 	{

@@ -18,7 +18,7 @@ namespace CoC.Backend.Settings.Gameplay
 		}
 	}
 	public sealed partial class TimeGlobalSetting : SimpleSetting
-	{ 
+	{
 		private BackendGlobalSave glob => BackendGlobalSave.data;
 
 		public TimeGlobalSetting() : base()

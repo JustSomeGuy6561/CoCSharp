@@ -80,7 +80,7 @@ namespace CoC.Frontend.Creatures
 				ushort timeout = (intensity * Heat.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Heat.TIMEOUT_STACK);
 				var heat = new Heat(timeout);
 				creature.statusEffects.AddStatusEffect(heat);
-				output = heat.obtainText();
+				output = heat.ObtainText();
 				return true;
 			}
 			else

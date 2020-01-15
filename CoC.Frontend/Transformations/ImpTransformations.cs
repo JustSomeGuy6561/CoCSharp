@@ -39,7 +39,7 @@ namespace CoC.Frontend.Transformations
 				if (target.cocks[0].length < 12)
 				{
 					float temp = target.cocks[0].LengthenCock(Utils.Rand(2) + 2);
-					sb.Append(OneCockGrewLarger(target, target.cocks[0], temp));
+					sb.Append(OneCockGrewLarger(target, 0, temp));
 				}
 				hpDelta = 30;
 			}
@@ -365,7 +365,7 @@ namespace CoC.Frontend.Transformations
 			return target.lowerBody.TransformFromText(oldLegs);
 		}
 		protected abstract string InitialTransformText(Creature target);
-		protected abstract string OneCockGrewLarger(Creature target, Cock cock, float deltaSize);
+		protected abstract string OneCockGrewLarger(Creature target, int index, float deltaSize);
 		protected abstract string GainVitalityText(Creature target);
 		protected abstract string ChangeSkinColorText(Creature target, Tones oldSkinTone);
 		protected abstract string GetShorterText(Creature target, byte heightDelta);

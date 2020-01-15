@@ -58,7 +58,7 @@ namespace CoC.Backend.Settings.Fetishes
 
 		public override bool SettingEnabled(bool? possibleSetting, out string whyNot)
 		{
-			//could have prevented resetting to null on local, but 
+			//could have prevented resetting to null on local, but
 			//if you really want to reset the "ask me" flag, we'll let you. fuck it.
 
 			whyNot = ""; //since we return true this is ignored.

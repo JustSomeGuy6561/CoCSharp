@@ -89,9 +89,9 @@ namespace CoC.Frontend.Transformations
 
 		//displays text for one more more cocks, with each growing or shortening by the deltaAmount value (positive = grow. negative = shorten)
 		//the number of cocks is determined by the
-		protected string GenericChangeOneCockLengthText(Creature target, Cock grownCock, float deltaAmount)
+		protected string GenericChangeOneCockLengthText(Creature target, int index, float deltaAmount)
 		{
-			return GenericChangeCockLengthText(target, new int[] { grownCock.id }, deltaAmount);
+			return GenericChangeCockLengthText(target, new int[] { index }, deltaAmount);
 		}
 		protected string GenericChangeCockLengthText(Creature target, int[] grownCocks, float deltaAmount)
 		{
@@ -483,6 +483,25 @@ namespace CoC.Frontend.Transformations
 				$"{removedBreastRow.ShortDescription()} shrink down, disappearing completely into your {(target.breasts.Count > 2 ? "abdomen" : "chest")}. The " +
 				$"{removedBreastRow.nipples.ShortDescription()} even fade until nothing but {target.body.mainEpidermis.ShortDescription()} remains. " +
 				SafelyFormattedString.FormattedText("You've lost a row of breasts!", StringFormats.BOLD);
+		}
+
+		protected string GainedOrEnteredHeatTextGeneric(Creature target, bool isIncrease)
+		{
+			if (!target.statusEffects.HasStatusEffect<Heat>())
+			{
+				return "";
+			}
+
+			var heat = target.statusEffects.GetStatusEffect<Heat>();
+
+			if (isIncrease)
+			{
+				return heat.IncreasedHeatText();
+			}
+			else
+			{
+				return heat.ObtainText();
+			}
 		}
 	}
 }

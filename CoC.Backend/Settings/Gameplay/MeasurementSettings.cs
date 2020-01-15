@@ -18,7 +18,7 @@ namespace CoC.Backend.Settings.Gameplay
 		}
 	}
 	public sealed partial class MeasurementGlobalSetting : SimpleSetting
-	{ 
+	{
 		public MeasurementGlobalSetting() : base()
 		{
 		}

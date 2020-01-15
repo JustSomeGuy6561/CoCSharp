@@ -17,13 +17,13 @@ namespace CoC.Frontend.StatusEffect
 			overdoseCount = 1;
 		}
 
-		public override SimpleDescriptor obtainText => OverdoseText;
+		public override string ObtainText() => OverdoseText();
 
 
 
-		public override SimpleDescriptor ShortDescription => ODShort;
+		public override string ShortDescription() => ODShort();
 
-		public override SimpleDescriptor LongDescription => ODFull;
+		public override string LongDescription() => ODFull();
 
 
 
