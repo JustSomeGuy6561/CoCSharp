@@ -4,6 +4,7 @@
 //1/16/2020 5:19:26 PM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
@@ -45,6 +46,11 @@ namespace CoC.Frontend.Items.Consumables
 		public override byte sateHungerAmount => 40;
 
 		protected override int monetaryValue => DEFAULT_VALUE;
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is EchidnaCake;
+		}
 
 		public override bool CanUse(Creature target, out string whyNot)
 		{

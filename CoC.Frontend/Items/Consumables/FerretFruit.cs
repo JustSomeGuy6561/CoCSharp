@@ -4,6 +4,7 @@
 //1/18/2020 9:05:07 PM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -57,7 +58,11 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override int monetaryValue => DEFAULT_VALUE;
 
-		//can we use this item on the given creature? if not, provide a valid string explaining why not. that text will be displayed as a hint to the user.
+		public override bool Equals(CapacityItem other)
+		{
+			return other is FerretFruit;
+		}
+
 		public override bool CanUse(Creature target, out string whyNot)
 		{
 			whyNot = null;

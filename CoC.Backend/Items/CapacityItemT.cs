@@ -1,10 +1,11 @@
 ﻿using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.UI;
+using System;
 
 namespace CoC.Backend.Items
 {
-	public abstract class CapacityItem<T> : CapacityItem where T : CapacityItem<T>
+	public abstract class CapacityItem<T> : CapacityItem, IEquatable<T> where T : CapacityItem<T>
 	{
 		protected CapacityItem() : base() { }
 
@@ -27,6 +28,7 @@ namespace CoC.Backend.Items
 			postItemUseCallbackSafe(true, resultsOfUse, Author(), retVal);
 		}
 
+
 		/// <summary>
 		/// Do any internal logic for using the item. if this item overrides AttemptToUseSafe, this can be ignored.
 		/// </summary>
@@ -34,5 +36,20 @@ namespace CoC.Backend.Items
 		/// <param name="resultsOfUseText">Text explaining the results of the current use. </param>
 		/// <returns></returns>
 		protected abstract T UseItem(Creature target, out string resultsOfUseText);
+
+		public override bool Equals(CapacityItem other)
+		{
+			if (other is T tType)
+			{
+				return this.Equals(tType);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public abstract bool Equals(T other);
+
 	}
 }

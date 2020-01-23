@@ -1,5 +1,6 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.UI;
@@ -43,6 +44,12 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is AkbalSaliva;
+		}
+
 		public override bool countsAsLiquid => true;
 
 		public override bool countsAsCum => false;

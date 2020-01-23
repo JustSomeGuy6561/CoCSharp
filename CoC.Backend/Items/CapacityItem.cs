@@ -9,7 +9,7 @@ namespace CoC.Backend.Items
 {
 
 
-	public abstract class CapacityItem
+	public abstract class CapacityItem : IEquatable<CapacityItem>
 	{
 
 		//unlike the original, which put all of the data in the constructor, C# doesn't let us pass along function pointers to the base that use data from the current object
@@ -79,5 +79,9 @@ namespace CoC.Backend.Items
 		//using an item that does not get its own page while on another page is undefined - you don't want to override the original author's wall of text to say "you drank a potion
 		//and got 50 health back". Generally, though, all items get their own page. (afaik, they always do, but don't quote me).
 		public virtual string Author() => "";
+
+		//equatable is used to determine items that are the same. it's not possible to simply go by type, because items may have variables that differentiate them (i.e. succubi milk
+		//vs Purified Succubi Milk)
+		public abstract bool Equals(CapacityItem other);
 	}
 }

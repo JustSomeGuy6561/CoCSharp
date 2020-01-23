@@ -4,6 +4,7 @@
 //1/21/2020 2:45:33 AM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
@@ -62,9 +63,11 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		//what happens when we try to use this item? note that it's unlikely, but possible, for this to be called if CanUse returns false.
-		//you need to handle that, yourself, and you'll probably want to return some unique text saying you cant do it, you tried anyway,
-		//and looked really dumb or something of the like
+		public override bool Equals(CapacityItem other)
+		{
+			return other is GoblinAle;
+		}
+
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
 			var tf = new GoblinTFs();

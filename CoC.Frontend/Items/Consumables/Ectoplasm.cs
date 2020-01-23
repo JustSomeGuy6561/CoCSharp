@@ -4,6 +4,7 @@
 //1/16/2020 10:42:10 PM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
@@ -46,6 +47,11 @@ namespace CoC.Frontend.Items.Consumables
 		public override byte sateHungerAmount => 20;
 
 		protected override int monetaryValue => DEFAULT_VALUE;
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is Ectoplasm;
+		}
 
 		public override bool CanUse(Creature target, out string whyNot)
 		{

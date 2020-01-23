@@ -1,8 +1,9 @@
-﻿//HorseTransformations.cs
+﻿//OmnibiJuice.cs
 //Description:
 //Author: JustSomeGuy
-//1/18/2020 7:00:51 PM
+//1/23/2020 4:30:05 AM
 
+using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
@@ -13,10 +14,13 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class Equinium : ConsumableBase
+	public sealed partial class OmnibiJuice : ConsumableBase
 	{
-		public Equinium() : base()
+		private readonly bool isPurified;
+
+		public OmnibiJuice(bool purified) : base()
 		{
+			isPurified = purified;
 		}
 
 		//move these to a dedicated file withing the strings folder group. they're here to make initial development easier.
@@ -35,7 +39,12 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
+			//if your text uses "an" as an article instead of "a", be sure to change that here.
+			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			//when the text below is corrected, remove this throw.
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			//update the text below to display what you need.
+			return $"{count} <Your Text Here>";
 		}
 
 		public override string Appearance()
@@ -43,18 +52,24 @@ namespace CoC.Frontend.Items.Consumables
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
+		//this can be removed safely if the item does a transformation. transformations handle bad end and results text for you.
+		private string UseItemText()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 
 		public override bool countsAsLiquid => true;
 
+		//i mean, partially, but i don't think it's pure enough to count it, idk.
 		public override bool countsAsCum => false;
 
-		public override byte sateHungerAmount => 15;
+		public override byte sateHungerAmount => 10;
 
-		protected override int monetaryValue => DEFAULT_VALUE;
+		protected override int monetaryValue => isPurified ? 40 : 20;
 
 		public override bool Equals(CapacityItem other)
 		{
-			return other is Equinium;
+			return other is OmnibiJuice omnibi && this.isPurified == omnibi.isPurified;
 		}
 
 		public override bool CanUse(Creature target, out string whyNot)
@@ -65,14 +80,19 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
-			var tf = new HorseTFs();
+
+			var tf = new OmnibiTFs(isPurified);
 			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
 
 			return true;
 		}
 
-		private class HorseTFs : HorseTransformations
+		private class OmnibiTFs : DemonTransformations
 		{
+			public OmnibiTFs(bool purified) : base(Gender.HERM, purified)
+			{
+			}
+
 			protected override bool InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();

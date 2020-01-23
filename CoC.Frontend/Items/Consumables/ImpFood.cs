@@ -7,6 +7,7 @@
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
@@ -21,14 +22,18 @@ namespace CoC.Frontend.Items.Consumables
 
 
 
-		//does this consumable count as liquid for slimes?
 		public override bool countsAsLiquid => false;
-		//does this consumable count as cum for succubi?
+
 		public override bool countsAsCum => false;
-		//how much hunger does consuming this sate?
+
 		public override byte sateHungerAmount => 20;
 
 		protected override int monetaryValue => DEFAULT_VALUE;
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is ImpFood;
+		}
 
 		public override bool CanUse(Creature target, out string whyNot)
 		{

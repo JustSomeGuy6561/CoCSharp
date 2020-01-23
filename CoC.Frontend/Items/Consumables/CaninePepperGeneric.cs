@@ -2,6 +2,7 @@
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -50,6 +51,11 @@ namespace CoC.Frontend.Items.Consumables
 		public override byte sateHungerAmount => 10; //not originally there. but it makes sense.
 
 		protected override int monetaryValue { get; }
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is CaninePepperGeneric caninePepper && caninePepper.modifiers == this.modifiers;
+		}
 
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{

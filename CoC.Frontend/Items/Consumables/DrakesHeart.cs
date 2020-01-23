@@ -5,6 +5,7 @@
 
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
@@ -54,6 +55,10 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		public override bool Equals(CapacityItem other)
+		{
+			return other is DrakesHeart;
+		}
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
 #warning when Ember implemented, set these to the correct values.

@@ -4,6 +4,7 @@
 //1/19/2020 3:00:33 AM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
@@ -89,6 +90,11 @@ namespace CoC.Frontend.Items.Consumables
 			var tf = new FoxTFs(potent);
 			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
 			return true;
+		}
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is FoxBerry foxBerry && this.potent == foxBerry.potent;
 		}
 
 		private sealed class FoxTFs : FoxTransformations

@@ -7,6 +7,7 @@ using CoC.Backend;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -55,14 +56,17 @@ namespace CoC.Frontend.Items.Consumables
 		//warn the player in this text when they dye and the current color are the same.
 
 
-		//does this consumable count as liquid for slimes and (kangaroo) diapause?
 		public override bool countsAsLiquid => false; //i mean, it is, but it's not, i guess? vanilla said no.
-													  //does this consumable count as cum (i.e. for succubi)?
 		public override bool countsAsCum => false;
 		//how much hunger does consuming this sate?
 		public override byte sateHungerAmount => 0;
 
 		protected override int monetaryValue => color == HairFurColors.RAINBOW ? 100 : 6;
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is HairDye hairDye && this.color == hairDye.color;
+		}
 
 		public override bool CanUse(Creature target, out string whyNot)
 		{

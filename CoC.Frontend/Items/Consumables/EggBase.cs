@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //6/27/2019, 6:30 PM
 using CoC.Backend;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using System;
@@ -42,6 +43,11 @@ namespace CoC.Frontend.Items.Consumables
 		}
 
 		public abstract string Color();
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is EggBase egg && this.Equals(egg);
+		}
 
 		public abstract bool Equals(EggBase other);
 
