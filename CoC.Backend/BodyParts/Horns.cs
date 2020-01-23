@@ -127,6 +127,19 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
+		internal bool UpdateOrStrengthenHornType(HornType newType, bool uniform = false)
+		{
+			if (type == newType)
+			{
+				return StrengthenTransform(1, uniform);
+			}
+			else
+			{
+				return UpdateType(newType);
+			}
+		}
+
+
 		private void CheckDataChanged(HornData oldData)
 		{
 			if (numHorns != oldData.hornCount && significantHornSize != oldData.hornLength)
@@ -138,7 +151,7 @@ namespace CoC.Backend.BodyParts
 		#region Horn Specific Methods
 		public bool CanStrengthen => type.CanGrow(numHorns, significantHornSize, femininity);
 
-		internal bool StrengthenTransform(byte numberOfTimes = 1, bool uniform = false)
+		public bool StrengthenTransform(byte numberOfTimes = 1, bool uniform = false)
 		{
 			var oldData = AsReadOnlyData();
 			var retVal = StrengthenTransformPrivate(numberOfTimes, uniform);
@@ -156,7 +169,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool CanWeaken => type.CanShrink(numHorns, significantHornSize, femininity);
 
-		internal bool WeakenTransform(byte byAmount = 1)
+		public bool WeakenTransform(byte byAmount = 1)
 		{
 			var oldData = AsReadOnlyData();
 			var retVal = WeakenTransformPrivate(byAmount);

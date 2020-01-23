@@ -11,34 +11,40 @@ namespace CoC.Backend.Items
 
 	public abstract class CapacityItem
 	{
-		//abbreviated name, for buttons and such.
-		private readonly SimpleDescriptor abbreviatedName;
-		//Non-abbreviated name. useful when the player has an item and we don't want to describe it again, but can't use the abbreviated name because that doesn't work in a sentence.
-		private readonly SimpleDescriptor name;
-		//concise description of the item. this is used basically everywhere.
-		private readonly SimpleDescriptor description;
-		//a full sentence description of the item, with appearance and smells or whatever. used for tooltips, primarily.
-		private readonly SimpleDescriptor apperanceSentence;
 
+		//unlike the original, which put all of the data in the constructor, C# doesn't let us pass along function pointers to the base that use data from the current object
+		//because the current object doesn't technically exist yet - the functions need to be static. personally, i'm not a fan of this approach, but there's nothing i can
+		//do about it except some crazy workarounds that are just plain ugly. so, these are all abstract function calls. this lets us have variables unique to each object
+		//factor in to their descriptions (so, if an armor has some unique perk or trait like durability or something, we can actually describe that), or lets us create 'enhanced'
+		//items that use the same source but have different values and text. Its possible for people to misuse this, i guess, because it's easier to make the description mutable
+		//(i.e. can change between function calls), but whatever.
 
-		protected CapacityItem(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
-		{
-			this.abbreviatedName = abbreviate ?? throw new ArgumentNullException(nameof(abbreviate));
-			this.name = itemName ?? throw new ArgumentNullException(nameof(itemName));
+		protected CapacityItem() { }
 
-			description = shortDesc ?? throw new ArgumentNullException(nameof(shortDesc));
-			apperanceSentence = appearance ?? throw new ArgumentNullException(nameof(appearance));
-		}
+		//an abbreviated (~9 Characters or less) name for the item. this is primarily used for buttons, which need space to write 'x10' afterward. Note that if a capacity item limits
+		//the number to only 1 per slot, you may use 12 characters, but that's really only recommended for armor or accessories. if the name is longer than the provided space, it will
+		//be truncated (cut short).
+		public abstract string AbbreviatedName();
 
-		//name used for buttons and such.
-		public string AbbreviatedName() => abbreviatedName();
+		//name used when we don't have any character limit. there are situations where calling an item by it's name (like when gifting one to an NPC) is useful.
+		public abstract string ItemName();
 
-		//name used when we don't have any character limit.
-		public string ItemName() => name();
+		//a short description of the item. primarily used when you initially obtain an item, and as part of the tooltip header. It includes a count and a display count flag.
+		//the count tells you how many we are describing, so you know whether or not to make it plural. the display count flag tells you whether or not to display that count
+		//as part of the description.
+		//This lets us deal with multiple items nicely.
+		//Example: enemy drops LaBova x1. Note that the reads section below add <> around the text that aren't normally there, to show what is being read from the function.
+		//$"It seems the enemy dropped {ItemDescription(1,true)} as they fled. You place the {ItemDescription(1,false)} in your second pouch"
+		//reads: "It seems the enemy dropped <A bottle of 'LaBova'> as they fled. You place the <bottle of LaBova> in your second pouch.
+		//Example 2: same as above, but enemy drops LaBova x3
+		//$"It seems the enemy dropped {ItemDescription(3,true)} as they fled. You place the {ItemDescription(3,false)} in your second pouch"
+		//reads: "It seems the enemy dropped <three bottles of 'LaBova'> as they fled. You place the <bottles of LaBova> in your second pouch.
+		//for the most part, make sure this sounds nice with count =1, for both display count and not. nearly all interactions only do one item at a time.
 
-		public string ItemDescription() => description();
+		public abstract string ItemDescription(byte count = 1, bool displayCount = false);
 
-		public string Appearance() => apperanceSentence();
+		//a more verbose description of the object, explaining any defining traits along with its physical appearance. this is used as part of the tooltip for the given item
+		public abstract string Appearance();
 
 		public abstract byte maxCapacityPerSlot { get; }
 
@@ -69,5 +75,9 @@ namespace CoC.Backend.Items
 		public virtual bool canBuy => buyPrice > 0;
 		public virtual bool canSell => true;
 
+		//by default, no author. if there's an author, override this. the author credit will be passed along to the results, which should display it. note that the behavior for
+		//using an item that does not get its own page while on another page is undefined - you don't want to override the original author's wall of text to say "you drank a potion
+		//and got 50 health back". Generally, though, all items get their own page. (afaik, they always do, but don't quote me).
+		public virtual string Author() => "";
 	}
 }

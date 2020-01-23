@@ -24,9 +24,18 @@ namespace CoC.Frontend.StatusEffect
 		private const sbyte MAX_VIRILITY_BOOST = 25; //25% chance max increase.
 
 		public const ushort MAX_TIMEOUT = 720;
-		public Rut(SimpleDescriptor name, ushort initialTimeout) : base(name, initialTimeout)
+
+		public Rut() : this(2 * TIMEOUT_STACK) { }
+
+		public Rut(ushort initialTimeout) : base(Name, initialTimeout)
 		{
 		}
+
+		private static string Name()
+		{
+			return "Rut";
+		}
+
 
 		public override string ObtainText() => GainedRutText();
 

@@ -46,7 +46,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NeckTattoo : TattooablePart<NeckTattooLocation>
 	{
-		public NeckTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		public NeckTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 
@@ -106,7 +106,7 @@ namespace CoC.Backend.BodyParts
 		{
 			type = neckType ?? throw new ArgumentNullException(nameof(neckType));
 
-			tattoos = new NeckTattoo(AllTattoosShort, AllTattoosLong);
+			tattoos = new NeckTattoo(this, AllTattoosShort, AllTattoosLong);
 		}
 
 		internal Neck(Guid creatureID, NeckType neckType, HairFurColors initialNeckColor = null, byte neckLength = NeckType.MIN_NECK_LENGTH) : this(creatureID, neckType)
@@ -159,7 +159,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal byte GrowNeck(byte amount)
+		public byte GrowNeck(byte amount)
 		{
 			return GrowNeckInternal(amount, false);
 		}
@@ -301,7 +301,7 @@ namespace CoC.Backend.BodyParts
 			return currNeckLength < maxNeckLength;
 		}
 
-		internal virtual bool neckAtBaseOfSkull => true;
+		public virtual bool neckAtBaseOfSkull => true;
 
 		internal virtual byte StrengthenTransform(ref byte neckLength, byte amount)
 		{
@@ -425,7 +425,7 @@ namespace CoC.Backend.BodyParts
 			{
 			}
 
-			internal override bool neckAtBaseOfSkull => false;
+			public override bool neckAtBaseOfSkull => false;
 		}
 	}
 

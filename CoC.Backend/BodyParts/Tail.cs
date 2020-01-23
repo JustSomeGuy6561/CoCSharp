@@ -75,7 +75,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TailPiercing : Piercing<TailPiercingLocation>
 	{
-		public TailPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
+		public TailPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -177,9 +177,10 @@ namespace CoC.Backend.BodyParts
 		{
 			_type = tailType ?? throw new ArgumentNullException(nameof(tailType));
 			_tailCount = _type.initialTailCount;
-			tailPiercings = new TailPiercing(PiercingLocationUnlocked, AllTailPiercingsShort, AllTailPiercingsLong);
 
 			ovipositorEnabled = tailType.allowsOvipositor && hasOvipositorIfApplicable;
+
+			tailPiercings = new TailPiercing(this, PiercingLocationUnlocked, AllTailPiercingsShort, AllTailPiercingsLong);
 		}
 
 
@@ -224,7 +225,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal bool GrowAdditionalTail()
+		public bool GrowAdditionalTail()
 		{
 			if (!type.hasMultipleTails || tailCount >= type.maxTailCount)
 			{
@@ -236,7 +237,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal byte GrowMultipleAdditionalTails(byte amount = 1)
+		public byte GrowMultipleAdditionalTails(byte amount = 1)
 		{
 			if (!type.hasMultipleTails || tailCount >= type.maxTailCount)
 			{
@@ -271,6 +272,8 @@ namespace CoC.Backend.BodyParts
 			}
 			return valid;
 		}
+
+		public bool IsReptilian() => type.IsReptilian();
 
 		#region Text
 		//default short description will take into account current number of tails.
@@ -667,8 +670,14 @@ namespace CoC.Backend.BodyParts
 		public static readonly TailType WOLF = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultWolfTailFur, true, true, WolfShortDesc, WolfLongDesc, WolfPlayerStr, WolfTransformStr, WolfRestoreStr);
 		public static readonly TailType SHEEP = new FurryTail(EpidermisType.WOOL, DefaultValueHelpers.defaultSheepWoolFur, true, false, SheepShortDesc, SheepLongDesc, SheepPlayerStr, SheepTransformStr, SheepRestoreStr);
 		public static readonly TailType IMP = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultImpTailFur, true, true, ImpShortDesc, ImpLongDesc, ImpPlayerStr, ImpTransformStr, ImpRestoreStr);
-		public static readonly TailType COCKATRICE = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultCockatriceTailFeaithers, true, true, CockatriceShortDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
+		public static readonly TailType COCKATRICE = new FurryTail(EpidermisType.FEATHERS, DefaultValueHelpers.defaultCockatriceTailFeaithers, true, true, CockatriceShortDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr);
 		public static readonly TailType RED_PANDA = new FurryTail(EpidermisType.FUR, DefaultValueHelpers.defaultRedPandaFaceEarTailFur, true, true, RedPandaShortDesc, RedPandaLongDesc, RedPandaPlayerStr, RedPandaTransformStr, RedPandaRestoreStr);
+
+		public bool IsReptilian()
+		{
+			return this == SALAMANDER || this == LIZARD || this == DRACONIC;
+		}
+
 
 		private sealed class NoTail : TailType
 		{

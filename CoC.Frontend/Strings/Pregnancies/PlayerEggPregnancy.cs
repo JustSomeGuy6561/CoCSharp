@@ -177,7 +177,7 @@ namespace CoC.Frontend.Pregnancies
 			{
 				descript += "large ";
 			}
-			descript += eggsLaid.shortDesc();
+			descript += eggsLaid.ItemName();
 			//EGGS
 			if (plural)
 			{

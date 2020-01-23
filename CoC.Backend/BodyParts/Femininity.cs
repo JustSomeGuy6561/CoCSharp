@@ -190,7 +190,7 @@ namespace CoC.Backend.BodyParts
 		public static bool valueAtLeastMasculine(byte fem) => fem <= MASCULINE;
 		public static bool valueIsHyperMasculine(byte fem) => fem <= HYPER_MASCULINE;
 
-		internal byte feminize(byte amount)
+		public byte IncreaseFemininity(byte amount)
 		{
 			if (value >= MOST_FEMININE)
 			{
@@ -201,7 +201,7 @@ namespace CoC.Backend.BodyParts
 			return value.subtract(oldFemininity);
 		}
 
-		internal byte masculinize(byte amount)
+		public byte InreaseMasculinity(byte amount)
 		{
 			if (value == 0)
 			{
@@ -212,10 +212,41 @@ namespace CoC.Backend.BodyParts
 			return oldFemininity.subtract(value);
 		}
 
-		internal byte SetFemininity(byte newValue)
+		public byte SetFemininity(byte newValue)
 		{
 			UpdateFemininity(newValue);
 			return value;
+		}
+
+		public short ChangeFemininityToward(byte target, byte increment)
+		{
+			if (target == value) return 0;
+
+			byte oldFemininity = value;
+			if (target < value)
+			{
+				if (value - increment <= target)
+				{
+					UpdateFemininity(target);
+				}
+				else
+				{
+					UpdateFemininity(value.subtract(increment));
+				}
+			}
+			else
+			{
+				if (value + increment >= target)
+				{
+					UpdateFemininity(target);
+				}
+				else
+				{
+					UpdateFemininity(value.add(increment));
+				}
+			}
+
+			return value.delta(oldFemininity);
 		}
 
 		internal byte feminizeWithText(byte amount, out string output)
@@ -344,6 +375,11 @@ namespace CoC.Backend.BodyParts
 		internal FemininityData(Guid id, byte fem) : base(id)
 		{
 			value = fem;
+		}
+
+		public static implicit operator byte(FemininityData femininity)
+		{
+			return femininity.value;
 		}
 
 		public bool isFemale => Femininity.valueIsFemale(value);

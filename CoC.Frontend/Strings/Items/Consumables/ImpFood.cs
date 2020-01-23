@@ -10,22 +10,26 @@ namespace CoC.Frontend.Items.Consumables
 {
 	partial class ImpFood
 	{
-		private static string Abbreviated()
+		public override string AbbreviatedName()
 		{
 			return "ImpFood";
 		}
 
-		private static string Name()
+		public override string ItemName()
 		{
 			return "Imp Food";
 		}
 
-		private static string Desc()
+		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			return "a parcel of imp food";
+			string parcelText = count != 1 ? "parcels" : "parcel";
+
+			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+
+			return $"{count} {parcelText} of  of imp food";
 		}
 
-		private static string AppearanceStr()
+		public override string Appearance()
 		{
 			return "This is a small parcel of reddish-brown bread stuffed with some kind of meat. It smells delicious.";
 		}

@@ -26,7 +26,7 @@ namespace CoC.Frontend.Transformations
 		{
 			isBadEnd = false;
 
-			int changeLimit = GenerateChanceCount(target, new int[] { 2, 2 });
+			int changeLimit = GenerateChangeCount(target, new int[] { 2, 2 });
 			int remainingChanges = changeLimit;
 
 			//crit is our modifier for basically all stats. 1 is default, though any non-standard will proc the non-default
@@ -293,6 +293,9 @@ namespace CoC.Frontend.Transformations
 
 				}
 			}
+
+			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+
 			//tfs (cost 1).
 
 			//restore neck
@@ -353,7 +356,7 @@ namespace CoC.Frontend.Transformations
 					var index = demonSpecialCase.cockIndex;
 					if (demonSpecialCase != null)
 					{
-						float delta = demonSpecialCase.ThickenCock(2);
+						float delta = demonSpecialCase.IncreaseThickness(2);
 
 						if (delta != 0)
 						{
@@ -364,7 +367,10 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 
-			//update cum
+			//update cum. now, if it reaches the cap, it simply uses the new flat amount adder (up to a certain point). it does not use the messy orgasm perk
+			//anymore because i've tried to remove calls to random perks because it's not very future-proof - what happens when a new perk is added that has a
+			//similar effect? do we add that check literally everywhere too? (of course, if a perk is unique enough that nothing else will act in the same way,
+			//that's fine. i dunno, it's difficult to try and clean everything up without being able to predict the future, which is admittedly impossible)
 			if (target.hasCock && (target.genitals.cumMultiplier < 1.5f || target.genitals.additionalCum < 500) && Utils.RandBool())
 			{
 				float delta;
@@ -391,7 +397,7 @@ namespace CoC.Frontend.Transformations
 				if (smallest.girth < 1)
 				{
 					var delta = 1 - smallest.girth;
-					smallest.ThickenCock(delta);
+					smallest.IncreaseThickness(delta);
 				}
 				sb.Append(GrewSmallestCockText(target, smallest.cockIndex, oldData));
 			}
@@ -457,9 +463,11 @@ namespace CoC.Frontend.Transformations
 				{
 					var oldBreastData = target.genitals.allBreasts.AsReadOnlyData();
 
-					target.genitals.AnthropomorphizeBreasts();
-
-					sb.Append(NormalizedBreastSizeText(target, oldBreastData));
+					//only call the normalize text if we actually did anything. related, anthro breasts now returns a bool. thanks, fox tfs.
+					if (target.genitals.AnthropomorphizeBreasts())
+					{
+						sb.Append(NormalizedBreastSizeText(target, oldBreastData));
+					}
 				}
 			}
 
@@ -547,7 +555,7 @@ namespace CoC.Frontend.Transformations
 			{
 				var oldData = target.ears.AsReadOnlyData();
 
-				target.UpdateEar(EarType.DOG);
+				target.UpdateEars(EarType.DOG);
 
 				sb.Append(ChangedEarsText(target, oldData));
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);

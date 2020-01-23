@@ -168,11 +168,11 @@ namespace CoC.Backend.BodyParts
 		}
 		private ushort _bonusAnalCapacity = 0;
 
-
-		public ushort perkBonusAnalCapacity
+		//these are wired directly from perk collection, because ass is immutable - it will always exist.
+		internal ushort perkBonusAnalCapacity
 		{
 			get => _perkBonusAnalCapacity;
-			internal set
+			set
 			{
 				if (_perkBonusAnalCapacity != value)
 				{
@@ -182,7 +182,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		private ushort _perkBonusAnalCapacity;
+		private ushort _perkBonusAnalCapacity = 0;
 
 		public ushort analCapacity()
 		{
@@ -251,7 +251,7 @@ namespace CoC.Backend.BodyParts
 		public string FullDescription(bool alternateFormat = false) => AssStrings.FullDescription(this, alternateFormat);
 
 		#region Update Variables - Ass-Specific
-		internal byte StretchAnus(byte amount = 1)
+		public byte IncreaseLooseness(byte amount = 1)
 		{
 
 			AnalLooseness oldLooseness = looseness;
@@ -259,7 +259,7 @@ namespace CoC.Backend.BodyParts
 			return looseness - oldLooseness;
 		}
 
-		internal byte ShrinkAnus(byte amount = 1)
+		public byte DecreaseLooseness(byte amount = 1)
 		{
 
 			AnalLooseness oldLooseness = looseness;
@@ -267,7 +267,7 @@ namespace CoC.Backend.BodyParts
 			return oldLooseness - looseness;
 		}
 
-		internal bool SetAnalLooseness(AnalLooseness analLooseness)
+		public bool SetAnalLooseness(AnalLooseness analLooseness)
 		{
 			if (analLooseness >= minLooseness && analLooseness <= maxLooseness)
 			{
@@ -281,20 +281,20 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal byte MakeWetter(byte amount = 1)
+		public byte IncreaseWetness(byte amount = 1)
 		{
 			AnalWetness oldWetness = wetness;
 			wetness = wetness.ByteEnumAdd(amount);
 			return wetness - oldWetness;
 		}
 
-		internal byte MakeDrier(byte amount = 1)
+		public byte DecreaseWetness(byte amount = 1)
 		{
 			AnalWetness oldWetness = wetness;
 			wetness = wetness.ByteEnumSubtract(amount);
 			return oldWetness - wetness;
 		}
-		internal bool SetAnalWetness(AnalWetness analWetness)
+		public bool SetAnalWetness(AnalWetness analWetness)
 		{
 			if (analWetness >= minWetness && analWetness <= maxWetness)
 			{
@@ -308,14 +308,14 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal ushort AddBonusCapacity(ushort amountToAdd)
+		public ushort IncreaseBonusCapacity(ushort amountToAdd)
 		{
 			ushort currentCapacity = bonusAnalCapacity;
 			bonusAnalCapacity = bonusAnalCapacity.add(amountToAdd);
 			return bonusAnalCapacity.subtract(currentCapacity);
 		}
 
-		internal ushort SubtractBonusCapacity(ushort amountToRemove)
+		public ushort DecreaseBonusCapacity(ushort amountToRemove)
 		{
 			ushort currentCapacity = bonusAnalCapacity;
 			bonusAnalCapacity = bonusAnalCapacity.subtract(amountToRemove);

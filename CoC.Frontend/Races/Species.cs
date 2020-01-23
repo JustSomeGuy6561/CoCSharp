@@ -5,7 +5,9 @@
 
 using CoC.Backend;
 using CoC.Backend.Creatures;
+using CoC.Backend.Tools;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CoC.Frontend.Races
 {
@@ -13,7 +15,7 @@ namespace CoC.Frontend.Races
 	//to do so, uncomment the abstract function, and do so for all species defined.
 	public abstract partial class Species
 	{
-		private static Dictionary<int, Species> theSpecies = new Dictionary<int, Species>();
+
 		//private static Dictionary<Species, GenericCreatureCreator> speciesCreator = new Dictionary<Species, GenericCreatureCreator>();
 		private static int indexMaker = 0;
 
@@ -29,6 +31,20 @@ namespace CoC.Frontend.Races
 			theSpecies.Add(index, this);
 			//speciesCreator.Add(this, creator);
 		}
+
+		public static Species CurrentSpecies(Creature creature)
+		{
+			return theSpecies.Values.MaxItem(x => x.Score(creature));
+		}
+
+		//Returns an array of key-value pairs, which stores a species and the score for the given creature in that species, respectively. the results are stored from highest score
+		//to lowest score. any species with a score of 0 (or less) is excluded.
+		public static KeyValuePair<Species, int>[] AllSpeciesWithScores(Creature creature)
+		{
+			return theSpecies.Values.Select(x => new KeyValuePair<Species, int>(x, x.Score(creature))).Where(x => x.Value > 0).OrderByDescending(x => x.Value).ToArray();
+		}
+
+		private static Dictionary<int, Species> theSpecies = new Dictionary<int, Species>();
 
 		public static Species Dereference(int index)
 		{

@@ -47,9 +47,8 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class ButtTattoo : TattooablePart<ButtTattooLocation>
 	{
-		public ButtTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
-		{
-		}
+		public ButtTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		{ }
 
 		public override int MaxTattoos => ButtTattooLocation.allLocations.Count;
 
@@ -108,7 +107,7 @@ namespace CoC.Backend.BodyParts
 				_buttSize = Utils.Clamp2(size, TIGHT, INCONCEIVABLY_BIG);
 			}
 
-			tattoos = new ButtTattoo(AllTattoosShort, AllTattoosLong);
+			tattoos = new ButtTattoo(this, AllTattoosShort, AllTattoosLong);
 		}
 
 		internal static Butt GenerateButtless(Guid creatureID)

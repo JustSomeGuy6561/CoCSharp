@@ -16,4 +16,6 @@ namespace  CoC.Backend.BodyParts.SpecialInteraction
 		bool CanReducto();
 		float UseReducto();
 	}
+
+
 }

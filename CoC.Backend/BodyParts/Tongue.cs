@@ -73,7 +73,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TonguePiercing : Piercing<TonguePiercingLocation>
 	{
-		public TonguePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
+		public TonguePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -89,7 +89,7 @@ namespace CoC.Backend.BodyParts
 		public override string BodyPartName() => Name();
 
 
-		public readonly TonguePiercing tonguePiercings;
+		public readonly TonguePiercing piercings;
 
 		public override TongueType type { get; protected set; }
 		public override TongueType defaultType => TongueType.defaultValue;
@@ -109,7 +109,7 @@ namespace CoC.Backend.BodyParts
 		{
 			type = tongueType ?? throw new ArgumentNullException(nameof(tongueType));
 
-			tonguePiercings = new TonguePiercing(TonguePiercingUnlocked, AllTonguePiercingsShort, AllTonguePiercingsLong);
+			piercings = new TonguePiercing(this, TonguePiercingUnlocked, AllTonguePiercingsShort, AllTonguePiercingsLong);
 		}
 
 		public override TongueData AsReadOnlyData()
@@ -152,7 +152,7 @@ namespace CoC.Backend.BodyParts
 			type = tongueType;
 			if (valid || correctInvalidData)
 			{
-				valid &= tonguePiercings.Validate(correctInvalidData);
+				valid &= piercings.Validate(correctInvalidData);
 			}
 			return valid;
 		}
@@ -160,13 +160,13 @@ namespace CoC.Backend.BodyParts
 		//could be a one-liner. written this way because maybe people wanna change it, idk.
 		private bool TonguePiercingUnlocked(TonguePiercingLocation piercingLocation, out string whyNot)
 		{
-			if (tonguePiercings.piercingFetish)
+			if (piercings.piercingFetish)
 			{
 				whyNot = null;
 				return true;
 			}
 			//allow one tongue piercing. must have fetish for more than that.
-			else if (tonguePiercings.piercingCount > 0 && !tonguePiercings.isPiercedAt(piercingLocation))
+			else if (piercings.piercingCount > 0 && !piercings.isPiercedAt(piercingLocation))
 			{
 				whyNot = OnlyOneTonguePiercingWithoutFetish();
 				return false;
@@ -182,7 +182,7 @@ namespace CoC.Backend.BodyParts
 		internal void Reset()
 		{
 			Restore();
-			tonguePiercings.Reset();
+			piercings.Reset();
 		}
 	}
 
@@ -277,7 +277,7 @@ namespace CoC.Backend.BodyParts
 
 		internal TongueData(Tongue tongue) : base(GetID(tongue), GetBehavior(tongue))
 		{
-			tonguePiercings = tongue.tonguePiercings.AsReadOnlyData();
+			tonguePiercings = tongue.piercings.AsReadOnlyData();
 		}
 	}
 }

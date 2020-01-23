@@ -17,7 +17,7 @@ namespace CoC.Frontend.Items.Consumables
 {
 	public sealed partial class ImpFood : ConsumableBase
 	{
-		public ImpFood() : base(Abbreviated, Name, Desc, AppearanceStr) {}
+		public ImpFood() : base() {}
 
 
 

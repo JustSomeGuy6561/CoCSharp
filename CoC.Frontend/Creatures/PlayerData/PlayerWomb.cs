@@ -44,6 +44,8 @@ namespace CoC.Frontend.Creatures.PlayerData
 		//prevents laysEggs from being false;
 		public bool basiliskWomb { get; private set; } = false;
 
+		public bool canClearOviposition => hasOviposition && !basiliskWomb;
+
 		public byte eggsEveryXDays { get; private set; } = 15;
 
 		public bool eggSizeKnown => normalPregnancy.eggSizeKnown;

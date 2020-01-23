@@ -255,6 +255,8 @@ namespace CoC.Backend.Creatures
 		public NippleStatus? nippleStatus = null; //allows you to make nipples fuckable or whatever.
 		public bool blackNipples = false;
 		public bool quadNipples = false;
+		public float? nippleLength = null; //if unset, will use the default value for the largest given cup size. if set, use the max between this value and the default for largest cup size.
+		public bool unlockedDickNipples = false;
 		public float lactationMultiplier = 0;
 
 		//perks

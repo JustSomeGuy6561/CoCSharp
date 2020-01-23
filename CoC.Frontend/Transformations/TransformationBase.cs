@@ -16,7 +16,7 @@ namespace CoC.Frontend.Transformations
 		//and if it is, do Player related things.
 		protected internal abstract string DoTransformation(Creature target, out bool isBadEnd);
 
-		protected int GenerateChanceCount(Creature target, int[] extraRolls = null, int initialCount = 1, int minimumCount = 1)
+		protected int GenerateChangeCount(Creature target, int[] extraRolls = null, int initialCount = 1, int minimumCount = 1)
 		{
 			initialCount += target.GetExtraData()?.deltaTransforms ?? 0;
 			if (extraRolls != null)
@@ -82,6 +82,17 @@ namespace CoC.Frontend.Transformations
 			{
 				deepenedHeat = target.statusEffects.HasStatusEffect<Heat>();
 				target.GoIntoHeat();
+			}
+			return false;
+		}
+
+		protected bool EnterRut(Creature target, out bool deepenedRut, byte roll = 2)
+		{
+			deepenedRut = false;
+			if (Utils.Rand(roll) == 0 && target.hasVagina && !target.womb.isPregnant)
+			{
+				deepenedRut = target.statusEffects.HasStatusEffect<Rut>();
+				target.GoIntoRut();
 			}
 			return false;
 		}
@@ -481,7 +492,7 @@ namespace CoC.Frontend.Transformations
 		{
 			return $"You stumble back when your center of balance shifts, and though you adjust before you can fall over, you're left to watch in awe as your bottom-most " +
 				$"{removedBreastRow.ShortDescription()} shrink down, disappearing completely into your {(target.breasts.Count > 2 ? "abdomen" : "chest")}. The " +
-				$"{removedBreastRow.nipples.ShortDescription()} even fade until nothing but {target.body.mainEpidermis.ShortDescription()} remains. " +
+				$"{removedBreastRow.ShortNippleDescription()} even fade until nothing but {target.body.mainEpidermis.ShortDescription()} remains. " +
 				SafelyFormattedString.FormattedText("You've lost a row of breasts!", StringFormats.BOLD);
 		}
 

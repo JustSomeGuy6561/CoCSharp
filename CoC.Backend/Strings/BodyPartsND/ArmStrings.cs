@@ -698,7 +698,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string DragonTransformStr(ArmData previousArmData, PlayerBase player)
 		{
-			if (previousArmData.type.isPredatorArms())
+			if (previousArmData.type.IsPredatorArms())
 			{
 				return GlobalStrings.NewParagraph() + "Your " + previousArmData.hands.ShortDescription() + " change a little to become more dragon-like." +
 					" " + SafelyFormattedString.FormattedText("Your arms and claws are like those of a dragon.", StringFormats.BOLD);
@@ -787,7 +787,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string LizardTransformStr(ArmData previousArmData, PlayerBase player)
 		{
-			if (previousArmData.type.isPredatorArms())
+			if (previousArmData.type.IsPredatorArms())
 			{
 				return GlobalStrings.NewParagraph() + "Your " + previousArmData.hands.ShortDescription() + " change a little to become more lizard-like." +
 					" " + SafelyFormattedString.FormattedText("You now have lizard-like claws.", StringFormats.BOLD);

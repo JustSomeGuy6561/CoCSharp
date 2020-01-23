@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoC.Backend.Creatures;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

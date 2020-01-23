@@ -486,8 +486,8 @@ namespace CoC.Backend.Perks
 		//affects new clit size.
 		public float DefaultNewClitSize
 		{
-			get => source.genitals.perkData.MinNewClitSize;
-			set => source.genitals.perkData.MinNewClitSize = value;
+			get => source.genitals.perkData.DefaultNewClitSize;
+			set => source.genitals.perkData.DefaultNewClitSize = value;
 		}
 
 		public float MinClitSize

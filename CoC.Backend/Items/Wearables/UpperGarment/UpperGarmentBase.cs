@@ -7,9 +7,8 @@ namespace CoC.Backend.Items.Wearables.UpperGarment
 {
 	public abstract class UpperGarmentBase : WearableItemBase<UpperGarmentBase>
 	{
-		protected UpperGarmentBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance) :
-			base(abbreviate, itemName, shortDesc, appearance)
-		{}
+		protected UpperGarmentBase() : base()
+		{ }
 
 		//by default, upper garments seem to not care. undergarments do based on lower body type, but not these. hence this default. of course, if you need to limit it,
 		//override this.

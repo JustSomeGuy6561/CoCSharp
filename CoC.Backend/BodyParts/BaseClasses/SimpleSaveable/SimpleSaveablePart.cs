@@ -4,7 +4,6 @@
 //3/26/2019, 8:40 PM
 
 
-using CoC.Backend.BodyParts.BaseClasses;
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.Creatures;
 using System;
@@ -57,5 +56,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return typeof(DataClass);
 		}
+
+		Guid IBodyPart.creatureID => creatureID;
 	}
 }

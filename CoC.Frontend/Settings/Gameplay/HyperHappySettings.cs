@@ -1,4 +1,5 @@
-﻿using CoC.Backend.SaveData;
+﻿using CoC.Backend.Engine;
+using CoC.Backend.SaveData;
 using CoC.Backend.Settings;
 using CoC.Frontend.SaveData;
 using System;
@@ -10,6 +11,11 @@ namespace CoC.Frontend.Settings.Gameplay
 
 	public sealed partial class HyperHappySettings : GameplaySetting
 	{
+		private static HyperHappySettings currentSetting => (HyperHappySettings)GameplaySettingsManager.GetSetting(x => x.GetType() == typeof(HyperHappySettings));
+
+		//provides a place we can store the silly mode setting lookup without going insane.
+		public static bool isEnabled => ((SimpleSetting)currentSetting?.localSetting)?.setting == true;
+
 		public HyperHappySettings() : base(HyperHappySettingsStr, new HyperHappySessionSetting(), new HyperHappyGlobalSetting())
 		{
 		}

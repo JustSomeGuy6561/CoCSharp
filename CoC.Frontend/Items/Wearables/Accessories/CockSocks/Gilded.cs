@@ -8,7 +8,7 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 {
 	public sealed class Gilded : CockSockBase
 	{
-		public Gilded(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance) : base(abbreviate, itemName, shortDesc, appearance)
+		public Gilded() : base()
 		{
 		}
 
@@ -37,6 +37,26 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 		protected override void OnRemove(Creature wearer)
 		{
 			base.OnRemove(wearer);
+		}
+
+		public override string AbbreviatedName()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public override string ItemName()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public override string ItemDescription(byte count = 1, bool displayCount = false)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public override string Appearance()
+		{
+			throw new System.NotImplementedException();
 		}
 
 		/*

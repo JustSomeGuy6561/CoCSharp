@@ -13,8 +13,14 @@ namespace CoC.Frontend.StatusEffect
 {
 	public sealed class Heat : TimedStatusEffect
 	{
-		public sbyte totalAddedLibido { get; private set; }
+		//we don't use v1, v2, v3 anymore because they're generic and not useful. we now have static types and each has its own variables. but that's not overly useful when porting.
+		//so, for reference when porting:
+		//this is old v1.
 		public byte totalAddedFertility { get; private set; }
+		//old v2.
+		public sbyte totalAddedLibido { get; private set; }
+		//time until wears off is old v3.
+
 
 		private bool active = false;
 
@@ -135,7 +141,7 @@ namespace CoC.Frontend.StatusEffect
 				}
 				else
 				{
-					timeDelta.addIn(2);
+					timeDelta.addIn(1);
 				}
 
 				if (totalAddedFertility < MAX_FERTILITY_BOOST)
@@ -147,7 +153,7 @@ namespace CoC.Frontend.StatusEffect
 				}
 				else
 				{
-					timeDelta.addIn(2);
+					timeDelta.addIn(1);
 				}
 
 				if (hoursRemaining + (timeDelta * TIMEOUT_STACK) < MAX_TIMEOUT)

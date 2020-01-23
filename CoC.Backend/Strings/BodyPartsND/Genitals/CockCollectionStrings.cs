@@ -157,9 +157,9 @@ namespace CoC.Backend.BodyParts
 	{
 		ReadOnlyCollection<Cock> ICockCollection<Cock>.cocks => cocks;
 
-		private string AllCocksPlayerDesc()
+		private string AllCocksPlayerDesc(PlayerBase player)
 		{
-			if (!CreatureStore.TryGetCreature(creatureID, out Creature creature) || !(creature is PlayerBase player))
+			if (_cocks.Count == 0)
 			{
 				return "";
 			}

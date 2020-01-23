@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LowerBodyTattoo : TattooablePart<LowerBodyTattooLocation>
 	{
-		public LowerBodyTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		public LowerBodyTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 
@@ -111,6 +111,10 @@ namespace CoC.Backend.BodyParts
 		public const byte OCTOPED_LEG_COUNT = 8;
 
 		private BodyData bodyData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.body.AsReadOnlyData() : new BodyData(creatureID);
+
+		//incorporeality is now implemented as an extension method in the frontend. this lets us extend the incorporeal perk to other body parts if we desire, and keeps the value
+		//set to true as long as we have the incorporeality perk, so we don't need to fuss with that.
+
 
 		public override LowerBodyType type
 		{
@@ -142,7 +146,7 @@ namespace CoC.Backend.BodyParts
 			_type = type ?? throw new ArgumentNullException(nameof(type));
 			feet = new Feet(creatureID, type.footType);
 
-			tattoos = new LowerBodyTattoo(AllTattoosShort, AllTattoosLong);
+			tattoos = new LowerBodyTattoo(this, AllTattoosShort, AllTattoosLong);
 		}
 
 		internal LowerBody(Guid creatureID) : this(creatureID, LowerBodyType.defaultValue)
@@ -167,6 +171,8 @@ namespace CoC.Backend.BodyParts
 			type = lowerBodyType;
 			return valid;
 		}
+
+		public bool IsReptilian() => type.IsReptilian();
 
 		#region Text
 		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
@@ -396,6 +402,12 @@ namespace CoC.Backend.BodyParts
 		public static readonly LowerBodyType OCTOLING = new ToneLowerBody(FootType.TENDRIL, EpidermisType.SKIN, SEXTOPED, DefaultValueHelpers.defaultTentacleTone, SkinTexture.SLIMY, true, OctoDesc, OctoSingleDesc, OctoLongDesc, OctoFullDesc, OctoPlayerStr, OctoTransformStr, OctoRestoreStr);
 		public static readonly LowerBodyType COCKATRICE = new CockatriceLowerBody();
 		public static readonly LowerBodyType RED_PANDA = new RedPandaLowerBody();
+
+		public bool IsReptilian()
+		{
+			return this == SALAMANDER || this == LIZARD || this == DRAGON;
+		}
+
 
 		private class FurLowerBody : LowerBodyType
 		{

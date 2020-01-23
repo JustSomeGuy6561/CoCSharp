@@ -565,30 +565,13 @@ namespace CoC.Frontend.Items.Consumables
 			}
 			return sb.ToString();
 		}
-		//private static string RestoredEyesText(Creature target, EyeType oldType)
-		//{
-		//	if (oldType == EyeType.SAND_TRAP)
-		//	{
-		//		return Environment.NewLine + Environment.NewLine + "You feel a twinge in your eyes and you blink. It feels like black cataracts have just fallen away from you, " +
-		//			"and you know without needing to see your reflection that your eyes have gone back to looking human.";
-		//	}
-		//	else
-		//	{
-		//		string retVal = Environment.NewLine + Environment.NewLine + "You blink and stumble, a wave of vertigo threatening to pull your " + target.feet.shortDescription() +
-		//			" from under you. As you steady and open your eyes, you realize something seems different. Your vision is changed somehow. ";
-		//		if (oldType == EyeType.SPIDER)
-		//		{
-		//			return retVal + SafelyFormattedString.FormattedText("Your arachnid eyes are gone!", StringFormats.BOLD);
-		//		}
-		//		else return retVal + SafelyFormattedString.FormattedText("You have normal, humanoid eyes again.", StringFormats.BOLD);
-		//	}
-		//}
 
 		private static string ChangedFurText(Creature target, ReadOnlyFurColor oldFurColor)
 		{
 			return GlobalStrings.NewParagraph() + SafelyFormattedString.FormattedText("Your fur tingles, growing in thicker than ever " +
 				"as darkness begins to spread from the roots, turning it midnight black.", StringFormats.BOLD);
 		}
+
 		private static string ChangedBodyTypeText(Creature target, BodyData oldBodyData)
 		{
 			return GlobalStrings.NewParagraph() + SafelyFormattedString.FormattedText("Your " + target.body.primarySkin.ShortDescription() + " itches like crazy as fur grows out from it, coating your body. " +

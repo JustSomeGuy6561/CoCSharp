@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Backend.BodyParts.BaseClasses
+namespace CoC.Backend.BodyParts
 {
 	public interface IBodyPart
 	{
@@ -11,6 +11,8 @@ namespace CoC.Backend.BodyParts.BaseClasses
 		Type BaseType();
 
 		Type DataType();
+
+		Guid creatureID { get; }
 	}
 
 	public interface IBehavioralBodyPart : IBodyPart
@@ -19,4 +21,15 @@ namespace CoC.Backend.BodyParts.BaseClasses
 		Type BehaviorType();
 
 	}
+
+	public interface IBodyPartData
+	{
+		string BodyPartName();
+
+		Type BaseType();
+
+		Type DataType();
+	}
+
+
 }

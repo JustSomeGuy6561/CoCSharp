@@ -31,17 +31,26 @@ namespace CoC.Backend.BodyParts
 		public const int MAX_COCKS = 10;
 		#endregion
 
+		#region Cum Related Constants
+
+		public const ushort CUM_MULTIPLIER_CAP = 20000;
+
+		#endregion
+
 		#region Public Cock Related Members
 
 		public readonly ReadOnlyCollection<Cock> cocks;
-
+		public Cock this[int index]
+		{
+			get => _cocks[index];
+		}
 		#endregion
 
 		#region Public Cum Related Members
 		public float cumMultiplierTrue
 		{
 			get => _cumMultiplierTrue;
-			private set => _cumMultiplierTrue = Utils.Clamp2(value, 1, ushort.MaxValue);
+			private set => _cumMultiplierTrue = Utils.Clamp2(value, 1, CUM_MULTIPLIER_CAP);
 		}
 		private float _cumMultiplierTrue = 1;
 
@@ -212,9 +221,7 @@ namespace CoC.Backend.BodyParts
 
 		internal void Initialize(CockCreator[] cockCreators)
 		{
-			CockPerkHelper cockPerkWrapper = perkData.GetCockPerkWrapper();
-
-			_cocks.AddRange(cockCreators.Where(x => x != null).Select(x => new Cock(creatureID, cockPerkWrapper,x.type, x.validLength, x.validGirth,
+			_cocks.AddRange(cockCreators.Where(x => x != null).Select(x => new Cock(creatureID,x.type, x.validLength, x.validGirth,
 				x.knot, x.cockSock, x.piercings)).Take(MAX_COCKS));
 		}
 
@@ -345,7 +352,7 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_cocks.Add(new Cock(creatureID, perkData.GetCockPerkWrapper(), newCockType));
+			_cocks.Add(new Cock(creatureID, newCockType));
 
 			source.CheckGenderChanged(oldGender);
 			return true;
@@ -359,7 +366,7 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_cocks.Add(new Cock(creatureID, perkData.GetCockPerkWrapper(), newCockType, length, girth, knotMultiplier));
+			_cocks.Add(new Cock(creatureID, newCockType, length, girth, knotMultiplier));
 
 			source.CheckGenderChanged(oldGender);
 			return true;
@@ -449,6 +456,11 @@ namespace CoC.Backend.BodyParts
 			return _cocks[index].UpdateCockTypeWithAll(newType, newLength, newGirth, newKnotMultiplier);
 		}
 
+		public bool RestoreCock(int index)
+		{
+			return _cocks[index].Restore();
+		}
+
 		#endregion
 
 		#region AllCocks Update Functions
@@ -473,7 +485,7 @@ namespace CoC.Backend.BodyParts
 				{
 					if (cock.girth < avgGirth - 0.5f)
 					{
-						cock.ThickenCock(0.5f);
+						cock.IncreaseThickness(0.5f);
 					}
 					else if (cock.girth > avgGirth + 0.5f)
 					{
@@ -576,7 +588,17 @@ namespace CoC.Backend.BodyParts
 		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
 
 		#endregion
-
+		internal string AllCocksPlayerDescription()
+		{
+			if (creature is PlayerBase player)
+			{
+				return AllCocksPlayerDesc(player);
+			}
+			else
+			{
+				return "";
+			}
+		}
 	}
 
 	public sealed partial class CockCollectionData : SimpleData, ICockCollection<CockData>
@@ -588,6 +610,11 @@ namespace CoC.Backend.BodyParts
 		ReadOnlyCollection<CockData> ICockCollection<CockData>.cocks => cocks;
 
 		public readonly ReadOnlyCollection<CockData> cocks;
+
+		public CockData this[int index]
+		{
+			get => cocks[index];
+		}
 
 		public readonly BallsData balls;
 

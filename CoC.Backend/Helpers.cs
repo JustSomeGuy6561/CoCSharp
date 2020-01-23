@@ -420,6 +420,22 @@ namespace CoC
 			});
 		}
 
+		public static int FirstIndexOf<T>(this ReadOnlyCollection<T> collection, Predicate<T> match)
+		{
+			if (collection is null) throw new ArgumentNullException(nameof(collection));
+			if (match is null) throw new ArgumentNullException(nameof(match));
+
+			for(int x = 0; x< collection.Count;x++)
+			{
+				if (match(collection[x]))
+				{
+					return x;
+				}
+			}
+
+			return -1;
+		}
+
 		public static void Push<T>(this Queue<T> queue, T item)
 		{
 			queue.Enqueue(item);

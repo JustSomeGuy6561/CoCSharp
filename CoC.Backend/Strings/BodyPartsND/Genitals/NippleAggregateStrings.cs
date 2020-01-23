@@ -5,43 +5,6 @@ using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
-	public partial class NipplePiercingLocation
-	{
-		private static string LeftHorizontalButton()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string LeftHorizontalLocation()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string LeftVerticalButton()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string LeftVerticalLocation()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string RightHorizontalButton()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string RightHorizontalLocation()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string RightVerticalButton()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		private static string RightVerticalLocation()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-	}
-
-
 	internal interface INipple
 	{
 		float length { get; }
@@ -49,93 +12,21 @@ namespace CoC.Backend.BodyParts
 		NippleStatus status { get; }
 		bool quadNipples { get; }
 
-		ReadOnlyPiercing<NipplePiercingLocation> piercings { get; }
-
 		LactationStatus lactationStatus { get; }
 		float lactationRate { get; }
 
 		float relativeLust { get; }
 
 		BodyType bodyType { get; }
-
 	}
-	public sealed partial class Nipples : INipple
+
+	partial class NippleAggregate
 	{
-		private string AllNipplePiercingsShort(PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private string AllNipplePiercingsLong(PlayerBase player)
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		float INipple.length => length;
-
-		bool INipple.blackNipples => blackNipples;
-
-		NippleStatus INipple.status => nippleStatus;
-
-		bool INipple.quadNipples => quadNipples;
-
-		BodyType INipple.bodyType => bodyType;
-
-		ReadOnlyPiercing<NipplePiercingLocation> INipple.piercings => this.nipplePiercing.AsReadOnlyData();
-
 		public static string Name()
 		{
 			return "Nipples";
 		}
 
-		//private static string NippleShortDescription()
-		//{
-		//	return "nipples";
-		//}
-
-
-		private string NipplesLessInvertedDueToPiercingInThem(bool hasOtherBreastRows)
-		{
-			string otherStr = "";
-			if (hasOtherBreastRows)
-			{
-				otherStr = " A quick check tells you your remaining nipples seem to have followed suit. That's curious.";
-			}
-			return "You notice the tug from the jewelry in your " + ShortDescription() + " has lessened slightly, and after close inspection you can confirm your nipples are less inverted." + otherStr;
-		}
-
-		private string NipplesNoLongerInvertedDueToPiercingInThem(bool hasOtherBreastRows)
-		{
-			string otherStr = "";
-			if (hasOtherBreastRows)
-			{
-				otherStr = " Not to be outdone, your remaining nipples seem to have followed suit.";
-			}
-			return "You pause for a moment as your nipples seem a bit more sensitive than normal. You quickly locate the cause - it seems your piercings have done their work, " +
-				"as your nipples are no longer inverted!" + otherStr;
-
-		}
-	}
-
-	public partial class NippleData : INipple
-	{
-		float INipple.length => length;
-
-		bool INipple.blackNipples => blackNipples;
-
-		NippleStatus INipple.status => status;
-
-		bool INipple.quadNipples => quadNipples;
-
-		ReadOnlyPiercing<NipplePiercingLocation> INipple.piercings => nipplePiercings;
-
-		LactationStatus INipple.lactationStatus => lactationStatus;
-
-		float INipple.lactationRate => lactationRate;
-
-		float INipple.relativeLust => relativeLust;
-
-		BodyType INipple.bodyType => bodyType;
 	}
 
 	internal static class NippleStrings
@@ -265,11 +156,11 @@ namespace CoC.Backend.BodyParts
 			return Utils.PluralizeIf("nipple", plural);
 		}
 
-		public static string ShortDescription(INipple nipple, bool plural, bool allowQuadNippleText) => ShortDesc(nipple, plural, false, allowQuadNippleText);
+		public static string ShortDescription(INipple nipple, IBreast breast, bool plural, bool allowQuadNippleText) => ShortDesc(nipple, breast, plural, false, allowQuadNippleText);
 
-		public static string SingleItemDescription(INipple nipple, bool allowQuadNippleText) => ShortDesc(nipple, false, true, allowQuadNippleText);
+		public static string SingleItemDescription(INipple nipple, IBreast breast, bool allowQuadNippleText) => ShortDesc(nipple, breast, false, true, allowQuadNippleText);
 
-		private static string ShortDesc(INipple nipple, bool plural, bool singleMemberFormatIfNotPlural, bool allowQuadNippleText)
+		private static string ShortDesc(INipple nipple, IBreast breast, bool plural, bool singleMemberFormatIfNotPlural, bool allowQuadNippleText)
 		{
 
 			bool needsArticle = !plural && singleMemberFormatIfNotPlural;
@@ -294,13 +185,13 @@ namespace CoC.Backend.BodyParts
 			//the original odds were conviluted to say the least, with mixes of  anywhere from 0-75% available in some cases.
 
 			bool isLactating = nipple.lactationStatus > LactationStatus.NOT_LACTATING;
-			bool wearingJewelry = nipple.piercings.wearingJewelry;
+			bool wearingJewelry = breast.piercings.wearingJewelry;
 
 			if (randVal == 0 && (wearingJewelry || nipple.bodyType == BodyType.GOO || nipple.blackNipples))
 			{
 				if (wearingJewelry)
 				{
-					var leftHorJewelry = nipple.piercings[NipplePiercingLocation.LEFT_HORIZONTAL];
+					var leftHorJewelry = breast.piercings[NipplePiercingLocation.LEFT_HORIZONTAL];
 					//if (piercing is nipple chain) return "chained " + nount;
 
 					return (needsArticle ? "a " : "") + "pierced " + noun;
@@ -400,22 +291,22 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		internal static string LongDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
+		internal static string LongDescription(INipple nipple, IBreast breast, bool alternateFormat, bool plural, bool usePreciseMeasurements)
 		{
-			return LongFullDesc(nipple, alternateFormat, plural, usePreciseMeasurements, false);
+			return LongFullDesc(nipple, breast, alternateFormat, plural, usePreciseMeasurements, false);
 		}
 
-		internal static string FullDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
+		internal static string FullDescription(INipple nipple, IBreast breast, bool alternateFormat, bool plural, bool usePreciseMeasurements)
 		{
-			return LongFullDesc(nipple, alternateFormat, plural, usePreciseMeasurements, true);
+			return LongFullDesc(nipple, breast, alternateFormat, plural, usePreciseMeasurements, true);
 		}
 
 		//note: if plural is set to true, with article is ignored. the alternate format for plural is identical to the regular format.
-		private static string LongFullDesc(INipple nipple, bool withArticle, bool allAvailableNipples, bool preciseMeasurements, bool full)
+		private static string LongFullDesc(INipple nipple, IBreast breast, bool withArticle, bool allAvailableNipples, bool preciseMeasurements, bool full)
 		{
 			StringBuilder sb = new StringBuilder();
 
-			if (full && nipple.piercings.wearingJewelry)
+			if (full && breast.piercings.wearingJewelry)
 			{
 				sb.Append("pierced");
 			}
@@ -606,8 +497,6 @@ namespace CoC.Backend.BodyParts
 
 			}
 		}
-
-
-
 	}
+
 }

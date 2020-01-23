@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //4/15/2019, 9:13 PM
 
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
 

@@ -134,9 +134,8 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NavelPiercing : Piercing<NavelPiercingLocation>
 	{
-		public NavelPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
-		{
-		}
+		public NavelPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => NavelPiercingLocation.allLocations.Count;
 
@@ -211,63 +210,105 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class HipPiercing : Piercing<HipPiercingLocation>
 	{
-		public HipPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
-		{
-		}
+		public HipPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => HipPiercingLocation.allLocations.Count;
 
 		public override IEnumerable<HipPiercingLocation> availableLocations => HipPiercingLocation.allLocations;
 	}
 
-	public sealed partial class BodyTattooLocation : TattooLocation
+	public sealed partial class CoreTattooLocation : TattooLocation
 	{
 
-		private static readonly List<BodyTattooLocation> _allLocations = new List<BodyTattooLocation>();
+		private static readonly List<CoreTattooLocation> _allLocations = new List<CoreTattooLocation>();
 
-		public static readonly ReadOnlyCollection<BodyTattooLocation> allLocations;
+		public static readonly ReadOnlyCollection<CoreTattooLocation> allLocations;
 
 		private readonly byte index;
 
-		static BodyTattooLocation()
+		static CoreTattooLocation()
 		{
-			allLocations = new ReadOnlyCollection<BodyTattooLocation>(_allLocations);
+			allLocations = new ReadOnlyCollection<CoreTattooLocation>(_allLocations);
 		}
 
-		private BodyTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		private CoreTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
 		{
 			this.index = index;
 		}
 
-		public static BodyTattooLocation LEFT_SHOULDERBLADE = new BodyTattooLocation(0, SmallTattoosOnly, LeftShoulderbladeButton, LeftShoulderbladeLocation);
-		public static BodyTattooLocation LEFT_RIBS = new BodyTattooLocation(1, MediumTattoosOrSmaller, LeftRibsButton, LeftRibsLocation);
-		public static BodyTattooLocation LEFT_LOWER_STOMACH = new BodyTattooLocation(2, MediumTattoosOrSmaller, LeftLowerStomachButton, LeftLowerStomachLocation);
+		public static CoreTattooLocation LEFT_SHOULDERBLADE = new CoreTattooLocation(0, SmallTattoosOnly, LeftShoulderbladeButton, LeftShoulderbladeLocation);
+		public static CoreTattooLocation LEFT_RIBS = new CoreTattooLocation(1, MediumTattoosOrSmaller, LeftRibsButton, LeftRibsLocation);
+		public static CoreTattooLocation LEFT_LOWER_STOMACH = new CoreTattooLocation(2, MediumTattoosOrSmaller, LeftLowerStomachButton, LeftLowerStomachLocation);
 
-		public static BodyTattooLocation RIGHT_SHOULDERBLADE = new BodyTattooLocation(3, SmallTattoosOnly, RightShoulderbladeButton, RightShoulderbladeLocation);
-		public static BodyTattooLocation RIGHT_RIBS = new BodyTattooLocation(4, MediumTattoosOrSmaller, RightRibsButton, RightRibsLocation);
-		public static BodyTattooLocation RIGHT_LOWER_STOMACH = new BodyTattooLocation(5, MediumTattoosOrSmaller, RightLowerStomachButton, RightLowerStomachLocation);
+		public static CoreTattooLocation RIGHT_SHOULDERBLADE = new CoreTattooLocation(3, SmallTattoosOnly, RightShoulderbladeButton, RightShoulderbladeLocation);
+		public static CoreTattooLocation RIGHT_RIBS = new CoreTattooLocation(4, MediumTattoosOrSmaller, RightRibsButton, RightRibsLocation);
+		public static CoreTattooLocation RIGHT_LOWER_STOMACH = new CoreTattooLocation(5, MediumTattoosOrSmaller, RightLowerStomachButton, RightLowerStomachLocation);
 
-		public static BodyTattooLocation NAVEL = new BodyTattooLocation(6, SmallTattoosOnly, NavelButton, NavelLocation);
-		public static BodyTattooLocation CORE = new BodyTattooLocation(7, LargeTattoosOrSmaller, CoreButton, CoreLocation);
-		public static BodyTattooLocation FULL_FRONTAL = new BodyTattooLocation(8, FullPartTattoo, FullButton, FullLocation);
+		public static CoreTattooLocation NAVEL = new CoreTattooLocation(6, SmallTattoosOnly, NavelButton, NavelLocation);
+		public static CoreTattooLocation CORE = new CoreTattooLocation(7, LargeTattoosOrSmaller, CoreButton, CoreLocation);
+		public static CoreTattooLocation FULL_FRONTAL = new CoreTattooLocation(8, FullPartTattoo, FullButton, FullLocation);
 
-		public static bool LocationsCompatible(BodyTattooLocation first, BodyTattooLocation second)
+		public static bool LocationsCompatible(CoreTattooLocation first, CoreTattooLocation second)
 		{
 			return true;
 		}
 	}
 
-	public sealed class BodyTattoo : TattooablePart<BodyTattooLocation>
+	public sealed class CoreTattoo : TattooablePart<CoreTattooLocation>
 	{
-		public BodyTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		public CoreTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		{ }
+
+		public override int MaxTattoos => CoreTattooLocation.allLocations.Count;
+
+		public override IEnumerable<CoreTattooLocation> availableLocations => CoreTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(CoreTattooLocation first, CoreTattooLocation second) => CoreTattooLocation.LocationsCompatible(first, second);
+	}
+
+	//a 'full' tattoo for your entire body. it's preferred to do full tattoos in the various parts, but if you have a tattoo that literally goes everywhere (and still respects any
+	//other full tattoos the creature may have on various body parts), this is available. also for variety, you can have two full body tattoos, working together, if you choose.
+	//use this as sparingly as possible, unless you have something that does this. I'd assume there's a valid full body tattoo from a tattoo shop/parlor/whatever we call it in this game
+	//but for now, this is primarily used so we can do kitsune tats and not kill ourselves in the process.
+	public sealed partial class FullBodyTattooLocation : TattooLocation
+	{
+
+		private static readonly List<FullBodyTattooLocation> _allLocations = new List<FullBodyTattooLocation>();
+
+		public static readonly ReadOnlyCollection<FullBodyTattooLocation> allLocations;
+
+		private readonly byte index;
+
+		static FullBodyTattooLocation()
 		{
+			allLocations = new ReadOnlyCollection<FullBodyTattooLocation>(_allLocations);
 		}
 
-		public override int MaxTattoos => BodyTattooLocation.allLocations.Count;
+		private FullBodyTattooLocation(byte index, TattooSizeLimit limitSize, SimpleDescriptor btnText, SimpleDescriptor locationDesc) : base(limitSize, btnText, locationDesc)
+		{
+			this.index = index;
+		}
 
-		public override IEnumerable<BodyTattooLocation> availableLocations => BodyTattooLocation.allLocations;
+		public static FullBodyTattooLocation MAIN = new FullBodyTattooLocation(0, FullPartTattoo, MainButton, MainLocation);
+		public static FullBodyTattooLocation ALTERNATE = new FullBodyTattooLocation(1, FullPartTattoo, AlternateButton, AlternateLocation);
 
-		public override bool LocationsCompatible(BodyTattooLocation first, BodyTattooLocation second) => BodyTattooLocation.LocationsCompatible(first, second);
+		public static bool LocationsCompatible(FullBodyTattooLocation first, FullBodyTattooLocation second)
+		{
+			return true;
+		}
+	}
+
+	public sealed class FullBodyTattoo : TattooablePart<FullBodyTattooLocation>
+	{
+		public FullBodyTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		{ }
+
+		public override int MaxTattoos => FullBodyTattooLocation.allLocations.Count;
+
+		public override IEnumerable<FullBodyTattooLocation> availableLocations => FullBodyTattooLocation.allLocations;
+
+		public override bool LocationsCompatible(FullBodyTattooLocation first, FullBodyTattooLocation second) => FullBodyTattooLocation.LocationsCompatible(first, second);
 	}
 
 	internal enum ToneDyeLotionLocations : byte { EVERYTHING, PRIMARY, ALTERNATE }
@@ -381,7 +422,8 @@ namespace CoC.Backend.BodyParts
 
 		public override BodyType defaultType => BodyType.defaultValue;
 
-		public readonly BodyTattoo tattoos;
+		public readonly CoreTattoo coreTattoos;
+		public readonly FullBodyTattoo fullCreatureTattoos;
 
 		internal Body(Guid creatureID) : this(creatureID, BodyType.defaultValue) { }
 
@@ -391,10 +433,11 @@ namespace CoC.Backend.BodyParts
 
 			bodyType.Init(out mainSkin, out mainFur, out secondary);
 
-			navelPiercings = new NavelPiercing(NavelLocationUnlocked, AllNavelPiercingsShort, AllNavelPiercingsLong);
-			hipPiercings = new HipPiercing(HipLocationUnlocked, AllHipPiercingsShort, AllHipPiercingsLong);
+			navelPiercings = new NavelPiercing(this, NavelLocationUnlocked, AllNavelPiercingsShort, AllNavelPiercingsLong);
+			hipPiercings = new HipPiercing(this, HipLocationUnlocked, AllHipPiercingsShort, AllHipPiercingsLong);
 
-			tattoos = new BodyTattoo(AllTattoosShort, AllTattoosLong);
+			coreTattoos = new CoreTattoo(this, AllCoreTattoosShort, AllCoreTattoosLong);
+			fullCreatureTattoos = new FullBodyTattoo(this, FullBodyTattoosShort, FullBodyTattoosLong);
 		}
 
 		internal Body(Guid creatureID, BodyType bodyType, FurColor primaryFurColor = null, FurTexture? primaryFurTexture = null, Tones primarySkinTone = null,
@@ -431,6 +474,11 @@ namespace CoC.Backend.BodyParts
 		}
 
 		public override string BodyPartName() => Name();
+
+		public bool IsFurBodyType()
+		{
+			return type == BodyType.SIMPLE_FUR || type == BodyType.UNDERBODY_FUR;
+		}
 
 		#region Updates
 
@@ -872,11 +920,12 @@ namespace CoC.Backend.BodyParts
 			return piercingFetish;
 		}
 		#endregion
+
 		public override BodyData AsReadOnlyData()
 		{
 			return new BodyData(this);
 		}
-
+		#region Text
 		//describe the main epidermis (no body)
 		public string MainDescription() => type.MainDescription();
 		public string MainDescription(out bool isPlural) => type.MainDescription(out isPlural);
@@ -892,6 +941,7 @@ namespace CoC.Backend.BodyParts
 		//same as above, but the more verbose version.
 		public string LongEpidermisDescription() => type.LongDescriptionWithoutBody(AsReadOnlyData());
 		public string LongEpidermisDescription(out bool isPlural) => type.LongDescriptionWithoutBody(AsReadOnlyData(), out isPlural);
+		#endregion
 
 		#region MultiPatternable
 		//3 possibilities: all fur, primary fur, or secondary fur. if there is no under fur available, primary and secondary are disabled.

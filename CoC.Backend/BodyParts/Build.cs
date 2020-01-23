@@ -191,7 +191,26 @@ namespace CoC.Backend.BodyParts
 			return muscleTone.subtract(oldTone);
 		}
 
-		public byte LoseMuscle(byte amount = 1)
+		public short ChangeMuscleToneToward(byte desiredValue, byte increment)
+		{
+			var oldMuscleTone = muscleTone;
+			if (muscleTone == desiredValue)
+			{
+				return 0;
+			}
+			else if (muscleTone > desiredValue)
+			{
+				muscleTone = muscleTone.subtract(increment);
+				return muscleTone.delta(oldMuscleTone);
+			}
+			else
+			{
+				muscleTone = muscleTone.add(increment);
+				return muscleTone.delta(oldMuscleTone);
+			}
+		}
+
+		public byte DescreaseMuscleTone(byte amount = 1)
 		{
 			byte oldTone = muscleTone;
 			muscleTone = muscleTone.subtract(amount);
@@ -209,6 +228,25 @@ namespace CoC.Backend.BodyParts
 			byte oldThickness = thickness;
 			thickness = thickness.add(amount);
 			return thickness.subtract(oldThickness);
+		}
+
+		public short ChangeThicknessToward(byte desiredValue, byte increment)
+		{
+			var oldThickness = thickness;
+			if (thickness == desiredValue)
+			{
+				return 0;
+			}
+			else if (thickness > desiredValue)
+			{
+				thickness = thickness.subtract(increment);
+				return thickness.delta(oldThickness);
+			}
+			else
+			{
+				thickness = thickness.add(increment);
+				return thickness.delta(oldThickness);
+			}
 		}
 
 		public byte GetThinner(byte amount = 1)
@@ -229,6 +267,25 @@ namespace CoC.Backend.BodyParts
 			byte oldHeight = heightInInches;
 			heightInInches = heightInInches.add(increaseInInches);
 			return heightInInches.subtract(oldHeight);
+		}
+
+		public short ChangeHeightToward(byte desiredValue, byte increment)
+		{
+			var oldHeight = heightInInches;
+			if (heightInInches == desiredValue)
+			{
+				return 0;
+			}
+			else if (heightInInches > desiredValue)
+			{
+				heightInInches = heightInInches.subtract(increment);
+				return heightInInches.delta(oldHeight);
+			}
+			else
+			{
+				heightInInches = heightInInches.add(increment);
+				return heightInInches.delta(oldHeight);
+			}
 		}
 
 		public byte GetShorter(byte decreaseInInches = 1)

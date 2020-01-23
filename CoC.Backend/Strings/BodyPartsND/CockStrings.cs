@@ -185,15 +185,15 @@ namespace CoC.Backend.BodyParts
 			//{
 			//
 			//}
-			int frenumJewelryCount = cockPiercings.jewelryCount;
-			bool hasPA = cockPiercings.WearingJewelryAt(CockPiercingLocation.PRINCE_ALBERT);
+			int frenumJewelryCount = piercings.jewelryCount;
+			bool hasPA = piercings.WearingJewelryAt(CockPiercingLocation.PRINCE_ALBERT);
 			if (hasPA)
 			{
 				frenumJewelryCount--;
 				//sb.Append("Looking positively pervese, " + cockPiercings[CockPiercingLocations.PRINCE_ALBERT].LongDescription(true) + "adorns your " + HeadDescription() + ".");
 			}
 
-			if (frenumJewelryCount == cockPiercings.MaxFrenumPiercings)
+			if (frenumJewelryCount == piercings.MaxFrenumPiercings)
 			{
 				string intro, outro;
 				if (hasPA)
@@ -212,7 +212,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 
-			if (cockPiercings.jewelryCount > 1 || (cockPiercings.wearingJewelry && !cockPiercings.WearingJewelryAt(CockPiercingLocation.PRINCE_ALBERT)))
+			if (piercings.jewelryCount > 1 || (piercings.wearingJewelry && !piercings.WearingJewelryAt(CockPiercingLocation.PRINCE_ALBERT)))
 			{
 
 			}

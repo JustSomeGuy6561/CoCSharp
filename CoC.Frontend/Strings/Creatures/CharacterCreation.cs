@@ -8,6 +8,7 @@ using CoC.Backend.CoC_Colors;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
+using System.Linq;
 using System.Text;
 
 namespace CoC.Frontend.Creatures
@@ -417,7 +418,13 @@ namespace CoC.Frontend.Creatures
 			{
 				sb.Append("Clit Size: " + Measurement.ToNearestQuarterInchOrMillimeter(creator.vaginas[0].validClitLength, true) + Environment.NewLine);
 			}
-			sb.Append("Breast size: " + creator.breasts[0].cupSize.AsText() + " with " + Measurement.ToNearestQuarterInchOrHalfCentimeter(creator.breasts[0].validNippleLength, true) + " nipples" + Environment.NewLine);
+
+			if (creator.nippleLength is null)
+			{
+				creator.nippleLength = creator.breasts.Max(x => x.cupSize) > CupSize.A ? 0.5f : 0.25f;
+			}
+
+			sb.Append("Breast size: " + creator.breasts[0].cupSize.AsText() + " with " + Measurement.ToNearestQuarterInchOrHalfCentimeter((float)creator.nippleLength, true) + " nipples" + Environment.NewLine);
 			return sb.ToString();
 		}
 

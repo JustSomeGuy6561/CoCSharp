@@ -79,7 +79,7 @@ namespace CoC.Backend.BodyParts
 			{ // if no gills
 				return GlobalStrings.NewParagraph() + "You feel a pressure in your lower esophageal region and pull your garments down to check the area. Before your eyes " +
 					"a pair of feathery gills start to push out of the center of your chest, just below your neckline, parting sideways and draping over your " +
-					player.nipples[0].LongDescription() + ". They feel a bit uncomfortable in the open air at first, but soon a thin film of mucus covers them and you" +
+					player.breasts[0].LongNippleDescription() + ". They feel a bit uncomfortable in the open air at first, but soon a thin film of mucus covers them and you" +
 					" hardly notice anything at all. You redress carefully." + GlobalStrings.NewParagraph() + SafelyFormattedString.FormattedText("You now have feathery gills!", StringFormats.BOLD);
 			}
 		}

@@ -1,4 +1,6 @@
-﻿using CoC.Backend.Creatures;
+﻿using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Tools;
 using System;
@@ -8,7 +10,7 @@ using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class BreastCollection : SimpleSaveablePart<BreastCollection, BreastCollectionData>
+	public sealed partial class BreastCollection : SimpleSaveablePart<BreastCollection, BreastCollectionData>, IGrowable, IShrinkable
 	{
 		#region Notes:
 
@@ -46,36 +48,28 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ReadOnlyCollection<Breasts> breastRows;
 
+
+		public Breasts this[int index]
+		{
+			get => _breasts[index];
+		}
+
 		#endregion
 
 		#region Public Nipple Related Members
-		public bool blackNipples
-		{
-			get => _blackNipples;
-			private set
-			{
-				_blackNipples = value;
-			}
-		}
-		private bool _blackNipples;
-		public bool quadNipples
-		{
-			get => _quadNipples;
-			private set
-			{
-				_quadNipples = value;
-			}
-		}
-		private bool _quadNipples;
-		public NippleStatus nippleType
-		{
-			get => _nippleType;
-			private set
-			{
-				_nippleType = value;
-			}
-		}
-		private NippleStatus _nippleType;
+		//public bool blackNipples { get; private set; } = false;
+		//public bool quadNipples { get; private set; } = false;
+		//public NippleStatus nippleType { get; private set; } = NippleStatus.NORMAL;
+
+		//public float nippleLength { get; private set; } = 0.5f;
+
+		internal readonly NippleAggregate nippleData;
+
+		public bool hasBlackNipples => nippleData.hasBlackNipples;
+		public bool hasQuadNipples => nippleData.hasQuadNipples;
+		public NippleStatus nippleStatus => nippleData.nippleStatus;
+
+		public float nippleLength => nippleData.length;
 
 		public bool unlockedDickNipples
 		{
@@ -145,9 +139,6 @@ namespace CoC.Backend.BodyParts
 
 		private uint missingRowNippleFuckCount = 0;
 		private uint missingRowDickNippleSexCount = 0;
-		private uint missingRowNippleOrgasmCount = 0;
-		private uint missingRowNippleDryOrgasmCount = 0;
-
 
 		#endregion
 
@@ -173,16 +164,11 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Public Nipple Related Computed Properties
-		public IEnumerable<Nipples> nipples => new ReadOnlyCollection<Nipples>(_breasts.ConvertAll(x => x.nipples));
-
-		public int nippleCount => _breasts.Count * Breasts.NUM_BREASTS * (quadNipples ? 4 : 1);
+		public int nippleCount => _breasts.Count * Breasts.NUM_BREASTS * (hasQuadNipples ? 4 : 1);
 
 
-		public uint nippleFuckCount => missingRowNippleFuckCount + (uint)breastRows.Sum(x => x.nippleFuckCount);
-		public uint dickNippleSexCount => missingRowDickNippleSexCount + (uint)breastRows.Sum(x => x.dickNippleFuckCount);
-
-		public uint nippleOrgasmCount => missingRowNippleOrgasmCount.add((uint)breastRows.Sum(x => x.nippleOrgasmCount));
-		public uint nippleDryOrgasmCount => missingRowNippleDryOrgasmCount.add((uint)breastRows.Sum(x => x.nippleDryOrgasmCount));
+		public uint totalFuckableNippleSexCount => missingRowNippleFuckCount + (uint)breastRows.Sum(x => x.fuckableNippleSexCount);
+		public uint totalDickNippleSexCount => missingRowDickNippleSexCount + (uint)breastRows.Sum(x => x.dickNippleSexCount);
 
 		#endregion
 
@@ -298,6 +284,8 @@ namespace CoC.Backend.BodyParts
 			source = parent;
 
 			breastRows = new ReadOnlyCollection<Breasts>(_breasts);
+
+			nippleData = new NippleAggregate(creatureID, this);
 		}
 		#endregion
 
@@ -305,9 +293,7 @@ namespace CoC.Backend.BodyParts
 
 		internal void Initialize(BreastCreator[] breastCreators)
 		{
-			BreastPerkHelper BreastPerkWrapper = perkData.GetBreastPerkWrapper();
-
-			_breasts.AddRange(breastCreators.Where(x => x != null).Select(x => new Breasts(creatureID, BreastPerkWrapper, x.cupSize, x.validNippleLength)).Take(MAX_BREAST_ROWS));
+			_breasts.AddRange(breastCreators.Where(x => x != null).Select(x => new Breasts(creatureID, nippleData, x.cupSize, x.nipplePiercings)).Take(MAX_BREAST_ROWS));
 		}
 
 		#endregion
@@ -380,16 +366,6 @@ namespace CoC.Backend.BodyParts
 			return _breasts.MinItem(x => (byte)x.cupSize);
 		}
 
-		public Breasts SmallestBreastByNippleLength()
-		{
-			return _breasts.MinItem(x => x.nipples.length);
-		}
-
-		public Breasts LargestBreastByNippleLength()
-		{
-			return _breasts.MaxItem(x => x.nipples.length);
-		}
-
 		public BreastData AverageBreasts()
 		{
 			if (_breasts.Count == 0)
@@ -397,68 +373,8 @@ namespace CoC.Backend.BodyParts
 				return null;
 			}
 			var averageCup = AverageCupSize();
-			var averageNippleLength = AverageNippleSize();
-			return Breasts.GenerateAggregate(creatureID, averageCup, averageNippleLength, blackNipples, quadNipples, nippleType, lactationRate, lactationStatus,
-				isOverfull, gender, relativeLust);
-		}
-
-		#endregion
-
-		#region Nipple Aggregate Functions
-
-		public float LargestNippleSize()
-		{
-			if (nipples.IsEmpty())
-			{
-				return 0;
-			}
-			return nipples.Max(x => x.length);
-		}
-
-		public Nipples LargestNipples()
-		{
-			if (nipples.IsEmpty())
-			{
-				return null;
-			}
-			return nipples.MaxItem(x => x.length);
-		}
-
-		public float SmallestNippleSize()
-		{
-			if (nipples.IsEmpty())
-			{
-				return 0;
-			}
-			return nipples.Min(x => x.length);
-		}
-
-		public Nipples SmallestNipples()
-		{
-			if (nipples.IsEmpty())
-			{
-				return null;
-			}
-			return nipples.MinItem(x => x.length);
-		}
-
-		public float AverageNippleSize()
-		{
-			if (nipples.IsEmpty())
-			{
-				return 0;
-			}
-			return nipples.Average(x => x.length);
-		}
-
-		public NippleData AverageNipple()
-		{
-			if (nipples.IsEmpty())
-			{
-				return null;
-			}
-
-			return new NippleData(creatureID, AverageNippleSize(), -1, lactationRate, quadNipples, blackNipples, nippleType, null, relativeLust);
+			return Breasts.GenerateAggregate(creatureID, averageCup, nippleLength, hasBlackNipples, hasQuadNipples, nippleData.dickNipplesEnabled, nippleStatus, lactationRate,
+				lactationStatus, isOverfull, gender, relativeLust, perkData.MaleMinCup);
 		}
 
 		#endregion
@@ -473,8 +389,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			var cup = _breasts[_breasts.Count - 1].cupSize;
-			var length = _breasts[_breasts.Count - 1].nipples.length;
-			_breasts.Add(new Breasts(creatureID, perkData.GetBreastPerkWrapper(), cup, length));
+			_breasts.Add(new Breasts(creatureID, nippleData, cup));
 			return true;
 		}
 		public bool AddBreastRowAverage()
@@ -485,10 +400,9 @@ namespace CoC.Backend.BodyParts
 			}
 			//linq ftw!
 			//i find it funny that linq was created for databases, but it really is used for functional programming.
-			double avgLength = _breasts.Average((x) => (double)x.nipples.length);
 			double avgCup = _breasts.Average((x) => (double)x.cupSize);
 			byte cup = (byte)Math.Ceiling(avgCup);
-			_breasts.Add(new Breasts(creatureID, perkData.GetBreastPerkWrapper(), (CupSize)cup, (float)avgLength));
+			_breasts.Add(new Breasts(creatureID, nippleData, (CupSize)cup));
 			return true;
 		}
 
@@ -498,8 +412,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			double avgLength = _breasts.Average((x) => (double)x.nipples.length);
-			_breasts.Add(new Breasts(creatureID, perkData.GetBreastPerkWrapper(), cup, (float)avgLength));
+
+			_breasts.Add(new Breasts(creatureID, nippleData, cup));
 			return true;
 		}
 
@@ -519,10 +433,8 @@ namespace CoC.Backend.BodyParts
 				missingRowBreastOrgasmCount += _breasts[0].orgasmCount;
 				missingRowBreastDryOrgasmCount += _breasts[0].dryOrgasmCount;
 
-				missingRowNippleFuckCount += _breasts[0].nippleFuckCount;
-				missingRowDickNippleSexCount += _breasts[0].dickNippleFuckCount;
-				missingRowNippleOrgasmCount += _breasts[0].nippleOrgasmCount;
-				missingRowNippleDryOrgasmCount += _breasts[0].nippleDryOrgasmCount;
+				missingRowNippleFuckCount += _breasts[0].fuckableNippleSexCount;
+				missingRowDickNippleSexCount += _breasts[0].dickNippleSexCount;
 				_breasts[0].Reset();
 
 				count = numBreastRows - 1;
@@ -532,10 +444,8 @@ namespace CoC.Backend.BodyParts
 			missingRowBreastOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.orgasmCount);
 			missingRowBreastDryOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.dryOrgasmCount);
 
-			missingRowNippleFuckCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.nippleFuckCount);
-			missingRowDickNippleSexCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.dickNippleFuckCount);
-			missingRowNippleOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.nippleOrgasmCount);
-			missingRowNippleDryOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.nippleDryOrgasmCount);
+			missingRowNippleFuckCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.fuckableNippleSexCount);
+			missingRowDickNippleSexCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.dickNippleSexCount);
 
 			_breasts.RemoveRange(numBreastRows - count, count);
 
@@ -556,18 +466,25 @@ namespace CoC.Backend.BodyParts
 		/// will completely average all values.
 		/// </summary>
 		/// <param name="untilEven">if true, forces all breast rows to average value, if false, only one unit.</param>
-		public void NormalizeBreasts(bool untilEven = false)
+		public bool NormalizeBreasts(bool untilEven = false)
 		{
 			if (numBreastRows == 1)
 			{
-				return;
+				return false;
 			}
 			CupSize averageSize = AverageCupSize();
+
+			bool changedAnything = false;
+
 			if (untilEven)
 			{
 				foreach (var row in _breasts)
 				{
+
+					var oldSize = row.cupSize;
 					row.SetCupSize(averageSize);
+
+					changedAnything |= oldSize != row.cupSize;
 				}
 			}
 			else
@@ -576,14 +493,16 @@ namespace CoC.Backend.BodyParts
 				{
 					if (row.cupSize > averageSize)
 					{
-						row.ShrinkBreasts(1, true);
+						changedAnything |= row.ShrinkBreasts(1, true) != 0;
 					}
 					else if (row.cupSize < averageSize)
 					{
-						row.GrowBreasts(1, true);
+						changedAnything |= row.GrowBreasts(1, true) != 0;
 					}
 				}
 			}
+
+			return changedAnything;
 		}
 
 		/// <summary>
@@ -593,12 +512,12 @@ namespace CoC.Backend.BodyParts
 		/// <param name="untilEven"></param>
 
 		//i hated writing this function so much holy shit lol. i mean, now that it's in, feel free to use it anywhere, it works like a charm. but damn was it a pain to figure out.
-		public void AnthropomorphizeBreasts(bool untilEven = false)
+		public bool AnthropomorphizeBreasts(bool untilEven = false)
 		{
 			//only one row or all are flat.
-			if (numBreastRows == 1 || SmallestCupSize() == CupSize.FLAT)
+			if (numBreastRows == 1 || BiggestCupSize() == CupSize.FLAT)
 			{
-				return;
+				return false;
 			}
 
 			byte[] target = new byte[_breasts.Count];
@@ -683,11 +602,17 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 
+			bool changedAnything = false;
+
 			if (untilEven)
 			{
 				for (int x = 0; x < _breasts.Count; x++)
 				{
+					var oldSize = _breasts[x].cupSize;
+
 					_breasts[x].SetCupSize((CupSize)target[x]);
+
+					changedAnything |= oldSize != _breasts[x].cupSize;
 				}
 			}
 			else
@@ -705,14 +630,14 @@ namespace CoC.Backend.BodyParts
 				//handle the easiest case first.
 				if (addCount == subCount)
 				{
-					adders.ForEach(x => x.GrowBreasts(1, true));
-					subbers.ForEach(x => x.ShrinkBreasts(1, true));
+					adders.ForEach(x => changedAnything |= x.GrowBreasts(1, true) != 0);
+					subbers.ForEach(x => changedAnything |= x.ShrinkBreasts(1, true) != 0);
 				}
 				//more adds than subs, but our subs need to change more.
 				else if (addCount > subCount)
 				{
-					adders.ForEach(x => x.GrowBreasts(1, true));
-					subbers.ForEach(x => x.ShrinkBreasts(1, true));
+					adders.ForEach(x => changedAnything |= x.GrowBreasts(1, true) != 0);
+					subbers.ForEach(x => changedAnything |= x.ShrinkBreasts(1, true) != 0);
 
 					int extraSubs = addCount - subCount;
 
@@ -728,15 +653,15 @@ namespace CoC.Backend.BodyParts
 								break;
 							}
 
-							sub.ShrinkBreasts(1, true);
+							changedAnything |= sub.ShrinkBreasts(1, true) != 0;
 							extraSubs--;
 						}
 					}
 				}
 				else //if (subCount > addCount)
 				{
-					subbers.ForEach(x => x.ShrinkBreasts(1, true));
-					adders.ForEach(x => x.GrowBreasts(1, true));
+					subbers.ForEach(x => changedAnything |= x.ShrinkBreasts(1, true) != 0);
+					adders.ForEach(x => changedAnything |= x.GrowBreasts(1, true) != 0);
 
 					int extraAdds = subCount - addCount;
 
@@ -752,27 +677,31 @@ namespace CoC.Backend.BodyParts
 								break;
 							}
 
-							add.GrowBreasts(1, true);
+							changedAnything |= add.GrowBreasts(1, true) != 0;
 							extraAdds--;
 						}
 					}
 				}
-
 			}
+
+			return changedAnything;
 		}
 
 		#endregion
 
 		#region Nipple Mutators
-		public void SetQuadNipples(bool active)
-		{
-			quadNipples = active;
-		}
+		public bool SetNippleStatus(NippleStatus desiredStatus, bool limitToCurrentLength = false, bool toggleDickNippleFlagIfNeccesary = false) =>
+			nippleData.SetNippleStatus(desiredStatus, limitToCurrentLength, toggleDickNippleFlagIfNeccesary);
 
-		public void SetBlackNipples(bool active)
-		{
-			blackNipples = active;
-		}
+		public bool SetQuadNipples(bool active) => nippleData.SetQuadNipples(active);
+
+		public bool SetBlackNipples(bool active) => nippleData.SetBlackNipples(active);
+
+		public bool UnlockDickNipples() => nippleData.UnlockDickNipples();
+
+		public bool PreventDickNipples() => nippleData.PreventDickNipples();
+
+		public bool SetDickNippleFlag(bool enabled) => nippleData.SetDickNippleFlag(enabled);
 
 		#endregion
 
@@ -865,21 +794,13 @@ namespace CoC.Backend.BodyParts
 
 		internal void HandleNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm)
 		{
-			Nipples nipple = breastRows[breastIndex].nipples;
-			nipple.DoNippleFuck(length, girth, knotWidth, cumAmount, reachOrgasm);
+			breastRows[breastIndex].DoNippleFuck(length, girth, knotWidth, cumAmount, reachOrgasm);
 		}
 
 		internal void HandleNippleDickPenetrate(int breastIndex, bool reachOrgasm)
 		{
-			Nipples nipple = breastRows[breastIndex].nipples;
-			nipple.DoDickNippleSex(reachOrgasm);
+			breastRows[breastIndex].DoDickNippleSex(reachOrgasm);
 		}
-
-		internal void HandleNippleOrgasmGeneric(int breastIndex, bool dryOrgasm)
-		{
-			breastRows[breastIndex].nipples.OrgasmNipplesGeneric(dryOrgasm);
-		}
-
 		#endregion
 
 		#region Lactation Sex Related Functions
@@ -1117,6 +1038,50 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
+		#region Breast Collection Exclusive Text
+
+		internal string AllBreastsPlayerDescription()
+		{
+			if (CreatureStore.GetCreatureClean(creatureID) is PlayerBase player)
+			{
+				return AllBreastsPlayerText(player);
+			}
+			else
+			{
+				return "";
+			}
+
+		}
+		#endregion
+
+		#region IGrowable
+
+		bool IGrowable.CanGroPlus()
+		{
+			return _breasts.Any(x => (x as IGrowable).CanGroPlus());
+		}
+
+		float IGrowable.UseGroPlus()
+		{
+			return _breasts.Average(x => (x as IGrowable).UseGroPlus());
+		}
+
+		#endregion
+
+		#region IShrinkable
+
+		bool IShrinkable.CanReducto()
+		{
+			return _breasts.Any(x => (x as IShrinkable).CanReducto());
+		}
+
+		float IShrinkable.UseReducto()
+		{
+			return _breasts.Average(x => (x as IShrinkable).UseReducto());
+		}
+
+		#endregion
+
 	}
 
 	public sealed partial class BreastCollectionData : SimpleData
@@ -1124,27 +1089,26 @@ namespace CoC.Backend.BodyParts
 		#region Public Breast Related Members
 
 		public readonly ReadOnlyCollection<BreastData> breasts;
-
+		public BreastData this[int index]
+		{
+			get => breasts[index];
+		}
 		#endregion
 
 		#region Public Nipple Related Members
 
-		public readonly ReadOnlyCollection<NippleData> nipples;
-
 		public readonly bool blackNipples;
 		public readonly bool quadNipples;
-
 		public readonly NippleStatus nippleType;
+		public readonly float nippleLength;
 
 		public readonly bool unlockedDickNipples;
 
 		public int nippleCount => numBreasts * (quadNipples ? 4 : 1);
 
-		public readonly uint nippleFuckCount;
+		public readonly uint fuckableNippleSexCount;
 		public readonly uint dickNippleSexCount;
 
-		public readonly uint nippleOrgasmCount;
-		public readonly uint nippleDryOrgasmCount;
 		#endregion
 
 		#region Public Lactation Related Members
@@ -1201,10 +1165,11 @@ namespace CoC.Backend.BodyParts
 
 		private readonly Gender gender;
 
+		private readonly CupSize maleMinCupSize;
+
 		internal BreastCollectionData(BreastCollection source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			this.breasts = new ReadOnlyCollection<BreastData>(source.breastRows.Select(x => x.AsReadOnlyData()).ToList());
-			this.nipples = new ReadOnlyCollection<NippleData>(source.nipples.Select(x => x.AsReadOnlyData()).ToList());
 
 			this.lactation_TotalCapacityMultiplier = source.lactation_TotalCapacityMultiplier;
 			this.lactation_CapacityMultiplier = source.lactation_CapacityMultiplier;
@@ -1222,18 +1187,18 @@ namespace CoC.Backend.BodyParts
 			this.currentLactationCapacity = source.currentLactationCapacity;
 			this.lactationRate = source.lactationRate;
 			this.lactationStatus = source.lactationStatus;
-			this.blackNipples = source.blackNipples;
-			this.quadNipples = source.quadNipples;
-			this.nippleType = source.nippleType;
+			this.blackNipples = source.hasBlackNipples;
+			this.quadNipples = source.hasQuadNipples;
+			this.nippleType = source.nippleStatus;
 			this.unlockedDickNipples = source.unlockedDickNipples;
-			this.nippleFuckCount = source.nippleFuckCount;
-			this.dickNippleSexCount = source.dickNippleSexCount;
-			this.nippleOrgasmCount = source.nippleOrgasmCount;
-			this.nippleDryOrgasmCount = source.nippleDryOrgasmCount;
-
+			this.fuckableNippleSexCount = source.totalFuckableNippleSexCount;
+			this.dickNippleSexCount = source.totalDickNippleSexCount;
+			this.nippleLength = source.nippleLength;
 			this.relativeLust = source.relativeLust;
 			this.isPregnant = source.isPregnant;
 			this.gender = source.gender;
+
+			this.maleMinCupSize = source.breastRows[0].maleMinCup;
 		}
 
 		#region Breast Aggregate Functions
@@ -1263,16 +1228,6 @@ namespace CoC.Backend.BodyParts
 			return breasts.MinItem(x => (byte)x.cupSize);
 		}
 
-		public BreastData SmallestBreastByNippleLength()
-		{
-			return breasts.MinItem(x => x.nipples.length);
-		}
-
-		public BreastData LargestBreastByNippleLength()
-		{
-			return breasts.MaxItem(x => x.nipples.length);
-		}
-
 		public BreastData AverageBreasts()
 		{
 			if (breasts.Count == 0)
@@ -1280,68 +1235,8 @@ namespace CoC.Backend.BodyParts
 				return null;
 			}
 			var averageCup = AverageCupSize();
-			var averageNippleLength = AverageNippleSize();
-			return Breasts.GenerateAggregate(creatureID, averageCup, averageNippleLength, blackNipples, quadNipples, nippleType, lactationRate, lactationStatus,
-				isOverfull, gender, relativeLust);
-		}
-
-		#endregion
-
-		#region Nipple Aggregate Functions
-
-		public float LargestNippleSize()
-		{
-			if (nipples.IsEmpty())
-			{
-				return 0;
-			}
-			return nipples.Max(x => x.length);
-		}
-
-		public NippleData LargestNipples()
-		{
-			if (nipples.IsEmpty())
-			{
-				return null;
-			}
-			return nipples.MaxItem(x => x.length);
-		}
-
-		public float SmallestNippleSize()
-		{
-			if (nipples.IsEmpty())
-			{
-				return 0;
-			}
-			return nipples.Min(x => x.length);
-		}
-
-		public NippleData SmallestNipples()
-		{
-			if (nipples.IsEmpty())
-			{
-				return null;
-			}
-			return nipples.MinItem(x => x.length);
-		}
-
-		public float AverageNippleSize()
-		{
-			if (nipples.IsEmpty())
-			{
-				return 0;
-			}
-			return nipples.Average(x => x.length);
-		}
-
-		public NippleData AverageNipple()
-		{
-			if (nipples.IsEmpty())
-			{
-				return null;
-			}
-
-			return new NippleData(creatureID, AverageNippleSize(), -1, lactationRate, quadNipples, blackNipples, nippleType, null, relativeLust);
+			return Breasts.GenerateAggregate(creatureID, averageCup, nippleLength, blackNipples, quadNipples, unlockedDickNipples, nippleType, lactationRate, lactationStatus,
+				isOverfull, gender, relativeLust, maleMinCupSize);
 		}
 
 		#endregion

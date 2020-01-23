@@ -64,6 +64,9 @@ namespace CoC.Backend
 	//every function that uses a button will follow this format. note that with lambdas they can take virtually anything.
 	public delegate void PlayerFunction(PlayerBase player);
 
+
+	public delegate string ItemDescriptor(byte count, bool displayCount);
+
 	/// <summary>
 	/// Used to resume idleing, called after all the complicated hourly stuff completes.
 	/// </summary>
@@ -73,9 +76,9 @@ namespace CoC.Backend
 	public delegate string ResumeTimeCallback(ushort hoursRemaining, AreaBase currentLocation);
 
 	//passed into the item use function. It's called when the item is used, successfully or otherwise. This is due to the delayed, event-based nature of the item.
-	public delegate void UseItemCallback(bool successfullyUsedItem, string whatHappened, CapacityItem replacementItem);
+	public delegate void UseItemCallback(bool successfullyUsedItem, string whatHappened, string author, CapacityItem replacementItem);
 	//public delegate PageDataWrapper UseItemCallback(bool successfullyUsedItem, CapacityItem replacementItem);
-	public delegate void UseItemCallbackSafe<T>(bool successfullyUsedItem, string whatHappened, T replacementItem) where T : CapacityItem;
+	public delegate void UseItemCallbackSafe<T>(bool successfullyUsedItem, string whatHappened, string author, T replacementItem) where T : CapacityItem;
 	//public delegate PageDataWrapper UseItemCallbackSafe<T>(bool successfullyUsedItem, T replacementItem) where T : CapacityItem;
 
 

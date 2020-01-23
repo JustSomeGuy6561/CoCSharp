@@ -7,9 +7,9 @@ namespace CoC.Backend.Items.Wearables
 {
 	public abstract class WearableItemBase<T> : CapacityItem<T> where T:WearableItemBase<T>
 	{
-		protected WearableItemBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
-			: base(abbreviate, itemName, shortDesc, appearance)
-		{}
+		protected WearableItemBase() : base()
+		{
+		}
 
 		protected abstract bool CanWearWithBodyData(Creature creature, out string whyNot);
 

@@ -29,6 +29,7 @@ namespace CoC.Backend.BodyParts
 
 		private readonly byte index;
 
+
 		static ClitPiercingLocation()
 		{
 			allLocations = new ReadOnlyCollection<ClitPiercingLocation>(_allLocations);
@@ -81,9 +82,8 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class ClitPiercing : Piercing<ClitPiercingLocation>
 	{
-		public ClitPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
-		{
-		}
+		public ClitPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => ClitPiercingLocation.allLocations.Count;
 
@@ -95,32 +95,33 @@ namespace CoC.Backend.BodyParts
 	{
 		public override string BodyPartName() => Name();
 
-		internal float clitGrowthMultiplier = 1;
-		internal float clitShrinkMultiplier = 1;
-		internal float minClitSize
+		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
+
+
+		private float clitGrowthMultiplier => creature?.genitals.perkData.ClitGrowthMultiplier ?? 1;
+		private float clitShrinkMultiplier => creature?.genitals.perkData.ClitShrinkMultiplier ?? 1;
+
+		public float minClitSize => creature?.genitals.perkData.MinClitSize ?? MIN_CLIT_SIZE;
+
+		private float defaultNewClitSize => creature?.genitals.perkData.DefaultNewClitSize ?? MIN_CLIT_SIZE;
+		private float newClitSizeDelta => creature?.genitals.perkData.NewClitSizeDelta ?? 0;
+
+		//called by perks when min clit size changes. this ensures the clit size is still valid.
+		internal void CheckClitSize()
 		{
-			get => _minClitSize;
-			set
-			{
-				_minClitSize = value;
-				if (length < minSize)
-				{
-					length = minSize;
-				}
-			}
+			//make sure it's still valid, even if min clit size has changed.
+			length = length;
 		}
-		private float _minClitSize = MIN_CLIT_SIZE;
 
-		internal float minNewClitSize;
-
-		private float resetSize => Math.Max(minNewClitSize, minClitSize);
+		private float resetSize => Math.Max(defaultNewClitSize, minClitSize);
 
 		public uint penetrateCount { get; private set; } = 0;
 
 		public uint orgasmCount => parent.orgasmCount;
 
+
 		private readonly Vagina parent;
-		private int vaginaIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.vaginas.IndexOf(parent) : 0;
+		private int vaginaIndex => creature?.genitals.vaginas.IndexOf(parent) ?? 0;
 
 		private static readonly ClitPiercingLocation[] requiresFetish = { ClitPiercingLocation.LARGE_CLIT_1, ClitPiercingLocation.LARGE_CLIT_2, ClitPiercingLocation.LARGE_CLIT_3 };
 
@@ -154,27 +155,35 @@ namespace CoC.Backend.BodyParts
 		}
 		private float _length;
 
-		public readonly ClitPiercing clitPiercings;
+		public readonly ClitPiercing piercings;
 
-		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, bool isOmnibusClit = false)
-			: this(creatureID, source, initialPerkData, null, isOmnibusClit)
+		internal Clit(Guid creatureID, Vagina source)
+			: this(creatureID, source, null)
 		{ }
 
-		internal Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, float clitSize, bool isOmnibusClit = false)
-			: this(creatureID, source, initialPerkData, (float?)clitSize, isOmnibusClit)
-		{ }
-
-		private Clit(Guid creatureID, Vagina source, VaginaPerkHelper initialPerkData, float? clitSize, bool isOmnibusClit) : base(creatureID)
+		internal Clit(Guid creatureID, Vagina source, float? clitSize) : base(creatureID)
 		{
 			parent = source ?? throw new ArgumentNullException(nameof(source));
-			_length = initialPerkData.NewClitSize(clitSize);
+			_length = NewClitSize(clitSize);
 
-			clitPiercings = new ClitPiercing(PiercingLocationUnlocked, AllClitPiercingsShort, AllClitPiercingsLong);
+			piercings = new ClitPiercing(this, PiercingLocationUnlocked, AllClitPiercingsShort, AllClitPiercingsLong);
+		}
 
-			_minClitSize = initialPerkData.MinClitSize;
-			minNewClitSize = initialPerkData.DefaultNewClitSize;
-			clitGrowthMultiplier = initialPerkData.ClitGrowthMultiplier;
-			clitShrinkMultiplier = initialPerkData.ClitShrinkMultiplier;
+		private float NewClitSize(float? givenSize = null)
+		{
+			float minValue = Utils.Clamp2(Math.Max(defaultNewClitSize, minClitSize), MIN_CLIT_SIZE, MAX_CLIT_SIZE);
+			if (givenSize != null)
+			{
+				givenSize += newClitSizeDelta;
+			}
+			if (givenSize is null || givenSize < minValue)
+			{
+				return minValue;
+			}
+			else
+			{
+				return (float)givenSize;
+			}
 		}
 
 		public override ClitData AsReadOnlyData()
@@ -224,7 +233,7 @@ namespace CoC.Backend.BodyParts
 		public void Reset()
 		{
 			Restore();
-			clitPiercings.Reset();
+			piercings.Reset();
 		}
 
 		//internal bool ActivateOmnibusClit()
@@ -300,7 +309,7 @@ namespace CoC.Backend.BodyParts
 		internal override bool Validate(bool correctInvalidData)
 		{
 			length = length;
-			return clitPiercings.Validate(correctInvalidData);
+			return piercings.Validate(correctInvalidData);
 		}
 		#region Text
 		public static string PluralClitNoun() => ClitStrings.PluralClitNoun();
@@ -341,9 +350,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public bool isPierced => clitPiercings.isPierced;
+		public bool isPierced => piercings.isPierced;
 
-		public bool wearingJewelry => clitPiercings.wearingJewelry;
+		public bool wearingJewelry => piercings.wearingJewelry;
 
 
 		#endregion
@@ -404,7 +413,7 @@ namespace CoC.Backend.BodyParts
 			length = source.length;
 			vaginaIndex = currIndex;
 
-			clitPiercings = source.clitPiercings.AsReadOnlyData();
+			clitPiercings = source.piercings.AsReadOnlyData();
 		}
 
 		public ClitData(Guid creatureID, int currentIndex, float length, ReadOnlyPiercing<ClitPiercingLocation> piercings) : base(creatureID)

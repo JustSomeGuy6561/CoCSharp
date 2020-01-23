@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //4/15/2019, 9:13 PM
 
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using System;
@@ -20,11 +21,15 @@ namespace CoC.Backend.BodyParts
 	public enum Gender : byte { GENDERLESS = 0, MALE = 1, FEMALE = 2, HERM = MALE | FEMALE }
 
 
-
 	public enum LactationStatus { NOT_LACTATING, LIGHT, MODERATE, STRONG, HEAVY, EPIC }
 
 	public static class GenitalHelpers
 	{
+		public static bool CanHaveSexWith(this Gender source, Gender other)
+		{
+			return source != Gender.GENDERLESS && other != Gender.GENDERLESS && (source | other) == Gender.HERM;
+		}
+
 		//Genderless can also be used if gender is unimportant.
 		public static string AsPronoun(this Gender gender)
 		{
@@ -58,7 +63,6 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-
 		public static float MinThreshold(this LactationStatus lactationStatus)
 		{
 			switch (lactationStatus)
@@ -81,7 +85,7 @@ namespace CoC.Backend.BodyParts
 
 		public static PiercingJewelry GenerateCockJewelry(this Cock cock, CockPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (cock.cockPiercings.CanWearGenericJewelryOfType(location, jewelryType))
+			if (cock.piercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
@@ -90,7 +94,7 @@ namespace CoC.Backend.BodyParts
 
 		public static PiercingJewelry GenerateClitJewelry(this Clit clit, ClitPiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (clit.clitPiercings.CanWearGenericJewelryOfType(location, jewelryType))
+			if (clit.piercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}
@@ -108,7 +112,7 @@ namespace CoC.Backend.BodyParts
 
 		public static PiercingJewelry GenerateNippleJewelry(this Breasts breasts, NipplePiercingLocation location, JewelryType jewelryType, JewelryMaterial jewelryMaterial)
 		{
-			if (breasts.nipples.nipplePiercing.CanWearGenericJewelryOfType(location, jewelryType))
+			if (breasts.nipplePiercings.CanWearGenericJewelryOfType(location, jewelryType))
 			{
 				return new GenericPiercing(jewelryType, jewelryMaterial);
 			}

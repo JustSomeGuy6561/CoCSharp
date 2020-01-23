@@ -80,7 +80,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class GenitalTattoo : TattooablePart<GenitalTattooLocation>
 	{
-		public GenitalTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		public GenitalTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 
@@ -138,6 +138,8 @@ namespace CoC.Backend.BodyParts
 
 		#region Cock Related Constants
 		public const int MAX_COCKS = CockCollection.MAX_COCKS;
+
+		public const ushort CUM_MULTIPLIER_CAP = CockCollection.CUM_MULTIPLIER_CAP;
 		#endregion
 
 		#region Public ReadOnly Members
@@ -208,6 +210,8 @@ namespace CoC.Backend.BodyParts
 		public uint analOrgasmCount => ass.orgasmCount;
 		public uint analDryOrgasmCount => ass.dryOrgasmCount;
 
+		public ushort standardBonusAnalCapacity => ass.bonusAnalCapacity;
+
 		#endregion
 
 		#region Balls Aliases
@@ -261,11 +265,11 @@ namespace CoC.Backend.BodyParts
 		#region BreastCollection Aliases
 
 		#region Public Nipple Related Members
-		public bool blackNipples => allBreasts.blackNipples;
+		public bool hasBlackNipples => allBreasts.hasBlackNipples;
 
-		public bool quadNipples => allBreasts.quadNipples;
+		public bool hasQuadNipples => allBreasts.hasQuadNipples;
 
-		public NippleStatus nippleType => allBreasts.nippleType;
+		public NippleStatus nippleType => allBreasts.nippleStatus;
 
 
 		public bool unlockedDickNipples => allBreasts.unlockedDickNipples;
@@ -295,19 +299,19 @@ namespace CoC.Backend.BodyParts
 		public uint breastOrgasmCount => allBreasts.breastOrgasmCount;
 		public uint breastDryOrgasmCount => allBreasts.breastDryOrgasmCount;
 
+		public CupSize smallestMaleCupSize => perkData.MaleMinCup;
+		public CupSize smallestFemaleCupSize => perkData.FemaleMinCup;
+
+		public CupSize smallestPossibleCupSize => gender.HasFlag(Gender.FEMALE) ? smallestFemaleCupSize : smallestMaleCupSize;
+
 		#endregion
 
 		#region Public Nipple Related Computed Properties
-		public Nipples[] nipples => breastRows.Select(x => x.nipples).ToArray();
 
 		public int nippleCount => allBreasts.nippleCount;
 
-
-		public uint nippleFuckCount => allBreasts.nippleFuckCount;
-		public uint dickNippleSexCount => allBreasts.dickNippleSexCount;
-
-		public uint nippleOrgasmCount => allBreasts.nippleOrgasmCount;
-		public uint nippleDryOrgasmCount => allBreasts.nippleDryOrgasmCount;
+		public uint nippleFuckCount => allBreasts.totalFuckableNippleSexCount;
+		public uint dickNippleSexCount => allBreasts.totalDickNippleSexCount;
 
 		#endregion
 
@@ -333,6 +337,10 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region VaginaCollection Aliases
+
+		public ushort standardBonusVaginalCapacity => allVaginas.standardBonusCapacity;
+		public ushort perkBonusVaginalCapacity => allVaginas.perkBonusCapacity;
+		public ushort totalBonusVaginalCapacity => allVaginas.totalBonusCapacity;
 
 		#region Public Vagina Related Computed Values
 
@@ -536,7 +544,7 @@ namespace CoC.Backend.BodyParts
 
 			this.womb = womb ?? throw new ArgumentNullException(nameof(womb));
 
-			tattoos = new GenitalTattoo(AllTattoosShort, AllTattoosLong);
+			tattoos = new GenitalTattoo(this, AllTattoosShort, AllTattoosLong);
 		}
 
 		internal Genitals(Guid creatureID, Ass ass, BreastCreator[] breasts, CockCreator[] cocks, Balls balls, VaginaCreator[] vaginas, Womb womb, byte? femininity,
@@ -571,7 +579,7 @@ namespace CoC.Backend.BodyParts
 
 			this.womb = womb ?? throw new ArgumentNullException(nameof(womb));
 
-			tattoos = new GenitalTattoo(AllTattoosShort, AllTattoosLong);
+			tattoos = new GenitalTattoo(this, AllTattoosShort, AllTattoosLong);
 		}
 
 #warning make sure this is up to date when the genitals are finally finished.
@@ -690,14 +698,14 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Femininity
-		public byte feminize(byte amount)
+		public byte IncreaseFemininity(byte amount)
 		{
-			return femininity.feminize(amount);
+			return femininity.IncreaseFemininity(amount);
 		}
 
-		public byte masculinize(byte amount)
+		public byte IncreaseMasculinity(byte amount)
 		{
-			return femininity.masculinize(amount);
+			return femininity.InreaseMasculinity(amount);
 		}
 
 		public byte SetFemininity(byte newValue)
@@ -761,6 +769,13 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
+		#region Ass Aliases
+		//not really necessary, mostly redundant, but whatever.
+		public ushort IncreaseBonusAnalCapacity(ushort amountToAdd) => ass.IncreaseBonusCapacity(amountToAdd);
+
+		public ushort DecreaseBonusAnalCapacity(ushort amountToRemove) => ass.DecreaseBonusCapacity(amountToRemove);
+		#endregion
+
 		#region Add/Remove Breasts
 
 		public bool AddBreastRow() => allBreasts.AddBreastRow();
@@ -780,21 +795,28 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Update All Breasts Functions
-		public void NormalizeBreasts(bool untilEven = false) => allBreasts.NormalizeBreasts(untilEven);
+		public bool NormalizeBreasts(bool untilEven = false) => allBreasts.NormalizeBreasts(untilEven);
 
 
 
-		public void AnthropomorphizeBreasts(bool untilEven = false) => allBreasts.AnthropomorphizeBreasts(untilEven);
+		public bool AnthropomorphizeBreasts(bool untilEven = false) => allBreasts.AnthropomorphizeBreasts(untilEven);
 
 
 		#endregion
 
 		#region Nipple Mutators
-		public void SetQuadNipples(bool active) => allBreasts.SetQuadNipples(active);
+		public bool SetNippleStatus(NippleStatus desiredStatus, bool limitToCurrentLength = false, bool toggleDickNippleFlagIfNeccesary = false) =>
+			allBreasts.SetNippleStatus(desiredStatus, limitToCurrentLength, toggleDickNippleFlagIfNeccesary);
 
+		public bool SetQuadNipples(bool active) => allBreasts.SetQuadNipples(active);
 
-		public void SetBlackNipples(bool active) => allBreasts.SetBlackNipples(active);
+		public bool SetBlackNipples(bool active) => allBreasts.SetBlackNipples(active);
 
+		public bool UnlockDickNipples() => allBreasts.UnlockDickNipples();
+
+		public bool PreventDickNipples() => allBreasts.PreventDickNipples();
+
+		public bool SetDickNippleFlag(bool enabled) => allBreasts.SetDickNippleFlag(enabled);
 
 		#endregion
 
@@ -922,7 +944,7 @@ namespace CoC.Backend.BodyParts
 		#region Convert Ball Type
 		public bool ConvertToNormalBalls()
 		{
-			return balls.makeStandard();
+			return balls.MakeStandard();
 		}
 
 		public bool ConvertToUniball()
@@ -1008,6 +1030,69 @@ namespace CoC.Backend.BodyParts
 
 		#region Update Cock Type
 
+		public bool UpdateCock(Cock cock, CockType newType)
+		{
+			if (allCocks[cock.cockIndex] == cock)
+			{
+				return allCocks.UpdateCock(cock.cockIndex, newType);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public bool UpdateCockWithLength(Cock cock, CockType newType, float newLength)
+		{
+			if (allCocks[cock.cockIndex] == cock)
+			{
+				return allCocks.UpdateCockWithLength(cock.cockIndex, newType, newLength);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+
+		public bool UpdateCockWithLengthAndGirth(Cock cock, CockType newType, float newLength, float newGirth)
+		{
+			if (allCocks[cock.cockIndex] == cock)
+			{
+				return allCocks.UpdateCockWithLengthAndGirth(cock.cockIndex, newType, newLength, newGirth);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+
+		public bool UpdateCockWithKnot(Cock cock, CockType newType, float newKnotMultiplier)
+		{
+			if (allCocks[cock.cockIndex] == cock)
+			{
+				return allCocks.UpdateCockWithKnot(cock.cockIndex, newType, newKnotMultiplier);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+
+		public bool UpdateCockWithAll(Cock cock, CockType newType, float newLength, float newGirth, float newKnotMultiplier)
+		{
+			if (allCocks[cock.cockIndex] == cock)
+			{
+				return allCocks.UpdateCockWithAll(cock.cockIndex, newType, newLength, newGirth, newKnotMultiplier);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		public bool UpdateCock(int index, CockType newType) => allCocks.UpdateCock(index, newType);
 
 
@@ -1022,6 +1107,18 @@ namespace CoC.Backend.BodyParts
 
 		public bool UpdateCockWithAll(int index, CockType newType, float newLength, float newGirth, float newKnotMultiplier) => allCocks.UpdateCockWithAll(index, newType, newLength, newGirth, newKnotMultiplier);
 
+		public bool RestoreCock(Cock cock)
+		{
+			if (allCocks[cock.cockIndex] == cock)
+			{
+				return allCocks.RestoreCock(cock.cockIndex);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		public bool RestoreCock(int index) => allCocks.RestoreCock(index);
 
 		#endregion
 
@@ -1043,10 +1140,10 @@ namespace CoC.Backend.BodyParts
 		public bool AddVagina(VaginaType newVaginaType) => allVaginas.AddVagina(newVaginaType);
 
 
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, bool omnibus = false) => allVaginas.AddVagina(newVaginaType, clitLength, omnibus);
+		public bool AddVagina(VaginaType newVaginaType, float clitLength) => allVaginas.AddVagina(newVaginaType, clitLength);
 
 
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness, bool omnibus = false) => allVaginas.AddVagina(newVaginaType, clitLength, looseness, wetness, omnibus);
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness) => allVaginas.AddVagina(newVaginaType, clitLength, looseness, wetness);
 
 
 		public string AddedVaginaText() => allVaginas.AddedVaginaText();
@@ -1059,6 +1156,44 @@ namespace CoC.Backend.BodyParts
 
 
 		public int RemoveAllVaginas() => allVaginas.RemoveAllVaginas();
+
+		#endregion
+
+		#region Update Common Vagina Functions
+
+		public bool UpdateVagina(int index, VaginaType vaginaType) => allVaginas.UpdateVagina(index, vaginaType);
+
+		public bool RestoreVagina(int index) => allVaginas.RestoreVagina(index);
+
+		public bool UpdateVagina(Vagina vagina, VaginaType vaginaType)
+		{
+			if (allVaginas[vagina.vaginaIndex] == vagina)
+			{
+				return allVaginas.UpdateVagina(vagina.vaginaIndex, vaginaType);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public bool RestoreVagina(Vagina vagina)
+		{
+			if (allVaginas[vagina.vaginaIndex] == vagina)
+			{
+				return allVaginas.RestoreVagina(vagina.vaginaIndex);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public ushort IncreaseBonusVaginalCapacity(ushort amount) => allVaginas.IncreaseBonusCapacity(amount);
+
+		public ushort DecreaseBonusVaginalCapacity(ushort amount) => allVaginas.DecreaseBonusCapacity(amount);
+
+		public int SetBonusVaginalCapacity(ushort targetCapacity) => allVaginas.SetBonusCapacity(targetCapacity);
 
 		#endregion
 
@@ -1252,11 +1387,6 @@ namespace CoC.Backend.BodyParts
 			allBreasts.HandleNippleDickPenetrate(breastIndex, reachOrgasm);
 		}
 
-		internal void HandleNippleOrgasmGeneric(int breastIndex, bool dryOrgasm)
-		{
-			allBreasts.HandleNippleOrgasmGeneric(breastIndex, dryOrgasm);
-		}
-
 		#endregion
 
 		#region Lactation Sex Related Functions
@@ -1356,35 +1486,7 @@ namespace CoC.Backend.BodyParts
 		public Breasts SmallestBreast() => allBreasts.SmallestBreast();
 
 
-		public Breasts SmallestBreastByNippleLength() => allBreasts.SmallestBreastByNippleLength();
-
-
-		public Breasts LargestBreastByNippleLength() => allBreasts.LargestBreastByNippleLength();
-
-
 		public BreastData AverageBreasts() => allBreasts.AverageBreasts();
-
-
-		#endregion
-
-		#region Nipple Aggregate Functions
-
-		public float LargestNippleSize() => allBreasts.LargestNippleSize();
-
-
-		public Nipples LargestNipples() => allBreasts.LargestNipples();
-
-
-		public float SmallestNippleSize() => allBreasts.SmallestNippleSize();
-
-
-		public Nipples SmallestNipples() => allBreasts.SmallestNipples();
-
-
-		public float AverageNippleSize() => allBreasts.AverageNippleSize();
-
-
-		public NippleData AverageNipple() => allBreasts.AverageNipple();
 
 
 		#endregion
@@ -1484,7 +1586,7 @@ namespace CoC.Backend.BodyParts
 		public VaginalLooseness SmallestVaginalLooseness() => allVaginas.SmallestVaginalLooseness();
 
 
-		public Vagina SmallestVaginalByLooseness() => allVaginas.SmallestVaginalByLooseness();
+		public Vagina TightestVagina() => allVaginas.SmallestVaginalByLooseness();
 
 
 		public VaginalLooseness AverageVaginalLooseness() => allVaginas.AverageVaginalLooseness();
@@ -1540,7 +1642,6 @@ namespace CoC.Backend.BodyParts
 
 		public readonly Gender gender;
 
-		public IEnumerable<NippleData> nipples => breasts.Select(x => x.nipples);
 		public IEnumerable<ClitData> clits => vaginas.Select(x => x.clit);
 
 		public readonly FemininityData femininity;
@@ -1661,35 +1762,7 @@ namespace CoC.Backend.BodyParts
 		public BreastData SmallestBreast() => allBreastData.SmallestBreast();
 
 
-		public BreastData SmallestBreastByNippleLength() => allBreastData.SmallestBreastByNippleLength();
-
-
-		public BreastData LargestBreastByNippleLength() => allBreastData.LargestBreastByNippleLength();
-
-
 		public BreastData AverageBreasts() => allBreastData.AverageBreasts();
-
-
-		#endregion
-
-		#region Nipple Aggregate Functions
-
-		public float LargestNippleSize() => allBreastData.LargestNippleSize();
-
-
-		public NippleData LargestNipples() => allBreastData.LargestNipples();
-
-
-		public float SmallestNippleSize() => allBreastData.SmallestNippleSize();
-
-
-		public NippleData SmallestNipples() => allBreastData.SmallestNipples();
-
-
-		public float AverageNippleSize() => allBreastData.AverageNippleSize();
-
-
-		public NippleData AverageNipple() => allBreastData.AverageNipple();
 
 
 		#endregion

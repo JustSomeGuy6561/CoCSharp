@@ -370,7 +370,7 @@ namespace CoC.Backend.Creatures
 			return intelligenceTrue - oldValue;
 		}
 
-		public float DecreaseStrengthBy(float percent, bool ignorePerks = true)
+		public float DecreaseStrengthByPercent(float percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = strengthTrue;
@@ -398,7 +398,7 @@ namespace CoC.Backend.Creatures
 			return oldValue - strengthTrue;
 		}
 
-		public float DecreaseToughnessBy(float percent, bool ignorePerks = true)
+		public float DecreaseToughnessByPercent(float percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
 			float oldValue = toughnessTrue;

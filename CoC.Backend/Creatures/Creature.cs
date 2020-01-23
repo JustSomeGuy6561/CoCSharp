@@ -3,11 +3,9 @@
 //Author: JustSomeGuy
 //2/20/2019, 4:13 PM
 using CoC.Backend.BodyParts;
-using CoC.Backend.BodyParts.BaseClasses;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Inventory;
 using CoC.Backend.Items;
@@ -29,9 +27,6 @@ namespace CoC.Backend.Creatures
 {
 	//The master class for any creature. It's responsible for exposing any internal functions related to all of its body parts, and providing common functionality that links them all
 	//together.
-
-
-
 	public abstract class Creature : ITimeActiveListenerSimple, ITimeDayMultiListenerSimple, ITimeLazyListener, IInteractiveStorage<CapacityItem>
 	{
 		public const byte DEFAULT_LIBIDO = 0;
@@ -198,7 +193,9 @@ namespace CoC.Backend.Creatures
 		public Balls balls => genitals.balls;
 
 		public Clit[] clits => genitals.clits;
-		public Nipples[] nipples => genitals.nipples;
+		public Femininity femininity => genitals.femininity;
+
+		public Fertility fertility => genitals.fertility;
 
 		//aliases for arms/legs
 		public Hands hands => arms.hands;
@@ -257,6 +254,25 @@ namespace CoC.Backend.Creatures
 		public bool wearingLowerGarment => lowerGarment != null;
 		public bool wearingAnything => armor != null || upperGarment != null || lowerGarment != null;
 
+		public bool HasPerk<T>() where T : PerkBase
+		{
+			return perks.HasPerk<T>();
+		}
+
+		public T GetPerk<T>() where T : PerkBase
+		{
+			return perks.GetPerk<T>();
+		}
+
+		public bool HasStatusEffect<T>() where T : StatusEffectBase
+		{
+			return statusEffects.HasStatusEffect<T>();
+		}
+
+		public T GetStatusEffect<T>() where T : StatusEffectBase
+		{
+			return statusEffects.GetStatusEffect<T>();
+		}
 
 		//public Weapon weapon { get; protected set; }
 		//public Weapon weapon { get; protected set; }
@@ -1142,14 +1158,14 @@ namespace CoC.Backend.Creatures
 			return genitals.AddVagina(newVaginaType);
 		}
 
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, bool omnibus = false)
+		public bool AddVagina(VaginaType newVaginaType, float clitLength)
 		{
-			return genitals.AddVagina(newVaginaType, clitLength, omnibus);
+			return genitals.AddVagina(newVaginaType, clitLength);
 		}
 
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness, bool omnibus = false)
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness)
 		{
-			return genitals.AddVagina(newVaginaType, clitLength, looseness, wetness, omnibus);
+			return genitals.AddVagina(newVaginaType, clitLength, looseness, wetness);
 		}
 
 		public int RemoveVagina(int count = 1)
@@ -1385,7 +1401,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				onUseItemReturn(false, whyNot, item);
+				onUseItemReturn(false, whyNot, item.Author(), item);
 			}
 		}
 
@@ -1396,11 +1412,11 @@ namespace CoC.Backend.Creatures
 
 			if (inventory[index].isEmpty)
 			{
-				onUseItemReturn(false, NoItemInSlotErrorText(), null);
+				onUseItemReturn(false, NoItemInSlotErrorText(), string.Empty, null);
 			}
 			else if (!inventory[index].item.CanUse(this, out string whyNot))
 			{
-				onUseItemReturn(false, whyNot, null);
+				onUseItemReturn(false, whyNot, inventory[index].item.Author(), null);
 			}
 			else
 			{
@@ -1417,7 +1433,7 @@ namespace CoC.Backend.Creatures
 			}
 			else if (!armor.CanUse(this, out string whyNot))
 			{
-				postEquipCallback(false, whyNot, armor);
+				postEquipCallback(false, whyNot, armor.Author(), armor);
 			}
 			else
 			{
@@ -1429,15 +1445,15 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postEquipCallback(false, NoItemInSlotErrorText(), null);
+				postEquipCallback(false, NoItemInSlotErrorText(), string.Empty, null);
 			}
 			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
-				postEquipCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
 			}
 			else if (!armorItem.CanUse(this, out string whyNot))
 			{
-				postEquipCallback(false, whyNot, null);
+				postEquipCallback(false, whyNot, armorItem.Author(), null);
 			}
 			else
 			{
@@ -1458,11 +1474,11 @@ namespace CoC.Backend.Creatures
 			if (armor is null)
 			{
 				var item = RemoveArmorManual(out string removeText);
-				postReplaceArmorCallback(true, removeText, item);
+				postReplaceArmorCallback(true, removeText, item.Author(), item);
 			}
-			if (!armor.CanUse(this, out string whyNot))
+			else if (!armor.CanUse(this, out string whyNot))
 			{
-				postReplaceArmorCallback(false, whyNot, armor);
+				postReplaceArmorCallback(false, whyNot, armor.Author(), armor);
 			}
 			else
 			{
@@ -1474,15 +1490,15 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postReplaceArmorCallback(false, NoItemInSlotErrorText(), null);
+				postReplaceArmorCallback(false, NoItemInSlotErrorText(), string.Empty, null);
 			}
 			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
-				postReplaceArmorCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), null);
+				postReplaceArmorCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
 			}
 			else if (!armorItem.CanUse(this, out string whyNot))
 			{
-				postReplaceArmorCallback(false, whyNot, null);
+				postReplaceArmorCallback(false, whyNot, armorItem.Author(), null);
 			}
 			else
 			{
@@ -1499,7 +1515,7 @@ namespace CoC.Backend.Creatures
 			}
 			else if (!upperGarment.CanUse(this, out string whyNot))
 			{
-				postEquipCallback(false, whyNot, upperGarment);
+				postEquipCallback(false, whyNot, upperGarment.Author(), upperGarment);
 			}
 			else
 			{
@@ -1511,15 +1527,15 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postEquipCallback(false, NoItemInSlotErrorText(), null);
+				postEquipCallback(false, NoItemInSlotErrorText(), string.Empty, null);
 			}
 			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
-				postEquipCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), string.Empty, null);
 			}
 			else if (!upperGarmentItem.CanUse(this, out string whyNot))
 			{
-				postEquipCallback(false, whyNot, null);
+				postEquipCallback(false, whyNot, upperGarmentItem.Author(), null);
 			}
 			else
 			{
@@ -1540,11 +1556,11 @@ namespace CoC.Backend.Creatures
 			if (upperGarment is null)
 			{
 				var item = RemoveUpperGarmentManual(out string removeText);
-				postReplaceUpperGarmentCallback(true, removeText, item);
+				postReplaceUpperGarmentCallback(true, removeText, item.Author(), item);
 			}
-			if (!upperGarment.CanUse(this, out string whyNot))
+			else if (!upperGarment.CanUse(this, out string whyNot))
 			{
-				postReplaceUpperGarmentCallback(false, whyNot, upperGarment);
+				postReplaceUpperGarmentCallback(false, whyNot, upperGarment.Author(), upperGarment);
 			}
 			else
 			{
@@ -1556,15 +1572,15 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postReplaceUpperGarmentCallback(false, NoItemInSlotErrorText(), null);
+				postReplaceUpperGarmentCallback(false, NoItemInSlotErrorText(), "", null);
 			}
 			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
-				postReplaceUpperGarmentCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), null);
+				postReplaceUpperGarmentCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), "", null);
 			}
 			else if (!upperGarmentItem.CanUse(this, out string whyNot))
 			{
-				postReplaceUpperGarmentCallback(false, whyNot, null);
+				postReplaceUpperGarmentCallback(false, whyNot, upperGarmentItem.Author(), null);
 			}
 			else
 			{
@@ -1581,7 +1597,7 @@ namespace CoC.Backend.Creatures
 			}
 			else if (!lowerGarment.CanUse(this, out string whyNot))
 			{
-				postEquipCallback(false, whyNot, lowerGarment);
+				postEquipCallback(false, whyNot, lowerGarment.Author(), lowerGarment);
 			}
 			else
 			{
@@ -1593,15 +1609,15 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postEquipCallback(false, NoItemInSlotErrorText(), null);
+				postEquipCallback(false, NoItemInSlotErrorText(), "", null);
 			}
 			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
-				postEquipCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
 			}
 			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
 			{
-				postEquipCallback(false, whyNot, null);
+				postEquipCallback(false, whyNot, lowerGarmentItem.Author(), null);
 			}
 			else
 			{
@@ -1622,11 +1638,11 @@ namespace CoC.Backend.Creatures
 			if (lowerGarment is null)
 			{
 				var item = RemoveLowerGarmentManual(out string removeText);
-				postReplaceLowerGarmentCallback(true, removeText, item);
+				postReplaceLowerGarmentCallback(true, removeText, "", item);
 			}
 			if (!lowerGarment.CanUse(this, out string whyNot))
 			{
-				postReplaceLowerGarmentCallback(false, whyNot, lowerGarment);
+				postReplaceLowerGarmentCallback(false, whyNot, lowerGarment.Author(), lowerGarment);
 			}
 			else
 			{
@@ -1638,15 +1654,15 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postReplaceLowerGarmentCallback(false, NoItemInSlotErrorText(), null);
+				postReplaceLowerGarmentCallback(false, NoItemInSlotErrorText(), "", null);
 			}
 			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
-				postReplaceLowerGarmentCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), null);
+				postReplaceLowerGarmentCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
 			}
 			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
 			{
-				postReplaceLowerGarmentCallback(false, whyNot, null);
+				postReplaceLowerGarmentCallback(false, whyNot, lowerGarmentItem.Author(), null);
 			}
 			else
 			{
@@ -1943,15 +1959,6 @@ namespace CoC.Backend.Creatures
 		{
 			genitals.HandleNipplePenetration(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm);
 			if (reachOrgasm && countTowardOrgasmTotal)
-			{
-				Orgasmed();
-			}
-		}
-
-		public void HaveGenericNippleOrgasm(int breastIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
-		{
-			genitals.HandleNippleOrgasmGeneric(breastIndex, dryOrgasm);
-			if (countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
@@ -2269,7 +2276,7 @@ namespace CoC.Backend.Creatures
 		#region Ears
 
 
-		public bool UpdateEar(EarType earType)
+		public bool UpdateEars(EarType earType)
 		{
 			return ears.UpdateType(earType);
 		}
@@ -2352,10 +2359,10 @@ namespace CoC.Backend.Creatures
 		}
 
 		//may want to create nicer versions of this, idk. i was getting tired of dealing with that shit lol.
-		public bool UpdateHair(HairType newType, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null,
+		public bool UpdateHair(HairType newType, bool? setHairGrowthFlag = null, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null,
 			float? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
 		{
-			return hair.UpdateType(newType, newHairColor, newHighlightColor, newHairLength, newStyle, ignoreCanLengthenOrCut);
+			return hair.UpdateType(newType, setHairGrowthFlag, newHairColor, newHighlightColor, newHairLength, newStyle, ignoreCanLengthenOrCut);
 		}
 
 		public bool RestoreHair()
@@ -2377,10 +2384,12 @@ namespace CoC.Backend.Creatures
 			return horns.UpdateType(hornType);
 		}
 
-		public bool UpdateHornsAndStrengthenTransform(HornType newType, byte byAmount)
+		public bool UpdateHornsAndStrengthenTransform(HornType newType, byte byAmount, bool uniform = false)
 		{
-			return horns.UpdateAndStrengthenHorns(newType, byAmount);
+			return horns.UpdateAndStrengthenHorns(newType, byAmount, uniform);
 		}
+
+		public bool UpdateOrStrengthenHorns(HornType newType, bool uniform = false) => horns.UpdateOrStrengthenHornType(newType, uniform);
 
 		public bool RestoreHorns()
 		{

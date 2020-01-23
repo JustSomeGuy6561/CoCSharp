@@ -172,10 +172,10 @@ namespace CoC.Frontend.Inventory
 
 		private void AttemptToUseItem()
 		{
-			item.AttemptToUseSafe(CreatureStore.currentControlledCharacter, (x, y, z) => PostItemUseAttempt(x, y, z));
+			item.AttemptToUseSafe(CreatureStore.currentControlledCharacter, (w, x, y, z) => PostItemUseAttempt(w, x, y, z));
 		}
 
-		private void PostItemUseAttempt(bool succeeded, string whatHappened, T newItem)
+		private void PostItemUseAttempt(bool succeeded, string whatHappened, string author, T newItem)
 		{
 			display.ClearOutput();
 
@@ -317,10 +317,10 @@ namespace CoC.Frontend.Inventory
 
 		private void AttemptToUseItem()
 		{
-			item.AttemptToUse(CreatureStore.currentControlledCharacter, (x, y, z) => PostItemUseAttempt(x, y, z));
+			item.AttemptToUse(CreatureStore.currentControlledCharacter, (w, x, y, z) => PostItemUseAttempt(w, x, y, z));
 		}
 
-		private void PostItemUseAttempt(bool succeeded, string whatHappened, CapacityItem newItem)
+		private void PostItemUseAttempt(bool succeeded, string whatHappened, string author, CapacityItem newItem)
 		{
 			display.ClearOutput();
 

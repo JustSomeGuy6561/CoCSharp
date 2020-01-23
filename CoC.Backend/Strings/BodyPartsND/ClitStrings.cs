@@ -112,7 +112,7 @@ namespace CoC.Backend.BodyParts
 		float IClit.length => length;
 
 
-		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => clitPiercings.AsReadOnlyData();
+		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => piercings.AsReadOnlyData();
 
 		Guid IClit.creatureID => creatureID;
 

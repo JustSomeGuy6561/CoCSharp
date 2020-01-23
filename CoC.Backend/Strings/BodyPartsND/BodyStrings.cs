@@ -93,7 +93,7 @@ namespace CoC.Backend.BodyParts
 	//	return "bottom of your belly button";
 	//}
 
-	public partial class BodyTattooLocation
+	public partial class CoreTattooLocation
 	{
 		private static string LeftShoulderbladeButton()
 		{
@@ -169,6 +169,30 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
+	public partial class FullBodyTattooLocation
+	{
+		private static string MainLocation()
+		{
+			throw new NotImplementedException();
+		}
+
+		private static string MainButton()
+		{
+			throw new NotImplementedException();
+		}
+
+
+		private static string AlternateLocation()
+		{
+			throw new NotImplementedException();
+		}
+
+		private static string AlternateButton()
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 	public partial class Body
 	{
 		public static string Name()
@@ -197,12 +221,22 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosShort(PlayerBase player)
+		private string AllCoreTattoosShort(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosLong(PlayerBase player)
+		private string AllCoreTattoosLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string FullBodyTattoosShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string FullBodyTattoosLong(PlayerBase player)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

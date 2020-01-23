@@ -15,12 +15,33 @@ namespace CoC.Frontend.Items.Consumables
 	public partial class CaninePepperGeneric : ConsumableBase
 	{
 		protected readonly CanineModifiers modifiers;
-		public CaninePepperGeneric(CanineModifiers canineModifiers, SimpleDescriptor ItemName, SimpleDescriptor fullName,
-			SimpleDescriptor shortDescription, SimpleDescriptor appearance, int value = 10) : base(ItemName, fullName, shortDescription, appearance)
+		private readonly SimpleDescriptor abbreviated;
+		private readonly SimpleDescriptor name;
+		private readonly ItemDescriptor description;
+		private readonly SimpleDescriptor appearText;
+
+		public CaninePepperGeneric(CanineModifiers canineModifiers, SimpleDescriptor abbreviatedName, SimpleDescriptor itemName, ItemDescriptor itemDescription,
+			SimpleDescriptor appearance, int value = 10) : base()
 		{
 			modifiers = canineModifiers;
 			monetaryValue = value;
+
+			this.abbreviated = abbreviatedName ?? throw new ArgumentNullException(nameof(abbreviatedName));
+			this.name = itemName ?? throw new ArgumentNullException(nameof(itemName));
+			this.description = itemDescription ?? throw new ArgumentNullException(nameof(itemDescription));
+			this.appearText = appearance ?? throw new ArgumentNullException(nameof(appearance));
 		}
+
+
+
+		public override string AbbreviatedName() => abbreviated();
+
+		public override string ItemName() => name();
+
+		public override string ItemDescription(byte count = 1, bool displayCount = false) => description(count, displayCount);
+
+		public override string Appearance() => appearText();
+
 
 		public override bool countsAsLiquid => false;
 

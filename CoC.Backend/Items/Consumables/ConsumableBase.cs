@@ -14,8 +14,7 @@ namespace CoC.Backend.Items.Consumables
 	{
 		protected const int DEFAULT_VALUE = 6;
 
-		protected ConsumableBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
-			: base(abbreviate, itemName, shortDesc, appearance)
+		protected ConsumableBase() : base()
 		{ }
 
 		//does this consumable count as liquid for slimes?
@@ -62,7 +61,7 @@ namespace CoC.Backend.Items.Consumables
 			}
 			else
 			{
-				postItemUseCallback(result, consumeResults, item);
+				postItemUseCallback(result, consumeResults, Author(), item);
 			}
 		}
 

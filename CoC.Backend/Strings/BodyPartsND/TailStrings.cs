@@ -25,6 +25,8 @@ namespace CoC.Backend.BodyParts
 
 	public partial class Tail
 	{
+#warning make sure to add all the ovipositor checks to each one of these for restore, transform, and player. they're all handled here.
+
 		private string CurrentTailTypeDoesntSupportPiercings()
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -107,7 +109,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private static string HorsePlayerStr(Tail tail, PlayerBase player)
 		{
-			return "A long " + tail.epidermis.JustColor() + " horsetail hangs from your butt, smooth and shiny.";
+			return "A long " + tail.epidermis.JustColor() + " horsetail hangs from your butt, smooth and shiny. "; //+ tail.ovipositor.PlayerDescription();
 		}
 		private static string HorseTransformStr(TailData previousTailData, PlayerBase player, bool describeOvipositorChangeIfApplicable = true)
 		{

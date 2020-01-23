@@ -7,8 +7,7 @@ namespace CoC.Backend.Items.Wearables.LowerGarment
 {
 	public abstract class LowerGarmentBase : WearableItemBase<LowerGarmentBase>
 	{
-		protected LowerGarmentBase(SimpleDescriptor abbreviate, SimpleDescriptor itemName, SimpleDescriptor shortDesc, SimpleDescriptor appearance)
-			: base(abbreviate, itemName, shortDesc, appearance)
+		protected LowerGarmentBase() : base()
 		{}
 
 		protected override LowerGarmentBase EquipItem(Creature wearer, out string equipOutput)

@@ -32,9 +32,24 @@ namespace CoC.Backend.BodyParts
 		private uint missingClitPenetrateCount;
 		#endregion
 
+		public readonly ReadOnlyCollection<Vagina> vaginas;
+
+		public Vagina this[int index]
+		{
+			get => _vaginas[index];
+		}
+
+		//Bonus capacity is shared between all vaginas. however, some may have different capacities than others due to their looseness/wetness values, and bonuses by vagina type.
+		//IMO it'd be nice if those were shared as well, but i suppose it doesn't make sense for one hole that sees a lot of action to be as tight as the other that does not.
+
+		//bonus capacity, for all vaginas, regardless of type or other internal values. this is the
+		public ushort standardBonusCapacity { get; private set; }
+		public ushort perkBonusCapacity => perkData.perkBonusVaginalCapacity;
+
+		public ushort totalBonusCapacity => standardBonusCapacity.add(perkBonusCapacity);
+
 		#region Public Vagina Related Computed Values
 
-		public readonly ReadOnlyCollection<Vagina> vaginas;
 
 		public int numVaginas => _vaginas.Count;
 
@@ -132,13 +147,13 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, perkData.GetVaginaPerkWrapper(), newVaginaType));
+			_vaginas.Add(new Vagina(creatureID, newVaginaType));
 
 			source.CheckGenderChanged(oldGender);
 			return true;
 		}
 
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, bool omnibus = false)
+		public bool AddVagina(VaginaType newVaginaType, float clitLength)
 		{
 			if (numVaginas >= MAX_VAGINAS)
 			{
@@ -146,13 +161,13 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, perkData.GetVaginaPerkWrapper(), newVaginaType, clitLength, omnibus: omnibus));
+			_vaginas.Add(new Vagina(creatureID, newVaginaType, clitLength));
 
 			source.CheckGenderChanged(oldGender);
 			return true;
 		}
 
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness, bool omnibus = false)
+		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness)
 		{
 			if (numVaginas >= MAX_VAGINAS)
 			{
@@ -160,7 +175,7 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, perkData.GetVaginaPerkWrapper(), newVaginaType, clitLength, looseness, wetness, true, omnibus));
+			_vaginas.Add(new Vagina(creatureID, newVaginaType, clitLength, looseness, wetness, true));
 
 			source.CheckGenderChanged(oldGender);
 			return true;
@@ -172,7 +187,7 @@ namespace CoC.Backend.BodyParts
 
 			var lastVagina = _vaginas[_vaginas.Count - 1];
 
-			return lastVagina.type.GrewVaginaText(player, (byte)(_vaginas.Count -1));
+			return lastVagina.type.GrewVaginaText(player, (byte)(_vaginas.Count - 1));
 		}
 
 		public int RemoveVagina(int count = 1)
@@ -187,12 +202,12 @@ namespace CoC.Backend.BodyParts
 
 			if (count >= numVaginas)
 			{
-				missingVaginaSexCount.addIn((uint)_vaginas.Sum(x=>x.sexCount));
-				missingVaginaOrgasmCount.addIn((uint)_vaginas.Sum(x=>x.orgasmCount));
-				missingVaginaDryOrgasmCount.addIn((uint)_vaginas.Sum(x=>x.dryOrgasmCount));
-				missingVaginaPenetratedCount.addIn((uint)_vaginas.Sum(x=>x.totalPenetrationCount));
+				missingVaginaSexCount.addIn((uint)_vaginas.Sum(x => x.sexCount));
+				missingVaginaOrgasmCount.addIn((uint)_vaginas.Sum(x => x.orgasmCount));
+				missingVaginaDryOrgasmCount.addIn((uint)_vaginas.Sum(x => x.dryOrgasmCount));
+				missingVaginaPenetratedCount.addIn((uint)_vaginas.Sum(x => x.totalPenetrationCount));
 
-				missingClitPenetrateCount.addIn((uint)_vaginas.Sum(x=>x.clit.penetrateCount));
+				missingClitPenetrateCount.addIn((uint)_vaginas.Sum(x => x.clit.penetrateCount));
 
 				_vaginas.Clear();
 
@@ -202,11 +217,11 @@ namespace CoC.Backend.BodyParts
 			else
 			{
 				missingVaginaSexCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.sexCount));
-				missingVaginaOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.orgasmCount));
-				missingVaginaDryOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.dryOrgasmCount));
-				missingVaginaPenetratedCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.totalPenetrationCount));
+				missingVaginaOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.orgasmCount));
+				missingVaginaDryOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.dryOrgasmCount));
+				missingVaginaPenetratedCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.totalPenetrationCount));
 
-				missingClitPenetrateCount.addIn((uint)_vaginas.Skip(numVaginas-count).Sum(x => x.clit.penetrateCount));
+				missingClitPenetrateCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.clit.penetrateCount));
 				_vaginas.RemoveRange(numVaginas - count, count);
 				//
 				source.CheckGenderChanged(oldGender);
@@ -224,6 +239,47 @@ namespace CoC.Backend.BodyParts
 		{
 			return RemoveVagina(numVaginas);
 		}
+		#endregion
+
+		#region Updates
+
+		public bool UpdateVagina(int index, VaginaType vaginaType)
+		{
+			return vaginas[index].UpdateType(vaginaType);
+		}
+
+		public bool RestoreVagina(int index)
+		{
+			return vaginas[index].Restore();
+		}
+		#endregion
+
+		#region Update Common Vagina Data
+
+		//only affects standard capacity. perks use their own special values.
+		public ushort IncreaseBonusCapacity(ushort amount)
+		{
+			var oldCap = standardBonusCapacity;
+			standardBonusCapacity = standardBonusCapacity.add(amount);
+			return standardBonusCapacity.subtract(oldCap);
+		}
+
+		public ushort DecreaseBonusCapacity(ushort amount)
+		{
+			var oldCap = standardBonusCapacity;
+			standardBonusCapacity = standardBonusCapacity.subtract(amount);
+			return oldCap.subtract(standardBonusCapacity);
+		}
+
+		public int SetBonusCapacity(ushort targetCapacity)
+		{
+			var oldCap = standardBonusCapacity;
+			standardBonusCapacity = targetCapacity;
+
+			return standardBonusCapacity - oldCap;
+		}
+
+
 		#endregion
 
 		#region Vagina Related Aggregate Functions
@@ -387,7 +443,7 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 
-		#region Vagina Text
+		#region Vagina Common Text
 		public string AllVaginasShortDescription() => VaginaCollectionStrings.AllVaginasShortDescription(this);
 
 		public string AllVaginasLongDescription() => VaginaCollectionStrings.AllVaginasLongDescription(this);
@@ -413,10 +469,27 @@ namespace CoC.Backend.BodyParts
 		public string EachVaginaOrVaginasShort(string pronoun, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, pronoun, out isPlural);
 
 		#endregion
+
+		#region Vagina Collection Exclusive Text
+
+		internal string AllVaginasPlayerDescription()
+		{
+			if (creature is PlayerBase player)
+			{
+				return AllVaginasPlayerText(player);
+			}
+			else
+			{
+				return "";
+			}
+		}
+
+		#endregion
+
 		internal void Initialize(VaginaCreator[] vaginaCreators)
 		{
-#warning implement me.
-			throw new NotImplementedException();
+			_vaginas.AddRange(vaginaCreators.Where(x => x != null).Take(MAX_VAGINAS).Select(x => new Vagina(creatureID, x.type, x.validClitLength, x.looseness, x.wetness, x.virgin,
+				x.labiaPiercings, x.clitPiercings)));
 		}
 	}
 
@@ -425,6 +498,11 @@ namespace CoC.Backend.BodyParts
 		//public readonly bool hasClitCock;
 
 		public ReadOnlyCollection<VaginaData> vaginas;
+
+		public VaginaData this[int index]
+		{
+			get => vaginas[index];
+		}
 
 		public int numVaginas => vaginas.Count;
 

@@ -17,6 +17,10 @@ namespace CoC.Frontend.Creatures
 		private readonly ExtendedPerkModifiers extendedPerkData;
 		internal int TotalTransformCount;
 		internal bool hasDoggoWarning;
+		internal bool hasHorseWarning;
+		internal int horseWarningCount = 0;
+		internal bool hasFerretWarning;
+		internal bool hasFoxWarning;
 
 		public ExtendedCreatureData(Creature creature, ExtendedPerkModifiers extraPerkData)
 		{

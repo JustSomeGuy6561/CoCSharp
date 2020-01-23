@@ -706,7 +706,7 @@ namespace CoC.Frontend.Races
 			{
 				minoCounter++;
 			}
-			if (source.genitals.quadNipples && minoCounter > 0)
+			if (source.genitals.hasQuadNipples && minoCounter > 0)
 			{
 				minoCounter++;
 			}
@@ -1053,7 +1053,7 @@ namespace CoC.Frontend.Races
 	public class Ferret : Species
 	{
 
-		public HairFurColors[] availableHair => new HairFurColors[] { HairFurColors.WHITE, HairFurColors.BROWN, HairFurColors.CARAMEL };
+		public HairFurColors[] availableHairColors => new HairFurColors[] { HairFurColors.WHITE, HairFurColors.BROWN, HairFurColors.CARAMEL };
 
 		private readonly Pair<FurColor, FurColor>[] furData = new Pair<FurColor, FurColor>[]
 		{
@@ -1066,6 +1066,21 @@ namespace CoC.Frontend.Races
 			new Pair<FurColor, FurColor>(new FurColor(HairFurColors.WHITE), new FurColor(HairFurColors.WHITE)),
 			new Pair<FurColor, FurColor>(new FurColor(HairFurColors.SANDY_BROWN), new FurColor(HairFurColors.BROWN)),
 		};
+
+		public void GetFurColorsFrom(FurColor currentPrimary, out FurColor primary, out FurColor underbody)
+		{
+			if (furData.Any(x => x.first.Equals(currentPrimary)))
+			{
+				primary = currentPrimary;
+
+				underbody = Utils.RandomChoice(furData.Where(x => x.first.Equals(currentPrimary)).ToArray()).second;
+			}
+			else
+			{
+				GetRandomFurColor(out primary, out underbody);
+			}
+		}
+
 
 		public void GetRandomFurColor(out FurColor primary, out FurColor underbody)
 		{
@@ -1157,6 +1172,12 @@ namespace CoC.Frontend.Races
 		public FurColor defaultFacialFur => new FurColor(HairFurColors.ORANGE, HairFurColors.WHITE, FurMulticolorPattern.NO_PATTERN);
 
 		public FurColor defaultTailFur => new FurColor(HairFurColors.ORANGE, HairFurColors.WHITE, FurMulticolorPattern.STRIPED);
+
+		public HairFurColors[] AvailableHairColors => new HairFurColors[]
+		{
+			HairFurColors.GOLDEN_BLONDE, HairFurColors.RED_ORANGE, HairFurColors.SILVER, HairFurColors.WHITE, HairFurColors.RED, HairFurColors.BLACK
+		};
+
 		internal Fox() : base(FoxStr) { }
 
 		public override byte Score(Creature source)
@@ -2361,7 +2382,7 @@ namespace CoC.Frontend.Races
 		public override byte Score(Creature source)
 		{
 			int counter = 0;
-			if (source.genitals.blackNipples)
+			if (source.genitals.hasBlackNipples)
 			{
 				counter++;
 			}

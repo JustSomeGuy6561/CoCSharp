@@ -13,12 +13,14 @@ using System.Text;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public abstract partial class EggBase : ConsumableBase
+#warning Make sure white eggs disable dick nipple flag. Include a new egg (i'm thinking yellow, but color irrelevant) that enables dick nipples, and large causes the creature to get them
+
+	public abstract partial class EggBase : ConsumableBase, IEquatable<EggBase>
 	{
-
-
 		private static readonly List<Func<bool, EggBase>> members;
-		public static string[] EggColorChoices => members.Select(x => x(false).colorStr()).ToArray();
+		public static string[] EggColorChoices => members.Select(x => x(false).Color()).ToArray();
+
+		public static EggBase RandomEgg(bool large) => Utils.RandomChoice(members.ToArray()).Invoke(large);
 
 		static EggBase()
 		{
@@ -32,25 +34,17 @@ namespace CoC.Frontend.Items.Consumables
 		}
 
 
-		protected readonly SimpleDescriptor colorStr;
 		public bool isLarge { get; private set; }
 
-		protected EggBase(SimpleDescriptor colorText, bool large, DescriptorWithArg<bool> abbName, DescriptorWithArg<bool> name, DescriptorWithArg<bool> descText,
-			DescriptorWithArg<bool> appearanceText) : base(checkValid(abbName, large, nameof(abbName)), checkValid(name, large, nameof(name)),
-				checkValid(descText, large, nameof(descText)), checkValid(appearanceText, large, nameof(appearanceText)))
+		protected EggBase(bool large) : base()
 		{
-			colorStr = colorText;
 			isLarge = large;
 		}
 
-		private static SimpleDescriptor checkValid(DescriptorWithArg<bool> fn, bool value, string name)
-		{
-			if (fn is null) throw new ArgumentNullException(name);
-			else return () => fn(value);
-		}
+		public abstract string Color();
 
-		public virtual SimpleDescriptor shortDesc => ShortDescription;
+		public abstract bool Equals(EggBase other);
 
-		public static EggBase RandomEgg(bool large) => Utils.RandomChoice(members.ToArray()).Invoke(large);
+		public abstract bool EqualsIgnoreSize(EggBase other);
 	}
 }

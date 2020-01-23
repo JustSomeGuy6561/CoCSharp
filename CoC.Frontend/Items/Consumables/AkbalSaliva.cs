@@ -1,6 +1,7 @@
 ﻿using CoC.Backend;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items.Consumables;
+using CoC.Backend.Tools;
 using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
@@ -10,27 +11,31 @@ namespace CoC.Frontend.Items.Consumables
 {
 	public sealed class AkbalSaliva : ConsumableBase
 	{
-		public AkbalSaliva() : base(Short, Name, Full, Desc)
+		public AkbalSaliva() : base()
 		{
 
 		}
 
-		private static string Short()
+		public override string AbbreviatedName()
 		{
 			return "AkbalSlv";
 		}
 
-		private static string Name()
+		public override string ItemName()
 		{
 			return "Akbal Saliva";
 		}
 
-		private static string Full()
+		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			return "a vial of Akbal's saliva";
+			string vialText = count != 1 ? "vials" : "vial";
+
+			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+
+			return $"{count} {vialText} of Akbal's saliva";
 		}
 
-		private static string Desc()
+		public override string Appearance()
 		{
 			return "This corked vial of Akbal's saliva is said to contain healing properties. ";
 		}

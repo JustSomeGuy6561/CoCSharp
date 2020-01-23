@@ -74,9 +74,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class BackTattoo : TattooablePart<BackTattooLocation>
 	{
-		public BackTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
-		{
-		}
+		public BackTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong) {}
 
 		public override int MaxTattoos => BackTattooLocation.allLocations.Count;
 
@@ -137,7 +135,7 @@ namespace CoC.Backend.BodyParts
 		{
 			type = backType ?? throw new ArgumentNullException();
 
-			tattoos = new BackTattoo(AllTattoosShort, AllTattoosLong);
+			tattoos = new BackTattoo(this, AllTattoosShort, AllTattoosLong);
 		}
 
 		internal Back(Guid creatureID) : this(creatureID, BackType.defaultValue) { }
@@ -210,6 +208,8 @@ namespace CoC.Backend.BodyParts
 			type = backType;
 			return retVal;
 		}
+
+		public bool IsDraconic() => type.IsDraconic();
 
 		#region IDyeable
 		bool IDyeable.allowsDye()
@@ -365,7 +365,6 @@ namespace CoC.Backend.BodyParts
 
 		//in some cases order of creation matters. in these cases you will need a static constructor.
 
-
 		public static readonly BackType NORMAL;
 		public static readonly DragonBackMane DRACONIC_MANE;
 		public static readonly BackType DRACONIC_SPIKES;
@@ -389,6 +388,13 @@ namespace CoC.Backend.BodyParts
 			BEHEMOTH = new BehemothBack();
 
 		}
+
+
+		public bool IsDraconic()
+		{
+			return this == DRACONIC_MANE || this == DRACONIC_SPIKES;
+		}
+
 	}
 	public sealed class DragonBackMane : BackType
 	{

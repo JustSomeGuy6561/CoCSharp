@@ -59,6 +59,7 @@ namespace CoC.Backend.CoC_Colors
 		public static readonly HairFurColors PURPLE = new HairFurColors(Color.Purple);
 		public static readonly HairFurColors PURPLISH_BLACK = new HairFurColors(Color.FromArgb(52, 0, 52), "DarkPurple");
 		public static readonly HairFurColors RED = new HairFurColors(Color.Red, "Red"); //well, red seems too strong.
+		public static readonly HairFurColors RED_ORANGE = new HairFurColors(Color.OrangeRed, "Red-Orange");
 		public static readonly HairFurColors RUSSET = new HairFurColors(Color.FromArgb(128, 70, 27), "Russet");
 		public static readonly HairFurColors SANDY_BLONDE = new HairFurColors(Color.PaleGoldenrod, "Sandy-Blonde");
 		public static readonly HairFurColors SANDY_BROWN = new HairFurColors(Color.Tan, "Sandy-Brown");

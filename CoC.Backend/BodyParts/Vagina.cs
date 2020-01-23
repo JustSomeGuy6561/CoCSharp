@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LabiaPiercing : Piercing<LabiaPiercingLocation>
 	{
-		public LabiaPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
+		public LabiaPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -112,68 +112,52 @@ namespace CoC.Backend.BodyParts
 		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
 		public const ushort MAX_VAGINAL_CAPACITY = ushort.MaxValue;
 
+		//used for natural tightening of vagina over time. value is in in-game hours.
+		private const ushort LOOSENESS_LOOSE_TIMER = 200;
+		private const ushort LOOSENESS_ROOMY_TIMER = 100;
+		private const ushort LOOSENESS_GAPING_TIMER = 70;
+		private const ushort LOOSENESS_CLOWN_CAR_TIMER = 50;
+
 		public readonly Clit clit;
 
-		public int vaginaIndex => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.vaginas.IndexOf(this) : 0;
+		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
 
-		internal VaginalLooseness minLooseness
+		public int vaginaIndex => creature?.genitals.vaginas.IndexOf(this) ?? 0;
+
+		private GenitalPerkData perkData => creature?.genitals.perkData;
+
+		public VaginalLooseness minLooseness => perkData?.minVaginalLooseness ?? VaginalLooseness.TIGHT;
+		public VaginalLooseness maxLooseness => perkData?.maxVaginalLooseness ?? VaginalLooseness.CLOWN_CAR_WIDE;
+
+		public VaginalWetness minWetness => perkData?.minVaginalWetness ?? VaginalWetness.DRY;
+		public VaginalWetness maxWetness => perkData?.maxVaginalWetness ?? VaginalWetness.SLAVERING;
+
+		private VaginalWetness defaultNewVaginaWetness => creature?.genitals.perkData.defaultNewVaginaWetness ?? VaginalWetness.NORMAL;
+		private VaginalLooseness DefaultNewVaginaLooseness(bool virgin)
 		{
-			get => _minLooseness;
-			set
+			if (creature is null)
 			{
-				_minLooseness = value;
-				looseness = looseness; //auto-correct property;
-				if (maxLooseness < _minLooseness)
-				{
-					maxLooseness = _minLooseness;
-				}
+				return virgin ? VaginalLooseness.TIGHT : VaginalLooseness.NORMAL;
+			}
+			else
+			{
+				return creature.genitals.perkData.defaultNewVaginaLooseness;
 			}
 		}
-		private VaginalLooseness _minLooseness = VaginalLooseness.TIGHT;
-		internal VaginalLooseness maxLooseness
-		{
-			get => _maxLooseness;
-			set
-			{
-				if (value < minLooseness)
-				{
-					value = minLooseness;
-				}
-				_maxLooseness = value;
-				looseness = looseness; //auto-correct property;
-			}
-		}
-		private VaginalLooseness _maxLooseness = VaginalLooseness.CLOWN_CAR_WIDE;
 
 
-		internal VaginalWetness minWetness
+		//called when min or max wetness changes in the perk data.
+		internal void OnWetnessPerkValueChange()
 		{
-			get => _minWetness;
-			set
-			{
-				_minWetness = value;
-				wetness = wetness; //auto-correct property;
-				if (maxWetness < _minWetness)
-				{
-					maxWetness = _minWetness;
-				}
-			}
+			//try to set the wetness to itself. note that this forces the setter to auto-correct if the data is now invalid. do not remove this.
+			wetness = wetness;
 		}
-		private VaginalWetness _minWetness = VaginalWetness.DRY;
-		internal VaginalWetness maxWetness
+
+		internal void OnLoosenessPerkValueChange()
 		{
-			get => _maxWetness;
-			set
-			{
-				if (value < minWetness)
-				{
-					value = minWetness;
-				}
-				_maxWetness = value;
-				wetness = wetness; //auto-correct property;
-			}
+			//try to set the looseness to itself. note that this forces the setter to auto-correct if the data is now invalid. do not remove this.
+			looseness = looseness;
 		}
-		private VaginalWetness _maxWetness = VaginalWetness.SLAVERING;
 
 		public VaginalWetness wetness
 		{
@@ -212,39 +196,13 @@ namespace CoC.Backend.BodyParts
 		public ushort totalPenetrationCount { get; private set; } = 0;
 		public ushort dryOrgasmCount { get; private set; } = 0;
 
-		public bool isVirgin { get; private set; } = true;
+		public bool isVirgin => sexCount > 0;
 
 		public bool everPracticedVaginal => totalPenetrationCount > 0;
 
-		public ushort bonusVaginalCapacity
-		{
-			get => _bonusVaginalCapacity;
-			private set
-			{
-				if (_bonusVaginalCapacity != value)
-				{
-					var oldData = AsReadOnlyData();
-					_bonusVaginalCapacity = value;
-					NotifyDataChanged(oldData);
-				}
-			}
-		}
-		private ushort _bonusVaginalCapacity = 0;
+		private ushort bonusCapacity => creature?.genitals.allVaginas.totalBonusCapacity ?? 0;
 
-		internal ushort perkBonusVaginalCapacity
-		{
-			get => _perkBonusVaginalCapacity;
-			set
-			{
-				if (_perkBonusVaginalCapacity != value)
-				{
-					var oldData = AsReadOnlyData();
-					_perkBonusVaginalCapacity = value;
-					NotifyDataChanged(oldData);
-				}
-			}
-		}
-		private ushort _perkBonusVaginalCapacity = 0;
+
 
 		public ushort VaginalCapacity()
 		{
@@ -255,7 +213,7 @@ namespace CoC.Backend.BodyParts
 				loose++;
 			}
 			byte wet = ((byte)wetness).add(1);
-			uint cap = (uint)Math.Floor(BASE_CAPACITY + bonusVaginalCapacity + perkBonusVaginalCapacity /*+ experience / 10*/ + 6 * loose * loose * wet / 10.0);
+			uint cap = (uint)Math.Floor(BASE_CAPACITY + bonusCapacity + type.typeCapacityBonus /*+ experience / 10*/ + 6 * loose * loose * wet / 10.0);
 			if (cap > MAX_VAGINAL_CAPACITY)
 			{
 				return MAX_VAGINAL_CAPACITY;
@@ -263,62 +221,68 @@ namespace CoC.Backend.BodyParts
 			return (ushort)cap;
 		}
 
-		private const ushort LOOSENESS_LOOSE_TIMER = 200;
-		private const ushort LOOSENESS_ROOMY_TIMER = 100;
-		private const ushort LOOSENESS_GAPING_TIMER = 70;
-		private const ushort LOOSENESS_CLOWN_CAR_TIMER = 50;
+
 		private ushort vaginaTightenTimer = 0;
 		public readonly LabiaPiercing labiaPiercings;
 		public override VaginaType type { get; protected set; }
 		public override VaginaType defaultType => VaginaType.defaultValue;
 
 		#region Constructors
-		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData) : this(creatureID, initialPerkData, VaginaType.defaultValue, clitLength: initialPerkData.DefaultNewClitSize)
+		internal Vagina(Guid creatureID) : this(creatureID, VaginaType.defaultValue)
 		{ }
 
-		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType) : base(creatureID)
+		internal Vagina(Guid creatureID, VaginaType vaginaType) : base(creatureID)
 		{
-			clit = new Clit(creatureID, this, initialPerkData);
-			isVirgin = true;
-			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
-			_wetness = initialPerkData.defaultWetnessNew;
-			_looseness = initialPerkData.defaultLoosenessNew;
+			clit = new Clit(creatureID, this);
 
-			labiaPiercings = new LabiaPiercing(PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
+			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
+			_wetness = defaultNewVaginaWetness;
+			_looseness = DefaultNewVaginaLooseness(true);
+
+			//default to virgin.
+			sexCount = 0;
+
+			labiaPiercings = new LabiaPiercing(this, PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
 		}
 
-		internal Vagina(Guid creatureID, VaginaPerkHelper initialPerkData, VaginaType vaginaType, float clitLength,
-			VaginalLooseness? vaginalLooseness = null, VaginalWetness? vaginalWetness = null, bool? isVirgin = null, bool omnibus = false) : base(creatureID)
+		internal Vagina(Guid creatureID, VaginaType vaginaType, float clitLength, VaginalLooseness? vaginalLooseness = null, VaginalWetness? vaginalWetness = null,
+			bool? isVirgin = null, IEnumerable<KeyValuePair<LabiaPiercingLocation, PiercingJewelry>> initialLabiaPiercings = null,
+				IEnumerable<KeyValuePair<ClitPiercingLocation, PiercingJewelry>> initialClitPiercings = null) : base(creatureID)
 		{
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
 
-			clit = new Clit(creatureID, this, initialPerkData, clitLength, omnibus);
+			clit = new Clit(creatureID, this, clitLength);
 			if (isVirgin is null)
 			{
 				isVirgin = vaginalLooseness == VaginalLooseness.TIGHT || vaginalLooseness is null;
+
 			}
-			this.isVirgin = (bool)isVirgin;
 
-			minLooseness = initialPerkData.minLooseness;
-			maxLooseness = initialPerkData.maxLooseness;
-			minWetness = initialPerkData.minWetness;
-			maxWetness = initialPerkData.maxWetness;
-
-			perkBonusVaginalCapacity = initialPerkData.perkBonusCapacity;
+			if ((bool)isVirgin)
+			{
+				sexCount = 0;
+			}
+			else
+			{
+				sexCount = 1;
+			}
 
 			//these are clamped by above set values.
-			_wetness = vaginalWetness ?? initialPerkData.defaultWetnessNew;
-			_looseness = vaginalLooseness ?? initialPerkData.defaultLoosenessNew;
+			_wetness = vaginalWetness ?? defaultNewVaginaWetness;
+			_looseness = vaginalLooseness ?? DefaultNewVaginaLooseness(sexCount == 0);
 
-			labiaPiercings = new LabiaPiercing(PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
+			labiaPiercings = new LabiaPiercing(this, PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
+
+			labiaPiercings.InitializePiercings(initialLabiaPiercings);
+			clit.piercings.InitializePiercings(initialClitPiercings);
 		}
 
 		#endregion
 
 		#region Generate
-		internal static Vagina GenerateFromGender(Guid creatureID, VaginaPerkHelper initialPerkData, Gender gender)
+		internal static Vagina GenerateFromGender(Guid creatureID, Gender gender)
 		{
-			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(creatureID, initialPerkData);
+			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(creatureID);
 			else return null;
 		}
 
@@ -361,7 +325,7 @@ namespace CoC.Backend.BodyParts
 			var oldValue = type;
 			if (newType.orgasmOnTransform)
 			{
-				if (CreatureStore.TryGetCreature(creatureID, out Creature creature))
+				if (!(creature is null))
 				{
 					creature.HaveGenericVaginalOrgasm(vaginaIndex, false, true);
 				}
@@ -393,7 +357,6 @@ namespace CoC.Backend.BodyParts
 			if (takeVirginity)
 			{
 				sexCount++;
-				isVirgin = false;
 			}
 			if (reachOrgasm)
 			{
@@ -449,11 +412,12 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			isVirgin = false;
+
+			sexCount++;
 			return true;
 		}
 
-		internal byte StretchVagina(byte amount = 1)
+		public byte IncreaseLooseness(byte amount = 1)
 		{
 
 			VaginalLooseness oldLooseness = looseness;
@@ -461,7 +425,7 @@ namespace CoC.Backend.BodyParts
 			return looseness - oldLooseness;
 		}
 
-		internal byte ShrinkVagina(byte amount = 1)
+		public byte DecreaseLooseness(byte amount = 1)
 		{
 
 			VaginalLooseness oldLooseness = looseness;
@@ -469,7 +433,7 @@ namespace CoC.Backend.BodyParts
 			return oldLooseness - looseness;
 		}
 
-		internal bool SetVaginalLooseness(VaginalLooseness Looseness)
+		public bool SetVaginalLooseness(VaginalLooseness Looseness)
 		{
 			if (Looseness >= minLooseness && Looseness <= maxLooseness)
 			{
@@ -479,20 +443,20 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		internal byte MakeWetter(byte amount = 1)
+		public byte IncreaseWetness(byte amount = 1)
 		{
 			VaginalWetness oldWetness = wetness;
 			wetness = wetness.ByteEnumAdd(amount);
 			return wetness - oldWetness;
 		}
 
-		internal byte MakeDrier(byte amount = 1)
+		public byte DecreaseWetness(byte amount = 1)
 		{
 			VaginalWetness oldWetness = wetness;
 			wetness = wetness.ByteEnumSubtract(amount);
 			return oldWetness - wetness;
 		}
-		internal bool SetVaginalWetness(VaginalWetness Wetness)
+		public bool SetVaginalWetness(VaginalWetness Wetness)
 		{
 			if (Wetness >= minWetness && Wetness <= maxWetness)
 			{
@@ -501,22 +465,6 @@ namespace CoC.Backend.BodyParts
 			}
 			return false;
 		}
-
-		internal ushort AddBonusCapacity(ushort amountToAdd)
-		{
-			ushort currentCapacity = bonusVaginalCapacity;
-			bonusVaginalCapacity = bonusVaginalCapacity.add(amountToAdd);
-			return bonusVaginalCapacity.subtract(currentCapacity);
-		}
-
-		internal ushort SubtractBonusCapacity(ushort amountToRemove)
-		{
-			ushort currentCapacity = bonusVaginalCapacity;
-			bonusVaginalCapacity = bonusVaginalCapacity.subtract(amountToRemove);
-			return bonusVaginalCapacity.subtract(currentCapacity);
-		}
-
-
 
 		#endregion
 		#region Clit Helpers
@@ -629,7 +577,7 @@ namespace CoC.Backend.BodyParts
 
 		internal void InitializePiercings(Dictionary<ClitPiercingLocation, PiercingJewelry> clitPiercings, Dictionary<LabiaPiercingLocation, PiercingJewelry> labiaPiercings)
 		{
-			clit.clitPiercings.InitializePiercings(clitPiercings);
+			clit.piercings.InitializePiercings(clitPiercings);
 			this.labiaPiercings.InitializePiercings(labiaPiercings);
 		}
 
@@ -838,7 +786,7 @@ namespace CoC.Backend.BodyParts
 		private static int indexMaker = 0;
 		private static readonly List<VaginaType> types = new List<VaginaType>();
 		public static readonly ReadOnlyCollection<VaginaType> availableTypes = new ReadOnlyCollection<VaginaType>(types);
-		public readonly int typeCapacityBonus;
+		public readonly short typeCapacityBonus;
 
 		public static VaginaType defaultValue => HUMAN;
 
@@ -873,7 +821,7 @@ namespace CoC.Backend.BodyParts
 		internal string GrewVaginaText(PlayerBase player, byte grownVaginaIndex) => grewVaginaStr(player, grownVaginaIndex);
 
 
-		private VaginaType(int capacityBonus, bool orgasmWhenTransforming,
+		private VaginaType(short capacityBonus, bool orgasmWhenTransforming,
 			ShortPluralDescriptor shortDesc, SimpleDescriptor singleDesc, PartDescriptor<VaginaData> longDesc, PartDescriptor<VaginaData> fullDesc,
 			PlayerBodyPartDelegate<Vagina> playerDesc, ChangeType<VaginaData> transform, GrowVaginaDescriptor growVaginaText, RestoreType<VaginaData> restore,
 			RemoveVaginaDescriptor removeVaginaText) : base(PluralHelper(shortDesc, false), singleDesc, longDesc, playerDesc, transform, restore)

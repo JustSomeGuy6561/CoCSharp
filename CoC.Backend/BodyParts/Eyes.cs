@@ -44,8 +44,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private EyeColor _rightIrisColor;
 
-		public bool isHeterochromia => leftIrisColor != rightIrisColor && eyeCount > 1;
-		public byte eyeCount => type.eyeCount;
+		public bool isHeterochromia => leftIrisColor != rightIrisColor && count > 1;
+		public byte count => type.eyeCount;
 		public bool isReptilian => type.isReptilianEyes;
 
 		public ScleraColor scleraColor => type.scleraColor;
@@ -327,7 +327,7 @@ namespace CoC.Backend.BodyParts
 		{
 			leftIrisColor = source.leftIrisColor;
 			rightIrisColor = source.rightIrisColor;
-			eyeCount = source.eyeCount;
+			eyeCount = source.count;
 			scleraColor = source.type.scleraColor;
 		}
 

@@ -129,9 +129,8 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class EarPiercing : Piercing<EarPiercingLocation>
 	{
-		public EarPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
-		{
-		}
+		public EarPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => EarPiercingLocation.allLocations.Count;
 
@@ -157,7 +156,8 @@ namespace CoC.Backend.BodyParts
 		internal Ears(Guid creatureID, EarType earType) : base(creatureID)
 		{
 			type = earType ?? throw new ArgumentNullException(nameof(earType));
-			earPiercings = new EarPiercing(PiercingLocationUnlocked, AllEarPiercingsShort, AllEarPiercingsLong);
+
+			earPiercings = new EarPiercing(this,PiercingLocationUnlocked, AllEarPiercingsShort, AllEarPiercingsLong);
 		}
 
 		public override EarData AsReadOnlyData()

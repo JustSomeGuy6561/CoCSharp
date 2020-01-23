@@ -2,15 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //2/20/2019, 4:15 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
-using CoC.Backend.UI;
-using CoC.Backend.Inventory;
 using CoC.Backend.Items;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
 using System;
-using CoC.Backend.BodyParts;
-using CoC.Backend.Perks;
 
 namespace CoC.Backend.Creatures
 {
@@ -58,10 +55,7 @@ namespace CoC.Backend.Creatures
 			throw new NotImplementedException();
 		}
 
-		public string Appearance()
-		{
-			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-		}
+		public abstract string Appearance();
 
 		public string LowerBodyArmorShort(bool both = true)
 		{
@@ -138,6 +132,96 @@ namespace CoC.Backend.Creatures
 				return (uint)max;
 			}
 		}
+		//ovpositor handled by tail
 
+		protected string AntennaeAppearance()
+		{
+			return antennae.PlayerDescription();
+		}
+		protected string ArmsAppearance()
+		{
+			return arms.PlayerDescription();
+		}
+		protected string BackAppearance()
+		{
+			return back.PlayerDescription();
+		}
+		//protected string BeardAppearance()
+		//{
+		//return beard.PlayerDescription();
+		//}
+		protected string BodyAppearance()
+		{
+			return body.PlayerDescription();
+		}
+
+		protected string EyesAppearance()
+		{
+			return eyes.PlayerDescription();
+		}
+		protected string FaceAppearance()
+		{
+			return face.PlayerDescription();
+		}
+
+		protected string AllBreastsAppearance()
+		{
+			return genitals.allBreasts.AllBreastsPlayerDescription();
+		}
+
+		protected string AllCocksAppearance()
+		{
+			return genitals.allCocks.AllCocksPlayerDescription();
+		}
+
+
+		protected string AllVaginasAppearance()
+		{
+			return genitals.allVaginas.AllVaginasPlayerDescription();
+		}
+
+		protected string GillsAppearance()
+		{
+			return gills.PlayerDescription();
+		}
+		protected string HairAppearance()
+		{
+			return hair.PlayerDescription();
+		}
+		protected string HornsAppearance()
+		{
+			return horns.PlayerDescription();
+		}
+		protected string LowerBodyAppearance()
+		{
+			return lowerBody.PlayerDescription();
+		}
+		protected string NeckAppearance()
+		{
+			return neck.PlayerDescription();
+		}
+
+		protected string TailAppearance()
+		{
+			return tail.PlayerDescription();
+		}
+		protected string TongueAppearance()
+		{
+			return tongue.PlayerDescription();
+		}
+		protected string WingsAppearance()
+		{
+			return wings.PlayerDescription();
+		}
+
+		protected string AssAppearance()
+		{
+			return ass.PlayerString(this);
+		}
+
+		protected string BallsAppearance()
+		{
+			return balls.PlayerDescription();
+		}
 	}
 }

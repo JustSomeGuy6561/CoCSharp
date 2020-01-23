@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //10/11/2019 1:24:57 AM
 
+using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using CoC.Frontend.Perks;
 using CoC.Frontend.StatusEffect;
@@ -89,6 +90,62 @@ namespace CoC.Frontend.Creatures
 				return false;
 			}
 		}
+
+
+		public static bool GoIntoRut(this Creature creature, byte intensity = 1)
+		{
+			if (creature.statusEffects.HasStatusEffect<Rut>())
+			{
+				var heat = creature.statusEffects.GetStatusEffect<Rut>();
+				return heat.IncreaseRut(intensity);
+			}
+			else if (creature.hasCock)
+			{
+				ushort timeout = (intensity * Rut.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Rut.TIMEOUT_STACK);
+				var heat = new Rut(timeout);
+				creature.statusEffects.AddStatusEffect(heat);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public static bool GoIntoRut(this Creature creature, out string output, byte intensity = 1)
+		{
+			if (creature.statusEffects.HasStatusEffect<Rut>())
+			{
+				var heat = creature.statusEffects.GetStatusEffect<Rut>();
+				bool retVal = heat.IncreaseRut(intensity);
+
+				output = null;
+				if (retVal)
+				{
+					output = heat.IncreasedRutText();
+				}
+				return retVal;
+			}
+			else if (creature.hasVagina && !creature.womb.isPregnant)
+			{
+				ushort timeout = (intensity * Rut.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Rut.TIMEOUT_STACK);
+				var heat = new Rut(timeout);
+				creature.statusEffects.AddStatusEffect(heat);
+				output = heat.ObtainText();
+				return true;
+			}
+			else
+			{
+				output = null;
+				return false;
+			}
+		}
+
+		public static bool KitsuneLikeBody(this Creature creature)
+		{
+			return creature.body.type == BodyType.HUMANOID || creature.body.type == BodyType.KITSUNE;
+		}
+
 	}
 
 

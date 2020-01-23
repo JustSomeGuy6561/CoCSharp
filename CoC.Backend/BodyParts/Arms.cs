@@ -157,11 +157,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class ArmTattoo : TattooablePart<ArmTattooLocation>
 	{
-
-
-		public ArmTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
-		{
-		}
+		public ArmTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong) { }
 
 		public override int MaxTattoos => ArmTattooLocation.allLocations.Count;
 
@@ -336,7 +332,7 @@ namespace CoC.Backend.BodyParts
 			_type = armType ?? throw new ArgumentNullException(nameof(armType));
 			hands = new Hands(creatureID, type.handType, (x) => x ? epidermis : secondaryEpidermis);
 
-			tattoos = new ArmTattoo(AllTattoosShort, AllTattoosLong);
+			tattoos = new ArmTattoo(this, AllTattoosShort, AllTattoosLong);
 		}
 
 		//default implementation of update and restore are fine
@@ -362,6 +358,9 @@ namespace CoC.Backend.BodyParts
 		{
 			return ArmType.ArmEpidermisDescription(epidermis, secondaryEpidermis);
 		}
+
+		public bool IsPredatorArms() => type.IsPredatorArms();
+		public bool IsReptilian() => type.IsReptilian();
 	}
 
 	public abstract partial class ArmType : SaveableBehavior<ArmType, Arms, ArmData>
@@ -568,9 +567,14 @@ namespace CoC.Backend.BodyParts
 				return new EpidermalData(primaryEpidermis, color, defaultTexture);
 			}
 		}
-		public bool isPredatorArms()
+		public bool IsPredatorArms()
 		{
 			return this == DRAGON || this == IMP || this == LIZARD;
+		}
+
+		public bool IsReptilian()
+		{
+			return this == SALAMANDER || this == LIZARD || this == DRAGON;
 		}
 	}
 

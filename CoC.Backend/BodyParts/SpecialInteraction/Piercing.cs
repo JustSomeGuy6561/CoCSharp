@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //3/27/2019, 11:41 AM
+using CoC.Backend.Creatures;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
@@ -46,7 +47,19 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		protected readonly PlayerStr allPiercingsShortDescription;
 		protected readonly PlayerStr allPiercingsLongDescription;
 
+		public string ShortPlayerDescription(PlayerBase player)
+		{
+			return allPiercingsShortDescription(player);
+		}
+
+		public string VerbosePlayerDesription(PlayerBase player)
+		{
+			return allPiercingsLongDescription(player);
+		}
+
 		protected readonly PiercingUnlocked piercingUnlocked;
+
+		public readonly IBodyPart parent;
 
 		//tbh, not the cleanest tool, but idgaf. it works. As far as anyone implementing this shit will know or care, it's basically identical to the standard event.
 		private readonly WeakEventSource<PiercingDataChangedEventArgs<Location>> piercingChangeSource = new WeakEventSource<PiercingDataChangedEventArgs<Location>>();
@@ -62,19 +75,14 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		protected readonly Dictionary<Location, bool> piercedAt = new Dictionary<Location, bool>();
 		protected readonly Dictionary<Location, PiercingJewelry> jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
 
-		internal Piercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+		internal Piercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
 		{
+			parent = source ?? throw new ArgumentNullException(nameof(source));
+
 			piercingUnlocked = LocationUnlocked ?? throw new ArgumentNullException(nameof(LocationUnlocked));
 			allPiercingsShortDescription = playerShortDesc ?? throw new ArgumentNullException(nameof(playerShortDesc));
 			allPiercingsLongDescription = playerLongDesc ?? throw new ArgumentNullException(nameof(playerLongDesc));
 		}
-
-		//internal Piercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc, ReadOnlyPiercing<Location> initialData)
-		//{
-		//	piercingUnlocked = LocationUnlocked ?? throw new ArgumentNullException(nameof(LocationUnlocked));
-		//	allPiercingsShortDescription = playerShortDesc ?? throw new ArgumentNullException(nameof(playerShortDesc));
-		//	allPiercingsLongDescription = playerLongDesc ?? throw new ArgumentNullException(nameof(playerLongDesc));
-		//}
 
 		public virtual ReadOnlyPiercing<Location> AsReadOnlyData()
 		{
@@ -296,7 +304,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 		private void ProcChange(Dictionary<Location, bool> piercedAt, Dictionary<Location, PiercingJewelry> jewelryEquipped)
 		{
-			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercedAt, jewelryEquipped));
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(parent, piercedAt, jewelryEquipped));
 		}
 
 		//if theres some magic in the future that lets you un-pierce a location and reject any jewelry inside, this will handle it. but it's mostly for the other way - piercing something with new jewelry.
@@ -306,22 +314,22 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			{
 				if (deltaJewelry != null)
 				{
-					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, isNowPierced, null, deltaJewelry, piercingCount, jewelryCount));
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(parent, piercingLocation, isNowPierced, null, deltaJewelry, piercingCount, jewelryCount));
 				}
 				else
 				{
-					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(parent, piercingLocation, isNowPierced, piercingCount, jewelryCount));
 				}
 			}
 			else
 			{
 				if (deltaJewelry != null)
 				{
-					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, isNowPierced, deltaJewelry, null, piercingCount, jewelryCount));
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(parent, piercingLocation, isNowPierced, deltaJewelry, null, piercingCount, jewelryCount));
 				}
 				else
 				{
-					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, isNowPierced, piercingCount, jewelryCount));
+					piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(parent, piercingLocation, isNowPierced, piercingCount, jewelryCount));
 				}
 			}
 		}
@@ -329,12 +337,12 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		//oldJewelry assumed to be null.
 		private void ProcChange(Location piercingLocation, PiercingJewelry newJewelry)
 		{
-			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, null, newJewelry, piercingCount, jewelryCount));
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(parent, piercingLocation, null, newJewelry, piercingCount, jewelryCount));
 		}
 
 		private void ProcChange(Location piercingLocation, PiercingJewelry oldJewelry, PiercingJewelry newJewelry)
 		{
-			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(piercingLocation, oldJewelry, newJewelry, piercingCount, jewelryCount));
+			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(parent, piercingLocation, oldJewelry, newJewelry, piercingCount, jewelryCount));
 		}
 
 	}
@@ -396,18 +404,27 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 	public delegate void PiercingDataChangedEventHandler<T>(object sender, PiercingDataChangedEventArgs<T> args) where T : PiercingLocation;
 
-	public class PiercingDataChangedEventArgs<T> : EventArgs where T : PiercingLocation
+	//Generally, if you need the source that raised the event, you typecheck the sender object from the event. however, if you're dealing with a generic piercing and don't know
+	//the type used for the piercing location, it becomes difficult to get the associated body part that the sender is associated with. therefore, it is stored here as well, so
+	//you can obtain it without resorting to reflection. further, if you need to, you can get the creature associated with this body part (if applicable) by retrieving it
+	//from the CreatureStore using the body part's creatureID.
+	public class PiercingDataChangedEventArgs<T> : EventArgs where T: PiercingLocation
 	{
 		public readonly ReadOnlyDictionary<T, ValueDifference<bool>> piercingDiffs;
 		public readonly ReadOnlyDictionary<T, ValueDifference<PiercingJewelry>> jewelryDiffs;
+
+		public readonly IBodyPart parent;
 
 		public readonly int oldPiercingCount;
 		public readonly int newPiercingCount;
 		public readonly int oldJewelryCount;
 		public readonly int newJewelryCount;
 
-		internal PiercingDataChangedEventArgs(T location, bool piercingChange, int newPiercingCount, int newJewelryCount)
+		internal PiercingDataChangedEventArgs(IBodyPart source, T location, bool piercingChange, int newPiercingCount, int newJewelryCount)
 		{
+			parent = source ?? throw new ArgumentNullException(nameof(source));
+			if (location is null) throw new ArgumentNullException(nameof(location));
+
 			this.newPiercingCount = newPiercingCount;
 			oldPiercingCount = piercingChange ? newPiercingCount - 1 : newPiercingCount + 1;
 			this.newJewelryCount = newJewelryCount;
@@ -421,8 +438,11 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			jewelryDiffs = new ReadOnlyDictionary<T, ValueDifference<PiercingJewelry>>(new Dictionary<T, ValueDifference<PiercingJewelry>>());
 		}
 
-		internal PiercingDataChangedEventArgs(T location, PiercingJewelry oldJewelry, PiercingJewelry newJewelry, int newPiercingCount, int newJewelryCount)
+		internal PiercingDataChangedEventArgs(IBodyPart source, T location, PiercingJewelry oldJewelry, PiercingJewelry newJewelry, int newPiercingCount, int newJewelryCount)
 		{
+			parent = source;
+			if (location is null) throw new ArgumentNullException(nameof(location));
+
 			this.newPiercingCount = newPiercingCount;
 			oldPiercingCount = newPiercingCount;
 			this.newJewelryCount = newJewelryCount;
@@ -451,8 +471,11 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			jewelryDiffs = new ReadOnlyDictionary<T, ValueDifference<PiercingJewelry>>(jDiff);
 		}
 
-		internal PiercingDataChangedEventArgs(T location, bool piercingChange, PiercingJewelry oldJewelry, PiercingJewelry newJewelry, int newPiercingCount, int newJewelryCount)
+		internal PiercingDataChangedEventArgs(IBodyPart source, T location, bool piercingChange, PiercingJewelry oldJewelry, PiercingJewelry newJewelry, int newPiercingCount, int newJewelryCount)
 		{
+			parent = source ?? throw new ArgumentNullException(nameof(source));
+			if (location is null) throw new ArgumentNullException(nameof(location));
+
 			this.newPiercingCount = newPiercingCount;
 			oldPiercingCount = piercingChange ? newPiercingCount - 1 : newPiercingCount + 1;
 
@@ -487,8 +510,14 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			jewelryDiffs = new ReadOnlyDictionary<T, ValueDifference<PiercingJewelry>>(jDiff);
 		}
 
-		internal PiercingDataChangedEventArgs(Dictionary<T, bool> unclearedPiercingDict, Dictionary<T, PiercingJewelry> unclearedJewelryDict)
+		internal PiercingDataChangedEventArgs(IBodyPart source, Dictionary<T, bool> unclearedPiercingDict, Dictionary<T, PiercingJewelry> unclearedJewelryDict)
 		{
+			parent = source ?? throw new ArgumentNullException(nameof(source));
+			if (unclearedPiercingDict is null) throw new ArgumentNullException(nameof(unclearedPiercingDict));
+			if (unclearedJewelryDict is null) throw new ArgumentNullException(nameof(unclearedJewelryDict));
+
+
+
 			Dictionary<T, ValueDifference<bool>> pDiffs = unclearedPiercingDict.Where(x => x.Value == true).ToDictionary(x => x.Key, x => new ValueDifference<bool>(x.Value, false));
 			piercingDiffs = new ReadOnlyDictionary<T, ValueDifference<bool>>(pDiffs);
 			oldPiercingCount = unclearedPiercingDict.Count;

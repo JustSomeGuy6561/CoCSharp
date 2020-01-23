@@ -2,7 +2,6 @@
 //Description:
 //Author: JustSomeGuy
 //1/18/2019, 9:56 PM
-using CoC.Backend.BodyParts.BaseClasses;
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.Creatures;
 using System;
@@ -86,5 +85,7 @@ namespace CoC.Backend.BodyParts
 		{
 			return typeof(DataClass);
 		}
+
+		Guid IBodyPart.creatureID => creatureID;
 	}
 }

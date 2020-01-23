@@ -121,10 +121,12 @@ namespace CoC.Backend.BodyParts
 
 		public bool isGrowing => type?.growsOverTime == true && !growthArtificallyDisabled;
 
-		//in theory, this bool would allow players to "magically" stop hair growth, allowing them, for example, to grow cornrows or a mohawk
+		public bool canGrowNaturally => type.growsOverTime;
+		//this bool allows us to disable hair growth, even if the type currently allows hair growth. this is useful primarily for reptile tfs, though
+		//in theory, it could also be used to allow players to "magically" stop hair growth, allowing them, for example, to grow cornrows or a mohawk
 		//and not have to worry about their hair being too short or too long to realistically be that style.
-		//right now it's always false, because i don't know how we'd deal with this bool on tf - always reset it?
-		private bool growthArtificallyDisabled = false;
+		//currently, however, it's only used for lizard tfs and anything that resets them. perhaps we can think of a more standardized approach later.
+		public bool growthArtificallyDisabled { get; private set; } = false;
 
 		public bool isSemiTransparent { get; private set; } = false;
 
@@ -239,7 +241,7 @@ namespace CoC.Backend.BodyParts
 		//Updates the type. returns true if it actually changed type. if it didn't change type, all other variables are ignored, and it returns false
 		//all variables beyond type are optional. All hair will first do its default action on transform, then update with any values here.
 		//this is to prevent overriding when calling the tf on change effects.
-		internal bool UpdateType(HairType newType, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null, float? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
+		internal bool UpdateType(HairType newType, bool? enableHairGrowth = null, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null, float? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
 		{
 			if (newType == null || type == newType)
 			{
@@ -260,6 +262,12 @@ namespace CoC.Backend.BodyParts
 				}
 				//otherwise, we can't do anything or we're already the correct length, so do nothing.
 			}
+			//set the disabled flag. currently only used by reptile tf and anything that negates it. the behavior isn't standardized across tfs. perhaps we should make it so.
+			if (enableHairGrowth is bool isDisabled)
+			{
+				growthArtificallyDisabled = isDisabled;
+			}
+
 			if (!HairFurColors.IsNullOrEmpty(newHairColor))
 			{
 				SetHairColorPrivate(newHairColor, false);
@@ -414,19 +422,24 @@ namespace CoC.Backend.BodyParts
 			return currLen - length;
 		}
 
-		public bool SetAll(float? newLength = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
+		public bool SetAll(float? newLength = null, bool? enableHairGrowth = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
 		{
 
-			return HandleHairChange(() => SetAllPrivate(newLength, mainColor, highlight, style));
+			return HandleHairChange(() => SetAllPrivate(newLength, enableHairGrowth, mainColor, highlight, style));
 		}
 
-		private bool SetAllPrivate(float? newLength = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
+		private bool SetAllPrivate(float? newLength = null, bool? enableHairGrowth = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
 		{
 			bool retVal = false;
 			if (newLength is float length)
 			{
 				retVal |= SetHairLengthPrivate(length);
 			}
+			if (enableHairGrowth is bool hairGrowth)
+			{
+				retVal |= SetHairGrowthStatus(hairGrowth);
+			}
+
 			if (mainColor is HairFurColors validHair)
 			{
 				retVal |= SetHairColorPrivate(validHair, false);
@@ -449,10 +462,42 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
+		//NOTE: this only affects the artificially disabled flag, it does not have any effect on the current type. if the type does not allow hair growth, it will not have any
+		//effect on the is growing flag. it will return true if it updated the artificially disabled flag, false otherwise.
+		//growing makes more sense here from a caller standpoint, but unfortunately here we store the opposite bool. so these checks are backward.
+		public bool SetHairGrowthStatus(bool growing)
+		{
+			return HandleHairChange(() => SetHairGrowthStatusPrivate(growing));
+		}
+
+		private bool SetHairGrowthStatusPrivate(bool growing)
+		{
+			//if we want to set it to growing, but it's disabled, or we want to set it to not growing and it's enabled, these two will be equal.
+			if (growing == growthArtificallyDisabled)
+			{
+				growthArtificallyDisabled = !growing;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public bool StopNaturalGrowth()
+		{
+			return SetHairGrowthStatus(false);
+		}
+
+		public bool ResumeNaturalGrowthPrivate()
+		{
+			return SetHairGrowthStatus(true);
+		}
+
 		private void CheckDataChanged(HairData oldData)
 		{
 			if (style != oldData.style || length != oldData.length || hairColor != oldData.hairColor || highlightColor != oldData.highlightColor
-				|| isSemiTransparent != oldData.isSemiTransparent)
+				|| isSemiTransparent != oldData.isSemiTransparent || oldData.isGrowing != isGrowing)
 			{
 				NotifyDataChanged(oldData);
 			}
@@ -501,7 +546,7 @@ namespace CoC.Backend.BodyParts
 		#region HairAwareHelper
 		public override HairData AsReadOnlyData()
 		{
-			return new HairData(creatureID, type, hairColor, highlightColor, style, length, isSemiTransparent, !isGrowing);
+			return new HairData(creatureID, type, hairColor, highlightColor, style, length, isSemiTransparent, isGrowing);
 		}
 
 		#endregion
@@ -790,14 +835,15 @@ namespace CoC.Backend.BodyParts
 
 		private protected abstract bool ValidateData(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData);
 
+
 		internal abstract void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone);
 
 
-		//super complicated but a lot more flexible this way - basically, you can choose to set anything you want as time passes. Does having living hair mean your hair randomly gets tangled?
-		//you can now make that happen. The cost is you now HAVE to set a Special Output string, but if you don't have anything to say, just set it to "";
-		//Don't worry about saying that the hair grew to a certain length relative to the player - that's taken care of by the Hair class, and it'll be appended after any other special text you set here.
-		//also, return true if something happened to the hair - even if it didn't change length, the game needs to know that you messed with the hair style, for example. false otherwise.
-
+		//super complicated but a lot more flexible this way - basically, you can choose to set anything you want as time passes. Does having living hair mean your hair randomly gets
+		//tangled? you can now make that happen. The cost is you now HAVE to set a Special Output string, but if you don't have anything to say, just set it to "";
+		//Don't worry about saying that the hair grew to a certain length relative to the player - that's taken care of by the Hair class, and it'll be appended after any other
+		//special text you set here. also, return true if something happened to the hair - even if it didn't change length, the game needs to know that you messed with the hair style,
+		//for example. false otherwise.
 		internal abstract bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, byte hoursPassed,
 			float unitsGrown, out string SpecialOutput);
 
@@ -1133,9 +1179,9 @@ namespace CoC.Backend.BodyParts
 		public readonly HairStyle style;
 		public readonly float length;
 		public readonly bool isSemiTransparent;
-		public readonly bool isNotGrowing;
+		public readonly bool isGrowing;
 		public bool isNoHair => type == HairType.NO_HAIR;
-		public bool hairDeactivated => type == HairType.NO_HAIR || (length == 0 && isNotGrowing);
+		public bool hairDeactivated => type == HairType.NO_HAIR || (length == 0 && !isGrowing);
 		public bool isBald => isNoHair || length == 0;
 
 		public HairFurColors activeHairColor => hairDeactivated ? HairFurColors.NO_HAIR_FUR : hairColor;
@@ -1155,14 +1201,14 @@ namespace CoC.Backend.BodyParts
 			return this;
 		}
 
-		internal HairData(Guid id, HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool notGrowing) : base(id, type)
+		internal HairData(Guid id, HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool growing) : base(id, type)
 		{
 			hairColor = color;
 			highlightColor = highlight;
 			this.style = style;
 			length = hairLen;
 			isSemiTransparent = semiTransparent;
-			isNotGrowing = notGrowing;
+			isGrowing = growing;
 		}
 
 		internal HairData(Guid id) : base(id, HairType.defaultValue)
@@ -1172,7 +1218,7 @@ namespace CoC.Backend.BodyParts
 			style = HairStyle.NO_STYLE;
 			length = 0;
 			isSemiTransparent = false;
-			isNotGrowing = true;
+			isGrowing = true;
 		}
 	}
 }

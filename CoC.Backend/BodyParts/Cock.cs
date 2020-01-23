@@ -97,9 +97,8 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class CockPiercing : Piercing<CockPiercingLocation>
 	{
-		public CockPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
-		{
-		}
+		public CockPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public int MaxFrenumPiercings => MaxPiercings - 1;
 
@@ -168,44 +167,41 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		//perk values that alter how the cock changes size.
 		private float cockGrowthMultiplier => (creature?.genitals.perkData.CockGrowthMultiplier ?? 1) + (cockSock?.cockGrowthMultiplier ?? 0);
 		private float cockShrinkMultiplier => (creature?.genitals.perkData.CockShrinkMultiplier ?? 1) + (cockSock?.cockShrinkMultiplier ?? 0);
-		internal float minCockLength
-		{
-			get => _minCockLength;
-			set
-			{
-				_minCockLength = value;
-				if (length < _minCockLength)
-				{
-					var oldData = AsReadOnlyData();
-					_cockLength = _minCockLength;
-					NotifyDataChanged(oldData);
-				}
-			}
-		}
-		private float _minCockLength = MIN_COCK_LENGTH;
 
-		internal float newCockDefaultSize; //needed for reset.
+		//perk values that alter the size of any new cock.
+		private float newCockDefaultSize => creature?.genitals.perkData.NewCockDefaultSize ?? DEFAULT_COCK_LENGTH;
+		private float newCockSizeDelta => creature?.genitals.perkData.NewCockSizeDelta ?? 0;
 
-		private Creature creature
+		//perk value that sets the absolute minimum size for any cock. this is given priority, even over new size perk data.
+		public float minCockLength => creature?.genitals.perkData.MinCockLength ?? MIN_COCK_LENGTH;
+
+		//perk values used to alter virility of a creature (and by extension, all of its cocks).
+		private float perkBonusVirilityMultiplier => creature?.genitals.perkData.perkBonusVirilityMultiplier ?? 1;
+		private sbyte perkBonusVirility => creature?.genitals.perkData.perkBonusVirility ?? 0;
+
+		//used to validate the length whenever a perk changes the min or max length. will fire off length changed as needed.
+		internal void ValidateLength()
 		{
-			get
+			var newLength = Utils.Clamp2(_cockLength, minCockLength, maxLength);
+			if (newLength != _cockLength)
 			{
-				CreatureStore.TryGetCreature(creatureID, out Creature creatureSource);
-				return creatureSource;
+				var oldData = AsReadOnlyData();
+				_cockLength = newLength;
+				NotifyDataChanged(oldData);
 			}
 		}
 
-		internal float perkBonusVirilityMultiplier => creature?.genitals.perkData.perkBonusVirilityMultiplier ?? 1;
-		internal sbyte perkBonusVirility => creature?.genitals.perkData.perkBonusVirility ?? 0;
+		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
 
 		public byte currentLust => creature?.lust ?? Creature.DEFAULT_LUST;
 		public float currentRelativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
 
 		private float resetLength => Math.Max(newCockDefaultSize, minCockLength);
 
-		public readonly CockPiercing cockPiercings;
+		public readonly CockPiercing piercings;
 
 		public float urethraWidth => Math.Max(type.UrethraWidth(girth), MIN_URETHRA_WIDTH);
 
@@ -264,46 +260,45 @@ namespace CoC.Backend.BodyParts
 		}
 		private CockType _type = CockType.HUMAN;
 
-		public bool isPierced => cockPiercings.isPierced;
+		public bool isPierced => piercings.isPierced;
 
 
 		public override CockType defaultType => CockType.defaultValue;
 		#endregion
 		#region Constructors
-		internal Cock(Guid creatureID, CockPerkHelper initialPerkValues) : this(creatureID, initialPerkValues, CockType.defaultValue)
+
+		//NOTE: when called from genitals (or its members), the perk data class must already be initialized in the genitals. otherwise, this will break. if they are created during
+		//the post perk init phase (or later, like in normal gameplay), which as of this writing, they are, this will never be an issue.
+
+		internal Cock(Guid creatureID) : this(creatureID, CockType.defaultValue)
 		{ }
 
-		internal Cock(Guid creatureID, CockPerkHelper initialPerkValues, CockType cockType) : base(creatureID)
+		internal Cock(Guid creatureID, CockType cockType) : base(creatureID)
 		{
 			type = cockType ?? throw new ArgumentNullException(nameof(cockType));
-			updateLength(initialPerkValues.NewLength());
+			updateLength(NewLength());
 
 			knotMultiplier = type.baseKnotMultiplier;
 
-			cockPiercings = new CockPiercing(PiercingLocationUnlocked, AllCockPiercingsShort, AllCockPiercingsLong);
-
-			newCockDefaultSize = initialPerkValues.NewCockDefaultSize;
-			minCockLength = initialPerkValues.MinCockLength;
+			cockSock = null;
+			piercings = new CockPiercing(this, PiercingLocationUnlocked, AllCockPiercingsShort, AllCockPiercingsLong);
 		}
 
-		internal Cock(Guid creatureID, CockPerkHelper initialPerkValues, CockType cockType, float length, float girth,
+		internal Cock(Guid creatureID, CockType cockType, float length, float girth,
 			float? initialKnotMultiplier = null, CockSockBase cockSock = null, ReadOnlyDictionary<CockPiercingLocation, PiercingJewelry> piercings = null) : base(creatureID)
 		{
 			type = cockType ?? throw new ArgumentNullException(nameof(cockType));
-			length = initialPerkValues.NewLength(length);
+			length = NewLength();
 
 			updateLengthAndGirth(length, girth);
 
 			knotMultiplier = initialKnotMultiplier ?? type.baseKnotMultiplier;
 
-			cockPiercings = new CockPiercing(PiercingLocationUnlocked, AllCockPiercingsShort, AllCockPiercingsLong);
-
-			newCockDefaultSize = initialPerkValues.NewCockDefaultSize;
-			minCockLength = initialPerkValues.MinCockLength;
 
 			this.cockSock = cockSock;
 
-			this.cockPiercings.InitializePiercings(piercings);
+			this.piercings = new CockPiercing(this, this.PiercingLocationUnlocked, this.AllCockPiercingsShort, this.AllCockPiercingsLong);
+			this.piercings.InitializePiercings(piercings);
 		}
 
 		private Cock(Guid creatureID, CockType cockType, float length, float girth,
@@ -315,36 +310,43 @@ namespace CoC.Backend.BodyParts
 
 			knotMultiplier = initialKnotMultiplier ?? type.baseKnotMultiplier;
 
-			cockPiercings = new CockPiercing(PiercingLocationUnlocked, AllCockPiercingsShort, AllCockPiercingsLong);
-
-			newCockDefaultSize = DEFAULT_COCK_LENGTH;
-			minCockLength = MIN_COCK_LENGTH;
-
 			this.cockSock = null;
+
+			piercings = new CockPiercing(this, PiercingLocationUnlocked, AllCockPiercingsShort, AllCockPiercingsLong);
+		}
+
+		private float NewLength(float? givenLength = null)
+		{
+			float minLength = Utils.Clamp2(Math.Max(minCockLength, newCockDefaultSize), Cock.MIN_COCK_LENGTH, Cock.MAX_COCK_LENGTH);
+			if (givenLength != null)
+			{
+				givenLength += newCockSizeDelta;
+			}
+			if (givenLength is null || givenLength < minLength)
+			{
+				return minLength;
+			}
+			else
+			{
+				return (float)givenLength;
+			}
 		}
 
 		#endregion
 
 		#region Generate
-		internal static Cock GenerateFromGender(Guid creatureID, CockPerkHelper initialPerkValues, Gender gender)
+		internal static Cock GenerateFromGender(Guid creatureID, Gender gender)
 		{
 			if (gender.HasFlag(Gender.MALE))
 			{
-				return new Cock(creatureID, initialPerkValues);
+				return new Cock(creatureID);
 			}
 			else return null;
 		}
 
-		internal static Cock GenerateClitCock(Guid creatureID, Clit clit)
+		internal void InitializePiercings(Dictionary<CockPiercingLocation, PiercingJewelry> initialPiercings)
 		{
-			//clit cock doesn't care about perks, also this way i can write it easily lol.
-			return new Cock(creatureID, new CockPerkHelper(), CockType.defaultValue, clit.length + 5, DEFAULT_COCK_GIRTH, null, null);
-		}
-
-		internal void InitializePiercings(Dictionary<CockPiercingLocation, PiercingJewelry> piercings)
-		{
-#warning Implement Me!
-			//throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			piercings.InitializePiercings(initialPiercings);
 		}
 
 		internal static CockData GenerateAggregate(Guid creatureID, CockType type, float averageKnot, float averageKnotSize, float averageLength, float averageGirth)
@@ -429,7 +431,7 @@ namespace CoC.Backend.BodyParts
 
 			if (resetPiercings)
 			{
-				cockPiercings.Reset();
+				piercings.Reset();
 			}
 		}
 
@@ -474,7 +476,7 @@ namespace CoC.Backend.BodyParts
 			return length;
 		}
 
-		public float ThickenCock(float thickenAmount)
+		public float IncreaseThickness(float thickenAmount)
 		{
 			float oldGirth = girth;
 			var oldData = AsReadOnlyData();
@@ -591,7 +593,7 @@ namespace CoC.Backend.BodyParts
 			type = cockType;
 			if (valid || correctInvalidData)
 			{
-				valid &= cockPiercings.Validate(correctInvalidData);
+				valid &= piercings.Validate(correctInvalidData);
 			}
 			//give length priority.
 			if (valid || correctInvalidData)
@@ -1035,7 +1037,7 @@ namespace CoC.Backend.BodyParts
 
 			cockSock = source.cockSock;
 
-			cockPiercings = source.cockPiercings.AsReadOnlyData();
+			cockPiercings = source.piercings.AsReadOnlyData();
 
 			currentlyHasSheath = source.hasSheath;
 		}

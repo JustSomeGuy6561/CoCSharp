@@ -1462,13 +1462,13 @@ namespace CoC.Frontend.Creatures
 			creator.breasts[0].cupSize = size;
 			//remember null < anything is false, and null > anything is false.
 			//so these are fine. woo!
-			if (size > CupSize.C && creator.breasts[0].nippleLength < 0.5f)
+			if (size > CupSize.C && (creator.nippleLength is null || creator.nippleLength < 0.5f))
 			{
-				creator.breasts[0].nippleLength = 0.5f;
+				creator.nippleLength = 0.5f;
 			}
-			else if (size == CupSize.FLAT && creator.breasts[0].nippleLength > 0.25f)
+			else if (size == CupSize.FLAT && (creator.nippleLength is null || creator.nippleLength < 0.25f))
 			{
-				creator.breasts[0].nippleLength = 0.25f;
+				creator.nippleLength = 0.25f;
 			}
 			GenericStyleCustomizeMenu();
 		}

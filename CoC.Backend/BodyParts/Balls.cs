@@ -157,7 +157,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal bool makeUniBall()
+		public bool makeUniBall()
 		{
 			if (hasBalls && uniBall)
 			{
@@ -170,7 +170,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal bool makeStandard()
+		public bool MakeStandard()
 		{
 			if (hasBalls && !uniBall)
 			{
@@ -183,7 +183,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal byte AddBalls(byte addAmount)
+		public byte AddBalls(byte addAmount)
 		{
 			Utils.Clamp(ref addAmount, (byte)0, MAX_BALLS_COUNT);
 
@@ -201,7 +201,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//
-		internal byte RemoveBalls(byte removeAmount)
+		public byte RemoveBalls(byte removeAmount)
 		{
 			Utils.Clamp(ref removeAmount, (byte)0, MAX_BALLS_COUNT);
 			if (!hasBalls || removeAmount == 0)

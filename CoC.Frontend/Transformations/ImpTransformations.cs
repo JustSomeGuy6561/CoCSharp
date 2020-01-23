@@ -5,6 +5,7 @@ using CoC.Backend.Tools;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Races;
+using CoC.Frontend.Settings.Gameplay;
 using CoC.Frontend.UI;
 using System;
 using System.Text;
@@ -18,14 +19,13 @@ namespace CoC.Frontend.Transformations
 	 */
 	internal abstract class ImpTransformation : GenericTransformationBase
 	{
-		StandardDisplay currentDisplay => DisplayManager.GetCurrentDisplay();
-		private bool hyperHappy => SaveData.FrontendSessionSave.data?.HyperHappyLocal ?? false;
+		private bool hyperHappy => HyperHappySettings.isEnabled;
 
 		protected internal override string DoTransformation(Creature target, out bool isBadEnd)
 		{
 			isBadEnd = false;
 
-			int changeCount = GenerateChanceCount(target, new int[] { 2, 2 });
+			int changeCount = GenerateChangeCount(target, new int[] { 2, 2 });
 			int remainingChanges = changeCount;
 
 			StringBuilder sb = new StringBuilder();
@@ -71,7 +71,6 @@ namespace CoC.Frontend.Transformations
 			//Shrinkage!
 			if (Utils.Rand(2) == 0 && target.build.heightInInches > 42)
 			{
-				//currentDisplay.OutputText(target, "" + Environment.NewLine + "" + Environment.NewLine + "Your skin crawls, making you close your eyes and shiver. When you open them again the world seems... different. After a bit of investigation, you realize you've become shorter!");
 				byte heightDelta = target.build.GetShorter((byte)(1 + Utils.Rand(3)));
 				if (heightDelta > 0)
 				{
@@ -140,7 +139,7 @@ namespace CoC.Frontend.Transformations
 			if (target.horns.type == HornType.IMP && Array.Exists(Species.IMP.availableTones, x => target.body.primarySkin.tone == x) && target.ears.type != EarType.IMP && Utils.Rand(3) == 0)
 			{
 				var oldData = target.ears.AsReadOnlyData();
-				if (target.UpdateEar(EarType.IMP))
+				if (target.UpdateEars(EarType.IMP))
 				{
 					sb.Append(ChangeEarsText(target, oldData));
 
@@ -187,11 +186,13 @@ namespace CoC.Frontend.Transformations
 
 				if (target.hair.type != HairType.NORMAL)
 				{
-					target.UpdateHair(HairType.NORMAL, hairColor, newHairLength: hairLength, newStyle: HairStyle.CURLY);
+					//also restarts hair growth if disabled.
+					target.UpdateHair(HairType.NORMAL, true, hairColor, newHairLength: hairLength, newStyle: HairStyle.CURLY);
 				}
 				else
 				{
-					target.hair.SetAll(hairLength, hairColor, style: HairStyle.CURLY);
+					//also restarts hair growth if disabled.
+					target.hair.SetAll(hairLength, true, hairColor, style: HairStyle.CURLY);
 				}
 				sb.Append(HairChangedText(target, oldHairData));
 
@@ -237,7 +238,7 @@ namespace CoC.Frontend.Transformations
 
 						if (delta != 0)
 						{
-							sb.Append(CurrentBreastRowChanged(target, breast.index, delta, rowsAlreadyModified));
+							sb.Append(CurrentBreastRowChanged(target, breast.rowIndex, delta, rowsAlreadyModified));
 
 							rowsAlreadyModified++;
 						}
@@ -249,7 +250,7 @@ namespace CoC.Frontend.Transformations
 
 
 			//Free extra nipple removal service
-			if (target.genitals.quadNipples && Utils.Rand(3) == 0)
+			if (target.genitals.hasQuadNipples && Utils.Rand(3) == 0)
 			{
 				target.genitals.SetQuadNipples(false);
 

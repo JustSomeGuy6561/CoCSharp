@@ -21,22 +21,31 @@ namespace CoC.Frontend.Items.Consumables
 	{
 		private readonly HairFurColors color;
 
-		public HairDye(HairFurColors dyeColor) : base(Short(dyeColor), Short(dyeColor), Full(dyeColor), Desc)
+		public HairDye(HairFurColors dyeColor) : base()
 		{
 			color = dyeColor ?? throw new ArgumentNullException(nameof(dyeColor));
 		}
 
-		private static SimpleDescriptor Short(HairFurColors dyeColor)
+		public override string AbbreviatedName()
 		{
-			return () => dyeColor.AsString() + " dye";
+			return color.AsString().Truncate(6) + "Dye";
 		}
 
-		private static SimpleDescriptor Full(HairFurColors dyeColor)
+		public override string ItemName()
 		{
-			return () => $"a vial of {dyeColor.AsString()} hair dye";
+			return color.AsString() + " Dye";
 		}
 
-		private static string Desc()
+		public override string ItemDescription(byte count = 1, bool displayCount = false)
+		{
+			string vialText = count != 1 ? "vials" : "vial";
+
+			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+
+			return $"{count} {vialText} of  {color.AsString()} hair dye";
+		}
+
+		public override string Appearance()
 		{
 			return "This bottle of dye will allow you to change the color of your hair. Of course if you don't have hair, using this would be a waste.";
 		}
@@ -187,14 +196,14 @@ namespace CoC.Frontend.Items.Consumables
 			itemCallback = null;
 
 			//and resume normal execution.
-			temp(true, result, null);
+			temp(true, result, Author(), null);
 		}
 
 		private void PutBack()
 		{
 			primaryMenu = null;
 
-			itemCallback(false, PutBackItemText(), this);
+			itemCallback(false, PutBackItemText(), Author(), this);
 		}
 
 		private string PutBackItemText()

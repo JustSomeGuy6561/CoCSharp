@@ -1,4 +1,5 @@
 ﻿using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 using System;
 
@@ -37,6 +38,47 @@ namespace CoC.Backend.BodyParts
 		public override string BodyPartName()
 		{
 			return Name();
+		}
+
+		public string LongDescription(bool alternateFormat = false) => type.LongDescription(AsReadOnlyData(), alternateFormat);
+
+		public string LongAlternateDescription() => type.LongAlternateDescription(AsReadOnlyData());
+		public string LongPrimaryDescription() => type.LongPrimaryDescription(AsReadOnlyData());
+
+		internal string PlayerDescription()
+		{
+			if (CreatureStore.GetCreatureClean(creatureID) is PlayerBase player)
+			{
+				return type.PlayerDescription(this, player);
+			}
+			else
+			{
+				return "";
+			}
+		}
+
+		internal string TransformedFromText(TailData preTransform)
+		{
+			if (CreatureStore.GetCreatureClean(creatureID) is PlayerBase player)
+			{
+				return type.TransformedFromText(preTransform, player);
+			}
+			else
+			{
+				return "";
+			}
+		}
+
+		internal string RestoredText(TailData preRestoreData)
+		{
+			if (CreatureStore.GetCreatureClean(creatureID) is PlayerBase player)
+			{
+				return type.RestoredText(preRestoreData, player);
+			}
+			else
+			{
+				return "";
+			}
 		}
 	}
 
@@ -83,9 +125,19 @@ namespace CoC.Backend.BodyParts
 		private readonly OvipositorTransform transformStr;
 		private readonly OvipositorRestore restoreStr;
 
+		public string LongDescription(OvipositorData ovipositor, bool alternateFormat = false) => longDesc(ovipositor, alternateFormat);
+
+		public string LongAlternateDescription(OvipositorData ovipositor) => longDesc(ovipositor, true);
+		public string LongPrimaryDescription(OvipositorData ovipositor) => longDesc(ovipositor, false);
+
+		internal string PlayerDescription(Ovipositor ovipositor, PlayerBase player) => playerDesc(ovipositor, player);
+
+		internal string TransformedFromText(TailData preTransform, PlayerBase player) => transformStr(preTransform, player);
+
+		internal string RestoredText(TailData preRestoreData, PlayerBase player) => restoreStr(preRestoreData, player);
 
 		private OvipositorType(ShortDescriptor shortDesc, PartDescriptor<OvipositorData> longDesc, PlayerBodyPartDelegate<Ovipositor> playerDesc,
-			OvipositorTransform transform, OvipositorRestore restore) : this(0, shortDesc, longDesc, playerDesc, transform, restore) {}
+			OvipositorTransform transform, OvipositorRestore restore) : this(0, shortDesc, longDesc, playerDesc, transform, restore) { }
 
 		private OvipositorType(byte maxEggs, ShortDescriptor shortDesc, PartDescriptor<OvipositorData> longDesc, PlayerBodyPartDelegate<Ovipositor> playerDesc,
 			OvipositorTransform transform, OvipositorRestore restore) : base(shortDesc)

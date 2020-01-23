@@ -78,7 +78,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LipPiercing : Piercing<LipPiercingLocation>
 	{
-		public LipPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
+		public LipPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -143,7 +143,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class EyebrowPiercing : Piercing<EyebrowPiercingLocation>
 	{
-		public EyebrowPiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
+		public EyebrowPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -219,7 +219,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NosePiercing : Piercing<NosePiercingLocation>
 	{
-		public NosePiercing(PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(LocationUnlocked, playerShortDesc, playerLongDesc)
+		public NosePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -268,7 +268,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class FaceTattoo : TattooablePart<FaceTattooLocation>
 	{
-		public FaceTattoo(PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(allTattoosShort, allTattoosLong)
+		public FaceTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 
@@ -373,11 +373,12 @@ namespace CoC.Backend.BodyParts
 		{
 			type = faceType ?? throw new ArgumentNullException(nameof(faceType));
 			isFullMorph = false;
-			lipPiercings = new LipPiercing(LipPiercingUnlocked, AllLipPiercingsShort, AllLipPiercingsLong);
-			nosePiercings = new NosePiercing(NosePiercingUnlocked, AllNosePiercingsShort, AllNosePiercingsLong);
-			eyebrowPiercings = new EyebrowPiercing(EyebrowPiercingUnlocked, AllEyebrowPiercingsShort, AllEyebrowPiercingsLong);
 
-			tattoos = new FaceTattoo(AllTattoosShort, AllTattoosLong);
+			lipPiercings = new LipPiercing(this, LipPiercingUnlocked, AllLipPiercingsShort, AllLipPiercingsLong);
+			nosePiercings = new NosePiercing(this, NosePiercingUnlocked, AllNosePiercingsShort, AllNosePiercingsLong);
+			eyebrowPiercings = new EyebrowPiercing(this, EyebrowPiercingUnlocked, AllEyebrowPiercingsShort, AllEyebrowPiercingsLong);
+
+			tattoos = new FaceTattoo(this, AllTattoosShort, AllTattoosLong);
 		}
 
 		internal Face(Guid creatureID, FaceType faceType, bool? fullMorph = null, SkinTexture complexion = SkinTexture.NONDESCRIPT) : this(creatureID, faceType)
@@ -466,7 +467,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal bool StrengthenFacialMorph()
+		public bool StrengthenFacialMorph()
 		{
 			if (!isFullMorph && type.hasSecondLevel)
 			{
@@ -478,7 +479,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		internal bool WeakenFacialMorph(bool restoreIfAlreadyLevelOne = true)
+		public bool WeakenFacialMorph(bool restoreIfAlreadyLevelOne = true)
 		{
 			//if full morph, weaken it to half-morph level.
 			if (isFullMorph)
@@ -506,7 +507,7 @@ namespace CoC.Backend.BodyParts
 			else return UpdateFaceWithMorph(faceType, forceFullMorph);
 		}
 
-		internal bool ChangeComplexion(SkinTexture complexion)
+		public bool ChangeComplexion(SkinTexture complexion)
 		{
 			if (skinTexture == complexion)
 			{

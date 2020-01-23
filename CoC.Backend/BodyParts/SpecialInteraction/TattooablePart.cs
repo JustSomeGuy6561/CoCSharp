@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Items.Wearables.Tattoos;
+﻿using CoC.Backend.Creatures;
+using CoC.Backend.Items.Wearables.Tattoos;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -83,6 +84,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 		protected readonly Dictionary<Location, TattooBase> tattoos;
 
+		public readonly IBodyPart parent;
 
 #warning Consider adding hint text delegates (defined below) for getting/replacing/removing tattoo.
 		//would need more booleans to define what we're doing - are we trying to add, replace, or remove?
@@ -92,6 +94,16 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		protected readonly PlayerStr allTattoosShortDescription;
 		protected readonly PlayerStr allTattoosLongDescription;
 
+		public string ShortPlayerDescription(PlayerBase player)
+		{
+			return allTattoosShortDescription(player);
+		}
+
+		public string VerbosePlayerDesription(PlayerBase player)
+		{
+			return allTattoosLongDescription(player);
+		}
+
 		private readonly WeakEventSource<TattooDataChangedEventArgs<Location>> tattooChangeSource = new WeakEventSource<TattooDataChangedEventArgs<Location>>();
 		public event EventHandler<TattooDataChangedEventArgs<Location>> OnTattooChange
 		{
@@ -99,8 +111,10 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			remove { tattooChangeSource.Unsubscribe(value); }
 		}
 
-		internal TattooablePart(PlayerStr allTattoosShort, PlayerStr allTattoosLong)
+		internal TattooablePart(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong)
 		{
+			parent = source ?? throw new ArgumentNullException(nameof(source));
+
 			allTattoosShortDescription = allTattoosShort ?? throw new ArgumentNullException(nameof(allTattoosShort));
 			allTattoosLongDescription = allTattoosShort ?? throw new ArgumentNullException(nameof(allTattoosShort));
 		}
@@ -224,13 +238,13 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		//assumes is called before the tattoos are cleared.
 		private void ProcReset()
 		{
-			tattooChangeSource.Raise(this, new TattooDataChangedEventArgs<Location>(tattoos));
+			tattooChangeSource.Raise(this, new TattooDataChangedEventArgs<Location>(parent, tattoos));
 		}
 
 		//difficult to do, so we'll just leave this up to implementer.
 		private void ProcMultiChange(IDictionary<Location, ValueDifference<TattooBase>> diffs)
 		{
-			tattooChangeSource.Raise(this, new TattooDataChangedEventArgs<Location>(diffs));
+			tattooChangeSource.Raise(this, new TattooDataChangedEventArgs<Location>(parent, diffs));
 		}
 
 		//assumes is called before the tattoo is changed.
@@ -255,12 +269,14 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 				newCount = currentTattooCount;
 			}
 
-			tattooChangeSource.Raise(this, new TattooDataChangedEventArgs<Location>(tattooLocation, oldTattoo, newTattoo, newCount));
+			tattooChangeSource.Raise(this, new TattooDataChangedEventArgs<Location>(parent, tattooLocation, oldTattoo, newTattoo, newCount));
 		}
 	}
 
 	public delegate void TattooDataChangedEventHandler<T>(object sender, TattooDataChangedEventArgs<T> args) where T : TattooLocation;
 
+	//just like piercing, a tattoo change event now stores the body part associated with it, so you don't need to know exactly what T is to get the associated body part
+	//(and by extension, the creature associated with that body part).
 	public class TattooDataChangedEventArgs<T> : EventArgs where T : TattooLocation
 	{
 		public readonly ReadOnlyDictionary<T, ValueDifference<TattooBase>> tattooDiffs;
@@ -268,9 +284,14 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		public readonly int oldTattooCount;
 		public readonly int newTattooCount;
 
+		public readonly IBodyPart parent;
+
 		//add, replace, or remove tattoo.
-		internal TattooDataChangedEventArgs(T location, TattooBase oldTattoo, TattooBase newTattoo, int newTattooCount)
+		internal TattooDataChangedEventArgs(IBodyPart source, T location, TattooBase oldTattoo, TattooBase newTattoo, int newTattooCount)
 		{
+			parent = source ?? throw new ArgumentNullException(nameof(source));
+			if (location == null) throw new ArgumentNullException(nameof(location));
+
 			this.newTattooCount = newTattooCount;
 
 			if (oldTattoo == null != (newTattoo == null))
@@ -296,9 +317,10 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			};
 		}
 
-		//add, replace, or remove multiple tattoos or a single tattoo from multiple locations.
-		internal TattooDataChangedEventArgs(IDictionary<T, ValueDifference<TattooBase>> diffs)
+		//add, replace, or remove multiple tattoos.
+		internal TattooDataChangedEventArgs(IBodyPart source, IDictionary<T, ValueDifference<TattooBase>> diffs)
 		{
+			parent = source ?? throw new ArgumentNullException(nameof(source));
 			if (diffs is null) throw new ArgumentNullException(nameof(diffs));
 
 
@@ -309,8 +331,12 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		}
 
 		//clear tattoos.
-		internal TattooDataChangedEventArgs(Dictionary<T, TattooBase> unclearedTattooDict)
+		internal TattooDataChangedEventArgs(IBodyPart source, IDictionary<T, TattooBase> unclearedTattooDict)
 		{
+			parent = source ?? throw new ArgumentNullException(nameof(source));
+			if (unclearedTattooDict is null) throw new ArgumentNullException(nameof(unclearedTattooDict));
+
+
 			Dictionary<T, ValueDifference<TattooBase>> pDiffs = unclearedTattooDict.Where(x => x.Value != null).ToDictionary(x => x.Key, x => new ValueDifference<TattooBase>(x.Value, null));
 			tattooDiffs = new ReadOnlyDictionary<T, ValueDifference<TattooBase>>(pDiffs);
 			oldTattooCount = unclearedTattooDict.Where(x => x.Value != null).Count();

@@ -3,19 +3,55 @@
 //Author: JustSomeGuy
 //1/10/2019, 9:07 PM
 
+using CoC.Backend.BodyParts.SpecialInteraction;
+using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using System;
+using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
+	public partial class NipplePiercingLocation
+	{
+		private static string LeftHorizontalButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftHorizontalLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftVerticalButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string LeftVerticalLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightHorizontalButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightHorizontalLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightVerticalButton()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+		private static string RightVerticalLocation()
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+	}
 	//feel free to use the body type for these descriptions for these -
 	//because of the lack of types,
 
 	internal interface IBreast
 	{
 		CupSize cupSize { get; }
-
-		NippleData nipples { get; }
 
 		byte numberOfBreasts { get; }
 
@@ -28,6 +64,12 @@ namespace CoC.Backend.BodyParts
 		bool isOverFull { get; }
 
 		bool isMaleBreasts { get; }
+
+
+		ReadOnlyPiercing<NipplePiercingLocation> piercings { get; }
+		float nippleLength { get; }
+
+		string FullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false);
 	}
 
 	public partial class Breasts : IBreast
@@ -37,9 +79,17 @@ namespace CoC.Backend.BodyParts
 			return "Breasts";
 		}
 
-		CupSize IBreast.cupSize => cupSize;
+		private string AllNipplePiercingsShort(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
 
-		NippleData IBreast.nipples => nipples.AsReadOnlyData();
+		private string AllNipplePiercingsLong(PlayerBase player)
+		{
+			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		CupSize IBreast.cupSize => cupSize;
 
 		byte IBreast.numberOfBreasts => numBreasts;
 
@@ -47,13 +97,20 @@ namespace CoC.Backend.BodyParts
 
 		bool IBreast.isMaleBreasts => isMale;
 
+		float IBreast.lactationRate => lactationRate;
+
+		LactationStatus IBreast.lactationStatus => lactationStatus;
+
+		bool IBreast.isOverFull => isOverFull;
+
+		ReadOnlyPiercing<NipplePiercingLocation> IBreast.piercings => nipplePiercings.AsReadOnlyData();
+
+		float IBreast.nippleLength => nippleLength;
 	}
 
 	public partial class BreastData : IBreast
 	{
 		CupSize IBreast.cupSize => cupSize;
-
-		NippleData IBreast.nipples => nipples;
 
 		byte IBreast.numberOfBreasts => numberOfBreasts;
 
@@ -66,6 +123,8 @@ namespace CoC.Backend.BodyParts
 		Gender IBreast.gender => gender;
 
 		bool IBreast.isMaleBreasts => isMaleBreasts;
+
+		ReadOnlyPiercing<NipplePiercingLocation> IBreast.piercings => throw new NotImplementedException();
 	}
 
 	public static class BreastHelpers
@@ -306,13 +365,15 @@ namespace CoC.Backend.BodyParts
 				string withText = plural ? ", each with " : " with ";
 				if (preciseMeasurements)
 				{
-					return intro + breast.cupSize.DescribeSize(breast.gender, getArticle) + milkText + breast.cupSize.AsText() + " " + ShortDesc(breast, plural) + withText + breast.nipples.FullDescription(true, true, true);
+					return intro + breast.cupSize.DescribeSize(breast.gender, getArticle) + milkText + breast.cupSize.AsText() + " " + ShortDesc(breast, plural) + withText + breast.FullNippleDescription(true, true, true);
 				}
 				else
 				{
-					return intro + breast.cupSize.DescribeSize(breast.gender, getArticle) + milkText + ShortDesc(breast, plural) + withText + breast.nipples.FullDescription(true, true, false);
+					return intro + breast.cupSize.DescribeSize(breast.gender, getArticle) + milkText + ShortDesc(breast, plural) + withText + breast.FullNippleDescription(true, true, false);
 				}
 			}
 		}
 	}
+
+
 }
