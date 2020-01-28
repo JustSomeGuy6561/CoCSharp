@@ -102,6 +102,8 @@ namespace CoC.Backend.BodyParts
 		}
 		private float _length;
 
+		private float growthMultiplier => creature?.genitals.perkData.NippleGrowthMultiplier ?? 1;
+		private float shrinkMultiplier => creature?.genitals.perkData.NippleShrinkMultiplier ?? 1;
 
 		internal BodyType bodyType => creature?.body.type ?? BodyType.defaultValue;
 
@@ -334,6 +336,63 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 		}
+
+		internal float GrowNipples(float amount, bool ignorePerks = false)
+		{
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			if (!ignorePerks)
+			{
+				amount *= growthMultiplier;
+			}
+			var oldSize = length;
+
+			length += amount;
+
+			return length - oldSize;
+		}
+
+		internal float ShrinkNipples(float amount, bool ignorePerks = false)
+		{
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			if (!ignorePerks)
+			{
+				amount *= shrinkMultiplier;
+			}
+			var oldSize = length;
+
+			length -= amount;
+
+			return oldSize - length;
+		}
+
+		internal float ChangeNippleLength(float delta, bool ignorePerks = false)
+		{
+			if (delta > 0)
+			{
+				return GrowNipples(delta, ignorePerks);
+			}
+			else if (delta == 0)
+			{
+				return 0;
+			}
+			else
+			{
+				return -1 * ShrinkNipples(-1 * delta, ignorePerks);
+			}
+		}
+
+		internal bool SetNippleLength(float size)
+		{
+			length = size;
+			return length == size;
+		}
+
 		#endregion
 
 		#region GrowShrink

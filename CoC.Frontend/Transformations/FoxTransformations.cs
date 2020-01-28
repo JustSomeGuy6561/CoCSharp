@@ -119,7 +119,7 @@ namespace CoC.Frontend.Transformations
 			//Modification Note: move this free change up here, where it makes the most sense.
 			if (target.build.muscleTone > 40 && Utils.Rand(2) == 0)
 			{
-				target.build.DescreaseMuscleTone(4);
+				target.build.DecreaseMuscleTone(4);
 			}
 
 

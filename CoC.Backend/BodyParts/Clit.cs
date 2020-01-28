@@ -93,6 +93,13 @@ namespace CoC.Backend.BodyParts
 	//note: perks are guarenteed to be valid by the time this is created, so it's post perk init won't be called.
 	public sealed partial class Clit : SimpleSaveablePart<Clit, ClitData>, IGrowable, IShrinkable
 	{
+		public const float MIN_CLIT_SIZE = 0.25f;
+		public const float DEFAULT_CLIT_SIZE = 0.25f;
+		public const float MAX_CLIT_SIZE = 100f;
+
+		public const float LARGEST_NATURAL_SIZE = 3f;
+
+
 		public override string BodyPartName() => Name();
 
 		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
@@ -102,6 +109,9 @@ namespace CoC.Backend.BodyParts
 		private float clitShrinkMultiplier => creature?.genitals.perkData.ClitShrinkMultiplier ?? 1;
 
 		public float minClitSize => creature?.genitals.perkData.MinClitSize ?? MIN_CLIT_SIZE;
+
+		//the largest this clit can be through 'natural' means. this factors in any perks that might alter the normal size. considering what game this is, this is hardly used.
+		public float largestNormalSize => LARGEST_NATURAL_SIZE + (creature?.genitals.perkData.NewClitSizeDelta ?? 0);
 
 		private float defaultNewClitSize => creature?.genitals.perkData.DefaultNewClitSize ?? MIN_CLIT_SIZE;
 		private float newClitSizeDelta => creature?.genitals.perkData.NewClitSizeDelta ?? 0;
@@ -127,9 +137,7 @@ namespace CoC.Backend.BodyParts
 
 		private bool piercingFetish => BackendSessionSave.data.piercingFetishEnabled;
 
-		public const float MIN_CLIT_SIZE = 0.25f;
-		public const float DEFAULT_CLIT_SIZE = 0.25f;
-		public const float MAX_CLIT_SIZE = 100f;
+
 
 		private float minSize
 		{

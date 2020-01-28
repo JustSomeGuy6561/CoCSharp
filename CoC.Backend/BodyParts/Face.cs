@@ -674,8 +674,12 @@ namespace CoC.Backend.BodyParts
 			return type.canAttackWith;
 		}
 
-
 		AttackBase ICanAttackWith.attack => type.attack;
+
+		public bool IsReptilian()
+		{
+			return type == FaceType.LIZARD || type == FaceType.DRAGON;
+		}
 	}
 
 	//feel free to add more types. if you need a single instance to support multiple types at once, you could mark this with the [flags] attribute.

@@ -187,10 +187,10 @@ namespace CoC.Frontend.Transformations
 
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
-			if (Utils.Rand(3) == 0 && target.gender == Gender.MALE && target.genitals.AverageCupSize() > target.genitals.smallestMaleCupSize && !hyperHappy)
+			if (Utils.Rand(3) == 0 && target.gender == Gender.MALE && target.genitals.AverageCupSize() > target.genitals.smallestPossibleMaleCupSize && !hyperHappy)
 			{
 				//sb.Append("\n\nYou cup your tits as they begin to tingle strangely. You can actually feel them getting smaller in your hands!");
-				foreach (var tit in target.breasts.Where(x => x.cupSize > target.genitals.smallestMaleCupSize))
+				foreach (var tit in target.breasts.Where(x => x.cupSize > target.genitals.smallestPossibleMaleCupSize))
 				{
 					tit.ShrinkBreasts(1);
 				}
@@ -216,7 +216,6 @@ namespace CoC.Frontend.Transformations
 			{
 				if (playerWomb.GrantOviposition())
 				{
-
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}

@@ -53,6 +53,12 @@ namespace CoC.Backend.BodyParts
 
 		public int numVaginas => _vaginas.Count;
 
+		public VaginalLooseness minVaginalLooseness => perkData.minVaginalLooseness;
+		public VaginalLooseness maxVaginalLooseness => perkData.maxVaginalLooseness;
+
+		public VaginalWetness minVaginalWetness => perkData.minVaginalWetness;
+		public VaginalWetness maxVaginalWetness => perkData.maxVaginalWetness;
+
 		public uint vaginalSexCount => missingVaginaSexCount.add((uint)_vaginas.Sum(x => x.sexCount));
 		public uint vaginaPenetratedCount => missingVaginaPenetratedCount.add((uint)_vaginas.Sum(x => x.totalPenetrationCount));
 		public uint vaginalOrgasmCount => missingVaginaOrgasmCount.add((uint)_vaginas.Sum(x => x.orgasmCount));
@@ -369,6 +375,16 @@ namespace CoC.Backend.BodyParts
 		public int CountVaginasOfType(VaginaType vaginaType)
 		{
 			return _vaginas.Sum(x => x.type == vaginaType ? 1 : 0);
+		}
+
+		public bool HasAVaginaOfType(VaginaType type)
+		{
+			return _vaginas.Any(x => x.type == type);
+		}
+
+		public bool OnlyHasVaginasOfType(VaginaType type)
+		{
+			return _vaginas.All(x => x.type == type);
 		}
 
 		#endregion

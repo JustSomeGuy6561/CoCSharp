@@ -35,11 +35,23 @@ namespace CoC.Frontend.Perks
 			historyPerks.Add(createHistoryFunction);
 		}
 
-		public readonly SimpleDescriptor buttonText;
-		public readonly SimpleDescriptor unlockHistoryText;
+		private readonly SimpleDescriptor nameText;
+		private readonly SimpleDescriptor perkText;
 
-		public HistoryPerkBase(SimpleDescriptor perkName, SimpleDescriptor buttonStr, SimpleDescriptor perkHintStr, SimpleDescriptor hasPerkText) : base(perkName, hasPerkText)
+		public override string Name() => nameText();
+		public override string HasPerkText() => perkText();
+
+		private readonly SimpleDescriptor buttonText;
+		private readonly SimpleDescriptor unlockHistoryText;
+
+		public string ButtonText() => buttonText();
+		public string UnlockHistoryText() => unlockHistoryText();
+
+		public HistoryPerkBase(SimpleDescriptor perkName, SimpleDescriptor buttonStr, SimpleDescriptor perkHintStr, SimpleDescriptor hasPerkText)
 		{
+			nameText = perkName ?? throw new ArgumentNullException(nameof(perkName));
+			perkText = hasPerkText ?? throw new ArgumentNullException(nameof(hasPerkText));
+
 			unlockHistoryText = perkHintStr;
 			buttonText = buttonStr;
 		}

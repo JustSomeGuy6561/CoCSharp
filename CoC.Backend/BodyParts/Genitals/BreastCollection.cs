@@ -703,6 +703,14 @@ namespace CoC.Backend.BodyParts
 
 		public bool SetDickNippleFlag(bool enabled) => nippleData.SetDickNippleFlag(enabled);
 
+		public float GrowNipples(float amount, bool ignorePerks = false) => nippleData.GrowNipples(amount, ignorePerks);
+
+		public float ShrinkNipples(float amount, bool ignorePerks = false) => nippleData.ShrinkNipples(amount, ignorePerks);
+
+		public float ChangeNippleLength(float delta, bool ignorePerks = false) => nippleData.ChangeNippleLength(delta, ignorePerks);
+
+		public bool SetNippleLength(float size) => nippleData.SetNippleLength(size);
+
 		#endregion
 
 		#region Lactation Update Functions

@@ -73,7 +73,20 @@ namespace CoC.Backend.BodyParts
 
 		private Gender currentGender => creature?.genitals.gender ?? Gender.MALE;
 
-		public bool femininityLimitedByGender { get; internal set; } = false;
+		public bool femininityLimitedByGender
+		{
+			get => _femininityLimitedByGender;
+			private set
+			{
+				if (_femininityLimitedByGender != value)
+				{
+					_femininityLimitedByGender = value;
+					UpdateFemininity(this.value);
+				}
+			}
+		}
+		private bool _femininityLimitedByGender = false;
+
 
 		public static implicit operator byte(Femininity femininity)
 		{
@@ -140,6 +153,26 @@ namespace CoC.Backend.BodyParts
 			return femininityListeners.Remove(listener);
 		}
 
+		public bool ActivateAndrogyny()
+		{
+			if (!femininityLimitedByGender)
+			{
+				return false;
+			}
+			femininityLimitedByGender = false;
+			return true;
+		}
+
+		public bool DeactivateAndrogyny()
+		{
+			if (femininityLimitedByGender)
+			{
+				return false;
+			}
+			femininityLimitedByGender = true;
+			return true;
+		}
+
 		//private Femininity(Gender initialGender, byte femininity)
 		//{
 		//	genderAccessor = () => initialGender;
@@ -201,7 +234,7 @@ namespace CoC.Backend.BodyParts
 			return value.subtract(oldFemininity);
 		}
 
-		public byte InreaseMasculinity(byte amount)
+		public byte IncreaseMasculinity(byte amount)
 		{
 			if (value == 0)
 			{

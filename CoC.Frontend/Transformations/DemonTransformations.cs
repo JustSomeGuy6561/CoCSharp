@@ -2,14 +2,13 @@
 //Description:
 //Author: JustSomeGuy
 //1/23/2020 4:25:13 AM
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Creatures.PlayerData;
-using CoC.Frontend.Races;
 using CoC.Frontend.Settings.Gameplay;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
@@ -18,12 +17,12 @@ namespace CoC.Frontend.Transformations
 
 	internal abstract class DemonTransformations : GenericTransformationBase
 	{
-		protected readonly Gender targetGender;
+		protected readonly Gender desiredGender;
 		protected readonly bool isPurified;
 
-		protected DemonTransformations(Gender target, bool purified)
+		protected DemonTransformations(Gender transformationGender, bool purified)
 		{
-			targetGender = target == Gender.GENDERLESS ? Gender.MALE : target;
+			desiredGender = transformationGender == Gender.GENDERLESS ? Gender.MALE : transformationGender;
 
 			isPurified = purified;
 		}
@@ -36,10 +35,7 @@ namespace CoC.Frontend.Transformations
 		{
 			isBadEnd = false;
 
-			//by default, this is 2 rolls at 50%, so a 25% chance of 0 additional tfs, 50% chance of 1 additional tf, 25% chance of 2 additional tfs.
-			//also takes into consideration any perks that increase or decrease tf effectiveness. if you need to roll out your own, feel free to do so.
-			int changeCount = GenerateChangeCount(target, new int[] { 2, 2 });
-			int remainingChanges = changeCount;
+			//for some unknown reason, demon tfs roll out their own chance system completely unique to them. ok.
 
 			StringBuilder sb = new StringBuilder();
 
@@ -53,20 +49,364 @@ namespace CoC.Frontend.Transformations
 			//Add any free changes here - these can occur even if the change count is 0. these include things such as change in stats (intelligence, etc)
 			//change in height, hips, and/or butt, or other similar stats.
 
-			//this will handle the edge case where the change count starts out as 0.
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			int rando = Utils.Rand(100);
+			int delta = target.GetExtraData()?.deltaTransforms ?? 0;
 
-			//Any transformation related changes go here. these typically cost 1 change. these can be anything from body parts to gender (which technically also changes body parts,
-			//but w/e). You are required to make sure you return as soon as you've applied changeCount changes, but a single line of code can be applied at the end of a change to do
-			//this for you.
+			if (delta != 0)
+			{
+				rando += 5 * delta + Utils.Rand(5 * delta);
+			}
 
-			//paste this line after any tf is applied, and it will: automatically decrement the remaining changes count. if it becomes 0 or less, apply the total number of changes
-			//underwent to the target's change count (if applicable) and then return the StringBuilder content.
-			//if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			//First, check if this tf has the male flag set (for male or herm tfs). If it does, add or grow cocks.
+			if (desiredGender.HasFlag(Gender.MALE))
+			{
+				byte addedCocks = 0;
+				//if our initial roll was a crit, roll again. if we crit again, we may add several cocks, if possible.
+				if (rando >= 85 && target.cocks.Count < Genitals.MAX_COCKS && Utils.Rand(10) < target.corruptionTrue / 25)
+				{
+					addedCocks = GrowCockGeneric(target, (byte)(Utils.Rand(2) + 2));
+
+					target.DeltaCreatureStats(lib: 3 * addedCocks, sens: 5 * addedCocks, lus: 10 * addedCocks);
+					if (!isPurified)
+					{
+						target.IncreaseCorruption(8);
+					}
+				}
+				//otherwise, only add a cock if we have none or we originally rolled a crit (but failed to crit again)
+				else if (target.cocks.Count == 0 || (rando >= 85 && target.cocks.Count < Genitals.MAX_COCKS))
+				{
+					addedCocks = GrowCockGeneric(target, 1);
+
+					target.DeltaCreatureStats(lib: 3, sens: 5, lus: 10);
+					if (!isPurified)
+					{
+						target.IncreaseCorruption(5);
+					}
+				}
+				//if that fails, it means we had a cock already, or can't grow any more of them.
+				else
+				{
+					Cock shortest = target.genitals.ShortestCock();
+					float lengthDelta;
+
+					if (rando >= 45)
+					{
+						lengthDelta = shortest.IncreaseLength(Utils.Rand(3) + 3);
+						shortest.IncreaseThickness(1);
+					}
+					else if (Utils.Rand(4) == 0)
+					{
+						lengthDelta = shortest.IncreaseLength(3);
+					}
+					else
+					{
+						lengthDelta = shortest.IncreaseLength(1);
+					}
+
+					target.DeltaCreatureStats(lib: 2, sens: 1, lus: 5 + lengthDelta * 3);
+					if (!isPurified)
+					{
+						target.IncreaseCorruption();
+					}
+					if (target is CombatCreature cc)
+					{
+						//no idea why this occurs, but ok.
+						cc.IncreaseIntelligence(1);
+					}
+				}
+			}
+			//Otherwise, we're targeting female demon tfs only. this means we need to shrink (and possibly remove) the largest cock the target has, unless hyper happy is on.
+			else if (!hyperHappy && target.hasCock)
+			{
+				Cock largest = target.genitals.LongestCock(); //this loops through all the cocks and finds the longest. obviously, if the count is 1, this is simply the first element.
+
+				//we'll need this if it gets removed. if not, this can still be used, this time to determine how much we shrunk.
+				CockData oldData = largest.AsReadOnlyData();
+
+				//try decreasing it by 1-3. if this causes it to be removed instead, that's fine, but we need to know.
+				//Note that this remove is now IN PLACE, not LAST. so if we remove the 3rd one, the old 4th is now 3rd, and so on.
+				bool removed = target.genitals.ShrinkCockAndRemoveIfTooSmall(largest, Utils.Rand(3) + 1);
+			}
+
+			//Then, check if the tf has the female flag set (for female or herm tfs). if it does, add a vagina (if needed), and increase breast size.
+			if (desiredGender.HasFlag(Gender.FEMALE))
+			{
+				//don't currently have a vagina and herm tf or we're genderless, or it's a crit, or we rerolled a crit.
+				if (!target.hasVagina && (desiredGender == Gender.HERM || target.gender == Gender.GENDERLESS || rando > 65 || Utils.Rand(3) == 0))
+				{
+					target.genitals.AddVagina(VaginaType.HUMAN);
+				}
+				//do have one, and rolled a high crit.
+				else if (target.hasVagina && rando >= 85)
+				{
+					foreach (Vagina vag in target.vaginas)
+					{
+						//grow each clit anywhere from 0.25in to 1in, if they are below the largest normal size.
+						if (vag.clit.length < vag.clit.largestNormalSize)
+						{
+							vag.GrowClit((Utils.Rand(4) + 1) * 0.25f);
+							//cap it at the largest normal size.
+							if (vag.clit.length > vag.clit.largestNormalSize)
+							{
+								vag.SetClitSize(vag.clit.largestNormalSize);
+							}
+						}
+					}
+				}
+				//do have one, rolled a crit, but not a high crit.
+				else if (target.hasVagina && rando > 65)
+				{
+					target.HaveGenericVaginalOrgasm(0, true, true);
+					target.vaginas.ForEach(x => x.IncreaseWetness());
+				}
 
 
+				//now, breasts. these are the fallback, of sorts, so they grow larger when we don't crit. they also grow larger when we crit if we're targeting herms.
+
+				if (rando < 85 || desiredGender == Gender.HERM)
+				{
+					//only occurs via herm.
+					if (rando >= 85)
+					{
+						target.breasts.ForEach(x => x.GrowBreasts(3));
+					}
+					else
+					{
+
+						byte temp = (byte)(1 + Utils.Rand(3));
+						CupSize largestSize = target.genitals.BiggestCupSize();
+						if (largestSize < CupSize.B && Utils.Rand(3) == 0)
+						{
+							temp++;
+						}
+
+						if (largestSize < CupSize.DD && Utils.Rand(4) == 0)
+						{
+							temp++;
+						}
+
+						if (largestSize < CupSize.DD_BIG && Utils.Rand(5) == 0)
+						{
+							temp++;
+						}
+
+						target.breasts.ForEach(x => x.GrowBreasts(temp));
+					}
+				}
+			}
+			//if not, we're targeting male demon tfs only. this means we may need to shrink any overlarge breasts. Additionally, higher rng rolls may now remove vaginas.
+			else if (!hyperHappy)
+			{
+				//if high crit: decrease bonus capacity, and remove a vagina, flat-out.
+				if (rando >= 85 && target.hasVagina)
+				{
+					target.genitals.DecreaseBonusVaginalCapacity(5);
+					target.genitals.RemoveVagina();
+				}
+				//otherwise, if somewhat high, decrease bonus vaginal capacity (all vaginas), and wetness (last vagina). if this causes the bonus capacity to drop to 0
+				//and would cause it to go negative if we allowed that, remove the last vagina.
+				else if (rando >= 65)
+				{
+					Vagina lastVagina = target.vaginas[target.vaginas.Count - 1];
+					lastVagina.DecreaseWetness(1);
+
+					//this is being super pedantic, but i'd prefer it lower the stat, then remove the vagina. hence this bool here.
+					bool remove = target.genitals.standardBonusVaginalCapacity < 5;
+					//decrease first.
+					target.genitals.DecreaseBonusVaginalCapacity(5);
+
+					//then remove it.
+					if (remove)
+					{
+						target.genitals.RemoveVagina();
+					}
+				}
+
+				//
+				if (target.genitals.BiggestCupSize() > target.genitals.smallestPossibleCupSize && (rando >= 85 || (rando > 65 && Utils.RandBool()) || (rando <= 65 && Utils.Rand(4) == 0)))
+				{
+					foreach (Breasts breast in target.breasts)
+					{
+						if (breast.cupSize > target.genitals.smallestPossibleCupSize)
+						{
+							byte amount = 1;
+							if (rando >= 85)
+							{
+								amount++;
+							}
+
+							breast.ShrinkBreasts(amount);
+						}
+					}
+				}
+			}
+
+			//never called in vanilla. if i read it correctly, it just initializes to 0 with a max of 1.
+			int changeCount = base.GenerateChangeCount(target, new int[] { 3 }, 0, 0);
+
+			if (changeCount == 0)
+			{
+				return ApplyChangesAndReturn(target, sb, 0);
+			}
+
+			int remainingChanges = changeCount;
 
 
+			//Neck restore
+			if (!target.neck.isDefault && Utils.Rand(4) == 0)
+			{
+				target.RestoreNeck();
+
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
+			}
+			//Rear body restore
+			if (!target.back.isDefault && Utils.Rand(5) == 0)
+			{
+				target.RestoreBack();
+
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
+			}
+			//Ovi perk loss
+			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
+			{
+				playerWomb.ClearOviposition();
+
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
+			}
+			//Demonic changes - higher chance with higher corruption.
+			if (Utils.Rand(40) + target.corruption / 3 > 35 && !isPurified)
+			{
+
+				//Change tail if already horned.
+				if (target.tail.type != TailType.DEMONIC && !target.horns.isDefault)
+				{
+					target.IncreaseCorruption(4);
+					target.UpdateTail(TailType.DEMONIC);
+
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
+				}
+				//grow horns!
+				if (target.horns.numHorns == 0 || (Utils.Rand(target.horns.numHorns + 3) == 0))
+				{
+					if (target.horns.numHorns < 12 && (target.horns.type == HornType.NONE || target.horns.type == HornType.DEMON))
+					{
+
+						if (target.horns.type == HornType.NONE)
+						{
+							target.UpdateHorns(HornType.DEMON);
+						}
+
+						target.IncreaseCorruption(3);
+					}
+					//Text for shifting horns
+					else if (target.horns.type != HornType.DEMON)
+					{
+						target.UpdateHorns(HornType.DEMON);
+						target.IncreaseCorruption(3);
+					}
+
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
+				}
+				//Nipples Turn Back:
+				if (target.genitals.hasBlackNipples && Utils.Rand(3) == 0)
+				{
+					target.genitals.SetBlackNipples(false);
+
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
+				}
+
+				//remove fur
+				if (target.face.type != FaceType.HUMAN || (target.body.type != BodyType.HUMANOID && Utils.Rand(3) == 0))
+				{
+					//Remove face before fur!
+					if (target.face.type != FaceType.HUMAN)
+					{
+						target.RestoreFace();
+					}
+					//De-fur
+					else if (target.body.type != BodyType.HUMANOID)
+					{
+						target.RestoreBody();
+					}
+
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
+				}
+				//Demon tongue
+				if (target.tongue.type == TongueType.SNAKE && Utils.Rand(3) == 0)
+				{
+					target.UpdateTongue(TongueType.DEMONIC);
+
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
+				}
+				//foot changes - requires furless
+				if (target.body.type == BodyType.HUMANOID && Utils.Rand(4) == 0)
+				{
+					bool changed;
+					//Males/genderless get clawed feet
+					if (!target.gender.HasFlag(Gender.FEMALE) || (target.gender == Gender.HERM && target.genitals.AppearsMoreMaleThanFemale()))
+					{
+						changed = target.UpdateLowerBody(LowerBodyType.DEMONIC_CLAWS);
+					}
+					//Females/futa get high heels
+					else
+					{
+						changed = target.UpdateLowerBody(LowerBodyType.DEMONIC_HIGH_HEELS);
+					}
+
+					if (changed && --remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
+				}
+				//Grow demon wings
+				if ((target.wings.type != WingType.BAT_LIKE || !target.wings.isLarge || target.back.type == BackType.SHARK_FIN) && Utils.Rand(8) == 0 && target.IsCorruptEnough(50))
+				{
+					//grow smalls to large
+
+					if (target.wings.type == WingType.BAT_LIKE && target.IsCorruptEnough(75))
+					{
+						target.wings.GrowLarge();
+					}
+					else
+					{
+						target.UpdateWings(WingType.BAT_LIKE);
+					}
+
+					if (target.back.type == BackType.SHARK_FIN)
+					{
+						target.RestoreBack();
+					}
+
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
+				}
+			}
 			//this is the fallthrough that occurs when a tf item goes through all the changes, but does not proc enough of them to exit early. it will apply however many changes
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);

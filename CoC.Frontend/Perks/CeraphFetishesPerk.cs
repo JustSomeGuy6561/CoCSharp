@@ -16,17 +16,17 @@ namespace CoC.Frontend.Perks
 
 		public bool hasPassiveFetish => stacks >= 3;
 
-		public CeraphFetishesPerk(byte initialStack = 1) : base(perkName(), havePerkText())
+		public CeraphFetishesPerk(byte initialStack = 1) : base()
 		{
 			stacks = Utils.Clamp2<byte>(initialStack, 1, 3);
 		}
 
-		private static SimpleDescriptor perkName()
+		public override string Name()
 		{
 			throw new NotImplementedException();
 		}
 
-		private static SimpleDescriptor havePerkText()
+		public override string HasPerkText()
 		{
 			throw new NotImplementedException();
 		}

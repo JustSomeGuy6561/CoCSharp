@@ -177,31 +177,31 @@ namespace CoC.Backend.BodyParts
 				Environment.NewLine + SafelyFormattedString.FormattedText("You have a human neck again!", StringFormats.BOLD);
 		}
 
-		private static string CockatriceDyeText(out bool isPlural)
+		protected static string CockatriceDyeText(out bool isPlural)
 		{
 			isPlural = true;
 			return "the feathers on your neck";
 		}
 
-		private static string CockatricePostDyeText(HairFurColors color)
+		protected static string CockatricePostDyeText(HairFurColors color)
 		{
 			return color.AsString() + " feathers on your neck";
 		}
 
-		private static string CockatriceDesc(bool singleMemberFormat)
+		protected static string CockatriceDesc(bool singleMemberFormat)
 		{
 			return Utils.AddArticleIf("feathered, cockatrice-like neck", singleMemberFormat);
 		}
-		private static string CockatriceLongDesc(NeckData neck, bool alternateFormat)
+		protected static string CockatriceLongDesc(NeckData neck, bool alternateFormat)
 		{
 			return (alternateFormat ? "an " : "") + "elongated, feathered cockatrice-like neck.";
 		}
-		private static string CockatricePlayerStr(Neck neck, PlayerBase player)
+		protected static string CockatricePlayerStr(Neck neck, PlayerBase player)
 		{
 			return " Your neck is longer and thinner than a humans, as if it were somehow stretched. Around your neck is a ruff of " + neck.color.AsString() +
 				" feathers which tends to puff out with your emotions.";
 		}
-		private static string CockatriceTransformStr(NeckData previousNeckData, PlayerBase player)
+		protected static string CockatriceTransformStr(NeckData previousNeckData, PlayerBase player)
 		{
 			string deltaLengthString;
 			if (previousNeckData.length > player.neck.length)
@@ -222,7 +222,7 @@ namespace CoC.Backend.BodyParts
 				"until a ruff of soft fluffy feathers has formed like that of an exotic bird." + Environment.NewLine +
 				SafelyFormattedString.FormattedText("You now have a cockatrice neck!", StringFormats.BOLD);
 		}
-		private static string CockatriceRestoreStr(NeckData previousNeckData, PlayerBase player)
+		protected static string CockatriceRestoreStr(NeckData previousNeckData, PlayerBase player)
 		{
 			return GlobalStrings.NewParagraph() + "Your neck starts to tingle uncomfortably, as if compressed like an accordion. As it does, the feathers that decorate your neck begin to " +
 				"fall out until " + SafelyFormattedString.FormattedText("you're left with a normal neck!", StringFormats.BOLD);

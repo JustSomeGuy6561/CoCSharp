@@ -24,6 +24,11 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 			throw new System.NotImplementedException();
 		}
 
+		public override bool Equals(CockSockBase other)
+		{
+			throw new System.NotImplementedException();
+		}
+
 		protected override string OnEquip()
 		{
 			throw new System.NotImplementedException();

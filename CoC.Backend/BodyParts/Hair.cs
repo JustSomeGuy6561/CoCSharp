@@ -489,7 +489,7 @@ namespace CoC.Backend.BodyParts
 			return SetHairGrowthStatus(false);
 		}
 
-		public bool ResumeNaturalGrowthPrivate()
+		public bool ResumeNaturalGrowth()
 		{
 			return SetHairGrowthStatus(true);
 		}
@@ -736,6 +736,11 @@ namespace CoC.Backend.BodyParts
 			return sb.ToString();
 		}
 		#endregion
+
+		public bool IsBasiliskHair()
+		{
+			return type.IsBasiliskHair();
+		}
 	}
 
 	public abstract partial class HairType : SaveableBehavior<HairType, Hair, HairData>
@@ -847,6 +852,10 @@ namespace CoC.Backend.BodyParts
 		internal abstract bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, byte hoursPassed,
 			float unitsGrown, out string SpecialOutput);
 
+		public bool IsBasiliskHair()
+		{
+			return this == BASILISK_PLUME || this == BASILISK_SPINES;
+		}
 
 		protected static Func<float, float> KeepSize() => (x) => x;
 		protected static Func<float, float> KeepSizeUnlessBald(float defaultSize) => (x) => x != 0 ? x : defaultSize; //currently unused, idk if that's a behavior someone would prefer.

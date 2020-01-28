@@ -75,9 +75,51 @@ namespace CoC.Backend.Engine.Time
 			else return -hoursTo(other);
 		}
 
+		public static bool operator >(GameDateTime source, GameDateTime other)
+		{
+			if (other is null || source is null) return false;
+			return source.CompareTo(other) > 0;
+		}
+
+		public static bool operator <(GameDateTime source, GameDateTime other)
+		{
+			if (other is null || source is null) return false;
+			return source.CompareTo(other) < 0;
+		}
+
+		public static bool operator ==(GameDateTime source, GameDateTime other)
+		{
+			if (other is null && source is null) return true;
+			else if (other is null || source is null) return false;
+			else return source.Equals(other);
+		}
+
+		public static bool operator !=(GameDateTime source, GameDateTime other)
+		{
+			if (other is null && source is null) return false;
+			else if (other is null || source is null) return true;
+			else return !source.Equals(other);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is GameDateTime gameDateTime && this.Equals(gameDateTime);
+		}
+
 		public bool Equals(GameDateTime other)
 		{
 			return !(other is null) && this.hour == other.hour && this.day == other.day;
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = 1684876132;
+				hashCode = hashCode * -1521134295 + hour.GetHashCode();
+				hashCode = hashCode * -1521134295 + day.GetHashCode();
+				return hashCode;
+			}
 		}
 	}
 

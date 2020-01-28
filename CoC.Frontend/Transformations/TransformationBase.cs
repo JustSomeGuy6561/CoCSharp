@@ -45,6 +45,21 @@ namespace CoC.Frontend.Transformations
 			return false;
 		}
 
+		protected byte GrowCockGeneric(Creature creature, byte count)
+		{
+			if (count == 0)
+			{
+				return 0;
+			}
+
+			byte added = 0;
+			while (count-- > 0 && creature.AddCock(CockType.HUMAN, Utils.Rand(3) + 5, 0.75f))
+			{
+				added++;
+			}
+			return added;
+		}
+
 		protected string RemovedFeatheryHairTextGeneric(Creature creature, bool ingestedSomething = true)
 		{
 			if (creature.hair.length >= 6)

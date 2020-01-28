@@ -341,7 +341,7 @@ namespace CoC.Backend.BodyParts
 			if (creature != null) creature.genitals.onGenderChanged += OnGenderChanged;
 		}
 
-		public byte GrowBreasts(byte byAmount, bool ignorePerks = false)
+		public byte GrowBreasts(byte byAmount = 1, bool ignorePerks = false)
 		{
 			if (cupSize >= CupSize.JACQUES00)
 			{
@@ -363,7 +363,7 @@ namespace CoC.Backend.BodyParts
 			return cupSize - oldSize;
 		}
 
-		public byte ShrinkBreasts(byte byAmount, bool ignorePerks = false)
+		public byte ShrinkBreasts(byte byAmount = 1, bool ignorePerks = false)
 		{
 			if (cupSize <= CupSize.FLAT)
 			{

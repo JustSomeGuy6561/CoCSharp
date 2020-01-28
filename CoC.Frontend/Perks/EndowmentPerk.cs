@@ -43,13 +43,25 @@ namespace CoC.Frontend.Perks
 
 
 
-		public readonly SimpleDescriptor buttonText;
-		public readonly SimpleDescriptor unlockEndowmentText;
+		private readonly SimpleDescriptor buttonText;
+		private readonly SimpleDescriptor unlockEndowmentText;
 
-		public EndowmentPerkBase(SimpleDescriptor perkName, SimpleDescriptor buttonStr, SimpleDescriptor perkHintStr, SimpleDescriptor hasPerkText) : base(perkName, hasPerkText)
+		private readonly SimpleDescriptor nameText;
+		private readonly SimpleDescriptor perkText;
+
+		public string ButtonText() => buttonText();
+		public string UnlockEndowmentText() => unlockEndowmentText();
+
+		public override string HasPerkText() => perkText();
+
+		public override string Name() => nameText();
+
+		public EndowmentPerkBase(SimpleDescriptor perkName, SimpleDescriptor buttonStr, SimpleDescriptor perkHintStr, SimpleDescriptor hasPerkText) : base()
 		{
-			unlockEndowmentText = perkHintStr;
-			buttonText = buttonStr;
+			nameText = perkName ?? throw new ArgumentNullException(nameof(perkName));
+			perkText = hasPerkText ?? throw new ArgumentNullException(nameof(hasPerkText));
+			unlockEndowmentText = perkHintStr ?? throw new ArgumentNullException(nameof(perkHintStr));
+			buttonText = buttonStr ?? throw new ArgumentNullException(nameof(buttonStr));
 		}
 
 		internal bool IsUnlocked(Gender gender) => Unlocked(gender);

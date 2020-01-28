@@ -24,15 +24,7 @@ namespace CoC.Backend.Perks
 		protected PerkCollection basicData => sourceCreature.perks; //gives you access to hasPerk. allows you to hard-code other checks, to prevent mutual exclusives.
 		public BasePerkModifiers baseModifiers => basicData.baseModifiers; //allows you to update base stats.
 
-		public readonly SimpleDescriptor name;
-		public readonly SimpleDescriptor hasPerkText;
-
-
-		public PerkBase(SimpleDescriptor perkName, SimpleDescriptor havePerkText)
-		{
-			name = perkName;
-			hasPerkText = havePerkText;
-		}
+		public PerkBase() {}
 
 		internal void Activate(Creature source)
 		{
@@ -54,5 +46,9 @@ namespace CoC.Backend.Perks
 		protected internal abstract void OnRemoval();
 
 		protected internal abstract bool KeepOnAscension { get; }
+
+		public abstract string Name();
+
+		public abstract string HasPerkText();
 	}
 }

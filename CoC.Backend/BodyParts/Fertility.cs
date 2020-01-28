@@ -77,9 +77,7 @@ namespace CoC.Backend.BodyParts
 			return new FertilityData(this);
 		}
 
-		public byte bonusFertility { get; internal set; }
-
-		public byte totalFertility => Math.Min(MAX_TOTAL_FERTILITY, baseFertility.add(bonusFertility));
+		public byte totalFertility => Math.Min(MAX_TOTAL_FERTILITY, baseFertility.add(perkBonusFertility));
 		public byte currentFertility => isInfertile ? (byte)0 : totalFertility;
 
 

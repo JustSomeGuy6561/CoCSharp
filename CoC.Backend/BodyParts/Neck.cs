@@ -151,6 +151,27 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
+		internal bool UpdateType(CockatriceNeck newType, HairFurColors featherColor)
+		{
+			if (newType is null || newType == type)
+			{
+				return false;
+			}
+
+			var oldValue = type;
+			var oldData = AsReadOnlyData();
+
+			type = newType;
+			if (!HairFurColors.IsNullOrEmpty(featherColor))
+			{
+				color = featherColor;
+			}
+
+			CheckDataChanged(oldData);
+			NotifyTypeChanged(oldValue);
+			return true;
+		}
+
 		private void CheckDataChanged(NeckData oldData)
 		{
 			if (color != oldData.neckHairColor || length != oldData.length)
@@ -394,30 +415,10 @@ namespace CoC.Backend.BodyParts
 
 		public static readonly NeckType HUMANOID = new NeckType(MAX_HUMAN_LENGTH, HumanDesc, HumanLongDesc, HumanPlayerStr, (x, y) => x.type.RestoredString(x, y), GlobalStrings.RevertAsDefault);
 		public static readonly NeckType DRACONIC = new DraconicNeck();
-		public static readonly NeckType COCKATRICE = new CockatriceNeck();
+		public static readonly CockatriceNeck COCKATRICE = new CockatriceNeck();
 
 		//cockatrice does not grow, but is slightly larger than human neck (5inches). before, it was 2-5, with no way to grow.
-		private sealed class CockatriceNeck : NeckType
-		{
-			public CockatriceNeck() : base(MAX_COCKATRICE_LENGTH, CockatriceDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
-			{
-			}
 
-			public override HairFurColors defaultColor => HairFurColors.GREEN;
-
-			public override byte minNeckLength => MAX_COCKATRICE_LENGTH;
-
-			internal override string locationDesc(out bool isPlural)
-			{
-				return CockatriceDyeText(out isPlural);
-			}
-
-			internal override string postDyeDescription(HairFurColors color)
-			{
-				return CockatricePostDyeText(color);
-			}
-
-		}
 
 		private sealed class DraconicNeck : NeckType
 		{
@@ -427,6 +428,28 @@ namespace CoC.Backend.BodyParts
 
 			public override bool neckAtBaseOfSkull => false;
 		}
+	}
+
+	public sealed class CockatriceNeck : NeckType
+	{
+		public CockatriceNeck() : base(MAX_COCKATRICE_LENGTH, CockatriceDesc, CockatriceLongDesc, CockatricePlayerStr, CockatriceTransformStr, CockatriceRestoreStr)
+		{
+		}
+
+		public override HairFurColors defaultColor => HairFurColors.GREEN;
+
+		public override byte minNeckLength => MAX_COCKATRICE_LENGTH;
+
+		internal override string locationDesc(out bool isPlural)
+		{
+			return CockatriceDyeText(out isPlural);
+		}
+
+		internal override string postDyeDescription(HairFurColors color)
+		{
+			return CockatricePostDyeText(color);
+		}
+
 	}
 
 	public sealed class NeckData : BehavioralSaveablePartData<NeckData, Neck, NeckType>

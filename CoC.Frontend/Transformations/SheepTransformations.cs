@@ -52,7 +52,7 @@ namespace CoC.Frontend.Transformations
 			}
 			if (target.heightInInches > 67 && Utils.Rand(2) == 0)
 			{
-				target.build.GetShorter((byte)(1 + Utils.Rand(4)));
+				target.build.DecreaseHeight((byte)(1 + Utils.Rand(4)));
 
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}

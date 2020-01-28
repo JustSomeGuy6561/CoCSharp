@@ -101,9 +101,8 @@ namespace CoC.Backend.BodyParts
 
 		public bool canHaveOvipositor => type.allowsOvipositor;
 
-		public bool hasOvipositor => canHaveOvipositor && ovipositorEnabled;
+		public bool hasOvipositor => canHaveOvipositor && ovipositor.type != OvipositorType.defaultValue;
 
-		private bool ovipositorEnabled;
 
 		public byte tailCount
 		{
@@ -137,11 +136,7 @@ namespace CoC.Backend.BodyParts
 
 					if (!value.allowsOvipositor)
 					{
-						ovipositorEnabled = false;
-					}
-					else if (!_type.allowsOvipositor)
-					{
-						ovipositorEnabled = false;
+						ovipositor.UpdateType(OvipositorType.defaultValue);
 					}
 					//otherwise, keep the same value.
 
@@ -178,7 +173,10 @@ namespace CoC.Backend.BodyParts
 			_type = tailType ?? throw new ArgumentNullException(nameof(tailType));
 			_tailCount = _type.initialTailCount;
 
-			ovipositorEnabled = tailType.allowsOvipositor && hasOvipositorIfApplicable;
+			if (tailType.allowsOvipositor && hasOvipositorIfApplicable)
+			{
+				ovipositor.UpdateType(tailType.ovipositorType);
+			}
 
 			tailPiercings = new TailPiercing(this, PiercingLocationUnlocked, AllTailPiercingsShort, AllTailPiercingsLong);
 		}
@@ -206,6 +204,34 @@ namespace CoC.Backend.BodyParts
 			CheckDataChanged(oldData);
 			NotifyTypeChanged(oldValue);
 			return true;
+		}
+
+		public bool GrantOvipositor()
+		{
+			if (!canHaveOvipositor || hasOvipositor)
+			{
+				return false;
+			}
+			return ovipositor.UpdateType(type.ovipositorType);
+		}
+
+		public bool RemoveOvipositor()
+		{
+			if (!hasOvipositor)
+			{
+				return false;
+			}
+			return ovipositor.UpdateType(OvipositorType.defaultValue);
+		}
+
+		public bool SetOvipositor(bool active)
+		{
+			if (hasOvipositor == active)
+			{
+				return false;
+			}
+
+			return ovipositor.UpdateType(active ? type.ovipositorType : OvipositorType.defaultValue);
 		}
 
 		public void UpdateResources(short resourceDelta = 0, short regenRateDelta = 0)

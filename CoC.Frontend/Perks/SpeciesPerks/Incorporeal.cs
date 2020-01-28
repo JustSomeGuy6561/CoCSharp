@@ -16,16 +16,16 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 
 		//Ghost perk. Grants a possess attack during combat, and increases evade chance. Unlike most species perks, this perk is not disabled when the creature loses their
 		//ghost-like traits. It can be removed artificially, of course, as is the case (as of a few patches before this port, at least) with the human tf item.
-		public Incorporeal() : base(Name, CurrentlyHasText)
+		public Incorporeal() : base()
 		{
 		}
 
-		private static string Name()
+		public override string Name()
 		{
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string CurrentlyHasText()
+		public override string HasPerkText()
 		{
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}

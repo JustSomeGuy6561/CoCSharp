@@ -10,16 +10,18 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 	//i assume the corrupted form has some lust cost to it, idk. lost when the creature no longer has 9 Fox Tails.
 	class NineTails : PerkBase
 	{
-		public NineTails(bool enlightened) : base(() => PerkName(enlightened), () => HavePerkText(enlightened))
+		private readonly bool isEnlightened;
+		public NineTails(bool enlightened) : base()
 		{
+			isEnlightened = enlightened;
 		}
 
-		private static string PerkName(bool enlightened)
+		public override string Name()
 		{
 			throw new NotImplementedException();
 		}
 
-		private static string HavePerkText(bool enlightened)
+		public override string HasPerkText()
 		{
 			throw new NotImplementedException();
 		}

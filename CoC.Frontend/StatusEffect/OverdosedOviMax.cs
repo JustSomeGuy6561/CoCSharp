@@ -21,11 +21,7 @@ namespace CoC.Frontend.StatusEffect
 
 
 
-		public override string ShortDescription() => ODShort();
-
-		public override string LongDescription() => ODFull();
-
-
+		public override string HaveStatusEffectText() => ODShort();
 
 		protected override void OnActivation()
 		{ }

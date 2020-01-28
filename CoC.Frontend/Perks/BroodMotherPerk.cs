@@ -8,19 +8,10 @@ namespace CoC.Frontend.Perks
 {
 	public sealed class BroodMotherPerk : PerkBase
 	{
-		public BroodMotherPerk() : base(PerkName(), PerkText())
+		public BroodMotherPerk() : base()
 		{
 		}
 
-		private static SimpleDescriptor PerkName()
-		{
-			throw new NotImplementedException();
-		}
-
-		private static SimpleDescriptor PerkText()
-		{
-			throw new NotImplementedException();
-		}
 
 		protected override bool KeepOnAscension => false;
 
@@ -32,6 +23,16 @@ namespace CoC.Frontend.Perks
 		protected override void OnRemoval()
 		{
 			baseModifiers.decPregSpeedByOne();
+		}
+
+		public override string Name()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override string HasPerkText()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

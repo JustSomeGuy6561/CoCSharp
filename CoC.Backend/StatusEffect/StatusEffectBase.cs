@@ -38,10 +38,11 @@ namespace CoC.Backend.StatusEffect
 		//called when the status effect is removed from the status effect collection.
 		protected abstract void OnRemoval();
 
-
+		//optionally called when you obtain the status effect. this provides a generic text that things that cause this status effect can use to describe what happened.
+		//of course, they may decide to roll out their own text, but this is necessary in case they don't want to and just want a nice default.
 		public abstract string ObtainText();
 
-		public abstract string ShortDescription();
-		public abstract string LongDescription();
+		//called when the player wants to know what status effects they have and what it entails.
+		public abstract string HaveStatusEffectText();
 	}
 }

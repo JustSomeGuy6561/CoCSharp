@@ -1,5 +1,6 @@
 ﻿using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
 using System;
@@ -116,40 +117,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public bool hasDiapauseEnabled { get; private set; }
-
-		public void EnableDiapause()
-		{
-			if (hasDiapauseEnabled != true)
-			{
-				WombData oldData = AsReadOnlyData();
-
-				hasDiapauseEnabled = true;
-				NotifyDataChanged(oldData);
-			}
-		}
-
-		public void DisableDiapause()
-		{
-			if (hasDiapauseEnabled != false)
-			{
-				WombData oldData = AsReadOnlyData();
-
-				hasDiapauseEnabled = false;
-				NotifyDataChanged(oldData);
-			}
-		}
-
-		public void SetDiapause(bool state)
-		{
-			if (hasDiapauseEnabled != state)
-			{
-				WombData oldData = AsReadOnlyData();
-
-				hasDiapauseEnabled = state;
-				NotifyDataChanged(oldData);
-			}
-		}
+		public virtual bool hasDiapauseEnabled => CreatureStore.GetCreatureClean(creatureID)?.genitals.perkData.hasDiapause ?? false;
 
 		//does not throw a data changed, could. idk.
 		internal void onConsumeLiquid()

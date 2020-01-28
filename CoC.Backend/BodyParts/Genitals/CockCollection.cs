@@ -44,6 +44,9 @@ namespace CoC.Backend.BodyParts
 		{
 			get => _cocks[index];
 		}
+
+		public float minimumCockLength => creature?.genitals.perkData.MinCockLength ?? Cock.MIN_COCK_LENGTH;
+
 		#endregion
 
 		#region Public Cum Related Members
@@ -79,7 +82,19 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Private Cum Related Members
-		private GameDateTime timeLastCum { get; set; }
+		private GameDateTime timeLastCum
+		{
+			get => _timeLastCum;
+			set
+			{
+				if (value > _timeLastCum)
+				{
+					pentUpBonus = 0;
+				}
+				_timeLastCum = value;
+			}
+		}
+		private GameDateTime _timeLastCum;
 
 		#endregion
 
@@ -108,6 +123,19 @@ namespace CoC.Backend.BodyParts
 
 		public int hoursSinceLastCum => timeLastCum.hoursToNow();
 
+		public int simulatedHoursSinceLastCum => (int)(hoursSinceLastCum + pentUpBonus);
+
+		public uint pentUpBonus
+		{
+			get => _pentUpBonus;
+			private set
+			{
+				_pentUpBonus = Utils.Clamp2<uint>(value, 0, int.MaxValue);
+			}
+		}
+		private uint _pentUpBonus = 0;
+
+
 		//we use mL for amount here, but store ball size in inches. Let's do it right, no? 1cm^3 = 1mL
 		public int totalCum
 		{
@@ -131,10 +159,10 @@ namespace CoC.Backend.BodyParts
 				{
 					multiplier = 0.25;
 				}
-				if (hoursSinceLastCum < 12 && !perkData.alwaysProducesMaxCum) //i'd do 24 but this is Mareth, so.
+				if (simulatedHoursSinceLastCum < 12 && !perkData.alwaysProducesMaxCum) //i'd do 24 but this is Mareth, so.
 				{
-					int hoursOffset = hoursSinceLastCum;
-					if (hoursSinceLastCum <= 0) //0 is possible and likely valid, but below 0 means we broke shit. this is just a catch-all.
+					int hoursOffset = simulatedHoursSinceLastCum;
+					if (simulatedHoursSinceLastCum <= 0) //0 is possible and likely valid, but below 0 means we broke shit. this is just a catch-all.
 					{
 						hoursOffset = 1;
 					}
@@ -221,12 +249,12 @@ namespace CoC.Backend.BodyParts
 
 		internal void Initialize(CockCreator[] cockCreators)
 		{
-			_cocks.AddRange(cockCreators.Where(x => x != null).Select(x => new Cock(creatureID,x.type, x.validLength, x.validGirth,
+			_cocks.AddRange(cockCreators.Where(x => x != null).Select(x => new Cock(creatureID, x.type, x.validLength, x.validGirth,
 				x.knot, x.cockSock, x.piercings)).Take(MAX_COCKS));
 		}
 
 		#region Cock Aggregate Functions
-		public float BiggestCockSize()
+		public float BiggestCockTotalSize()
 		{
 			return _cocks.Max(x => x.area);
 		}
@@ -241,7 +269,7 @@ namespace CoC.Backend.BodyParts
 			return _cocks.Max(x => x.girth);
 		}
 
-		public Cock BiggestCock()
+		public Cock BiggestCockByArea()
 		{
 			return _cocks.MaxItem(x => x.area);
 		}
@@ -286,7 +314,7 @@ namespace CoC.Backend.BodyParts
 			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth);
 		}
 
-		public float SmallestCockSize()
+		public float SmallestCockTotalSize()
 		{
 			return _cocks.Min(x => x.area);
 		}
@@ -301,7 +329,7 @@ namespace CoC.Backend.BodyParts
 			return _cocks.Min(x => x.girth);
 		}
 
-		public Cock SmallestCock()
+		public Cock SmallestCockByArea()
 		{
 			return _cocks.MinItem(x => x.area);
 		}
@@ -319,6 +347,16 @@ namespace CoC.Backend.BodyParts
 		public int CountCocksOfType(CockType type)
 		{
 			return _cocks.Sum(x => x.type == type ? 1 : 0);
+		}
+
+		public bool HasACockOfType(CockType type)
+		{
+			return _cocks.Any(x => x.type == type);
+		}
+
+		public bool OnlyHasCocksOfType(CockType type)
+		{
+			return _cocks.All(x => x.type == type);
 		}
 
 		public bool OtherCocksUseSheath(int excludedCockIndex)
@@ -375,7 +413,7 @@ namespace CoC.Backend.BodyParts
 		public string AddedCockText(CockData addedCock)
 		{
 			int count = CountCocksOfType(addedCock.type);
-			if (count == 0 || numCocks == 0) return "";
+			if (count <= 0 || numCocks == 0) return "";
 
 			if (creature is PlayerBase player)
 			{
@@ -413,6 +451,29 @@ namespace CoC.Backend.BodyParts
 
 				_cocks.RemoveRange(numCocks - count, count);
 			}
+
+			source.CheckGenderChanged(oldGender);
+			return oldCount - numCocks;
+		}
+
+		public int RemoveCockAt(int index, int count = 1)
+		{
+			if (numCocks == 0 || count <= 0 || index < 0 || index >= numCocks)
+			{
+				return 0;
+			}
+
+
+			int oldCount = numCocks;
+			var oldGender = gender;
+
+
+			this.missingCockSexCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.sexCount);
+			this.missingCockSoundCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.soundCount);
+			this.missingCockOrgasmCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.orgasmCount);
+			this.missingCockDryOrgasmCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.dryOrgasmCount);
+
+			_cocks.RemoveRange(index, count);
 
 			source.CheckGenderChanged(oldGender);
 			return oldCount - numCocks;
@@ -463,6 +524,27 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
+		#region Shrink Cock With Remove
+
+		public bool ShrinkCockAndRemoveIfTooSmall(int index, float shrinkAmount, bool ignorePerks = false)
+		{
+			if (shrinkAmount <= 0)
+			{
+				return false;
+			}
+
+			if (cocks[index].DecreaseLengthAndCheckIfNeedsRemoval(shrinkAmount, ignorePerks))
+			{
+				_cocks.RemoveAt(index);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		#endregion
+
 		#region AllCocks Update Functions
 		public void NormalizeDicks(bool untilEven = false)
 		{
@@ -489,7 +571,7 @@ namespace CoC.Backend.BodyParts
 					}
 					else if (cock.girth > avgGirth + 0.5f)
 					{
-						cock.ThinCock(0.5f);
+						cock.DecreaseThickness(0.5f);
 					}
 					else
 					{
@@ -498,11 +580,11 @@ namespace CoC.Backend.BodyParts
 
 					if (cock.length < avgLength - 1)
 					{
-						cock.LengthenCock(1);
+						cock.IncreaseLength(1);
 					}
 					else if (cock.length > avgLength + 1)
 					{
-						cock.ShortenCock(1);
+						cock.DecreaseLength(1);
 					}
 					else
 					{
@@ -514,11 +596,18 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Cum Update Functions
-		public float IncreaseCumMultiplier(float additionalMultiplier)
+		public float IncreaseCumMultiplier(float additionalMultiplier = 1)
 		{
 			var oldValue = cumMultiplierTrue;
 			cumMultiplierTrue += additionalMultiplier;
 			return cumMultiplierTrue - oldValue;
+		}
+
+		public float DecreaseCumMultiplier(float decreaseInMultiplier = 1)
+		{
+			var oldValue = cumMultiplierTrue;
+			cumMultiplierTrue -= decreaseInMultiplier;
+			return oldValue - cumMultiplierTrue;
 		}
 
 		public float AddFlatCumAmount(float additionalCum)
@@ -526,6 +615,20 @@ namespace CoC.Backend.BodyParts
 			var oldValue = additionalCumTrue;
 			additionalCumTrue += additionalCum;
 			return additionalCumTrue - oldValue;
+		}
+
+		public uint AddHoursPentUp(uint additionalTime)
+		{
+			var oldValue = pentUpBonus;
+			pentUpBonus = pentUpBonus.add(additionalTime);
+			return pentUpBonus - oldValue;
+		}
+
+		public uint RemoveHoursPentUp(uint reliefTime)
+		{
+			var oldValue = pentUpBonus;
+			pentUpBonus = pentUpBonus.subtract(reliefTime);
+			return oldValue - pentUpBonus;
 		}
 		#endregion
 

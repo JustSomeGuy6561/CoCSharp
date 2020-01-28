@@ -47,12 +47,12 @@ namespace CoC.Backend.BodyParts
 		public abstract string BodyPartName();
 
 
-		public Type BaseType()
+		Type IBodyPart.BaseType()
 		{
 			return typeof(ThisClass);
 		}
 
-		public Type DataType()
+		Type IBodyPart.DataType()
 		{
 			return typeof(DataClass);
 		}

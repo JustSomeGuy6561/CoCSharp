@@ -133,7 +133,7 @@ namespace CoC.Frontend.Transformations
 			//[decrease muscle tone toward 40]
 			if (target.build.muscleTone >= 40 && Utils.Rand(enhanced ? 2 : 4) == 0)
 			{
-				target.build.DescreaseMuscleTone((byte)(2 + Utils.Rand(3)));
+				target.build.DecreaseMuscleTone((byte)(2 + Utils.Rand(3)));
 
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}

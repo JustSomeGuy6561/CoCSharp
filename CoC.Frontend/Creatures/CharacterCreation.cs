@@ -1489,7 +1489,7 @@ namespace CoC.Frontend.Creatures
 					for (byte x = 0; x < data.Count; x++)
 					{
 						byte y = x;
-						currentDisplay.AddButton(x, data[x].buttonText(), () => ConfirmEndowment(data[y]));
+						currentDisplay.AddButton(x, data[x].ButtonText(), () => ConfirmEndowment(data[y]));
 					}
 				}
 				else
@@ -1510,7 +1510,7 @@ namespace CoC.Frontend.Creatures
 			currentDisplay.ClearOutput();
 			//OutputImage("event-question"));
 
-			currentDisplay.OutputText(endowment.unlockEndowmentText());
+			currentDisplay.OutputText(endowment.UnlockEndowmentText());
 
 			currentDisplay.AddButton(0, GlobalStrings.YES(), () => ActivateEndowment(endowment));
 			currentDisplay.AddButton(1, GlobalStrings.NO(), ChooseEndowment);
@@ -1543,7 +1543,7 @@ namespace CoC.Frontend.Creatures
 					for (byte x = 0; x < data.Count; x++)
 					{
 						byte y = x;
-						currentDisplay.AddButton(x, data[x].buttonText(), () => ConfirmHistory(data[y]));
+						currentDisplay.AddButton(x, data[x].ButtonText(), () => ConfirmHistory(data[y]));
 					}
 				}
 				else
@@ -1562,7 +1562,7 @@ namespace CoC.Frontend.Creatures
 			currentDisplay.ClearOutput();
 			//OutputImage("event-question"));
 
-			currentDisplay.OutputText(history.unlockHistoryText());
+			currentDisplay.OutputText(history.UnlockHistoryText());
 
 			currentDisplay.AddButton(0, GlobalStrings.YES(), () => ActivateHistory(history));
 			currentDisplay.AddButton(1, GlobalStrings.NO(), ChooseHistory);

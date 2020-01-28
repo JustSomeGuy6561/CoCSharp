@@ -38,7 +38,7 @@ namespace CoC.Frontend.Transformations
 			{
 				if (target.cocks[0].length < 12)
 				{
-					float temp = target.cocks[0].LengthenCock(Utils.Rand(2) + 2);
+					float temp = target.cocks[0].IncreaseLength(Utils.Rand(2) + 2);
 					sb.Append(OneCockGrewLarger(target, 0, temp));
 				}
 				hpDelta = 30;
@@ -71,7 +71,7 @@ namespace CoC.Frontend.Transformations
 			//Shrinkage!
 			if (Utils.Rand(2) == 0 && target.build.heightInInches > 42)
 			{
-				byte heightDelta = target.build.GetShorter((byte)(1 + Utils.Rand(3)));
+				byte heightDelta = target.build.DecreaseHeight((byte)(1 + Utils.Rand(3)));
 				if (heightDelta > 0)
 				{
 					sb.Append(GetShorterText(target, heightDelta));

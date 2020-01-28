@@ -494,7 +494,7 @@ namespace CoC.Backend.BodyParts
 		//	return false;
 		//}
 
-		public float growClit(float amount, bool ignorePerks = false)
+		public float GrowClit(float amount, bool ignorePerks = false)
 		{
 			var oldData = AsReadOnlyData();
 			var retVal = clit.growClit(amount, ignorePerks);
@@ -505,7 +505,7 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		public float shrinkClit(float amount, bool ignorePerks = false)
+		public float ShrinkClit(float amount, bool ignorePerks = false)
 		{
 			var oldData = AsReadOnlyData();
 			var retVal = clit.shrinkClit(amount, ignorePerks);

@@ -8,7 +8,7 @@ namespace CoC.Frontend.Perks
 {
 	public sealed class Feeder : PerkBase
 	{
-		public Feeder(SimpleDescriptor perkName, SimpleDescriptor havePerkText) : base(perkName, havePerkText)
+		public Feeder() : base()
 		{
 		}
 
@@ -20,6 +20,16 @@ namespace CoC.Frontend.Perks
 		}
 
 		protected override void OnRemoval()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override string Name()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override string HasPerkText()
 		{
 			throw new NotImplementedException();
 		}

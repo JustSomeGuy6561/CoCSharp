@@ -356,13 +356,6 @@ namespace CoC.Backend.Perks
 
 		#region Pregnancy/Fertility
 
-		public bool femininityLockedByGender
-		{
-			get => source.genitals.femininity.femininityLimitedByGender;
-			set => source.genitals.femininity.femininityLimitedByGender = value;
-		}
-
-
 		public byte bonusFertility
 		{
 			get => source.genitals.fertility.perkBonusFertility;
@@ -388,6 +381,13 @@ namespace CoC.Backend.Perks
 		}
 
 		public float pregnancyMultiplier => source.genitals.womb.pregnancyMultiplier;
+
+		public bool hasDiapause
+		{
+			get => source.genitals.perkData.hasDiapause;
+			set => source.genitals.perkData.hasDiapause = value;
+		}
+
 
 		//below is the actual formula.
 
@@ -693,7 +693,6 @@ namespace CoC.Backend.Perks
 			set => source.genitals.perkData.bonusCumAdded = value;
 		}
 		#endregion
-
 		//i can't think of anything else for this.
 		//a bunch of old perks can just be attributes of classes, or fire a one-off "Reaction" instead of existing (looking at you Post-Akbal submit/whatever "perks")
 		//it may be possible to get a perk that prioritizes certain fur colors or skin tones, and that realistically could/should be handled here.

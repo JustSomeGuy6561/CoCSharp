@@ -31,6 +31,8 @@ namespace CoC.Backend.BodyParts
 		public byte numHorns => _numHorns;
 		private byte _numHorns = 0;
 
+		public byte largestPossibleHornSize => type.maxHornLength;
+
 		private FemininityData femininity => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.femininity.AsReadOnlyData() : new FemininityData(creatureID, 50);
 
 		public override HornType type
@@ -1380,7 +1382,7 @@ namespace CoC.Backend.BodyParts
 
 					if (feminine || uniform)
 					{
-						lottery.addItem(3);
+						lottery.AddItem(3);
 					}
 					else
 					{

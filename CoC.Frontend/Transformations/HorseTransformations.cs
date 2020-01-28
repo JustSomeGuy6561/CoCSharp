@@ -222,9 +222,9 @@ namespace CoC.Frontend.Transformations
 						sizeDelta = Utils.Rand(4) + 1;
 					}
 
-					var smallest = target.genitals.SmallestCock();
+					var smallest = target.genitals.ShortestCock();
 
-					smallest.LengthenCock(sizeDelta);
+					smallest.IncreaseLength(sizeDelta);
 					target.DeltaCreatureStats(sens: 1, lus: 10);
 
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);

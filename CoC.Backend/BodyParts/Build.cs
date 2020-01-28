@@ -210,7 +210,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public byte DescreaseMuscleTone(byte amount = 1)
+		public byte DecreaseMuscleTone(byte amount = 1)
 		{
 			byte oldTone = muscleTone;
 			muscleTone = muscleTone.subtract(amount);
@@ -262,7 +262,7 @@ namespace CoC.Backend.BodyParts
 			return thickness;
 		}
 
-		public byte GetTaller(byte increaseInInches = 1)
+		public byte IncreaseHeight(byte increaseInInches = 1)
 		{
 			byte oldHeight = heightInInches;
 			heightInInches = heightInInches.add(increaseInInches);
@@ -288,7 +288,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public byte GetShorter(byte decreaseInInches = 1)
+		public byte DecreaseHeight(byte decreaseInInches = 1)
 		{
 			byte oldHeight = heightInInches;
 			heightInInches = heightInInches.subtract(decreaseInInches);

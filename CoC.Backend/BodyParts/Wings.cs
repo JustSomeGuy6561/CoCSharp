@@ -18,6 +18,8 @@ namespace CoC.Backend.BodyParts
 	{
 		public override string BodyPartName() => Name();
 
+		private BodyData bodyData => CreatureStore.GetCreatureClean(creatureID)?.body.AsReadOnlyData() ?? new BodyData(creatureID);
+
 		public HairFurColors featherColor
 		{
 			get => _featherColor;
@@ -46,7 +48,7 @@ namespace CoC.Backend.BodyParts
 				if (value != _type)
 				{
 					isLarge = value.UpdateSizeOnTransform(isLarge);
-					value.UpdateColorOnTransform(ref _featherColor, ref _wingTone, ref _wingBoneTone);
+					value.UpdateColorOnTransform(ref _featherColor, ref _wingTone, ref _wingBoneTone, bodyData);
 				}
 				_type = value;
 			}
@@ -665,7 +667,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 		}
-		internal virtual void UpdateColorOnTransform(ref HairFurColors featherColor, ref Tones wingTone, ref Tones wingBoneTone)
+		internal virtual void UpdateColorOnTransform(ref HairFurColors featherColor, ref Tones wingTone, ref Tones wingBoneTone, in BodyData bodyData)
 		{
 			featherColor = HairFurColors.NO_HAIR_FUR;
 			wingTone = Tones.NOT_APPLICABLE;
@@ -704,9 +706,20 @@ namespace CoC.Backend.BodyParts
 			defaultFeatherColor = defaultHair;
 		}
 
-		internal override void UpdateColorOnTransform(ref HairFurColors featherColor, ref Tones wingTone, ref Tones wingBoneTone)
+		internal override void UpdateColorOnTransform(ref HairFurColors featherColor, ref Tones wingTone, ref Tones wingBoneTone, in BodyData bodyData)
 		{
-			featherColor = defaultFeatherColor;
+			if (bodyData.hasActiveFurType)
+			{
+				featherColor = bodyData.activeFur.fur.primaryColor;
+			}
+			else if (!bodyData.activeHairColor.isEmpty)
+			{
+				featherColor = bodyData.activeHairColor;
+			}
+			else
+			{
+				featherColor = defaultFeatherColor;
+			}
 			wingTone = Tones.NOT_APPLICABLE;
 			wingBoneTone = Tones.NOT_APPLICABLE;
 		}

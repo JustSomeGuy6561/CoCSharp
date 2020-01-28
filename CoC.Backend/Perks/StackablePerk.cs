@@ -6,7 +6,7 @@ namespace CoC.Backend.Perks
 {
 	public abstract class StackablePerk : PerkBase
 	{
-		public StackablePerk(SimpleDescriptor perkName, SimpleDescriptor havePerkText) : base(perkName, havePerkText)
+		public StackablePerk() : base()
 		{
 		}
 

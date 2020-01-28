@@ -35,22 +35,5 @@ namespace CoC.Frontend.StatusEffect
 			}
 			return SafelyFormattedString.FormattedText("You are under the effects of excess OviMax intake.", StringFormats.BOLD) + warning + ".";
 		}
-		private string ODFull()
-		{
-			string warning;
-			if (overdoseCount < 2)
-			{
-				warning = " Egg related pregnancies may have undesired effects ";
-			}
-			else if (overdoseCount < 3)
-			{
-				warning = " Egg related pregnancies will probably have undesired effects ";
-			}
-			else
-			{
-				warning = " Egg related pregnancies will have undesired effects ";
-			}
-			return SafelyFormattedString.FormattedText("You are under the effects of excess OviMax intake.", StringFormats.BOLD) + warning + "until this wears off.";
-		}
 	}
 }

@@ -19,16 +19,16 @@ namespace CoC.Frontend.Perks
 	//to suffocate enemies, and also add it in for flavor text for some tease attacks, but that's marked for future enhancements, not current core goals.
 	public sealed class RubberySkin : StackablePerk
 	{
-		public RubberySkin() : base(Name, HavePerkText)
+		public RubberySkin() : base()
 		{
 		}
 
-		private static string Name()
+		public override string Name()
 		{
 			throw new NotImplementedException();
 		}
 
-		private static string HavePerkText()
+		public override string HasPerkText()
 		{
 			throw new NotImplementedException();
 		}

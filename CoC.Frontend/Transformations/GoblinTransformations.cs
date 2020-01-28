@@ -99,7 +99,7 @@ namespace CoC.Frontend.Transformations
 			//Shrink
 			if (Utils.Rand(2) == 0 && target.heightInInches > 48)
 			{
-				target.build.GetShorter((byte)(1 + Utils.Rand(5)));
+				target.build.DecreaseHeight((byte)(1 + Utils.Rand(5)));
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
@@ -164,7 +164,7 @@ namespace CoC.Frontend.Transformations
 			{
 				if (target.cocks[0].length > 12)
 				{
-					float delta = target.cocks[0].ShortenCock(1 + Utils.Rand(3));
+					float delta = target.cocks[0].DecreaseLength(1 + Utils.Rand(3));
 
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}

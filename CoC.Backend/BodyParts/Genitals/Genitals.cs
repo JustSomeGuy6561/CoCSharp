@@ -140,6 +140,8 @@ namespace CoC.Backend.BodyParts
 		public const int MAX_COCKS = CockCollection.MAX_COCKS;
 
 		public const ushort CUM_MULTIPLIER_CAP = CockCollection.CUM_MULTIPLIER_CAP;
+
+		public float minimumCockLength => perkData.MinCockLength;
 		#endregion
 
 		#region Public ReadOnly Members
@@ -212,6 +214,12 @@ namespace CoC.Backend.BodyParts
 
 		public ushort standardBonusAnalCapacity => ass.bonusAnalCapacity;
 
+		public AnalLooseness minAnalLooseness => ass.minLooseness;
+		public AnalLooseness maxAnalLooseness => ass.maxLooseness;
+
+		public AnalWetness minAnalWetness => ass.minWetness;
+		public AnalWetness maxAnalWetness => ass.maxWetness;
+
 		#endregion
 
 		#region Balls Aliases
@@ -253,6 +261,12 @@ namespace CoC.Backend.BodyParts
 		public ushort cumMultiplier => allCocks.cumMultiplier;
 
 		public int hoursSinceLastCum => allCocks.hoursSinceLastCum;
+		//includes any pent up bonuses caused by various items, effects, etc.
+		public int simulatedHoursSinceLastCum => allCocks.simulatedHoursSinceLastCum;
+
+		//hours since last cum is now constant - it stores the last time you actually came (or the beginning of the game if you never came). To get around this, we have a pent-up bonus
+		//which stacks like the old hours since last came
+		public uint pentUpBonus => allCocks.pentUpBonus;
 
 		public int totalCum => allCocks.totalCum;
 
@@ -271,6 +285,7 @@ namespace CoC.Backend.BodyParts
 
 		public NippleStatus nippleType => allBreasts.nippleStatus;
 
+		public float nippleLength => allBreasts.nippleLength;
 
 		public bool unlockedDickNipples => allBreasts.unlockedDickNipples;
 
@@ -299,10 +314,10 @@ namespace CoC.Backend.BodyParts
 		public uint breastOrgasmCount => allBreasts.breastOrgasmCount;
 		public uint breastDryOrgasmCount => allBreasts.breastDryOrgasmCount;
 
-		public CupSize smallestMaleCupSize => perkData.MaleMinCup;
-		public CupSize smallestFemaleCupSize => perkData.FemaleMinCup;
+		public CupSize smallestPossibleMaleCupSize => perkData.MaleMinCup;
+		public CupSize smallestPossibleFemaleCupSize => perkData.FemaleMinCup;
 
-		public CupSize smallestPossibleCupSize => gender.HasFlag(Gender.FEMALE) ? smallestFemaleCupSize : smallestMaleCupSize;
+		public CupSize smallestPossibleCupSize => gender.HasFlag(Gender.FEMALE) ? smallestPossibleFemaleCupSize : smallestPossibleMaleCupSize;
 
 		#endregion
 
@@ -355,6 +370,12 @@ namespace CoC.Backend.BodyParts
 		public uint vaginalOrgasmCount => allVaginas.vaginalOrgasmCount;
 		public uint vaginalDryOrgasmCount => allVaginas.vaginalDryOrgasmCount;
 
+		public VaginalLooseness minVaginalLooseness => allVaginas.minVaginalLooseness;
+		public VaginalLooseness maxVaginalLooseness => allVaginas.maxVaginalLooseness;
+
+		public VaginalWetness minVaginalWetness => allVaginas.minVaginalWetness;
+		public VaginalWetness maxVaginalWetness => allVaginas.maxVaginalWetness;
+
 		#endregion
 
 		#region Public Clit Related Computed Values
@@ -382,6 +403,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+
 		/* Trap check. This combines the feminity value and the physical endowments to determine how this creature appears.
 		 *
 		 * Start with the most obvious
@@ -400,8 +422,8 @@ namespace CoC.Backend.BodyParts
 		 */
 		public Gender ApparentGender()
 		{
-			//noticable bulge and breasts
-			if (BiggestCupSize() > CupSize.B && BiggestCockSize() >= 6)
+			//noticable bulge and breasts. Note
+			if (BiggestCupSize() > CupSize.B && BiggestCockTotalSize() >= 10)
 			{
 				return Gender.HERM;
 			}
@@ -411,12 +433,12 @@ namespace CoC.Backend.BodyParts
 				return Gender.FEMALE;
 			}
 			//noticable dick and sufficiently male
-			else if (BiggestCockSize() >= 6 && !femininity.atLeastSlightlyFeminine)
+			else if (BiggestCockTotalSize() >= 10 && !femininity.atLeastSlightlyFeminine)
 			{
 				return Gender.MALE;
 			}
 			//not noticable assets - go by appearance
-			else if (BiggestCockSize() < 6 && BiggestCupSize() <= CupSize.B)
+			else if (BiggestCockTotalSize() < 6 && BiggestCupSize() <= CupSize.B)
 			{
 				if (femininity.atLeastSlightlyFeminine) return Gender.FEMALE;
 				else if (femininity.atLeastSlightlyMasculine) return Gender.MALE;
@@ -446,7 +468,7 @@ namespace CoC.Backend.BodyParts
 			else
 			{
 				CupSize LargestCup = BiggestCupSize();
-				float longestCock = BiggestCockSize();
+				float longestCock = BiggestCockTotalSize();
 
 				//at this point, we are either herm or genderless appearing. there are 3 cases for herm: truly apparent breasts and cock bulge, appears male but with breasts,
 				//and appears female but with a rather obvious dick bulge. genderless is everything else. Originally this was a lot more concise, but this way of writing it is
@@ -703,9 +725,9 @@ namespace CoC.Backend.BodyParts
 			return femininity.IncreaseFemininity(amount);
 		}
 
-		public byte IncreaseMasculinity(byte amount)
+		public byte InreaseMasculinity(byte amount)
 		{
-			return femininity.InreaseMasculinity(amount);
+			return femininity.IncreaseMasculinity(amount);
 		}
 
 		public byte SetFemininity(byte newValue)
@@ -818,10 +840,18 @@ namespace CoC.Backend.BodyParts
 
 		public bool SetDickNippleFlag(bool enabled) => allBreasts.SetDickNippleFlag(enabled);
 
+		public float GrowNipples(float amount, bool ignorePerks = false) => allBreasts.GrowNipples(amount, ignorePerks);
+
+		public float ShrinkNipples(float amount, bool ignorePerks = false) => allBreasts.ShrinkNipples(amount, ignorePerks);
+
+		public float ChangeNippleLength(float delta, bool ignorePerks = false) => allBreasts.ChangeNippleLength(delta, ignorePerks);
+
+		public bool SetNippleLength(float size) => allBreasts.SetNippleLength(size);
+
 		#endregion
 
 		#region Lactation Update Functions
-		public LactationStatus setLactationTo(LactationStatus newStatus) => allBreasts.setLactationTo(newStatus);
+		public LactationStatus SetLactationTo(LactationStatus newStatus) => allBreasts.setLactationTo(newStatus);
 
 
 		public bool clearLactation() => allBreasts.clearLactation();
@@ -842,7 +872,7 @@ namespace CoC.Backend.BodyParts
 		/// <returns>True if the creature gained a pair of balls, false if they already had them.</returns>
 		public bool GrowBalls()
 		{
-			return balls.growBalls();
+			return balls.GrowBalls();
 		}
 
 		/// <summary>
@@ -855,7 +885,7 @@ namespace CoC.Backend.BodyParts
 		/// <remarks>this function will never create a Uniball. If this is desired, use either GrowUniBall or GrowBallsAny.</remarks>
 		public bool GrowBalls(byte numberOfBalls, byte ballSize = Balls.DEFAULT_BALLS_SIZE)
 		{
-			return balls.growBalls(numberOfBalls, ballSize);
+			return balls.GrowBalls(numberOfBalls, ballSize);
 		}
 
 		/// <summary>
@@ -864,7 +894,7 @@ namespace CoC.Backend.BodyParts
 		/// <returns>True if the target did not have balls and now has a uniball, false otherwise.</returns>
 		public bool GrowUniBall()
 		{
-			return balls.growUniBall();
+			return balls.GrowUniBall();
 		}
 
 		/// <summary>
@@ -878,11 +908,11 @@ namespace CoC.Backend.BodyParts
 		{
 			if (numBalls == 1)
 			{
-				return balls.growUniBall();
+				return balls.GrowUniBall();
 			}
 			else
 			{
-				return balls.growBalls(numBalls, newSize);
+				return balls.GrowBalls(numBalls, newSize);
 			}
 		}
 
@@ -909,7 +939,7 @@ namespace CoC.Backend.BodyParts
 		/// Adds the given total of balls to the current amount. If the target does not have balls or the target has a uniball and the optional ignore if uniball flag is set,
 		/// this will fail to add any balls. Returns the number of balls added.
 		/// </summary>
-		/// <param name="additionalBalls">Number of balls to add.</param>
+		/// <param name="additionalBalls">float of balls to add.</param>
 		/// <param name="ignoreIfUniball">Should this function respect a uniball, if applicable?</param>
 		/// <returns>The number of balls successfully added.</returns>
 		/// <remarks> The number of balls a target can have is capped; The return value will differ from the given value if this cap is reached.</remarks>
@@ -949,7 +979,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool ConvertToUniball()
 		{
-			return balls.makeUniBall();
+			return balls.MakeUniBall();
 		}
 
 		#endregion
@@ -1019,6 +1049,11 @@ namespace CoC.Backend.BodyParts
 
 
 		public int RemoveCock(int count = 1) => allCocks.RemoveCock(count);
+
+		public int RemoveCockAt(int index, int count = 1)
+		{
+			return allCocks.RemoveCockAt(index, count);
+		}
 
 
 		public int RemoveExtraCocks() => allCocks.RemoveExtraCocks();
@@ -1122,20 +1157,45 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
+		#region Shrink Cock With Remove
+
+		public bool ShrinkCockAndRemoveIfTooSmall(int index, float shrinkAmount, bool ignorePerks = false) => allCocks.ShrinkCockAndRemoveIfTooSmall(index, shrinkAmount, ignorePerks);
+		public bool ShrinkCockAndRemoveIfTooSmall(Cock cock, float shrinkAmount, bool ignorePerks = false)
+		{
+			if (cock == cocks[cock.cockIndex])
+			{
+				return allCocks.ShrinkCockAndRemoveIfTooSmall(cock.cockIndex, shrinkAmount, ignorePerks);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		#endregion
+
 		#region AllCocks Update Functions
 		public void NormalizeDicks(bool untilEven = false) => allCocks.NormalizeDicks(untilEven);
 
 		#endregion
 
 		#region Cum Update Functions
-		public float IncreaseCumMultiplier(float additionalMultiplier) => allCocks.IncreaseCumMultiplier(additionalMultiplier);
+		public float IncreaseCumMultiplier(float additionalMultiplier = 1) => allCocks.IncreaseCumMultiplier(additionalMultiplier);
+		public float DecreaseCumMultiplier(float decreaseMultiplier = 1) => allCocks.DecreaseCumMultiplier(decreaseMultiplier);
 
 
 		public float AddFlatCumAmount(float additionalCum) => allCocks.AddFlatCumAmount(additionalCum);
 
+		//adds a stacking effect to current hours since last cum. this is additive.
+		public uint AddPentUpTime(uint additionalTime) => allCocks.AddHoursPentUp(additionalTime);
+
+		//removes some of the additive stacking effect applied to current hours since last cum, if applicable
+		public uint RemoveHoursPentUp(uint reliefTime) => allCocks.RemoveHoursPentUp(reliefTime);
+
 		#endregion
 
 		#region Add/Remove Vaginas
+
+		public bool AddVagina() => allVaginas.AddVagina(VaginaType.defaultValue);
 
 		public bool AddVagina(VaginaType newVaginaType) => allVaginas.AddVagina(newVaginaType);
 
@@ -1492,7 +1552,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Cock Aggregate Functions
-		public float BiggestCockSize() => allCocks.BiggestCockSize();
+		public float BiggestCockTotalSize() => allCocks.BiggestCockTotalSize();
 
 
 		public float LongestCockLength() => allCocks.LongestCockLength();
@@ -1501,7 +1561,7 @@ namespace CoC.Backend.BodyParts
 		public float WidestCockMeasure() => allCocks.WidestCockMeasure();
 
 
-		public Cock BiggestCock() => allCocks.BiggestCock();
+		public Cock BiggestCockByArea() => allCocks.BiggestCockByArea();
 
 
 		public Cock LongestCock() => allCocks.LongestCock();
@@ -1522,7 +1582,7 @@ namespace CoC.Backend.BodyParts
 		public CockData AverageCock() => allCocks.AverageCock();
 
 
-		public float SmallestCockSize() => allCocks.SmallestCockSize();
+		public float SmallestCockTotalSize() => allCocks.SmallestCockTotalSize();
 
 
 		public float ShortestCockLength() => allCocks.ShortestCockLength();
@@ -1531,7 +1591,7 @@ namespace CoC.Backend.BodyParts
 		public float ThinnestCockMeasure() => allCocks.ThinnestCockMeasure();
 
 
-		public Cock SmallestCock() => allCocks.SmallestCock();
+		public Cock SmallestCockByArea() => allCocks.SmallestCockByArea();
 
 
 		public Cock ShortestCock() => allCocks.ShortestCock();
@@ -1542,8 +1602,11 @@ namespace CoC.Backend.BodyParts
 
 		public int CountCocksOfType(CockType type) => allCocks.CountCocksOfType(type);
 
+		//for those who aren't familiar with linq these are just helpful aliases for common linq queries.
 
+		public bool HasAnyCocksOfType(CockType type) => allCocks.HasACockOfType(type);
 
+		public bool OnlyHasCocksOfType(CockType type) => allCocks.OnlyHasCocksOfType(type);
 
 		public bool OtherCocksUseSheath(int excludedCockIndex) => allCocks.OtherCocksUseSheath(excludedCockIndex);
 		#endregion
@@ -1600,6 +1663,11 @@ namespace CoC.Backend.BodyParts
 
 		public int CountVaginasOfType(VaginaType vaginaType) => allVaginas.CountVaginasOfType(vaginaType);
 
+		//for those who aren't familiar with linq these are just helpful aliases for common linq queries.
+
+		public bool HasAVaginaOfType(VaginaType type) => allVaginas.HasAVaginaOfType(type);
+
+		public bool OnlyHasVaginasOfType(VaginaType type) => allVaginas.OnlyHasVaginasOfType(type);
 
 		#endregion
 

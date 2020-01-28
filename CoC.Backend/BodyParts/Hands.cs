@@ -35,7 +35,9 @@ namespace CoC.Backend.BodyParts
 
 		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
-
+		public bool isClaws => type.isClaws;
+		public bool isPaws => type.isPaws;
+		public bool isHands => type.isHands;
 
 		public string LongDescription() => type.LongDescription(AsReadOnlyData());
 		public string LongDescription(bool alternateFormat) => type.LongDescription(AsReadOnlyData(), alternateFormat);

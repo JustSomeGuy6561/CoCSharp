@@ -309,9 +309,9 @@ namespace CoC.Frontend.Transformations
 			}
 
 			//remove oviposition
-			if (target is Player && Utils.Rand(5) == 0)
+			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
 			{
-				if (((PlayerWomb)target.womb).ClearOviposition())
+				if (playerWomb.ClearOviposition())
 				{
 					sb.Append(RemovedOvipositionText(target));
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
@@ -390,10 +390,10 @@ namespace CoC.Frontend.Transformations
 
 			if (target.hasCock && modifiers.HasFlag(CanineModifiers.LARGE))
 			{
-				var smallest = target.genitals.SmallestCock();
+				var smallest = target.genitals.ShortestCock();
 				var oldData = smallest.AsReadOnlyData();
 
-				smallest.LengthenCock(Utils.Rand(4) + 3);
+				smallest.IncreaseLength(Utils.Rand(4) + 3);
 				if (smallest.girth < 1)
 				{
 					var delta = 1 - smallest.girth;

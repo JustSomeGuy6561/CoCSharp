@@ -46,7 +46,7 @@ namespace CoC.Backend.Tools
 		}
 
 		//add an item, optionally multiple times
-		public void addItem(T item, int numberOfEntries = 1)
+		public void AddItem(T item, int numberOfEntries = 1)
 		{
 			//prevent negative number wrap arounds
 			if (numberOfEntries <= 0) return;

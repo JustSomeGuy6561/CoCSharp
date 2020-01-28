@@ -79,6 +79,13 @@ namespace CoC.Backend.CoC_Colors
 		public static readonly Tones SPRING_GREEN = new Tones(Color.SpringGreen);
 		public static readonly Tones TAN = new Tones(Color.Tan);
 		public static readonly Tones TAWNY = new Tones(Color.FromArgb(205, 87, 0), "Tawny"); //= #cd5700
+
+		//tigersharks are literally the only place that uses two tones for a color, and it's only this combo. this is a hack (like rainbow)
+		//that allows that behavior. it's ugly, and shouldn't be here, but it's only one instance, so it's fine, i guess. the better solution
+		//would be to implement a body type for sharks, but then all the checks for humanoid body would also need to allow shark bodies, and it just gets annoying.
+		//the color chosen to represent this in ARGB is burnt orange, which is a rough combo of orange and black. so we can use that for color compares.
+		public static readonly Tones TIGERSHARK = new Tones(Color.FromArgb(0x96, 0x40, 0x00), "striped Black and Orange");
+
 		public static readonly Tones TURQUOISE = new Tones(Color.Turquoise);
 		public static readonly Tones WHITE = new Tones(Color.White); //= #ffffff
 		public static readonly Tones WOODLY_BROWN = new Tones(Color.FromArgb(85, 67, 55), "WoodenBrown");

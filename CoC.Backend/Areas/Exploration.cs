@@ -95,7 +95,7 @@ namespace CoC.Backend.Areas
 					//only add them to the RNG lottery if we're actually going to use the RNG lottery - that is, we don't have any bad luck preventers taking priority.
 					else if (badLuckPreventerScene.Count == 0)
 					{
-						picker.addItem(entry.Key, entry.Key.chances);
+						picker.AddItem(entry.Key, entry.Key.chances);
 					}
 				}
 				//do the first bad luck preventer if any exist.
@@ -111,7 +111,7 @@ namespace CoC.Backend.Areas
 					{
 						if (scene.isActive)
 						{
-							picker.addItem(scene, scene.chances);
+							picker.AddItem(scene, scene.chances);
 						}
 					}
 					//select an entry from the lottery.

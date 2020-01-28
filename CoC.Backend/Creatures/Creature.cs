@@ -259,15 +259,37 @@ namespace CoC.Backend.Creatures
 			return perks.HasPerk<T>();
 		}
 
+		public bool AddPerk(PerkBase perkBase) => perks.AddPerk(perkBase);
+
+		public bool AddPerk<T>() where T : PerkBase, new() => perks.AddPerk<T>();
+		public bool AddOrStackPerk<T>() where T : StackablePerk, new() => perks.AddOrStackPerk<T>();
+
+		public bool AddOrStackPerk(StackablePerk perk) => perks.AddOrStackPerk(perk);
+
+		public bool StackPerk<T>() where T : StackablePerk, new() => perks.StackPerk<T>();
+
 		public T GetPerk<T>() where T : PerkBase
 		{
 			return perks.GetPerk<T>();
 		}
 
-		public bool HasStatusEffect<T>() where T : StatusEffectBase
+		public bool RemovePerk<T>() where T : PerkBase
 		{
-			return statusEffects.HasStatusEffect<T>();
+			return perks.RemovePerk<T>();
 		}
+
+		public bool AddStatusEffect(StatusEffectBase statusEffectBase) => statusEffects.AddStatusEffect(statusEffectBase);
+
+		public bool AddStatusEffect<T>() where T : StatusEffectBase, new() => statusEffects.AddStatusEffect<T>();
+
+		//checks to see if an instance of this statusEffect type exists in the collection
+		public bool HasStatusEffect<T>() where T : StatusEffectBase => statusEffects.HasStatusEffect<T>();
+
+		public bool RemoveStatusEffect<T>() where T : StatusEffectBase => statusEffects.RemoveStatusEffect<T>();
+
+		public bool RemoveStatusEffect(Type type) => statusEffects.RemoveStatusEffect(type);
+
+		public bool RemoveStatusEffect(StatusEffectBase effect) => statusEffects.RemoveStatusEffect(effect);
 
 		public T GetStatusEffect<T>() where T : StatusEffectBase
 		{
@@ -2018,12 +2040,12 @@ namespace CoC.Backend.Creatures
 		}
 		#endregion
 		#region Give Cock Sex
-		internal void PenetrateWithCockGeneric(int cockIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void PenetrateWithCockGeneric(int cockIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
 			genitals.HandleCockPenetrate(cockIndex, reachOrgasm);
 		}
 
-		internal void HaveGenericCockOrgasm(int cockIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
+		public void HaveGenericCockOrgasm(int cockIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
 			genitals.DoCockOrgasmGeneric(cockIndex, dryOrgasm);
 			if (countTowardOrgasmTotal)
@@ -2417,6 +2439,10 @@ namespace CoC.Backend.Creatures
 		{
 			return neck.UpdateType(neckType);
 		}
+
+		public bool UpdateTypeWithAddedLength(NeckType newType, byte additionalLength) => neck.UpdateTypeWithAddedLength(newType, additionalLength);
+
+		public bool UpdateNeck(CockatriceNeck newType, HairFurColors featherColor) => neck.UpdateType(newType, featherColor);
 
 		public bool RestoreNeck()
 		{

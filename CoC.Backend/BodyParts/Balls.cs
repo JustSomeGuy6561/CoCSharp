@@ -116,7 +116,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Unique Functions and Updating Properties
 		//Grows a pair of balls. returns false if it already has balls.
-		internal bool growBalls()
+		public bool GrowBalls()
 		{
 			if (hasBalls)
 			{
@@ -130,7 +130,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal bool growBalls(byte numBalls, byte newSize = DEFAULT_BALLS_SIZE)
+		public bool GrowBalls(byte numBalls, byte newSize = DEFAULT_BALLS_SIZE)
 		{
 
 			if (hasBalls)
@@ -144,7 +144,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal bool growUniBall()
+		public bool GrowUniBall()
 		{
 			if (hasBalls)
 			{
@@ -157,7 +157,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public bool makeUniBall()
+		public bool MakeUniBall()
 		{
 			if (hasBalls && uniBall)
 			{
@@ -223,12 +223,12 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal byte RemoveExtraBalls()
+		public byte RemoveExtraBalls()
 		{
 			return RemoveBalls(count.subtract(2));
 		}
 
-		internal bool removeAllBalls()
+		public bool removeAllBalls()
 		{
 			if (!hasBalls)
 			{
@@ -267,7 +267,7 @@ namespace CoC.Backend.BodyParts
 			return size.subtract(originalSize);
 		}
 
-		public byte ShrinkBalls(byte amount, bool ignorePerks = false)
+		public byte ShrinkBalls(byte amount = 1, bool ignorePerks = false)
 		{
 			if (!hasBalls || size == MIN_BALLS_SIZE)
 			{

@@ -457,15 +457,15 @@ namespace CoC.Frontend.Races
 		//          ["white",  "grey",      "white"],
 		//      ];
 
-		public FurColor[] availablePrimaryFurColors => new FurColor[]
+		public HairFurColors[] availablePrimaryFeatherColors => new HairFurColors[]
 		{
-			new FurColor(HairFurColors.BLUE),
-			new FurColor(HairFurColors.ORANGE),
-			new FurColor(HairFurColors.GREEN),
-			new FurColor(HairFurColors.PURPLE),
-			new FurColor(HairFurColors.BLACK),
-			new FurColor(HairFurColors.BLONDE),
-			new FurColor(HairFurColors.WHITE),
+			HairFurColors.BLUE,
+			HairFurColors.ORANGE,
+			HairFurColors.GREEN,
+			HairFurColors.PURPLE,
+			HairFurColors.BLACK,
+			HairFurColors.BLONDE,
+			HairFurColors.WHITE,
 		};
 		public Tones[] availableTones => new Tones[]
 		{
@@ -478,35 +478,49 @@ namespace CoC.Frontend.Races
 			Tones.WHITE
 		};
 
-		public FurColor[] availableSecondaryFurColors => new FurColor[]
+		public HairFurColors[] availableSecondaryFeatherColors => new HairFurColors[]
 		{
-			new FurColor(HairFurColors.TURQUOISE),
-			new FurColor(HairFurColors.RED),
-			new FurColor(HairFurColors.YELLOW),
-			new FurColor(HairFurColors.PINK),
-			new FurColor(HairFurColors.WHITE),
-			new FurColor(HairFurColors.BROWN),
-			new FurColor(HairFurColors.GRAY),
+			HairFurColors.TURQUOISE,
+			HairFurColors.RED,
+			HairFurColors.YELLOW,
+			HairFurColors.PINK,
+			HairFurColors.WHITE,
+			HairFurColors.BROWN,
+			HairFurColors.GRAY,
 		};
 
 		public void GetRandomCockatriceColors(out FurColor primaryFeathers, out Tones secondaryScales)
 		{
-			FurColor[] primaryColors = availablePrimaryFurColors;
 			Tones[] secondaryTones = availableTones;
-			int rand = Utils.Rand(primaryColors.Length);
-			primaryFeathers = primaryColors[rand];
+			int rand = Utils.Rand(availablePrimaryFeatherColors.Length);
+			HairFurColors first = availablePrimaryFeatherColors[rand];
+			HairFurColors second;
+			if (rand >= availableSecondaryFeatherColors.Length)
+			{
+				second = availableSecondaryFeatherColors[availableSecondaryFeatherColors.Length - 1];
+			}
+			else
+			{
+				second = availableSecondaryFeatherColors[rand];
+			}
 			if (rand >= secondaryTones.Length)
 			{
 				secondaryScales = secondaryTones[secondaryTones.Length - 1];
 			}
-			else secondaryScales = secondaryTones[rand];
+			else
+			{
+				secondaryScales = secondaryTones[rand];
+			}
+
+			primaryFeathers = new FurColor(first, second, FurMulticolorPattern.NO_PATTERN);
+
 		}
 
-		public FurColor GetSecondaryCockatriceFeathers(FurColor primaryColor)
+		public HairFurColors GetSecondaryCockatriceFeathers(FurColor primaryColor)
 		{
-			FurColor[] primaryColors = availablePrimaryFurColors;
-			FurColor[] secondaryColors = availableSecondaryFurColors;
-			bool predicate(FurColor x) => x.Equals(primaryColor);
+			HairFurColors[] primaryColors = availablePrimaryFeatherColors;
+			HairFurColors[] secondaryColors = availableSecondaryFeatherColors;
+			bool predicate(HairFurColors x) => primaryColor.IsIdenticalTo(x);
 			int y = Array.FindIndex(primaryColors, predicate);
 			if (y != -1)
 			{
@@ -518,13 +532,14 @@ namespace CoC.Frontend.Races
 				}
 				else return secondaryColors[y];
 			}
-			else return new FurColor(HairFurColors.YELLOW);
+
+			else return HairFurColors.YELLOW;
 		}
 
 		public FurColor defaultPrimaryFeathers => new FurColor(HairFurColors.BLUE);
 		public Tones defaultScaleTone => Tones.BLUE;
-		public FurColor defaultSecondaryFeathers => new FurColor(HairFurColors.TURQUOISE);
-		public FurColor defaultTailFeaithers => defaultSecondaryFeathers;
+		public HairFurColors defaultSecondaryFeathers => HairFurColors.TURQUOISE;
+		public FurColor defaultTailFeaithers => new FurColor(defaultSecondaryFeathers);
 		public EyeColor defaultEyeColor => EyeColor.BLUE;
 		internal Cockatrice() : base(CockatriceStr) { }
 
@@ -1323,7 +1338,26 @@ namespace CoC.Frontend.Races
 
 		public Tones[] availableTones => new Tones[] { Tones.GREEN, Tones.PURPLE, Tones.BLUE, Tones.CERULEAN, Tones.EMERALD };
 
-		internal Goo() : base(GooStr) { }
+		private readonly Lottery<HairFurColors> hairColors = new Lottery<HairFurColors>();
+
+		internal Goo() : base(GooStr)
+		{
+			hairColors.AddItem(HairFurColors.GREEN, 30);  // = ColorLists.GOO_MORPH[0]
+			hairColors.AddItem(HairFurColors.PURPLE, 20);  // = ColorLists.GOO_MORPH[1]
+			hairColors.AddItem(HairFurColors.BLUE, 20);  // = ColorLists.GOO_MORPH[2]
+			hairColors.AddItem(HairFurColors.CERULEAN, 20);  // = ColorLists.GOO_MORPH[3]
+			hairColors.AddItem(HairFurColors.EMERALD, 10); // = ColorLists.GOO_MORPH[4]
+		}
+
+		public HairFurColors[] availableHairColors => new HairFurColors[]
+		{
+			HairFurColors.GREEN, HairFurColors.PURPLE, HairFurColors.BLUE, HairFurColors.CERULEAN, HairFurColors.EMERALD,
+		};
+
+		public HairFurColors GetRandomHairColor()
+		{
+			return hairColors.Select();
+		}
 
 		public override byte Score(Creature source)
 		{
@@ -1787,22 +1821,26 @@ namespace CoC.Frontend.Races
 			Tones.BLACK
 		};
 
-		private static Lottery<Tones> theLottery = new Lottery<Tones>();
+		private static Lottery<Pair<Tones>> theLottery;
 
-		public Tones GetRandomSkinTone()
+		public void GetRandomSkinTone(out Tones primary, out Tones underbody)
 		{
-			return theLottery.Select();
+			var result = theLottery.Select();
+
+			primary = result.first;
+			underbody = result.second;
 		}
 
 		static Lizard()
 		{
-			theLottery.addItem(Tones.PURPLE, 5);
-			theLottery.addItem(Tones.SILVER, 5);
-			theLottery.addItem(Tones.RED, 18);
-			theLottery.addItem(Tones.GREEN, 18);
-			theLottery.addItem(Tones.WHITE, 18);
-			theLottery.addItem(Tones.BLUE, 18);
-			theLottery.addItem(Tones.BLACK, 18);
+			theLottery = new Lottery<Pair<Tones>>();
+			theLottery.AddItem(new Pair<Tones>(Tones.PURPLE, Tones.DEEP_PINK), 5);
+			theLottery.AddItem(new Pair<Tones>(Tones.SILVER, Tones.LIGHT_GRAY), 5);
+			theLottery.AddItem(new Pair<Tones>(Tones.RED, Tones.ORANGE), 18);
+			theLottery.AddItem(new Pair<Tones>(Tones.GREEN, Tones.YELLOWISH_GREEN), 18);
+			theLottery.AddItem(new Pair<Tones>(Tones.WHITE, Tones.LIGHT_GRAY), 18);
+			theLottery.AddItem(new Pair<Tones>(Tones.BLUE, Tones.CERULEAN), 18);
+			theLottery.AddItem(new Pair<Tones>(Tones.BLACK, Tones.DARK_GRAY), 18);
 		}
 
 
@@ -2643,6 +2681,37 @@ namespace CoC.Frontend.Races
 					wolfCounter--;
 			}
 			return (byte)Utils.Clamp2(wolfCounter, byte.MinValue, byte.MaxValue);
+		}
+
+		public Pair<FurColor>[] availableFurColors { get; } = new Pair<FurColor>[]
+		{
+			new Pair<FurColor>(new FurColor(HairFurColors.WHITE), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.GRAY), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.DARK_GRAY), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.LIGHT_GRAY), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.BLACK), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.LIGHT_BROWN), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.SANDY_BROWN), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.GOLDEN), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.SILVER), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.BROWN), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.AUBURN), new FurColor(HairFurColors.NO_HAIR_FUR)),
+			new Pair<FurColor>(new FurColor(HairFurColors.BLACK), new FurColor(HairFurColors.GRAY)),
+			new Pair<FurColor>(new FurColor(HairFurColors.BLACK), new FurColor(HairFurColors.BROWN)),
+			new Pair<FurColor>(new FurColor(HairFurColors.BLACK), new FurColor(HairFurColors.SILVER)),
+			new Pair<FurColor>(new FurColor(HairFurColors.BLACK), new FurColor(HairFurColors.AUBURN)),
+			new Pair<FurColor>(new FurColor(HairFurColors.WHITE), new FurColor(HairFurColors.GRAY)),
+			new Pair<FurColor>(new FurColor(HairFurColors.WHITE), new FurColor(HairFurColors.SILVER)),
+			new Pair<FurColor>(new FurColor(HairFurColors.WHITE), new FurColor(HairFurColors.GOLDEN)),
+		};
+
+		internal void GetRandomFurColors(out FurColor primary, out FurColor underbody)
+		{
+			var result = Utils.RandomChoice(availableFurColors);
+
+			primary = result.first;
+			underbody = result.second;
+
 		}
 	}
 }

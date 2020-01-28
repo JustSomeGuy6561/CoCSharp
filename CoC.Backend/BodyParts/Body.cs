@@ -1582,16 +1582,17 @@ namespace CoC.Backend.BodyParts
 		#region Dye/Tone/Lotion
 
 #warning consider adding these back in.
-		//these are only virtual if you want to do some weird edge case - like the fur is too thick, preventing you from rubbing the lotion on the skin... underneath.
-		//(Silence of the Lambs reference? Check!)
-		//internal virtual bool allowsPrimaryDye => primary.usesFur && primary.epidermisType.updateable;
-		//internal virtual bool allowsSecondaryDye => secondary.usesFur && secondary.epidermisType.usesFur; //either usesTone and tone is mutabl
+		//by default, it's assumed that everything is tonable or dyeable if it has the corresponding part, or in the case of fur trying to tone,
+		//you can simply tone the skin underneath regardless (for primary only). If you want to make the fur too thick to tone the fur underneath or you are using the underbody as
+		//some sort of tone hack bullshit (thanks, sharks), you may want to alter this.
+		internal virtual bool allowsPrimaryDye => primary.usesFurColor && primary.epidermisType.updateable;
+		internal virtual bool allowsSecondaryDye => secondary.usesFurColor && secondary.epidermisType.usesFurColor; //either usesTone and tone is mutabl
 
-		//internal virtual bool allowsPrimaryOil => primary.usesTone && primary.epidermisType.updateable;
-		//internal virtual bool allowsSecondaryOil => secondary.usesTone && secondary.epidermisType.usesTone;
+		internal virtual bool allowsPrimaryOil => !primary.usesTone || primary.epidermisType.updateable;
+		internal virtual bool allowsSecondaryOil => secondary.usesTone && secondary.epidermisType.usesTone;
 
-		//internal virtual bool allowsPrimaryLotion => primary.usesTone && primary.epidermisType.updateable;
-		//internal virtual bool allowsSecondaryLotion => secondary.usesTone && secondary.epidermisType.updateable;
+		internal virtual bool allowsPrimaryLotion => !primary.usesTone || primary.epidermisType.updateable;
+		internal virtual bool allowsSecondaryLotion => secondary.usesTone && secondary.epidermisType.updateable;
 
 		//these provide text for when the body is lotioned, toned, or dyed. it looks complicated and unweildy (it is), but it means we have full control over what displays
 		//when doing this, making it as flexible as we want. Unfortunately, body is supremely complicated because it can be dyed, toned, or lotioned, and toned/lotioned can occur
@@ -1689,6 +1690,11 @@ namespace CoC.Backend.BodyParts
 			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, ReptileBodyDesc, MainScalesButton, GenericPostDesc),
 			new ToneBodyMember(EpidermisType.SCALES, DefaultValueHelpers.defaultLizardTone, false, ReptileUnderbodyDesc, AlternateScalesButton, GenericPostDesc),
 			AllScalesButton, AllScalesDesc, GenericPostDesc, ReptileDesc, ReptileLongDesc, ReptilePlayerStr, ReptileTransformStr, ReptileRestoreStr);
+
+		//tiger sharks can have two tones for skin tone. it's the only time i've seen so far that tones are mixed. I really, really don't want to add mixed skin tones if that's
+		//literally the only place it's used. the easiest way around it is to hack in a tigershark tone (which is what i've done). The proper way is probably to have a shark body type
+		//and use the underbody color as a supplementary color. i started to do that, but that's also a pain. if needed, figure out how to implement it here - probaby a simple tone body
+		//but with an update function that takes two colors. you'll need to override the handle type change to allow it to take two-tones as well. imo not worth the effort.
 
 		public static readonly CockatriceBodyType COCKATRICE = new CockatriceBodyType();
 		public static readonly KitsuneBodyType KITSUNE = new KitsuneBodyType();
@@ -2265,6 +2271,7 @@ namespace CoC.Backend.BodyParts
 			return secondary.buttonText(isTone);
 		}
 	}
+
 	public class SimpleToneBodyType : SimpleBodyType
 	{
 

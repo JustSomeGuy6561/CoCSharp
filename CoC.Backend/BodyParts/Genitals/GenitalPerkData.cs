@@ -78,7 +78,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (value && !_alwaysProducesMaxCum)
 				{
-					alwaysProducesMaxCum = value;
+					_alwaysProducesMaxCum = value;
 					handleCumChange();
 				}
 
@@ -264,6 +264,15 @@ namespace CoC.Backend.BodyParts
 		}
 		private float _MinClitSize = Clit.MIN_CLIT_SIZE;
 		#endregion
+		#endregion
+
+		#region Womb
+
+		internal bool hasDiapause
+		{
+			get;set;
+		}
+
 		#endregion
 
 		#region Helpers

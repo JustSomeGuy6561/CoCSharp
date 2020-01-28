@@ -439,7 +439,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Attribute Updates
 
-		public float LengthenCock(float lengthenAmount, bool ignorePerk = false)
+		public float IncreaseLength(float lengthenAmount = 1, bool ignorePerk = false)
 		{
 			if (lengthenAmount <= 0) return 0;
 
@@ -454,7 +454,9 @@ namespace CoC.Backend.BodyParts
 			return length - oldLength;
 		}
 
-		public float ShortenCock(float shortenAmount, bool ignorePerk = false)
+		//calling this will not cause a cock to be removed, should it become too small. Note that perks may prevent this from shrinking beyond a certain size, so
+		//you'll need to keep that in mind when checking for that.
+		public float DecreaseLength(float shortenAmount = 1, bool ignorePerk = false)
 		{
 			if (shortenAmount <= 0) return 0;
 			float oldLength = length;
@@ -466,6 +468,34 @@ namespace CoC.Backend.BodyParts
 			updateLength(length - shortenAmount);
 			CheckDataChanged(oldData);
 			return oldLength - length;
+		}
+
+		//this is a variant of the decrease length function that spits out a boolean telling you if you should remove it after this procs. This disctinction is important because
+		//nearly all of the code (incorrectly) assumes a minimum length of 3, as the minimum length was previously constant. As such, most code that does not want to accidently
+		//cause this to occur is written in such a way that it will never cause the length to drop below 3. this, however, is no longer correct. As such, when you attempt to shrink
+		//a cock below it's minimum length, it will simply stop there and return the amount it did shrink, unless you call this variant. this variant will stop at the minimum length
+		//like the other check, but it will also set the should remove boolean to true when you are trying to shrink well beyond the possible length.
+		//if you are certain you wish to remove the cock when it tries to shrink beyond it's minimum length, use this variant.
+		public bool DecreaseLengthAndCheckIfNeedsRemoval(float shortenAmount, bool ignorePerks = false)
+		{
+
+			if (shortenAmount <= 0)
+			{
+				return false;
+			}
+
+			float oldLength = length;
+			if (!ignorePerks)
+			{
+				shortenAmount *= cockShrinkMultiplier;
+			}
+			var oldData = AsReadOnlyData();
+			updateLength(length - shortenAmount);
+			CheckDataChanged(oldData);
+
+			//if the amount we tried to shorten is one or more than the amount we did actually shrink, we should remove it.
+			//alternatively, if it drops below the ABSOLUTE MINIMUM (3), then we should remove, regardless of amount we're trying to drop it (>0, of course)
+			return oldLength - length + 1 < shortenAmount || oldLength - shortenAmount < MIN_COCK_LENGTH;
 		}
 
 		public float SetLength(float newLength)
@@ -485,7 +515,7 @@ namespace CoC.Backend.BodyParts
 			return girth - oldGirth;
 		}
 
-		public float ThinCock(float thinAmount)
+		public float DecreaseThickness(float thinAmount)
 		{
 			float oldGirth = girth;
 			var oldData = AsReadOnlyData();
@@ -500,6 +530,18 @@ namespace CoC.Backend.BodyParts
 			updateGirth(newGirth);
 			CheckDataChanged(oldData);
 			return girth;
+		}
+
+		public Pair<float> DeltaLengthAndGirth(float lengthDelta, float girthDelta)
+		{
+			float oldLength = length;
+			float oldGirth = girth;
+
+			var oldData = AsReadOnlyData();
+			updateLengthAndGirth(length + lengthDelta, girth + girthDelta);
+			CheckDataChanged(oldData);
+
+			return new Pair<float>(length - oldLength, girth - oldGirth);
 		}
 
 		public void SetLengthAndGirth(float newLength, float newGirth)

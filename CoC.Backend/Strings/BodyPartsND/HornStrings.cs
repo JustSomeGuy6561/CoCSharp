@@ -9,6 +9,7 @@ namespace CoC.Backend.BodyParts
 {
 	public partial class Horns
 	{
+
 		public string OneHornShortDescription(string pronoun = "your")
 		{
 			if (numHorns == 0)

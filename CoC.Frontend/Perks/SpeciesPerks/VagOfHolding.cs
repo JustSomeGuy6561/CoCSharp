@@ -8,17 +8,17 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 {
 	class VagOfHolding : PerkBase
 	{
-		public VagOfHolding() : base(PerkName, HavePerkText)
+		public VagOfHolding() : base()
 		{
 		}
 
-		private static string HavePerkText()
+		public override string HasPerkText()
 		{
 			return "In addition to the various kitsune-like traits you've obtained over your travels, you've inherited the ability to handle otherwise impossible penetrations " +
 				"without any adverse effect on your body. It's safe to assume you would lose this ability if you ever lost all of your kitsune-like traits.";
 		}
 
-		private static string PerkName()
+		public override string Name()
 		{
 			return "Vag of Holding";
 		}

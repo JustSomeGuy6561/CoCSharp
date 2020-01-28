@@ -98,6 +98,8 @@ namespace CoC.Backend.BodyParts
 		{
 			return Environment.NewLine + SafelyFormattedString.FormattedText("Your hair's growth has reached a new threshold, giving you " + LongDescription(true) + ".", StringFormats.BOLD) + Environment.NewLine;
 		}
+
+
 	}
 
 	//by default, we actually don't use the hair's player description; it's part of ears. For the sake of completion, it's just the long text, but made into a sentence.

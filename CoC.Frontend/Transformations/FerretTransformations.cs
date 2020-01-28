@@ -193,11 +193,11 @@ namespace CoC.Frontend.Transformations
 				var shortenedCock = false;
 				if (longestCock.length >= 10)
 				{
-					shortenedCock |= longestCock.ShortenCock(Utils.Rand(4) + 2) > 0;
+					shortenedCock |= longestCock.DecreaseLength(Utils.Rand(4) + 2) > 0;
 				}
 				else
 				{
-					shortenedCock |= longestCock.ShortenCock(Utils.RandBool() ? 2 : 1) > 0;
+					shortenedCock |= longestCock.DecreaseLength(Utils.RandBool() ? 2 : 1) > 0;
 				}
 
 				if (longestCock.girth > longestCock.length / 6.0f)
