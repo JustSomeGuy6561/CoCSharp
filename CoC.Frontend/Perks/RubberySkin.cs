@@ -33,7 +33,7 @@ namespace CoC.Frontend.Perks
 			throw new NotImplementedException();
 		}
 
-		protected override bool KeepOnAscension => throw new NotImplementedException();
+		protected override bool keepOnAscension => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{

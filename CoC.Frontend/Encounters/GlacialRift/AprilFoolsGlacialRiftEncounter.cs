@@ -5,12 +5,12 @@ namespace CoC.Frontend.Encounters.GlacialRift
 {
 	internal class AprilFoolsGlacialRiftEncounter : TriggeredEncounter
 	{
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			throw new System.NotImplementedException();
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			throw new System.NotImplementedException();
 		}

@@ -134,7 +134,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NavelPiercing : Piercing<NavelPiercingLocation>
 	{
-		public NavelPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+		public NavelPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc)
 			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => NavelPiercingLocation.allLocations.Count;
@@ -210,7 +210,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class HipPiercing : Piercing<HipPiercingLocation>
 	{
-		public HipPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+		public HipPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc)
 			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => HipPiercingLocation.allLocations.Count;
@@ -257,7 +257,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class CoreTattoo : TattooablePart<CoreTattooLocation>
 	{
-		public CoreTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public CoreTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{ }
 
 		public override int MaxTattoos => CoreTattooLocation.allLocations.Count;
@@ -301,7 +301,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class FullBodyTattoo : TattooablePart<FullBodyTattooLocation>
 	{
-		public FullBodyTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public FullBodyTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{ }
 
 		public override int MaxTattoos => FullBodyTattooLocation.allLocations.Count;

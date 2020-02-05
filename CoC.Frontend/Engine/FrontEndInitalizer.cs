@@ -28,7 +28,8 @@ namespace CoC.Frontend.Engine
 		{
 
 			BackendInitializer.PreSaveInit(() => new StandardDisplay(), DisplayManager.GetCurrentDisplay, DisplayManager.LoadDisplay, AreaManager.placeCollection, AreaManager.locationCollection,
-				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex);
+				AreaManager.dungeonCollection, AreaManager.homeBaseCollection, DifficultyManager.difficultyCollection, DifficultyManager.defaultDifficultyIndex,
+				PerkManager.conditionalPerks);
 
 			GameplaySettingsManager.IncludeGameplaySetting(new HyperHappySettings());
 

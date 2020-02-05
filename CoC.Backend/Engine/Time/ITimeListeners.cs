@@ -85,7 +85,7 @@ namespace CoC.Backend.Engine.Time
 	{
 		byte hourToTrigger { get; }
 
-		string reactToDailyTrigger();
+		string ReactToDailyTrigger();
 	}
 
 	public interface ITimeDayMultiListenerSimple
@@ -138,7 +138,7 @@ namespace CoC.Backend.Engine.Time
 
 		public byte hourToTrigger { get; }
 
-		public string reactToDailyTrigger() => callback();
+		public string ReactToDailyTrigger() => callback();
 
 		public SingleDayWrapperSimple(byte hour, ITimeDayMultiListenerSimple listener)
 		{

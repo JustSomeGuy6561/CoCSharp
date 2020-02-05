@@ -12,44 +12,32 @@ using CoC.Frontend.Pregnancies;
 using System;
 
 
-//
-// NOTE TO SELF: FINISH NOT DONE BODY PARTS, ADD THEM THE REST OF THE WAY TO CREATOR
-// MAKE SURE PLAYER, COMBAT CREATURE, CREATURE CORRECTLY PARSE _ALL_ DATA FRM CREATOR
-// CLEAN UP MINOR ERRORS. TRY TO BUILD AND CLEAN UP MAJOR ERRORS THEN DO THE SAME WITH FRONTEND
-
-//womb breaks all the fucking rules. it's a body part, but giving birth probably deserves its own page.
-//similarly, when NPCs and such get eggs and what the do with them varies due to their anatomy and implementations. There's no common rules to anything. Fuck it.
+//womb is annoying because there are no common rules, so you have to make some stuff virtual and override it as needed. i really hate doing this, but i suppose it works fine.
 
 //Pregnancy Store is generic. it can be used for anyone, by anything. but the SpawnType variable should be unique for player->NPC, NPC->player, or NPC->NPC (or other) spawns.
 //if the spawnType is not unique, it must provide a constructor that lets the user determine which behavior it will have (like an ENUM or pair of bools or something, idk)
 //it's not my job to make sure you give the right SpawnType to the right PregnancyStore, but it's pretty straightforward imo.
 
-//Womb is now player specific, and a "helper" - i don't _need_ it, but it's convenient. As such, it's handled Differently. We'll save it like a body part, but
-//it gets its own wiring in player.
-
-//If you want to wrap pregnancy stores in generic "Wombs" for random NPCs, and give them their own rules, go for it, but wiring it up to the system is on your.
-
+//This version is suited toward the player, allowing the player to obtain or remove oviposition and/or diapause. it may be possible to use this elsewhere if it suits you.
 
 namespace CoC.Frontend.Creatures.PlayerData
 {
 	//even though technically butt pregnancies dont occur in the womb, i'm going to store them here.
-	//ITimeListener: if pregnant or anal pregnant, run them, check what's going on
-	//IDayListender: if lays eggs and not pregnant and day % layseggsday = 0, set pregnancy store to egg pregnant. output it.
 
-	public sealed partial class PlayerWomb : Womb, ITimeDailyListenerSimple
+	public sealed partial class PlayerWomb : Womb
 	{
 		//egg related.
 		public bool laysEggs => basiliskWomb || hasOviposition;
-		public bool hasOviposition { get; private set; } = false;
 		//prevents laysEggs from being false;
 		public bool basiliskWomb { get; private set; } = false;
 
-		public bool canClearOviposition => hasOviposition && !basiliskWomb;
+		public override bool allowsDiapause => true;
+		public override bool allowsDiapauseRemoval => true;
 
-		public byte eggsEveryXDays { get; private set; } = 15;
+		public override bool allowsOviposition => true;
+		public override bool allowsOvipositionRemoval => !basiliskWomb;
 
-		public bool eggSizeKnown => normalPregnancy.eggSizeKnown;
-		public bool defaultKnownEggSize => normalPregnancy.eggsLarge;
+
 
 		//the player can get anally pregnant, even if the source does not force it. This allows things like bunny eggs in the ass, etc.
 		//note that this only applies if the player has an anus (which they should) and the spawn type allows anal pregnancies.
@@ -68,19 +56,6 @@ namespace CoC.Frontend.Creatures.PlayerData
 			return new PlayerWombData(this);
 		}
 
-		public void SetEggSize(bool isLarge)
-		{
-			SetNormalEggSize(isLarge);
-			SetSecondaryEggSize(isLarge);
-		}
-
-		//clears egg size "perk". now eggs are sized randomly.
-		public void ClearEggSize()
-		{
-			ClearNormalEggSize();
-			ClearSecondaryEggSize();
-		}
-
 		public bool GrantBasiliskWomb()
 		{
 			hasOviposition = true;
@@ -89,16 +64,6 @@ namespace CoC.Frontend.Creatures.PlayerData
 				return false;
 			}
 			basiliskWomb = true;
-			return true;
-		}
-
-		public bool GrantOviposition()
-		{
-			if (hasOviposition)
-			{
-				return false;
-			}
-			hasOviposition = true;
 			return true;
 		}
 
@@ -111,25 +76,16 @@ namespace CoC.Frontend.Creatures.PlayerData
 			}
 		}
 
-		public bool ClearOviposition()
-		{
-			if (!hasOviposition || basiliskWomb)
-			{
-				return false;
-			}
-			hasOviposition = false;
-			return true;
-		}
-
 		protected override bool ExtraValidations(bool currentlyValid, bool correctInvalidData)
 		{
 			return currentlyValid;
 		}
 
 		#region ITimeListeners
-		byte ITimeDailyListenerSimple.hourToTrigger => 0;
 
-		string ITimeDailyListenerSimple.reactToDailyTrigger()
+		protected override byte eggHourTrigger => 0;
+
+		protected override string ReactToDailyTrigger()
 		{
 			if (!normalPregnancy.isPregnant && laysEggs && GameEngine.CurrentDay % eggsEveryXDays == 0)
 			{
@@ -145,26 +101,13 @@ namespace CoC.Frontend.Creatures.PlayerData
 	public sealed class PlayerWombData : WombData
 	{
 		public bool laysEggs => basiliskWomb || hasOviposition;
-		public readonly bool hasOviposition;
 		//prevents laysEggs from being false;
 		public readonly bool basiliskWomb;
 
-		public readonly byte eggsEveryXDays;
-
-		public readonly bool? eggSize;
-
-		public bool eggSizeKnown => eggSize != null;
-		public bool defaultKnownEggSize => eggSize ?? false;
 
 		internal PlayerWombData(PlayerWomb womb) : base(womb)
 		{
-			hasOviposition = womb.hasOviposition;
-
 			basiliskWomb = womb.basiliskWomb;
-
-			eggsEveryXDays = womb.eggsEveryXDays;
-
-			eggSize = womb.normalPregnancy.eggSizeKnown ? (bool?)womb.normalPregnancy.eggsLarge : null;
 		}
 	}
 

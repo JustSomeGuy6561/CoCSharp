@@ -3,7 +3,7 @@ using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Reaction;
-using CoC.Backend.StatusEffect;
+using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Text;
 
 namespace CoC.Frontend.StatusEffect
 {
-	public sealed class Heat : TimedStatusEffect
+	public sealed class Heat : TimedPerk
 	{
 		//we don't use v1, v2, v3 anymore because they're generic and not useful. we now have static types and each has its own variables. but that's not overly useful when porting.
 		//so, for reference when porting:
@@ -36,18 +36,18 @@ namespace CoC.Frontend.StatusEffect
 
 		public Heat() : this(2 * TIMEOUT_STACK) { }
 
-		public Heat(ushort initialTimeout) : base(HeatStr, initialTimeout)
+		public Heat(ushort initialTimeout) : base(initialTimeout)
 		{
 		}
 
-		private static string HeatStr()
+		public override string Name()
 		{
 			return "Heat";
 		}
 
 		public override string ObtainText() => GainedHeatText();
 
-		public override string HaveStatusEffectText() => throw new NotImplementedException();
+		public override string HasPerkText() => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{
@@ -55,13 +55,13 @@ namespace CoC.Frontend.StatusEffect
 			{
 				active = true;
 
-				sbyte oldMinLibido = perkModifiers.minLibido;
-				perkModifiers.minLibido += LIBIDO_STACK;
-				totalAddedLibido = perkModifiers.minLibido.subtract(oldMinLibido);
+				sbyte oldMinLibido = baseModifiers.minLibido;
+				baseModifiers.minLibido += LIBIDO_STACK;
+				totalAddedLibido = baseModifiers.minLibido.subtract(oldMinLibido);
 
-				byte oldBonusFertility = perkModifiers.bonusFertility;
-				perkModifiers.bonusFertility += FERTILITY_STACK;
-				totalAddedFertility = perkModifiers.bonusFertility.subtract(oldBonusFertility);
+				byte oldBonusFertility = baseModifiers.bonusFertility;
+				baseModifiers.bonusFertility += FERTILITY_STACK;
+				totalAddedFertility = baseModifiers.bonusFertility.subtract(oldBonusFertility);
 
 				sourceCreature.womb.onKnockup -= Womb_onKnockup;
 				sourceCreature.womb.onKnockup += Womb_onKnockup;
@@ -91,8 +91,8 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (active)
 			{
-				perkModifiers.minLibido -= totalAddedLibido;
-				perkModifiers.bonusFertility -= totalAddedFertility;
+				baseModifiers.minLibido -= totalAddedLibido;
+				baseModifiers.bonusFertility -= totalAddedFertility;
 
 				totalAddedLibido = 0;
 				totalAddedFertility = 0;
@@ -132,9 +132,9 @@ namespace CoC.Frontend.StatusEffect
 				byte timeDelta = stack;
 				if (totalAddedLibido < MAX_LIBIDO)
 				{
-					sbyte oldMinLibido = perkModifiers.minLibido;
-					perkModifiers.minLibido += LIBIDO_STACK;
-					totalAddedLibido += perkModifiers.minLibido.subtract(oldMinLibido);
+					sbyte oldMinLibido = baseModifiers.minLibido;
+					baseModifiers.minLibido += LIBIDO_STACK;
+					totalAddedLibido += baseModifiers.minLibido.subtract(oldMinLibido);
 					increased = true;
 				}
 				else
@@ -144,9 +144,9 @@ namespace CoC.Frontend.StatusEffect
 
 				if (totalAddedFertility < MAX_FERTILITY_BOOST)
 				{
-					byte oldBonusFertility = perkModifiers.bonusFertility;
-					perkModifiers.bonusFertility += FERTILITY_STACK;
-					totalAddedFertility += perkModifiers.bonusFertility.subtract(oldBonusFertility);
+					byte oldBonusFertility = baseModifiers.bonusFertility;
+					baseModifiers.bonusFertility += FERTILITY_STACK;
+					totalAddedFertility += baseModifiers.bonusFertility.subtract(oldBonusFertility);
 					increased = true;
 				}
 				else
@@ -219,8 +219,11 @@ namespace CoC.Frontend.StatusEffect
 
 		private string DoReaction(bool currentlyIdling, bool hasIdleHours)
 		{
-			sourceCollection?.RemoveStatusEffect(this);
+			sourceCreature.perks.RemoveTimedEffect(this);
 			return RemoveText();
 		}
+
+
+		public override bool isAilment => true;
 	}
 }

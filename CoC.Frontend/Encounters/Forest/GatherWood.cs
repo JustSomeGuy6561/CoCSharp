@@ -15,12 +15,12 @@ namespace CoC.Frontend.Encounters.Forest
 		private const int CHANCES = 10;
 		protected override int chances => CHANCES;
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return false;
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return true;
 		}

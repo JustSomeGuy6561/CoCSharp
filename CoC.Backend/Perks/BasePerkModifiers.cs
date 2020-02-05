@@ -382,12 +382,6 @@ namespace CoC.Backend.Perks
 
 		public float pregnancyMultiplier => source.genitals.womb.pregnancyMultiplier;
 
-		public bool hasDiapause
-		{
-			get => source.genitals.perkData.hasDiapause;
-			set => source.genitals.perkData.hasDiapause = value;
-		}
-
 
 		//below is the actual formula.
 

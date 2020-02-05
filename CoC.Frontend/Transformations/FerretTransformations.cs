@@ -284,9 +284,9 @@ namespace CoC.Frontend.Transformations
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//Ovi perk loss
-			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
-				playerWomb.ClearOviposition();
+				target.womb.ClearOviposition();
 
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
@@ -342,7 +342,7 @@ namespace CoC.Frontend.Transformations
 			//rubber skin is now a perk. try to remove a stack. if this removes the perk, that's cool too.
 			if (target.HasPerk<RubberySkin>())
 			{
-				if (target.GetPerk<RubberySkin>().attemptStackDecrease())
+				if (target.GetPerkData<RubberySkin>().AttemptStackDecrease())
 				{
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}

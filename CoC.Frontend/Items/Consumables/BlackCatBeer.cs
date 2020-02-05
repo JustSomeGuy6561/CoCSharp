@@ -90,15 +90,15 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			(consumer as CombatCreature)?.AddHP(40 + (uint)Utils.Rand(21));
 
-			bool alreadyDrunk = consumer.HasStatusEffect<NiamhDrunk>();
+			bool alreadyDrunk = consumer.HasTimedEffect<NiamhDrunk>();
 
 			if (alreadyDrunk)
 			{
-				consumer.GetStatusEffect<NiamhDrunk>().StackEffect();
+				consumer.GetTimedEffectData<NiamhDrunk>().StackEffect();
 			}
 			else
 			{
-				consumer.AddStatusEffect<NiamhDrunk>();
+				consumer.AddTimedEffect<NiamhDrunk>();
 			}
 
 			resultsOfUse = UseItemText(alreadyDrunk);

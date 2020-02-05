@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CoC.Frontend.Perks.SpeciesPerks
 {
-	class DragonFire : PerkBase
+	class DragonFire : StandardPerk
 	{
 		//dragon perk. Grants a breath attack for use in combat. Unlike most other species perks, this perk is not lost when the creature loses their dragon-like traits.
 		//it is entirely possible to remove this artificially, but as of the current implementation, no item, TF, or NPC interaction removes this. Also, why would you want to?
@@ -14,7 +14,7 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 		{
 		}
 
-		protected override bool KeepOnAscension => throw new NotImplementedException();
+		protected override bool keepOnAscension => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{

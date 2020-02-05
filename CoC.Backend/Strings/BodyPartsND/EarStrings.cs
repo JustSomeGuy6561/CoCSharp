@@ -228,12 +228,12 @@ namespace CoC.Backend.BodyParts
 			return "Ears";
 		}
 
-		private string AllEarPiercingsShort(PlayerBase player)
+		private string AllEarPiercingsShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllEarPiercingsLong(PlayerBase player)
+		private string AllEarPiercingsLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

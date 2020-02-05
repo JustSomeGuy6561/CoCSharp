@@ -6,6 +6,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Settings.Gameplay;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 
@@ -95,11 +96,11 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllClitPiercingsShort(PlayerBase player)
+		private string AllClitPiercingsShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllClitPiercingsLong(PlayerBase player)
+		private string AllClitPiercingsLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

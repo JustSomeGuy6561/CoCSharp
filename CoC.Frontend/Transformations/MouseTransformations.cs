@@ -136,10 +136,10 @@ namespace CoC.Frontend.Transformations
 			}
 			//fem fertility up and heat (suppress if pregnant)
 			//not already in heat (add heat and lust)
-			if (!target.HasStatusEffect<Heat>() || target.GetStatusEffect<Heat>().totalAddedLibido < 30 && Utils.Rand(2) == 0)
+			if (!target.HasTimedEffect<Heat>() || target.GetTimedEffectData<Heat>().totalAddedLibido < 30 && Utils.Rand(2) == 0)
 			{
 
-				bool intensified = target.HasStatusEffect<Heat>();
+				bool intensified = target.HasTimedEffect<Heat>();
 				if (target.GoIntoHeat())
 				{
 					if (intensified)
@@ -192,9 +192,9 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 			//Ovi perk loss
-			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
-				playerWomb.ClearOviposition();
+				target.womb.ClearOviposition();
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);

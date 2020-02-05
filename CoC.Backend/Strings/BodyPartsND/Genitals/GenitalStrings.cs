@@ -1,5 +1,6 @@
 ﻿using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -150,12 +151,12 @@ namespace CoC.Backend.BodyParts
 			return "Genitals";
 		}
 
-		private string AllTattoosShort(PlayerBase player)
+		private string AllTattoosShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosLong(PlayerBase player)
+		private string AllTattoosLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

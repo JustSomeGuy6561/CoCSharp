@@ -46,7 +46,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NeckTattoo : TattooablePart<NeckTattooLocation>
 	{
-		public NeckTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public NeckTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 

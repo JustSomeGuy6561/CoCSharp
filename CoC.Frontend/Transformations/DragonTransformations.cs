@@ -242,7 +242,7 @@ namespace CoC.Frontend.Transformations
 
 			if (Species.DRAGON.Score(target) >= 4 && !target.HasPerk<DragonFire>())
 			{
-				target.perks.GetPerk<DragonFire>();
+				target.perks.AddPerk<DragonFire>();
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 

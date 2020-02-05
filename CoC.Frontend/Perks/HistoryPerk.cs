@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace CoC.Frontend.Perks
 {
-	public abstract class HistoryPerkBase : PerkBase
+	public abstract class HistoryPerkBase : StandardPerk
 	{
 		public static List<Func<HistoryPerkBase>> historyPerks = new List<Func<HistoryPerkBase>>();
 		static HistoryPerkBase()
@@ -56,7 +56,7 @@ namespace CoC.Frontend.Perks
 			buttonText = buttonStr;
 		}
 
-		protected override bool KeepOnAscension => false;
+		protected override bool keepOnAscension => false;
 
 		protected bool hasExtraModifiers => sourceCreature is IExtendedCreature;
 		protected ExtendedPerkModifiers extraModifiers => (sourceCreature as IExtendedCreature)?.extendedPerkModifiers;

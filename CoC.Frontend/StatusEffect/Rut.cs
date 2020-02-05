@@ -2,13 +2,13 @@
 using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
+using CoC.Backend.Perks;
 using CoC.Backend.Reaction;
-using CoC.Backend.StatusEffect;
 using CoC.Backend.Tools;
 using System;
 namespace CoC.Frontend.StatusEffect
 {
-	public sealed class Rut : TimedStatusEffect
+	public sealed class Rut : TimedPerk
 	{
 		public sbyte totalAddedLibido { get; private set; }
 		public sbyte totalAddedVirility { get; private set; }
@@ -27,11 +27,11 @@ namespace CoC.Frontend.StatusEffect
 
 		public Rut() : this(2 * TIMEOUT_STACK) { }
 
-		public Rut(ushort initialTimeout) : base(Name, initialTimeout)
+		public Rut(ushort initialTimeout) : base(initialTimeout)
 		{
 		}
 
-		private static string Name()
+		public override string Name()
 		{
 			return "Rut";
 		}
@@ -39,7 +39,7 @@ namespace CoC.Frontend.StatusEffect
 
 		public override string ObtainText() => GainedRutText();
 
-		public override string HaveStatusEffectText() => throw new NotImplementedException();
+		public override string HasPerkText() => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{
@@ -47,13 +47,13 @@ namespace CoC.Frontend.StatusEffect
 			{
 				active = true;
 
-				sbyte oldMinLibido = perkModifiers.minLibido;
-				perkModifiers.minLibido += LIBIDO_STACK;
-				totalAddedLibido = perkModifiers.minLibido.subtract(oldMinLibido);
+				sbyte oldMinLibido = baseModifiers.minLibido;
+				baseModifiers.minLibido += LIBIDO_STACK;
+				totalAddedLibido = baseModifiers.minLibido.subtract(oldMinLibido);
 
-				sbyte oldBonusFertility = perkModifiers.perkBonusVirility;
-				perkModifiers.perkBonusVirility += VIRILITY_STACK;
-				totalAddedVirility = perkModifiers.perkBonusVirility.subtract(oldBonusFertility);
+				sbyte oldBonusFertility = baseModifiers.perkBonusVirility;
+				baseModifiers.perkBonusVirility += VIRILITY_STACK;
+				totalAddedVirility = baseModifiers.perkBonusVirility.subtract(oldBonusFertility);
 
 				sourceCreature.genitals.onGenderChanged -= Genitals_onGenderChanged;
 				sourceCreature.genitals.onGenderChanged += Genitals_onGenderChanged;
@@ -72,8 +72,8 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (active)
 			{
-				perkModifiers.minLibido -= totalAddedLibido;
-				perkModifiers.perkBonusVirility -= totalAddedVirility;
+				baseModifiers.minLibido -= totalAddedLibido;
+				baseModifiers.perkBonusVirility -= totalAddedVirility;
 
 				totalAddedLibido = 0;
 				totalAddedVirility = 0;
@@ -106,9 +106,9 @@ namespace CoC.Frontend.StatusEffect
 				byte timeDelta = stack;
 				if (totalAddedLibido < MAX_LIBIDO)
 				{
-					sbyte oldMinLibido = perkModifiers.minLibido;
-					perkModifiers.minLibido += LIBIDO_STACK;
-					totalAddedLibido += perkModifiers.minLibido.subtract(oldMinLibido);
+					sbyte oldMinLibido = baseModifiers.minLibido;
+					baseModifiers.minLibido += LIBIDO_STACK;
+					totalAddedLibido += baseModifiers.minLibido.subtract(oldMinLibido);
 					increased = true;
 				}
 				else
@@ -118,9 +118,9 @@ namespace CoC.Frontend.StatusEffect
 
 				if (totalAddedVirility < MAX_VIRILITY_BOOST)
 				{
-					sbyte oldBonusVirility = perkModifiers.perkBonusVirility;
-					perkModifiers.perkBonusVirility += VIRILITY_STACK;
-					totalAddedVirility += perkModifiers.perkBonusVirility.subtract(oldBonusVirility);
+					sbyte oldBonusVirility = baseModifiers.perkBonusVirility;
+					baseModifiers.perkBonusVirility += VIRILITY_STACK;
+					totalAddedVirility += baseModifiers.perkBonusVirility.subtract(oldBonusVirility);
 					increased = true;
 				}
 				else
@@ -177,7 +177,7 @@ namespace CoC.Frontend.StatusEffect
 
 		private string DoReaction(bool currentlyIdling, bool hasIdleHours)
 		{
-			sourceCollection?.RemoveStatusEffect(this);
+			sourceCreature.perks.RemoveTimedEffect(this);
 			return RemoveText();
 		}
 
@@ -202,5 +202,7 @@ namespace CoC.Frontend.StatusEffect
 				"Wait, what!? It's hard to shake the thought from your head - you really could use a nice fertile hole to impregnate. You slap your forehead and realize " +
 				SafelyFormattedString.FormattedText("you've gone into rut", StringFormats.BOLD) + "!";
 		}
+
+		public override bool isAilment => true;
 	}
 }

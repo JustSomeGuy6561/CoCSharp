@@ -309,9 +309,9 @@ namespace CoC.Frontend.Transformations
 			}
 
 			//remove oviposition
-			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
-				if (playerWomb.ClearOviposition())
+				if (target.womb.ClearOviposition())
 				{
 					sb.Append(RemovedOvipositionText(target));
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);

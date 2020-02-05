@@ -15,19 +15,19 @@ namespace CoC.Backend.Pregnancies
 	{
 		public override string BodyPartName()
 		{
-			return Womb.Name(); //idk. really, this should implement saveable, not body part saveable. 
+			return Womb.Name(); //idk. really, this should implement saveable, not body part saveable.
 		}
 
 		private Womb source => CreatureStore.GetCreatureClean(creatureID)?.womb;
 
-		public bool hasDiapause => source?.hasDiapauseEnabled ?? false;
+		public bool hasDiapause => source?.hasDiapause ?? false;
 
 		public float pregnancyMultiplier => source?.pregnancyMultiplier ?? 1.0f;
 
 		public uint birthCount { get; private set; } = 0;
 		public uint totalBirthCount => CreatureStore.GetCreatureClean(creatureID)?.womb.totalBirthCount ?? birthCount;
 
-		//remember, we can have eggs even if we have normal womb due to ovi elixirs. 
+		//remember, we can have eggs even if we have normal womb due to ovi elixirs.
 		private bool? eggSize = null;
 		public bool eggSizeKnown => eggSize != null;
 		public bool eggsLarge => eggSize == true;
@@ -149,10 +149,10 @@ namespace CoC.Backend.Pregnancies
 		#region ITimeListener
 		TimeReactionBase ITimeActiveListenerFull.reactToHourPassing()
 		{
-			//set initial out values so we can return safely. 
+			//set initial out values so we can return safely.
 			TimeReactionBase output = null;
 
-			//pregnant, does not have diapause, or pregnant, has diapause, and has some hours to progess due to ingesting liquids. 
+			//pregnant, does not have diapause, or pregnant, has diapause, and has some hours to progess due to ingesting liquids.
 			if (isPregnant && (!hasDiapause || diapauseHours > 0))
 			{
 				if (hasDiapause)
@@ -195,7 +195,7 @@ namespace CoC.Backend.Pregnancies
 
 		protected abstract DynamicTimeReaction HandleBirthing();
 
-		//in the rare event time passing causes premature birthing, you can do it here. 
+		//in the rare event time passing causes premature birthing, you can do it here.
 		string ITimeLazyListener.reactToTimePassing(byte hoursPassed)
 		{
 			if (isPregnant)
@@ -222,13 +222,13 @@ namespace CoC.Backend.Pregnancies
 		public readonly bool hasDiapause;
 
 		public readonly float pregnancyMultiplier;
-		
+
 		public readonly bool eggSizeKnown;
-		
+
 		public readonly bool eggSizeLarge;
-		
+
 		public readonly bool isPregnant;
-		
+
 		public readonly uint totalBirthCount;
 
 		public ReadOnlyPregnancyStore(PregnancyStore source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))

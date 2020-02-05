@@ -75,7 +75,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TailPiercing : Piercing<TailPiercingLocation>
 	{
-		public TailPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public TailPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 

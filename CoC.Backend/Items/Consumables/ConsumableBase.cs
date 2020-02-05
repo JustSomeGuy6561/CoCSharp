@@ -5,6 +5,7 @@
 
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.UI;
 
 namespace CoC.Backend.Items.Consumables
 {
@@ -34,7 +35,7 @@ namespace CoC.Backend.Items.Consumables
 		protected abstract bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd);
 
 		//note: consumables that require a menu will need to overwrite this. items that return another item will, as well.
-		public override void AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
+		public override DisplayBase AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
 		{
 			bool result = OnConsumeAttempt(target, out string consumeResults, out bool isBadEnd);
 			CapacityItem item = this;
@@ -62,6 +63,7 @@ namespace CoC.Backend.Items.Consumables
 			else
 			{
 				postItemUseCallback(result, consumeResults, Author(), item);
+				return null;
 			}
 		}
 

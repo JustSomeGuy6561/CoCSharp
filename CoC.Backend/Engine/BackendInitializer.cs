@@ -20,10 +20,11 @@ namespace CoC.Backend.Engine
 	{
 		//rundown: to allow you to do whatever you want in the frontend, some data needs to be passed back here.
 
-		public static void PreSaveInit(Func<DisplayBase> PageConstructor, Func<DisplayBase> GetCurrentPage, Action<DisplayBase> SetCurrentPage,
+		public static void PreSaveInit(Func<DisplayBase> PageConstructor, Func<DisplayBase> GetCurrentPage, Action<DisplayBase> SetCurrentPage,//display
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> homeBases, //AreaEngine
-			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex) //Game Difficulty Engine.
+			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficultyIndex, //Game Difficulty Engine.
+			ReadOnlyDictionary<Type, Func<ConditionalPerk>> conditionalPerks) //Perk engine.
 		{
 			//add the fetish/game settings.
 
@@ -43,7 +44,7 @@ namespace CoC.Backend.Engine
 
 			//initialize game engine.
 			GameEngine.InitializeEngine(PageConstructor, GetCurrentPage, SetCurrentPage, gamePlaces, gameLocations, gameDungeons, homeBases,
-				gameDifficulties, defaultDifficultyIndex);
+				gameDifficulties, defaultDifficultyIndex, conditionalPerks);
 		}
 
 		public static void LatePreSaveInit()

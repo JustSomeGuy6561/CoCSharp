@@ -13,7 +13,7 @@ namespace CoC.Backend.BodyParts
 	//womb is not sealed; if you need a womb that does custom things, feel free to do so.
 	//womb has several constructors, but
 
-	public partial class Womb : SimpleSaveablePart<Womb, WombData>
+	public partial class Womb : SimpleSaveablePart<Womb, WombData>, ITimeDailyListenerSimple
 	{
 		public override string BodyPartName()
 		{
@@ -68,6 +68,84 @@ namespace CoC.Backend.BodyParts
 
 		public uint totalBirthCount => normalPregnancy?.birthCount + analPregnancy?.birthCount + secondaryNormalPregnancy?.birthCount ?? 0;
 
+		#region Oviposition
+
+		public virtual bool allowsOviposition => false;
+		public virtual bool allowsOvipositionRemoval => false;
+
+		public virtual byte eggsEveryXDays => 15;
+
+		public bool canObtainOviposition => allowsOviposition && !hasOviposition;
+		public bool canRemoveOviposition => allowsOvipositionRemoval && hasOviposition;
+
+		public bool hasOviposition { get; protected set; } = false;
+
+		public bool GrantOviposition()
+		{
+			if (hasOviposition || !canObtainOviposition)
+			{
+				return false;
+			}
+			hasOviposition = true;
+			return true;
+		}
+
+		public bool ClearOviposition()
+		{
+			if (!hasOviposition || !canRemoveOviposition)
+			{
+				return false;
+			}
+			hasOviposition = false;
+			return true;
+		}
+
+		#endregion
+
+		#region Diapause
+
+		public virtual bool allowsDiapause => false;
+		public virtual bool allowsDiapauseRemoval => false;
+
+		public bool canObtainDiapause => allowsDiapause && !hasDiapause;
+		public bool canRemoveDiapause => allowsDiapauseRemoval && hasDiapause;
+
+		public bool hasDiapause { get; protected set; } = false;
+
+		//does not throw a data changed, could. idk.
+		internal void onConsumeLiquid()
+		{
+			if (hasDiapause)
+			{
+				normalPregnancy?.onConsumeLiquid();
+				secondaryNormalPregnancy?.onConsumeLiquid();
+				analPregnancy?.onConsumeLiquid();
+			}
+		}
+
+		public bool EnableDiapause()
+		{
+			if (hasDiapause || !canObtainDiapause)
+			{
+				return false;
+			}
+			hasDiapause = true;
+			return true;
+		}
+
+		public bool DisableDiapause()
+		{
+			if (!hasDiapause || !canRemoveDiapause)
+			{
+				return false;
+			}
+			hasDiapause = false;
+			return true;
+		}
+
+		#endregion
+
+
 		//allows full customization.
 		protected Womb(Guid creatureID, VaginalPregnancyStore primaryVagina, AnalPregnancyStore anus, VaginalPregnancyStore secondaryVagina) : base(creatureID)
 		{
@@ -117,40 +195,42 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public virtual bool hasDiapauseEnabled => CreatureStore.GetCreatureClean(creatureID)?.genitals.perkData.hasDiapause ?? false;
-
-		//does not throw a data changed, could. idk.
-		internal void onConsumeLiquid()
-		{
-			if (hasDiapauseEnabled)
-			{
-				normalPregnancy?.onConsumeLiquid();
-				secondaryNormalPregnancy?.onConsumeLiquid();
-				analPregnancy?.onConsumeLiquid();
-			}
-		}
-
 		private void Normal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
 			NotifyDataChanged(new WombData(creatureID, e.oldValues, canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
-				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, hasDiapauseEnabled));
+				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, eggsEveryXDays, eggSize, hasDiapause, hasOviposition));
 		}
 
 		private void Anal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
 			NotifyDataChanged(new WombData(creatureID, normalPregnancy?.AsReadOnlyData(), canGetPregnant, e.oldValues, canGetAnallyPregnant,
-				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, hasDiapauseEnabled));
+				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, eggsEveryXDays, eggSize, hasDiapause, hasOviposition));
 		}
 
 		private void Secondary_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
 			NotifyDataChanged(new WombData(creatureID, normalPregnancy?.AsReadOnlyData(), canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
-				e.oldValues, canGetSecondaryNormalPregnant, hasDiapauseEnabled));
+				e.oldValues, canGetSecondaryNormalPregnant,  eggsEveryXDays, eggSize, hasDiapause, hasOviposition));
 		}
 
 		protected internal bool AttemptNormalKnockUp(float knockupChance, StandardSpawnType type)
 		{
 			return normalPregnancy.attemptKnockUp(knockupChance, type);
+		}
+
+		public virtual bool? eggSize => normalPregnancy?.eggSizeKnown == true ? (bool?)normalPregnancy.eggsLarge : null;
+
+		public void SetEggSize(bool isLarge)
+		{
+			SetNormalEggSize(isLarge);
+			SetSecondaryEggSize(isLarge);
+		}
+
+		//clears egg size "perk". now eggs are sized randomly.
+		public void ClearEggSize()
+		{
+			ClearNormalEggSize();
+			ClearSecondaryEggSize();
 		}
 
 		//sets the egg size for all future egg pregnancies in this womb.
@@ -328,6 +408,17 @@ namespace CoC.Backend.BodyParts
 			}
 			return dayMultiListeners;
 		}
+
+		byte ITimeDailyListenerSimple.hourToTrigger => eggHourTrigger;
+
+		string ITimeDailyListenerSimple.ReactToDailyTrigger() => ReactToDailyTrigger();
+
+		protected virtual byte eggHourTrigger => 0;
+
+		protected virtual string ReactToDailyTrigger()
+		{
+			return null;
+		}
 	}
 
 	public class WombData : SimpleData
@@ -343,10 +434,18 @@ namespace CoC.Backend.BodyParts
 		public readonly Func<bool, bool> canGetPregnantIfHasSecondVagina;
 
 		public readonly bool hasDiapause;
+		public readonly bool hasOviposition;
+
+		public readonly byte eggsEveryXDays;
+		public readonly bool? eggSize;
+
+		public bool eggSizeKnown => eggSize != null;
+		public bool defaultKnownEggSize => eggSize ?? false;
 
 		public WombData(Guid creatureID, ReadOnlyPregnancyStore vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina,
 			ReadOnlyPregnancyStore analPregnancyStore, Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus,
-			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina, bool diapause) : base(creatureID)
+			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina,
+			byte eggsAfterDays, bool? eggSizeKnown, bool diapause, bool oviposition) : base(creatureID)
 		{
 			this.vaginalPregnancyStore = vaginalPregnancyStore;
 			this.canGetPregnantIfHasVagina = canGetPregnantIfHasVagina ?? throw new ArgumentNullException(nameof(canGetPregnantIfHasVagina));
@@ -354,6 +453,10 @@ namespace CoC.Backend.BodyParts
 			this.canGetAnallyPregnantIfHasAnus = canGetAnallyPregnantIfHasAnus ?? throw new ArgumentNullException(nameof(canGetAnallyPregnantIfHasAnus));
 			this.secondVaginaPregnancyStore = secondVaginaPregnancyStore;
 			this.canGetPregnantIfHasSecondVagina = canGetPregnantIfHasSecondVagina ?? throw new ArgumentNullException(nameof(canGetPregnantIfHasSecondVagina));
+
+			eggsEveryXDays = eggsAfterDays;
+
+			eggSize = eggSizeKnown;
 
 			hasDiapause = diapause;
 		}
@@ -368,8 +471,14 @@ namespace CoC.Backend.BodyParts
 			canGetAnallyPregnantIfHasAnus = source.canGetAnallyPregnant;
 			canGetPregnantIfHasSecondVagina = source.canGetSecondaryNormalPregnant;
 
-			hasDiapause = source.hasDiapauseEnabled;
+			hasDiapause = source.hasDiapause;
+			hasOviposition = source.hasOviposition;
+
+			eggsEveryXDays = source.eggsEveryXDays;
+
+			eggSize = source.normalPregnancy.eggSizeKnown ? (bool?)source.normalPregnancy.eggsLarge : null;
 		}
+
 
 
 	}

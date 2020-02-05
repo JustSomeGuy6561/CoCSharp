@@ -4,6 +4,7 @@
 //12/29/2018, 8:21 PM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
@@ -131,12 +132,12 @@ namespace CoC.Backend.BodyParts
 			return "LowerBody";
 		}
 
-		private string AllTattoosShort(PlayerBase player)
+		private string AllTattoosShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosLong(PlayerBase player)
+		private string AllTattoosLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

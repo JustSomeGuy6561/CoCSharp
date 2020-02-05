@@ -21,6 +21,7 @@ namespace CoC.Frontend.Creatures
 		internal int horseWarningCount = 0;
 		internal bool hasFerretWarning;
 		internal bool hasFoxWarning;
+		internal bool knowsAboutBlackEggs;
 
 		public ExtendedCreatureData(Creature creature, ExtendedPerkModifiers extraPerkData)
 		{

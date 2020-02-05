@@ -163,9 +163,9 @@ namespace CoC.Frontend.Transformations
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//Ovi perk loss
-			if (target.womb is PlayerWomb playerWomb && playerWomb.hasOviposition && Utils.Rand(5) == 0)
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
-				if (playerWomb.ClearOviposition())
+				if (target.womb.ClearOviposition())
 				{
 
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -275,7 +275,7 @@ namespace CoC.Frontend.Transformations
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 
-				if ((!target.HasStatusEffect<Heat>() || target.GetStatusEffect<Heat>().totalAddedLibido < 30) && Utils.Rand(2) == 0)
+				if ((!target.HasTimedEffect<Heat>() || target.GetTimedEffectData<Heat>().totalAddedLibido < 30) && Utils.Rand(2) == 0)
 				{
 					if (target.GoIntoHeat())
 					{

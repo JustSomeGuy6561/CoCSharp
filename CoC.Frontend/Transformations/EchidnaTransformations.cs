@@ -212,15 +212,15 @@ namespace CoC.Frontend.Transformations
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//Ovi perk gain
-			if (Utils.Rand(4) == 0 && Species.ECHIDNA.Score(target) >= 3 && target.hasVagina && target.womb is PlayerWomb playerWomb && !playerWomb.hasOviposition)
+			if (Utils.Rand(4) == 0 && Species.ECHIDNA.Score(target) >= 3 && target.hasVagina && target.womb.canObtainOviposition)
 			{
-				if (playerWomb.GrantOviposition())
+				if (target.womb.GrantOviposition())
 				{
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
-			if ((target.hasVagina && !target.HasStatusEffect<Heat>() && Utils.Rand(3) == 0) ||
-					(target.statusEffects.HasStatusEffect<Heat>() && Utils.RandBool() && target.GetStatusEffect<Heat>().totalAddedLibido < 30))
+			if ((target.hasVagina && !target.HasTimedEffect<Heat>() && Utils.Rand(3) == 0) ||
+					(target.perks.HasTimedEffect<Heat>() && Utils.RandBool() && target.GetTimedEffectData<Heat>().totalAddedLibido < 30))
 			{
 				target.GoIntoHeat();
 

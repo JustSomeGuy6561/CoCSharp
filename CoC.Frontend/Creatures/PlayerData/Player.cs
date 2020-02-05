@@ -86,37 +86,37 @@ namespace CoC.Frontend.Creatures.PlayerData
 			}
 			sb.Append(AssAppearance());
 			//piercings
-			sb.Append(face.eyebrowPiercings.ShortPlayerDescription(this));
-			sb.Append(ears.earPiercings.ShortPlayerDescription(this));
-			sb.Append(face.nosePiercings.ShortPlayerDescription(this));
-			sb.Append(face.lipPiercings.ShortPlayerDescription(this));
-			sb.Append(tongue.piercings.ShortPlayerDescription(this));
+			sb.Append(face.eyebrowPiercings.ShortCreatureDescription(this));
+			sb.Append(ears.earPiercings.ShortCreatureDescription(this));
+			sb.Append(face.nosePiercings.ShortCreatureDescription(this));
+			sb.Append(face.lipPiercings.ShortCreatureDescription(this));
+			sb.Append(tongue.piercings.ShortCreatureDescription(this));
 
-			sb.Append(breasts[0].nipplePiercings.ShortPlayerDescription(this));
-			sb.Append(body.navelPiercings.ShortPlayerDescription(this));
-			sb.Append(body.hipPiercings.ShortPlayerDescription(this));
+			sb.Append(breasts[0].nipplePiercings.ShortCreatureDescription(this));
+			sb.Append(body.navelPiercings.ShortCreatureDescription(this));
+			sb.Append(body.hipPiercings.ShortCreatureDescription(this));
 
-			sb.Append(tail.tailPiercings.ShortPlayerDescription(this));
+			sb.Append(tail.tailPiercings.ShortCreatureDescription(this));
 			if (hasCock)
 			{
-				sb.Append(cocks[0].piercings.ShortPlayerDescription(this));
+				sb.Append(cocks[0].piercings.ShortCreatureDescription(this));
 			}
 			if (hasVagina)
 			{
-				sb.Append(vaginas[0].labiaPiercings.ShortPlayerDescription(this));
-				sb.Append(vaginas[0].clit.piercings.ShortPlayerDescription(this));
+				sb.Append(vaginas[0].labiaPiercings.ShortCreatureDescription(this));
+				sb.Append(vaginas[0].clit.piercings.ShortCreatureDescription(this));
 			}
 			//tattoos
-			sb.Append(face.tattoos.ShortPlayerDescription(this));
-			sb.Append(neck.tattoos.ShortPlayerDescription(this));
-			sb.Append(arms.tattoos.ShortPlayerDescription(this));
-			sb.Append(body.coreTattoos.ShortPlayerDescription(this));
-			sb.Append(back.tattoos.ShortPlayerDescription(this));
+			sb.Append(face.tattoos.ShortCreatureDescription(this));
+			sb.Append(neck.tattoos.ShortCreatureDescription(this));
+			sb.Append(arms.tattoos.ShortCreatureDescription(this));
+			sb.Append(body.coreTattoos.ShortCreatureDescription(this));
+			sb.Append(back.tattoos.ShortCreatureDescription(this));
 
-			sb.Append(butt.tattoos.ShortPlayerDescription(this));
-			sb.Append(lowerBody.tattoos.ShortPlayerDescription(this));
+			sb.Append(butt.tattoos.ShortCreatureDescription(this));
+			sb.Append(lowerBody.tattoos.ShortCreatureDescription(this));
 
-			sb.Append(genitals.tattoos.ShortPlayerDescription(this));
+			sb.Append(genitals.tattoos.ShortCreatureDescription(this));
 			//money
 
 			//not yet implemented

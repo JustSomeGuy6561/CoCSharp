@@ -8,7 +8,7 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 {
 	//combines the corrupted and enlightened perks into one, which makes it easier to maintain. grants the user a boost to magic damage, and frankly i have no idea what else.
 	//i assume the corrupted form has some lust cost to it, idk. lost when the creature no longer has 9 Fox Tails.
-	class NineTails : PerkBase
+	class NineTails : StandardPerk
 	{
 		private readonly bool isEnlightened;
 		public NineTails(bool enlightened) : base()
@@ -26,7 +26,7 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 			throw new NotImplementedException();
 		}
 
-		protected override bool KeepOnAscension => throw new NotImplementedException();
+		protected override bool keepOnAscension => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{

@@ -57,43 +57,7 @@ namespace CoC.Backend.Creatures
 
 		public abstract string Appearance();
 
-		public string LowerBodyArmorShort(bool both = true)
-		{
-			if (wearingArmor && both && wearingLowerGarment)
-			{
-				return armor.ItemName() + " and " + lowerGarment.ItemName();
-			}
-			else if (wearingArmor)
-			{
-				return armor.ItemName();
-			}
-			else if (wearingLowerGarment)
-			{
-				return lowerGarment.ItemName();
-			}
-			return null;
-		}
 
-		public string LowerBodyArmorTextHelper(string armorAndLowerGarmentText, string armorText, string lowerGarmentText, string nakedText)
-		{
-			if (wearingArmor && wearingLowerGarment) return armorAndLowerGarmentText;
-			else if (wearingArmor) return armorText;
-			else if (wearingLowerGarment) return lowerGarmentText;
-			else return nakedText;
-		}
-
-		public string LowerBodyArmorTextHelper(string armorText, string lowerGarmentText, string nakedText)
-		{
-			if (wearingArmor) return armorText;
-			else if (wearingLowerGarment) return lowerGarmentText;
-			else return nakedText;
-		}
-
-		public string ClothingOrNakedTextHelper(string clothingText, string nakedText)
-		{
-			if (wearingAnything) return clothingText;
-			else return nakedText;
-		}
 
 		protected override string PlaceItemInCreatureStorageText(CapacityItem item, byte slot)
 		{

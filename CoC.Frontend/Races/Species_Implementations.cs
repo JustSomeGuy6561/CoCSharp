@@ -1382,7 +1382,7 @@ namespace CoC.Frontend.Races
 			{
 				gooCounter++;
 			}
-			if (source.statusEffects.HasStatusEffect<SlimeCraving>())//could make this a perk, idk. it's the same as the elastic innards perk in terms or requirements.
+			if (source.perks.HasPerk<SlimeCraving>())//could make this a perk, idk. it's the same as the elastic innards perk in terms or requirements.
 			{
 				gooCounter++;
 			}

@@ -28,12 +28,12 @@ namespace CoC.Backend.Encounters
 			ran = false;
 		}
 
-		protected internal override bool encounterDisabled()
+		protected internal override bool EncounterDisabled()
 		{
 			return ran;
 		}
 
-		protected internal override bool encounterUnlocked()
+		protected internal override bool EncounterUnlocked()
 		{
 			return true;
 		}

@@ -97,7 +97,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class CockPiercing : Piercing<CockPiercingLocation>
 	{
-		public CockPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+		public CockPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc)
 			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public int MaxFrenumPiercings => MaxPiercings - 1;

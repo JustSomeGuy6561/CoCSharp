@@ -29,12 +29,12 @@ namespace CoC.Frontend.Encounters.Forest
 			currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(2));
 		}
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return deepwoodsFound;
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return true;
 		}

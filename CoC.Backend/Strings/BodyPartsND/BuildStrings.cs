@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/18/2019, 9:30 PM
 using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System.Text;
 
@@ -51,12 +52,12 @@ namespace CoC.Backend.BodyParts
 			return "Butt";
 		}
 
-		private string AllTattoosShort(PlayerBase player)
+		private string AllTattoosShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosLong(PlayerBase player)
+		private string AllTattoosLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

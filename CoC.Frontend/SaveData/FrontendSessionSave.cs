@@ -114,5 +114,6 @@ namespace CoC.Frontend.SaveData
 		internal ushort wallSkullCount = 0;
 		internal ushort wallStatueCount = 0;
 		internal bool HyperHappyLocal = false;
+		internal int BeeGirlStatus;
 	}
 }

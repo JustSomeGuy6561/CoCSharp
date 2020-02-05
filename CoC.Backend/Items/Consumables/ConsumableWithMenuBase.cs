@@ -14,9 +14,9 @@ namespace CoC.Backend.Items.Consumables
 		//Note to implementers: OnConsumeAttempt is not used in this class. if you do not need it in your implementation because you did it manually, simply throw a NotSupported or NotImplemented
 		//as it will never be called (and if it is somehow, we'd probably want to know).
 
-		public override void AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
+		public override DisplayBase AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
 		{
-			BuildMenu(target, postItemUseCallback);
+			return BuildMenu(target, postItemUseCallback);
 		}
 
 		/// <summary>
@@ -24,6 +24,7 @@ namespace CoC.Backend.Items.Consumables
 		/// Generally, this will be after a button is pressed, with the function callback the button executing it, though it may occur on a sub menu or something.
 		/// </summary>
 		/// <param name="consumer"></param>
-		protected abstract void BuildMenu(Creature consumer, UseItemCallback postItemUseCallback);
+		/// <returns>The initial menu display and any text required for it.</returns>
+		protected abstract DisplayBase BuildMenu(Creature consumer, UseItemCallback postItemUseCallback);
 	}
 }

@@ -240,9 +240,9 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 			//-VAGs
-			if (target.hasVagina && target.womb is PlayerWomb playerWomb && !playerWomb.hasOviposition && Species.LIZARD.Score(target) > 3 && ScalingChance(3, currentChanges(), 5))
+			if (target.hasVagina && target.womb.canObtainOviposition && Species.LIZARD.Score(target) > 3 && ScalingChance(3, currentChanges(), 5))
 			{
-				playerWomb.GrantOviposition();
+				target.womb.GrantOviposition();
 
 				if (--remainingChanges <= 0)
 				{

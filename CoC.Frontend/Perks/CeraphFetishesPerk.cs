@@ -31,7 +31,7 @@ namespace CoC.Frontend.Perks
 			throw new NotImplementedException();
 		}
 
-		protected override bool KeepOnAscension => false;
+		protected override bool keepOnAscension => false;
 
 		//passive perk - does nothing when activating or deactivating.
 		protected override void OnActivation() { }

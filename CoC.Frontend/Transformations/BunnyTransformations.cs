@@ -131,9 +131,9 @@ namespace CoC.Frontend.Transformations
 			}
 
 			//MOD: Bunny eggs and oviposition are now one and the same. the idea of removing oviposition and adding bunny eggs - that's just dumb.
-			if (target.womb is PlayerWomb playerWomb && !playerWomb.hasOviposition && Utils.Rand(4) == 0)
+			if (target.womb.canObtainOviposition && Utils.Rand(4) == 0)
 			{
-				playerWomb.GrantOviposition();
+				target.womb.GrantOviposition();
 
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}

@@ -261,6 +261,6 @@ namespace CoC.Backend.Creatures
 
 		//perks
 
-		public List<PerkBase> perks;
+		public List<StandardPerk> perks;
 	}
 }

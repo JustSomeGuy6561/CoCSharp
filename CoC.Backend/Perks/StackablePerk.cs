@@ -4,18 +4,19 @@ using System.Text;
 
 namespace CoC.Backend.Perks
 {
-	public abstract class StackablePerk : PerkBase
+	//a variation of the standard perk that has a built-in stacking mechanic. this i
+	public abstract class StackablePerk : StandardPerk
 	{
 		public StackablePerk() : base()
 		{
 		}
 
-		public bool attemptStackIncrease()
+		public bool AttemptStackIncrease()
 		{
 			return OnStackIncreaseAttempt();
 		}
 
-		public bool attemptStackDecrease()
+		public bool AttemptStackDecrease()
 		{
 			return OnStackDecreaseAttempt();
 		}

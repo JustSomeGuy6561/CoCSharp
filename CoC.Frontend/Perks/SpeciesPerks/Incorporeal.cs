@@ -7,7 +7,7 @@ using System.Text;
 namespace CoC.Frontend.Perks.SpeciesPerks
 {
 	//class Incorporeal : StackablePerkBase
-	class Incorporeal : PerkBase
+	class Incorporeal : StandardPerk
 	{
 		public bool affectsLegs => sourceCreature != null;
 
@@ -30,7 +30,7 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		protected override bool KeepOnAscension => throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		protected override bool keepOnAscension => throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 
 
 		protected override void OnActivation()

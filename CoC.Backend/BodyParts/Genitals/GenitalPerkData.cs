@@ -266,15 +266,6 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#endregion
 
-		#region Womb
-
-		internal bool hasDiapause
-		{
-			get;set;
-		}
-
-		#endregion
-
 		#region Helpers
 		private void CheckChanged(ref bool target, bool newValue, Action ifDifferentCallback)
 		{

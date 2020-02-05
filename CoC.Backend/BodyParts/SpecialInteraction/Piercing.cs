@@ -5,6 +5,7 @@
 using CoC.Backend.Creatures;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.SaveData;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -44,17 +45,29 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		public delegate bool PiercingUnlocked(Location location, out string whyNot);
 		public delegate JewelryType JewelryTypeAllowed(Location locations);
 
-		protected readonly PlayerStr allPiercingsShortDescription;
-		protected readonly PlayerStr allPiercingsLongDescription;
-
-		public string ShortPlayerDescription(PlayerBase player)
+		//tattoos and piercings use creature agnostic descriptions - that is, they will work for the player and all npcs, too.
+		//to handle this, they get a Conjugate class, which stores the various pronouns and adjectives associated with that conjugation.
+		protected readonly GenericCreatureText allPiercingsShortDescription;
+		protected readonly GenericCreatureText allPiercingsLongDescription;
+		//by default, we assume the gender information from the creature will allow us to determine the correct conjugation, but also optionally allow plural formatting instead.
+		public string ShortCreatureDescription(Creature creature, bool useApparentGender = false, bool isPlural = false)
 		{
-			return allPiercingsShortDescription(player);
+			return allPiercingsShortDescription(creature, Conjugate.FromCreature(creature, useApparentGender, isPlural));
 		}
 
-		public string VerbosePlayerDesription(PlayerBase player)
+		public string VerboseCreatureDesription(Creature creature, bool useApparentGender = false, bool isPlural = false)
 		{
-			return allPiercingsLongDescription(player);
+			return allPiercingsLongDescription(creature, Conjugate.FromCreature(creature, useApparentGender, isPlural));
+		}
+		//but we allow you to explicitely set the conjugate to use, just in case you have a creature with a gender identity that doesn't match their appearance or sexual endowments.
+		public string ShortCreatureDescription(Creature creature, Conjugate conjugate)
+		{
+			return allPiercingsShortDescription(creature, conjugate);
+		}
+
+		public string VerboseCreatureDesription(Creature creature, Conjugate conjugate)
+		{
+			return allPiercingsLongDescription(creature, conjugate);
 		}
 
 		protected readonly PiercingUnlocked piercingUnlocked;
@@ -75,13 +88,13 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		protected readonly Dictionary<Location, bool> piercedAt = new Dictionary<Location, bool>();
 		protected readonly Dictionary<Location, PiercingJewelry> jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
 
-		internal Piercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+		internal Piercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText shortDesc, GenericCreatureText longDesc)
 		{
 			parent = source ?? throw new ArgumentNullException(nameof(source));
 
 			piercingUnlocked = LocationUnlocked ?? throw new ArgumentNullException(nameof(LocationUnlocked));
-			allPiercingsShortDescription = playerShortDesc ?? throw new ArgumentNullException(nameof(playerShortDesc));
-			allPiercingsLongDescription = playerLongDesc ?? throw new ArgumentNullException(nameof(playerLongDesc));
+			allPiercingsShortDescription = shortDesc ?? throw new ArgumentNullException(nameof(shortDesc));
+			allPiercingsLongDescription = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
 		}
 
 		public virtual ReadOnlyPiercing<Location> AsReadOnlyData()

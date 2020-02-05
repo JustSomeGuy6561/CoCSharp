@@ -18,12 +18,12 @@ namespace CoC.Frontend.Encounters.Forest
 
 		protected override int chances => CHANCES;
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return false;
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return Essrayle.isUnlocked && !Essrayle.caughtBySandWitches;
 		}

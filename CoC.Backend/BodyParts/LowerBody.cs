@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LowerBodyTattoo : TattooablePart<LowerBodyTattooLocation>
 	{
-		public LowerBodyTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public LowerBodyTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 

@@ -10,12 +10,12 @@ namespace CoC.Frontend.Encounters.Lake
 	{
 		protected override int chances => throw new NotImplementedException();
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			throw new NotImplementedException();
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			throw new NotImplementedException();
 		}

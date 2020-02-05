@@ -230,9 +230,9 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 			//Ovi perk loss
-			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
-				playerWomb.ClearOviposition();
+				target.womb.ClearOviposition();
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//****************
@@ -292,9 +292,9 @@ namespace CoC.Frontend.Transformations
 			}
 			//UBEROOOO
 			//kangaroo perk: - any liquid or food intake will accelerate a pregnancy, but it will not progress otherwise
-			if (!target.womb.hasDiapauseEnabled && Species.KANGAROO.Score(target) > 4 && Utils.Rand(4) == 0 && target.hasVagina)
+			if (target.womb.canObtainDiapause && Species.KANGAROO.Score(target) > 4 && Utils.Rand(4) == 0 && target.hasVagina)
 			{
-				target.AddPerk<Diapause>();
+				target.womb.EnableDiapause();
 
 				//Perk name and description:
 				if (--remainingChanges <= 0)

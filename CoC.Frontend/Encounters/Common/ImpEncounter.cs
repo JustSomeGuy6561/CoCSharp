@@ -26,12 +26,12 @@ namespace CoC.Frontend.Encounters.Common
 			throw new NotImplementedException();
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return true;
 		}
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return false;
 		}

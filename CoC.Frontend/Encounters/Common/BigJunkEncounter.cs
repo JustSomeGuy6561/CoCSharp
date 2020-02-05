@@ -62,12 +62,12 @@ namespace CoC.Frontend.Encounters.Common
 			currentDisplay.DoNext(() => GameEngine.UseHoursGoToBase(1));
 		}
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return false;
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return bigJunkAvailable;
 		}

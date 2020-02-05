@@ -5,6 +5,7 @@
 
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Text;
@@ -79,12 +80,12 @@ namespace CoC.Backend.BodyParts
 			return "Breasts";
 		}
 
-		private string AllNipplePiercingsShort(PlayerBase player)
+		private string AllNipplePiercingsShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllNipplePiercingsLong(PlayerBase player)
+		private string AllNipplePiercingsLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

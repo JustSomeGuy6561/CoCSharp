@@ -76,9 +76,9 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0) target.RestoreBack();
 			//Ovi perk loss
-			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
-				playerWomb.ClearOviposition();
+				target.womb.ClearOviposition();
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//Remove wings and shark fin
@@ -162,9 +162,9 @@ namespace CoC.Frontend.Transformations
 				(target as CombatCreature)?.DeltaCombatCreatureStats(str: 1, tou: 1);
 			}
 			//Big slime girl
-			else if (!target.HasStatusEffect<SlimeCraving>())
+			else if (!target.HasPerk<SlimeCraving>())
 			{
-				target.AddStatusEffect<SlimeCraving>();
+				target.AddPerk<SlimeCraving>();
 			}
 
 

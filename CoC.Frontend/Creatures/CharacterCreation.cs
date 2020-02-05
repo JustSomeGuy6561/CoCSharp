@@ -1520,7 +1520,7 @@ namespace CoC.Frontend.Creatures
 		{
 			if (creator.perks is null)
 			{
-				creator.perks = new List<PerkBase>();
+				creator.perks = new List<StandardPerk>();
 			}
 
 			creator.perks.Add(endowment);

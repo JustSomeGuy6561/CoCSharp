@@ -100,7 +100,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NipplePiercing : Piercing<NipplePiercingLocation>
 	{
-		public NipplePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public NipplePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 

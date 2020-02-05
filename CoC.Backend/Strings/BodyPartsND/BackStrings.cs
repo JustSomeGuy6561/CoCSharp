@@ -86,12 +86,12 @@ namespace CoC.Backend.BodyParts
 			return "Back";
 		}
 
-		private static string AllTattoosShort(PlayerBase player)
+		private static string AllTattoosShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private static string AllTattoosLong(PlayerBase player)
+		private static string AllTattoosLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

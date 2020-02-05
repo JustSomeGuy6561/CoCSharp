@@ -6,14 +6,14 @@ using System.Text;
 
 namespace CoC.Frontend.Perks
 {
-	public sealed class BroodMotherPerk : PerkBase
+	public sealed class BroodMotherPerk : StandardPerk
 	{
 		public BroodMotherPerk() : base()
 		{
 		}
 
 
-		protected override bool KeepOnAscension => false;
+		protected override bool keepOnAscension => false;
 
 		protected override void OnActivation()
 		{

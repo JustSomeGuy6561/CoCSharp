@@ -95,7 +95,7 @@ namespace CoC.Frontend.Transformations
 			deepenedHeat = false;
 			if (Utils.Rand(roll) == 0 && target.hasVagina && !target.womb.isPregnant)
 			{
-				deepenedHeat = target.statusEffects.HasStatusEffect<Heat>();
+				deepenedHeat = target.perks.HasTimedEffect<Heat>();
 				target.GoIntoHeat();
 			}
 			return false;
@@ -106,7 +106,7 @@ namespace CoC.Frontend.Transformations
 			deepenedRut = false;
 			if (Utils.Rand(roll) == 0 && target.hasVagina && !target.womb.isPregnant)
 			{
-				deepenedRut = target.statusEffects.HasStatusEffect<Rut>();
+				deepenedRut = target.perks.HasTimedEffect<Rut>();
 				target.GoIntoRut();
 			}
 			return false;
@@ -513,12 +513,12 @@ namespace CoC.Frontend.Transformations
 
 		protected string GainedOrEnteredHeatTextGeneric(Creature target, bool isIncrease)
 		{
-			if (!target.statusEffects.HasStatusEffect<Heat>())
+			if (!target.perks.HasTimedEffect<Heat>())
 			{
 				return "";
 			}
 
-			var heat = target.statusEffects.GetStatusEffect<Heat>();
+			var heat = target.perks.GetTimedEffectData<Heat>();
 
 			if (isIncrease)
 			{

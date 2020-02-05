@@ -54,12 +54,12 @@ namespace CoC.Backend.BodyParts
 			return "Neck";
 		}
 
-		private string AllTattoosShort(PlayerBase player)
+		private string AllTattoosShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosLong(PlayerBase player)
+		private string AllTattoosLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

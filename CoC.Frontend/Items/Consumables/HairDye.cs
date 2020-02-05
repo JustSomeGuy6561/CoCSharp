@@ -11,6 +11,7 @@ using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using CoC.Backend.UI;
 using CoC.Frontend.UI;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ using System.Linq;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed class HairDye : ConsumableBase
+	public sealed class HairDye : ConsumableWithMenuBase
 	{
 		private readonly HairFurColors color;
 
@@ -78,15 +79,16 @@ namespace CoC.Frontend.Items.Consumables
 		private UseItemCallback itemCallback;
 		private ButtonListMaker primaryMenu;
 		private Creature source;
+		private StandardDisplay display;
 
-		public override void AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
+		protected override DisplayBase BuildMenu(Creature target, UseItemCallback postItemUseCallback)
 		{
 			IEnumerable<object> listOfDyeableParts = target.bodyParts.Where(x => x is IDyeable || x is IMultiDyeable);
 
-			DisplayManager.GetCurrentDisplay().ClearOutput();
+			display = new StandardDisplay();
 
 			//set the globals.
-			primaryMenu = new ButtonListMaker(DisplayManager.GetCurrentDisplay());
+			primaryMenu = new ButtonListMaker(display);
 			itemCallback = postItemUseCallback;
 			source = target;
 
@@ -105,6 +107,7 @@ namespace CoC.Frontend.Items.Consumables
 			}
 
 			RunMainMenu();
+			return display;
 		}
 
 		private void RunMainMenu()
@@ -140,9 +143,9 @@ namespace CoC.Frontend.Items.Consumables
 
 		private void DoSubMenu(IMultiDyeable multiDyeable)
 		{
-			DisplayManager.GetCurrentDisplay().ClearOutput();
+			display.ClearOutput();
 
-			ButtonListMaker subMenu = new ButtonListMaker(DisplayManager.GetCurrentDisplay());
+			ButtonListMaker subMenu = new ButtonListMaker(display);
 
 			for (byte x = 0; x < multiDyeable.numDyeableMembers; x++)
 			{
@@ -195,6 +198,7 @@ namespace CoC.Frontend.Items.Consumables
 			//clear the globals.
 			source = null;
 			primaryMenu = null;
+			display = null;
 
 			var temp = itemCallback;
 			itemCallback = null;
@@ -206,8 +210,11 @@ namespace CoC.Frontend.Items.Consumables
 		private void PutBack()
 		{
 			primaryMenu = null;
+			display = null;
+			source = null;
 
 			itemCallback(false, PutBackItemText(), Author(), this);
+			itemCallback = null;
 		}
 
 		private string PutBackItemText()

@@ -14,8 +14,8 @@ using CoC.Backend.Items.Wearables.LowerGarment;
 using CoC.Backend.Items.Wearables.UpperGarment;
 using CoC.Backend.Perks;
 using CoC.Backend.Pregnancies;
-using CoC.Backend.StatusEffect;
 using CoC.Backend.Tools;
+using CoC.Backend.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -202,7 +202,7 @@ namespace CoC.Backend.Creatures
 		public Feet feet => lowerBody.feet;
 
 		public readonly PerkCollection perks;
-		public readonly StatusEffectCollection statusEffects;
+		//public readonly StatusEffectCollection statusEffects;
 
 		public byte heightInInches => build.heightInInches;
 
@@ -254,47 +254,105 @@ namespace CoC.Backend.Creatures
 		public bool wearingLowerGarment => lowerGarment != null;
 		public bool wearingAnything => armor != null || upperGarment != null || lowerGarment != null;
 
-		public bool HasPerk<T>() where T : PerkBase
-		{
-			return perks.HasPerk<T>();
-		}
+		//public bool HasPerk<T>() where T : PerkBase
+		//{
+		//	return perks.HasPerk<T>();
+		//}
 
-		public bool AddPerk(PerkBase perkBase) => perks.AddPerk(perkBase);
+		//public bool AddPerk(PerkBase perkBase) => perks.AddPerk(perkBase);
 
-		public bool AddPerk<T>() where T : PerkBase, new() => perks.AddPerk<T>();
+		//public bool AddPerk<T>() where T : PerkBase, new() => perks.AddPerk<T>();
+		//public bool AddOrStackPerk<T>() where T : StackablePerk, new() => perks.AddOrStackPerk<T>();
+
+		//public bool AddOrStackPerk(StackablePerk perk) => perks.AddOrStackPerk(perk);
+
+		//public bool StackPerk<T>() where T : StackablePerk, new() => perks.StackPerk<T>();
+
+		//public T GetPerk<T>() where T : PerkBase
+		//{
+		//	return perks.GetPerk<T>();
+		//}
+
+		//public bool RemovePerk<T>() where T : PerkBase
+		//{
+		//	return perks.RemovePerk<T>();
+		//}
+
+		//public bool AddStatusEffect(StatusEffectBase statusEffectBase) => statusEffects.AddStatusEffect(statusEffectBase);
+
+		//public bool AddStatusEffect<T>() where T : StatusEffectBase, new() => statusEffects.AddStatusEffect<T>();
+
+		////checks to see if an instance of this statusEffect type exists in the collection
+		//public bool HasStatusEffect<T>() where T : StatusEffectBase => perks.HasTimedEffect<T>();
+
+		//public bool RemoveStatusEffect<T>() where T : StatusEffectBase => statusEffects.RemoveStatusEffect<T>();
+
+		//public bool RemoveStatusEffect(Type type) => statusEffects.RemoveStatusEffect(type);
+
+		//public bool RemoveStatusEffect(StatusEffectBase effect) => statusEffects.RemoveStatusEffect(effect);
+
+		//public T GetStatusEffect<T>() where T : StatusEffectBase
+		//{
+		//	return statusEffects.GetStatusEffect<T>();
+		//}
+
+		public bool AddPerk(StandardPerk perkBase) => perks.AddPerk(perkBase);
+
+		public bool AddPerk<T>() where T : StandardPerk, new() => perks.AddPerk<T>();
+
+
 		public bool AddOrStackPerk<T>() where T : StackablePerk, new() => perks.AddOrStackPerk<T>();
+
 
 		public bool AddOrStackPerk(StackablePerk perk) => perks.AddOrStackPerk(perk);
 
-		public bool StackPerk<T>() where T : StackablePerk, new() => perks.StackPerk<T>();
 
-		public T GetPerk<T>() where T : PerkBase
-		{
-			return perks.GetPerk<T>();
-		}
+		public bool StackPerk<T>() where T : StackablePerk => perks.StackPerk<T>();
 
-		public bool RemovePerk<T>() where T : PerkBase
-		{
-			return perks.RemovePerk<T>();
-		}
 
-		public bool AddStatusEffect(StatusEffectBase statusEffectBase) => statusEffects.AddStatusEffect(statusEffectBase);
+		//checks to see if an instance of this perk type exists in the collection
+		public bool HasPerk<T>() where T : StandardPerk => perks.HasPerk<T>();
 
-		public bool AddStatusEffect<T>() where T : StatusEffectBase, new() => statusEffects.AddStatusEffect<T>();
 
-		//checks to see if an instance of this statusEffect type exists in the collection
-		public bool HasStatusEffect<T>() where T : StatusEffectBase => statusEffects.HasStatusEffect<T>();
+		//checks to see if an instance of this perk type exists in the collection
+		public bool HasAnyPerk() => perks.HasAnyPerk();
 
-		public bool RemoveStatusEffect<T>() where T : StatusEffectBase => statusEffects.RemoveStatusEffect<T>();
+		public bool AddTimedEffect(TimedPerk timedPerk) => perks.AddTimedEffect(timedPerk);
 
-		public bool RemoveStatusEffect(Type type) => statusEffects.RemoveStatusEffect(type);
 
-		public bool RemoveStatusEffect(StatusEffectBase effect) => statusEffects.RemoveStatusEffect(effect);
+		public bool AddTimedEffect<T>() where T : TimedPerk, new() => perks.AddTimedEffect<T>();
 
-		public T GetStatusEffect<T>() where T : StatusEffectBase
-		{
-			return statusEffects.GetStatusEffect<T>();
-		}
+
+		//checks to see if an instance of this perk type exists in the collection
+		public bool HasTimedEffect<T>() where T : TimedPerk => perks.HasTimedEffect<T>();
+
+
+		public bool ConditionalPerkActive<T>() where T : ConditionalPerk => perks.ConditionalPerkActive<T>();
+
+
+		//removes perk of this type if the character has it. if they didn't have it to begin with, returns false. otherwise removes it and returns true.
+		public bool RemovePerk<T>() where T : StandardPerk => perks.RemovePerk<T>();
+
+		public bool RemovePerk(Type type) => perks.RemovePerk(type);
+
+		public bool RemovePerk(StandardPerk effect) => perks.RemovePerk(effect);
+
+		public bool RemoveTimedEffect(TimedPerk effect) => perks.RemoveTimedEffect(effect);
+
+		//retrieves a timed perk, so you can update it.
+		public T GetPerkData<T>() where T : StandardPerk => perks.GetPerkData<T>();
+
+
+		public bool RemoveTimedEffect<T>() where T : TimedPerk => perks.RemoveTimedEffect<T>();
+
+
+		//retrieves a timed perk, so you can update it.
+		public T GetTimedEffectData<T>() where T : TimedPerk => perks.GetTimedEffectData<T>();
+
+
+		//retrives a conditional perk, so you can update it. note that by default, this does not return conditional perks that aren't currently active.
+		public T GetConditionalPerkData<T>(bool ignoreIfInactive = true) where T : ConditionalPerk => perks.GetConditionalPerkData<T>(ignoreIfInactive);
+
 
 		//public Weapon weapon { get; protected set; }
 		//public Weapon weapon { get; protected set; }
@@ -617,10 +675,10 @@ namespace CoC.Backend.Creatures
 
 			inventoryStore = new BasicInventory();
 
-			perks = new PerkCollection(this);
+			perks = new PerkCollection(this, GameEngine.GetConditionalPerks());
 			perks.InitPerks(creator.perks?.ToArray());
 
-			statusEffects = new StatusEffectCollection(this);
+			//statusEffects = new StatusEffectCollection(this);
 
 			DoPostPerkInit();
 			DoLateInit();
@@ -1412,22 +1470,31 @@ namespace CoC.Backend.Creatures
 			inventoryStore.ReplaceItemInSlot(index, replacement, addIfSameItem);
 		}
 
-		public void UseItemManual(CapacityItem item, UseItemCallback onUseItemReturn)
+		//Using items manually will return a display. if it's not null, it's expected you will load that display so the player sees it, though how you choose to do so is up to you.
+		//(for example, you may choose to merge the text from the current display into the new one, OR call DoNext and have it load the display when the player clicks next).
+		//This is for all items, including armors and other equipables. Though no equipables currently do this, it's now possible for equipables to display a menu adjusting their
+		//settings when they are equipped, which is consistent with how consumable items work.
+		//Note: Just like with consumable items, if an item does not require a menu, these will return null (because they have no display to give you)
+
+		//This is admittedly more complex than the original, but there's an automatic version of these that takes care of all of this for you.
+
+		public DisplayBase UseItemManual(CapacityItem item, UseItemCallback onUseItemReturn)
 		{
 			if (item is null) throw new ArgumentNullException(nameof(item));
 			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
 
 			if (item.CanUse(this, out string whyNot))
 			{
-				item.AttemptToUse(this, onUseItemReturn);
+				return item.AttemptToUse(this, onUseItemReturn);
 			}
 			else
 			{
 				onUseItemReturn(false, whyNot, item.Author(), item);
+				return null;
 			}
 		}
 
-		public void UseItemInInventoryManual(byte index, UseItemCallback onUseItemReturn)
+		public DisplayBase UseItemInInventoryManual(byte index, UseItemCallback onUseItemReturn)
 		{
 			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
 			if (index >= inventory.Count) throw new IndexOutOfRangeException("inventory does not have that many slots currently.");
@@ -1435,52 +1502,59 @@ namespace CoC.Backend.Creatures
 			if (inventory[index].isEmpty)
 			{
 				onUseItemReturn(false, NoItemInSlotErrorText(), string.Empty, null);
+				return null;
 			}
 			else if (!inventory[index].item.CanUse(this, out string whyNot))
 			{
 				onUseItemReturn(false, whyNot, inventory[index].item.Author(), null);
+				return null;
 			}
 			else
 			{
 				var item = inventoryStore.RemoveItem(index);
-				item.AttemptToUse(this, onUseItemReturn);
+				return item.AttemptToUse(this, onUseItemReturn);
 			}
 		}
 
-		public void EquipArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postEquipCallback)
+		public DisplayBase EquipArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postEquipCallback)
 		{
 			if (armor is null)
 			{
-				return;
+				postEquipCallback(false, YouGaveMeANull(), null, null);
+				return null;
 			}
 			else if (!armor.CanUse(this, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, armor.Author(), armor);
+				return null;
 			}
 			else
 			{
-				armor.AttemptToUseSafe(this, postEquipCallback);
+				return armor.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void EquipArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> postEquipCallback)
+		public DisplayBase EquipArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
 				postEquipCallback(false, NoItemInSlotErrorText(), string.Empty, null);
+				return null;
 			}
 			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
 				postEquipCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
+				return null;
 			}
 			else if (!armorItem.CanUse(this, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, armorItem.Author(), null);
+				return null;
 			}
 			else
 			{
 				var item = (ArmorBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, postEquipCallback);
+				return item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
@@ -1491,78 +1565,88 @@ namespace CoC.Backend.Creatures
 			return retVal;
 		}
 
-		public void ReplaceArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postReplaceArmorCallback)
+		public DisplayBase ReplaceArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
 			if (armor is null)
 			{
 				var item = RemoveArmorManual(out string removeText);
 				postReplaceArmorCallback(true, removeText, item.Author(), item);
+				return null;
 			}
 			else if (!armor.CanUse(this, out string whyNot))
 			{
 				postReplaceArmorCallback(false, whyNot, armor.Author(), armor);
+				return null;
 			}
 			else
 			{
-				armor.AttemptToUseSafe(this, postReplaceArmorCallback);
+				return armor.AttemptToUseSafe(this, postReplaceArmorCallback);
 			}
 		}
 
-		public void ReplaceArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> postReplaceArmorCallback)
+		public DisplayBase ReplaceArmorFromInventoryManual(byte index, UseItemCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
 				postReplaceArmorCallback(false, NoItemInSlotErrorText(), string.Empty, null);
+				return null;
 			}
 			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
 				postReplaceArmorCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
+				return null;
 			}
 			else if (!armorItem.CanUse(this, out string whyNot))
 			{
 				postReplaceArmorCallback(false, whyNot, armorItem.Author(), null);
+				return null;
 			}
 			else
 			{
 				var item = (ArmorBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, postReplaceArmorCallback);
+				return item.AttemptToUseSafe(this, postReplaceArmorCallback);
 			}
 		}
 
-		public void EquipUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postEquipCallback)
+		public DisplayBase EquipUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postEquipCallback)
 		{
 			if (upperGarment is null)
 			{
-				return;
+				postEquipCallback(false, YouGaveMeANull(), null, null);
+				return null;
 			}
 			else if (!upperGarment.CanUse(this, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, upperGarment.Author(), upperGarment);
+				return null;
 			}
 			else
 			{
-				upperGarment.AttemptToUseSafe(this, postEquipCallback);
+				return upperGarment.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void EquipUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> postEquipCallback)
+		public DisplayBase EquipUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
 				postEquipCallback(false, NoItemInSlotErrorText(), string.Empty, null);
+				return null;
 			}
 			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
 				postEquipCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), string.Empty, null);
+				return null;
 			}
 			else if (!upperGarmentItem.CanUse(this, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, upperGarmentItem.Author(), null);
+				return null;
 			}
 			else
 			{
 				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, postEquipCallback);
+				return item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
@@ -1573,78 +1657,88 @@ namespace CoC.Backend.Creatures
 			return retVal;
 		}
 
-		public void ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
+		public DisplayBase ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
 			if (upperGarment is null)
 			{
 				var item = RemoveUpperGarmentManual(out string removeText);
 				postReplaceUpperGarmentCallback(true, removeText, item.Author(), item);
+				return null;
 			}
 			else if (!upperGarment.CanUse(this, out string whyNot))
 			{
 				postReplaceUpperGarmentCallback(false, whyNot, upperGarment.Author(), upperGarment);
+				return null;
 			}
 			else
 			{
-				upperGarment.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
+				return upperGarment.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
 
-		public void ReplaceUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
+		public DisplayBase ReplaceUpperGarmentFromInventoryManual(byte index, UseItemCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
 				postReplaceUpperGarmentCallback(false, NoItemInSlotErrorText(), "", null);
+				return null;
 			}
 			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
 				postReplaceUpperGarmentCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), "", null);
+				return null;
 			}
 			else if (!upperGarmentItem.CanUse(this, out string whyNot))
 			{
 				postReplaceUpperGarmentCallback(false, whyNot, upperGarmentItem.Author(), null);
+				return null;
 			}
 			else
 			{
 				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
+				return item.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
 
-		public void EquipLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postEquipCallback)
+		public DisplayBase EquipLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postEquipCallback)
 		{
 			if (lowerGarment is null)
 			{
-				return;
+				postEquipCallback(false, YouGaveMeANull(), null, null);
+				return null;
 			}
 			else if (!lowerGarment.CanUse(this, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, lowerGarment.Author(), lowerGarment);
+				return null;
 			}
 			else
 			{
-				lowerGarment.AttemptToUseSafe(this, postEquipCallback);
+				return lowerGarment.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
-		public void EquipLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> postEquipCallback)
+		public DisplayBase EquipLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
 				postEquipCallback(false, NoItemInSlotErrorText(), "", null);
+				return null;
 			}
 			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
 				postEquipCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
+				return null;
 			}
 			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, lowerGarmentItem.Author(), null);
+				return null;
 			}
 			else
 			{
 				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, postEquipCallback);
+				return item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
@@ -1655,42 +1749,52 @@ namespace CoC.Backend.Creatures
 			return retVal;
 		}
 
-		public void ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
+		public DisplayBase ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
 			if (lowerGarment is null)
 			{
 				var item = RemoveLowerGarmentManual(out string removeText);
 				postReplaceLowerGarmentCallback(true, removeText, "", item);
+				return null;
 			}
-			if (!lowerGarment.CanUse(this, out string whyNot))
+			else if (!lowerGarment.CanUse(this, out string whyNot))
 			{
 				postReplaceLowerGarmentCallback(false, whyNot, lowerGarment.Author(), lowerGarment);
+				return null;
 			}
 			else
 			{
-				lowerGarment.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
+				return lowerGarment.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
 			}
 		}
 
-		public void ReplaceLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
+		public DisplayBase ReplaceLowerGarmentFromInventoryManual(byte index, UseItemCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
 				postReplaceLowerGarmentCallback(false, NoItemInSlotErrorText(), "", null);
+				return null;
 			}
 			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
 				postReplaceLowerGarmentCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
+				return null;
 			}
 			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
 			{
 				postReplaceLowerGarmentCallback(false, whyNot, lowerGarmentItem.Author(), null);
+				return null;
 			}
 			else
 			{
 				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				item.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
+				return item.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
 			}
+		}
+
+		private string YouGaveMeANull()
+		{
+			throw new NotImplementedException();
 		}
 
 		private string NoItemInSlotErrorText()
@@ -2161,12 +2265,49 @@ namespace CoC.Backend.Creatures
 		#endregion
 		#endregion
 
+		public string LowerBodyArmorShort(bool both = true)
+		{
+			if (wearingArmor && both && wearingLowerGarment)
+			{
+				return armor.ItemName() + " and " + lowerGarment.ItemName();
+			}
+			else if (wearingArmor)
+			{
+				return armor.ItemName();
+			}
+			else if (wearingLowerGarment)
+			{
+				return lowerGarment.ItemName();
+			}
+			return null;
+		}
+
+		public string LowerBodyArmorTextHelper(string armorAndLowerGarmentText, string armorText, string lowerGarmentText, string nakedText)
+		{
+			if (wearingArmor && wearingLowerGarment) return armorAndLowerGarmentText;
+			else if (wearingArmor) return armorText;
+			else if (wearingLowerGarment) return lowerGarmentText;
+			else return nakedText;
+		}
+
+		public string LowerBodyArmorTextHelper(string armorText, string lowerGarmentText, string nakedText)
+		{
+			if (wearingArmor) return armorText;
+			else if (wearingLowerGarment) return lowerGarmentText;
+			else return nakedText;
+		}
+
+		public string ClothingOrNakedTextHelper(string clothingText, string nakedText)
+		{
+			if (wearingAnything) return clothingText;
+			else return nakedText;
+		}
+
 		//everything that modifies data within a body part is supposed to be internal, and then called from here. this way, we can debug eaiser, while still making it somewhat intuitive for non-programmers.
 		//we also do this so that we can correctly handle the data, without the frontend devs having to lookup functions and such. for example, we can create a single function for sexual intercourse
 		//that calls the genitals and womb classes here, instead of forcing the dev to call multiple functions, and worry about sharing the data - we'll automate that process. It also lets us hook up events
 		//and proc them here, so we don't have to worry about doing that in the body parts themselves. The downside is it's more work for us here in the backend and turns this class into a several thousand line
 		//long monstrosity. Side note: I'm aware this is how code works on large projects, but dear God do I hate large code files.
-
 		#region Body Part Update/Restore and related event handlers
 
 		#region Antennae

@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LabiaPiercing : Piercing<LabiaPiercingLocation>
 	{
-		public LabiaPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public LabiaPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace CoC.Backend.Items.Wearables
 {
+	//Note: it's possible, though unlikely, for a wearable item to use a menu (to adjust settings or characteristics of that wearable item)
+	//if you do this, it will require overriding a lot of stuff manually.
+
 	public abstract class WearableItemBase<T> : CapacityItem<T> where T:WearableItemBase<T>
 	{
 		protected WearableItemBase() : base()

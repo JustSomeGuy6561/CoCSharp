@@ -176,7 +176,7 @@ namespace CoC.Frontend.Creatures
 				////Equipment: Starts with spiked fist
 				//creator.setWeapon(weapons.S_GAUN0);
 				////Perks: Fighter and Lotsa Jizz"	Annetta
-				perks = new List<Backend.Perks.PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Fighter(),
 					new MessyOrgasms(),
@@ -325,7 +325,7 @@ namespace CoC.Frontend.Creatures
 				corruption = 30,
 				libido = 30,
 				sensitivity = 10,
-				perks = new List<Backend.Perks.PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Smart(),
 					new Healer(),
@@ -440,7 +440,7 @@ namespace CoC.Frontend.Creatures
 
 				//Is it possible to get extra starting perks added? If so, I'd like History: Religious added to whatever is selected on creation. If not, please ignore this line.
 				//i mean, i guess it's possible. For reasons unknown, has fighter and whore. could remove them and do some magic to make religious added on.
-				perks = new List<PerkBase>
+				perks = new List<StandardPerk>
 				{
 					new Fighter(),
 					new Whore(),
@@ -643,7 +643,7 @@ namespace CoC.Frontend.Creatures
 				////- history: smith
 				//creator.createPerk(PerkLib.HistorySmith,0,0,0,0);
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Fast(),
 					new Religious(),
@@ -720,7 +720,7 @@ namespace CoC.Frontend.Creatures
 				assVirgin = true,
 				heightInInches = 67,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Scholar(),
 					new Smart(),
@@ -794,7 +794,7 @@ namespace CoC.Frontend.Creatures
 				tone = 88,
 				tongueType = TongueType.DRACONIC,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Fighter(),
 					new MessyOrgasms(),
@@ -834,7 +834,7 @@ namespace CoC.Frontend.Creatures
 				complexion = Tones.TAN,
 				hairColor = HairFurColors.PLATINUM_BLONDE,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Slut(),
 					new BigTits(),
@@ -889,7 +889,7 @@ namespace CoC.Frontend.Creatures
 				thickness = 10,
 				tone = 75,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Fast(),
 					new Fertile(),
@@ -967,7 +967,7 @@ namespace CoC.Frontend.Creatures
 				cumMultiplier = 5.5f,
 
 				//Herm, lots of jizz.
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new MessyOrgasms(),
 					new Whore(),
@@ -1027,7 +1027,7 @@ namespace CoC.Frontend.Creatures
 				speed = 25,
 				toughness = 15,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					////Gift Perk- Smarts
 					////History- Schooling
@@ -1178,7 +1178,7 @@ namespace CoC.Frontend.Creatures
 
 				//fertility AND messy orgasm (hope that's not pushing it)
 				//fighting history
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Fertile(),
 					new MessyOrgasms(),
@@ -1230,7 +1230,7 @@ namespace CoC.Frontend.Creatures
 				largeWings = false,
 				tailType = TailType.DEMONIC,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Fast(),
 					//i interpreted the initially corrupt as this. sorry if that's not what you want.
@@ -1263,7 +1263,7 @@ namespace CoC.Frontend.Creatures
 				tone = 65,
 				heightInInches = 65,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Slacker(),
 				},
@@ -1323,7 +1323,7 @@ namespace CoC.Frontend.Creatures
 				cumMultiplier = 5.5f,
 				//Gift: Lotz of Jizz
 				//History: Schooling
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Scholar(),
 					new MessyOrgasms(),
@@ -1466,7 +1466,7 @@ namespace CoC.Frontend.Creatures
 				speed = 18,
 				intelligence = 17,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Slut(),
 					new Fertile(),
@@ -1524,7 +1524,7 @@ namespace CoC.Frontend.Creatures
 				complexion = Tones.SANGUINE,
 				gems = 300,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Scholar(),
 					new Religious(),
@@ -1658,7 +1658,7 @@ namespace CoC.Frontend.Creatures
 
 				gems = 20,
 
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Religious(), // abandoned religion after obtaining nine tails
 					new AlchemicalMastery(), // and resorted to your hobby - alchemy
@@ -2031,7 +2031,7 @@ namespace CoC.Frontend.Creatures
 
 				//perk : Alchemist - Guniea Pig (makes you more sucsceptible to TFs) also slacker, as it seems to fit her backstory.
 				//endowment: sensitivity
-				perks = new List<PerkBase>()
+				perks = new List<StandardPerk>()
 				{
 					new Slacker(),
 					new TestSubject(),

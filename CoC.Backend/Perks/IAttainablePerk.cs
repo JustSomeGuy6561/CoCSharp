@@ -12,7 +12,7 @@ namespace CoC.Backend.Perks
 	//anything that implements this will need to add itself to the leveling engine so it can handle itself, however, that is not implemented as of this writing.
 	//it's technically possible to do via reflection, but i really really hate using reflection for that.
 
-	public interface IAttainablePerk<T> where T: PerkBase
+	public interface IAttainablePerk<T> where T: StandardPerk
 	{
 		string AbbreviatedName();
 

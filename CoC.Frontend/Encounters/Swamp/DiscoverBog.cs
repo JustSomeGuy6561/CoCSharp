@@ -5,12 +5,12 @@ namespace CoC.Frontend.Encounters.Swamp
 {
 	internal class DiscoverBog : TriggeredEncounter
 	{
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			throw new System.NotImplementedException();
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			throw new System.NotImplementedException();
 		}

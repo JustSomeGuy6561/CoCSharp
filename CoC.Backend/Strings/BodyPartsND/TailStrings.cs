@@ -37,11 +37,11 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTailPiercingsShort(PlayerBase player)
+		private string AllTailPiercingsShort(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllTailPiercingsLong(PlayerBase player)
+		private string AllTailPiercingsLong(Creature creature, Conjugate conjugate)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

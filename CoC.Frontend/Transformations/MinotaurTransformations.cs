@@ -177,9 +177,9 @@ namespace CoC.Frontend.Transformations
 				target.RestoreBack();
 			}
 			//Ovi perk loss
-			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
-				playerWomb.ClearOviposition();
+				target.womb.ClearOviposition();
 				//if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 			//Restore arms to become human arms again
@@ -328,9 +328,9 @@ namespace CoC.Frontend.Transformations
 			}
 
 			//Anti-masturbation status
-			if (Utils.Rand(4) == 0 && !target.HasStatusEffect<Dysfunction>() && target.gender != Gender.GENDERLESS)
+			if (Utils.Rand(4) == 0 && !target.HasTimedEffect<Dysfunction>() && target.gender != Gender.GENDERLESS)
 			{
-				target.AddStatusEffect<Dysfunction>();
+				target.AddTimedEffect<Dysfunction>();
 
 				if (--remainingChanges <= 0)
 				{

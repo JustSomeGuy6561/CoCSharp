@@ -73,7 +73,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TonguePiercing : Piercing<TonguePiercingLocation>
 	{
-		public TonguePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public TonguePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 

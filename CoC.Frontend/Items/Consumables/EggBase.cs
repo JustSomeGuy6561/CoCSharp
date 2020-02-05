@@ -3,9 +3,11 @@
 //Author: JustSomeGuy
 //6/27/2019, 6:30 PM
 using CoC.Backend;
+using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
+using CoC.Frontend.Items.Consumables.Eggs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,6 +32,7 @@ namespace CoC.Frontend.Items.Consumables
 			//This takes a function callback, which should/will probably just be the constructor, wrapped nicely.
 			members = new List<Func<bool, EggBase>>()
 			{
+				(x) => new BlackRubberEgg(x),
 
 			};
 		}
@@ -52,5 +55,17 @@ namespace CoC.Frontend.Items.Consumables
 		public abstract bool Equals(EggBase other);
 
 		public abstract bool EqualsIgnoreSize(EggBase other);
+
+		public override bool countsAsCum => false;
+
+		public override bool countsAsLiquid => false;
+
+		public override bool CanUse(Creature target, out string whyNot)
+		{
+			whyNot = null;
+			return true;
+		}
+
+		protected override int monetaryValue => DEFAULT_VALUE;
 	}
 }

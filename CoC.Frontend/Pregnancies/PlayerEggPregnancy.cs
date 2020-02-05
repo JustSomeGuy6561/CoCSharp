@@ -40,9 +40,9 @@ namespace CoC.Frontend.Pregnancies
 				knownEggType = EggBase.RandomEgg;
 			}
 
-			if (!((PlayerWomb)player.womb).laysEggs && player.statusEffects.HasStatusEffect<OverdosedOviMax>())
+			if (!((PlayerWomb)player.womb).laysEggs && player.perks.HasTimedEffect<OverdosedOviMax>())
 			{
-				OverdosedOviMax oviOD = player.statusEffects.GetStatusEffect<OverdosedOviMax>();
+				OverdosedOviMax oviOD = player.perks.GetTimedEffectData<OverdosedOviMax>();
 				if (Utils.Rand(3) < oviOD.overdoseCount)
 				{
 					((PlayerWomb)player.womb).GrantOviposition();

@@ -80,7 +80,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class GenitalTattoo : TattooablePart<GenitalTattooLocation>
 	{
-		public GenitalTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public GenitalTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 

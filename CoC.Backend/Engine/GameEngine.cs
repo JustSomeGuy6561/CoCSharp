@@ -12,6 +12,7 @@ using CoC.Backend.UI;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 
 namespace CoC.Backend.Engine
 {
@@ -170,17 +171,33 @@ namespace CoC.Backend.Engine
 
 		public static ReadOnlyDictionary<Type, string> GetUnlockedDungeons() => areaEngine.GetUnlockedDungeons();
 
+		private static ReadOnlyDictionary<Type, Func<ConditionalPerk>> conditionalPerkCollection;
+
+		internal static ConditionalPerk[] GetConditionalPerks()
+		{
+			if (conditionalPerkCollection is null)
+			{
+				return new ConditionalPerk[0];
+			}
+			else
+			{
+				return conditionalPerkCollection.Select(x => x.Value?.Invoke()).Where(x => !(x is null)).ToArray();
+			}
+		}
 
 		public static void InitializeEngine(Func<DisplayBase> pageDataConstructor, Func<DisplayBase> currentPageGetter, Action<DisplayBase> currentPageSetter,
 			ReadOnlyDictionary<Type, Func<PlaceBase>> gamePlaces, ReadOnlyDictionary<Type, Func<LocationBase>> gameLocations,
 			ReadOnlyDictionary<Type, Func<DungeonBase>> gameDungeons, ReadOnlyDictionary<Type, Func<HomeBaseBase>> gameHomeBases, //Area Engine
-			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficulty) //Game Difficulty Collections.
+			ReadOnlyCollection<GameDifficulty> gameDifficulties, int defaultDifficulty, //Game Difficulty Collections.
+			ReadOnlyDictionary<Type, Func<ConditionalPerk>> conditionalPerks) //Perk Creation.
 		{
 			areaEngine = new AreaEngine(pageDataConstructor, currentPageGetter, currentPageSetter, gamePlaces, gameLocations, gameDungeons, gameHomeBases);
 			timeEngine = new TimeEngine(pageDataConstructor, currentPageGetter, currentPageSetter, areaEngine);
 
 			difficulties = gameDifficulties ?? throw new ArgumentNullException(nameof(gameDifficulties));
 			defaultDifficultyIndex = defaultDifficulty;
+
+			conditionalPerkCollection = conditionalPerks;
 
 			AreaBase.SetPageMaker(currentPageGetter);
 		}

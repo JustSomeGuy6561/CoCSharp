@@ -6,13 +6,13 @@ using System.Text;
 
 namespace CoC.Frontend.Perks
 {
-	public sealed class Feeder : PerkBase
+	public sealed class Feeder : StandardPerk
 	{
 		public Feeder() : base()
 		{
 		}
 
-		protected override bool KeepOnAscension => throw new NotImplementedException();
+		protected override bool keepOnAscension => throw new NotImplementedException();
 
 		protected override void OnActivation()
 		{

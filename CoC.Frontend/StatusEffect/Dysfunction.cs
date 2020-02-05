@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Text;
 using CoC.Backend;
-using CoC.Backend.StatusEffect;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.StatusEffect
 {
-	class Dysfunction : TimedStatusEffect
+	class Dysfunction : TimedPerk
 	{
 		const ushort INITIAL_TIMEOUT = 96;
 
-		public Dysfunction(ushort timeout) : base(Name, timeout)
+		public Dysfunction(ushort timeout) : base(timeout)
 		{ }
 
-		public Dysfunction() : base(Name, INITIAL_TIMEOUT)
+		public Dysfunction() : base(INITIAL_TIMEOUT)
 		{ }
 
-		private static string Name()
+		public override string Name()
 		{
 			throw new NotImplementedException();
 		}
@@ -46,9 +46,11 @@ namespace CoC.Frontend.StatusEffect
 			throw new NotImplementedException();
 		}
 
-		public override string HaveStatusEffectText()
+		public override string HasPerkText()
 		{
 			throw new NotImplementedException();
 		}
+
+		public override bool isAilment => true;
 	}
 }

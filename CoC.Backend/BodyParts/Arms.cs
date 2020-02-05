@@ -157,7 +157,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class ArmTattoo : TattooablePart<ArmTattooLocation>
 	{
-		public ArmTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong) { }
+		public ArmTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong) { }
 
 		public override int MaxTattoos => ArmTattooLocation.allLocations.Count;
 

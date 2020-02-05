@@ -8,6 +8,7 @@ using CoC.Backend.Attacks;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
+using CoC.Backend.Strings;
 using System;
 
 namespace CoC.Backend
@@ -46,6 +47,19 @@ namespace CoC.Backend
 
 
 	public delegate string AdjectiveDescriptor(bool withArticle);
+
+	//this allows us to describe any creature, including the player controlled one. conjugate tells us which pronoun we should use. this allows the caller to manually set the
+	//conjugate, which means you can have a given creature's choice of gender identity differ from their sexual endowments. It also and also lets us use plural formats more easily.
+
+	//Note: A set of helpers exist in the Conjugate class to parse a creature/gender to the corresponding conjugate, though thise of course does not account for gender identity.
+	//It may be useful to declare a default variant of any generic creature text function, using those helpers to determine the conjugate,
+	public delegate string GenericCreatureText(Creature creature, Conjugate conjugate);
+
+	//public string DefaultCreatureText(Creature creature, bool useApparentGender = false, bool isPlural = false) => GenericCreatureTextCallback(creature, Conjugate.FromCreature(creature, useApparentGender, isPlural));
+
+
+
+	public delegate string CreatureStr(Creature creature);
 
 	public delegate string PlayerStr(PlayerBase player);
 	public delegate string ChangeStr<T>(T newBehavior, PlayerBase player);

@@ -24,12 +24,12 @@ namespace CoC.Frontend.Encounters
 
 		protected override int chances => chance;
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return false;
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return true;
 		}

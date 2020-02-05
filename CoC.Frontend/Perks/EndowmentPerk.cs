@@ -11,7 +11,7 @@ namespace CoC.Frontend.Perks
 	//slight buff to endowment perks: they all now have a "permanent," albeit minor effect. For example, large cock/clit/breasts now grant a slight boost to growth rates
 	//and/or set a minimum default size when new instances are created. others boost the minimum value for base stats.
 
-	public abstract class EndowmentPerkBase : PerkBase
+	public abstract class EndowmentPerkBase : StandardPerk
 	{
 		public static List<Func<EndowmentPerkBase>> endowmentPerks = new List<Func<EndowmentPerkBase>>();
 
@@ -68,7 +68,7 @@ namespace CoC.Frontend.Perks
 
 		protected virtual bool Unlocked(Gender gender) => true;
 
-		protected override bool KeepOnAscension => false;
+		protected override bool keepOnAscension => false;
 
 		protected bool hasExtraModifiers => sourceCreature is IExtendedCreature;
 		protected ExtendedPerkModifiers extraModifiers => (sourceCreature as IExtendedCreature).extendedPerkModifiers;

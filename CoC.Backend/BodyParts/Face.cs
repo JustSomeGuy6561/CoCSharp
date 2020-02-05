@@ -78,7 +78,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LipPiercing : Piercing<LipPiercingLocation>
 	{
-		public LipPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public LipPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -143,7 +143,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class EyebrowPiercing : Piercing<EyebrowPiercingLocation>
 	{
-		public EyebrowPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public EyebrowPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -219,7 +219,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NosePiercing : Piercing<NosePiercingLocation>
 	{
-		public NosePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public NosePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -268,7 +268,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class FaceTattoo : TattooablePart<FaceTattooLocation>
 	{
-		public FaceTattoo(IBodyPart source, PlayerStr allTattoosShort, PlayerStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public FaceTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 

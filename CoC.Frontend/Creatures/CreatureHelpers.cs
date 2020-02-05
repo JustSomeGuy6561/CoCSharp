@@ -44,16 +44,16 @@ namespace CoC.Frontend.Creatures
 
 		public static bool GoIntoHeat(this Creature creature, byte intensity = 1)
 		{
-			if (creature.statusEffects.HasStatusEffect<Heat>())
+			if (creature.perks.HasTimedEffect<Heat>())
 			{
-				var heat = creature.statusEffects.GetStatusEffect<Heat>();
+				var heat = creature.perks.GetTimedEffectData<Heat>();
 				return heat.IncreaseHeat(intensity);
 			}
 			else if (creature.hasVagina && !creature.womb.isPregnant)
 			{
 				ushort timeout = (intensity * Heat.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Heat.TIMEOUT_STACK);
 				var heat = new Heat(timeout);
-				creature.statusEffects.AddStatusEffect(heat);
+				creature.perks.AddTimedEffect(heat);
 				return true;
 			}
 			else
@@ -62,11 +62,11 @@ namespace CoC.Frontend.Creatures
 			}
 		}
 
-		public static bool GoIntoHeat(this Creature creature, out string output, byte intensity = 1)
+		public static bool GoIntoHeat(this Creature creature, byte intensity, out string output)
 		{
-			if (creature.statusEffects.HasStatusEffect<Heat>())
+			if (creature.perks.HasTimedEffect<Heat>())
 			{
-				var heat = creature.statusEffects.GetStatusEffect<Heat>();
+				var heat = creature.perks.GetTimedEffectData<Heat>();
 				bool retVal = heat.IncreaseHeat(intensity);
 
 				output = null;
@@ -80,7 +80,7 @@ namespace CoC.Frontend.Creatures
 			{
 				ushort timeout = (intensity * Heat.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Heat.TIMEOUT_STACK);
 				var heat = new Heat(timeout);
-				creature.statusEffects.AddStatusEffect(heat);
+				creature.perks.AddTimedEffect(heat);
 				output = heat.ObtainText();
 				return true;
 			}
@@ -94,16 +94,16 @@ namespace CoC.Frontend.Creatures
 
 		public static bool GoIntoRut(this Creature creature, byte intensity = 1)
 		{
-			if (creature.statusEffects.HasStatusEffect<Rut>())
+			if (creature.perks.HasTimedEffect<Rut>())
 			{
-				var heat = creature.statusEffects.GetStatusEffect<Rut>();
+				var heat = creature.perks.GetTimedEffectData<Rut>();
 				return heat.IncreaseRut(intensity);
 			}
 			else if (creature.hasCock)
 			{
 				ushort timeout = (intensity * Rut.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Rut.TIMEOUT_STACK);
 				var heat = new Rut(timeout);
-				creature.statusEffects.AddStatusEffect(heat);
+				creature.perks.AddTimedEffect(heat);
 				return true;
 			}
 			else
@@ -112,11 +112,11 @@ namespace CoC.Frontend.Creatures
 			}
 		}
 
-		public static bool GoIntoRut(this Creature creature, out string output, byte intensity = 1)
+		public static bool GoIntoRut(this Creature creature, byte intensity, out string output)
 		{
-			if (creature.statusEffects.HasStatusEffect<Rut>())
+			if (creature.perks.HasTimedEffect<Rut>())
 			{
-				var heat = creature.statusEffects.GetStatusEffect<Rut>();
+				var heat = creature.perks.GetTimedEffectData<Rut>();
 				bool retVal = heat.IncreaseRut(intensity);
 
 				output = null;
@@ -130,7 +130,7 @@ namespace CoC.Frontend.Creatures
 			{
 				ushort timeout = (intensity * Rut.TIMEOUT_STACK > ushort.MaxValue) ? ushort.MaxValue : (ushort)(intensity * Rut.TIMEOUT_STACK);
 				var heat = new Rut(timeout);
-				creature.statusEffects.AddStatusEffect(heat);
+				creature.perks.AddTimedEffect(heat);
 				output = heat.ObtainText();
 				return true;
 			}

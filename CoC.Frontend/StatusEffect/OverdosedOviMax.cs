@@ -1,18 +1,18 @@
 ﻿using CoC.Backend;
-using CoC.Backend.StatusEffect;
+using CoC.Backend.Perks;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CoC.Frontend.StatusEffect
 {
-	public sealed partial class OverdosedOviMax : TimedStatusEffect
+	public sealed partial class OverdosedOviMax : TimedPerk
 	{
 		private const ushort OVIMAX_DEFAULT_TIMEOUT = 336; //Two weeks.
 
 		public byte overdoseCount { get; private set; }
 
-		public OverdosedOviMax() : base(OviMaxODText, OVIMAX_DEFAULT_TIMEOUT)
+		public OverdosedOviMax() : base(OVIMAX_DEFAULT_TIMEOUT)
 		{
 			overdoseCount = 1;
 		}
@@ -21,7 +21,7 @@ namespace CoC.Frontend.StatusEffect
 
 
 
-		public override string HaveStatusEffectText() => ODShort();
+		public override string HasPerkText() => ODShort();
 
 		protected override void OnActivation()
 		{ }
@@ -45,5 +45,7 @@ namespace CoC.Frontend.StatusEffect
 		{
 			return null;
 		}
+
+		public override bool isAilment => true;
 	}
 }

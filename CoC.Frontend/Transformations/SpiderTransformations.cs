@@ -2,6 +2,8 @@
 //Description:
 //Author: JustSomeGuy
 //1/24/2020 9:45:31 PM
+using System.Linq;
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
@@ -10,8 +12,6 @@ using CoC.Frontend.Creatures;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Races;
 using CoC.Frontend.Settings.Gameplay;
-using System.Linq;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
@@ -49,7 +49,10 @@ namespace CoC.Frontend.Transformations
 			//change in height, hips, and/or butt, or other similar stats.
 
 			//this will handle the edge case where the change count starts out as 0.
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			}
 
 			//Any transformation related changes go here. these typically cost 1 change. these can be anything from body parts to gender (which technically also changes body parts,
 			//but w/e). You are required to make sure you return as soon as you've applied changeCount changes, but a single line of code can be applied at the end of a change to do
@@ -110,7 +113,10 @@ namespace CoC.Frontend.Transformations
 			{
 				target.tail.UpdateResources(regenRateDelta: 5);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(tightens vagina to 1, increases lust/libido)
 			if (target.hasVagina)
@@ -119,7 +125,7 @@ namespace CoC.Frontend.Transformations
 				VaginalLooseness minVaginalLooseness = EnumHelper.Max(VaginalLooseness.NORMAL, target.genitals.minVaginalLooseness);
 				if (target.genitals.LargestVaginalLooseness() > minVaginalLooseness && Utils.Rand(3) == 0)
 				{
-					foreach (var vagina in target.vaginas)
+					foreach (Vagina vagina in target.vaginas)
 					{
 						if (vagina.looseness > minVaginalLooseness)
 						{
@@ -129,7 +135,10 @@ namespace CoC.Frontend.Transformations
 
 					target.DeltaCreatureStats(lib: 2, lus: 25);
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 			AnalLooseness minAnalLooseness = EnumHelper.Max(AnalLooseness.LOOSE, target.genitals.minAnalLooseness);
@@ -140,7 +149,10 @@ namespace CoC.Frontend.Transformations
 				target.ass.DecreaseLooseness();
 				target.DeltaCreatureStats(lib: 2, lus: 25);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//[Requires penises]
 			//(Thickens all cocks to a ratio of 1\" thickness per 5.5\"
@@ -152,38 +164,58 @@ namespace CoC.Frontend.Transformations
 			{
 				int amountChanged = toThicken.Sum(x => x.IncreaseThickness(0.1f) != 0 ? 1 : 0);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//[Increase to Breast Size] - up to Large DD
 			if (target.genitals.SmallestCupSize() < CupSize.DD_BIG && Utils.Rand(4) == 0)
 			{
 				target.genitals.SmallestBreast().GrowBreasts();
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//[Increase to Ass Size] - to 11
 			if (target.butt.size < 11 && Utils.Rand(4) == 0)
 			{
 				target.butt.GrowButt();
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Neck restore
 			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0)
 			{
 				target.RestoreNeck();
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
 				target.RestoreBack();
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Ovi perk loss
-			if (target.womb is PlayerWomb playerWomb && playerWomb.canClearOviposition && Utils.Rand(5) == 0)
-{
-playerWomb.ClearOviposition();
-//if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-}
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
+			{
+				target.womb.ClearOviposition();
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
+			}
 
 			//***************
 			//Appearance Changes
@@ -192,39 +224,58 @@ playerWomb.ClearOviposition();
 			if (target.ears.type != EarType.HUMAN && target.ears.type != EarType.ELFIN && Utils.Rand(4) == 0)
 			{
 				target.UpdateEars(EarType.ELFIN);
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(Fur/Scales fall out)
 			if (target.body.type != BodyType.HUMANOID && (target.ears.type == EarType.HUMAN || target.ears.type == EarType.ELFIN) && Utils.Rand(4) == 0)
 			{
 				target.UpdateBody(BodyType.HUMANOID, Tones.PALE);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(Gain human face)
 			if (target.body.type == BodyType.HUMANOID && (target.face.type != FaceType.SPIDER && target.face.type != FaceType.HUMAN) && Utils.Rand(4) == 0)
 			{
 				target.UpdateFace(FaceType.HUMAN);
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//-Remove breast rows over 2.
 			if (target.breasts.Count > 2 && Utils.Rand(3) == 0 && !hyperHappy)
 			{
 				target.RemoveExtraBreastRows();
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//-Nipples reduction to 1 per tit.
 			if (target.genitals.hasQuadNipples && Utils.Rand(4) == 0)
 			{
 				target.genitals.SetQuadNipples(false);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Nipples Turn Black:
 			if (!target.genitals.hasBlackNipples && Utils.Rand(6) == 0)
 			{
 				target.genitals.SetBlackNipples(true);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//eyes!
 			if (target.body.type == BodyType.HUMANOID && target.eyes.type != EyeType.SPIDER && Utils.Rand(4) == 0)
@@ -235,21 +286,30 @@ playerWomb.ClearOviposition();
 				}
 				target.UpdateEyes(EyeType.SPIDER);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(Gain spider fangs)
 			if (target.face.type == FaceType.HUMAN && target.body.type == BodyType.HUMANOID && Utils.Rand(4) == 0)
 			{
 				target.UpdateFace(FaceType.SPIDER);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(Arms to carapace-covered arms)
 			if (target.arms.type != ArmType.SPIDER && Utils.Rand(4) == 0)
 			{
 				target.UpdateArms(ArmType.SPIDER);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (Utils.Rand(4) == 0 && target.lowerBody.type != LowerBodyType.DRIDER && target.lowerBody.type != LowerBodyType.CHITINOUS_SPIDER)
 			{
@@ -269,14 +329,20 @@ playerWomb.ClearOviposition();
 				//-male/herm characters will have a sex dream if they reach stage three of unfertilized eggs; this will represent their bee/drider parts drawing their own semen from their body to fertilize the eggs, and is accompanied by a nocturnal emission.
 				//-unsexed characters cannot currently fertilize their eggs.
 				//Even while unfertilized, eggs can be deposited inside NPCs - obviously, unfertilized eggs will never hatch and cannot lead to any egg-birth scenes that may be written later.
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(Normal Biped Legs -> Carapace-Clad Legs)
 			if (((isDrider && target.lowerBody.type != LowerBodyType.DRIDER && target.lowerBody.type != LowerBodyType.CHITINOUS_SPIDER) || (!isDrider && target.lowerBody.type != LowerBodyType.CHITINOUS_SPIDER)) && target.lowerBody.isBiped && Utils.Rand(4) == 0)
 			{
 				target.UpdateLowerBody(LowerBodyType.CHITINOUS_SPIDER);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(Tail becomes spider abdomen GRANT WEB ATTACK)
 			if (target.tail.type != TailType.SPIDER_SPINNERET && (target.lowerBody.type == LowerBodyType.CHITINOUS_SPIDER || target.lowerBody.type == LowerBodyType.DRIDER) && target.arms.type == ArmType.SPIDER && Utils.Rand(4) == 0)
@@ -285,13 +351,19 @@ playerWomb.ClearOviposition();
 				//(No tail)
 				target.UpdateTail(TailType.SPIDER_SPINNERET);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(Drider Item Only: Carapace-Clad Legs to Drider Legs)
 			if (isDrider && target.lowerBody.type == LowerBodyType.CHITINOUS_SPIDER && Utils.Rand(4) == 0 && target.tail.type == TailType.SPIDER_SPINNERET)
 			{
 				target.UpdateLowerBody(LowerBodyType.DRIDER);
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			// Remove gills
 			if (Utils.Rand(4) == 0 && !target.gills.isDefault)

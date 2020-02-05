@@ -5,12 +5,12 @@ namespace CoC.Frontend.Encounters.HighMountain
 {
 	internal class SnowAngelHighMountainEncounter : TriggeredEncounter
 	{
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			throw new System.NotImplementedException();
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			throw new System.NotImplementedException();
 		}

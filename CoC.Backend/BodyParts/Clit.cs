@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class ClitPiercing : Piercing<ClitPiercingLocation>
 	{
-		public ClitPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, PlayerStr playerShortDesc, PlayerStr playerLongDesc)
+		public ClitPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc)
 			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => ClitPiercingLocation.allLocations.Count;

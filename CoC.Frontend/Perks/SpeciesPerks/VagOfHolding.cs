@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CoC.Frontend.Perks.SpeciesPerks
 {
-	class VagOfHolding : PerkBase
+	class VagOfHolding : StandardPerk
 	{
 		public VagOfHolding() : base()
 		{
@@ -23,7 +23,7 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 			return "Vag of Holding";
 		}
 
-		protected override bool KeepOnAscension => false;
+		protected override bool keepOnAscension => false;
 
 		protected override void OnActivation()
 		{

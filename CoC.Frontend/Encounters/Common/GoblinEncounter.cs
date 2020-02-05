@@ -23,12 +23,12 @@ namespace CoC.Frontend.Encounters.Common
 
 		protected override int chances => Utils.LerpRound(1, 20, (int)player.level, 20, 10);
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return false;
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return player.level >= 1;
 		}

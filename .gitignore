@@ -279,3 +279,5 @@ __pycache__/
 /CoC.WinDesktop/resources/sprites/source
 /consumables
 *.leu
+/Areas
+/Parser

@@ -22,12 +22,12 @@ namespace CoC.Frontend.Encounters.Forest
 			throw new NotImplementedException();
 		}
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return Marble.isDisabled || Marble.isLover;
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return Marble.isUnlocked;
 		}

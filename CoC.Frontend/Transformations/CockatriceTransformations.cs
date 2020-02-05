@@ -210,9 +210,9 @@ namespace CoC.Frontend.Transformations
 					target.build.ChangeThicknessToward(35, 5);
 				}
 				//Grant oviposition.
-				if (target.womb is PlayerWomb playerWomb && !playerWomb.hasOviposition && Species.COCKATRICE.Score(target) > 3 && Utils.Rand(5) == 0)
+				if (target.womb.canObtainOviposition && Species.COCKATRICE.Score(target) > 3 && Utils.Rand(5) == 0)
 				{
-					playerWomb.GrantOviposition();
+					target.womb.GrantOviposition();
 
 					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}

@@ -26,12 +26,12 @@ namespace CoC.Frontend.Encounters.Forest
 			currentDisplay.OutputText(flavorText());
 		}
 
-		protected override bool encounterDisabled()
+		protected override bool EncounterDisabled()
 		{
 			return false;
 		}
 
-		protected override bool encounterUnlocked()
+		protected override bool EncounterUnlocked()
 		{
 			return true;
 		}

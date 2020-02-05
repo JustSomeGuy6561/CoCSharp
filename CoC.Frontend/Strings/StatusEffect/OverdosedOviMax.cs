@@ -1,5 +1,5 @@
 ﻿using CoC.Backend;
-using CoC.Backend.StatusEffect;
+using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace CoC.Frontend.StatusEffect
 {
 	public partial class OverdosedOviMax
 	{
-		private static string OviMaxODText()
+		public override string Name()
 		{
 			return "OviMax Overdose";
 		}

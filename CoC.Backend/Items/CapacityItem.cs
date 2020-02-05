@@ -57,14 +57,17 @@ namespace CoC.Backend.Items
 		public abstract bool CanUse(Creature target, out string whyNot);
 
 		/// <summary>
-		/// Attempts to use the item, returning either its own page if it needs several pages, or the results of postItemUseCallback.
+		/// Attempts to use the item, returning either its own page if it needs several pages, or calling postItemUseCallback immediately and returning null.
 		/// </summary>
 		/// <param name="target">the creature attempting to use this item.</param>
 		/// <param name="postItemUseCallback">Callback to call when the item is actually used. </param>
-		/// <returns>Either a page, or a string, explaining what it did, or why it failed.</returns>
+		/// <returns>A display containing all the menu data required for this item if it requires one, or null.</returns>
 		/// <remarks>Items that can result in a bad end will not call the post item use callback. If the base class they inherit does not have a built-in means of dealing with
-		/// a bad end, it will need to override this.  </remarks>
-		public abstract void AttemptToUse(Creature target, UseItemCallback postItemUseCallback);
+		/// a bad end, it will need to override this.
+		/// The expected behavior is to only get a valid display when the item uses a menu, which would prevent the postItemUseCallback from being called. If you return null,
+		/// and postItemUsedCallback is not called beforehand, it will never be called. If you return a display after calling postItemUseCallback, the behavior is undefined,
+		/// but will likely result in text displaying out of order. Basically, only return a display when you need a menu. otherwise return null. </remarks>
+		public abstract DisplayBase AttemptToUse(Creature target, UseItemCallback postItemUseCallback);
 
 		//how much it costs to buy this item. Generally, the sell price is 1/2 it's value because video game capitalism. Items that cannot be bought should be given a price of 0;
 		protected abstract int monetaryValue { get; }
