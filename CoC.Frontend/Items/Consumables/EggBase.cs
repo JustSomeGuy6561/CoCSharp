@@ -18,7 +18,7 @@ namespace CoC.Frontend.Items.Consumables
 {
 #warning Make sure white eggs disable dick nipple flag. Include a new egg (i'm thinking yellow, but color irrelevant) that enables dick nipples, and large causes the creature to get them
 
-	public abstract partial class EggBase : ConsumableBase, IEquatable<EggBase>
+	public abstract partial class EggBase : StandardConsumable, IEquatable<EggBase>
 	{
 		private static readonly List<Func<bool, EggBase>> members;
 		public static string[] EggColorChoices => members.Select(x => x(false).Color()).ToArray();
@@ -60,7 +60,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override bool countsAsLiquid => false;
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;

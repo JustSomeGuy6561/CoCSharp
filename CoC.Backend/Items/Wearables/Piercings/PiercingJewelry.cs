@@ -35,7 +35,7 @@ namespace CoC.Backend.Items.Wearables.Piercings
 		//This allows you to limit a piece of jewelry to specific piercing locations - i.e. a nipple chain would only make sense in nipple piercings. Note this does not take into
 		//account existing piercings or currently equipped jewelry, just the location.
 
-		public virtual bool CanEquipAt<T, U>(T piercable) where T : Piercing<U> where U : PiercingLocation
+		public virtual bool CanEquipAt<T, U>(T piercable, U location) where T : Piercing<U> where U : PiercingLocation
 		{
 			//if limiting to a certain location, simply go return U is <Type>. (for example, to limit a piercing jewelry to only ear piercings, write 'return U is EarPiercingLocation;'
 			return true;

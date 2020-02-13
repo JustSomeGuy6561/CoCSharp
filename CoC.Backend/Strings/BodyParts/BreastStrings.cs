@@ -113,7 +113,7 @@ namespace CoC.Backend.BodyParts
 	{
 		CupSize IBreast.cupSize => cupSize;
 
-		byte IBreast.numberOfBreasts => numberOfBreasts;
+		byte IBreast.numberOfBreasts => numBreasts;
 
 		float IBreast.lactationRate => lactationRate;
 

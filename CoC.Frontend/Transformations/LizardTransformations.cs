@@ -342,7 +342,7 @@ namespace CoC.Frontend.Transformations
 			//Claw transition
 			//MOD OF MOD (LOL): predator arms are a collection of arm types now, not a single type. thus, we can combine the claw and type checks.
 			//now, you get the arms (and thus, the claws) if they aren't a predator type and have lizard legs, or switch to lizard arms from any other predator type.
-			if ((target.arms.IsPredatorArms() || target.lowerBody.type == LowerBodyType.LIZARD) && target.body.type == BodyType.REPTILE  && ScalingChance(2, currentChanges(), 3))
+			if ((target.arms.IsPredatorArms() || target.lowerBody.type == LowerBodyType.LIZARD) && target.body.type == BodyType.REPTILE && ScalingChance(2, currentChanges(), 3))
 			{
 				target.UpdateArms(ArmType.LIZARD);
 
@@ -383,7 +383,7 @@ namespace CoC.Frontend.Transformations
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
-			//-Scales – color changes to red, green, white, blue, or black.  Rarely: purple or silver.
+			//-Scales – color changes to red, green, white, blue, or black. Rarely: purple or silver.
 			if (target.body.type != BodyType.REPTILE && target.ears.type == EarType.LIZARD && target.tail.type == TailType.LIZARD && target.lowerBody.type == LowerBodyType.LIZARD
 				&& ScalingChance(3, currentChanges(), 5))
 			{
@@ -466,6 +466,6 @@ namespace CoC.Frontend.Transformations
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

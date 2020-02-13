@@ -254,6 +254,6 @@ target.womb.ClearOviposition();
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

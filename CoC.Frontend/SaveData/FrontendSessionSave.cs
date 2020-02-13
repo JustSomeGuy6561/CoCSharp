@@ -10,6 +10,7 @@ namespace CoC.Frontend.SaveData
 	{
 		public static FrontendSessionSave data => SaveSystem.GetSessionSave<FrontendSessionSave>();
 
+
 		internal bool ForestUnlocked = false;
 		internal bool DeepwoodsUnlocked = false;
 		internal bool LakeUnlocked = false;
@@ -115,5 +116,14 @@ namespace CoC.Frontend.SaveData
 		internal ushort wallStatueCount = 0;
 		internal bool HyperHappyLocal = false;
 		internal int BeeGirlStatus;
+		internal bool ValeriaUnlocked = false;
+		internal bool ValeriaInCamp = false;
+		internal bool ValeriaIsDisabled = false;
+		internal bool CeraphUnlocked;
+		internal bool CeraphIsSlave;
+		internal bool CeraphIsDisabled;
+		internal byte ValeriaTotalFluids;
+		internal byte ValeriaSparIntensity;
+		internal bool ValeriaFluidsEnabled;
 	}
 }

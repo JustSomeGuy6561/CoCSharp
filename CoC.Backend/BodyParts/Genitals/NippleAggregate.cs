@@ -81,7 +81,6 @@ namespace CoC.Backend.BodyParts
 			return nippleStatus;
 		}
 
-
 		internal bool hasQuadNipples { get; private set; }
 		internal bool hasBlackNipples { get; private set; }
 
@@ -154,6 +153,12 @@ namespace CoC.Backend.BodyParts
 		public override NippleAggregateData AsReadOnlyData()
 		{
 			return new NippleAggregateData(this);
+		}
+
+		public override bool IsIdenticalTo(NippleAggregateData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && hasBlackNipples == original.hasBlackNipples && hasQuadNipples == original.hasQuadNipples
+				&& lactationStatus == original.lactationStatus && dickNipplesEnabled == original.dickNipplesEnabled && length == original.length;
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -501,7 +506,7 @@ namespace CoC.Backend.BodyParts
 		internal readonly bool hasQuadNipples;
 		internal readonly bool hasBlackNipples;
 
-		internal readonly bool unlockedDickNipples;
+		internal readonly bool dickNipplesEnabled;
 
 		internal readonly float length;
 
@@ -519,7 +524,7 @@ namespace CoC.Backend.BodyParts
 			this.hasBlackNipples = source.hasBlackNipples;
 			this.hasQuadNipples = source.hasQuadNipples;
 
-			this.unlockedDickNipples = source.dickNipplesEnabled;
+			this.dickNipplesEnabled = source.dickNipplesEnabled;
 
 			this.length = source.length;
 			this.bodyType = source.bodyType;
@@ -536,7 +541,7 @@ namespace CoC.Backend.BodyParts
 			this.nippleStatus = nippleStatus;
 			this.hasQuadNipples = hasQuadNipples;
 			this.hasBlackNipples = hasBlackNipples;
-			this.unlockedDickNipples = unlockedDickNipples;
+			this.dickNipplesEnabled = unlockedDickNipples;
 			this.length = length;
 			this.bodyType = bodyType ?? throw new ArgumentNullException(nameof(bodyType));
 			this.relativeLust = relativeLust;

@@ -16,20 +16,24 @@ namespace CoC.Backend.BodyParts
 		public const int MAX_VAGINAS = 2;
 		#endregion
 
-
-
 		#region Private Vagina Related Members
 
 		private readonly List<Vagina> _vaginas = new List<Vagina>();
 
 		private uint missingVaginaSexCount;
+		private uint missingVaginaSelfSexCount;
 		private uint missingVaginaOrgasmCount;
 		private uint missingVaginaDryOrgasmCount;
 		private uint missingVaginaPenetratedCount;
+		private uint missingVaginaSelfPenetratedCount;
+		private uint missingVaginaNonPenetratedCount;
+		private uint missingVaginaSelfNonPenetratedCount;
+		private uint missingVaginaBirthCount;
 		#endregion
 
 		#region Private Clit Related Members
 		private uint missingClitPenetrateCount;
+		private uint missingClitSelfPenetrateCount;
 		#endregion
 
 		public readonly ReadOnlyCollection<Vagina> vaginas;
@@ -59,26 +63,33 @@ namespace CoC.Backend.BodyParts
 		public VaginalWetness minVaginalWetness => perkData.minVaginalWetness;
 		public VaginalWetness maxVaginalWetness => perkData.maxVaginalWetness;
 
-		public uint vaginalSexCount => missingVaginaSexCount.add((uint)_vaginas.Sum(x => x.sexCount));
-		public uint vaginaPenetratedCount => missingVaginaPenetratedCount.add((uint)_vaginas.Sum(x => x.totalPenetrationCount));
-		public uint vaginalOrgasmCount => missingVaginaOrgasmCount.add((uint)_vaginas.Sum(x => x.orgasmCount));
-		public uint vaginalDryOrgasmCount => missingVaginaDryOrgasmCount.add((uint)_vaginas.Sum(x => x.dryOrgasmCount));
+		internal VaginalLooseness? defaultNewVaginaLooseness => perkData.defaultNewVaginaLooseness;
+		internal VaginalWetness? defaultNewVaginaWetness => perkData.defaultNewVaginaWetness;
+
+		public uint totalSexCount => missingVaginaSexCount.add((uint)_vaginas.Sum(x => x.totalSexCount));
+		public uint selfSexCount => missingVaginaSelfSexCount.add((uint)_vaginas.Sum(x => x.selfSexCount));
+		public uint totalPenetratedCount => missingVaginaPenetratedCount.add((uint)_vaginas.Sum(x => x.totalPenetrationCount));
+		public uint selfPenetratedCount => missingVaginaSelfPenetratedCount.add((uint)_vaginas.Sum(x => x.selfPenetrationCount));
+
+		public uint totalNonPenetratedCount => missingVaginaNonPenetratedCount.add((uint)_vaginas.Sum(x => x.totalNonPenetrationCount));
+		public uint selfNonPenetratedCount => missingVaginaSelfNonPenetratedCount.add((uint)_vaginas.Sum(x => x.selfNonPenetrationCount));
+
+		public uint totalOrgasmCount => missingVaginaOrgasmCount.add((uint)_vaginas.Sum(x => x.totalOrgasmCount));
+		public uint totalDryOrgasmCount => missingVaginaDryOrgasmCount.add((uint)_vaginas.Sum(x => x.dryOrgasmCount));
+		public uint totalBirthCount => missingVaginaBirthCount.add((uint)_vaginas.Sum(x => x.totalBirths));
 
 		#endregion
 
 		#region Public Clit Related Computed Values
-		//public uint clitCockSexCount => missingClitCockSexCount.add((uint)_vaginas.Sum(x => x.clit.asCockSexCount));
-		//public uint clitCockSoundedCount => missingClitCockSoundCount.add((uint)_vaginas.Sum(x => x.clit.asCockSoundCount));
-		//public bool clitCockVirgin => missingClitCockSexCount > 0 ? false : clitCockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
-		//public uint clitCockOrgasmCount => missingClitCockOrgasmCount.add((uint)_vaginas.Sum(x => x.clit.asCockOrgasmCount));
-		//public uint clitCockDryOrgasmCount => missingClitCockDryOrgasmCount.add((uint)_vaginas.Sum(x => x.clit.asCockDryOrgasmCount));
 
-		public uint clitUsedAsPenetratorCount => missingClitPenetrateCount.add((uint)_vaginas.Sum(x => x.clit.penetrateCount));
+		public uint clitUsedAsPenetratorCount => missingClitPenetrateCount.add((uint)_vaginas.Sum(x => x.clit.totalPenetrateCount));
+		public uint clitUsedAsPenetratorOnSelfCount => missingClitSelfPenetrateCount.add((uint)_vaginas.Sum(x => x.clit.selfPenetrateCount));
 		#endregion
 
-		#region Constructor
-
 		private readonly Genitals source;
+		private uint currentVaginaID = 0;
+
+		#region Constructor
 
 		private GenitalPerkData perkData => source.perkData;
 
@@ -93,6 +104,20 @@ namespace CoC.Backend.BodyParts
 			source = parent;
 
 			vaginas = new ReadOnlyCollection<Vagina>(_vaginas);
+		}
+
+		#endregion
+
+		#region Late Init
+		internal void Initialize(VaginaCreator[] vaginaCreators)
+		{
+			var vags = vaginaCreators.Where(x => x != null).Take(MAX_VAGINAS);
+
+			foreach (var vag in vags)
+			{
+				_vaginas.Add(new Vagina(this, currentVaginaID, vag.type, vag.validClitLength, vag.looseness, vag.wetness, vag.virgin, vag.labiaPiercings, vag.clitPiercings));
+				currentVaginaID++;
+			}
 		}
 
 		#endregion
@@ -141,9 +166,26 @@ namespace CoC.Backend.BodyParts
 
 		}
 
+		public override bool IsIdenticalTo(VaginaCollectionData original, bool ignoreSexualMetaData)
+		{
+			if (original is null) return false;
+
+			Dictionary<uint, Vagina> items = _vaginas.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, VaginaData> dataItems = original.vaginas.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return totalBonusCapacity == original.totalBonusCapacity && standardBonusCapacity == original.standardBonusCapacity
+				&& (ignoreSexualMetaData || (totalSexCount == original.totalSexCount && selfSexCount == original.selfSexCount
+				&& totalPenetratedCount == original.totalPenetratedCount && selfPenetratedCount == original.selfPenetratedCount
+				&& totalNonPenetratedCount == original.totalNonPenetratedCount && selfNonPenetratedCount == original.selfNonPenetratedCount
+				&& totalOrgasmCount == original.totalOrgasmCount && totalDryOrgasmCount == original.totalDryOrgasmCount && totalBirthCount == original.totalBirthCount))
+				&& items.Keys.Count == dataItems.Keys.Count && items.All(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
+		}
+
 		#endregion
 
 		#region Add/Remove Vaginas
+
+		public bool AddVagina() => AddVagina(VaginaType.defaultValue);
 
 		public bool AddVagina(VaginaType newVaginaType)
 		{
@@ -153,12 +195,14 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, newVaginaType));
+			_vaginas.Add(new Vagina(this, currentVaginaID, newVaginaType));
+			currentVaginaID++;
 
 			source.CheckGenderChanged(oldGender);
 			return true;
 		}
 
+		public bool AddVagina(float clitLength) => AddVagina(VaginaType.defaultValue, clitLength);
 		public bool AddVagina(VaginaType newVaginaType, float clitLength)
 		{
 			if (numVaginas >= MAX_VAGINAS)
@@ -167,12 +211,14 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, newVaginaType, clitLength));
+			_vaginas.Add(new Vagina(this, currentVaginaID, newVaginaType, clitLength));
+			currentVaginaID++;
 
 			source.CheckGenderChanged(oldGender);
 			return true;
 		}
 
+		public bool AddVagina(float clitLength, VaginalLooseness looseness, VaginalWetness wetness) => AddVagina(VaginaType.defaultValue, clitLength, looseness, wetness);
 		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness)
 		{
 			if (numVaginas >= MAX_VAGINAS)
@@ -181,7 +227,8 @@ namespace CoC.Backend.BodyParts
 			}
 			var oldGender = gender;
 
-			_vaginas.Add(new Vagina(creatureID, newVaginaType, clitLength, looseness, wetness, true));
+			_vaginas.Add(new Vagina(this, currentVaginaID, newVaginaType, clitLength, looseness, wetness, true));
+			currentVaginaID++;
 
 			source.CheckGenderChanged(oldGender);
 			return true;
@@ -208,12 +255,20 @@ namespace CoC.Backend.BodyParts
 
 			if (count >= numVaginas)
 			{
-				missingVaginaSexCount.addIn((uint)_vaginas.Sum(x => x.sexCount));
-				missingVaginaOrgasmCount.addIn((uint)_vaginas.Sum(x => x.orgasmCount));
+				missingVaginaSexCount.addIn((uint)_vaginas.Sum(x => x.totalSexCount));
+				missingVaginaSelfSexCount.addIn((uint)_vaginas.Sum(x => x.selfSexCount));
+				missingVaginaOrgasmCount.addIn((uint)_vaginas.Sum(x => x.totalOrgasmCount));
 				missingVaginaDryOrgasmCount.addIn((uint)_vaginas.Sum(x => x.dryOrgasmCount));
 				missingVaginaPenetratedCount.addIn((uint)_vaginas.Sum(x => x.totalPenetrationCount));
+				missingVaginaSelfPenetratedCount.addIn((uint)_vaginas.Sum(x => x.selfPenetrationCount));
 
-				missingClitPenetrateCount.addIn((uint)_vaginas.Sum(x => x.clit.penetrateCount));
+				missingVaginaNonPenetratedCount.addIn((uint)_vaginas.Sum(x => x.totalNonPenetrationCount));
+				missingVaginaSelfNonPenetratedCount.addIn((uint)_vaginas.Sum(x => x.selfNonPenetrationCount));
+
+				missingClitPenetrateCount.addIn((uint)_vaginas.Sum(x => x.clit.totalPenetrateCount));
+				missingClitSelfPenetrateCount.addIn((uint)_vaginas.Sum(x => x.clit.selfPenetrateCount));
+
+				missingVaginaBirthCount.addIn((uint)_vaginas.Sum(x => x.totalBirths));
 
 				_vaginas.Clear();
 
@@ -222,12 +277,22 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				missingVaginaSexCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.sexCount));
-				missingVaginaOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.orgasmCount));
-				missingVaginaDryOrgasmCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.dryOrgasmCount));
-				missingVaginaPenetratedCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.totalPenetrationCount));
+				var toRemove = _vaginas.Skip(numVaginas - count);
 
-				missingClitPenetrateCount.addIn((uint)_vaginas.Skip(numVaginas - count).Sum(x => x.clit.penetrateCount));
+				missingVaginaSexCount.addIn((uint)toRemove.Sum(x => x.totalSexCount));
+				missingVaginaSelfSexCount.addIn((uint)toRemove.Sum(x => x.selfSexCount));
+
+				missingVaginaOrgasmCount.addIn((uint)toRemove.Sum(x => x.totalOrgasmCount));
+				missingVaginaDryOrgasmCount.addIn((uint)toRemove.Sum(x => x.dryOrgasmCount));
+
+				missingVaginaPenetratedCount.addIn((uint)toRemove.Sum(x => x.totalPenetrationCount));
+				missingVaginaSelfPenetratedCount.addIn((uint)toRemove.Sum(x => x.selfPenetrationCount));
+
+				missingClitPenetrateCount.addIn((uint)toRemove.Sum(x => x.clit.totalPenetrateCount));
+				missingClitSelfPenetrateCount.addIn((uint)toRemove.Sum(x => x.clit.selfPenetrateCount));
+
+				missingVaginaBirthCount.addIn((uint)toRemove.Sum(x => x.totalBirths));
+
 				_vaginas.RemoveRange(numVaginas - count, count);
 				//
 				source.CheckGenderChanged(oldGender);
@@ -387,6 +452,11 @@ namespace CoC.Backend.BodyParts
 			return _vaginas.All(x => x.type == type);
 		}
 
+		public bool HasVirginVagina()
+		{
+			return _vaginas.Any(x => x.isVirgin);
+		}
+
 		#endregion
 
 		#region Clit Aggregate Functions
@@ -425,18 +495,25 @@ namespace CoC.Backend.BodyParts
 
 			VaginaType type = _vaginas[0].type;
 			bool virgin = _vaginas.All(x => x.isVirgin == true);
-			bool chaste = _vaginas.All(x => x.everPracticedVaginal == true);
+			bool everPenetrated = _vaginas.Any(x => x.everPracticedVaginal == true);
+			bool chaste = _vaginas.All(x => x.isChaste == true);
 
 			return Vagina.GenerateAggregate(creatureID, type, Clit.GenerateAggregate(creatureID, AverageClitSize()),
-				AverageVaginalLooseness(), AverageVaginalWetness(), virgin, chaste, AverageVaginalCapacity());
+				AverageVaginalLooseness(), AverageVaginalWetness(), AverageVaginalCapacity(), virgin, everPenetrated, chaste);
 		}
 
 		#endregion
 
 		#region Vagina Sex-Related Functions
-		internal void HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool takeVirginity, bool reachOrgasm)
+		internal void HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool takeVirginity, bool reachOrgasm,
+			bool sourceIsSelf)
 		{
-			vaginas[vaginaIndex].PenetrateVagina((ushort)(length * girth), knotWidth, takeVirginity, reachOrgasm);
+			vaginas[vaginaIndex].PenetrateVagina((ushort)(length * girth), knotWidth, takeVirginity, reachOrgasm, sourceIsSelf);
+		}
+
+		internal void HandleVaginalStimulation(int vaginaIndex, bool reachOrgasm, bool sourceIsSelf)
+		{
+			vaginas[vaginaIndex].StimulateVagina(reachOrgasm, sourceIsSelf);
 		}
 
 		//'Dry' orgasm is orgasm without stimulation.
@@ -449,9 +526,9 @@ namespace CoC.Backend.BodyParts
 
 		#region Clit Sex-Related Functions
 
-		internal void HandleClitPenetrate(int vaginaIndex, bool reachOrgasm)
+		internal void HandleClitPenetrate(int vaginaIndex, bool reachOrgasm, bool sourceIsSelf)
 		{
-			vaginas[vaginaIndex].clit.DoPenetration();
+			vaginas[vaginaIndex].clit.DoPenetration(sourceIsSelf);
 			if (reachOrgasm)
 			{
 				vaginas[vaginaIndex].OrgasmGeneric(false);
@@ -501,12 +578,6 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
-
-		internal void Initialize(VaginaCreator[] vaginaCreators)
-		{
-			_vaginas.AddRange(vaginaCreators.Where(x => x != null).Take(MAX_VAGINAS).Select(x => new Vagina(creatureID, x.type, x.validClitLength, x.looseness, x.wetness, x.virgin,
-				x.labiaPiercings, x.clitPiercings)));
-		}
 	}
 
 	public sealed partial class VaginaCollectionData : SimpleData, IVaginaCollection<VaginaData>
@@ -524,27 +595,48 @@ namespace CoC.Backend.BodyParts
 
 		ReadOnlyCollection<VaginaData> IVaginaCollection<VaginaData>.vaginas => vaginas;
 
-		public readonly uint vaginalSexCount;
-		public readonly uint vaginaPenetratedCount;
-		public readonly uint vaginalOrgasmCount;
-		public readonly uint vaginalDryOrgasmCount;
+		public readonly ushort standardBonusCapacity;
+		public readonly ushort totalBonusCapacity;
+
+		public readonly uint totalSexCount;
+		public readonly uint selfSexCount;
+		public readonly uint totalPenetratedCount;
+		public readonly uint selfPenetratedCount;
+
+		public readonly uint totalNonPenetratedCount;
+		public readonly uint selfNonPenetratedCount;
+
+		public readonly uint totalOrgasmCount;
+		public readonly uint totalDryOrgasmCount;
+
+		public readonly uint totalBirthCount;
 
 		#region Public Clit Related Computed Values
 
 		public readonly uint clitUsedAsPenetratorCount;
 		#endregion
 
-		public readonly bool clitCockActive;
-
 		internal VaginaCollectionData(VaginaCollection source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			this.vaginas = new ReadOnlyCollection<VaginaData>(source.vaginas.Select(x => x.AsReadOnlyData()).ToList());
-			this.vaginalSexCount = source.vaginalSexCount;
-			this.vaginaPenetratedCount = source.vaginaPenetratedCount;
-			this.vaginalOrgasmCount = source.vaginalOrgasmCount;
-			this.vaginalDryOrgasmCount = source.vaginalDryOrgasmCount;
-			this.clitUsedAsPenetratorCount = source.clitUsedAsPenetratorCount;
-		}
+
+			standardBonusCapacity = source.standardBonusCapacity;
+			totalBonusCapacity = source.totalBonusCapacity;
+
+			totalSexCount = source.totalSexCount;
+			selfSexCount = source.selfSexCount;
+			totalPenetratedCount = source.totalPenetratedCount;
+			selfPenetratedCount = source.selfPenetratedCount;
+
+			totalNonPenetratedCount = source.totalNonPenetratedCount;
+			selfNonPenetratedCount = source.selfNonPenetratedCount;
+
+			totalOrgasmCount = source.totalOrgasmCount;
+			totalDryOrgasmCount = source.totalDryOrgasmCount;
+
+			totalBirthCount = source.totalBirthCount;
+
+	}
 
 		#region Vagina Related Aggregate Functions
 
@@ -672,11 +764,12 @@ namespace CoC.Backend.BodyParts
 			}
 
 			VaginaType type = vaginas[0].type;
-			bool virgin = vaginas.All(x => x.isVirgin == true);
-			bool chaste = vaginas.All(x => x.everPracticedVaginal == true);
+			bool virgin = vaginas.All(x => x.isVirgin);
+			bool everPenetrated = vaginas.Any(x => x.everPracticedVaginal);
+			bool chaste = vaginas.All(x => x.isChaste);
 
 			return Vagina.GenerateAggregate(creatureID, type, Clit.GenerateAggregate(creatureID, AverageClitSize()), AverageVaginalLooseness(),
-				AverageVaginalWetness(), virgin, chaste, AverageVaginalCapacity());
+				AverageVaginalWetness(), AverageVaginalCapacity(), virgin, everPenetrated, chaste);
 		}
 
 		#endregion

@@ -13,7 +13,7 @@ using System.Text;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public partial class CaninePepperGeneric : ConsumableBase
+	public partial class CaninePepperGeneric : StandardConsumable
 	{
 		protected readonly CanineModifiers modifiers;
 		private readonly SimpleDescriptor abbreviated;
@@ -41,7 +41,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false) => description(count, displayCount);
 
-		public override string Appearance() => appearText();
+		public override string AboutItem() => appearText();
 
 
 		public override bool countsAsLiquid => false;
@@ -64,7 +64,14 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var transform = new CanineTFs(modifiers);
+			resultsOfUse = transform.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			return true;
+		}
+
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;

@@ -284,6 +284,13 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 			tattooChangeSource.Raise(this, new TattooDataChangedEventArgs<Location>(parent, tattooLocation, oldTattoo, newTattoo, newCount));
 		}
+
+		public virtual bool IsIdenticalTo(ReadOnlyTattooablePart<Location> original)
+		{
+			return tattoos.Keys.Count == original.tattoos.Keys.Count && tattoos.Keys.All(k => original.tattoos.ContainsKey(k) &&
+			Equals(original.tattoos[k], tattoos[k]));
+		}
+
 	}
 
 	public delegate void TattooDataChangedEventHandler<T>(object sender, TattooDataChangedEventArgs<T> args) where T : TattooLocation;
@@ -360,7 +367,12 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	public class ReadOnlyTattooablePart<Location> where Location : TattooLocation
 	{
 
-		protected readonly Dictionary<Location, TattooBase> tattoos;
+		protected internal readonly Dictionary<Location, TattooBase> tattoos;
+
+		public ReadOnlyTattooablePart()
+		{
+			this.tattoos = new Dictionary<Location, TattooBase>();
+		}
 
 		internal ReadOnlyTattooablePart(Dictionary<Location, TattooBase> tattoos)
 		{

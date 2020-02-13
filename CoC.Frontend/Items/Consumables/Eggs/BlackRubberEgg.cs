@@ -38,14 +38,14 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
 			//if your text uses "an" as an article instead of "a", be sure to change that here.
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 			string sizeText = isLarge ? "large " : "";
 			string eggText = count == 1 ? "egg" : "eggs";
 
-			return $"{count} {sizeText}black {eggText}";
+			return $"{count}{sizeText}black {eggText}";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "This is an oblong egg, not much different from a" + (isLarge ? "n ostrich" : " chicken") + " egg in appearance (save for the color)." +
 				" Something tells you it's more than just food." + (isLarge ? " For all you know, it could turn you into rubber!" : "");
@@ -124,6 +124,8 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 			isBadEnd = false;
 			return true;
 		}
+
+		//combat consume is identical to regular consume. no need to override it.
 
 		public override string Color()
 		{

@@ -14,7 +14,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class FerretFruit : ConsumableBase
+	public sealed partial class FerretFruit : StandardConsumable
 	{
 		public FerretFruit() : base()
 		{
@@ -26,22 +26,25 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string AbbreviatedName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "FerretFrt";
 		}
 
 		public override string ItemName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "ferret fruit";
 		}
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
+
+			string fruitText = count != 1 ? "fruits" : "fruit";
+			return $"{count}ferret {fruitText}";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "This fruit is curved oddly, just like the tree it came from. The skin is fuzzy and brown, like the skin of a peach.";
 		}
 
 		private string RottenFruitOrSomething(Creature consumer)
@@ -63,7 +66,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is FerretFruit;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -85,6 +88,23 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			//fun fact: Ferret Fruit has a 1/100 chance of doing nothing.
+			if (Utils.Rand(100) == 0)
+			{
+				isBadEnd = false;
+				isCombatLoss = false;
+				resultsOfUse = RottenFruitOrSomething(consumer);
+			}
+			else
+			{
+				var tf = new FerretTFs();
+				resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			}
+			return true;
+		}
+
 		public override string Author()
 		{
 			return "Coalsack (revision)";
@@ -92,7 +112,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		private class FerretTFs : FerretTransformations
 		{
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

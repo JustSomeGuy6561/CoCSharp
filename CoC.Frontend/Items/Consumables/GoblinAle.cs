@@ -13,7 +13,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class GoblinAle : ConsumableBase
+	public sealed partial class GoblinAle : StandardConsumable
 	{
 		public GoblinAle() : base()
 		{
@@ -33,13 +33,13 @@ namespace CoC.Frontend.Items.Consumables
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
 			//if your text uses "an" as an article instead of "a", be sure to change that here.
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 			string vialText = count != 1 ? "flagons" : "flagon";
 
-			return $"{count} {vialText} of potent goblin ale";
+			return $"{count}{vialText} of potent goblin ale";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "This sealed flagon of 'Goblin Ale' sloshes noisily with alcoholic brew. Judging by the markings on the flagon, it's a VERY strong drink, " +
 				"and not to be trifled with.";
@@ -57,7 +57,7 @@ namespace CoC.Frontend.Items.Consumables
 		protected override int monetaryValue => DEFAULT_VALUE;
 
 		//can we use this item on the given creature? if not, provide a valid string explaining why not. that text will be displayed as a hint to the user.
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -76,13 +76,21 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new GoblinTFs();
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+
+			return true;
+		}
+
 		private class GoblinTFs : GoblinTransformations
 		{
 			public GoblinTFs()
 			{
 			}
 
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

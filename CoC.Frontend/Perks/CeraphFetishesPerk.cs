@@ -15,6 +15,7 @@ namespace CoC.Frontend.Perks
 		public bool hasBondageFetish => stacks >= 2;
 
 		public bool hasPassiveFetish => stacks >= 3;
+		public CeraphFetishesPerk() : this(1) {	}
 
 		public CeraphFetishesPerk(byte initialStack = 1) : base()
 		{

@@ -101,7 +101,7 @@ namespace CoC.Frontend.Transformations
 			if (target.hasVagina && target.genitals.SmallestVaginalWetness() > targetWetness && Utils.Rand(3) == 0)
 			{
 				//Just to be safe
-				foreach (var vag in  target.vaginas)
+				foreach (var vag in target.vaginas)
 				{
 					vag.DecreaseWetness();
 				}
@@ -179,7 +179,7 @@ namespace CoC.Frontend.Transformations
 
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
-			//BUN FACE!  REQUIREZ EARZ
+			//BUN FACE! REQUIREZ EARZ
 			if (target.ears.type == EarType.BUNNY && target.face.type != FaceType.BUNNY && Utils.Rand(3) == 0)
 			{
 				target.UpdateFace(FaceType.BUNNY);
@@ -246,6 +246,6 @@ namespace CoC.Frontend.Transformations
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

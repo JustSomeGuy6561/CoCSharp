@@ -21,7 +21,7 @@ namespace CoC.Backend.BodyParts
 	//This class is so much harder to implement than i thought it'd be.
 	//Edit so much later: This class is probably the most complicated i've implemented to date. I still need to add attack data.
 
-	public sealed partial class Horns : BehavioralSaveablePart<Horns, HornType, HornData>, IGrowable, IShrinkable, IFemininityListenerInternal, ICanAttackWith
+	public sealed partial class Horns : FullBehavioralPart<Horns, HornType, HornData>, IGrowable, IShrinkable, IFemininityListenerInternal, ICanAttackWith
 	{
 
 		public override string BodyPartName() => Name();
@@ -33,7 +33,8 @@ namespace CoC.Backend.BodyParts
 
 		public byte largestPossibleHornSize => type.maxHornLength;
 
-		private FemininityData femininity => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.femininity.AsReadOnlyData() : new FemininityData(creatureID, 50);
+		private FemininityData femininity => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.genitals.femininity.AsReadOnlyData() :
+			new FemininityData(creatureID, 50, true);
 
 		public override HornType type
 		{
@@ -262,6 +263,11 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public override bool IsIdenticalTo(HornData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && numHorns == original.hornCount && significantHornSize == original.hornLength;
+		}
+
 		#region IFemininityListener
 		string IFemininityListenerInternal.reactToFemininityChangeFromTimePassing(bool isPlayer, byte hoursPassed, byte oldFemininity)
 		{
@@ -321,7 +327,7 @@ namespace CoC.Backend.BodyParts
 
 	//i could go with function pointers throughout this, but frankly it's complicated enough that it might as well just be abstract.
 
-	public abstract partial class HornType : SaveableBehavior<HornType, Horns, HornData>
+	public abstract partial class HornType : FullBehavior<HornType, Horns, HornData>
 	{
 		//horns are super fucky - they can be both plural or singular (just like tails, which are also a pain), and some even switch between singular and plural.
 		//(thanks rhino horns) thus: HornType.<whatever>.ShortDescription will always be singular. however, type provides a count aware short description, which requires a byte.
@@ -1521,7 +1527,7 @@ namespace CoC.Backend.BodyParts
 		*/
 	}
 
-	public sealed class HornData : BehavioralSaveablePartData<HornData, Horns, HornType>
+	public sealed class HornData : FullBehavioralData<HornData, Horns, HornType>
 	{
 		public readonly byte hornLength;
 		public readonly byte hornCount;

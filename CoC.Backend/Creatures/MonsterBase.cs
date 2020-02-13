@@ -16,9 +16,14 @@ namespace CoC.Backend.Creatures
 	public class MonsterBase : CombatCreature
 	{
 		public readonly ushort bonusHP;
+
+		protected readonly SimpleDescriptor indefinite, definite;
+
 		public MonsterBase(MonsterCreator creator) : base(creator)
 		{
 			bonusHP = creator.baseHealth;
+			indefinite = creator.indefiniteArticle;
+			definite = creator.definiteArticle;
 		}
 
 		public override uint maxHealth
@@ -43,6 +48,12 @@ namespace CoC.Backend.Creatures
 					return (ushort)hp;
 				}
 			}
+		}
+
+		public override string Article(bool definitiveArticle)
+		{
+			if (definitiveArticle) return definite?.Invoke() ?? "";
+			else return indefinite?.Invoke() ?? "";
 		}
 
 		public virtual double GetAscensionHP(double hp)

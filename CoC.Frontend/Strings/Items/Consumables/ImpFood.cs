@@ -24,12 +24,12 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			string parcelText = count != 1 ? "parcels" : "parcel";
 
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 
-			return $"{count} {parcelText} of  of imp food";
+			return $"{count}{parcelText} of of imp food";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "This is a small parcel of reddish-brown bread stuffed with some kind of meat. It smells delicious.";
 		}

@@ -2,15 +2,15 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 5:57 PM
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
@@ -44,7 +44,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return Equals(labiaPiercing);
 			}
-			else return false;
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool Equals(LabiaPiercingLocation other)
@@ -68,8 +71,8 @@ namespace CoC.Backend.BodyParts
 		public static readonly LabiaPiercingLocation RIGHT_2 = new LabiaPiercingLocation(7, SupportedJewelry, Right2Button, Right2Location);
 		public static readonly LabiaPiercingLocation RIGHT_3 = new LabiaPiercingLocation(8, SupportedJewelry, Right3Button, Right3Location);
 		public static readonly LabiaPiercingLocation RIGHT_4 = new LabiaPiercingLocation(9, SupportedJewelry, Right4Button, Right4Location);
-		public static readonly LabiaPiercingLocation RIGHT_5 = new LabiaPiercingLocation(10, SupportedJewelry,Right5Button, Right5Location );
-		public static readonly LabiaPiercingLocation RIGHT_6 = new LabiaPiercingLocation(11, SupportedJewelry,Right6Button, Right6Location );
+		public static readonly LabiaPiercingLocation RIGHT_5 = new LabiaPiercingLocation(10, SupportedJewelry, Right5Button, Right5Location);
+		public static readonly LabiaPiercingLocation RIGHT_6 = new LabiaPiercingLocation(11, SupportedJewelry, Right6Button, Right6Location);
 
 
 		private static bool SupportedJewelry(JewelryType jewelryType)
@@ -101,7 +104,7 @@ namespace CoC.Backend.BodyParts
 	//i have, however, renamed these. gaping-wide-> gaping. gaping-> roomy. could even rename clown car to gaping-wide if clown car is a little too bizarre, but i'm kinda fond of its bizarre-ness.
 	public enum VaginalLooseness : byte { TIGHT, NORMAL, LOOSE, ROOMY, GAPING, CLOWN_CAR_WIDE }
 
-	public sealed partial class Vagina : BehavioralSaveablePart<Vagina, VaginaType, VaginaData>, IBodyPartTimeLazy
+	public sealed partial class Vagina : FullBehavioralPart<Vagina, VaginaType, VaginaData>, IBodyPartTimeLazy
 	{
 		public override string BodyPartName()
 		{
@@ -122,27 +125,25 @@ namespace CoC.Backend.BodyParts
 
 		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
 
-		public int vaginaIndex => creature?.genitals.vaginas.IndexOf(this) ?? 0;
+		private readonly VaginaCollection source;
+		internal readonly uint collectionID;
 
-		private GenitalPerkData perkData => creature?.genitals.perkData;
+		public int vaginaIndex => source.vaginas.IndexOf(this);
 
-		public VaginalLooseness minLooseness => perkData?.minVaginalLooseness ?? VaginalLooseness.TIGHT;
-		public VaginalLooseness maxLooseness => perkData?.maxVaginalLooseness ?? VaginalLooseness.CLOWN_CAR_WIDE;
+		//private GenitalPerkData perkData => creature?.genitals.perkData;
 
-		public VaginalWetness minWetness => perkData?.minVaginalWetness ?? VaginalWetness.DRY;
-		public VaginalWetness maxWetness => perkData?.maxVaginalWetness ?? VaginalWetness.SLAVERING;
+		public VaginalLooseness minLooseness => source.minVaginalLooseness;
+		public VaginalLooseness maxLooseness => source.maxVaginalLooseness;
 
-		private VaginalWetness defaultNewVaginaWetness => creature?.genitals.perkData.defaultNewVaginaWetness ?? VaginalWetness.NORMAL;
+		public VaginalWetness minWetness => source.minVaginalWetness;
+		public VaginalWetness maxWetness => source.maxVaginalWetness;
+
+		private VaginalWetness defaultNewVaginaWetness => source.defaultNewVaginaWetness ?? VaginalWetness.NORMAL;
+		private VaginalLooseness? defaultNewVaginaLooseness => source.defaultNewVaginaLooseness;
+
 		private VaginalLooseness DefaultNewVaginaLooseness(bool virgin)
 		{
-			if (creature is null)
-			{
-				return virgin ? VaginalLooseness.TIGHT : VaginalLooseness.NORMAL;
-			}
-			else
-			{
-				return creature.genitals.perkData.defaultNewVaginaLooseness;
-			}
+			return defaultNewVaginaLooseness ?? (virgin ? VaginalLooseness.TIGHT : VaginalLooseness.NORMAL);
 		}
 
 
@@ -167,7 +168,7 @@ namespace CoC.Backend.BodyParts
 				Utils.ClampEnum(ref value, minWetness, maxWetness);
 				if (_wetness != value)
 				{
-					var oldData = AsReadOnlyData();
+					VaginaData oldData = AsReadOnlyData();
 					_wetness = value;
 					NotifyDataChanged(oldData);
 				}
@@ -183,7 +184,7 @@ namespace CoC.Backend.BodyParts
 				Utils.ClampEnum(ref value, minLooseness, maxLooseness);
 				if (_looseness != value)
 				{
-					var oldData = AsReadOnlyData();
+					VaginaData oldData = AsReadOnlyData();
 					_looseness = value;
 					NotifyDataChanged(oldData);
 				}
@@ -191,12 +192,43 @@ namespace CoC.Backend.BodyParts
 		}
 		private VaginalLooseness _looseness;
 
-		public ushort orgasmCount { get; private set; } = 0;
-		public ushort sexCount { get; private set; } = 0;
-		public ushort totalPenetrationCount { get; private set; } = 0;
-		public ushort dryOrgasmCount { get; private set; } = 0;
+		//Sexual metadata.
+		//Note that all sexual metadata requires it be significant - for example, fingering oneself as a combat tease does not count here. Generally speaking,
+		//a good measure of thumb is whether or not it results in an orgasm, though some instances that do not (i.e. orgasm denial) may still qualify.
+		//We use this stuff to adjust scenes to the sexual preferences or quirks a given creature may have, and to draw conclusions based on sexual habits.
+		//Insert joke about Data Collection, Privacy Policy, and or Terms of Use here.
 
-		public bool isVirgin => sexCount > 0;
+		//The Vagina Sexual MetaData is as follows:
+
+		//sex count: times sexually penetrated in such a way that it would take this vagina's virginity (if applicable)
+		//penetration count: times sexually penetrated by anything. this includes the sex count, as well as any penetrations that don't rob virginity (like dildoes, i guess)
+		//non penetration count: times sexually stimulated without actual penetration.
+
+		//all of the above data also has a subset that only counts any self-stimulation, so we can handle that, i guess.
+
+		//orgasm count: times orgasmed. this includes any sex, penetration, or non-penetration that results in an orgasm, any dry orgasms, and any other situation
+		//	that causes this vagina to reach an orgasm that is not covered by this metadata (like vagina type change, vagina piercings, giving birth)
+		//dry orgasm count: times orgasmed without any stimulation to this vagina. this can be caused by sex with other organs (i.e. cocks, ass, tits), among others.
+
+		public uint totalSexCount { get; private set; } = 0;
+		public uint selfSexCount { get; private set; } = 0;
+
+		public uint totalPenetrationCount { get; private set; } = 0;
+		public uint selfPenetrationCount { get; private set; } = 0;
+
+		public uint totalNonPenetrationCount { get; private set; } = 0;
+		public uint selfNonPenetrationCount { get; private set; } = 0;
+
+		public uint totalStimulationCount => totalPenetrationCount.add(totalNonPenetrationCount);
+		public uint totalSelfStimulationCount => selfPenetrationCount.add(selfNonPenetrationCount);
+
+		public uint totalOrgasmCount { get; private set; } = 0;
+		public uint dryOrgasmCount { get; private set; } = 0;
+
+		public uint totalBirths { get; private set; } = 0;
+
+		public bool isVirgin => totalSexCount == 0 && totalBirths == 0;
+		public bool isChaste => totalNonPenetrationCount == 0 && totalPenetrationCount == 0 && totalBirths == 0;
 
 		public bool everPracticedVaginal => totalPenetrationCount > 0;
 
@@ -228,11 +260,14 @@ namespace CoC.Backend.BodyParts
 		public override VaginaType defaultType => VaginaType.defaultValue;
 
 		#region Constructors
-		internal Vagina(Guid creatureID) : this(creatureID, VaginaType.defaultValue)
+		internal Vagina(VaginaCollection parent, uint id) : this(parent, id, VaginaType.defaultValue)
 		{ }
 
-		internal Vagina(Guid creatureID, VaginaType vaginaType) : base(creatureID)
+		internal Vagina(VaginaCollection parent, uint id, VaginaType vaginaType) : base(parent?.creatureID ?? throw new ArgumentNullException(nameof(parent)))
 		{
+			source = parent;
+			collectionID = id;
+
 			clit = new Clit(creatureID, this);
 
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
@@ -240,15 +275,20 @@ namespace CoC.Backend.BodyParts
 			_looseness = DefaultNewVaginaLooseness(true);
 
 			//default to virgin.
-			sexCount = 0;
+			totalSexCount = 0;
 
 			labiaPiercings = new LabiaPiercing(this, PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
 		}
 
-		internal Vagina(Guid creatureID, VaginaType vaginaType, float clitLength, VaginalLooseness? vaginalLooseness = null, VaginalWetness? vaginalWetness = null,
-			bool? isVirgin = null, IEnumerable<KeyValuePair<LabiaPiercingLocation, PiercingJewelry>> initialLabiaPiercings = null,
-				IEnumerable<KeyValuePair<ClitPiercingLocation, PiercingJewelry>> initialClitPiercings = null) : base(creatureID)
+		internal Vagina(VaginaCollection parent, uint id, VaginaType vaginaType, float clitLength, VaginalLooseness? vaginalLooseness = null,
+			VaginalWetness? vaginalWetness = null, bool? isVirgin = null, IEnumerable<KeyValuePair<LabiaPiercingLocation, PiercingJewelry>> initialLabiaPiercings = null,
+			IEnumerable<KeyValuePair<ClitPiercingLocation, PiercingJewelry>> initialClitPiercings = null)
+			: base(parent?.creatureID ?? throw new ArgumentNullException(nameof(parent)))
 		{
+			source = parent;
+			collectionID = id;
+
+
 			type = vaginaType ?? throw new ArgumentNullException(nameof(vaginaType));
 
 			clit = new Clit(creatureID, this, clitLength);
@@ -260,16 +300,19 @@ namespace CoC.Backend.BodyParts
 
 			if ((bool)isVirgin)
 			{
-				sexCount = 0;
+				totalSexCount = 0;
 			}
 			else
 			{
-				sexCount = 1;
+				totalSexCount = 1;
 			}
+
+			totalPenetrationCount = totalSexCount;
+
 
 			//these are clamped by above set values.
 			_wetness = vaginalWetness ?? defaultNewVaginaWetness;
-			_looseness = vaginalLooseness ?? DefaultNewVaginaLooseness(sexCount == 0);
+			_looseness = vaginalLooseness ?? DefaultNewVaginaLooseness(totalSexCount == 0);
 
 			labiaPiercings = new LabiaPiercing(this, PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
 
@@ -280,16 +323,22 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Generate
-		internal static Vagina GenerateFromGender(Guid creatureID, Gender gender)
+		internal static Vagina GenerateFromGender(VaginaCollection parent, uint id, Gender gender)
 		{
-			if (gender.HasFlag(Gender.FEMALE)) return new Vagina(creatureID);
-			else return null;
+			if (gender.HasFlag(Gender.FEMALE))
+			{
+				return new Vagina(parent, id);
+			}
+			else
+			{
+				return null;
+			}
 		}
 
-		public static VaginaData GenerateAggregate(Guid creatureID, VaginaType vaginaType, ClitData averageClit, VaginalLooseness looseness, VaginalWetness wetness, bool isVirgin,
-			bool everPracticedVaginal, ushort averageCapacity)
+		public static VaginaData GenerateAggregate(Guid creatureID, VaginaType vaginaType, ClitData averageClit, VaginalLooseness looseness, VaginalWetness wetness,
+			ushort averageCapacity, bool isVirgin, bool everPracticedVaginal, bool chaste)
 		{
-			return new VaginaData(creatureID, vaginaType, averageClit, looseness, wetness, isVirgin, everPracticedVaginal, -1, averageCapacity, new ReadOnlyPiercing<LabiaPiercingLocation>());
+			return new VaginaData(creatureID, vaginaType, -1, averageClit, looseness, wetness, averageCapacity, isVirgin, everPracticedVaginal, chaste, new ReadOnlyPiercing<LabiaPiercingLocation>());
 		}
 
 		#endregion
@@ -322,7 +371,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 
-			var oldValue = type;
+			VaginaType oldValue = type;
 			if (newType.orgasmOnTransform)
 			{
 				if (!(creature is null))
@@ -343,11 +392,17 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
-		#region Unique Functions
+		#region Sexual Functions
 
-		internal bool PenetrateVagina(ushort penetratorArea, float knotArea, bool takeVirginity, bool reachOrgasm)
+		internal bool PenetrateVagina(ushort penetratorArea, float knotArea, bool takeVirginity, bool reachOrgasm, bool sourceIsSelf)
 		{
 			totalPenetrationCount++;
+
+			if (sourceIsSelf)
+			{
+				selfPenetrationCount++;
+			}
+
 
 			//experience = experience.add(ExperiencedGained);
 			VaginalLooseness oldLooseness = looseness;
@@ -356,20 +411,45 @@ namespace CoC.Backend.BodyParts
 
 			if (takeVirginity)
 			{
-				sexCount++;
+				totalSexCount++;
+
+				if (sourceIsSelf)
+				{
+					selfSexCount++;
+				}
 			}
 			if (reachOrgasm)
 			{
-				orgasmCount++;
+				totalOrgasmCount++;
 			}
 
 			return oldLooseness != looseness;
 		}
 
+		internal void StimulateVagina(bool reachOrgasm, bool sourceIsSelf)
+		{
+			totalNonPenetrationCount++;
+
+			if (sourceIsSelf)
+			{
+				selfNonPenetrationCount++;
+			}
+
+			//experience = experience.add(ExperiencedGained);
+
+			if (reachOrgasm)
+			{
+				totalOrgasmCount++;
+			}
+		}
+
 		internal void OrgasmGeneric(bool dryOrgasm)
 		{
-			orgasmCount++;
-			if (dryOrgasm) dryOrgasmCount++;
+			totalOrgasmCount++;
+			if (dryOrgasm)
+			{
+				dryOrgasmCount++;
+			}
 		}
 
 		internal void HandleBirth(ushort size)
@@ -406,16 +486,6 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Vagina-Specific
-		internal bool Deflower()
-		{
-			if (!isVirgin)
-			{
-				return false;
-			}
-
-			sexCount++;
-			return true;
-		}
 
 		public byte IncreaseLooseness(byte amount = 1)
 		{
@@ -468,36 +538,11 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 		#region Clit Helpers
-		//public bool omnibusClit => clit.omnibusClit;
-
-		//public bool ActivateOmnibusClit()
-		//{
-		//	if (!clit.omnibusClit)
-		//	{
-		//		var oldData = AsReadOnlyData();
-		//		bool retVal = clit.ActivateOmnibusClit();
-		//		NotifyDataChanged(oldData);
-		//		return retVal;
-		//	}
-		//	return false;
-		//}
-
-		//public bool DeactivateOmnibusClit()
-		//{
-		//	if (clit.omnibusClit)
-		//	{
-		//		var oldData = AsReadOnlyData();
-		//		var retVal = clit.DeactivateOmnibusClit();
-		//		NotifyDataChanged(oldData);
-		//		return retVal;
-		//	}
-		//	return false;
-		//}
 
 		public float GrowClit(float amount, bool ignorePerks = false)
 		{
-			var oldData = AsReadOnlyData();
-			var retVal = clit.growClit(amount, ignorePerks);
+			VaginaData oldData = AsReadOnlyData();
+			float retVal = clit.GrowClit(amount, ignorePerks);
 			if (retVal != 0)
 			{
 				NotifyDataChanged(oldData);
@@ -507,8 +552,8 @@ namespace CoC.Backend.BodyParts
 
 		public float ShrinkClit(float amount, bool ignorePerks = false)
 		{
-			var oldData = AsReadOnlyData();
-			var retVal = clit.shrinkClit(amount, ignorePerks);
+			VaginaData oldData = AsReadOnlyData();
+			float retVal = clit.ShrinkClit(amount, ignorePerks);
 			if (retVal != 0)
 			{
 				NotifyDataChanged(oldData);
@@ -518,9 +563,9 @@ namespace CoC.Backend.BodyParts
 
 		public float SetClitSize(float newSize)
 		{
-			var oldData = AsReadOnlyData();
-			var oldSize = clit.length;
-			var retVal = clit.SetClitSize(newSize);
+			VaginaData oldData = AsReadOnlyData();
+			float oldSize = clit.length;
+			float retVal = clit.SetClitSize(newSize);
 			if (clit.length != oldSize)
 			{
 				NotifyDataChanged(oldData);
@@ -536,7 +581,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldType = type;
+			VaginaType oldType = type;
 			type = VaginaType.HUMAN;
 
 			NotifyTypeChanged(oldType);
@@ -560,6 +605,17 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 		#endregion
+		public override bool IsIdenticalTo(VaginaData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && vaginaIndex == original.vaginaIndex && looseness == original.looseness && wetness == original.wetness
+				&& clit.IsIdenticalTo(original.clit) && original.isVirgin == isVirgin && original.everPracticedVaginal == everPracticedVaginal &&
+				labiaPiercings.IsIdenticalTo(original.labiaPiercings) &&
+				(ignoreSexualMetaData || (totalSexCount == original.totalSexCount && totalPenetrationCount == original.totalPenetrationCount &&
+				totalNonPenetrationCount == original.totalNonPenetrationCount && selfSexCount == original.selfSexCount &&
+				selfPenetrationCount == original.selfPenetrationCount && selfNonPenetrationCount == original.selfNonPenetrationCount &&
+				totalOrgasmCount == original.totalOrgasmCount && dryOrgasmCount == original.dryOrgasmCount && totalBirths == original.totalBirths));
+		}
+
 		#region Piercing-Related
 		private bool PiercingLocationUnlocked(LabiaPiercingLocation piercingLocation, out string whyNot)
 		{
@@ -629,7 +685,7 @@ namespace CoC.Backend.BodyParts
 			else if (looseness > VaginalLooseness.NORMAL && looseness > minLooseness) //whichever is greator.
 			{
 				vaginaTightenTimer += hoursPassed;
-				var oldLooseness = looseness;
+				VaginalLooseness oldLooseness = looseness;
 				while (vaginaTightenTimer >= timerAmount && looseness > minLooseness && looseness > VaginalLooseness.NORMAL)
 				{
 					vaginaTightenTimer -= timerAmount;
@@ -777,7 +833,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public sealed partial class VaginaType : SaveableBehavior<VaginaType, Vagina, VaginaData>
+	public sealed partial class VaginaType : FullBehavior<VaginaType, Vagina, VaginaData>
 	{
 		//in this game, you can have two vaginas, so it technically needs to be plural. BUT, it makes no sense to have long/full description here do that
 		//because they will generally have different stats (and even if they are the same that's a bit misleading). So we dont. regardless, genitals handles the multiple
@@ -862,27 +918,54 @@ namespace CoC.Backend.BodyParts
 
 	}
 
-	public sealed partial class VaginaData : BehavioralSaveablePartData<VaginaData, Vagina, VaginaType>, IVagina
+	public sealed partial class VaginaData : FullBehavioralData<VaginaData, Vagina, VaginaType>, IVagina
 	{
-
+		#region Standard Data
 		public readonly ClitData clit;
 		public readonly VaginalLooseness looseness;
 		public readonly VaginalWetness wetness;
-		public readonly bool isVirgin;
-		public readonly bool everPracticedVaginal;
+		//public readonly bool isVirgin;
+		//public readonly bool everPracticedVaginal;
 		public readonly int vaginaIndex;
+
 
 		public readonly ushort capacity;
 
 		public readonly ReadOnlyPiercing<LabiaPiercingLocation> labiaPiercings;
+		internal readonly uint? collectionID;
 
-		VaginaType IVagina.type => type;
+		#endregion
 
+		#region Sex MetaData
+		public readonly uint totalSexCount;
+		public readonly uint totalPenetrationCount;
+		public readonly uint totalNonPenetrationCount;
+
+		public uint totalStimulationCount => totalPenetrationCount.add(totalNonPenetrationCount);
+
+		public readonly uint selfSexCount;
+		public readonly uint selfPenetrationCount;
+		public readonly uint selfNonPenetrationCount;
+
+		public uint totalSelfStimulationCount => selfPenetrationCount.add(selfNonPenetrationCount);
+
+
+		public readonly uint totalOrgasmCount;
+		public readonly uint dryOrgasmCount;
+
+		public readonly uint totalBirths;
+
+		public bool isVirgin => totalSexCount == 0 && totalBirths == 0;
+		public bool isChaste => totalNonPenetrationCount == 0 && totalPenetrationCount == 0 && totalBirths == 0;
+
+		public bool everPracticedVaginal => totalPenetrationCount > 0;
+		#endregion
 		public override VaginaData AsCurrentData()
 		{
 			return this;
 		}
 
+		#region Text
 		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
 		public string AdjectiveText(bool multipleAdjectives)
@@ -895,32 +978,85 @@ namespace CoC.Backend.BodyParts
 		public string FullDescriptionAlternate() => type.FullDescriptionAlternate(this);
 
 		public string FullDescription(bool alternateFormat) => type.FullDescription(this, alternateFormat);
+		#endregion
 
 		public VaginaData(Vagina source, int currIndex) : base(GetID(source), GetBehavior(source))
 		{
 			clit = source.clit.AsReadOnlyData();
 			looseness = source.looseness;
 			wetness = source.wetness;
-			isVirgin = source.isVirgin;
-			everPracticedVaginal = source.everPracticedVaginal;
 
 			capacity = source.VaginalCapacity();
 			vaginaIndex = currIndex;
 
 			labiaPiercings = source.labiaPiercings.AsReadOnlyData();
+
+			collectionID = source.collectionID;
+
+			totalSexCount = source.totalSexCount;
+			totalPenetrationCount = source.totalPenetrationCount;
+			totalNonPenetrationCount = source.totalNonPenetrationCount;
+
+			selfSexCount = source.selfSexCount;
+			selfPenetrationCount = source.selfPenetrationCount;
+			selfNonPenetrationCount = source.selfNonPenetrationCount;
+
+			totalBirths = source.totalBirths;
 		}
 
-		public VaginaData(Guid creatureID, VaginaType vaginaType, ClitData clit, VaginalLooseness looseness, VaginalWetness wetness, bool isVirgin, bool everPracticedVaginal,
-			int vaginaIndex, ushort capacity, ReadOnlyPiercing<LabiaPiercingLocation> labiaPiercings) : base(creatureID, vaginaType)
+		public VaginaData(Guid creatureID, VaginaType vaginaType, int vaginaIndex, ClitData clit, VaginalLooseness looseness, VaginalWetness wetness,
+			ushort capacity, bool isVirgin, bool everPracticedVaginal, bool chaste, ReadOnlyPiercing<LabiaPiercingLocation> labiaPiercings) : base(creatureID, vaginaType)
 		{
 			this.clit = clit ?? throw new ArgumentNullException(nameof(clit));
 			this.looseness = looseness;
 			this.wetness = wetness;
-			this.isVirgin = isVirgin;
-			this.everPracticedVaginal = everPracticedVaginal;
 			this.vaginaIndex = vaginaIndex;
 			this.capacity = capacity;
 			this.labiaPiercings = labiaPiercings ?? throw new ArgumentNullException(nameof(labiaPiercings));
+
+			collectionID = null;
+
+			totalSexCount = (uint)(!isVirgin ? 1 : 0);
+			totalPenetrationCount = (uint)(!isVirgin || everPracticedVaginal ? 1 : 0);
+			totalNonPenetrationCount = (uint)(chaste ? 0 : 1);
+
+			selfSexCount = 0;
+			selfPenetrationCount = 0;
+			selfNonPenetrationCount = 0;
+
+			dryOrgasmCount = 0;
+			totalBirths = 0;
 		}
+
+
+		public VaginaData(Guid creatureID, VaginaType vaginaType, int vaginaIndex, ClitData clit, VaginalLooseness looseness, VaginalWetness wetness, ushort capacity,
+			ReadOnlyPiercing<LabiaPiercingLocation> labiaPiercings, uint totalSexCount, uint totalPenetrationCount, uint totalNonPenetrationCount, uint selfSexCount,
+			uint selfPenetrationCount, uint selfNonPenetrationCount, uint totalOrgasmCount, uint dryOrgasmCount, uint totalBirths) : base(creatureID, vaginaType)
+		{
+			this.clit = clit ?? throw new ArgumentNullException(nameof(clit));
+			this.looseness = looseness;
+			this.wetness = wetness;
+			this.vaginaIndex = vaginaIndex;
+			this.capacity = capacity;
+			this.labiaPiercings = labiaPiercings ?? new ReadOnlyPiercing<LabiaPiercingLocation>();
+			this.totalSexCount = totalSexCount;
+
+			this.totalPenetrationCount = totalPenetrationCount;
+			this.totalNonPenetrationCount = totalNonPenetrationCount;
+			this.selfSexCount = selfSexCount;
+			this.selfPenetrationCount = selfPenetrationCount;
+			this.selfNonPenetrationCount = selfNonPenetrationCount;
+			this.totalOrgasmCount = totalOrgasmCount;
+			this.dryOrgasmCount = dryOrgasmCount;
+
+			this.totalBirths = totalBirths;
+
+			collectionID = null;
+		}
+
+		#region IVagina
+		VaginaType IVagina.type => type;
+		#endregion
+
 	}
 }

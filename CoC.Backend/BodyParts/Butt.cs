@@ -119,7 +119,7 @@ namespace CoC.Backend.BodyParts
 
 		public override ButtData AsReadOnlyData()
 		{
-			return new ButtData(creatureID, size);
+			return new ButtData(this);
 		}
 
 		public byte GrowButt(byte amount = 1)
@@ -149,6 +149,11 @@ namespace CoC.Backend.BodyParts
 
 		public string LongDescription(bool alternateFormat, byte muscleTone) => BuildStrings.ButtLongDescription(size, muscleTone, alternateFormat);
 		#endregion
+
+		public override bool IsIdenticalTo(ButtData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && size == original.size && tattoos.IsIdenticalTo(original.tattoos);
+		}
 
 		internal override bool Validate(bool correctInvalidData)
 		{
@@ -188,6 +193,8 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly byte size;
 
+		public readonly ReadOnlyTattooablePart<ButtTattooLocation> tattoos;
+
 		#region Text
 		public string SizeAsAdjective() => BuildStrings.ButtAdjective(size);
 
@@ -197,9 +204,16 @@ namespace CoC.Backend.BodyParts
 		public string LongDescription(bool alternateFormat, byte muscleTone) => BuildStrings.ButtLongDescription(size, muscleTone, alternateFormat);
 		#endregion
 
-		internal ButtData(Guid creatureID, byte buttSize) : base(creatureID)
+		internal ButtData(Butt source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		{
+			size = source.size;
+			tattoos = source.tattoos.AsReadOnlyData();
+		}
+
+		public ButtData(Guid creatureID, byte buttSize, ReadOnlyTattooablePart<ButtTattooLocation> buttTattoos) : base(creatureID)
 		{
 			size = buttSize;
+			tattoos = buttTattoos ?? new ReadOnlyTattooablePart<ButtTattooLocation>();
 		}
 	}
 }

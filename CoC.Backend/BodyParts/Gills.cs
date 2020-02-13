@@ -15,7 +15,7 @@ namespace CoC.Backend.BodyParts
 	//a verbose description and only one gill. feel free to add it if needed.
 
 	//has no special data. its data change will never be called.
-	public sealed partial class Gills : BehavioralSaveablePart<Gills, GillType, GillData>
+	public sealed partial class Gills : FullBehavioralPart<Gills, GillType, GillData>
 	{
 		public override string BodyPartName() => Name();
 
@@ -46,9 +46,14 @@ namespace CoC.Backend.BodyParts
 			type = gillType;
 			return valid;
 		}
+
+		public override bool IsIdenticalTo(GillData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type;
+		}
 	}
 
-	public partial class GillType : SaveableBehavior<GillType, Gills, GillData>
+	public partial class GillType : FullBehavior<GillType, Gills, GillData>
 	{
 		private static int indexMaker = 0;
 		public static GillType defaultValue => NONE;
@@ -111,7 +116,7 @@ namespace CoC.Backend.BodyParts
 		public static readonly GillType FISH = new GillType(FishDesc, FishSingleDesc, FishLongDesc, FishPlayerStr, FishTransformStr, FishRestoreStr);
 	}
 
-	public sealed class GillData : BehavioralSaveablePartData<GillData, Gills, GillType>
+	public sealed class GillData : FullBehavioralData<GillData, Gills, GillType>
 	{
 		public override GillData AsCurrentData()
 		{

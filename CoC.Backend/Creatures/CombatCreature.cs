@@ -2,7 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //2/20/2019, 4:14 PM
+using CoC.Backend.Items;
+using CoC.Backend.Items.Wearables.Armor;
+using CoC.Backend.Items.Wearables.LowerGarment;
+using CoC.Backend.Items.Wearables.UpperGarment;
 using CoC.Backend.Tools;
+using CoC.Backend.UI;
 using System;
 
 namespace CoC.Backend.Creatures
@@ -726,6 +731,319 @@ namespace CoC.Backend.Creatures
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		//Combat variations. Might want to be internal since they are only used by the combat system, idk.
+
+		public DisplayBase UseItemDuringCombatManual(CapacityItem item, UseItemCombatCallback onUseItemReturn)
+		{
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(item));
+			}
+
+			if (onUseItemReturn is null)
+			{
+				throw new ArgumentNullException(nameof(onUseItemReturn));
+			}
+
+			if (item.CanUse(this, true, out string whyNot))
+			{
+				return item.AttemptToUseInCombat(this, onUseItemReturn);
+			}
+			else
+			{
+				onUseItemReturn(false, false, whyNot, item.Author(), item);
+				return null;
+			}
+		}
+
+		public DisplayBase UseItemInInventoryDuringCombatManual(byte index, UseItemCombatCallback onUseItemReturn)
+		{
+			if (onUseItemReturn is null)
+			{
+				throw new ArgumentNullException(nameof(onUseItemReturn));
+			}
+
+			if (index >= inventory.Count)
+			{
+				throw new IndexOutOfRangeException("inventory does not have that many slots currently.");
+			}
+
+			if (inventory[index].isEmpty)
+			{
+				onUseItemReturn(false, false, NoItemInSlotErrorText(), string.Empty, null);
+				return null;
+			}
+			else if (!inventory[index].item.CanUse(this, true, out string whyNot))
+			{
+				onUseItemReturn(false, false, whyNot, inventory[index].item.Author(), null);
+				return null;
+			}
+			else
+			{
+				CapacityItem item = inventoryStore.RemoveItem(index);
+				return item.AttemptToUseInCombat(this, onUseItemReturn);
+			}
+		}
+
+		public DisplayBase EquipArmorDuringCombatManual(ArmorBase armor, UseItemCombatCallbackSafe<ArmorBase> postEquipCallback)
+		{
+			if (armor is null)
+			{
+				postEquipCallback(false, false, YouGaveMeANull(), null, null);
+				return null;
+			}
+			else if (!armor.CanUse(this, true, out string whyNot))
+			{
+				postEquipCallback(false, false, whyNot, armor.Author(), armor);
+				return null;
+			}
+			else
+			{
+				return armor.AttemptToUseInCombatSafe(this, postEquipCallback);
+			}
+		}
+
+		public DisplayBase EquipArmorFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<ArmorBase> postEquipCallback)
+		{
+			if (inventory[index].isEmpty)
+			{
+				postEquipCallback(false, false, NoItemInSlotErrorText(), string.Empty, null);
+				return null;
+			}
+			else if (!(inventory[index].item is ArmorBase armorItem))
+			{
+				postEquipCallback(false, false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
+				return null;
+			}
+			else if (!armorItem.CanUse(this, true, out string whyNot))
+			{
+				postEquipCallback(false, false, whyNot, armorItem.Author(), null);
+				return null;
+			}
+			else
+			{
+				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
+				return item.AttemptToUseInCombatSafe(this, postEquipCallback);
+			}
+		}
+
+		//remove the current armor, and replace it with the current one. since it may be possible for an armor equip to use a menu, the removed armor is sent along to the callback.
+		//you will need to manually parse the display returned by this. if the removed armor destroys itself when being removed, the corresponding value passed along to the
+		//callback will be null.
+		public DisplayBase ReplaceArmorDuringCombatManual(ArmorBase armor, UseItemCombatCallbackSafe<ArmorBase> postReplaceArmorCallback)
+		{
+			if (armor is null)
+			{
+				ArmorBase item = RemoveArmorManual(out string removeText);
+				postReplaceArmorCallback(true, false, removeText, item.Author(), item);
+				return null;
+			}
+			else if (!armor.CanUse(this, true, out string whyNot))
+			{
+				postReplaceArmorCallback(false, false, whyNot, armor.Author(), armor);
+				return null;
+			}
+			else
+			{
+				return armor.AttemptToUseInCombatSafe(this, postReplaceArmorCallback);
+			}
+		}
+
+		public DisplayBase ReplaceArmorFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<ArmorBase> postReplaceArmorCallback)
+		{
+			if (inventory[index].isEmpty)
+			{
+				postReplaceArmorCallback(false, false, NoItemInSlotErrorText(), string.Empty, null);
+				return null;
+			}
+			else if (!(inventory[index].item is ArmorBase armorItem))
+			{
+				postReplaceArmorCallback(false, false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
+				return null;
+			}
+			else if (!armorItem.CanUse(this, true, out string whyNot))
+			{
+				postReplaceArmorCallback(false, false, whyNot, armorItem.Author(), null);
+				return null;
+			}
+			else
+			{
+				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
+				return item.AttemptToUseInCombatSafe(this, postReplaceArmorCallback);
+			}
+		}
+
+		public DisplayBase EquipUpperGarmentDuringCombatManual(UpperGarmentBase upperGarment, UseItemCombatCallbackSafe<UpperGarmentBase> postEquipCallback)
+		{
+			if (upperGarment is null)
+			{
+				postEquipCallback(false, false, YouGaveMeANull(), null, null);
+				return null;
+			}
+			else if (!upperGarment.CanUse(this, true, out string whyNot))
+			{
+				postEquipCallback(false, false, whyNot, upperGarment.Author(), upperGarment);
+				return null;
+			}
+			else
+			{
+				return upperGarment.AttemptToUseInCombatSafe(this, postEquipCallback);
+			}
+		}
+
+		public DisplayBase EquipUpperGarmentFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<UpperGarmentBase> postEquipCallback)
+		{
+			if (inventory[index].isEmpty)
+			{
+				postEquipCallback(false, false, NoItemInSlotErrorText(), string.Empty, null);
+				return null;
+			}
+			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
+			{
+				postEquipCallback(false, false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), string.Empty, null);
+				return null;
+			}
+			else if (!upperGarmentItem.CanUse(this, true, out string whyNot))
+			{
+				postEquipCallback(false, false, whyNot, upperGarmentItem.Author(), null);
+				return null;
+			}
+			else
+			{
+				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
+				return item.AttemptToUseInCombatSafe(this, postEquipCallback);
+			}
+		}
+
+		public DisplayBase ReplaceUpperGarmentDuringCombatManual(UpperGarmentBase upperGarment, UseItemCombatCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
+		{
+			if (upperGarment is null)
+			{
+				UpperGarmentBase item = RemoveUpperGarmentManual(out string removeText);
+				postReplaceUpperGarmentCallback(true, false, removeText, item.Author(), item);
+				return null;
+			}
+			else if (!upperGarment.CanUse(this, true, out string whyNot))
+			{
+				postReplaceUpperGarmentCallback(false, false, whyNot, upperGarment.Author(), upperGarment);
+				return null;
+			}
+			else
+			{
+				return upperGarment.AttemptToUseInCombatSafe(this, postReplaceUpperGarmentCallback);
+			}
+		}
+
+		public DisplayBase ReplaceUpperGarmentFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
+		{
+			if (inventory[index].isEmpty)
+			{
+				postReplaceUpperGarmentCallback(false, false, NoItemInSlotErrorText(), "", null);
+				return null;
+			}
+			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
+			{
+				postReplaceUpperGarmentCallback(false, false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), "", null);
+				return null;
+			}
+			else if (!upperGarmentItem.CanUse(this, true, out string whyNot))
+			{
+				postReplaceUpperGarmentCallback(false, false, whyNot, upperGarmentItem.Author(), null);
+				return null;
+			}
+			else
+			{
+				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
+				return item.AttemptToUseInCombatSafe(this, postReplaceUpperGarmentCallback);
+			}
+		}
+
+		public DisplayBase EquipLowerGarmentDuringCombatManual(LowerGarmentBase lowerGarment, UseItemCombatCallbackSafe<LowerGarmentBase> postEquipCallback)
+		{
+			if (lowerGarment is null)
+			{
+				postEquipCallback(false, false, YouGaveMeANull(), null, null);
+				return null;
+			}
+			else if (!lowerGarment.CanUse(this, true, out string whyNot))
+			{
+				postEquipCallback(false, false, whyNot, lowerGarment.Author(), lowerGarment);
+				return null;
+			}
+			else
+			{
+				return lowerGarment.AttemptToUseInCombatSafe(this, postEquipCallback);
+			}
+		}
+
+		public DisplayBase EquipLowerGarmentFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<LowerGarmentBase> postEquipCallback)
+		{
+			if (inventory[index].isEmpty)
+			{
+				postEquipCallback(false, false, NoItemInSlotErrorText(), "", null);
+				return null;
+			}
+			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
+			{
+				postEquipCallback(false, false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
+				return null;
+			}
+			else if (!lowerGarmentItem.CanUse(this, true, out string whyNot))
+			{
+				postEquipCallback(false, false, whyNot, lowerGarmentItem.Author(), null);
+				return null;
+			}
+			else
+			{
+				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
+				return item.AttemptToUseInCombatSafe(this, postEquipCallback);
+			}
+		}
+
+		public DisplayBase ReplaceLowerGarmentDuringCombatManual(LowerGarmentBase lowerGarment, UseItemCombatCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
+		{
+			if (lowerGarment is null)
+			{
+				LowerGarmentBase item = RemoveLowerGarmentManual(out string removeText);
+				postReplaceLowerGarmentCallback(true, false, removeText, "", item);
+				return null;
+			}
+			else if (!lowerGarment.CanUse(this, true, out string whyNot))
+			{
+				postReplaceLowerGarmentCallback(false, false, whyNot, lowerGarment.Author(), lowerGarment);
+				return null;
+			}
+			else
+			{
+				return lowerGarment.AttemptToUseInCombatSafe(this, postReplaceLowerGarmentCallback);
+			}
+		}
+
+		public DisplayBase ReplaceLowerGarmentFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
+		{
+			if (inventory[index].isEmpty)
+			{
+				postReplaceLowerGarmentCallback(false, false, NoItemInSlotErrorText(), "", null);
+				return null;
+			}
+			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
+			{
+				postReplaceLowerGarmentCallback(false, false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
+				return null;
+			}
+			else if (!lowerGarmentItem.CanUse(this, true, out string whyNot))
+			{
+				postReplaceLowerGarmentCallback(false, false, whyNot, lowerGarmentItem.Author(), null);
+				return null;
+			}
+			else
+			{
+				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
+				return item.AttemptToUseInCombatSafe(this, postReplaceLowerGarmentCallback);
+			}
+		}
+
 
 		//internal CombatCreature(SurrogateCombatCreator surrogateCreator) : base(surrogateCreator)
 		//{

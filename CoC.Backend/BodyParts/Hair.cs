@@ -54,7 +54,7 @@ namespace CoC.Backend.BodyParts
 	//than the primary tone, it instead uses the generic term 'lowlights'. It's possible to convert RGB to HSL and then use the lightness value to compare if two colors are
 	//lighter or darker than one another, and thus correctly use "highlight" or "lowlight". But i'm not fucking with that.
 
-	public sealed partial class Hair : BehavioralSaveablePart<Hair, HairType, HairData>, IMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
+	public sealed partial class Hair : FullBehavioralPart<Hair, HairType, HairData>, IMultiDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
 
@@ -529,6 +529,14 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 		#endregion
+		#region IdenticalTo
+		public override bool IsIdenticalTo(HairData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && hairDeactivated == original.hairDeactivated
+				&& (hairDeactivated || (hairColor == original.hairColor && highlightColor == original.highlightColor
+				&& length == original.length && this.isSemiTransparent == original.isSemiTransparent && this.style == original.style));
+		}
+		#endregion
 		#region Extra Strings
 		public string DescriptionWithTransparency(bool alternateFormat = false) => type.DescriptionWithTransparency(isSemiTransparent, alternateFormat);
 
@@ -743,7 +751,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public abstract partial class HairType : SaveableBehavior<HairType, Hair, HairData>
+	public abstract partial class HairType : FullBehavior<HairType, Hair, HairData>
 	{
 		private static readonly List<HairType> hairTypes = new List<HairType>();
 		public static readonly ReadOnlyCollection<HairType> availableTypes = new ReadOnlyCollection<HairType>(hairTypes);
@@ -1181,7 +1189,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class HairData : BehavioralSaveablePartData<HairData, Hair, HairType>
+	public sealed class HairData : FullBehavioralData<HairData, Hair, HairType>
 	{
 		public readonly HairFurColors hairColor;
 		public readonly HairFurColors highlightColor;

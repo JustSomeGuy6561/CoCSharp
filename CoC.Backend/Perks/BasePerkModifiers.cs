@@ -490,12 +490,12 @@ namespace CoC.Backend.Perks
 			set => source.genitals.perkData.MinClitSize = value;
 		}
 		#endregion
-		public VaginalWetness NewVaginaDefaultWetness
+		public VaginalWetness? NewVaginaDefaultWetness
 		{
 			get => source.genitals.perkData.defaultNewVaginaWetness;
 			set => source.genitals.perkData.defaultNewVaginaWetness = value;
 		}
-		public VaginalLooseness NewVaginaDefaultLooseness
+		public VaginalLooseness? NewVaginaDefaultLooseness
 		{
 			get => source.genitals.perkData.defaultNewVaginaLooseness;
 			set => source.genitals.perkData.defaultNewVaginaLooseness = value;

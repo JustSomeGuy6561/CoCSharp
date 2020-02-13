@@ -14,7 +14,13 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed class DrakesHeart : ConsumableBase
+	/**
+	 * Moved out of classes.Scenes.NPCs.EmberScene
+	 * @since December 11, 2016
+	 * @author Stadler76
+	 */
+	 //MOD NOTE: removed ember's blood as a hidden item, instead implementing the transform in EmberScene. so the above comment is partially incorrect now.
+	public sealed class DrakesHeart : StandardConsumable
 	{
 		public DrakesHeart() : base()
 		{
@@ -22,22 +28,31 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string AbbreviatedName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "DrakeHart";
 		}
 
 		public override string ItemName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Drake's Heart";
 		}
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string flowerText = count != 1 ? "flowers" : "flower";
+
+			if (count == 1)
+			{
+				return $"a drake's flower flower";
+			}
+			else
+			{
+				return $"a bundle of {Utils.NumberAsText(count)} drake's heart {flowerText}";
+			}
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "A rare, beautiful flower. It could make an exquisite perfume. According to a legend, dragons give this flower to the ones they intend to court.";
 		}
 
 		//does this consumable count as liquid for slimes and (kangaroo) diapause?
@@ -49,7 +64,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override int monetaryValue => 50;
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -68,13 +83,22 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+#warning when Ember implemented, set these to the correct values.
+			var tf = new DragonTF(false, true);
+
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			return true;
+		}
+
 		private sealed class DragonTF : DragonTransformations
 		{
 			public DragonTF(bool allowsDraconicFace, bool backUsesMane) : base(false, allowsDraconicFace, backUsesMane)
 			{
 			}
 
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

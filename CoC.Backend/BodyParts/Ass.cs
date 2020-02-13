@@ -21,7 +21,12 @@ namespace CoC.Backend.BodyParts
 
 	//Pretty sure normal for ass size is pretty tight. so
 
+#warning consider adding a means to prevent creatures from changing asshole location, and handling that better.
+
 	public enum AnalLooseness : byte { NORMAL, LOOSE, ROOMY, STRETCHED, GAPING } //if you want to add a clown car level here, may i suggest RENT_ASUNDER?
+
+	public enum AssholeLocation : byte { BUTT, MOUTH }
+
 	public sealed partial class Ass : SimpleSaveablePart<Ass, AssData>, IBodyPartTimeLazy
 	{
 		public const ushort BASE_CAPACITY = 10; //you now have a base capacity so you can handle insertions, even if you don't have any wetness or whatever.
@@ -184,7 +189,7 @@ namespace CoC.Backend.BodyParts
 		}
 		private ushort _perkBonusAnalCapacity = 0;
 
-		public ushort analCapacity()
+		public ushort AnalCapacity()
 		{
 
 			byte loose = (byte)looseness;
@@ -201,20 +206,30 @@ namespace CoC.Backend.BodyParts
 			return (ushort)cap;
 		}
 
-		public uint sexCount { get; private set; } = 0;
-		public uint penetrateCount { get; private set; } = 0;
+		public AssholeLocation location { get; private set; } = AssholeLocation.BUTT;
+
+		#region Sexual MetaData
+		//anything that would qualify as taking anal virginity
+		public uint totalSexCount { get; private set; } = 0;
+		//times you've done it to yourself because reality need not apply.
+		public uint selfSexCount { get; private set; } = 0;
+		//includes total sex count and things you wouldn't qualify as taking anal viriginity, such as dildoes or whatever.
+		public uint totalPenetrateCount { get; private set; } = 0;
+		//times you've done it to yourself because reality need not apply.
+		public uint selfPenetrateCount { get; private set; } = 0;
 		public uint orgasmCount { get; private set; } = 0;
 		public uint dryOrgasmCount { get; private set; } = 0;
 
-		public bool virgin { get; private set; } = true;
-		public bool everPracticedAnal { get; private set; } = false;
+		public uint totalAnalBirths { get; private set; } = 0;
 
+		public bool virgin => totalSexCount == 0 && totalAnalBirths == 0;
+		public bool everPracticedAnal => totalPenetrateCount > 0;
+		#endregion
 		#region Constructor
 		internal Ass(Guid creatureID) : base(creatureID)
 		{
 			looseness = AnalLooseness.NORMAL;
 			wetness = AnalWetness.NORMAL;
-			virgin = true;
 		}
 
 		//default behavior is to let the ass determine if it's still virgin.
@@ -231,8 +246,8 @@ namespace CoC.Backend.BodyParts
 				everPracticedAnal = analLooseness != AnalLooseness.NORMAL;
 			}
 
-			this.everPracticedAnal = (bool)everPracticedAnal;
-			virgin = virginAnus;
+			totalPenetrateCount = (uint)((bool)everPracticedAnal ? 1 : 0);
+			totalSexCount = (uint)(virgin ? 0 : 1);
 		}
 
 		#endregion
@@ -322,34 +337,45 @@ namespace CoC.Backend.BodyParts
 			return bonusAnalCapacity.subtract(currentCapacity);
 		}
 
+		public bool SetAssholeLocation(AssholeLocation newLocation)
+		{
+			if (location == newLocation)
+			{
+				return false;
+			}
+
+			location = newLocation;
+			return true;
+		}
 
 
 		#endregion
 		//Alias these in the creature class, adding the relevant features not in Ass itself (knockup, orgasm)
 		#region Unique Functions
 
-		internal bool PenetrateAsshole(ushort penetratorArea, float knotArea, float cumAmount, bool takeAnalVirginity, bool reachOrgasm/*, byte analExperiencedGained = 1*/)
+		internal bool PenetrateAsshole(ushort penetratorArea, float knotArea, float cumAmount, bool takeAnalVirginity, bool reachOrgasm, bool sourceIsSelf)
 		{
-			penetrateCount++;
-			if (!everPracticedAnal)
+			totalPenetrateCount++;
+			if (sourceIsSelf)
 			{
-				everPracticedAnal = true;
+				selfPenetrateCount++;
 			}
 
 			//experience = experience.add(analExperiencedGained);
 			AnalLooseness oldLooseness = looseness;
-			ushort capacity = analCapacity();
+			ushort capacity = AnalCapacity();
 
 			HandleStretching(penetratorArea, knotArea);
 
-			if (!everPracticedAnal)
-			{
-				everPracticedAnal = true;
-			}
 			if (takeAnalVirginity)
 			{
-				sexCount++;
-				virgin = false;
+				totalSexCount++;
+
+				if (sourceIsSelf)
+				{
+					selfSexCount++;
+				}
+
 			}
 
 			if (reachOrgasm)
@@ -368,12 +394,12 @@ namespace CoC.Backend.BodyParts
 		internal void HandleBirth(ushort size)
 		{
 			HandleStretching(size, 0);
-			virgin = false;
+			totalAnalBirths++;
 		}
 
 		private void HandleStretching(ushort penetratorArea, float knotArea)
 		{
-			ushort capacity = analCapacity();
+			ushort capacity = AnalCapacity();
 			//don't have to worry about overflow, as +1 or +2 will never overflow our artificial max.
 			if (penetratorArea >= capacity * 3f)
 			{
@@ -387,11 +413,11 @@ namespace CoC.Backend.BodyParts
 			{
 				if (Utils.RandBool()) looseness++;
 			}
-			else if (penetratorArea >= analCapacity() * 0.9f)
+			else if (penetratorArea >= AnalCapacity() * 0.9f)
 			{
 				if (Utils.Rand(4) == 0) looseness++;
 			}
-			else if (penetratorArea >= analCapacity() * 0.75f)
+			else if (penetratorArea >= AnalCapacity() * 0.75f)
 			{
 				if (Utils.Rand(10) == 0) looseness++;
 			}
@@ -403,19 +429,20 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
+		public override bool IsIdenticalTo(AssData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.analCapacity == AnalCapacity() && original.location == location && looseness == original.looseness
+				&& wetness == original.wetness && (ignoreSexualMetaData || (totalSexCount == original.totalSexCount && selfSexCount == original.selfSexCount
+				&& totalPenetrateCount == original.totalPenetrateCount && selfPenetrateCount == original.selfPenetrateCount && orgasmCount == original.orgasmCount
+				&& dryOrgasmCount == original.dryOrgasmCount && totalAnalBirths == original.totalAnalBirths));
+		}
+
 		#region Validate
 		internal override bool Validate(bool correctInvalidData)
 		{
 			looseness = looseness;
 			wetness = wetness;
-			if (penetrateCount > 0 && !everPracticedAnal) //i'm going to let this one go silently.
-			{
-				everPracticedAnal = true;
-			}
-			if (sexCount > 0 && virgin) //see above
-			{
-				virgin = false;
-			}
+
 			return true;
 		}
 		#endregion
@@ -621,8 +648,22 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ushort analCapacity;
 
-		public readonly bool virgin;
-		public readonly bool everPracticedAnal;
+		public bool virgin => totalSexCount == 0 && totalAnalBirths == 0;
+		public bool everPracticedAnal => totalPenetrateCount > 0;
+
+		public readonly AssholeLocation location;
+
+		#region Sexual MetaData
+		public readonly uint totalSexCount;
+		public readonly uint selfSexCount;
+		public readonly uint totalPenetrateCount;
+		public readonly uint selfPenetrateCount;
+		public readonly uint orgasmCount;
+		public readonly uint dryOrgasmCount;
+
+		public readonly uint totalAnalBirths;
+
+		#endregion
 
 		public string ShortDescription() => AssStrings.ShortDescription();
 		public string LongDescription(bool alternateFormat = false) => AssStrings.LongDescription(this, alternateFormat);
@@ -632,9 +673,17 @@ namespace CoC.Backend.BodyParts
 		{
 			wetness = source.wetness;
 			looseness = source.looseness;
-			analCapacity = source.analCapacity();
-			virgin = source.virgin;
-			everPracticedAnal = source.everPracticedAnal;
+			analCapacity = source.AnalCapacity();
+			location = source.location;
+
+			totalSexCount = source.totalSexCount;
+			selfSexCount = source.selfSexCount;
+			totalPenetrateCount = source.totalPenetrateCount;
+			selfPenetrateCount = source.selfPenetrateCount;
+			orgasmCount = source.orgasmCount;
+			dryOrgasmCount = source.dryOrgasmCount;
+
+			totalAnalBirths = source.totalAnalBirths;
 		}
 
 		bool IAss.virgin => virgin;
@@ -644,5 +693,7 @@ namespace CoC.Backend.BodyParts
 		AnalWetness IAss.wetness => wetness;
 
 		bool IAss.everPracticedAnal => everPracticedAnal;
+
+		AssholeLocation IAss.location => location;
 	}
 }

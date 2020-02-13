@@ -254,7 +254,7 @@ namespace CoC.Frontend.Transformations
 			if (Utils.Rand(2) == 0 && target.build.heightInInches < 58)
 			{
 				int temp = Utils.Rand(5) + 3;
-				//Flavor texts.  Flavored like 1950's cigarettes. Yum.
+				//Flavor texts. Flavored like 1950's cigarettes. Yum.
 				target.build.IncreaseHeight((byte)temp);
 				if (--remainingChanges <= 0)
 				{
@@ -451,6 +451,6 @@ namespace CoC.Frontend.Transformations
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

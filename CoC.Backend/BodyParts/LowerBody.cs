@@ -94,7 +94,7 @@ namespace CoC.Backend.BodyParts
 	}
 
 	//data changed event will never fire.
-	public sealed partial class LowerBody : BehavioralSaveablePart<LowerBody, LowerBodyType, LowerBodyData>, ICanAttackWith
+	public sealed partial class LowerBody : FullBehavioralPart<LowerBody, LowerBodyType, LowerBodyData>, ICanAttackWith
 	{
 		public override string BodyPartName() => Name();
 
@@ -172,6 +172,13 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public override bool IsIdenticalTo(LowerBodyData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && this.primaryEpidermis.Equals(original.primaryEpidermis)
+				&& this.secondaryEpidermis.Equals(original.secondaryEpidermis) && tattoos.IsIdenticalTo(original.tattoos)
+				&& feet.IsIdenticalTo(original.footData, ignoreSexualMetaData);
+		}
+
 		public bool IsReptilian() => type.IsReptilian();
 
 		#region Text
@@ -223,16 +230,18 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
+
+
 		AttackBase ICanAttackWith.attack => type.attack;
 		bool ICanAttackWith.canAttackWith() => type.canAttackWith;
 
 		public override LowerBodyData AsReadOnlyData()
 		{
-			return new LowerBodyData(creatureID, type, primaryEpidermis, secondaryEpidermis);
+			return new LowerBodyData(this);
 		}
 	}
 
-	public abstract partial class LowerBodyType : SaveableBehavior<LowerBodyType, LowerBody, LowerBodyData>
+	public abstract partial class LowerBodyType : FullBehavior<LowerBodyType, LowerBody, LowerBodyData>
 	{
 
 		private const int NOLEGS = 0;
@@ -564,19 +573,23 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class LowerBodyData : BehavioralSaveablePartData<LowerBodyData, LowerBody, LowerBodyType>
+	public sealed class LowerBodyData : FullBehavioralData<LowerBodyData, LowerBody, LowerBodyType>
 	{
 		public readonly EpidermalData primaryEpidermis;
 		public readonly EpidermalData secondaryEpidermis;
 
 		public byte legCount => type.legCount;
-		public FootType footType => type.footType;
+		public readonly FootData footData;
+
+		public FootType footType => footData.type;
 
 		public bool isMonoped => legCount == LowerBody.MONOPED_LEG_COUNT;
 		public bool isBiped => legCount == LowerBody.BIPED_LEG_COUNT;
 		public bool isQuadruped => legCount == LowerBody.QUADRUPED_LEG_COUNT;
 		public bool isSextoped => legCount == LowerBody.SEXTOPED_LEG_COUNT;
 		public bool isOctoped => legCount == LowerBody.OCTOPED_LEG_COUNT;
+
+		public readonly ReadOnlyTattooablePart<LowerBodyTattooLocation> tattoos;
 
 		public override LowerBodyData AsCurrentData()
 		{
@@ -632,16 +645,14 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-		internal LowerBodyData(Guid id, LowerBodyType type, EpidermalData epidermis, EpidermalData secondary) : base(id, type)
+		internal LowerBodyData(LowerBody source) : base(GetID(source), GetBehavior(source))
 		{
-			primaryEpidermis = epidermis;
-			secondaryEpidermis = secondary;
-		}
+			primaryEpidermis = source.primaryEpidermis;
+			secondaryEpidermis = source.secondaryEpidermis;
 
-		internal LowerBodyData(Guid id) : base(id, LowerBodyType.defaultValue)
-		{
-			primaryEpidermis = new Epidermis(type.epidermisType).AsReadOnlyData();
-			secondaryEpidermis = new EpidermalData();
+			tattoos = source.tattoos.AsReadOnlyData();
+
+			footData = source.feet.AsReadOnlyData();
 		}
 	}
 }

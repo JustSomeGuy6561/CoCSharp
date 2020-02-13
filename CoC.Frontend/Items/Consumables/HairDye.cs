@@ -42,19 +42,19 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			string vialText = count != 1 ? "vials" : "vial";
 
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 
-			return $"{count} {vialText} of  {color.AsString()} hair dye";
+			return $"{count}{vialText} of {color.AsString()} hair dye";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "This bottle of dye will allow you to change the color of your hair. Of course if you don't have hair, using this would be a waste.";
 		}
 
 #warning Current (lazy) implementation does not display any flavor text. need to add that. also need to store menu string globally so it can be applied when going back to the menu
 		//from a sub-menu.
-		//warn the player in this text when they dye and the current color are the same.
+		//warn the target in this text when they dye and the current color are the same.
 
 
 		public override bool countsAsLiquid => false; //i mean, it is, but it's not, i guess? vanilla said no.
@@ -69,7 +69,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is HairDye hairDye && this.color == hairDye.color;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -117,9 +117,9 @@ namespace CoC.Frontend.Items.Consumables
 
 			//if (result)
 			//{
-			//	if (target is PlayerBase player)
+			//	if (target is PlayerBase target)
 			//	{
-			//		player.refillHunger(sateHungerAmount);
+			//		target.refillHunger(sateHungerAmount);
 			//	}
 			//	item = null;
 			//}
@@ -248,11 +248,6 @@ namespace CoC.Frontend.Items.Consumables
 		private string LessLustyText()
 		{
 			return GlobalStrings.NewParagraph() + "The cool water calms your urges somewhat, letting you think more clearly.";
-		}
-
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
-		{
-			throw new NotSupportedException();
 		}
 	}
 }

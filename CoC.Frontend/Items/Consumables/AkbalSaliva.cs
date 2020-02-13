@@ -10,7 +10,7 @@ using System.Text;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed class AkbalSaliva : ConsumableBase
+	public sealed class AkbalSaliva : StandardConsumable
 	{
 		public AkbalSaliva() : base()
 		{
@@ -31,12 +31,12 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			string vialText = count != 1 ? "vials" : "vial";
 
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 
-			return $"{count} {vialText} of Akbal's saliva";
+			return $"{count}{vialText} of Akbal's saliva";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "This corked vial of Akbal's saliva is said to contain healing properties. ";
 		}
@@ -58,7 +58,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override int monetaryValue => 0;
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -78,6 +78,8 @@ namespace CoC.Frontend.Items.Consumables
 			isBadEnd = false;
 			return true;
 		}
+
+		//a combat consume is identical, so no need to override it.
 
 		public override byte maxCapacityPerSlot => 5;
 	}

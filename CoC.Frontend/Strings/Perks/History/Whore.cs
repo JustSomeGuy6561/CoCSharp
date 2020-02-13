@@ -17,7 +17,7 @@ namespace CoC.Frontend.Perks.History
 		}
 		private static string WhoreHint()
 		{
-			return "You managed to find work as a whore.  Because of your time spent trading seduction for profit, you're more effective at teasing (+15% tease damage).  Is this your history?";
+			return "You managed to find work as a whore. Because of your time spent trading seduction for profit, you're more effective at teasing (+15% tease damage). Is this your history?";
 		}
 		private static string WhoreDesc()
 		{

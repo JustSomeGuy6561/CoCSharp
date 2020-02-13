@@ -1,5 +1,6 @@
 ﻿using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Frontend.Perks;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,21 @@ namespace CoC.Frontend.Creatures.PlayerData
 		{
 			extendedPerkModifiers = new ExtendedPerkModifiers(this);
 			extendedData = new ExtendedCreatureData(this, extendedPerkModifiers);
+		}
+
+		//the player uses the various forms of you for this.
+		public override string possessiveNoun => Conjugate.YOU.PossessiveNoun();
+		public override string objectNoun => Conjugate.YOU.ObjectNoun();
+		public override string personalNoun => Conjugate.YOU.PersonalNoun();
+		public override string possessiveAdjective => Conjugate.YOU.PossessiveAdjective();
+		public override string reflexiveNoun => Conjugate.YOU.ReflexiveNoun();
+		public override string personalNounWithAre => Conjugate.YOU.PersonalNounWithAre();
+		public override string personalNounWithHave => Conjugate.YOU.PersonalNounWithHave();
+
+
+		public override string Article(bool definitiveArticle)
+		{
+			return "";
 		}
 
 		public ExtendedCreatureData extendedData { get; }

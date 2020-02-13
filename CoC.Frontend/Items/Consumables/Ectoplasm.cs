@@ -13,7 +13,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed class Ectoplasm : ConsumableBase
+	public sealed class Ectoplasm : StandardConsumable
 	{
 		public Ectoplasm() : base()
 		{
@@ -21,29 +21,30 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string AbbreviatedName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "EctoPls";
 		}
 
 		public override string ItemName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Ectoplasm";
 		}
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string bottleText = count != 1 ? "bottles" : "bottle";
+
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
+
+			return $"{count}{bottleText} of ectoplasm";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "The green-tinted, hardly corporeal substance flows like a liquid inside its container. It makes you feel... uncomfortable, as you observe it.";
 		}
 
-		//does this consumable count as liquid for slimes and (kangaroo) diapause?
 		public override bool countsAsLiquid => true;
-		//does this consumable count as cum (i.e. for succubi)?
 		public override bool countsAsCum => false;
-		//how much hunger does consuming this sate?
 		public override byte sateHungerAmount => 20;
 
 		protected override int monetaryValue => DEFAULT_VALUE;
@@ -53,7 +54,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is Ectoplasm;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -67,9 +68,17 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new GhostTF();
+
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			return true;
+		}
+
 		private class GhostTF : GhostTransformations
 		{
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

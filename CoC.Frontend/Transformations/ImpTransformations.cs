@@ -346,7 +346,7 @@ namespace CoC.Frontend.Transformations
 		protected abstract string CurrentBreastRowChanged(Creature target, int index, byte cupSizesShrunk, byte rowsPreviouslyModified);
 		protected virtual string RemovedAnExtraRowOfBreasts(Creature target, BreastData removedRow)
 		{
-			return RemovedExtraBreastRowGenericText(target, removedRow);
+			return target.genitals.allBreasts.RemovedExtraBreastRowGenericText(target, removedRow);
 		}
 		protected abstract string HairChangedText(Creature target, HairData oldHairData);
 		protected virtual string ChangeArmText(Creature target, ArmData oldArms)

@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoC.Frontend.Strings.Items.Wearables.Piercings
+namespace CoC.Frontend.Items.Wearables.Piercings
 {
 	public sealed class Industrial : PiercingJewelry
 	{

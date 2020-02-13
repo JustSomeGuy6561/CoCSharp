@@ -13,6 +13,9 @@ namespace CoC.Backend.Creatures
 
 		public ushort baseHealth;
 
+		public SimpleDescriptor indefiniteArticle;
+		public SimpleDescriptor definiteArticle;
+
 		public MonsterCreator(string name) : base(name)
 		{
 

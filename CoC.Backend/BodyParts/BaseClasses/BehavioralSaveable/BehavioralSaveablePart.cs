@@ -3,9 +3,11 @@
 //Author: JustSomeGuy
 //12/30/2018, 10:08 PM
 
+using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using System;
+using WeakEvent;
 
 namespace CoC.Backend.BodyParts
 {
@@ -24,71 +26,88 @@ namespace CoC.Backend.BodyParts
 	//internal class ArmType : BodyPartBehavior<ArmType, Arms>
 
 
-	public abstract class BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass> : PartWithBehaviorAndEventBase<ThisClass, BehaviorClass, DataClass>
-		where ThisClass : BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass> where BehaviorClass : SaveableBehavior<BehaviorClass, ThisClass, DataClass>
-		where DataClass : BehavioralSaveablePartData<DataClass, ThisClass, BehaviorClass>
+	public abstract class BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass>
+		: BehavioralPartBase<BehaviorClass, DataClass>, IBehavioralBodyPart, IBodyPart<DataClass>
+		where ThisClass : BehavioralSaveablePart<ThisClass, BehaviorClass, DataClass>
+		where BehaviorClass : BehaviorBase
+		where DataClass : BehavioralSaveableData<DataClass, ThisClass, BehaviorClass>
 	{
-		private protected BehavioralSaveablePart(Guid creatureID) : base(creatureID)
+		public readonly Guid creatureID;
+
+		internal virtual bool UpdateType(BehaviorClass newType)
 		{
+			if (newType is null || newType == type)
+			{
+				return false;
+			}
+
+			var oldValue = type;
+			type = newType;
+
+			NotifyTypeChanged(oldValue);
+			return true;
+		}
+
+		protected readonly WeakEventSource<BodyPartChangedEventArg<DataClass, BehaviorClass>> typeChangeSource =
+			new WeakEventSource<BodyPartChangedEventArg<DataClass, BehaviorClass>>();
+
+		public event EventHandler<BodyPartChangedEventArg<DataClass, BehaviorClass>> typeChanged
+		{
+			add => typeChangeSource.Subscribe(value);
+			remove => typeChangeSource.Unsubscribe(value);
+		}
+
+		protected void NotifyTypeChanged(BehaviorClass previousType)
+		{
+			typeChangeSource.Raise(this, new BodyPartChangedEventArg<DataClass, BehaviorClass>(AsReadOnlyData(), previousType, type));
+		}
+
+		protected readonly WeakEventSource<BehavioralDataChangeEvent<ThisClass, BehaviorClass, DataClass>> dataChangeSource =
+			new WeakEventSource<BehavioralDataChangeEvent<ThisClass, BehaviorClass, DataClass>>();
+
+		public event EventHandler<BehavioralDataChangeEvent<ThisClass, BehaviorClass, DataClass>> dataChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+		protected void NotifyDataChanged(DataClass oldData)
+		{
+			dataChangeSource.Raise(this, new BehavioralDataChangeEvent<ThisClass, BehaviorClass, DataClass>(oldData, AsReadOnlyData()));
+		}
+
+		Type IBehavioralBodyPart.BehaviorType()
+		{
+			return typeof(BehaviorClass);
+		}
+
+		public abstract string BodyPartName();
+
+		Type IBodyPart.BaseType()
+		{
+			return typeof(ThisClass);
+		}
+
+		Type IBodyPart.DataType()
+		{
+			return typeof(DataClass);
+		}
+
+		Guid IBodyPart.creatureID => creatureID;
+
+
+
+		private protected BehavioralSaveablePart(Guid creatureID)
+		{
+			this.creatureID = creatureID;
 		}
 
 
 		//standard implementations.
 		//public static BehaviorType default[Name] => <value>;
-		public bool isDefault => type == defaultType;
-		public abstract BehaviorClass defaultType { get; }
 
-		//each class may have additional updates for more specific or varied cases, notably cases that use extra variables unique to that class.
-		//if this is the case, functions that can change these variables without updating the type may need to be implemented.
-
-		//internal bool Update[Special Name](BehaviorClass type, [additional parameters]);
-		//(optional) internal bool Change[Special Name]([additional parameters]);
-
-		internal virtual bool Restore()
-		{
-			return UpdateType(defaultType);
-		}
 
 		internal abstract bool Validate(bool correctInvalidData);
-
-		public virtual bool CanChangeTo(BehaviorClass newType)
-		{
-			return newType != type;
-		}
-
-		//Text output.
-		public string LongDescriptionPrimary() => type.LongDescriptionPrimary(AsReadOnlyData());
-
-		public string LongDescriptionAlternate() => type.LongDescriptionAlternate(AsReadOnlyData());
-
-		public string LongDescription(bool alternateFormat = false) => type.LongDescription(AsReadOnlyData(), alternateFormat);
-
-
-		public string PlayerDescription()
-		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
-			{
-				return type.PlayerDescription((ThisClass)this, player);
-			}
-			else return "";
-		}
-		public string TransformFromText(DataClass previousTypeData)
-		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
-			{
-				return type.TransformFrom(previousTypeData, player);
-			}
-			else return "";
-		}
-
-		public string RestoredText(DataClass oldData)
-		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature) && creature is PlayerBase player)
-			{
-				return oldData.type.RestoredString(oldData, player);
-			}
-			else return "";
-		}
 
 		//Serialization
 		//Type ISaveableBase.currentSaveType => currentSaveVersion;

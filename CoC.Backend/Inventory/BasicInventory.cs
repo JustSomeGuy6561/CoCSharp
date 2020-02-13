@@ -130,7 +130,7 @@ namespace CoC.Backend.Inventory
 			{
 				throw new ArgumentNullException(nameof(newItem));
 			}
-			else if (isEmpty || item == newItem && itemCount < item.maxCapacityPerSlot)
+			else if (isEmpty || item.Equals(newItem) && itemCount < item.maxCapacityPerSlot)
 			{
 				//shouldn't be necessary, but idk.
 				if (isEmpty)
@@ -150,7 +150,7 @@ namespace CoC.Backend.Inventory
 			{
 				throw new ArgumentNullException(nameof(newItem));
 			}
-			else if (item != newItem || !addIfSame)
+			else if (!item.Equals(newItem) || !addIfSame)
 			{
 				item = newItem;
 				itemCount = 1;
@@ -175,7 +175,7 @@ namespace CoC.Backend.Inventory
 			{
 				return false;
 			}
-			else if (item != newItem)
+			else if (!item.Equals(newItem))
 			{
 				item = newItem;
 				itemCount = 1;

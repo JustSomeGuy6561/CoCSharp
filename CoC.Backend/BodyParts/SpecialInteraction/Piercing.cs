@@ -130,7 +130,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			return jewelryEquipped.TryGetValue(location, out PiercingJewelry jewelry) && jewelry != null;
 		}
 
-		internal bool EquipPiercingJewelry(Location piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
+		public bool EquipPiercingJewelry(Location piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
 		{
 			if (jewelry == null) throw new ArgumentNullException(nameof(jewelry));
 			if (piercingLocation is null) throw new ArgumentNullException(nameof(piercingLocation));
@@ -173,7 +173,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			}
 		}
 
-		internal PiercingJewelry RemovePiercingJewelry(Location piercingLocation, bool forceRemove = false)
+		public PiercingJewelry RemovePiercingJewelry(Location piercingLocation, bool forceRemove = false)
 		{
 			if (!jewelryEquipped.ContainsKey(piercingLocation))
 			{
@@ -193,7 +193,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 		}
 
-		internal bool Pierce(Location piercingLocation)
+		public bool Pierce(Location piercingLocation)
 		{
 			if (!CanPierce(piercingLocation))
 			{
@@ -220,7 +220,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 
 		}
 
-		internal bool EquipOrPierceAndEquip(Location piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
+		public bool EquipOrPierceAndEquip(Location piercingLocation, PiercingJewelry jewelry, bool forceEquip = false)
 		{
 			bool isPierced = true;
 			if (!isPiercedAt(piercingLocation))
@@ -244,7 +244,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		//does not check if it can currently be equipped, just if it is possible.
 		public bool CanWearThisJewelry(Location piercingLocation, PiercingJewelry jewelry)
 		{
-			return piercingLocation.AllowsJewelryOfType(jewelry.jewelryType) && jewelry.CanEquipAt<Piercing<Location>, Location>(this);
+			return piercingLocation.AllowsJewelryOfType(jewelry.jewelryType) && jewelry.CanEquipAt(this, piercingLocation);
 		}
 
 		public bool CanWearGenericJewelryOfType(Location piercingLocation, JewelryType jewelryType)
@@ -302,7 +302,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			}
 		}
 
-		internal void Reset()
+		public void Reset()
 		{
 			ProcChange(piercedAt, jewelryEquipped);
 			piercedAt.Clear();
@@ -358,17 +358,24 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			piercingChangeSource.Raise(this, new PiercingDataChangedEventArgs<Location>(parent, piercingLocation, oldJewelry, newJewelry, piercingCount, jewelryCount));
 		}
 
+		public virtual bool IsIdenticalTo(ReadOnlyPiercing<Location> original)
+		{
+			return piercedAt.Keys.Count == original.piercedAt.Keys.Count && piercedAt.Keys.All(k => original.piercedAt.ContainsKey(k) &&
+			original.piercedAt[k] == piercedAt[k]) &&
+			jewelryEquipped.Keys.Count == original.jewelryEquipped.Keys.Count && jewelryEquipped.Keys.All(k => original.jewelryEquipped.ContainsKey(k) &&
+			Equals(original.jewelryEquipped[k], jewelryEquipped[k]));
+		}
 	}
 
 	public class ReadOnlyPiercing<Location> where Location : PiercingLocation
 	{
-		private readonly Dictionary<Location, bool> piercedAt = new Dictionary<Location, bool>();
-		private readonly Dictionary<Location, PiercingJewelry> jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
+		internal readonly Dictionary<Location, bool> piercedAt = new Dictionary<Location, bool>();
+		internal readonly Dictionary<Location, PiercingJewelry> jewelryEquipped = new Dictionary<Location, PiercingJewelry>();
 
 		public readonly int piercingCount;
 		public bool isPierced => piercingCount != 0;
 
-		public bool isPiercedAt(Location location)
+		public bool IsPiercedAt(Location location)
 		{
 			if (location == null)
 			{

@@ -19,7 +19,7 @@ namespace CoC.Frontend.Perks.History
 		private static string FortuneHint()
 		{
 			return "You always feel lucky when it comes to fortune. Because of that, you have always managed " +
-				"to save up gems until whatever's needed and how to make the most out it (+15% gems on victory).  " +
+				"to save up gems until whatever's needed and how to make the most out it (+15% gems on victory). " +
 				"You will also start out with 250 gems.Is this your history?";
 		}
 		private static string FortuneDesc()

@@ -12,6 +12,8 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 		{
 		}
 
+		public override float DefensiveRating(Creature wearer) => 0;
+
 		protected override int monetaryValue => throw new System.NotImplementedException();
 
 		public override string LongDescription(CockData attachedCock)
@@ -59,7 +61,12 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 			throw new System.NotImplementedException();
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public override string AboutItemWithStats(Creature wearer)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -14,7 +14,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class SuccubiMilk : ConsumableBase
+	public sealed partial class SuccubiMilk : StandardConsumable
 	{
 		private readonly bool isPurified;
 
@@ -29,27 +29,37 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string AbbreviatedName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return isPurified ? "P.S.Milk" : "SucMilk";
 		}
 
 		public override string ItemName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return isPurified ? "Purified Succubi Milk" : "Succubi Milk";
 		}
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			//if your text uses "an" as an article instead of "a", be sure to change that here.
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
-			//when the text below is corrected, remove this throw.
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-			//update the text below to display what you need.
-			return $"{count} <Your Text Here>";
+
+			string bottleText = (isPurified ? "untainted " : "") + (count != 1 ? "bottles" : "bottle");
+
+			string countText = "";
+			if (displayCount && count == 1)
+			{
+				countText = isPurified ? "an " : "a ";
+			}
+			else if (displayCount)
+			{
+				countText = Utils.NumberAsPlace(count);
+			}
+			return $"{count}{bottleText} of Succubi milk";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "This milk-bottle is filled to the brim with a creamy white milk of dubious origin. A pink label proudly labels it as \"" +
+				SafelyFormattedString.FormattedText("Succubi Milk", StringFormats.ITALIC) + ".\" In small text at the bottom of the label it reads: \"" +
+				SafelyFormattedString.FormattedText("To bring out the succubus in YOU!", StringFormats.ITALIC) + "\"" +
+				(isPurified ? " Purified by Rathazul to prevent corruption." : "");
 		}
 
 		public override bool countsAsLiquid => true;
@@ -65,7 +75,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is SuccubiMilk succubi && this.isPurified == succubi.isPurified;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -73,9 +83,16 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
-
 			var tf = new SuccubiTFs(isPurified);
 			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
+
+			return true;
+		}
+
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new SuccubiTFs(isPurified);
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
 
 			return true;
 		}
@@ -86,7 +103,7 @@ namespace CoC.Frontend.Items.Consumables
 			{
 			}
 
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

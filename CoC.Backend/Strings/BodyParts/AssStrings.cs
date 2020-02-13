@@ -127,6 +127,8 @@ namespace CoC.Backend.BodyParts
 		AnalLooseness looseness { get; }
 		AnalWetness wetness { get; }
 
+		AssholeLocation location { get; }
+
 		bool everPracticedAnal { get; }
 
 

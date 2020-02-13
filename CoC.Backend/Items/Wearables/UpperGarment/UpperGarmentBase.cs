@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items.Wearables.Armor;
 
 namespace CoC.Backend.Items.Wearables.UpperGarment
 {
@@ -10,28 +11,27 @@ namespace CoC.Backend.Items.Wearables.UpperGarment
 		protected UpperGarmentBase() : base()
 		{ }
 
-		//by default, upper garments seem to not care. undergarments do based on lower body type, but not these. hence this default. of course, if you need to limit it,
-		//override this.
-		protected override bool CanWearWithBodyData(Creature creature, out string whyNot)
-		{
-			whyNot = null;
-			return true;
-		}
-
 		protected override UpperGarmentBase EquipItem(Creature wearer, out string equipOutput)
 		{
-			var retVal = wearer.ReplaceUpperGarmentInternal(this);
+			return EquipUpperGarment(wearer, out equipOutput);
+		}
+
+		//changing upper garments is not exposed publicly, so we potentially could run into issues if EquipItem is ever overridden, and then potentially overridden again.
+		//this ensures that regardless of how crazy we go with inheritance, we can still do the bare necessities to change an upper garment and go from there.
+		protected UpperGarmentBase EquipUpperGarment(Creature wearer, out string equipOutput)
+		{
+			var retVal = wearer.ChangeUpperGarment(this, out string removeText);
 			OnEquip(wearer);
-			equipOutput = EquipText(wearer);
+			equipOutput = EquipText(wearer) + removeText;
 			return retVal;
 		}
 
 		protected virtual void OnEquip(Creature wearer) { }
 		protected abstract string EquipText(Creature wearer);
 
-		public override bool CanUse(Creature creature, out string whyNot)
+		public override bool CanUse(Creature creature, bool isInCombat, out string whyNot)
 		{
-			if (!base.CanUse(creature, out whyNot))
+			if (!base.CanUse(creature, isInCombat, out whyNot))
 			{
 				return false;
 			}

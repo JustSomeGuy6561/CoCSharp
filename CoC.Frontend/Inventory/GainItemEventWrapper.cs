@@ -25,7 +25,7 @@ namespace CoC.Frontend.Inventory
 
 		//used for standard gameplay, which requires a callback to handle once the item has been added successfully. The content is guarenteed to be written to the display before the callback
 		//is called.
-		public static void GainItemWithCallback(this Creature source, CapacityItem item, string originalOutput, Action resumeCallback)
+		public static void GainItemWithCallback(this Creature source, CapacityItem item, string originalOutput, bool isInCombat, Action resumeCallback)
 		{
 			if (source.CanAddItem(item))
 			{
@@ -35,7 +35,7 @@ namespace CoC.Frontend.Inventory
 			}
 			else
 			{
-				new ItemFullHelper(source, item, originalOutput, resumeCallback).Init();
+				new ItemFullHelper(source, item, originalOutput, isInCombat, resumeCallback).Init();
 			}
 		}
 	}
@@ -55,7 +55,7 @@ namespace CoC.Frontend.Inventory
 
 		protected override DisplayBase AsFullPageScene(bool currentlyIdling, bool hasIdleHours)
 		{
-			return new ItemFullHelper(source, target, howItemWasObtainedText(), () => GameEngine.ResumeExection()).Init();
+			return new ItemFullHelper(source, target, howItemWasObtainedText(), false, () => GameEngine.ResumeExection()).Init();
 		}
 
 		protected override string AsTextScene(bool currentlyIdling, bool hasIdleHours)
@@ -84,16 +84,17 @@ namespace CoC.Frontend.Inventory
 		private readonly Action resumeCallback;
 		private readonly Action returnCallback;
 		private readonly Action abandonCallback;
-
+		private readonly bool isInCombat;
 		private StandardDisplay display;
 
 		//
-		public ItemFullHelper(IInteractiveStorage<T> source, T item, string context, Action resumeCallback,
+		public ItemFullHelper(IInteractiveStorage<T> source, T item, string context, bool inCombat, Action resumeCallback,
 			Action returnItemFunction = null, Action cancelItemOverride = null)
 		{
 			this.inventory = source ?? throw new ArgumentNullException(nameof(source));
 			this.item = item ?? throw new ArgumentNullException(nameof(item));
 			this.context = context;
+			isInCombat = inCombat;
 			this.resumeCallback = resumeCallback ?? throw new ArgumentNullException(nameof(resumeCallback));
 			this.returnCallback = returnItemFunction;
 			this.abandonCallback = cancelItemOverride ?? DefaultAbandonAction;
@@ -129,7 +130,7 @@ namespace CoC.Frontend.Inventory
 			{
 				DoButton(12, putBackText(), returnCallback);
 			}
-			if (item.CanUse(CreatureStore.currentControlledCharacter, out string _))
+			if (item.CanUse(CreatureStore.currentControlledCharacter, isInCombat, out string _))
 			{
 				DoButton(13, useText(), AttemptToUseItem);
 			}
@@ -226,11 +227,11 @@ namespace CoC.Frontend.Inventory
 		private readonly Action resumeCallback;
 		private readonly Action returnCallback;
 		private readonly Action abandonCallback;
-
+		private readonly bool isInCombat;
 		private readonly StandardDisplay display;
 
 		//
-		public ItemFullHelper(IInteractiveStorage<CapacityItem> source, CapacityItem item, string context, Action resumeCallback,
+		public ItemFullHelper(IInteractiveStorage<CapacityItem> source, CapacityItem item, string context, bool inCombat, Action resumeCallback,
 			Action returnItemFunction = null, Action cancelItemOverride = null)
 		{
 			this.inventory = source ?? throw new ArgumentNullException(nameof(source));
@@ -239,6 +240,8 @@ namespace CoC.Frontend.Inventory
 			this.resumeCallback = resumeCallback ?? throw new ArgumentNullException(nameof(resumeCallback));
 			this.returnCallback = returnItemFunction;
 			this.abandonCallback = cancelItemOverride ?? DefaultAbandonAction;
+
+			isInCombat = inCombat;
 
 			display = DisplayManager.GetCurrentDisplay();
 			display.ClearOutput();
@@ -274,7 +277,7 @@ namespace CoC.Frontend.Inventory
 			{
 				DoButton(12, putBackText(), returnCallback);
 			}
-			if (item.CanUse(CreatureStore.currentControlledCharacter, out string _))
+			if (item.CanUse(CreatureStore.currentControlledCharacter, isInCombat, out string _))
 			{
 				DoButton(13, useText(), AttemptToUseItem);
 			}

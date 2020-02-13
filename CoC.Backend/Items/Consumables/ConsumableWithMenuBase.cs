@@ -19,6 +19,11 @@ namespace CoC.Backend.Items.Consumables
 			return BuildMenu(target, postItemUseCallback);
 		}
 
+		public override DisplayBase AttemptToUseInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		{
+			return BuildCombatAwareMenu(target, postItemUseCallback);
+		}
+
 		/// <summary>
 		/// Build the first menu page that displays after the target tries to use the item. Eventually, post item use callback must be called, but where and how is up to your implementation.
 		/// Generally, this will be after a button is pressed, with the function callback the button executing it, though it may occur on a sub menu or something.
@@ -26,5 +31,13 @@ namespace CoC.Backend.Items.Consumables
 		/// <param name="consumer"></param>
 		/// <returns>The initial menu display and any text required for it.</returns>
 		protected abstract DisplayBase BuildMenu(Creature consumer, UseItemCallback postItemUseCallback);
+
+		protected virtual DisplayBase BuildCombatAwareMenu(Creature consumer, UseItemCombatCallback postItemUseCallback)
+		{
+			return BuildMenu(consumer, (success, results, author, replacement) => postItemUseCallback(success, false, results, author, replacement));
+		}
+
+		public override byte maxCapacityPerSlot => 10;
+
 	}
 }

@@ -2,6 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //4/24/2019, 1:12 AM
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
@@ -11,9 +14,6 @@ using CoC.Backend.Engine;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -48,7 +48,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return Equals(lipPiercing);
 			}
-			else return false;
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool Equals(LipPiercingLocation other)
@@ -117,7 +120,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return Equals(eyebrowPiercing);
 			}
-			else return false;
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool Equals(EyebrowPiercingLocation other)
@@ -182,7 +188,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return Equals(nosePiercing);
 			}
-			else return false;
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool Equals(NosePiercingLocation other)
@@ -284,14 +293,10 @@ namespace CoC.Backend.BodyParts
 	 * and for some reason you need the skin tone to describe the face in detail. IDK, man. Regardless, you have the whole body data, just use that. if you need all three
 	 * for something not in the face itself, it's available, i guess. We're not firing when it changes though.
 	 */
-	public sealed partial class Face : BehavioralSaveablePart<Face, FaceType, FaceData>, ILotionable, ICanAttackWith
+	public sealed partial class Face : FullBehavioralPart<Face, FaceType, FaceData>, ILotionable, ICanAttackWith
 	{
 
 		public override string BodyPartName() => Name();
-
-		private const JewelryType SUPPORTED_LIP_JEWELRY = JewelryType.HORSESHOE | JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.SPECIAL;
-		//private const JewelryType SUPPORTED_NOSE_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.RING | JewelryType.HORSESHOE; //can't use as nose is a pain.
-		private const JewelryType SUPPORTED_EYEBROW_JEWELRY = JewelryType.BARBELL_STUD | JewelryType.HORSESHOE | JewelryType.RING | JewelryType.SPECIAL;
 
 		public readonly LipPiercing lipPiercings;
 		public readonly NosePiercing nosePiercings;
@@ -301,7 +306,7 @@ namespace CoC.Backend.BodyParts
 		{
 			get
 			{
-				var prime = primary;
+				EpidermalData prime = primary;
 				if (prime.type is ToneBasedEpidermisType toneType)
 				{
 					return new EpidermalData(toneType, prime.tone, skinTexture);
@@ -354,7 +359,9 @@ namespace CoC.Backend.BodyParts
 
 		public Tones epidermisTone => bodyData.mainSkin.tone;
 
-		public uint oralCount { get; private set; } = 0;
+		public uint totalOralCount { get; private set; } = 0;
+		public uint selfOralCount { get; private set; } = 0;
+
 		public uint orgasmCount { get; private set; } = 0;
 		public uint dryOrgasmCount { get; private set; } = 0;
 
@@ -399,8 +406,14 @@ namespace CoC.Backend.BodyParts
 
 		public override string ShortDescription()
 		{
-			if (isFullMorph) return type.secondLevelShortDescription();
-			else return type.ShortDescription();
+			if (isFullMorph)
+			{
+				return type.secondLevelShortDescription();
+			}
+			else
+			{
+				return type.ShortDescription();
+			}
 		}
 
 		internal override bool UpdateType(FaceType newType)
@@ -409,8 +422,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldType = type;
-			var oldData = AsReadOnlyData();
+			FaceType oldType = type;
+			FaceData oldData = AsReadOnlyData();
 			type = newType;
 
 			CheckDataChanged(oldData);
@@ -424,8 +437,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldType = type;
-			var oldData = AsReadOnlyData();
+			FaceType oldType = type;
+			FaceData oldData = AsReadOnlyData();
 
 			type = faceType;
 			isFullMorph = type.hasSecondLevel ? fullMorph : false;
@@ -440,8 +453,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldType = type;
-			var oldData = AsReadOnlyData();
+			FaceType oldType = type;
+			FaceData oldData = AsReadOnlyData();
 
 			type = faceType;
 			skinTexture = complexion;
@@ -456,8 +469,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldType = type;
-			var oldData = AsReadOnlyData();
+			FaceType oldType = type;
+			FaceData oldData = AsReadOnlyData();
 
 			type = faceType;
 			skinTexture = complexion;
@@ -471,7 +484,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (!isFullMorph && type.hasSecondLevel)
 			{
-				var oldData = AsReadOnlyData();
+				FaceData oldData = AsReadOnlyData();
 				isFullMorph = true;
 				NotifyDataChanged(oldData);
 				return true;
@@ -484,7 +497,7 @@ namespace CoC.Backend.BodyParts
 			//if full morph, weaken it to half-morph level.
 			if (isFullMorph)
 			{
-				var oldData = AsReadOnlyData();
+				FaceData oldData = AsReadOnlyData();
 				isFullMorph = false;
 				NotifyDataChanged(oldData);
 				return true;
@@ -504,7 +517,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return StrengthenFacialMorph();
 			}
-			else return UpdateFaceWithMorph(faceType, forceFullMorph);
+			else
+			{
+				return UpdateFaceWithMorph(faceType, forceFullMorph);
+			}
 		}
 
 		public bool ChangeComplexion(SkinTexture complexion)
@@ -513,7 +529,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldData = AsReadOnlyData();
+			FaceData oldData = AsReadOnlyData();
 			skinTexture = complexion;
 			NotifyDataChanged(oldData);
 			return true;
@@ -521,9 +537,15 @@ namespace CoC.Backend.BodyParts
 
 		//default restore is fine.
 
-		internal void HandleOralPenetration(float penetratorArea, float knotWidth, float cumAmount, bool reachOrgasm)
+		internal void HandleOralPenetration(float penetratorArea, float knotWidth, float cumAmount, bool reachOrgasm, bool selfOral = false)
 		{
-			oralCount++;
+			totalOralCount++;
+			if (selfOral)
+			{
+				selfOralCount++;
+			}
+
+
 			if (reachOrgasm)
 			{
 				orgasmCount++;
@@ -541,6 +563,15 @@ namespace CoC.Backend.BodyParts
 		//	}
 		//}
 
+		public override bool IsIdenticalTo(FaceData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.type == type && original.isFullMorph == isFullMorph && primary.Equals(original.primaryEpidermis)
+				&& secondary.Equals(original.secondaryEpidermis) && skinTexture == original.skinTexture && nosePiercings.IsIdenticalTo(original.nosePiercings)
+				&& eyebrowPiercings.IsIdenticalTo(original.eyebrowPiercings) && lipPiercings.IsIdenticalTo(original.lipPiercings)
+				&& tattoos.IsIdenticalTo(original.tattoos) && (ignoreSexualMetaData || (totalOralCount == original.totalOralCount && selfOralCount == original.selfOralCount
+				&& orgasmCount == original.orgasmCount && dryOrgasmCount == original.dryOrgasmCount));
+		}
+
 		internal void HandleOralPenetration(Cock penetrator, bool reachOrgasm)
 		{
 			HandleOralPenetration(penetrator.area, penetrator.knotSize, penetrator.cumAmount, reachOrgasm);
@@ -552,12 +583,15 @@ namespace CoC.Backend.BodyParts
 		internal void HandleOralOrgasmGeneric(bool dryOrgasm)
 		{
 			orgasmCount++;
-			if (dryOrgasm) dryOrgasmCount++;
+			if (dryOrgasm)
+			{
+				dryOrgasmCount++;
+			}
 		}
 
-		internal void HandleTonguePenetrate(bool reachOrgasm)
+		internal void HandleTonguePenetrate(bool reachOrgasm, bool selfPenetrating = false)
 		{
-			CreatureStore.GetCreatureClean(creatureID)?.tongue.DoPenetrate();
+			CreatureStore.GetCreatureClean(creatureID)?.tongue.DoPenetrate(selfPenetrating);
 			if (reachOrgasm)
 			{
 				orgasmCount++;
@@ -567,7 +601,7 @@ namespace CoC.Backend.BodyParts
 
 		internal void Reset()
 		{
-			var oldData = AsReadOnlyData();
+			FaceData oldData = AsReadOnlyData();
 			type = FaceType.HUMAN;
 			isFullMorph = false;
 			CheckDataChanged(oldData);
@@ -698,7 +732,7 @@ namespace CoC.Backend.BodyParts
 	public enum FacialStructure { UNIQUE, HUMANOID, MUZZLE, BEAK }
 
 
-	public abstract partial class FaceType : SaveableBehavior<FaceType, Face, FaceData>
+	public abstract partial class FaceType : FullBehavior<FaceType, Face, FaceData>
 	{
 		private static readonly List<FaceType> faces = new List<FaceType>();
 		public static readonly ReadOnlyCollection<FaceType> availableTypes = new ReadOnlyCollection<FaceType>(faces);
@@ -1146,7 +1180,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class FaceData : BehavioralSaveablePartData<FaceData, Face, FaceType>
+	public sealed class FaceData : FullBehavioralData<FaceData, Face, FaceType>
 	{
 		public readonly bool isFullMorph;
 
@@ -1160,10 +1194,25 @@ namespace CoC.Backend.BodyParts
 		public readonly ReadOnlyPiercing<NosePiercingLocation> nosePiercings;
 		public readonly ReadOnlyPiercing<EyebrowPiercingLocation> eyebrowPiercings;
 
+		public readonly ReadOnlyTattooablePart<FaceTattooLocation> tattoos;
+
+		#region Sexual Metadata
+		public readonly uint totalOralCount;
+		public readonly uint selfOralCount;
+		public readonly uint orgasmCount;
+		public readonly uint dryOrgasmCount;
+		#endregion
+
 		public override string ShortDescription()
 		{
-			if (isFullMorph) return type.secondLevelShortDescription();
-			else return type.ShortDescription();
+			if (isFullMorph)
+			{
+				return type.secondLevelShortDescription();
+			}
+			else
+			{
+				return type.ShortDescription();
+			}
 		}
 
 		public bool isHumanoid => type.IsHumanoid(isFullMorph);
@@ -1189,6 +1238,13 @@ namespace CoC.Backend.BodyParts
 			lipPiercings = source.lipPiercings.AsReadOnlyData();
 			nosePiercings = source.nosePiercings.AsReadOnlyData();
 			eyebrowPiercings = source.eyebrowPiercings.AsReadOnlyData();
+
+			tattoos = source.tattoos.AsReadOnlyData();
+
+			totalOralCount = source.totalOralCount;
+			selfOralCount = source.selfOralCount;
+			orgasmCount = source.orgasmCount;
+			dryOrgasmCount = source.dryOrgasmCount;
 		}
 	}
 }

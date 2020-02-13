@@ -273,7 +273,7 @@ namespace CoC.Backend.BodyParts
 
 	}
 
-	public sealed partial class Arms : BehavioralSaveablePart<Arms, ArmType, ArmData>
+	public sealed partial class Arms : FullBehavioralPart<Arms, ArmType, ArmData>
 	{
 		public override string BodyPartName() => Name();
 
@@ -337,6 +337,12 @@ namespace CoC.Backend.BodyParts
 
 		//default implementation of update and restore are fine
 
+		public override bool IsIdenticalTo(ArmData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && epidermis.Equals(original.epidermis) && secondaryEpidermis.Equals(original.secondaryEpidermis)
+				&& tattoos.IsIdenticalTo(original.tattoos) && hands.IsIdenticalTo(original.hands, ignoreSexualMetaData);
+		}
+
 		//description overloads.
 		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
@@ -363,7 +369,7 @@ namespace CoC.Backend.BodyParts
 		public bool IsReptilian() => type.IsReptilian();
 	}
 
-	public abstract partial class ArmType : SaveableBehavior<ArmType, Arms, ArmData>
+	public abstract partial class ArmType : FullBehavior<ArmType, Arms, ArmData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<ArmType> arms = new List<ArmType>();
@@ -648,11 +654,14 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class ArmData : BehavioralSaveablePartData<ArmData, Arms, ArmType>
+	public sealed class ArmData : FullBehavioralData<ArmData, Arms, ArmType>
 	{
 		public readonly EpidermalData epidermis;
 		public readonly EpidermalData secondaryEpidermis;
+
 		public readonly HandData hands;
+
+		public readonly ReadOnlyTattooablePart<ArmTattooLocation> tattoos;
 
 		public bool usesPrimaryTone => type.hasPrimaryTone;
 		public bool usesPrimaryFur => type.hasPrimaryFur;
@@ -689,6 +698,8 @@ namespace CoC.Backend.BodyParts
 			hands = source.hands.AsReadOnlyData();
 			epidermis = source.epidermis;
 			secondaryEpidermis = source.secondaryEpidermis;
+
+			tattoos = source.tattoos.AsReadOnlyData();
 		}
 	}
 

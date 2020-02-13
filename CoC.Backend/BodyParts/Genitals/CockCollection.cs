@@ -1,11 +1,11 @@
-﻿using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
-using CoC.Backend.Engine.Time;
-using CoC.Backend.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Engine.Time;
+using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
@@ -45,7 +45,7 @@ namespace CoC.Backend.BodyParts
 			get => _cocks[index];
 		}
 
-		public float minimumCockLength => creature?.genitals.perkData.MinCockLength ?? Cock.MIN_COCK_LENGTH;
+		public float minimumCockLength => source.perkData.MinCockLength;
 
 		#endregion
 
@@ -65,6 +65,16 @@ namespace CoC.Backend.BodyParts
 			private set => _additionalCumTrue = Utils.Clamp2(value, ushort.MinValue, ushort.MaxValue);
 		}
 		private float _additionalCumTrue = 0;
+
+		public uint pentUpBonus
+		{
+			get => _pentUpBonus;
+			private set
+			{
+				_pentUpBonus = Utils.Clamp2<uint>(value, 0, int.MaxValue);
+			}
+		}
+		private uint _pentUpBonus = 0;
 		#endregion
 
 		#region Private Cock Related Members
@@ -73,6 +83,8 @@ namespace CoC.Backend.BodyParts
 
 		//the number of times had sex with cocks that no longer exist;
 		private uint missingCockSexCount;
+		//the number of times had sex with cocks that no longer exist, with themself
+		private uint missingCockSelfSexCount;
 		//number of times had cock sounded for cocks that no longer exist.
 		private uint missingCockSoundCount;
 		//times cock orgasmed for missing cocks.
@@ -103,16 +115,14 @@ namespace CoC.Backend.BodyParts
 
 		public int numCocks => _cocks.Count;
 
-		public uint cockSoundedCount => missingCockSoundCount + (uint)cocks.Sum(x => x.soundCount);
+		public uint totalSoundCount => missingCockSoundCount.add((uint)_cocks.Sum(x => x.soundCount));
+		public uint totalSexCount => missingCockSexCount.add((uint)_cocks.Sum(x => x.totalSexCount));
+		public uint selfSexCount => missingCockSelfSexCount.add((uint)_cocks.Sum(x => x.selfSexCount));
 
-		public uint cockSexCount => missingCockSexCount + (uint)cocks.Sum(x => x.sexCount);
+		public uint totalOrgasmCount => missingCockOrgasmCount.add((uint)_cocks.Sum(x => x.orgasmCount));
+		public uint dryOrgasmCount => missingCockDryOrgasmCount.add((uint)_cocks.Sum(x => x.dryOrgasmCount));
 
-		public uint cockOrgasmCount => missingCockOrgasmCount.add((uint)cocks.Sum(x => x.orgasmCount));
-
-		public uint cockDryOrgasmCount => missingCockDryOrgasmCount.add((uint)cocks.Sum(x => x.dryOrgasmCount));
-
-		public bool cockVirgin => missingCockSexCount > 0 ? false : cockSexCount == 0; //the first one means no aggregate calculation, for efficiency.
-
+		public bool cockVirgin => missingCockSexCount > 0 ? false : totalSexCount == 0; //the first one means no aggregate calculation, for efficiency.
 
 		public bool hasSheath => _cocks.Any(x => x.requiresASheath);
 
@@ -124,17 +134,6 @@ namespace CoC.Backend.BodyParts
 		public int hoursSinceLastCum => timeLastCum.hoursToNow();
 
 		public int simulatedHoursSinceLastCum => (int)(hoursSinceLastCum + pentUpBonus);
-
-		public uint pentUpBonus
-		{
-			get => _pentUpBonus;
-			private set
-			{
-				_pentUpBonus = Utils.Clamp2<uint>(value, 0, int.MaxValue);
-			}
-		}
-		private uint _pentUpBonus = 0;
-
 
 		//we use mL for amount here, but store ball size in inches. Let's do it right, no? 1cm^3 = 1mL
 		public int totalCum
@@ -189,8 +188,26 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-		private Genitals source;
+		#region Perk Data
 
+		internal float cockGrowthMultiplier => perkData.CockGrowthMultiplier;
+		internal float cockShrinkMultiplier => perkData.CockShrinkMultiplier;
+
+		//perk values that alter the size of any new cock.
+		internal float newCockDefaultSize => perkData.NewCockDefaultSize;
+		internal float newCockSizeDelta => perkData.NewCockSizeDelta;
+
+		//perk value that sets the absolute minimum size for any cock. this is given priority, even over new size perk data.
+		public float minCockLength => perkData.MinCockLength;
+
+		//perk values used to alter virility of a creature (and by extension, all of its cocks).
+		internal float perkBonusVirilityMultiplier => perkData.perkBonusVirilityMultiplier;
+		internal sbyte perkBonusVirility => perkData.perkBonusVirility;
+
+		#endregion
+
+		private Genitals source;
+		private uint currentCockID = 0;
 		private GenitalPerkData perkData => source.perkData;
 
 		internal Balls balls => source.balls;
@@ -198,6 +215,10 @@ namespace CoC.Backend.BodyParts
 		public Gender gender => source.gender;
 
 		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
+
+		internal float relativeLust => source.relativeLust;
+
+		internal byte currentLust => creature?.lust ?? Creature.DEFAULT_LUST;
 
 		#region Constructor
 		internal CockCollection(Genitals parent) : base(parent?.creatureID ?? throw new ArgumentNullException(nameof(parent)))
@@ -233,7 +254,7 @@ namespace CoC.Backend.BodyParts
 				_cocks.RemoveRange(MAX_COCKS, _cocks.Count - MAX_COCKS);
 			}
 
-			foreach (var breast in _cocks)
+			foreach (Cock breast in _cocks)
 			{
 				valid |= breast.Validate(correctInvalidData);
 				if (!valid && !correctInvalidData)
@@ -245,12 +266,34 @@ namespace CoC.Backend.BodyParts
 
 			return valid;
 		}
+
+		public override bool IsIdenticalTo(CockCollectionData original, bool ignoreSexualMetaData)
+		{
+			if (original is null) return false;
+
+			Dictionary<uint, Cock> items = _cocks.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, CockData> dataItems = original.cocks.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return cumMultiplierTrue == original.cumMultiplierTrue && additionalCumTrue == original.additionalCumTrue && totalCum == original.totalCum
+				&& hoursSinceLastCum == original.hoursSinceLastCum && simulatedHoursSinceLastCum == original.simulatedHoursSinceLastCum
+				&& (ignoreSexualMetaData || (totalSoundCount == original.totalSoundCount && totalSexCount == original.totalSexCount
+				&& selfSexCount == original.selfSexCount && totalOrgasmCount == original.totalOrgasmCount && dryOrgasmCount == original.dryOrgasmCount))
+				&& items.Keys.Count == dataItems.Keys.Count && items.All(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
+		}
+
 		#endregion
 
 		internal void Initialize(CockCreator[] cockCreators)
 		{
-			_cocks.AddRange(cockCreators.Where(x => x != null).Select(x => new Cock(creatureID, x.type, x.validLength, x.validGirth,
-				x.knot, x.cockSock, x.piercings)).Take(MAX_COCKS));
+
+			IEnumerable<CockCreator> cocks = cockCreators.Where(x => x != null).Take(MAX_COCKS);
+
+			foreach (CockCreator cock in cocks)
+			{
+				_cocks.Add(new Cock(this, currentCockID, cock.type, cock.validLength, cock.validGirth, cock.knot, cock.cockSock, cock.piercings));
+				currentCockID++;
+			}
+
 		}
 
 		#region Cock Aggregate Functions
@@ -305,13 +348,13 @@ namespace CoC.Backend.BodyParts
 			{
 				return null;
 			}
-			var averageLength = _cocks.Average(x => x.length);
-			var averageGirth = cocks.Average(x => x.girth);
-			var averageKnot = cocks.Average(x => x.knotMultiplier);
-			var averageKnotSize = cocks.Average(x => x.knotSize);
+			float averageLength = _cocks.Average(x => x.length);
+			float averageGirth = cocks.Average(x => x.girth);
+			float averageKnot = cocks.Average(x => x.knotMultiplier);
+			float averageKnotSize = cocks.Average(x => x.knotSize);
 			//first initially gets the first group. the second call to first gets the first element of the first group.
 			CockType type = _cocks.GroupBy(x => x.type).OrderByDescending(y => y.Count()).First().First().type;
-			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth);
+			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth, totalCum, hasSheath, currentLust, relativeLust);
 		}
 
 		public float SmallestCockTotalSize()
@@ -382,15 +425,31 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Add/Remove Cocks
+		public bool AddCock()
+		{
+			if (numCocks == MAX_COCKS)
+			{
+				return false;
+			}
+			Gender oldGender = gender;
+
+			_cocks.Add(new Cock(this, currentCockID));
+			currentCockID++;
+
+			source.CheckGenderChanged(oldGender);
+			return true;
+		}
+
 		public bool AddCock(CockType newCockType)
 		{
 			if (numCocks == MAX_COCKS)
 			{
 				return false;
 			}
-			var oldGender = gender;
+			Gender oldGender = gender;
 
-			_cocks.Add(new Cock(creatureID, newCockType));
+			_cocks.Add(new Cock(this, currentCockID, newCockType));
+			currentCockID++;
 
 			source.CheckGenderChanged(oldGender);
 			return true;
@@ -402,9 +461,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldGender = gender;
+			Gender oldGender = gender;
 
-			_cocks.Add(new Cock(creatureID, newCockType, length, girth, knotMultiplier));
+			_cocks.Add(new Cock(this, currentCockID, newCockType, length, girth, knotMultiplier));
+			currentCockID++;
 
 			source.CheckGenderChanged(oldGender);
 			return true;
@@ -413,7 +473,10 @@ namespace CoC.Backend.BodyParts
 		public string AddedCockText(CockData addedCock)
 		{
 			int count = CountCocksOfType(addedCock.type);
-			if (count <= 0 || numCocks == 0) return "";
+			if (count <= 0 || numCocks == 0)
+			{
+				return "";
+			}
 
 			if (creature is PlayerBase player)
 			{
@@ -432,22 +495,26 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			int oldCount = numCocks;
-			var oldGender = gender;
+			Gender oldGender = gender;
 
 			if (count > numCocks)
 			{
-				this.missingCockSexCount += (uint)cocks.Sum(x => x.sexCount);
-				this.missingCockSoundCount += (uint)cocks.Sum(x => x.soundCount);
+				missingCockSexCount += (uint)cocks.Sum(x => x.totalSexCount);
+				missingCockSelfSexCount += (uint)cocks.Sum(x => x.selfSexCount);
+				missingCockSoundCount += (uint)cocks.Sum(x => x.soundCount);
 				missingCockOrgasmCount += (uint)cocks.Sum(x => x.orgasmCount);
 				missingCockDryOrgasmCount += (uint)cocks.Sum(x => x.dryOrgasmCount);
 				_cocks.Clear();
 			}
 			else
 			{
-				this.missingCockSexCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.sexCount);
-				this.missingCockSoundCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.soundCount);
-				this.missingCockOrgasmCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.orgasmCount);
-				this.missingCockDryOrgasmCount += (uint)cocks.Skip(numCocks - count).Sum(x => x.dryOrgasmCount);
+				var toRemove = cocks.Skip(numCocks - count);
+
+				missingCockSexCount += (uint)toRemove.Sum(x => x.totalSexCount);
+				missingCockSelfSexCount += (uint)toRemove.Sum(x => x.selfSexCount);
+				missingCockSoundCount += (uint)toRemove.Sum(x => x.soundCount);
+				missingCockOrgasmCount += (uint)toRemove.Sum(x => x.orgasmCount);
+				missingCockDryOrgasmCount += (uint)toRemove.Sum(x => x.dryOrgasmCount);
 
 				_cocks.RemoveRange(numCocks - count, count);
 			}
@@ -465,18 +532,27 @@ namespace CoC.Backend.BodyParts
 
 
 			int oldCount = numCocks;
-			var oldGender = gender;
+			Gender oldGender = gender;
 
 
-			this.missingCockSexCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.sexCount);
-			this.missingCockSoundCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.soundCount);
-			this.missingCockOrgasmCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.orgasmCount);
-			this.missingCockDryOrgasmCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.dryOrgasmCount);
+			missingCockSexCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.totalSexCount);
+			missingCockSoundCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.soundCount);
+			missingCockOrgasmCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.orgasmCount);
+			missingCockDryOrgasmCount += (uint)cocks.Skip(index).Take(count).Sum(x => x.dryOrgasmCount);
 
 			_cocks.RemoveRange(index, count);
 
 			source.CheckGenderChanged(oldGender);
 			return oldCount - numCocks;
+		}
+
+		public bool RemoveCock(Cock cock)
+		{
+			if (cock.cockIndex >= _cocks.Count || cock.cockIndex < 0 || _cocks[cock.cockIndex] != cock)
+			{
+				return false;
+			}
+			return RemoveCockAt(cock.cockIndex, 1) == 1;
 		}
 
 		public int RemoveExtraCocks()
@@ -556,14 +632,14 @@ namespace CoC.Backend.BodyParts
 			float avgGirth = AverageCockGirth();
 			if (untilEven)
 			{
-				foreach (var cock in _cocks)
+				foreach (Cock cock in _cocks)
 				{
 					cock.SetLengthAndGirth(avgLength, avgGirth);
 				}
 			}
 			else
 			{
-				foreach (var cock in _cocks)
+				foreach (Cock cock in _cocks)
 				{
 					if (cock.girth < avgGirth - 0.5f)
 					{
@@ -598,35 +674,35 @@ namespace CoC.Backend.BodyParts
 		#region Cum Update Functions
 		public float IncreaseCumMultiplier(float additionalMultiplier = 1)
 		{
-			var oldValue = cumMultiplierTrue;
+			float oldValue = cumMultiplierTrue;
 			cumMultiplierTrue += additionalMultiplier;
 			return cumMultiplierTrue - oldValue;
 		}
 
 		public float DecreaseCumMultiplier(float decreaseInMultiplier = 1)
 		{
-			var oldValue = cumMultiplierTrue;
+			float oldValue = cumMultiplierTrue;
 			cumMultiplierTrue -= decreaseInMultiplier;
 			return oldValue - cumMultiplierTrue;
 		}
 
 		public float AddFlatCumAmount(float additionalCum)
 		{
-			var oldValue = additionalCumTrue;
+			float oldValue = additionalCumTrue;
 			additionalCumTrue += additionalCum;
 			return additionalCumTrue - oldValue;
 		}
 
 		public uint AddHoursPentUp(uint additionalTime)
 		{
-			var oldValue = pentUpBonus;
+			uint oldValue = pentUpBonus;
 			pentUpBonus = pentUpBonus.add(additionalTime);
 			return pentUpBonus - oldValue;
 		}
 
 		public uint RemoveHoursPentUp(uint reliefTime)
 		{
-			var oldValue = pentUpBonus;
+			uint oldValue = pentUpBonus;
 			pentUpBonus = pentUpBonus.subtract(reliefTime);
 			return oldValue - pentUpBonus;
 		}
@@ -643,9 +719,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal void HandleCockPenetrate(int cockIndex, bool reachOrgasm)
+		internal void HandleCockPenetrate(int cockIndex, bool reachOrgasm, bool selfPenetrate)
 		{
-			cocks[cockIndex].DoSex(reachOrgasm);
+			cocks[cockIndex].DoSex(reachOrgasm, selfPenetrate);
 			if (reachOrgasm)
 			{
 				timeLastCum = GameDateTime.Now;
@@ -664,13 +740,16 @@ namespace CoC.Backend.BodyParts
 		public string SheathOrBaseStr() => CockCollectionStrings.SheathOrBaseStr(this);
 
 
-		public string AllCocksShortDescription() => CockCollectionStrings.AllCocksShortDescription(this);
+		public string AllCocksShortDescription() => CockCollectionStrings.AllCocksShortDescription(this, out bool _);
+		public string AllCocksShortDescription(out bool isPlural) => CockCollectionStrings.AllCocksShortDescription(this, out isPlural);
 
 
-		public string AllCocksLongDescription() => CockCollectionStrings.AllCocksLongDescription(this);
+		public string AllCocksLongDescription() => CockCollectionStrings.AllCocksLongDescription(this, out bool _);
+		public string AllCocksLongDescription(out bool isPlural) => CockCollectionStrings.AllCocksLongDescription(this, out isPlural);
 
 
-		public string AllCocksFullDescription() => CockCollectionStrings.AllCocksFullDescription(this);
+		public string AllCocksFullDescription() => CockCollectionStrings.AllCocksFullDescription(this, out bool _);
+		public string AllCocksFullDescription(out bool isPlural) => CockCollectionStrings.AllCocksFullDescription(this, out isPlural);
 
 
 		public string OneCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksNoun(this, pronoun);
@@ -708,11 +787,30 @@ namespace CoC.Backend.BodyParts
 	{
 		public readonly float cumMultiplierTrue;
 
-		public float additionalCumTrue;
+		public readonly float additionalCumTrue;
 
-		ReadOnlyCollection<CockData> ICockCollection<CockData>.cocks => cocks;
+		public readonly int hoursSinceLastCum;
+
+		public readonly int simulatedHoursSinceLastCum;
+
+		public readonly int totalCum;
+
+		#region Sexual Metadata
+
+		public readonly uint totalSoundCount;
+		public readonly uint totalSexCount;
+		public readonly uint selfSexCount;
+
+		public readonly uint totalOrgasmCount;
+		public readonly uint dryOrgasmCount;
+
+		#endregion
+
+		internal readonly byte currentLust;
+		internal readonly float relativeLust;
 
 		public readonly ReadOnlyCollection<CockData> cocks;
+		ReadOnlyCollection<CockData> ICockCollection<CockData>.cocks => cocks;
 
 		public CockData this[int index]
 		{
@@ -721,21 +819,31 @@ namespace CoC.Backend.BodyParts
 
 		public readonly BallsData balls;
 
+		public CockCollectionData(CockCollection source) : base(source?.creatureID?? throw new ArgumentNullException(nameof(source)))
+		{
+			this.cumMultiplierTrue = source.cumMultiplierTrue;
+			this.additionalCumTrue = source.additionalCumTrue;
+			this.hoursSinceLastCum = source.hoursSinceLastCum;
+			this.simulatedHoursSinceLastCum = source.simulatedHoursSinceLastCum;
+			this.totalCum = source.totalCum;
+
+			this.totalSoundCount = source.totalSoundCount;
+			this.totalSexCount = source.totalSexCount;
+			this.selfSexCount = source.selfSexCount;
+			this.totalOrgasmCount = source.totalOrgasmCount;
+			this.dryOrgasmCount = source.dryOrgasmCount;
+
+			this.currentLust = source.currentLust;
+			this.relativeLust = source.relativeLust;
+
+			balls = source.balls.AsReadOnlyData();
+			cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x => x.AsReadOnlyData()).ToList());
+		}
+
 		#region Public Cock Computed Values
-		public readonly int numCocks;
+		public bool hasCock => cocks.Count > 0;
 
-		public bool hasCock => numCocks > 0;
-
-		public readonly uint cockSoundedCount;
-
-		public readonly uint cockSexCount;
-
-		public readonly uint cockOrgasmCount;
-
-		public readonly uint cockDryOrgasmCount;
-
-		public bool cockVirgin => cockSexCount == 0;
-
+		public bool cockVirgin => totalSexCount == 0;
 
 		public bool hasSheath => cocks.Any(x => x.requiresSheath);
 
@@ -754,32 +862,23 @@ namespace CoC.Backend.BodyParts
 
 		public ushort additionalCum => (ushort)additionalCumTrue;
 
-		public readonly int hoursSinceLastCum;
+		#endregion
 
-		//we use mL for amount here, but store ball size in inches. Let's do it right, no? 1cm^3 = 1mL
-		public readonly int totalCum;
+		#region Constructor
+		//public CockCollectionData(CockCollection source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		//{
+		//	balls = source.balls.AsReadOnlyData();
 
-		public CockCollectionData(CockCollection source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
-		{
-			this.balls = source.balls.AsReadOnlyData();
+		//	cumMultiplierTrue = source.cumMultiplierTrue;
+		//	additionalCumTrue = source.additionalCumTrue;
+		//	cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x => x.AsReadOnlyData()).ToList());
 
-			this.cumMultiplierTrue = source.cumMultiplierTrue;
-			this.additionalCumTrue = source.additionalCumTrue;
-			this.cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x=>x.AsReadOnlyData()).ToList());
-			this.numCocks = source.numCocks;
-			//this.anyCockSoundedCount = source.anyCockSoundedCount;
-			this.cockSoundedCount = source.cockSoundedCount;
-			this.cockSexCount = source.cockSexCount;
-			//this.anyCockSexCount = source.anyCockSexCount;
-			this.cockOrgasmCount = source.cockOrgasmCount;
-			//this.anyCockOrgasmCount = source.anyCockOrgasmCount;
-			this.cockDryOrgasmCount = source.cockDryOrgasmCount;
-			//this.anyCockDryOrgasmCount = source.anyCockDryOrgasmCount;
-			this.hoursSinceLastCum = source.hoursSinceLastCum;
-			this.totalCum = source.totalCum;
+			//this.hoursSinceLastCum = source.hoursSinceLastCum;
+			//this.totalCum = source.totalCum;
 
-
-		}
+			//currentLust = source.currentLust;
+			//relativeLust = source.relativeLust;
+		//}
 		#endregion
 
 		#region CockData Aggregate Functions
@@ -834,13 +933,13 @@ namespace CoC.Backend.BodyParts
 			{
 				return null;
 			}
-			var averageLength = cocks.Average(x => x.length);
-			var averageGirth = cocks.Average(x => x.girth);
-			var averageKnot = cocks.Average(x => x.knotMultiplier);
-			var averageKnotSize = cocks.Average(x => x.knotSize);
+			float averageLength = cocks.Average(x => x.length);
+			float averageGirth = cocks.Average(x => x.girth);
+			float averageKnot = cocks.Average(x => x.knotMultiplier);
+			float averageKnotSize = cocks.Average(x => x.knotSize);
 			//first initially gets the first group. the second call to first gets the first element of the first group.
 			CockType type = cocks.GroupBy(x => x.type).OrderByDescending(y => y.Count()).First().First().type;
-			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth);
+			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth, totalCum, hasSheath, currentLust, relativeLust);
 		}
 
 		public float SmallestCockSize()
@@ -890,13 +989,16 @@ namespace CoC.Backend.BodyParts
 		public string SheathOrBaseStr() => CockCollectionStrings.SheathOrBaseStr(this);
 
 
-		public string AllCocksShortDescription() => CockCollectionStrings.AllCocksShortDescription(this);
+		public string AllCocksShortDescription() => CockCollectionStrings.AllCocksShortDescription(this, out bool _);
+		public string AllCocksShortDescription(out bool isPlural) => CockCollectionStrings.AllCocksShortDescription(this, out isPlural);
 
 
-		public string AllCocksLongDescription() => CockCollectionStrings.AllCocksLongDescription(this);
+		public string AllCocksLongDescription() => CockCollectionStrings.AllCocksLongDescription(this, out bool _);
+		public string AllCocksLongDescription(out bool isPlural) => CockCollectionStrings.AllCocksLongDescription(this, out isPlural);
 
 
-		public string AllCocksFullDescription() => CockCollectionStrings.AllCocksFullDescription(this);
+		public string AllCocksFullDescription() => CockCollectionStrings.AllCocksFullDescription(this, out bool _);
+		public string AllCocksFullDescription(out bool isPlural) => CockCollectionStrings.AllCocksFullDescription(this, out isPlural);
 
 
 		public string OneCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksNoun(this, pronoun);

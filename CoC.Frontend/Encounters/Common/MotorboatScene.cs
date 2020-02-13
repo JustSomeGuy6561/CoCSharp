@@ -73,11 +73,11 @@ namespace CoC.Frontend.Encounters.Common
 			//if (hasBalls)
 			//{
 
-			//	currentDisplay.OutputText(", towards her now throbbing balls. They too feel your tongue, but only briefly; you're true target glistening just below them.");
+			//	currentDisplay.OutputText(", towards her now throbbing balls. They too feel your tongue, but only briefly; you're true player glistening just below them.");
 			//}
 			//else
 			//{
-			currentDisplay.OutputText(". As you reach its base, you briefly pause, but soon find your way to your true target, the glistening entrance situated just below.");
+			currentDisplay.OutputText(". As you reach its base, you briefly pause, but soon find your way to your true player, the glistening entrance situated just below.");
 			//}
 
 			currentDisplay.OutputText("At this point, you abandon any remsining hints of foreplay, attacking her buzzer with your tongue. ");

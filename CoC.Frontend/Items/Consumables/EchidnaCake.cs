@@ -6,13 +6,14 @@
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
 using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed class EchidnaCake : ConsumableBase
+	public sealed class EchidnaCake : StandardConsumable
 	{
 		public EchidnaCake() : base()
 		{
@@ -20,22 +21,27 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string AbbreviatedName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "EchidCk";
 		}
 
 		public override string ItemName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Echidna Cake";
 		}
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string cakeText = count != 1 ? "cakes" : "cake";
+
+			string countText = displayCount ? (count == 1 ? "an " : Utils.NumberAsText(count)) + " " : "";
+
+			return $"{count}echidna {cakeText}";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "The label reads: \"Try our special cake, a favorite among the echidna-morphs!" + GlobalStrings.NewParagraph() + "DISCLAIMER: We are not responsible " +
+				"if you find yourself altered.\"";
 		}
 
 		//does this consumable count as liquid for slimes and (kangaroo) diapause?
@@ -52,7 +58,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is EchidnaCake;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -62,6 +68,13 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			var tf = new EchidnaTfs();
 			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
+			return true;
+		}
+
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new EchidnaTfs();
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
 			return true;
 		}
 

@@ -198,19 +198,22 @@ namespace CoC.Backend.BodyParts
 		private void Normal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
 			NotifyDataChanged(new WombData(creatureID, e.oldValues, canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
-				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, eggsEveryXDays, eggSize, hasDiapause, hasOviposition));
+				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, eggsEveryXDays, eggSize, allowsDiapause, hasDiapause, allowsDiapauseRemoval,
+				allowsOviposition, hasOviposition, allowsOvipositionRemoval));
 		}
 
 		private void Anal_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
 			NotifyDataChanged(new WombData(creatureID, normalPregnancy?.AsReadOnlyData(), canGetPregnant, e.oldValues, canGetAnallyPregnant,
-				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, eggsEveryXDays, eggSize, hasDiapause, hasOviposition));
+				secondaryNormalPregnancy?.AsReadOnlyData(), canGetSecondaryNormalPregnant, eggsEveryXDays, eggSize, allowsDiapause, hasDiapause, allowsDiapauseRemoval,
+				allowsOviposition, hasOviposition, allowsOvipositionRemoval));
 		}
 
 		private void Secondary_dataChange(object sender, EventHelpers.SimpleDataChangeEvent<PregnancyStore, ReadOnlyPregnancyStore> e)
 		{
 			NotifyDataChanged(new WombData(creatureID, normalPregnancy?.AsReadOnlyData(), canGetPregnant, analPregnancy?.AsReadOnlyData(), canGetAnallyPregnant,
-				e.oldValues, canGetSecondaryNormalPregnant,  eggsEveryXDays, eggSize, hasDiapause, hasOviposition));
+				e.oldValues, canGetSecondaryNormalPregnant,  eggsEveryXDays, eggSize, allowsDiapause, hasDiapause, allowsDiapauseRemoval,
+				allowsOviposition, hasOviposition, allowsOvipositionRemoval));
 		}
 
 		protected internal bool AttemptNormalKnockUp(float knockupChance, StandardSpawnType type)
@@ -419,6 +422,17 @@ namespace CoC.Backend.BodyParts
 		{
 			return null;
 		}
+
+		public override bool IsIdenticalTo(WombData originalData, bool ignoreSexualData)
+		{
+			return !(originalData is null) && eggsEveryXDays == originalData.eggsEveryXDays
+				&& BodyPartHelpers.AreIdentical(normalPregnancy, originalData.vaginalPregnancyStore, ignoreSexualData)
+				&& BodyPartHelpers.AreIdentical(analPregnancy, originalData.analPregnancyStore, ignoreSexualData)
+				&& BodyPartHelpers.AreIdentical(secondaryNormalPregnancy, originalData.secondVaginaPregnancyStore, ignoreSexualData)
+				&& allowsDiapause == originalData.allowsDiapause && hasDiapause == originalData.hasDiapause && allowsDiapauseRemoval == originalData.allowsDiapauseRemoval
+				&& allowsOviposition == originalData.allowsOviposition && hasOviposition == originalData.hasOviposition
+				&& allowsOvipositionRemoval == originalData.allowsOvipositionRemoval && eggSize == originalData.eggSize;
+		}
 	}
 
 	public class WombData : SimpleData
@@ -434,7 +448,12 @@ namespace CoC.Backend.BodyParts
 		public readonly Func<bool, bool> canGetPregnantIfHasSecondVagina;
 
 		public readonly bool hasDiapause;
+		public readonly bool allowsDiapause;
+		public readonly bool allowsDiapauseRemoval;
+
 		public readonly bool hasOviposition;
+		public readonly bool allowsOviposition;
+		public readonly bool allowsOvipositionRemoval;
 
 		public readonly byte eggsEveryXDays;
 		public readonly bool? eggSize;
@@ -444,8 +463,8 @@ namespace CoC.Backend.BodyParts
 
 		public WombData(Guid creatureID, ReadOnlyPregnancyStore vaginalPregnancyStore, Func<bool, bool> canGetPregnantIfHasVagina,
 			ReadOnlyPregnancyStore analPregnancyStore, Func<bool, bool, bool> canGetAnallyPregnantIfHasAnus,
-			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina,
-			byte eggsAfterDays, bool? eggSizeKnown, bool diapause, bool oviposition) : base(creatureID)
+			ReadOnlyPregnancyStore secondVaginaPregnancyStore, Func<bool, bool> canGetPregnantIfHasSecondVagina, byte eggsAfterDays, bool? eggSizeKnown,
+			bool canActivateDiapause, bool diapause, bool canDeactivateDiapause, bool canActivateOviposition, bool oviposition, bool canDeactivateOviposition) : base(creatureID)
 		{
 			this.vaginalPregnancyStore = vaginalPregnancyStore;
 			this.canGetPregnantIfHasVagina = canGetPregnantIfHasVagina ?? throw new ArgumentNullException(nameof(canGetPregnantIfHasVagina));
@@ -458,7 +477,14 @@ namespace CoC.Backend.BodyParts
 
 			eggSize = eggSizeKnown;
 
+			this.allowsDiapause = canActivateDiapause;
 			hasDiapause = diapause;
+			allowsDiapauseRemoval = canDeactivateDiapause;
+
+			allowsOviposition = canActivateOviposition;
+			hasOviposition = oviposition;
+			allowsOvipositionRemoval = canDeactivateOviposition;
+
 		}
 
 		protected internal WombData(Womb source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
@@ -471,11 +497,15 @@ namespace CoC.Backend.BodyParts
 			canGetAnallyPregnantIfHasAnus = source.canGetAnallyPregnant;
 			canGetPregnantIfHasSecondVagina = source.canGetSecondaryNormalPregnant;
 
+			allowsDiapause = source.allowsDiapause;
 			hasDiapause = source.hasDiapause;
+			allowsDiapauseRemoval = source.allowsDiapauseRemoval;
+
+			allowsOviposition = source.allowsOviposition;
 			hasOviposition = source.hasOviposition;
+			allowsOvipositionRemoval = source.allowsOvipositionRemoval;
 
 			eggsEveryXDays = source.eggsEveryXDays;
-
 			eggSize = source.normalPregnancy.eggSizeKnown ? (bool?)source.normalPregnancy.eggsLarge : null;
 		}
 

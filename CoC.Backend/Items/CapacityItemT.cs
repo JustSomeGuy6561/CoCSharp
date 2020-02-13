@@ -14,11 +14,16 @@ namespace CoC.Backend.Items
 			return AttemptToUseSafe(target, (w, x, y, z) => postItemUseCallback(w, x, y, z));
 		}
 
+		public override DisplayBase AttemptToUseInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		{
+			return AttemptToUseInCombatSafe(target, (v, w, x, y, z) => postItemUseCallback(v, w, x, y, z));
+		}
+
 		//safe variant that ensures T->T when item is used. this allows us to enforce inventories that require a certain Base Item Type.
 		//for example: the weapon rack will always have weapons; you can't pull a fast one and swap in a non-weapon when equipping a weapon off the rack.
 		public virtual DisplayBase AttemptToUseSafe(Creature target, UseItemCallbackSafe<T> postItemUseCallbackSafe)
 		{
-			if (!CanUse(target, out string whyNot))
+			if (!CanUse(target, false, out string whyNot))
 			{
 				postItemUseCallbackSafe(false, whyNot, Author(), (T)this);
 				return null;
@@ -31,6 +36,21 @@ namespace CoC.Backend.Items
 			}
 		}
 
+		public virtual DisplayBase AttemptToUseInCombatSafe(Creature target, UseItemCombatCallbackSafe<T> postItemUseCallbackSafe)
+		{
+			if (!CanUse(target, true, out string whyNot))
+			{
+				postItemUseCallbackSafe(false, false, whyNot, Author(), (T)this);
+				return null;
+			}
+			else
+			{
+				T retVal = UseItemInCombat(target, out bool causesLoss, out string resultsOfUse);
+				postItemUseCallbackSafe(true, causesLoss, resultsOfUse, Author(), retVal);
+				return null;
+			}
+		}
+
 
 		/// <summary>
 		/// Do any internal logic for using the item. if this item overrides AttemptToUseSafe, this can be ignored.
@@ -39,6 +59,11 @@ namespace CoC.Backend.Items
 		/// <param name="resultsOfUseText">Text explaining the results of the current use. </param>
 		/// <returns></returns>
 		protected abstract T UseItem(Creature target, out string resultsOfUseText);
+		protected virtual T UseItemInCombat(Creature target, out bool resultsInLoss, out string resultsOfUseText)
+		{
+			resultsInLoss = false;
+			return UseItem(target, out resultsOfUseText);
+		}
 
 		public override bool Equals(CapacityItem other)
 		{

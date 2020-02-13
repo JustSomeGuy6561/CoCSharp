@@ -1,8 +1,9 @@
 ﻿//ImpFood.cs
 //Description:
 //Author: JustSomeGuy
-//Note: date follows MMDDYYYY format.
 //10/25/2019 11:27:34 PM
+
+#warning override the combat versions of all remaining transformation items. implement naga tfs. implement remaining items fully. die on inside
 
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
@@ -16,7 +17,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class ImpFood : ConsumableBase
+	public sealed partial class ImpFood : StandardConsumable
 	{
 		public ImpFood() : base() {}
 
@@ -35,7 +36,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is ImpFood;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -45,6 +46,13 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			var transform = new ImpFoodTFs();
 			resultsOfUse = transform.DoTransformation(consumer, out isBadEnd);
+			return true;
+		}
+
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var transform = new ImpFoodTFs();
+			resultsOfUse = transform.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
 			return true;
 		}
 
@@ -91,7 +99,7 @@ namespace CoC.Frontend.Items.Consumables
 
 			protected override string OneCockGrewLarger(Creature target, int index, float delta)
 			{
-				return GenericChangeOneCockLengthText(target, index, delta);
+				return target.genitals.allCocks.GenericChangeOneCockLengthText(target, index, delta);
 			}
 
 			protected override string RemovedQuadNippleText(Creature target)

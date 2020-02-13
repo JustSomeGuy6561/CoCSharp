@@ -13,7 +13,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class BeeHoney : ConsumableBase
+	public sealed partial class BeeHoney : StandardConsumable
 	{
 		private readonly BeeModifiers modifier;
 		private bool isPure => modifier == BeeModifiers.PURE;
@@ -46,7 +46,7 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			string countText, vialText, itemText;
 			//all use 'a', so we're fine.
-			countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 
 			if (isSpecial)
 			{
@@ -64,10 +64,10 @@ namespace CoC.Frontend.Items.Consumables
 				itemText = "with giant-bee honey";
 			}
 
-			return $"{count} {vialText} {itemText}";
+			return $"{count}{vialText} {itemText}";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			if (isSpecial)
 			{
@@ -92,7 +92,7 @@ namespace CoC.Frontend.Items.Consumables
 		public override byte sateHungerAmount => 15;
 		protected override int monetaryValue => isSpecial ? 40 : (isPure ? 20 : DEFAULT_VALUE);
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 #warning Implement Exgartuan honey block if creature has exgartuan possession.
 			whyNot = null;
@@ -101,7 +101,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
-			if (!CanUse(consumer, out resultsOfUse))
+			if (!CanUse(consumer, false, out resultsOfUse))
 			{
 				isBadEnd = false;
 				return false;
@@ -116,13 +116,32 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool causesCombatLoss, out bool isBadEnd)
+		{
+			if (!CanUse(consumer, true, out resultsOfUse))
+			{
+				isBadEnd = false;
+				causesCombatLoss = false;
+				return false;
+			}
+
+#warning: A phouka pregnancy will intercept this item. add a virtual pregnancy item intercept function to pregnancy base, and implement it in consumable base class.
+			//only call on consume attempt if it does not intercept the item.
+
+			var tf = new BeeTFs(modifier);
+
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out causesCombatLoss, out isBadEnd);
+			return true;
+		}
+
+
 		private class BeeTFs : BeeTransformations
 		{
 			public BeeTFs(BeeModifiers beeModifier) : base(beeModifier)
 			{
 			}
 
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

@@ -112,13 +112,13 @@ namespace CoC.Frontend.Encounters.Common
 
 			if (player.hasVagina)
 			{
-				display.OutputText("  Your " + player.vaginaDescript() + " and " + player.clitDescript() + " are thoroughly squashed between the bulky flesh where your male genitals protrude from between your hips and the " + player.buttDescript() + " above.");
+				display.OutputText(" Your " + player.vaginaDescript() + " and " + player.clitDescript() + " are thoroughly squashed between the bulky flesh where your male genitals protrude from between your hips and the " + player.buttDescript() + " above.");
 				if (player.lowerBody.isQuadruped)
 				{
 					//IF CHARACTER HAS A DROOLING PUSSY ADD SENTENCE
 					if (player.vaginas[0].wetness >= VaginalWetness.DROOLING)
 					{
-						if (isLake || isForest) helperText1 = "  A leaf falls from a tree and lands on the wet lips of your cunt, its light touch teasing your sensitive skin.  Like a mare or cow in heat, your juices stream from your womanhood and pool in";
+						if (isLake || isForest) helperText1 = " A leaf falls from a tree and lands on the wet lips of your cunt, its light touch teasing your sensitive skin. Like a mare or cow in heat, your juices stream from your womanhood and pool in";
 						else helperText1 = " The desert sun beats down on your body, its fiery heat inflaming the senses of your vaginal lips.";
 
 						if (isForest) helperText2 = " the dirt and twigs beneath you.";
@@ -146,9 +146,9 @@ namespace CoC.Frontend.Encounters.Common
 
 			display.OutputText(Environment.NewLine + Environment.NewLine + "You realize you are effectively trapped here by your own body.");
 			//CORRUPTION BASED CHARACTER'S VIEW OF SITUATION
-			if (player.corruption < 33) display.OutputText(" Panic slips into your heart as you realize that if any dangerous predator were to find you in this state, you'd be completely defenseless.  You must find a way to regain your mobility immediately!");
-			else if (player.corruption < 66) display.OutputText(" You realize that if any dangerous predator were to find you in this state, you'd be completely defenseless!  You must find a way to regain your mobility... yet there is a certain appeal to imagining how pleasurable it would be for a sexual predator to take advantage of your obscene body.");
-			else display.OutputText(" Your endowments have rendered you completely helpless should any predators find you.  Somewhere in your heart, you find this prospect almost exhilarating.  The idea of being a helpless fucktoy for a wandering beast is unusually inviting to you.  Were it not for the thought that you might starve to death, you'd be incredibly tempted to remain right where you are.");
+			if (player.corruption < 33) display.OutputText(" Panic slips into your heart as you realize that if any dangerous predator were to find you in this state, you'd be completely defenseless. You must find a way to regain your mobility immediately!");
+			else if (player.corruption < 66) display.OutputText(" You realize that if any dangerous predator were to find you in this state, you'd be completely defenseless! You must find a way to regain your mobility... yet there is a certain appeal to imagining how pleasurable it would be for a sexual predator to take advantage of your obscene body.");
+			else display.OutputText(" Your endowments have rendered you completely helpless should any predators find you. Somewhere in your heart, you find this prospect almost exhilarating. The idea of being a helpless fucktoy for a wandering beast is unusually inviting to you. Were it not for the thought that you might starve to death, you'd be incredibly tempted to remain right where you are.");
 
 			//SCENE END = IF CHARACTER HAS FULL WINGS
 			if (player.wings.canFly)
@@ -180,7 +180,7 @@ namespace CoC.Frontend.Encounters.Common
 						" Eventually, with a crude crawl, your legs manage to push the bulk of your body onto more solid ground. With great difficulty, you spend the next hour shuffling your genitals across the sandscape and back to camp.";
 				}
 
-				display.OutputText("  You struggle and work your multiple legs against the" + helperText1 + ".  Your " + player.feet() + " have consistent trouble finding footing as the" + helperText2);
+				display.OutputText(" You struggle and work your multiple legs against the" + helperText1 + ". Your " + player.feet() + " have consistent trouble finding footing as the" + helperText2);
 			}
 			//SCENE END = FOR ALL OTHER CHARACTERS
 			else

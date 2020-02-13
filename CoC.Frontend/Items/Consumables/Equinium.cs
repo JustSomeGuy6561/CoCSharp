@@ -13,7 +13,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class Equinium : ConsumableBase
+	public sealed partial class Equinium : StandardConsumable
 	{
 		public Equinium() : base()
 		{
@@ -25,22 +25,26 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string AbbreviatedName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Equinum";
 		}
 
 		public override string ItemName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "Equinum";
 		}
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			string vialText = count != 1 ? "vials" : "vial";
+
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
+
+			return $"{count}{vialText} of Equinum";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "This is a long flared vial with a small label that reads, \"<i>Equinum</i>\". It is likely this potion is tied to horses in some way.";
 		}
 
 
@@ -57,7 +61,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is Equinium;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -71,9 +75,17 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new HorseTFs();
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+
+			return true;
+		}
+
 		private class HorseTFs : HorseTransformations
 		{
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

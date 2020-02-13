@@ -231,7 +231,7 @@ namespace CoC.Frontend.Transformations
 
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
-			//Body type changes.  Teh rarest of the rare.
+			//Body type changes. Teh rarest of the rare.
 			// Catgirl-face -> cat-morph-face
 			if (target.face.type == FaceType.CAT && !target.face.isFullMorph &&
 				target.tongue.type == TongueType.CAT &&
@@ -293,7 +293,7 @@ namespace CoC.Frontend.Transformations
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
-			//TURN INTO A FURRAH!  OH SHIT
+			//TURN INTO A FURRAH! OH SHIT
 			if (target.tail.type == TailType.CAT && target.ears.type == EarType.CAT && Utils.Rand(5) == 0 && target.lowerBody.type == LowerBodyType.CAT && !target.body.IsFurBodyType())
 			{
 
@@ -314,7 +314,7 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 
-			//CAT-FACE!  FULL ON FURRY!  RAGE AWAY NEKOZ
+			//CAT-FACE! FULL ON FURRY! RAGE AWAY NEKOZ
 			if (target.tail.type == TailType.CAT && target.ears.type == EarType.CAT && target.lowerBody.type == LowerBodyType.CAT && target.face.type != FaceType.CAT && Utils.Rand(5) == 0)
 			{
 				//Gain cat face, replace old face
@@ -368,6 +368,6 @@ namespace CoC.Frontend.Transformations
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

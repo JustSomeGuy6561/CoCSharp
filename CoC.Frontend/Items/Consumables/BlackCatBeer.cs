@@ -16,7 +16,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class BlackCatBeer : ConsumableBase
+	public sealed partial class BlackCatBeer : StandardConsumable
 	{
 		public BlackCatBeer() : base()
 		{
@@ -37,13 +37,13 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 			string mugText = count == 1 ? "mug" : "mugs";
 
-			return $"{count} {mugText} of {ItemName()}";
+			return $"{count}{mugText} of {ItemName()}";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "A capped mug containing an alcoholic drink secreted from the breasts of Niamh. It smells tasty.";
 		}
@@ -77,7 +77,7 @@ namespace CoC.Frontend.Items.Consumables
 		protected override int monetaryValue => 1;
 
 		//can we use this item on the given creature? if not, provide a valid string explaining why not. that text will be displayed as a hint to the user.
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -106,5 +106,7 @@ namespace CoC.Frontend.Items.Consumables
 
 			return true;
 		}
+
+		//combat consume is identical, so no need to override.
 	}
 }

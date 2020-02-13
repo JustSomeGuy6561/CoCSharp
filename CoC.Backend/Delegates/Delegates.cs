@@ -90,10 +90,14 @@ namespace CoC.Backend
 	public delegate string ResumeTimeCallback(ushort hoursRemaining, AreaBase currentLocation);
 
 	//passed into the item use function. It's called when the item is used, successfully or otherwise. This is due to the delayed, event-based nature of the item.
+	//there are two variants, each with two possible calls - the first is for all items, and the second is items that are guarenteed to be a certain subtype (like armor or weapons)
+	//these both have an alternate format for when they are called from combat - it may be possible for an item used in combat to immediately cause the player to lose.
+	//note that for the sake of simplicity, a combat loss caused by an item use will be treated as a hp loss, but your hp will be restored afterward.
 	public delegate void UseItemCallback(bool successfullyUsedItem, string whatHappened, string author, CapacityItem replacementItem);
-	//public delegate PageDataWrapper UseItemCallback(bool successfullyUsedItem, CapacityItem replacementItem);
+	public delegate void UseItemCombatCallback(bool successfullyUsedItem, bool lostCombatFromUse, string whatHappened, string author, CapacityItem replacementItem);
+
 	public delegate void UseItemCallbackSafe<T>(bool successfullyUsedItem, string whatHappened, string author, T replacementItem) where T : CapacityItem;
-	//public delegate PageDataWrapper UseItemCallbackSafe<T>(bool successfullyUsedItem, T replacementItem) where T : CapacityItem;
+	public delegate void UseItemCombatCallbackSafe<T>(bool successfullyUsedItem, bool lostCombatFromUse, string whatHappened, string author, T replacementItem) where T : CapacityItem;
 
 
 	public delegate string SimpleReactionDelegate(bool currentlyIdling, bool hasIdleHours);

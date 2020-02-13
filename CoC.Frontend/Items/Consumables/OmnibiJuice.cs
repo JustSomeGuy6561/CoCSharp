@@ -14,7 +14,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class OmnibiJuice : ConsumableBase
+	public sealed partial class OmnibiJuice : StandardConsumable
 	{
 		private readonly bool isPurified;
 
@@ -29,33 +29,34 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string AbbreviatedName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return isPurified ? "P.OmniJc" : "OmniJuc";
 		}
 
 		public override string ItemName()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return isPurified ? "purified Omnibi juice" : "Omnibi juice";
 		}
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			//if your text uses "an" as an article instead of "a", be sure to change that here.
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
-			//when the text below is corrected, remove this throw.
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-			//update the text below to display what you need.
-			return $"{count} <Your Text Here>";
+			string vialText = (isPurified ? "untainted " : "") + (count != 1 ? "vials" : "vial");
+
+			string countText = "";
+			if (displayCount && count == 1)
+			{
+				countText = isPurified ? "an " : "a ";
+			}
+			else if (displayCount)
+			{
+				countText = Utils.NumberAsPlace(count);
+			}
+			return $"{count}{vialText} of Omnibi juice";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		//this can be removed safely if the item does a transformation. transformations handle bad end and results text for you.
-		private string UseItemText()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			return "This concoction, in what appears to be a crystalline vial, a translucent, milky brew seen nothing but a myth till now, is a flask of Omnibi Juice." +
+				(isPurified ? " This has been purified by Rathazul to prevent corruption." : "");
 		}
 
 		public override bool countsAsLiquid => true;
@@ -72,7 +73,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is OmnibiJuice omnibi && this.isPurified == omnibi.isPurified;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -80,9 +81,16 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
-
 			var tf = new OmnibiTFs(isPurified);
 			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
+
+			return true;
+		}
+
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new OmnibiTFs(isPurified);
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
 
 			return true;
 		}
@@ -93,7 +101,7 @@ namespace CoC.Frontend.Items.Consumables
 			{
 			}
 
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

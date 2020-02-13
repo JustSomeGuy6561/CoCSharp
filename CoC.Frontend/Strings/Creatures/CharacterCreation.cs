@@ -334,7 +334,7 @@ namespace CoC.Frontend.Creatures
 
 		private string HairTooLongStr(float inputValue)
 		{
-			return "The value you entered, " + inputValue + ",  is taller than you! Try again, using a smaller value." + Environment.NewLine;
+			return "The value you entered, " + inputValue + ", is taller than you! Try again, using a smaller value." + Environment.NewLine;
 		}
 
 		private string NegativeNumberHairStr(float inputValue)

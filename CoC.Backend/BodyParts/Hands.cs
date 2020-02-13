@@ -10,13 +10,16 @@ namespace CoC.Backend.BodyParts
 {
 	//technically claws do update, but we're not messing with them. it's possible to do, but i just dont feel it's necessary. The data change will never occur.
 
-	public sealed partial class Hands : PartWithBehaviorAndEventBase<Hands, HandType, HandData>
+	public sealed partial class Hands : BehavioralSaveablePart<Hands, HandType, HandData>
 	{
 		public override string BodyPartName() => Name();
 
 		public override HandType type { get; protected set; }
 
 		public Tones clawTone => type.getClawTone(getArmData(true).tone, getArmData(false).tone);
+
+		#region Sexual Data
+		#endregion
 
 		private readonly Func<bool, EpidermalData> getArmData;
 		internal Hands(Guid creatureID, HandType handType, Func<bool, EpidermalData> currentEpidermalData) : base(creatureID)
@@ -28,6 +31,17 @@ namespace CoC.Backend.BodyParts
 		public override HandData AsReadOnlyData()
 		{
 			return new HandData(this);
+		}
+
+		public override bool IsIdenticalTo(HandData original, bool ignoreSexualMetaData)
+		{
+			//currently no sexual metadata to handle.
+			return !(original is null) && original.type == type && clawTone == original.clawTone;
+		}
+
+		internal override bool Validate(bool correctInvalidData)
+		{
+			return true;
 		}
 
 		public string HandText(bool plural = true) => type.HandText(plural);
@@ -166,9 +180,19 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class HandData : BehavioralPartDataBase<HandType>
+	public sealed class HandData : BehavioralSaveableData<HandData, Hands, HandType>
 	{
+		//can be obtained by parsing the body data, so we don't need this for serialization/deserialization.
 		public readonly Tones clawTone;
+
+		//we do, however, need any sexual meta data. as of this writing, not such data exists (though i suppose we could count the times you've given handjobs)
+		#region Sexual Data
+		#endregion
+
+		public override HandData AsCurrentData()
+		{
+			return this;
+		}
 
 		public bool isClaws => type.isClaws;
 		public bool isPaws => type.isPaws;
@@ -176,6 +200,7 @@ namespace CoC.Backend.BodyParts
 
 		//default case. never procs, though that may change in the future, idk.
 		public bool isOther => type.isOther;
+
 
 		public string HandText(bool plural) => type.HandText(plural);
 		public string NailsText(bool plural) => type.NailsText(plural);
@@ -200,19 +225,5 @@ namespace CoC.Backend.BodyParts
 		{
 			this.clawTone = source.clawTone;
 		}
-
-		private static Guid GetID(Hands source)
-		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-			return source.creatureID;
-		}
-
-		private static HandType GetBehavior(Hands source)
-		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-			return source.type;
-		}
-
-
 	}
 }

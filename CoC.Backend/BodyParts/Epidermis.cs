@@ -516,7 +516,7 @@ namespace CoC.Backend.BodyParts
 			else return new EpidermalData();
 		}
 
-		public bool IsIdenticalTo(EpidermalData other)
+		public override bool IsIdenticalTo(EpidermalData other, bool ignoreSexualMetaData)
 		{
 			//other not null and types match.
 			return !(other is null) && this.type == other.type && (

@@ -12,7 +12,7 @@ namespace CoC.Backend.BodyParts
 {
 	//Note: Never fires a data change event, as it has no data that can be changed.
 
-	public sealed partial class Antennae : BehavioralSaveablePart<Antennae, AntennaeType, AntennaeData>
+	public sealed partial class Antennae : FullBehavioralPart<Antennae, AntennaeType, AntennaeData>
 	{
 		public override string BodyPartName() => Name();
 
@@ -41,6 +41,11 @@ namespace CoC.Backend.BodyParts
 
 		public string LongDescriptionAlternate(bool plural) => type.LongDescriptionAlternate(AsReadOnlyData(), plural);
 
+		public override bool IsIdenticalTo(AntennaeData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type;
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			AntennaeType antennae = type;
@@ -55,7 +60,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed partial class AntennaeType : SaveableBehavior<AntennaeType, Antennae, AntennaeData>
+	public sealed partial class AntennaeType : FullBehavior<AntennaeType, Antennae, AntennaeData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<AntennaeType> antennaes = new List<AntennaeType>();
@@ -133,7 +138,7 @@ namespace CoC.Backend.BodyParts
 			(x, y) => CockatricePlayerStr(y), CockatriceTransformStr, CockatriceRestoreStr);
 	}
 
-	public sealed class AntennaeData : BehavioralSaveablePartData<AntennaeData, Antennae, AntennaeType>
+	public sealed class AntennaeData : FullBehavioralData<AntennaeData, Antennae, AntennaeType>
 	{
 
 		public override AntennaeData AsCurrentData()

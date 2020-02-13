@@ -60,7 +60,7 @@ namespace CoC.Backend.Inventory
 		public bool CanAddItem(T item)
 		{
 			if (item is null) return false;
-			if (slotStorage.Exists(x => x.item == item && x.itemCount < item.maxCapacityPerSlot))
+			if (slotStorage.Exists(x => x.item.Equals(item) && x.itemCount < item.maxCapacityPerSlot))
 			{
 				return true;
 			}
@@ -76,7 +76,7 @@ namespace CoC.Backend.Inventory
 			{
 				throw new ArgumentNullException(nameof(item));
 			}
-			var matches = slotStorage.FindAll(x => x.item == item);
+			var matches = slotStorage.FindAll(x => x.item.Equals(item));
 
 			if (matches.Count != 0)
 			{
@@ -109,7 +109,7 @@ namespace CoC.Backend.Inventory
 			{
 				throw new ArgumentNullException(nameof(item));
 			}
-			var matches = slotStorage.FindAll(x => x.item == item);
+			var matches = slotStorage.FindAll(x => x.item.Equals(item));
 
 			if (matches.Count != 0)
 			{

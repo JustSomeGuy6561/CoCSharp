@@ -1,0 +1,21 @@
+
+Regex to match braces. paste this after some function header and it'll match all the braces for it
+\r?{(?>{(?<c>)|[^{}]+|}(?<-c>))*(?(c)(?!))}
+
+Same, but for parenthesis
+\r?\((?>\((?<c>)|[^()]+|\)(?<-c>))*(?(c)(?!))\)
+
+Regex to fix old type compares
+find:
+(Antennae|Arm|Back|Body|Ear|Eye|Face|Gills|Hair|LowerBody|Neck|Tail|Tongue|Vagina|Wing)s?\.([A-Z_]+)
+replace:
+$1Type.$2
+
+find: CockTypesEnum
+replace: CockType
+
+find: rearbody
+replace: back
+
+find: NeckType.NORMAL
+replace: NeckType.HUMANOID

@@ -20,38 +20,20 @@ namespace CoC.Backend.BodyParts
 	/// data class. We deserialize to whatever version was originally saved, then tell it to convert to the source class. It's possible to be lazy and simply convert to the current
 	/// data class and then have that convert to the source class, or optimize it and create a direct conversion for each legacy save - the choice is yours.
 	/// </remarks>
-	public abstract class BehavioralSaveablePartData<DataClass, SourceClass, BehaviorClass> : BehavioralPartDataBase<BehaviorClass>
-		where DataClass : BehavioralSaveablePartData<DataClass, SourceClass, BehaviorClass>
-		where SourceClass : BehavioralSaveablePart<SourceClass, BehaviorClass, DataClass>
-		where BehaviorClass : SaveableBehavior<BehaviorClass, SourceClass, DataClass>
+	public abstract class FullBehavioralData<DataClass, SourceClass, BehaviorClass> : BehavioralSaveableData<DataClass, SourceClass, BehaviorClass>
+		where DataClass : FullBehavioralData<DataClass, SourceClass, BehaviorClass>
+		where SourceClass : FullBehavioralPart<SourceClass, BehaviorClass, DataClass>
+		where BehaviorClass : FullBehavior<BehaviorClass, SourceClass, DataClass>
 
 	{
-		private protected BehavioralSaveablePartData(Guid creatureID, BehaviorClass currentBehavior) : base(creatureID, currentBehavior)
+		private protected FullBehavioralData(Guid creatureID, BehaviorClass currentBehavior) : base(creatureID, currentBehavior)
 		{
 		}
-
-		//99% of the time, this will just say "return this;" but in the event of legacy savers, this will not always be the case.
-		public abstract DataClass AsCurrentData();
-
-		//private protected abstract SourceClass Deserialize(StreamingInfo info, DataContext dataa);
 
 		public string LongDescriptionPrimary() => type.LongDescriptionPrimary(AsCurrentData());
 
 		public string LongDescriptionAlternate() => type.LongDescriptionAlternate(AsCurrentData());
 
 		public string LongDescription(bool alternateFormat = false) => type.LongDescription(AsCurrentData(), alternateFormat);
-
-
-		protected static Guid GetID(SourceClass source)
-		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-			return source.creatureID;
-		}
-
-		protected static BehaviorClass GetBehavior(SourceClass source)
-		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-			return source.type;
-		}
 	}
 }

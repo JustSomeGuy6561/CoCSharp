@@ -67,7 +67,7 @@ namespace CoC.Frontend.Transformations
 					//weaker characters gain more
 					if (cc.relativeStrength <= 50)
 					{
-						//very weak players gain more
+						//very weak targets gain more
 						if (cc.relativeStrength <= 20)
 						{
 							cc.DeltaCombatCreatureStats(str: 3);
@@ -103,7 +103,7 @@ namespace CoC.Frontend.Transformations
 					//weaker characters gain more
 					if (cc.relativeToughness <= 50)
 					{
-						//very weak players gain more
+						//very weak targets gain more
 						if (cc.relativeToughness <= 20)
 						{
 							cc.DeltaCombatCreatureStats(tou: 3);
@@ -354,7 +354,7 @@ namespace CoC.Frontend.Transformations
 				{
 					temp = 1;
 				}
-				//Flavor texts.  Flavored like 1950's cigarettes. Yum.
+				//Flavor texts. Flavored like 1950's cigarettes. Yum.
 				target.build.IncreaseHeight(temp);
 				if (--remainingChanges <= 0)
 				{
@@ -501,6 +501,6 @@ namespace CoC.Frontend.Transformations
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

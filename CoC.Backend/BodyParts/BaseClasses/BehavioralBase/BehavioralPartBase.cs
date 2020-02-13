@@ -32,7 +32,8 @@ namespace CoC.Backend.BodyParts
 	//so you can attach epidermis to any body part that needs it and not need to deal with anything past keeping it updated.
 	//learned this the hard way after having to deal with it in arms. woo!
 
-	public abstract class BehavioralPartBase<BehaviorClass, DataClass> where BehaviorClass : BehaviorBase
+	public abstract class BehavioralPartBase<BehaviorClass, DataClass>
+		where BehaviorClass : BehaviorBase
 		where DataClass : BehavioralPartDataBase<BehaviorClass>
 	{
 
@@ -67,6 +68,13 @@ namespace CoC.Backend.BodyParts
 
 		private protected BehavioralPartBase()
 		{ }
+
+		public abstract bool IsIdenticalTo(DataClass original, bool ignoreSexualMetaData);
+
+		public bool IsIdenticalTo(DataClass original)
+		{
+			return IsIdenticalTo(original, false);
+		}
 
 	}
 }

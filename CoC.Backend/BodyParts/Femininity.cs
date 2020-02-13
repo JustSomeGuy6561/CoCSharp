@@ -282,7 +282,7 @@ namespace CoC.Backend.BodyParts
 			return value.delta(oldFemininity);
 		}
 
-		internal byte feminizeWithText(byte amount, out string output)
+		internal byte FeminizeWithText(byte amount, out string output)
 		{
 			if (value >= MOST_FEMININE)
 			{
@@ -294,7 +294,7 @@ namespace CoC.Backend.BodyParts
 			return value.subtract(oldFemininity);
 		}
 
-		internal byte masculinizeWithText(byte amount, out string output)
+		internal byte MasculinizeWithText(byte amount, out string output)
 		{
 			if (value == 0)
 			{
@@ -316,6 +316,11 @@ namespace CoC.Backend.BodyParts
 		{
 			value = value;
 			return true;
+		}
+
+		public override bool IsIdenticalTo(FemininityData originalData, bool ignoreSexualMetaData)
+		{
+			return !(originalData is null) && originalData.value == value && femininityLimitedByGender == originalData.femininityLimitedByGender;
 		}
 
 		string IBodyPartTimeLazy.reactToTimePassing(bool isPlayer, byte hoursPassed)
@@ -398,16 +403,19 @@ namespace CoC.Backend.BodyParts
 		public const byte HYPER_MASCULINE = Femininity.HYPER_MASCULINE;
 
 		public readonly byte value;
+		public readonly bool femininityLimitedByGender;
 
 		//enums are passed by value, so this should be fine.
 		internal FemininityData(Femininity fem) : base(fem?.creatureID ?? throw new ArgumentNullException(nameof(fem)))
 		{
 			value = fem;
+			femininityLimitedByGender = fem.femininityLimitedByGender;
 		}
 
-		internal FemininityData(Guid id, byte fem) : base(id)
+		internal FemininityData(Guid id, byte fem, bool limitedByGender = true) : base(id)
 		{
 			value = fem;
+			femininityLimitedByGender = limitedByGender;
 		}
 
 		public static implicit operator byte(FemininityData femininity)

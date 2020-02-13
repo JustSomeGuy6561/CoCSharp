@@ -85,7 +85,7 @@ namespace CoC.Backend.BodyParts
 	}
 
 
-	public sealed partial class Tail : BehavioralSaveablePart<Tail, TailType, TailData>, ICanAttackWith, IBodyPartTimeLazy
+	public sealed partial class Tail : FullBehavioralPart<Tail, TailType, TailData>, ICanAttackWith, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
 
@@ -151,6 +151,12 @@ namespace CoC.Backend.BodyParts
 		}
 		private TailType _type;
 		public override TailType defaultType => TailType.defaultValue;
+
+		//Sexual data
+		public uint totalPenetratorCount { get; private set; } = 0;
+
+		public uint selfPenetratorCount { get; private set; } = 0;
+
 
 		public override TailData AsReadOnlyData()
 		{
@@ -394,6 +400,19 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
+		#region Sexual Functions
+
+		internal void PenetrateSomething(bool isSelf)
+		{
+			totalPenetratorCount++;
+			if (isSelf)
+			{
+				selfPenetratorCount++;
+			}
+		}
+
+		#endregion
+
 		AttackBase ICanAttackWith.attack => _attack;
 		bool ICanAttackWith.canAttackWith() => _attack != AttackBase.NO_ATTACK && _attack != null;
 
@@ -417,9 +436,18 @@ namespace CoC.Backend.BodyParts
 		public ushort maxCharges => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxResource : (ushort)0;
 		public ushort maxRegen => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).maxRechargeRate : (ushort)0;
 		public ushort minRegen => _attack is ResourceAttackBase ? ((ResourceAttackBase)_attack).minRechargeRate : (ushort)0;
+
+
+		public override bool IsIdenticalTo(TailData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && tailCount == original.tailCount && resources == original.resources && regenRate == original.regenRate
+				&& tailPiercings.IsIdenticalTo(original.tailPiercings) && BodyPartHelpers.AreIdentical(ovipositor, original.ovipositor) &&
+				(ignoreSexualMetaData || (totalPenetratorCount == original.totalPenetratorCount && selfPenetratorCount == original.selfPenetratorCount));
+		}
+
 	}
 
-	public abstract partial class TailType : SaveableBehavior<TailType, Tail, TailData>
+	public abstract partial class TailType : FullBehavior<TailType, Tail, TailData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<TailType> tails = new List<TailType>();
@@ -911,7 +939,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class TailData : BehavioralSaveablePartData<TailData, Tail, TailType>
+	public sealed class TailData : FullBehavioralData<TailData, Tail, TailType>
 	{
 		public readonly byte tailCount;
 
@@ -927,6 +955,10 @@ namespace CoC.Backend.BodyParts
 		public readonly ushort maxResources;
 
 		public readonly ReadOnlyPiercing<TailPiercingLocation> tailPiercings;
+
+		public readonly uint totalPenetratorCount;
+		public readonly uint selfPenetratorCount;
+
 
 		#region Text
 		//default short description will take into account current number of tails.
@@ -1023,6 +1055,9 @@ namespace CoC.Backend.BodyParts
 			ovipositor = source.ovipositor.AsReadOnlyData();
 
 			tailPiercings = source.tailPiercings.AsReadOnlyData();
+
+			totalPenetratorCount = source.totalPenetratorCount;
+			selfPenetratorCount = source.selfPenetratorCount;
 		}
 	}
 }

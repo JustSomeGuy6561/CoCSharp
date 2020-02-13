@@ -26,7 +26,7 @@ namespace CoC.Backend.BodyParts
 	//is still used in some manner. For example, basilisk eyes are still blue, but they now use the player-chosen eye color for their lightning-like streaks.
 	//(unless the eyes are already blue, which then use white streaks). It's a bit more work, but i think it's nicer.
 
-	public sealed partial class Eyes : BehavioralSaveablePart<Eyes, EyeType, EyeData>, ICanAttackWith //Basilisk Eyes.
+	public sealed partial class Eyes : FullBehavioralPart<Eyes, EyeType, EyeData>, ICanAttackWith //Basilisk Eyes.
 	{
 		public override string BodyPartName() => Name();
 
@@ -176,6 +176,12 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public override bool IsIdenticalTo(EyeData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && leftIrisColor == original.leftIrisColor && rightIrisColor == original.rightIrisColor;
+		}
+
+
 		AttackBase ICanAttackWith.attack => type.attack;
 		bool ICanAttackWith.canAttackWith() => type.attack != AttackBase.NO_ATTACK;
 	}
@@ -186,7 +192,7 @@ namespace CoC.Backend.BodyParts
 		CLEAR//, //Everything else
 			 //RED   //Vampires? (silly mode, i guess)
 	}
-	public partial class EyeType : SaveableBehavior<EyeType, Eyes, EyeData>
+	public partial class EyeType : FullBehavior<EyeType, Eyes, EyeData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EyeType> eyes = new List<EyeType>();
@@ -305,13 +311,13 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class EyeData : BehavioralSaveablePartData<EyeData, Eyes, EyeType>
+	public sealed class EyeData : FullBehavioralData<EyeData, Eyes, EyeType>
 	{
 		public readonly EyeColor leftIrisColor;
 		public readonly EyeColor rightIrisColor;
 
-		public readonly byte eyeCount;
-		public readonly ScleraColor scleraColor;
+		public byte eyeCount => type.eyeCount;
+		public ScleraColor scleraColor => type.scleraColor;
 
 		public string ShortDescription(bool pluralIfApplicable) => type.ShortDescription(pluralIfApplicable);
 
@@ -327,8 +333,6 @@ namespace CoC.Backend.BodyParts
 		{
 			leftIrisColor = source.leftIrisColor;
 			rightIrisColor = source.rightIrisColor;
-			eyeCount = source.count;
-			scleraColor = source.type.scleraColor;
 		}
 
 		public bool isHeterochromia => leftIrisColor != rightIrisColor && eyeCount > 1;

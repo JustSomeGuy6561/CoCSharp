@@ -158,6 +158,12 @@ namespace CoC.Backend.BodyParts
 			baseFertility = baseFertility;
 			return true;
 		}
+
+		public override bool IsIdenticalTo(FertilityData originalData, bool ignoreSexualMetaData)
+		{
+			return !(originalData is null) && originalData.currentFertilityValue == totalFertility && isInfertile == originalData.artificiallyInfertile;
+		}
+
 	}
 
 	public sealed class FertilityData : SimpleData

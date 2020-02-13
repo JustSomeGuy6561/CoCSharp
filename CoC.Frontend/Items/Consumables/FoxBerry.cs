@@ -12,7 +12,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class FoxBerry : ConsumableBase
+	public sealed partial class FoxBerry : StandardConsumable
 	{
 		private readonly bool potent;
 
@@ -41,21 +41,21 @@ namespace CoC.Frontend.Items.Consumables
 			{
 				string vialText = count != 1 ? "bottles" : "bottle";
 
-				string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+				string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 
-				return $"{count} {vialText} labeled \"Vixen's Vigor\"";
+				return $"{count}{vialText} labeled \"Vixen's Vigor\"";
 			}
 			else
 			{
 				string berryText = count != 1 ? "berries" : "berry";
 
-				string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+				string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 
 				return $"{count} fox {berryText}";
 			}
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			if (potent)
 			{
@@ -76,7 +76,7 @@ namespace CoC.Frontend.Items.Consumables
 		protected override int monetaryValue => potent ? 30 : DEFAULT_VALUE;
 
 		//can we use this item on the given creature? if not, provide a valid string explaining why not. that text will be displayed as a hint to the user.
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -92,6 +92,13 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new FoxTFs(potent);
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			return true;
+		}
+
 		public override bool Equals(CapacityItem other)
 		{
 			return other is FoxBerry foxBerry && this.potent == foxBerry.potent;
@@ -103,7 +110,7 @@ namespace CoC.Frontend.Items.Consumables
 			{
 			}
 
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

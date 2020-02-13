@@ -115,6 +115,11 @@ namespace CoC.Backend.BodyParts
 			}
 			return oldSize - size;
 		}
+
+		public override bool IsIdenticalTo(HipData originalData, bool ignoreSexualMetaData)
+		{
+			return !(originalData is null) && size == originalData.size;
+		}
 	}
 
 	public sealed class HipData : SimpleData

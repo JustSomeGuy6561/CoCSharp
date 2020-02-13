@@ -13,8 +13,6 @@ using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
-	//public enum TonguePiercingLocation { FRONT_CENTER, MIDDLE_CENTER, BACK_CENTER }
-
 	public sealed partial class TonguePiercingLocation : PiercingLocation, IEquatable<TonguePiercingLocation>
 	{
 		private static readonly List<TonguePiercingLocation> _allLocations = new List<TonguePiercingLocation>();
@@ -84,7 +82,7 @@ namespace CoC.Backend.BodyParts
 
 	//ugh. i guess this fires on tongue length/width change? idk why, but whatever - overruled. i guess if you want to unlock some achievement when your tongue can cosplay
 	//for KISS, you can now easily do that.
-	public sealed partial class Tongue : BehavioralSaveablePart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something.
+	public sealed partial class Tongue : FullBehavioralPart<Tongue, TongueType, TongueData> //ICanAttackWith ? if we make tongues able to bind somebody or something.
 	{
 		public override string BodyPartName() => Name();
 
@@ -101,6 +99,8 @@ namespace CoC.Backend.BodyParts
 		public uint penetrateCount { get; private set; } = 0;
 		public uint cullingusCount { get; private set; } = 0;
 
+		public uint selfPenetrateCount { get; private set; } = 0;
+		public uint selfCullingusCount { get; private set; } = 0;
 
 		internal Tongue(Guid creatureID) : this(creatureID, TongueType.defaultValue)
 		{ }
@@ -135,14 +135,25 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		internal void DoPenetrate()
+		internal void DoPenetrate(bool isSelf)
 		{
 			penetrateCount++;
+
+			if (isSelf)
+			{
+				selfPenetrateCount++;
+			}
+
 		}
 
-		internal void DoLicking()
+		internal void DoLicking(bool isSelf)
 		{
 			cullingusCount++;
+
+			if (isSelf)
+			{
+				selfCullingusCount++;
+			}
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -179,6 +190,14 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		//oral sex is stored in
+		public override bool IsIdenticalTo(TongueData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && piercings.IsIdenticalTo(original.tonguePiercings) &&
+				(ignoreSexualMetaData || (cullingusCount == original.cullingusCount && penetrateCount == original.penetrateCount
+				&& selfCullingusCount == original.selfCullingusCount && selfPenetrateCount == original.selfPenetrateCount));
+		}
+
 		internal void Reset()
 		{
 			Restore();
@@ -186,7 +205,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class TongueType : SaveableBehavior<TongueType, Tongue, TongueData>
+	public partial class TongueType : FullBehavior<TongueType, Tongue, TongueData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<TongueType> tongues = new List<TongueType>();
@@ -262,13 +281,21 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class TongueData : BehavioralSaveablePartData<TongueData, Tongue, TongueType>
+	public sealed class TongueData : FullBehavioralData<TongueData, Tongue, TongueType>
 	{
+		//standard data
 		public float width => type.width;
 		public ushort length => type.length;
 		public bool isLongTongue => type.longTongue;
 
 		public readonly ReadOnlyPiercing<TonguePiercingLocation> tonguePiercings;
+
+		//sexual metadata.
+		public readonly uint penetrateCount;
+		public readonly uint cullingusCount;
+
+		public readonly uint selfPenetrateCount;
+		public readonly uint selfCullingusCount;
 
 		public override TongueData AsCurrentData()
 		{
@@ -278,6 +305,12 @@ namespace CoC.Backend.BodyParts
 		internal TongueData(Tongue tongue) : base(GetID(tongue), GetBehavior(tongue))
 		{
 			tonguePiercings = tongue.piercings.AsReadOnlyData();
+
+			penetrateCount = tongue.penetrateCount;
+			cullingusCount = tongue.cullingusCount;
+
+			selfPenetrateCount = tongue.selfPenetrateCount;
+			selfCullingusCount = tongue.selfCullingusCount;
 		}
 	}
 }

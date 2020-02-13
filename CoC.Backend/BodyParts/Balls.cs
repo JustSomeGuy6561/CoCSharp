@@ -228,7 +228,7 @@ namespace CoC.Backend.BodyParts
 			return RemoveBalls(count.subtract(2));
 		}
 
-		public bool removeAllBalls()
+		public bool RemoveAllBalls()
 		{
 			if (!hasBalls)
 			{
@@ -338,6 +338,12 @@ namespace CoC.Backend.BodyParts
 		public string FullDescription(bool preciseMeasurements, bool alternateFormat, bool prostateIfNoBalls, out bool isPlural) =>
 			BallsStrings.FullDescription(this, preciseMeasurements, alternateFormat, prostateIfNoBalls, out isPlural);
 		#endregion
+
+		public override bool IsIdenticalTo(BallsData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.hasBalls == hasBalls && original.uniBall == uniBall && count == original.count && size == original.size;
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			bool valid = true;

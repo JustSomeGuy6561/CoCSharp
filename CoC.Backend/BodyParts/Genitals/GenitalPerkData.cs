@@ -186,18 +186,18 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Vaginas
-		internal VaginalWetness defaultNewVaginaWetness
+		internal VaginalWetness? defaultNewVaginaWetness
 		{
 			get => _defaultNewVaginaWetness;
 			set => _defaultNewVaginaWetness = value;
 		}
-		private VaginalWetness _defaultNewVaginaWetness = VaginalWetness.NORMAL;
-		internal VaginalLooseness defaultNewVaginaLooseness
+		private VaginalWetness? _defaultNewVaginaWetness = null;
+		internal VaginalLooseness? defaultNewVaginaLooseness
 		{
 			get => _defaultNewVaginaLooseness;
 			set => _defaultNewVaginaLooseness = value;
 		}
-		private VaginalLooseness _defaultNewVaginaLooseness = VaginalLooseness.TIGHT;
+		private VaginalLooseness? _defaultNewVaginaLooseness = null;
 		internal ushort perkBonusVaginalCapacity
 		{
 			get => _perkBonusVaginalCapacity;

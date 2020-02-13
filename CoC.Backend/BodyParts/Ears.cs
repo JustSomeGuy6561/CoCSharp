@@ -138,7 +138,7 @@ namespace CoC.Backend.BodyParts
 	}
 
 	//lazy, so it actually wont fire any data changed events, even though the ear fur can change.
-	public sealed partial class Ears : BehavioralSaveablePart<Ears, EarType, EarData>
+	public sealed partial class Ears : FullBehavioralPart<Ears, EarType, EarData>
 	{
 		public override string BodyPartName() => Name();
 
@@ -181,6 +181,11 @@ namespace CoC.Backend.BodyParts
 			earPiercings.Reset();
 		}
 
+		public override bool IsIdenticalTo(EarData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && earFur.IsIdenticalTo(original.earFurColor) && this.earPiercings.IsIdenticalTo(original.earPiercings);
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			EarType earType = type;
@@ -209,7 +214,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class EarType : SaveableBehavior<EarType, Ears, EarData>
+	public partial class EarType : FullBehavior<EarType, Ears, EarData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<EarType> ears = new List<EarType>();
@@ -334,7 +339,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class EarData : BehavioralSaveablePartData<EarData, Ears, EarType>
+	public sealed class EarData : FullBehavioralData<EarData, Ears, EarType>
 	{
 		public readonly ReadOnlyFurColor earFurColor;
 

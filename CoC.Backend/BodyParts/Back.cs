@@ -84,7 +84,7 @@ namespace CoC.Backend.BodyParts
 	}
 
 	//only way data changes is due to dye. i figure that's rare enough not to deal with it.
-	public sealed partial class Back : BehavioralSaveablePart<Back, BackType, BackData>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
+	public sealed partial class Back : FullBehavioralPart<Back, BackType, BackData>, IDyeable, ICanAttackWith, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
 
@@ -201,6 +201,12 @@ namespace CoC.Backend.BodyParts
 
 		//default restore is fine.
 
+		public override bool IsIdenticalTo(BackData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.type == type && this.epidermis.IsIdenticalTo(original.epidermis)
+				&& regenRate == original.regenRate && resources == original.resources && tattoos.IsIdenticalTo(original.tattoos);
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			BackType backType = type;
@@ -293,7 +299,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 	}
 
-	public partial class BackType : SaveableBehavior<BackType, Back, BackData>
+	public partial class BackType : FullBehavior<BackType, Back, BackData>
 	{
 		private static int indexMaker = 0;
 		private static readonly List<BackType> backs = new List<BackType>();
@@ -476,9 +482,15 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class BackData : BehavioralSaveablePartData<BackData, Back, BackType>
+	public sealed class BackData : FullBehavioralData<BackData, Back, BackType>
 	{
 		public readonly EpidermalData epidermis;
+
+		public readonly ReadOnlyTattooablePart<BackTattooLocation> tattoos;
+
+		public readonly ushort regenRate;
+		public readonly ushort resources;
+
 
 		public override BackData AsCurrentData()
 		{
@@ -488,6 +500,11 @@ namespace CoC.Backend.BodyParts
 		internal BackData(Back back) : base(GetID(back), GetBehavior(back))
 		{
 			epidermis = back.epidermalData;
+
+			tattoos = back.tattoos.AsReadOnlyData();
+
+			regenRate = back.regenRate;
+			resources = back.resources;
 		}
 	}
 }

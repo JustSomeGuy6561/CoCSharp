@@ -25,7 +25,7 @@ namespace CoC.Frontend.Areas.Places
 				"Further along, you spot the lifeguard tower, though it seems to be empty at the moment. There's even a series of docks for fishing and boating, " +
 				"with a few rowboats tied along them. A sign hanging above one of the docks denotes they are available for public use. " +
 				"It's at this point you notice the lack of people, and your wariness returns. You quickly flee, but make note of this location so you could investigate it more later. " +
-				Environment.NewLine +  SafelyFormattedString.FormattedText("You have discovered the Beach!", StringFormats.BOLD) + Environment.NewLine +
+				Environment.NewLine + SafelyFormattedString.FormattedText("You have discovered the Beach!", StringFormats.BOLD) + Environment.NewLine +
 				"(You may return here to investigate this area and its surroundings by using the 'places' menu.)";
 		}
 

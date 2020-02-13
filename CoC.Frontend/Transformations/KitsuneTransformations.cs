@@ -211,7 +211,7 @@ namespace CoC.Frontend.Transformations
 
 			//[Vag of Holding] - rare effect, only if PC has high vaginal looseness
 			//MOD NOTE: Vag of holding is now a perk, and directly linked to kitsune score. The perk subscribes to a creature score checker, and when the kitsune score drops to 0,
-			//the player loses the perk. to obtain the perk, the creature must not have it (duh), have a decent kitsune score, and full bonus capacity for anal and vaginal (defined above)
+			//the target loses the perk. to obtain the perk, the creature must not have it (duh), have a decent kitsune score, and full bonus capacity for anal and vaginal (defined above)
 			if (target.hasVagina && !target.HasPerk<VagOfHolding>() && (enhanced || Utils.Rand(5) == 0) && target.genitals.standardBonusVaginalCapacity >= 200
 				&& target.genitals.standardBonusAnalCapacity >= 150 && Species.KITSUNE.Score(target) > 4)
 			{
@@ -256,7 +256,7 @@ namespace CoC.Frontend.Transformations
 				target.tail.GrowAdditionalTail();
 				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
-			//MOD NOTE: moved below previous check for logical consistency. Informs players on how to get the 9th tail.
+			//MOD NOTE: moved below previous check for logical consistency. Informs targets on how to get the 9th tail.
 			else if (!enhanced && target.ears.type == EarType.FOX && target.tail.type == TailType.FOX && target.tail.tailCount == TailType.FOX.maxTailCount - 1 && Utils.Rand(3) == 0)
 			{
 
@@ -395,6 +395,6 @@ namespace CoC.Frontend.Transformations
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

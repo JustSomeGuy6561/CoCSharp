@@ -16,7 +16,7 @@ using System.Text;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class Coal : ConsumableBase
+	public sealed partial class Coal : StandardConsumable
 	{
 		public Coal() : base()
 		{
@@ -52,7 +52,7 @@ namespace CoC.Frontend.Items.Consumables
 			}
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "These two pieces of coal may look ordinary but it makes you wonder what happens when you rub them together.";
 		}
@@ -65,7 +65,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		private string IncreasedAnalCapacityText(Creature consumer)
 		{
-			return GlobalStrings.NewParagraph() + "You feel... more accommodating somehow.  Your " + consumer.ass.LongDescription() + " is tingling a bit, " +
+			return GlobalStrings.NewParagraph() + "You feel... more accommodating somehow. Your " + consumer.ass.LongDescription() + " is tingling a bit, " +
 				"and though it doesn't seem to have loosened, it has grown more elastic.";
 		}
 
@@ -85,7 +85,7 @@ namespace CoC.Frontend.Items.Consumables
 		public override byte sateHungerAmount => 0;
 		protected override int monetaryValue => DEFAULT_VALUE;
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -120,6 +120,8 @@ namespace CoC.Frontend.Items.Consumables
 			resultsOfUse = sb.ToString();
 			return true;
 		}
+
+		//combat consume is identical, so no need to override.
 
 
 	}

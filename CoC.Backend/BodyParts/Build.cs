@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //4/10/2019, 4:44 AM
 using CoC.Backend.BodyParts.EventHelpers;
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Tools;
 using System;
 
@@ -109,7 +110,7 @@ namespace CoC.Backend.BodyParts
 		public string HipsShortDescription(bool plural = true) => hips.ShortDescription(plural);
 		public string HipsSingleItemDescription() => hips.SingleItemDescription();
 
-		public string ButtLongDescription(bool alternateFormat) => butt.LongDescription(alternateFormat, muscleTone);
+		public string ButtLongDescription(bool alternateFormat = false) => butt.LongDescription(alternateFormat, muscleTone);
 		public string HipsLongDescription() => hips.LongDescription(thickness);
 		#endregion
 		internal Build(Guid creatureID, byte heightInches, byte? characterThickness, byte? characterTone, byte? characterHipSize, byte? characterButtSize) : base(creatureID)
@@ -301,6 +302,12 @@ namespace CoC.Backend.BodyParts
 			return heightInInches;
 		}
 
+		public override bool IsIdenticalTo(BuildData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.heightInInches == heightInInches && muscleTone == original.muscleTone && thickness == original.thickness
+				&& hips.IsIdenticalTo(original.hips, ignoreSexualMetaData) && butt.IsIdenticalTo(original.butt, ignoreSexualMetaData);
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			//auto-validate data.
@@ -324,9 +331,9 @@ namespace CoC.Backend.BodyParts
 		public readonly byte heightInInches;
 		public readonly byte muscleTone;
 		public readonly byte thickness;
-		private readonly ButtData butt;
+		public readonly ButtData butt;
 		public byte buttSize => butt.size;
-		private readonly HipData hips;
+		public readonly HipData hips;
 		public byte hipSize => hips.size;
 
 		#region Text
@@ -346,9 +353,13 @@ namespace CoC.Backend.BodyParts
 		public string HipsLongDescription() => hips.LongDescription(thickness);
 		#endregion
 
-		internal BuildData(Build build) : base(build?.creatureID ?? throw new ArgumentNullException(nameof(build)))
+		internal BuildData(Build source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-
+			heightInInches = source.heightInInches;
+			muscleTone = source.muscleTone;
+			thickness = source.thickness;
+			butt = source.butt.AsReadOnlyData();
+			hips = source.hips.AsReadOnlyData();
 		}
 
 		public BuildData(Guid id, byte height, byte tone, byte thicc, ButtData butt, HipData hips) : base(id)
@@ -361,12 +372,13 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		public BuildData(Guid id, byte height, byte tone, byte thicc, byte butt, byte hips, BodyType bodyType, LowerBodyType lowerBodyType) : base(id)
+		public BuildData(Guid id, byte height, byte tone, byte thicc, byte butt, ReadOnlyTattooablePart<ButtTattooLocation> buttTattoos,
+			byte hips, BodyType bodyType, LowerBodyType lowerBodyType) : base(id)
 		{
 			heightInInches = height;
 			muscleTone = tone;
 			thickness = thicc;
-			this.butt = new ButtData(id, butt);
+			this.butt = new ButtData(id, butt, buttTattoos);
 			this.hips = new HipData(id, hips, bodyType, lowerBodyType);
 		}
 
@@ -376,7 +388,7 @@ namespace CoC.Backend.BodyParts
 			heightInInches = Build.DEFAULT_HEIGHT;
 			muscleTone = Build.THICKNESS_NORMAL;
 			thickness = Build.TONE_SOFT;
-			butt = new ButtData(id, Butt.AVERAGE);
+			butt = new ButtData(id, Butt.AVERAGE, null);
 			hips = new HipData(id, Hips.AVERAGE);
 		}
 	}

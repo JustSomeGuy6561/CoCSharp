@@ -13,7 +13,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed class Clovis : ConsumableBase
+	public sealed class Clovis : StandardConsumable
 	{
 		public Clovis() : base()
 		{
@@ -33,12 +33,12 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			string vialText = count != 1 ? "bottles" : "bottle";
 
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 
-			return $"{count} {vialText} of Clovis";
+			return $"{count}{vialText} of Clovis";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "This bottle is in the shape of a 4-leaf-clover and contains a soft pink potion. An image of a sheep is on the label along with text, \"" +
 				SafelyFormattedString.FormattedText("Clovis - to help you to live in clover", StringFormats.ITALIC) + "\".";
@@ -58,7 +58,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is Clovis;
 		}
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -67,7 +67,14 @@ namespace CoC.Frontend.Items.Consumables
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
 			var tf = new SheepTFs();
-			resultsOfUse =  tf.DoTransformation(consumer, out isBadEnd);
+			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
+			return true;
+		}
+
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new SheepTFs();
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
 			return true;
 		}
 

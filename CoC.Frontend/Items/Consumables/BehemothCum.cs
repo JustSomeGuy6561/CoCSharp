@@ -13,7 +13,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class BehemothCum : ConsumableBase
+	public sealed partial class BehemothCum : StandardConsumable
 	{
 		public BehemothCum() : base()
 		{
@@ -35,13 +35,13 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 			string bottleText = count == 1 ? "sealed bottle" : "sealed bottles";
 
-			return $"{count} {bottleText} of behemoth cum";
+			return $"{count}{bottleText} of behemoth cum";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "This bottle of behemoth cum looks thick and viscous. You suspect that it might boost your strength and toughness. It also tastes delicious.";
 		}
@@ -67,7 +67,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override int monetaryValue => 15;
 
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -84,5 +84,7 @@ namespace CoC.Frontend.Items.Consumables
 
 			return true;
 		}
+
+		//combat consume is identical, so no need to override it.
 	}
 }

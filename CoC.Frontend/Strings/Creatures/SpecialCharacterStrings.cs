@@ -4,7 +4,7 @@
 	{
 		internal static string AriaText()
 		{
-			return "It's really no surprise that you were sent through the portal to deal with the demons - you look enough like one as-is.  Your numerous fetish-inducing piercings, magical fox-tails, and bimbo-licious personality were all the motivation the elders needed to keep you from corrupting the village youth.";
+			return "It's really no surprise that you were sent through the portal to deal with the demons - you look enough like one as-is. Your numerous fetish-inducing piercings, magical fox-tails, and bimbo-licious personality were all the motivation the elders needed to keep you from corrupting the village youth.";
 		}
 		internal static string BertramText()
 		{
@@ -20,11 +20,11 @@
 		}
 		internal static string GalateaText()
 		{
-			return "You've got large breasts prone to lactation.  You aren't sure WHY you got chosen as a champion, but with your considerable strength, you're sure you'll do a good job protecting Ingnam.";
+			return "You've got large breasts prone to lactation. You aren't sure WHY you got chosen as a champion, but with your considerable strength, you're sure you'll do a good job protecting Ingnam.";
 		}
 		internal static string GundamText()
 		{
-			return "You're fabulously rich, thanks to a rather well-placed bet on who would be the champion.  Hopefully you can buy yourself out of any trouble you might get in.";
+			return "You're fabulously rich, thanks to a rather well-placed bet on who would be the champion. Hopefully you can buy yourself out of any trouble you might get in.";
 		}
 		internal static string HikariText()
 		{
@@ -36,11 +36,11 @@
 		}
 		internal static string LucinaText()
 		{
-			return "You're a blond, fair-skinned lass with a well-made bow and the skills to use it.  You have D-cup breasts and a very moist cunt that's seen a little action.  You're fit and trim, but not too thin, nor too well-muscled.  All in all, you're a good fit for championing your village's cause.";
+			return "You're a blond, fair-skinned lass with a well-made bow and the skills to use it. You have D-cup breasts and a very moist cunt that's seen a little action. You're fit and trim, but not too thin, nor too well-muscled. All in all, you're a good fit for championing your village's cause.";
 		}
 		internal static string NavornText()
 		{
-			return "There's been something special about you since day one, whether it's your numerous sexual endowments or your supernatural abilities.  You're a natural pick for champion.";
+			return "There's been something special about you since day one, whether it's your numerous sexual endowments or your supernatural abilities. You're a natural pick for champion.";
 		}
 		internal static string RopeText()
 		{
@@ -53,7 +53,7 @@
 
 		internal static string AnnettaText()
 		{
-			return "You're a rather well-endowed hermaphrodite that sports a thick, dog-knotted cock, an unused pussy, and a nice, stretchy butt-hole.  You've also got horns and demonic high-heels on your feet.  It makes you wonder why you would ever get chosen to be champion!";
+			return "You're a rather well-endowed hermaphrodite that sports a thick, dog-knotted cock, an unused pussy, and a nice, stretchy butt-hole. You've also got horns and demonic high-heels on your feet. It makes you wonder why you would ever get chosen to be champion!";
 		}
 		internal static string CeveoText()
 		{
@@ -61,7 +61,7 @@
 		}
 		internal static string CharlieText()
 		{
-			return "You're strong, smart, fast, and tough.  It also helps that you've got four dongs well beyond what others have lurking in their trousers.  With your wings, bow, weapon, and tough armor, you're a natural for protecting the town.";
+			return "You're strong, smart, fast, and tough. It also helps that you've got four dongs well beyond what others have lurking in their trousers. With your wings, bow, weapon, and tough armor, you're a natural for protecting the town.";
 		}
 		internal static string ChimeraText()
 		{
@@ -73,7 +73,7 @@
 		}
 		internal static string IsaacText()
 		{
-			return "Born of a disgraced priestess, Isaac was raised alone until she was taken by illness.  He worked a number of odd jobs until he was eventually chosen as champion.";
+			return "Born of a disgraced priestess, Isaac was raised alone until she was taken by illness. He worked a number of odd jobs until he was eventually chosen as champion.";
 		}
 		internal static string Kitteh6660Text()
 		{
@@ -93,11 +93,11 @@
 		}
 		internal static string MihariText()
 		{
-			return "The portal is not something you fear, not with your imposing armor and inscribed spellblade.  You're much faster and stronger than every champion that came before you, but will it be enough?";
+			return "The portal is not something you fear, not with your imposing armor and inscribed spellblade. You're much faster and stronger than every champion that came before you, but will it be enough?";
 		}
 		internal static string MirvannaText()
 		{
-			return "You're an equine dragon-herm with a rather well-proportioned body.  Ingnam is certainly going to miss having you whoring yourself out around town.  You don't think they'll miss cleaning up all the messy sex, though.";
+			return "You're an equine dragon-herm with a rather well-proportioned body. Ingnam is certainly going to miss having you whoring yourself out around town. You don't think they'll miss cleaning up all the messy sex, though.";
 		}
 		internal static string NamiText()
 		{
@@ -109,15 +109,15 @@
 		}
 		internal static string PrismereText()
 		{
-			return "You're more of a scout than a fighter, but you still feel confident you can handle your responsibilities as champion.  After all, what's to worry about when you can outrun everything you encounter?  You have olive skin, deep red hair, and a demonic tail and wings to blend in with the locals.";
+			return "You're more of a scout than a fighter, but you still feel confident you can handle your responsibilities as champion. After all, what's to worry about when you can outrun everything you encounter? You have olive skin, deep red hair, and a demonic tail and wings to blend in with the locals.";
 		}
 		internal static string RannRaylaText()
 		{
-			return "You're a young, fiery redhead who\'s utterly feminine.  You've got C-cup breasts and long red hair.  Being a champion can\'t be that bad, right?";
+			return "You're a young, fiery redhead who\'s utterly feminine. You've got C-cup breasts and long red hair. Being a champion can\'t be that bad, right?";
 		}
 		internal static string SeraText()
 		{
-			return "You're something of a shemale - three rows of C-cup breasts matched with three, plump, juicy cocks.  Some decent sized balls, bat wings, and cat-like ears round out the package.";
+			return "You're something of a shemale - three rows of C-cup breasts matched with three, plump, juicy cocks. Some decent sized balls, bat wings, and cat-like ears round out the package.";
 		}
 		internal static string SiveenText()
 		{
@@ -125,7 +125,7 @@
 		}
 		internal static string TyrianaText()
 		{
-			return "Your many, posh tits, incredible fertility, and well-used cunt made you more popular than the village bicycle.  With your cat-like ears, paws, and tail, you certainly had a feline appeal.  It's time to see how you fare in the next chapter of your life.";
+			return "Your many, posh tits, incredible fertility, and well-used cunt made you more popular than the village bicycle. With your cat-like ears, paws, and tail, you certainly had a feline appeal. It's time to see how you fare in the next chapter of your life.";
 		}
 		internal static string VahdunbriiText()
 		{

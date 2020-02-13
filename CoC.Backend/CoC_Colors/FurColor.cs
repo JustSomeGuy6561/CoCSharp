@@ -11,7 +11,7 @@ namespace CoC.Backend.CoC_Colors
 {
 	public enum FurMulticolorPattern { NO_PATTERN, STRIPED, SPOTTED, MIXED }
 
-	public class FurColor : IEquatable<FurColor>, IEquatable<HairFurColors>
+	public class FurColor : IEquatable<FurColor>, IEquatable<HairFurColors>, IEquatable<ReadOnlyFurColor>
 	{
 		public FurMulticolorPattern multiColorPattern { get; protected set; }
 		public HairFurColors primaryColor { get; protected set; }
@@ -128,6 +128,12 @@ namespace CoC.Backend.CoC_Colors
 			return (isEmpty && hairColor?.isEmpty == true) || (!isMultiColored && hairColor == primaryColor);
 		}
 
+		public bool IsIdenticalTo(ReadOnlyFurColor furColor)
+		{
+			return !(furColor is null) && furColor.isMultiColored == isMultiColored && (!isMultiColored || furColor.pattern == multiColorPattern)
+				&& furColor.primary == primaryColor && furColor.secondary == this.alternateColor;
+		}
+
 		public string AsString(bool withArticle = false)
 		{
 			if (!isMultiColored)
@@ -178,6 +184,11 @@ namespace CoC.Backend.CoC_Colors
 		}
 
 		public bool Equals(HairFurColors other)
+		{
+			return IsIdenticalTo(other);
+		}
+
+		public bool Equals(ReadOnlyFurColor other)
 		{
 			return IsIdenticalTo(other);
 		}

@@ -288,17 +288,22 @@ namespace CoC
 
 	public static class CollectionHelpers
 	{
-		public static bool IsNullOrEmpty<T>(IEnumerable<T> collection)
+		public static bool IsNullOrEmpty<T>(IEnumerable<T> enumerable)
 		{
 			//true or null (null is true)
-			return collection?.IsEmpty() != false;
+			return enumerable?.IsEmpty() != false;
 		}
 
-		public static bool IsEmpty<T>(this IEnumerable<T> collection)
+		public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
 		{
 			bool retVal;
 
-			using (IEnumerator<T> item = collection.GetEnumerator())
+			if (enumerable is ICollection<T> col)
+			{
+				return col.Count > 0;
+			}
+
+			using (IEnumerator<T> item = enumerable.GetEnumerator())
 			{
 				retVal = !item.MoveNext();
 			}
@@ -324,6 +329,8 @@ namespace CoC
 
 		public static T MaxItem<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : IComparable<U>
 		{
+			if (getValue is null) throw new ArgumentNullException(nameof(getValue));
+
 			if (IsNullOrEmpty(collection))
 			{
 				return default;
@@ -334,6 +341,29 @@ namespace CoC
 				else if (i2 == null) return i1;
 				return getValue(i1).CompareTo(getValue(i2)) > 0 ? i1 : i2;
 			});
+		}
+
+		public static int MaxIndex<T, U>(this IList<T> collection, Func<T, U> getValue) where U : IComparable<U>
+		{
+			if (getValue is null) throw new ArgumentNullException(nameof(getValue));
+
+			if (IsNullOrEmpty(collection))
+			{
+				return -1;
+			}
+
+			int result = -1;
+			for (int x = 0; x < collection.Count; x++)
+			{
+				if (collection[x] == null) continue;
+				else if (result == -1) result = x;
+				else if (getValue(collection[x]).CompareTo(getValue(collection[result])) > 0)
+				{
+					result = x;
+				}
+			}
+
+			return result;
 		}
 
 		public static T MinItem<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : IComparable<U>
@@ -348,6 +378,29 @@ namespace CoC
 				else if (i2 == null) return i1;
 				return getValue(i1).CompareTo(getValue(i2)) < 0 ? i1 : i2;
 			});
+		}
+
+		public static int MinIndex<T, U>(this IList<T> collection, Func<T, U> getValue) where U : IComparable<U>
+		{
+			if (getValue is null) throw new ArgumentNullException(nameof(getValue));
+
+			if (IsNullOrEmpty(collection))
+			{
+				return -1;
+			}
+
+			int result = -1;
+			for (int x = 0; x < collection.Count; x++)
+			{
+				if (collection[x] == null) continue;
+				else if (result == -1) result = x;
+				else if (getValue(collection[x]).CompareTo(getValue(collection[result])) < 0)
+				{
+					result = x;
+				}
+			}
+
+			return result;
 		}
 
 		public static bool All<T>(this IEnumerable<T> collection, Func<T, int, bool> checkWithIndex)

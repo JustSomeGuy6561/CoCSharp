@@ -126,6 +126,14 @@ namespace CoC.Backend.BodyParts
 
 			return sb.ToString();
 		}
+
+		public string RemovedExtraBreastRowGenericText(Creature target, BreastData removedBreastRow)
+		{
+			return $"You stumble back when your center of balance shifts, and though you adjust before you can fall over, you're left to watch in awe as your bottom-most " +
+				$"{removedBreastRow.ShortDescription()} shrink down, disappearing completely into your {(target.breasts.Count > 2 ? "abdomen" : "chest")}. The " +
+				$"{removedBreastRow.ShortNippleDescription()} even fade until nothing but {target.body.mainEpidermis.ShortDescription()} remains. " +
+				SafelyFormattedString.FormattedText("You've lost a row of breasts!", StringFormats.BOLD);
+		}
 	}
 
 	partial class BreastCollectionData : IBreastCollection<BreastData>

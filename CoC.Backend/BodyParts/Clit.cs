@@ -125,9 +125,10 @@ namespace CoC.Backend.BodyParts
 
 		private float resetSize => Math.Max(defaultNewClitSize, minClitSize);
 
-		public uint penetrateCount { get; private set; } = 0;
+		public uint totalPenetrateCount { get; private set; } = 0;
+		public uint selfPenetrateCount { get; private set; } = 0;
 
-		public uint orgasmCount => parent.orgasmCount;
+		public uint orgasmCount => parent.totalOrgasmCount;
 
 
 		private readonly Vagina parent;
@@ -205,31 +206,6 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		//public bool omnibusActive => CreatureStore.GetCreatureClean(creatureID)?.cocks.Count == 0 && omnibusClit;
-
-		//public Cock AsClitCock()
-		//{
-		//	if (!omnibusClit)
-		//	{
-		//		return null;
-		//	}
-
-		//	if (clitCock == null)
-		//	{
-		//		clitCock = Cock.GenerateClitCock(creatureID, this);
-		//	}
-		//	else
-		//	{
-		//		clitCock.SetLength(length + 5);
-		//	}
-		//	return clitCock;
-		//}
-		//private Cock clitCock = null;
-
-		//internal uint asCockSexCount => clitCock?.sexCount ?? 0;
-		//internal uint asCockSoundCount => clitCock?.soundCount ?? 0;
-		//internal uint asCockOrgasmCount => clitCock?.orgasmCount ?? 0;
-		//internal uint asCockDryOrgasmCount => clitCock?.dryOrgasmCount ?? 0;
 
 
 		public void Restore()
@@ -244,27 +220,9 @@ namespace CoC.Backend.BodyParts
 			piercings.Reset();
 		}
 
-		//internal bool ActivateOmnibusClit()
-		//{
-		//	if (omnibusClit)
-		//	{
-		//		return false;
-		//	}
-		//	omnibusClit = true;
-		//	return true;
-		//}
 
-		//internal bool DeactivateOmnibusClit()
-		//{
-		//	if (!omnibusClit)
-		//	{
-		//		return false;
-		//	}
-		//	omnibusClit = false;
-		//	return true;
-		//}
 
-		internal float growClit(float amount, bool ignorePerks = false)
+		internal float GrowClit(float amount, bool ignorePerks = false)
 		{
 			if (length >= MAX_CLIT_SIZE || amount <= 0)
 			{
@@ -284,7 +242,7 @@ namespace CoC.Backend.BodyParts
 			return length - oldLength;
 		}
 
-		internal float shrinkClit(float amount, bool ignorePerks = false)
+		internal float ShrinkClit(float amount, bool ignorePerks = false)
 		{
 			if (length <= MIN_CLIT_SIZE || amount <= 0)
 			{
@@ -309,9 +267,20 @@ namespace CoC.Backend.BodyParts
 			return length;
 		}
 
-		internal void DoPenetration()
+		internal void DoPenetration(bool toSelf)
 		{
-			penetrateCount++;
+			totalPenetrateCount++;
+
+			if (toSelf)
+			{
+				selfPenetrateCount++;
+			}
+		}
+
+		public override bool IsIdenticalTo(ClitData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.length == length && piercings.IsIdenticalTo(original.clitPiercings)
+				&& (ignoreSexualMetaData || (selfPenetrateCount == original.selfPenetrateCount && totalPenetrateCount == original.totalPenetrateCount));
 		}
 
 		internal override bool Validate(bool correctInvalidData)
@@ -324,8 +293,8 @@ namespace CoC.Backend.BodyParts
 		public static string SingularClitNoun() => ClitStrings.ClitNoun(true);
 		public static string ClitNoun() => ClitStrings.ClitNoun(false);
 		public string ShortDescription() => ClitStrings.ShortDesc(length);
-		public string LongDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, false);
-		public string FullDescription(bool alternateFormat) => ClitStrings.Desc(this, alternateFormat, true);
+		public string LongDescription(bool alternateFormat = false) => ClitStrings.Desc(this, alternateFormat, false);
+		public string FullDescription(bool alternateFormat = false) => ClitStrings.Desc(this, alternateFormat, true);
 		#endregion
 		#region Piercing Related
 		private bool PiercingLocationUnlocked(ClitPiercingLocation piercingLocation, out string whyNot)
@@ -408,6 +377,9 @@ namespace CoC.Backend.BodyParts
 
 		public readonly ReadOnlyPiercing<ClitPiercingLocation> clitPiercings;
 
+		public readonly uint totalPenetrateCount;
+		public readonly uint selfPenetrateCount;
+
 		#region Text
 		public static string PluralClitNoun() => ClitStrings.PluralClitNoun();
 		public static string SingularClitNoun() => ClitStrings.ClitNoun(true);
@@ -422,6 +394,9 @@ namespace CoC.Backend.BodyParts
 			vaginaIndex = currIndex;
 
 			clitPiercings = source.piercings.AsReadOnlyData();
+
+			this.selfPenetrateCount = source.selfPenetrateCount;
+			totalPenetrateCount = source.totalPenetrateCount;
 		}
 
 		public ClitData(Guid creatureID, int currentIndex, float length, ReadOnlyPiercing<ClitPiercingLocation> piercings) : base(creatureID)
@@ -431,6 +406,22 @@ namespace CoC.Backend.BodyParts
 			vaginaIndex = currentIndex;
 
 			clitPiercings = piercings;
+
+			selfPenetrateCount = 0;
+			totalPenetrateCount = 0;
+		}
+
+		public ClitData(Guid creatureID, int currentIndex, float length, ReadOnlyPiercing<ClitPiercingLocation> piercings, uint totalPenetrateCount,
+			uint selfPenetrateCount) : base(creatureID)
+		{
+			this.length = length;
+
+			vaginaIndex = currentIndex;
+
+			clitPiercings = piercings;
+
+			this.totalPenetrateCount = totalPenetrateCount;
+			this.selfPenetrateCount = selfPenetrateCount;
 		}
 	}
 }

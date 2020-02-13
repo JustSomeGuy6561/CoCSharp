@@ -395,7 +395,7 @@ namespace CoC.Frontend.Transformations
 			//Dragonfly Wings:
 			if (target.wings.type != WingType.DRAGONFLY && Utils.Rand(4) == 0)
 			{
-				//Wings Fall Out: You feel a sharp pinching sensation in your shoulders and you cringe slightly.  Your former dragonfly wings make soft, papery sounds as they fall into the dirt behind you.
+				//Wings Fall Out: You feel a sharp pinching sensation in your shoulders and you cringe slightly. Your former dragonfly wings make soft, papery sounds as they fall into the dirt behind you.
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -416,6 +416,6 @@ namespace CoC.Frontend.Transformations
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

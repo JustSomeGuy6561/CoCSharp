@@ -5,10 +5,30 @@ using System;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class Ovipositor : PartWithBehaviorAndEventBase<Ovipositor, OvipositorType, OvipositorData>
+	public sealed partial class Ovipositor : BehavioralSaveablePart<Ovipositor, OvipositorType, OvipositorData>
 	{
-		//if you want to add resource to this, implement body part lazy, make sure it's attached to list of lazies in the creature.
+#warning implement means to add resource to this by implement body part lazy and make sure it's attached to list of lazies in the creature.
 		//increment resouce as needed. provide function for removing resources.
+
+
+		public override string BodyPartName()
+		{
+			return Name();
+		}
+		public override OvipositorType type { get; protected set; }
+
+		public byte eggCount
+		{
+			get => _eggCount;
+			private set => _eggCount = Utils.Clamp2(value, byte.MinValue, type.maxEggs);
+		}
+		private byte _eggCount;
+
+		//Sexual data
+		public uint totalPenetratorCount { get; private set; } = 0;
+		public uint selfPenetratorCount { get; private set; } = 0;
+
+
 
 		public Ovipositor(Guid creatureID) : base(creatureID)
 		{
@@ -19,15 +39,6 @@ namespace CoC.Backend.BodyParts
 			type = tailType?.ovipositorType ?? throw new ArgumentNullException(nameof(tailType));
 		}
 
-		public override OvipositorType type { get; protected set; }
-
-		public byte eggCount
-		{
-			get => _eggCount;
-			private set => _eggCount = Utils.Clamp2(value, byte.MinValue, type.maxEggs);
-		}
-		private byte _eggCount;
-
 		public override OvipositorData AsReadOnlyData()
 		{
 			return new OvipositorData(this);
@@ -35,9 +46,11 @@ namespace CoC.Backend.BodyParts
 
 		//default update, restore fine. nothing else really required.
 
-		public override string BodyPartName()
+
+
+		internal override bool Validate(bool correctInvalidData)
 		{
-			return Name();
+			return true;
 		}
 
 		public string LongDescription(bool alternateFormat = false) => type.LongDescription(AsReadOnlyData(), alternateFormat);
@@ -80,6 +93,38 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 		}
+
+		internal byte HandlePenetrate(bool intoSelf, byte totalEggsToExpel = byte.MaxValue)
+		{
+			totalPenetratorCount++;
+
+			if (intoSelf)
+			{
+				selfPenetratorCount++;
+			}
+
+			if (totalEggsToExpel > eggCount)
+			{
+				byte retVal = eggCount;
+				eggCount = 0;
+				return retVal;
+			}
+			else
+			{
+				eggCount = eggCount.subtract(totalEggsToExpel);
+				return totalEggsToExpel;
+			}
+		}
+
+
+#warning Handle egg implanting via the womb. not ideal by any stretch, but whatever.
+
+		public override bool IsIdenticalTo(OvipositorData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.eggCount == eggCount && type == original.type && (ignoreSexualMetaData ||
+				(selfPenetratorCount == original.selfPenetratorCount && totalPenetratorCount == original.totalPenetratorCount));
+		}
+
 	}
 
 	//this is dumbed down because it's not a true type, but a sub-part of tail. that said, it has a strange behavior where the creature may not have it, even if they have the tail for it.
@@ -152,27 +197,30 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class OvipositorData : BehavioralPartDataBase<OvipositorType>
+	public sealed class OvipositorData : BehavioralSaveableData<OvipositorData, Ovipositor, OvipositorType>
 	{
 		public readonly byte eggCount;
 
+		public readonly uint totalPenetratorCount;
+		public readonly uint selfPenetratorCount;
+
+
 		public byte maxEggs => type.maxEggs;
+
+
 
 		public OvipositorData(Ovipositor source) : base(GetID(source), GetBehavior(source))
 		{
 			eggCount = source.eggCount;
+
+			totalPenetratorCount = source.totalPenetratorCount;
+			selfPenetratorCount = source.selfPenetratorCount;
 		}
 
-		private static Guid GetID(Ovipositor source)
+		public override OvipositorData AsCurrentData()
 		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-			return source.creatureID;
+			return this;
 		}
 
-		private static OvipositorType GetBehavior(Ovipositor source)
-		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
-			return source.type;
-		}
 	}
 }

@@ -320,7 +320,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed partial class Body : BehavioralSaveablePart<Body, BodyType, BodyData>, IMultiPatternable, IMultiLotionable, IMultiToneable
+	public sealed partial class Body : FullBehavioralPart<Body, BodyType, BodyData>, IMultiPatternable, IMultiLotionable, IMultiToneable
 	{
 
 		//Hair, Fur, Tone
@@ -888,7 +888,11 @@ namespace CoC.Backend.BodyParts
 			navelPiercings.Reset();
 		}
 		#endregion
-
+		public override bool IsIdenticalTo(BodyData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && mainEpidermis.Equals(original.main) && supplementaryEpidermis.Equals(original.supplementary)
+				&& primarySkin.Equals(original.mainSkin) && hipPiercings.IsIdenticalTo(original.hipPiercings) && navelPiercings.IsIdenticalTo(original.navelPiercings);
+		}
 		#region Validate
 		//called after deserialization. We're making the following assumptions: If the bodyType is not null, its Init was called. this should be true, because we control
 		//deserialization, though i suppose if we use a method of serialization that doesn't call constructors, that wouldn't apply. Honestly though, using a serialization technique that
@@ -1470,7 +1474,7 @@ namespace CoC.Backend.BodyParts
 	//idk.
 
 
-	public abstract partial class BodyType : SaveableBehavior<BodyType, Body, BodyData>
+	public abstract partial class BodyType : FullBehavior<BodyType, Body, BodyData>
 	{
 
 		static BodyType()
@@ -2491,7 +2495,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public sealed class BodyData : BehavioralSaveablePartData<BodyData, Body, BodyType>
+	public sealed class BodyData : FullBehavioralData<BodyData, Body, BodyType>
 	{
 
 		public readonly EpidermalData activeFur;

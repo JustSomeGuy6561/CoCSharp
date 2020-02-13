@@ -44,7 +44,8 @@ namespace CoC.Backend.Items
 		public abstract string ItemDescription(byte count = 1, bool displayCount = false);
 
 		//a more verbose description of the object, explaining any defining traits along with its physical appearance. this is used as part of the tooltip for the given item
-		public abstract string Appearance();
+		public abstract string AboutItem();
+
 
 		public abstract byte maxCapacityPerSlot { get; }
 
@@ -52,9 +53,12 @@ namespace CoC.Backend.Items
 		/// Checks to see if the given creature can use this item. Note that just because an item can be used doesn't mean it will ultimately succeed, i.e. if the player cancels it.
 		/// </summary>
 		/// <param name="target">The creature attempting to use this item.</param>
+		/// <param name="currentlyInCombat">Is the creature attempting to use this item currently in combat?</param>
 		/// <param name="whyNot">A string explaining why the current item cannot be used. only checked if this returns false.</param>
 		/// <returns>true if the creature can use this item, false otherwise.</returns>
-		public abstract bool CanUse(Creature target, out string whyNot);
+		/// <remarks>This technically allows you to make items that cannot be used unless in combat or out of combat. as of this writing, this is not expected, and thus the UI
+		/// doesn't really handle them that well. we'll see if that gets added later. </remarks>
+		public abstract bool CanUse(Creature target, bool currentlyInCombat, out string whyNot);
 
 		/// <summary>
 		/// Attempts to use the item, returning either its own page if it needs several pages, or calling postItemUseCallback immediately and returning null.
@@ -68,6 +72,13 @@ namespace CoC.Backend.Items
 		/// and postItemUsedCallback is not called beforehand, it will never be called. If you return a display after calling postItemUseCallback, the behavior is undefined,
 		/// but will likely result in text displaying out of order. Basically, only return a display when you need a menu. otherwise return null. </remarks>
 		public abstract DisplayBase AttemptToUse(Creature target, UseItemCallback postItemUseCallback);
+
+		//Variation of attempt to use item, but allows the item maker to specify that the item should cause a combat loss when used. for nearly all items, this is not expected
+		//to be any different than the regular, but it remains possible. for consumables, however, this will be overridden and accounted for.
+		public virtual DisplayBase AttemptToUseInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		{
+			return AttemptToUse(target, (success, resultText, author, replacement) => postItemUseCallback(success, false, resultText, author, replacement));
+		}
 
 		//how much it costs to buy this item. Generally, the sell price is 1/2 it's value because video game capitalism. Items that cannot be bought should be given a price of 0;
 		protected abstract int monetaryValue { get; }

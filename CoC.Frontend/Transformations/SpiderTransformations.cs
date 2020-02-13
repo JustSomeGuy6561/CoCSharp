@@ -322,7 +322,7 @@ namespace CoC.Frontend.Transformations
 				//V1 - Egg Count
 				//V2 - Fertilized Count
 				target.tail.GrantOvipositor();
-				//Opens up drider ovipositor scenes from available mobs. The character begins producing unfertilized eggs in their arachnid abdomen. Egg buildup raises minimum lust and eventually lowers speed until the target has gotten rid of them.  This perk may only be used with the drider lower body, so your scenes should reflect that.
+				//Opens up drider ovipositor scenes from available mobs. The character begins producing unfertilized eggs in their arachnid abdomen. Egg buildup raises minimum lust and eventually lowers speed until the target has gotten rid of them. This perk may only be used with the drider lower body, so your scenes should reflect that.
 				//Any PC can get an Ovipositor perk, but it will be much rarer for characters without vaginas.
 				//Eggs are unfertilized by default, but can be fertilized:
 				//-female/herm characters can fertilize them by taking in semen; successfully passing a pregnancy check will convert one level ofunfertilized eggs to fertilized, even if the PC is already pregnant.
@@ -384,6 +384,6 @@ namespace CoC.Frontend.Transformations
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract bool InitialTransformationText(Creature target);
+		protected abstract string InitialTransformationText(Creature target);
 	}
 }

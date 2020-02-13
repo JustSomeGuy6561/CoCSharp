@@ -115,6 +115,13 @@ namespace CoC.Backend.Pregnancies
 			}
 		}
 
+		public override bool IsIdenticalTo(ReadOnlyPregnancyStore original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.hasDiapause == hasDiapause && original.eggSizeKnown == eggSizeKnown && original.isPregnant == isPregnant
+				&& (!eggSizeKnown || eggsLarge == original.eggSizeLarge) && original.totalBirthCount == totalBirthCount && original.pregnancyMultiplier == pregnancyMultiplier
+				&& (!isPregnant || original.hoursTilBirth == this.birthCountdown && spawnType.IsIdenticalTo(original.spawnType));
+		}
+
 		internal override bool Validate(bool correctInvalidData)
 		{
 			if (spawnType != null || birthCountdown == 0)

@@ -12,7 +12,9 @@ using WeakEvent;
 namespace CoC.Backend.BodyParts
 {
 
-	public abstract class SimpleSaveablePart<ThisClass, DataClass> : IBodyPart where ThisClass : SimpleSaveablePart<ThisClass, DataClass> where DataClass : SimpleData
+	public abstract class SimpleSaveablePart<ThisClass, DataClass> : IBodyPart<DataClass>
+		where ThisClass : SimpleSaveablePart<ThisClass, DataClass>
+		where DataClass : SimpleData
 	{
 		internal abstract bool Validate(bool correctInvalidData);
 
@@ -58,5 +60,11 @@ namespace CoC.Backend.BodyParts
 		}
 
 		Guid IBodyPart.creatureID => creatureID;
+
+		public abstract bool IsIdenticalTo(DataClass original, bool ignoreSexualMetaData);
+		public bool IsIdenticalTo(DataClass original)
+		{
+			return IsIdenticalTo(original, false);
+		}
 	}
 }

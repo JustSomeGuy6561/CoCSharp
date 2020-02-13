@@ -7,7 +7,7 @@ using System;
 namespace CoC.Backend.BodyParts
 {
 	//may need to update the text things here to use their own delgates because we need additional info about it.
-	public sealed partial class Feet : PartWithBehaviorAndEventBase<Feet, FootType, FootData>
+	public sealed partial class Feet : BehavioralSaveablePart<Feet, FootType, FootData>
 	{
 		public override string BodyPartName() => Name();
 
@@ -18,14 +18,21 @@ namespace CoC.Backend.BodyParts
 
 		public override FootData AsReadOnlyData()
 		{
-			return new FootData(creatureID, type);
+			return new FootData(this);
 		}
 
-		//tbh idk how this would even work but whatever
-		public uint orgasmCount { get; private set; } = 0;
-		public uint dryOrgasmCount { get; private set; } = 0;
+		public override bool IsIdenticalTo(FootData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && (ignoreSexualMetaData || (penetrateCount == original.penetrateCount && rubCount == original.rubCount));
+		}
 
-		public uint lickCount { get; private set; } = 0;
+		internal override bool Validate(bool correctInvalidData)
+		{
+			return true;
+		}
+
+		//i'm not adding self counts that seems excessive. i mean, good luck with that.
+
 		public uint penetrateCount { get; private set; } = 0; //times foot has been used to penetrate whatever
 		public uint rubCount { get; private set; } = 0; //times jerked off a cock with feet.
 
@@ -33,42 +40,14 @@ namespace CoC.Backend.BodyParts
 
 		public override FootType type { get; protected set; }
 
-
-
-		internal void GetLicked(bool reachOrgasm)
-		{
-			lickCount++;
-			if (reachOrgasm)
-			{
-				orgasmCount++;
-			}
-		}
-
-		internal void DoPenetrate(bool reachOrgasm)
+		internal void DoPenetrate()
 		{
 			penetrateCount++;
-			if (reachOrgasm)
-			{
-				orgasmCount++;
-			}
 		}
 
-		internal void DoRubbing(bool reachOrgasm)
+		internal void DoRubbing()
 		{
 			rubCount++;
-			if (reachOrgasm)
-			{
-				orgasmCount++;
-			}
-		}
-
-		internal void DoGenericOrgasm(bool dryOrgasm)
-		{
-			orgasmCount++;
-			if (dryOrgasm)
-			{
-				dryOrgasmCount++;
-			}
 		}
 	}
 
@@ -166,8 +145,16 @@ namespace CoC.Backend.BodyParts
 		public static readonly FootType TENDRIL = new FootType(FootStyle.OTHER, TendrilNoun, TendrilDesc, TendrilSingleDesc, TendrilLongDesc);
 	}
 
-	public sealed class FootData : BehavioralPartDataBase<FootType>
+	public sealed class FootData : BehavioralSaveableData<FootData, Feet, FootType>
 	{
+		//the only reason this is now saveable. woo!!!
+		#region Sexual MetaData
+		//i'm not adding self counts that seems excessive. i mean, good luck with that.
+
+		public readonly uint penetrateCount; //times foot has been used to penetrate whatever
+		public readonly uint rubCount; //times jerked off a cock with feet.
+		#endregion
+
 		public bool isFeet => type.isFeet;
 		public bool isPaws => type.isPaws;
 		public bool isHooves => type.isHooves;
@@ -175,9 +162,16 @@ namespace CoC.Backend.BodyParts
 		public bool isClaws => type.isClaws;
 		public bool isOther => type.isOther;
 
-		public FootData(Guid id, FootType currentType) : base(id, currentType)
+		public FootData(Feet source) : base(GetID(source), GetBehavior(source))
 		{
-
+			penetrateCount = source.penetrateCount;
+			rubCount = source.rubCount;
 		}
+
+		public override FootData AsCurrentData()
+		{
+			return this;
+		}
+
 	}
 }

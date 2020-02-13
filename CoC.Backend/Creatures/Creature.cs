@@ -2,6 +2,12 @@
 //Description:
 //Author: JustSomeGuy
 //2/20/2019, 4:13 PM
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
@@ -14,14 +20,9 @@ using CoC.Backend.Items.Wearables.LowerGarment;
 using CoC.Backend.Items.Wearables.UpperGarment;
 using CoC.Backend.Perks;
 using CoC.Backend.Pregnancies;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using CoC.Backend.UI;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace CoC.Backend.Creatures
 {
@@ -130,7 +131,10 @@ namespace CoC.Backend.Creatures
 			{
 				return minValue;
 			}
-			else return LOWEST_POSSIBLE_MAX;
+			else
+			{
+				return LOWEST_POSSIBLE_MAX;
+			}
 		}
 
 		protected internal float LibidoGainMultiplier = 1.0f;
@@ -145,6 +149,19 @@ namespace CoC.Backend.Creatures
 		protected internal float LustGainMultiplier = 1.0f;
 		protected internal float LustLossMultiplier = 1.0f;
 		#endregion
+
+		public virtual string possessiveNoun => Conjugate.FromCreature(this).PossessiveNoun();
+		public virtual string objectNoun => Conjugate.FromCreature(this).ObjectNoun();
+		public virtual string personalNoun => Conjugate.FromCreature(this).PersonalNoun();
+		public virtual string possessiveAdjective => Conjugate.FromCreature(this).PossessiveAdjective();
+		public virtual string reflexiveNoun => Conjugate.FromCreature(this).ReflexiveNoun();
+		public virtual string personalNounWithHave => Conjugate.FromCreature(this).PersonalNounWithHave();
+		public virtual string personalNounWithAre => Conjugate.FromCreature(this).PersonalNounWithAre();
+
+		//definitive article means 'the' or the equivalent. if false, it's assumed to be the indefinite article, aka 'a' or the equivalent.
+		//note the these may return the empty string if the name is a proper noun (aka a name).
+		public abstract string Article(bool definitiveArticle);
+
 
 
 		public readonly string name;
@@ -382,7 +399,10 @@ namespace CoC.Backend.Creatures
 		#region Constructors
 		protected Creature(CreatureCreator creator)
 		{
-			if (creator == null) throw new ArgumentNullException();
+			if (creator == null)
+			{
+				throw new ArgumentNullException();
+			}
 
 			libidoTrue = creator.libido ?? DEFAULT_LIBIDO;
 			sensitivityTrue = creator.sensitivity ?? DEFAULT_SENSITIVITY;
@@ -464,11 +484,11 @@ namespace CoC.Backend.Creatures
 				fertility = new Fertility(id, (byte)creator.fertility, creator.artificiallyInfertile);
 			}
 
-			var womb = creator.GetWomb(id);
+			Womb womb = creator.GetWomb(id);
 
-			var cup = gender.HasFlag(Gender.FEMALE) ? Breasts.DEFAULT_FEMALE_SIZE : Breasts.DEFAULT_MALE_SIZE;
+			CupSize cup = gender.HasFlag(Gender.FEMALE) ? Breasts.DEFAULT_FEMALE_SIZE : Breasts.DEFAULT_MALE_SIZE;
 
-			var breasts = creator.breasts ?? new BreastCreator[] { new BreastCreator(cup) };
+			BreastCreator[] breasts = creator.breasts ?? new BreastCreator[] { new BreastCreator(cup) };
 
 			switch (gender)
 			{
@@ -476,7 +496,7 @@ namespace CoC.Backend.Creatures
 					genitals = new Genitals(id, ass, creator.breasts, null, new Balls(id, false), null, womb, creator.femininity, fertility); break;
 				case Gender.MALE:
 
-					var cocks = creator.cocks;
+					CockCreator[] cocks = creator.cocks;
 					if (cocks == null || cocks.Length == 0)
 					{
 						cocks = new CockCreator[] { new CockCreator() };
@@ -771,6 +791,17 @@ namespace CoC.Backend.Creatures
 		}
 		#endregion
 
+		public void IngestCum()
+		{
+			IngestLiquid();
+			throw new NotImplementedException();
+		}
+
+		public void IngestLiquid()
+		{
+			throw new NotImplementedException();
+		}
+
 		#region Stat Updates
 		public float IncreaseLibidoBy(float percent, bool ignorePerks = true)
 		{
@@ -797,7 +828,7 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			var oldValue = libidoTrue;
+			float oldValue = libidoTrue;
 			libidoTrue += amount;
 			return libidoTrue - oldValue;
 		}
@@ -824,7 +855,7 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			var oldValue = libidoTrue;
+			float oldValue = libidoTrue;
 			libidoTrue -= amount;
 			return oldValue - libidoTrue;
 		}
@@ -865,7 +896,7 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			var oldValue = sensitivityTrue;
+			float oldValue = sensitivityTrue;
 			sensitivityTrue += amount;
 			return sensitivityTrue - oldValue;
 		}
@@ -892,7 +923,7 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			var oldValue = sensitivityTrue;
+			float oldValue = sensitivityTrue;
 			sensitivityTrue -= amount;
 			return oldValue - sensitivityTrue;
 		}
@@ -933,7 +964,7 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			var oldValue = corruptionTrue;
+			float oldValue = corruptionTrue;
 			corruptionTrue += amount;
 			return corruptionTrue - oldValue;
 		}
@@ -960,7 +991,7 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			var oldValue = corruptionTrue;
+			float oldValue = corruptionTrue;
 			corruptionTrue -= amount;
 			return oldValue - corruptionTrue;
 		}
@@ -1001,7 +1032,7 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			var oldValue = lustTrue;
+			float oldValue = lustTrue;
 			lustTrue += amount;
 			return lustTrue - oldValue;
 		}
@@ -1028,7 +1059,7 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			var oldValue = lustTrue;
+			float oldValue = lustTrue;
 			lustTrue -= amount;
 			return oldValue - lustTrue;
 		}
@@ -1052,25 +1083,41 @@ namespace CoC.Backend.Creatures
 			if (lus != 0)
 			{
 				amount = lus;
-				if (!ignorePerks) amount *= LustGainMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= LustGainMultiplier;
+				}
+
 				lustTrue += amount;
 			}
 			if (lib != 0)
 			{
 				amount = lib;
-				if (!ignorePerks) amount *= LibidoGainMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= LibidoGainMultiplier;
+				}
+
 				libidoTrue += amount;
 			}
 			if (sens != 0)
 			{
 				amount = sens;
-				if (!ignorePerks) amount *= SensitivityGainMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= SensitivityGainMultiplier;
+				}
+
 				sensitivityTrue += amount;
 			}
 			if (corr != 0)
 			{
 				amount = corr;
-				if (!ignorePerks) amount *= CorruptionGainMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= CorruptionGainMultiplier;
+				}
+
 				corruptionTrue += amount;
 			}
 		}
@@ -1081,25 +1128,41 @@ namespace CoC.Backend.Creatures
 			if (lus != 0)
 			{
 				amount = lus;
-				if (!ignorePerks) amount *= LustLossMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= LustLossMultiplier;
+				}
+
 				lustTrue -= amount;
 			}
 			if (lib != 0)
 			{
 				amount = lib;
-				if (!ignorePerks) amount *= LibidoLossMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= LibidoLossMultiplier;
+				}
+
 				libidoTrue -= amount;
 			}
 			if (sens != 0)
 			{
 				amount = sens;
-				if (!ignorePerks) amount *= SensitivityLossMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= SensitivityLossMultiplier;
+				}
+
 				sensitivityTrue -= amount;
 			}
 			if (corr != 0)
 			{
 				amount = corr;
-				if (!ignorePerks) amount *= CorruptionLossMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= CorruptionLossMultiplier;
+				}
+
 				corruptionTrue -= amount;
 			}
 		}
@@ -1130,49 +1193,81 @@ namespace CoC.Backend.Creatures
 			if (lus < 0)
 			{
 				amount = lus;
-				if (!ignorePerks) amount *= LustLossMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= LustLossMultiplier;
+				}
+
 				lustTrue += amount;
 			}
 			else if (lus > 0)
 			{
 				amount = lus;
-				if (!ignorePerks) amount *= LustGainMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= LustGainMultiplier;
+				}
+
 				lustTrue += amount;
 			}
 			if (lib < 0)
 			{
 				amount = lib;
-				if (!ignorePerks) amount *= LibidoLossMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= LibidoLossMultiplier;
+				}
+
 				libidoTrue += amount;
 			}
 			else if (lib > 0)
 			{
 				amount = lib;
-				if (!ignorePerks) amount *= LibidoGainMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= LibidoGainMultiplier;
+				}
+
 				libidoTrue += amount;
 			}
 			if (sens < 0)
 			{
 				amount = sens;
-				if (!ignorePerks) amount *= SensitivityLossMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= SensitivityLossMultiplier;
+				}
+
 				sensitivityTrue += amount;
 			}
 			else if (sens > 0)
 			{
 				amount = sens;
-				if (!ignorePerks) amount *= SensitivityGainMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= SensitivityGainMultiplier;
+				}
+
 				sensitivityTrue += amount;
 			}
 			if (corr < 0)
 			{
 				amount = corr;
-				if (!ignorePerks) amount *= CorruptionLossMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= CorruptionLossMultiplier;
+				}
+
 				corruptionTrue += amount;
 			}
 			else if (corr > 0)
 			{
 				amount = corr;
-				if (!ignorePerks) amount *= CorruptionGainMultiplier;
+				if (!ignorePerks)
+				{
+					amount *= CorruptionGainMultiplier;
+				}
+
 				corruptionTrue += amount;
 			}
 		}
@@ -1221,6 +1316,16 @@ namespace CoC.Backend.Creatures
 			return genitals.RemoveCock(count);
 		}
 
+		public int RemoveCockAt(int index, int count = 1)
+		{
+			return genitals.RemoveCockAt(index, count);
+		}
+
+		public bool RemoveCock(Cock cock)
+		{
+			return genitals.RemoveCock(cock);
+		}
+
 		public int RemoveExtraCocks()
 		{
 			return genitals.RemoveExtraCocks();
@@ -1233,16 +1338,19 @@ namespace CoC.Backend.Creatures
 		#endregion
 		#region Vagina Add/Remove
 
+		public bool AddVagina() => genitals.AddVagina();
 		public bool AddVagina(VaginaType newVaginaType)
 		{
 			return genitals.AddVagina(newVaginaType);
 		}
 
+		public bool AddVagina(float clitLength) => genitals.AddVagina(clitLength);
 		public bool AddVagina(VaginaType newVaginaType, float clitLength)
 		{
 			return genitals.AddVagina(newVaginaType, clitLength);
 		}
 
+		public bool AddVagina(float clitLength, VaginalLooseness looseness, VaginalWetness wetness) => genitals.AddVagina(clitLength, looseness, wetness);
 		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness)
 		{
 			return genitals.AddVagina(newVaginaType, clitLength, looseness, wetness);
@@ -1268,75 +1376,51 @@ namespace CoC.Backend.Creatures
 		#region Equipment Related
 		//equip is handled by use item.
 
-		//all equipment is handled by the item system, because removing, equiping, and replacing all have an effect on the item system, be it removing, replacing, or adding items into
-		//the inventory as a result. Thus, all of these are internal. These are simply helpers responsible for actually setting the values in this class, which cannot be done elsewhere
-		//because of access restrictions.
+		//Normally, items are passive and just tell their consumer what to do, but equipment requires them to actively handle any other equipment they replace.
+		//This means the standard way of using items, with just a public UseItemOrWhatever(...) is not enough. We also need a way to retrieve the information about
+		//whatever item we are replacing (if any), and we need to do so without exposing it to the rest of the code base, because that would circumvent all the checks
+		//we do and any consequences of doing so. hence, the following internal change functions for the various pieces of equipment.
 
-		internal ArmorBase ReplaceArmorInternal(ArmorBase armorBase)
-		{
-			if (armorBase is null)
-			{
-				return RemoveArmorInternal();
-			}
-			else
-			{
-				var retVal = armor;
-				armor = armorBase;
-				retVal?.OnRemove(this);
-				return retVal;
-			}
-		}
 
-		internal ArmorBase RemoveArmorInternal()
+		internal ArmorBase ChangeArmor(ArmorBase armorBase, out string removeText)
 		{
-			var retVal = armor;
+			ArmorBase retVal = armor;
+			armor = armorBase;
 			retVal?.OnRemove(this);
+			removeText = retVal?.OnRemoveText();
+			if (retVal?.destroyOnRemoval == true)
+			{
+				retVal = null;
+			}
 			return retVal;
 		}
 
-		internal UpperGarmentBase ReplaceUpperGarmentInternal(UpperGarmentBase upperGarmentBase)
+		internal UpperGarmentBase ChangeUpperGarment(UpperGarmentBase upperGarmentBase, out string removeText)
 		{
-			if (upperGarmentBase is null)
-			{
-				return RemoveUpperGarmentInternal();
-			}
-			else
-			{
-				var retVal = upperGarment;
-				upperGarment = upperGarmentBase;
-				retVal?.OnRemove(this);
-				return retVal;
-			}
-		}
-
-		internal UpperGarmentBase RemoveUpperGarmentInternal()
-		{
-			var retVal = upperGarment;
+			UpperGarmentBase retVal = upperGarment;
+			upperGarment = upperGarmentBase;
 			retVal?.OnRemove(this);
+			removeText = retVal?.OnRemoveText();
+			if (retVal?.destroyOnRemoval == true)
+			{
+				retVal = null;
+			}
 			return retVal;
 		}
 
-		internal LowerGarmentBase ReplaceLowerGarmentInternal(LowerGarmentBase lowerGarmentBase)
+		internal LowerGarmentBase ChangeLowerGarment(LowerGarmentBase lowerGarmentBase, out string removeText)
 		{
-			if (lowerGarmentBase is null)
-			{
-				return RemoveLowerGarmentInternal();
-			}
-			else
-			{
-				var retVal = lowerGarment;
-				lowerGarment = lowerGarmentBase;
-				retVal?.OnRemove(this);
-				return retVal;
-			}
-		}
-
-		internal LowerGarmentBase RemoveLowerGarmentInternal()
-		{
-			var retVal = lowerGarment;
+			LowerGarmentBase retVal = lowerGarment;
+			lowerGarment = lowerGarmentBase;
 			retVal?.OnRemove(this);
+			removeText = retVal?.OnRemoveText();
+			if (retVal?.destroyOnRemoval == true)
+			{
+				retVal = null;
+			}
 			return retVal;
 		}
+
 		#endregion
 		#region Inventory Related
 		public ReadOnlyCollection<ReadOnlyItemSlot> inventory => inventoryStore.itemSlots;
@@ -1421,7 +1505,7 @@ namespace CoC.Backend.Creatures
 
 		bool IInteractiveStorage<CapacityItem>.ReplaceItem(CapacityItem replacement, byte slot)
 		{
-			var item = inventory[slot].item;
+			CapacityItem item = inventory[slot].item;
 			ReplaceItemInSlot(slot, item, true);
 			return item != inventory[slot].item;
 		}
@@ -1433,14 +1517,20 @@ namespace CoC.Backend.Creatures
 
 		public int TryAddItem(CapacityItem item)
 		{
-			if (item is null) throw new ArgumentNullException(nameof(item));
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(item));
+			}
 
 			return inventoryStore.AddItemReturnSlot(item);
 		}
 
 		public bool TryAddItem(CapacityItem item, out string whatHappened)
 		{
-			if (item is null) throw new ArgumentNullException(nameof(item));
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(item));
+			}
 
 			int slot = inventoryStore.AddItemReturnSlot(item);
 			if (slot != -1)
@@ -1480,10 +1570,17 @@ namespace CoC.Backend.Creatures
 
 		public DisplayBase UseItemManual(CapacityItem item, UseItemCallback onUseItemReturn)
 		{
-			if (item is null) throw new ArgumentNullException(nameof(item));
-			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(item));
+			}
 
-			if (item.CanUse(this, out string whyNot))
+			if (onUseItemReturn is null)
+			{
+				throw new ArgumentNullException(nameof(onUseItemReturn));
+			}
+
+			if (item.CanUse(this, false, out string whyNot))
 			{
 				return item.AttemptToUse(this, onUseItemReturn);
 			}
@@ -1496,22 +1593,29 @@ namespace CoC.Backend.Creatures
 
 		public DisplayBase UseItemInInventoryManual(byte index, UseItemCallback onUseItemReturn)
 		{
-			if (onUseItemReturn is null) throw new ArgumentNullException(nameof(onUseItemReturn));
-			if (index >= inventory.Count) throw new IndexOutOfRangeException("inventory does not have that many slots currently.");
+			if (onUseItemReturn is null)
+			{
+				throw new ArgumentNullException(nameof(onUseItemReturn));
+			}
+
+			if (index >= inventory.Count)
+			{
+				throw new IndexOutOfRangeException("inventory does not have that many slots currently.");
+			}
 
 			if (inventory[index].isEmpty)
 			{
 				onUseItemReturn(false, NoItemInSlotErrorText(), string.Empty, null);
 				return null;
 			}
-			else if (!inventory[index].item.CanUse(this, out string whyNot))
+			else if (!inventory[index].item.CanUse(this, false, out string whyNot))
 			{
 				onUseItemReturn(false, whyNot, inventory[index].item.Author(), null);
 				return null;
 			}
 			else
 			{
-				var item = inventoryStore.RemoveItem(index);
+				CapacityItem item = inventoryStore.RemoveItem(index);
 				return item.AttemptToUse(this, onUseItemReturn);
 			}
 		}
@@ -1523,7 +1627,7 @@ namespace CoC.Backend.Creatures
 				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
 			}
-			else if (!armor.CanUse(this, out string whyNot))
+			else if (!armor.CanUse(this, false, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, armor.Author(), armor);
 				return null;
@@ -1546,34 +1650,36 @@ namespace CoC.Backend.Creatures
 				postEquipCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
 				return null;
 			}
-			else if (!armorItem.CanUse(this, out string whyNot))
+			else if (!armorItem.CanUse(this, false, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, armorItem.Author(), null);
 				return null;
 			}
 			else
 			{
-				var item = (ArmorBase)inventoryStore.RemoveItem(index);
+				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
 				return item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
+		//remove the armor, retrieving it for you to manually parse. note that if the armor destroys itself when being removed, this will return null.
 		public ArmorBase RemoveArmorManual(out string removeText)
 		{
-			var retVal = RemoveArmorInternal();
-			removeText = retVal.OnRemoveText();
-			return retVal;
+			return ChangeArmor(null, out removeText);
 		}
 
+		//remove the current armor, and replace it with the current one. since it may be possible for an armor equip to use a menu, the removed armor is sent along to the callback.
+		//you will need to manually parse the display returned by this. if the removed armor destroys itself when being removed, the corresponding value passed along to the
+		//callback will be null.
 		public DisplayBase ReplaceArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
 			if (armor is null)
 			{
-				var item = RemoveArmorManual(out string removeText);
+				ArmorBase item = RemoveArmorManual(out string removeText);
 				postReplaceArmorCallback(true, removeText, item.Author(), item);
 				return null;
 			}
-			else if (!armor.CanUse(this, out string whyNot))
+			else if (!armor.CanUse(this, false, out string whyNot))
 			{
 				postReplaceArmorCallback(false, whyNot, armor.Author(), armor);
 				return null;
@@ -1596,14 +1702,14 @@ namespace CoC.Backend.Creatures
 				postReplaceArmorCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
 				return null;
 			}
-			else if (!armorItem.CanUse(this, out string whyNot))
+			else if (!armorItem.CanUse(this, false, out string whyNot))
 			{
 				postReplaceArmorCallback(false, whyNot, armorItem.Author(), null);
 				return null;
 			}
 			else
 			{
-				var item = (ArmorBase)inventoryStore.RemoveItem(index);
+				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
 				return item.AttemptToUseSafe(this, postReplaceArmorCallback);
 			}
 		}
@@ -1615,7 +1721,7 @@ namespace CoC.Backend.Creatures
 				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
 			}
-			else if (!upperGarment.CanUse(this, out string whyNot))
+			else if (!upperGarment.CanUse(this, false, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, upperGarment.Author(), upperGarment);
 				return null;
@@ -1638,34 +1744,32 @@ namespace CoC.Backend.Creatures
 				postEquipCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), string.Empty, null);
 				return null;
 			}
-			else if (!upperGarmentItem.CanUse(this, out string whyNot))
+			else if (!upperGarmentItem.CanUse(this, false, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, upperGarmentItem.Author(), null);
 				return null;
 			}
 			else
 			{
-				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
+				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
 				return item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
 		public UpperGarmentBase RemoveUpperGarmentManual(out string removeText)
 		{
-			var retVal = RemoveUpperGarmentInternal();
-			removeText = retVal.OnRemoveText();
-			return retVal;
+			return ChangeUpperGarment(null, out removeText);
 		}
 
 		public DisplayBase ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
 			if (upperGarment is null)
 			{
-				var item = RemoveUpperGarmentManual(out string removeText);
+				UpperGarmentBase item = RemoveUpperGarmentManual(out string removeText);
 				postReplaceUpperGarmentCallback(true, removeText, item.Author(), item);
 				return null;
 			}
-			else if (!upperGarment.CanUse(this, out string whyNot))
+			else if (!upperGarment.CanUse(this, false, out string whyNot))
 			{
 				postReplaceUpperGarmentCallback(false, whyNot, upperGarment.Author(), upperGarment);
 				return null;
@@ -1688,14 +1792,14 @@ namespace CoC.Backend.Creatures
 				postReplaceUpperGarmentCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), "", null);
 				return null;
 			}
-			else if (!upperGarmentItem.CanUse(this, out string whyNot))
+			else if (!upperGarmentItem.CanUse(this, false, out string whyNot))
 			{
 				postReplaceUpperGarmentCallback(false, whyNot, upperGarmentItem.Author(), null);
 				return null;
 			}
 			else
 			{
-				var item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
+				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
 				return item.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
@@ -1707,7 +1811,7 @@ namespace CoC.Backend.Creatures
 				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
 			}
-			else if (!lowerGarment.CanUse(this, out string whyNot))
+			else if (!lowerGarment.CanUse(this, false, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, lowerGarment.Author(), lowerGarment);
 				return null;
@@ -1730,34 +1834,32 @@ namespace CoC.Backend.Creatures
 				postEquipCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
 				return null;
 			}
-			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
+			else if (!lowerGarmentItem.CanUse(this, false, out string whyNot))
 			{
 				postEquipCallback(false, whyNot, lowerGarmentItem.Author(), null);
 				return null;
 			}
 			else
 			{
-				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
+				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
 				return item.AttemptToUseSafe(this, postEquipCallback);
 			}
 		}
 
 		public LowerGarmentBase RemoveLowerGarmentManual(out string removeText)
 		{
-			var retVal = RemoveLowerGarmentInternal();
-			removeText = retVal.OnRemoveText();
-			return retVal;
+			return ChangeLowerGarment(null, out removeText);
 		}
 
 		public DisplayBase ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
 			if (lowerGarment is null)
 			{
-				var item = RemoveLowerGarmentManual(out string removeText);
+				LowerGarmentBase item = RemoveLowerGarmentManual(out string removeText);
 				postReplaceLowerGarmentCallback(true, removeText, "", item);
 				return null;
 			}
-			else if (!lowerGarment.CanUse(this, out string whyNot))
+			else if (!lowerGarment.CanUse(this, false, out string whyNot))
 			{
 				postReplaceLowerGarmentCallback(false, whyNot, lowerGarment.Author(), lowerGarment);
 				return null;
@@ -1780,40 +1882,48 @@ namespace CoC.Backend.Creatures
 				postReplaceLowerGarmentCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
 				return null;
 			}
-			else if (!lowerGarmentItem.CanUse(this, out string whyNot))
+			else if (!lowerGarmentItem.CanUse(this, false, out string whyNot))
 			{
 				postReplaceLowerGarmentCallback(false, whyNot, lowerGarmentItem.Author(), null);
 				return null;
 			}
 			else
 			{
-				var item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
+				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
 				return item.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
 			}
 		}
 
-		private string YouGaveMeANull()
+
+
+
+
+
+
+
+
+		protected string YouGaveMeANull()
 		{
 			throw new NotImplementedException();
 		}
 
-		private string NoItemInSlotErrorText()
+		protected string NoItemInSlotErrorText()
 		{
 			throw new NotImplementedException();
 		}
-		private string ReturnItemToPreviousSlotFailedForSomeReasonText(byte originalIndex, CapacityItem originalItem)
-		{
-			throw new NotImplementedException();
-		}
-
-		private string ReturnItemToPreviousSlotText(byte originalIndex, CapacityItem originalItem)
+		protected string ReturnItemToPreviousSlotFailedForSomeReasonText(byte originalIndex, CapacityItem originalItem)
 		{
 			throw new NotImplementedException();
 		}
 
+		protected string ReturnItemToPreviousSlotText(byte originalIndex, CapacityItem originalItem)
+		{
+			throw new NotImplementedException();
+		}
 
 
-		private string InCorrectTypeErrorText(Type type)
+
+		protected string InCorrectTypeErrorText(Type type)
 		{
 			throw new NotImplementedException();
 		}
@@ -1823,7 +1933,7 @@ namespace CoC.Backend.Creatures
 			throw new NotImplementedException();
 		}
 
-		private string FailedToAddItemAutomaticallyDiscard(CapacityItem item)
+		protected string FailedToAddItemAutomaticallyDiscard(CapacityItem item)
 		{
 			throw new NotImplementedException();
 		}
@@ -1833,18 +1943,20 @@ namespace CoC.Backend.Creatures
 		//Note: it's possible to have multiple body parts achieve orgasm, but only want to count it as one orgasm for the global total.
 		//this is denoted with the countTowardOrgasmTotal bool. set it to false to prevent these multiple orgasm instances from falsely incrementing the total.
 
-		private void Orgasmed()
-		{
-			this.timeLastOrgasm = GameDateTime.Now;
-			this.orgasmCount++;
-			SetLust(0);
-			//raise orgasm event.
-		}
-
-		#region Take Anal
 		private GameDateTime timeLastOrgasm { get; set; }
 		public int hoursSinceLastOrgasm => timeLastOrgasm.hoursToNow();
 		public uint orgasmCount { get; private set; } = 0;
+
+		private void Orgasmed()
+		{
+			timeLastOrgasm = GameDateTime.Now;
+			orgasmCount++;
+			SetLust(0);
+			//raise orgasm event.
+		}
+		/*
+		#region Take Anal
+
 
 
 
@@ -1984,7 +2096,7 @@ namespace CoC.Backend.Creatures
 		{
 			return genitals.HandleVaginalPregnancyOverride(vaginaIndex, knockupType, knockupRate);
 		}
-
+		*/
 		//'Dry' orgasm is orgasm without stimulation.
 		public void HaveGenericVaginalOrgasm(int vaginaIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
@@ -1996,7 +2108,7 @@ namespace CoC.Backend.Creatures
 			}
 		}
 		//
-
+		/*
 		#endregion
 		#region Give Vaginal
 		public uint TimesFuckedAnotherVagina { get; private set; } = 0;
@@ -2197,9 +2309,9 @@ namespace CoC.Backend.Creatures
 		}
 		#endregion
 		#region Give With Mouth
-		public void PenetrateSomethingWithTongue(bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void PenetrateSomethingWithTongue(bool reachOrgasm, bool countTowardOrgasmTotal, bool isSelf = false)
 		{
-			tongue.DoPenetrate();
+			tongue.DoPenetrate(isSelf);
 			if (reachOrgasm)
 			{
 				face.HandleOralOrgasmGeneric(false);
@@ -2210,9 +2322,9 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public void LickSomethingWithTongue(bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void LickSomethingWithTongue(bool reachOrgasm, bool countTowardOrgasmTotal, bool isSelf = false)
 		{
-			tongue.DoLicking();
+			tongue.DoLicking(isSelf);
 			if (reachOrgasm)
 			{
 				face.HandleOralOrgasmGeneric(false);
@@ -2263,8 +2375,8 @@ namespace CoC.Backend.Creatures
 			}
 		}
 		#endregion
+		*/
 		#endregion
-
 		public string LowerBodyArmorShort(bool both = true)
 		{
 			if (wearingArmor && both && wearingLowerGarment)
@@ -2284,23 +2396,50 @@ namespace CoC.Backend.Creatures
 
 		public string LowerBodyArmorTextHelper(string armorAndLowerGarmentText, string armorText, string lowerGarmentText, string nakedText)
 		{
-			if (wearingArmor && wearingLowerGarment) return armorAndLowerGarmentText;
-			else if (wearingArmor) return armorText;
-			else if (wearingLowerGarment) return lowerGarmentText;
-			else return nakedText;
+			if (wearingArmor && wearingLowerGarment)
+			{
+				return armorAndLowerGarmentText;
+			}
+			else if (wearingArmor)
+			{
+				return armorText;
+			}
+			else if (wearingLowerGarment)
+			{
+				return lowerGarmentText;
+			}
+			else
+			{
+				return nakedText;
+			}
 		}
 
 		public string LowerBodyArmorTextHelper(string armorText, string lowerGarmentText, string nakedText)
 		{
-			if (wearingArmor) return armorText;
-			else if (wearingLowerGarment) return lowerGarmentText;
-			else return nakedText;
+			if (wearingArmor)
+			{
+				return armorText;
+			}
+			else if (wearingLowerGarment)
+			{
+				return lowerGarmentText;
+			}
+			else
+			{
+				return nakedText;
+			}
 		}
 
 		public string ClothingOrNakedTextHelper(string clothingText, string nakedText)
 		{
-			if (wearingAnything) return clothingText;
-			else return nakedText;
+			if (wearingAnything)
+			{
+				return clothingText;
+			}
+			else
+			{
+				return nakedText;
+			}
 		}
 
 		//everything that modifies data within a body part is supposed to be internal, and then called from here. this way, we can debug eaiser, while still making it somewhat intuitive for non-programmers.
@@ -2313,7 +2452,11 @@ namespace CoC.Backend.Creatures
 		#region Antennae
 		public bool UpdateAntennae(AntennaeType antennaeType)
 		{
-			if (antennaeType == null) throw new ArgumentNullException(nameof(antennaeType));
+			if (antennaeType == null)
+			{
+				throw new ArgumentNullException(nameof(antennaeType));
+			}
+
 			return antennae.UpdateType(antennaeType);
 		}
 
@@ -2326,7 +2469,11 @@ namespace CoC.Backend.Creatures
 		//arms are weird b/c hands. technically it's own class, so we'll let you subscribe to it, but it may not change whenever armType does.
 		public bool UpdateArms(ArmType armType)
 		{
-			if (armType == null) throw new ArgumentNullException(nameof(armType));
+			if (armType == null)
+			{
+				throw new ArgumentNullException(nameof(armType));
+			}
+
 			return arms.UpdateType(armType);
 		}
 
@@ -2340,7 +2487,11 @@ namespace CoC.Backend.Creatures
 
 		public bool UpdateBack(BackType backType)
 		{
-			if (backType == null) throw new ArgumentNullException(nameof(backType));
+			if (backType == null)
+			{
+				throw new ArgumentNullException(nameof(backType));
+			}
+
 			if (backType is DragonBackMane dragonBack)
 			{
 				return back.UpdateType(dragonBack, hair.hairColor);
@@ -2666,6 +2817,15 @@ namespace CoC.Backend.Creatures
 		#endregion
 
 		#endregion
+
+		#region Body Part Aliases and other useful Functions
+
+		public bool isBiped => lowerBody.isBiped;
+		public bool isMonoped => lowerBody.isMonoped;
+		public bool isQuadruped => lowerBody.isQuadruped;
+
+		#endregion
+
 		/*#region Body Part Change Aliases
 
 		//semantics: Set vs Change - Set will generally be void, as it'll just set it to the value given, though it can return a boolean if it may not be possible to set a value for this data based on other factors.
@@ -2820,8 +2980,8 @@ namespace CoC.Backend.Creatures
 		private string QueryDailyBodyListenerData(byte currentHour)
 		{
 			StringBuilder sb = new StringBuilder();
-			dailyBodyListeners.ForEach(x => { if (x.hourToTrigger == currentHour) sb.Append(x.reactToDailyTrigger(this is PlayerBase)); });
-			multiDailyBodyListeners.ForEach(x => { if (x.triggerHours.Contains(currentHour)) sb.Append(x.reactToTrigger(this is PlayerBase, currentHour)); });
+			dailyBodyListeners.ForEach(x => { if (x.hourToTrigger == currentHour) { sb.Append(x.reactToDailyTrigger(this is PlayerBase)); } });
+			multiDailyBodyListeners.ForEach(x => { if (x.triggerHours.Contains(currentHour)) { sb.Append(x.reactToTrigger(this is PlayerBase, currentHour)); } });
 
 			return sb.ToString();
 		}
@@ -2833,7 +2993,7 @@ namespace CoC.Backend.Creatures
 
 		internal IEnumerable<ITimeDailyListenerSimple> QuerySimpleDailyListeners(byte currentHour)
 		{
-			var res = new List<ITimeDailyListenerSimple>();
+			List<ITimeDailyListenerSimple> res = new List<ITimeDailyListenerSimple>();
 			if (womb is ITimeDailyListenerSimple ds && ds.hourToTrigger == currentHour)
 			{
 				res.Add(ds);
@@ -2848,7 +3008,7 @@ namespace CoC.Backend.Creatures
 
 		internal IEnumerable<ITimeDayMultiListenerSimple> QuerySimpleDayMultiListeners(byte currentHour)
 		{
-			var res = new List<ITimeDayMultiListenerSimple>()
+			List<ITimeDayMultiListenerSimple> res = new List<ITimeDayMultiListenerSimple>()
 			{
 				this
 			};
@@ -2898,6 +3058,8 @@ namespace CoC.Backend.Creatures
 		{
 			return QueryDailyBodyListenerData(currHour);
 		}
+
+
 
 		#endregion
 

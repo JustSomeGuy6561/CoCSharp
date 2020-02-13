@@ -14,7 +14,7 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.BodyParts
 {
 	//may once have been multidyeable, as we skip button location 4; location 3 is wings.
-	public sealed partial class Wings : BehavioralSaveablePart<Wings, WingType, WingData>, IDyeable, IMultiToneable //if combat grants a boost to running via wings, just add a hasWings check.
+	public sealed partial class Wings : FullBehavioralPart<Wings, WingType, WingData>, IDyeable, IMultiToneable //if combat grants a boost to running via wings, just add a hasWings check.
 	{
 		public override string BodyPartName() => Name();
 
@@ -348,6 +348,12 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		public override bool IsIdenticalTo(WingData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && isLarge == original.isLarge && usesHair == original.usesHair && usesTone == original.usesTone &&
+				((usesTone && wingTone == original.wingTone && wingBoneTone == original.wingBoneTone) || (usesHair && featherColor == original.featherColor));
+		}
+
 		bool IDyeable.allowsDye()
 		{
 			return type.usesHair && type.canChangeColor;
@@ -481,7 +487,7 @@ namespace CoC.Backend.BodyParts
 		private bool canTone(byte index) => multiToneable.canToneOil(index);
 	}
 
-	public partial class WingType : SaveableBehavior<WingType, Wings, WingData>
+	public partial class WingType : FullBehavior<WingType, Wings, WingData>
 	{
 		public enum BehaviorOnTransform { CONVERT_TO_SMALL, KEEP_SIZE, CONVERT_TO_LARGE }
 
@@ -791,7 +797,7 @@ namespace CoC.Backend.BodyParts
 		internal override string postToneText(Wings wings, byte index) => TonablePostToneText(wings, index);
 	}
 
-	public sealed class WingData : BehavioralSaveablePartData<WingData, Wings, WingType>
+	public sealed class WingData : FullBehavioralData<WingData, Wings, WingType>
 	{
 		public readonly HairFurColors featherColor;
 		public readonly Tones wingTone;

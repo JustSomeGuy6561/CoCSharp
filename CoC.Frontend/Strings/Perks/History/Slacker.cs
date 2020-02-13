@@ -18,7 +18,7 @@ namespace CoC.Frontend.Perks.History
 		private static string SlackerHint()
 		{
 			return "You spent a lot of time slacking, avoiding work, and otherwise making a nuisance of yourself. Your efforts at slacking have made" +
-				" you quite adept at resting, meaning you recover your stamina 20% faster.  Is this your history?";
+				" you quite adept at resting, meaning you recover your stamina 20% faster. Is this your history?";
 		}
 		private static string SlackerDesc()
 		{

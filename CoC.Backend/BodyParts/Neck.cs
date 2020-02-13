@@ -62,7 +62,7 @@ namespace CoC.Backend.BodyParts
 	//despite the fact that most lizards have their neck out the back of the their head (and most fish, for that matter)
 	//they were never implemented. it seemed like a half-baked idea, so it's no longer here. if it ever becomes full-baked,
 	//by all means, add it back.
-	public sealed partial class Neck : BehavioralSaveablePart<Neck, NeckType, NeckData>, IDyeable
+	public sealed partial class Neck : FullBehavioralPart<Neck, NeckType, NeckData>, IDyeable
 	{
 		public override string BodyPartName() => Name();
 
@@ -224,6 +224,11 @@ namespace CoC.Backend.BodyParts
 			return valid;
 		}
 
+		public override bool IsIdenticalTo(NeckData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && type == original.type && (!type.usesHair || this.color == original.neckHairColor) && length == original.length &&
+				tattoos.IsIdenticalTo(original.tattoos);
+		}
 
 		bool IDyeable.allowsDye()
 		{
@@ -263,7 +268,7 @@ namespace CoC.Backend.BodyParts
 		}
 	}
 
-	public partial class NeckType : SaveableBehavior<NeckType, Neck, NeckData>
+	public partial class NeckType : FullBehavior<NeckType, Neck, NeckData>
 	{
 		public const byte MIN_NECK_LENGTH = 2;
 
@@ -452,13 +457,14 @@ namespace CoC.Backend.BodyParts
 
 	}
 
-	public sealed class NeckData : BehavioralSaveablePartData<NeckData, Neck, NeckType>
+	public sealed class NeckData : FullBehavioralData<NeckData, Neck, NeckType>
 	{
 		public readonly byte length;
 		public readonly HairFurColors neckHairColor; //if applicable
 
 		public bool neckAtBaseOfSkull => type.neckAtBaseOfSkull; //(relative to humans, of course)
 
+		public readonly ReadOnlyTattooablePart<NeckTattooLocation> tattoos;
 
 		public override NeckData AsCurrentData()
 		{
@@ -469,6 +475,8 @@ namespace CoC.Backend.BodyParts
 		{
 			length = neck.length;
 			neckHairColor = neck.color;
+
+			tattoos = neck.tattoos.AsReadOnlyData();
 		}
 	}
 }

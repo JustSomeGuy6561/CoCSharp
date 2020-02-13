@@ -24,10 +24,10 @@ namespace CoC.Backend.BodyParts
 	 * 3) it then sets your neck length, and returns.
 	 */
 
-	public abstract class SaveableBehavior<ThisClass, ContainerClass, DataClass> : BehaviorBase
-		where ThisClass : SaveableBehavior<ThisClass, ContainerClass, DataClass>
-		where ContainerClass : BehavioralSaveablePart<ContainerClass, ThisClass, DataClass>
-		where DataClass : BehavioralSaveablePartData<DataClass, ContainerClass, ThisClass>
+	public abstract class FullBehavior<ThisClass, ContainerClass, DataClass> : BehaviorBase
+		where ThisClass : FullBehavior<ThisClass, ContainerClass, DataClass>
+		where ContainerClass : FullBehavioralPart<ContainerClass, ThisClass, DataClass>
+		where DataClass : FullBehavioralData<DataClass, ContainerClass, ThisClass>
 	{
 
 
@@ -94,7 +94,7 @@ namespace CoC.Backend.BodyParts
 			return restoredStr(originalData, player);
 		}
 
-		private protected SaveableBehavior(ShortDescriptor shortDesc, PartDescriptor<DataClass> longDesc,
+		private protected FullBehavior(ShortDescriptor shortDesc, PartDescriptor<DataClass> longDesc,
 			PlayerBodyPartDelegate<ContainerClass> playerDesc, ChangeType<DataClass> transformDesc, RestoreType<DataClass> restoreDesc) : base(shortDesc)
 		{
 			longStr = longDesc ?? throw new ArgumentNullException(nameof(longDesc));
@@ -103,7 +103,7 @@ namespace CoC.Backend.BodyParts
 			restoredStr = restoreDesc ?? throw new ArgumentNullException(nameof(restoreDesc));
 		}
 
-		private protected SaveableBehavior(SimpleDescriptor standardShortDesc, SimpleDescriptor singleShortDesc, PartDescriptor<DataClass> longDesc,
+		private protected FullBehavior(SimpleDescriptor standardShortDesc, SimpleDescriptor singleShortDesc, PartDescriptor<DataClass> longDesc,
 			PlayerBodyPartDelegate<ContainerClass> playerDesc, ChangeType<DataClass> transformDesc, RestoreType<DataClass> restoreDesc) : base(standardShortDesc, singleShortDesc)
 		{
 			longStr = longDesc ?? throw new ArgumentNullException(nameof(longDesc));

@@ -107,7 +107,7 @@ namespace CoC.Backend.BodyParts
 
 		public float currentLactationAmount { get; private set; }
 
-		public float lactationAmountPerBreast => currentLactationAmount / numBreasts;
+		public float lactationAmountPerBreast => currentLactationAmount / totalBreasts;
 		#endregion
 
 		#region Lactation Perk Data
@@ -131,6 +131,7 @@ namespace CoC.Backend.BodyParts
 		private readonly List<Breasts> _breasts = new List<Breasts>(MAX_BREAST_ROWS);
 
 		private uint missingRowTitFuckCount = 0;
+		private uint missingRowSelfTitFuckCount = 0;
 		private uint missingRowBreastOrgasmCount = 0;
 		private uint missingRowBreastDryOrgasmCount = 0;
 		#endregion
@@ -138,6 +139,7 @@ namespace CoC.Backend.BodyParts
 		#region Private Nipple Related Members
 
 		private uint missingRowNippleFuckCount = 0;
+		private uint missingRowSelfNippleFuckCount = 0;
 		private uint missingRowDickNippleSexCount = 0;
 
 		#endregion
@@ -151,12 +153,27 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-		#region Public Breast Related Computed Values
+		#region Public Breast Related Computed/Derived Values
 		public int numBreastRows => _breasts.Count;
 
-		public int numBreasts => _breasts.Sum(x => x.numBreasts);
+		public int totalBreasts => _breasts.Sum(x => x.numBreasts);
 
-		public uint titFuckCount => missingRowTitFuckCount + (uint)breastRows.Sum(x => x.titFuckCount);
+		internal CupSize maleNewDefaultCup => perkData.MaleNewDefaultCup;
+		internal CupSize femaleNewDefaultCup => perkData.FemaleNewDefaultCup;
+		internal sbyte maleNewCupDelta => perkData.MaleNewCupDelta;
+		internal sbyte femaleNewCupDelta => perkData.FemaleNewCupDelta;
+
+		public CupSize smallestPossibleMaleCupSize => perkData.MaleMinCup;
+		public CupSize smallestPossibleFemaleCupSize => perkData.FemaleMinCup;
+
+		public CupSize smallestPossibleCupSize => gender.HasFlag(Gender.FEMALE) ? smallestPossibleFemaleCupSize : smallestPossibleMaleCupSize;
+
+
+		internal float titsGrowthMultiplier => perkData.TitsGrowthMultiplier;
+		internal float titsShrinkMultiplier => perkData.TitsShrinkMultiplier;
+
+		public uint totalTitFuckCount => missingRowTitFuckCount + (uint)breastRows.Sum(x => x.totalTitFuckCount);
+		public uint selfTitFuckCount => missingRowSelfTitFuckCount + (uint)breastRows.Sum(x => x.selfTitFuckCount);
 
 		public uint breastOrgasmCount => missingRowBreastOrgasmCount.add((uint)breastRows.Sum(x => x.orgasmCount));
 		public uint breastDryOrgasmCount => missingRowBreastDryOrgasmCount.add((uint)breastRows.Sum(x => x.dryOrgasmCount));
@@ -167,7 +184,8 @@ namespace CoC.Backend.BodyParts
 		public int nippleCount => _breasts.Count * Breasts.NUM_BREASTS * (hasQuadNipples ? 4 : 1);
 
 
-		public uint totalFuckableNippleSexCount => missingRowNippleFuckCount + (uint)breastRows.Sum(x => x.fuckableNippleSexCount);
+		public uint totalFuckableNippleSexCount => missingRowNippleFuckCount + (uint)breastRows.Sum(x => x.totalFuckableNippleSexCount);
+		public uint selfFuckableNippleSexCount => missingRowSelfNippleFuckCount + (uint)breastRows.Sum(x => x.selfFuckableNippleSexCount);
 		public uint totalDickNippleSexCount => missingRowDickNippleSexCount + (uint)breastRows.Sum(x => x.dickNippleSexCount);
 
 		#endregion
@@ -270,7 +288,11 @@ namespace CoC.Backend.BodyParts
 
 		private readonly Genitals source;
 
+		private uint currentBreastID = 0;
+
 		private GenitalPerkData perkData => source.perkData;
+
+		internal BodyType bodyType => CreatureStore.GetCreatureClean(creatureID)?.body.type ?? BodyType.defaultValue;
 
 		public float relativeLust => source.relativeLust;
 
@@ -293,7 +315,12 @@ namespace CoC.Backend.BodyParts
 
 		internal void Initialize(BreastCreator[] breastCreators)
 		{
-			_breasts.AddRange(breastCreators.Where(x => x != null).Select(x => new Breasts(creatureID, nippleData, x.cupSize, x.nipplePiercings)).Take(MAX_BREAST_ROWS));
+			var rows = breastCreators.Where(x => x != null).Take(MAX_BREAST_ROWS);
+			foreach (var row in rows)
+			{
+				_breasts.Add(new Breasts(this, currentBreastID, row.cupSize, row.nipplePiercings));
+				currentBreastID++;
+			}
 		}
 
 		#endregion
@@ -322,8 +349,6 @@ namespace CoC.Backend.BodyParts
 					return false;
 				}
 			}
-
-
 			return valid;
 		}
 
@@ -335,6 +360,26 @@ namespace CoC.Backend.BodyParts
 		public override string BodyPartName()
 		{
 			return Name();
+		}
+
+		public override bool IsIdenticalTo(BreastCollectionData original, bool ignoreSexualMetaData)
+		{
+			if (original is null) return false;
+
+			Dictionary<uint, Breasts> items = _breasts.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, BreastData> dataItems = original.breasts.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			//this was a fucking bitch to figure out lmao.
+			return nippleData.IsIdenticalTo(original.nippleData, ignoreSexualMetaData) && lactation_TotalCapacityMultiplier == original.lactation_TotalCapacityMultiplier
+				&& lactation_CapacityMultiplier == original.lactation_CapacityMultiplier && lactationProductionModifier == original.lactationProductionModifier
+				&& overfullBuffer == original.overfullBuffer && currentLactationAmount == original.currentLactationAmount && isOverfull == original.isOverfull
+				&& canLessenCurrentLactationLevels == original.canLessenCurrentLactationLevels && hoursSinceLastMilked == original.hoursSinceLastMilked
+				&& hoursOverfull == original.hoursOverfull && maximumLactationCapacity == original.maximumLactationCapacity && lactationRate == original.lactationRate
+				&& currentLactationCapacity == original.currentLactationCapacity && lactationStatus == original.lactationStatus
+				&& (ignoreSexualMetaData || (totalTitFuckCount == original.totalTitFuckCount && selfTitFuckCount == original.selfTitFuckCount
+				&& totalFuckableNippleSexCount == original.totalFuckableNippleSexCount && selfFuckableNippleSexCount == original.selfFuckableNippleSexCount
+				&& totalDickNippleSexCount == original.totalDickNippleSexCount))
+				&& items.Keys.Count == dataItems.Keys.Count && items.All(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
 		}
 
 		#endregion
@@ -373,8 +418,8 @@ namespace CoC.Backend.BodyParts
 				return null;
 			}
 			var averageCup = AverageCupSize();
-			return Breasts.GenerateAggregate(creatureID, averageCup, nippleLength, hasBlackNipples, hasQuadNipples, nippleData.dickNipplesEnabled, nippleStatus, lactationRate,
-				lactationStatus, isOverfull, gender, relativeLust, perkData.MaleMinCup);
+			return Breasts.GenerateAggregate(creatureID, averageCup, nippleLength, hasBlackNipples, hasQuadNipples, nippleData.dickNipplesEnabled, nippleStatus,
+				lactationRate, lactationStatus, isOverfull, gender, bodyType, relativeLust, perkData.MaleMinCup);
 		}
 
 		#endregion
@@ -389,7 +434,9 @@ namespace CoC.Backend.BodyParts
 			}
 
 			var cup = _breasts[_breasts.Count - 1].cupSize;
-			_breasts.Add(new Breasts(creatureID, nippleData, cup));
+			_breasts.Add(new Breasts(this, currentBreastID, cup));
+			currentBreastID++;
+
 			return true;
 		}
 		public bool AddBreastRowAverage()
@@ -402,7 +449,9 @@ namespace CoC.Backend.BodyParts
 			//i find it funny that linq was created for databases, but it really is used for functional programming.
 			double avgCup = _breasts.Average((x) => (double)x.cupSize);
 			byte cup = (byte)Math.Ceiling(avgCup);
-			_breasts.Add(new Breasts(creatureID, nippleData, (CupSize)cup));
+			_breasts.Add(new Breasts(this, currentBreastID, (CupSize)cup));
+			currentBreastID++;
+
 			return true;
 		}
 
@@ -413,7 +462,8 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 
-			_breasts.Add(new Breasts(creatureID, nippleData, cup));
+			_breasts.Add(new Breasts(this, currentBreastID, cup));
+			currentBreastID++;
 			return true;
 		}
 
@@ -429,23 +479,29 @@ namespace CoC.Backend.BodyParts
 			//if over the number of breasts, reset the first one and set the number to remove to one less than the total.
 			if (count >= numBreastRows)
 			{
-				missingRowTitFuckCount += _breasts[0].titFuckCount;
+				missingRowTitFuckCount += _breasts[0].totalTitFuckCount;
+				missingRowSelfTitFuckCount += _breasts[0].selfTitFuckCount;
 				missingRowBreastOrgasmCount += _breasts[0].orgasmCount;
 				missingRowBreastDryOrgasmCount += _breasts[0].dryOrgasmCount;
 
-				missingRowNippleFuckCount += _breasts[0].fuckableNippleSexCount;
+				missingRowNippleFuckCount += _breasts[0].totalFuckableNippleSexCount;
+				missingRowSelfNippleFuckCount += _breasts[0].selfFuckableNippleSexCount;
 				missingRowDickNippleSexCount += _breasts[0].dickNippleSexCount;
 				_breasts[0].Reset();
 
 				count = numBreastRows - 1;
 			}
 
-			missingRowTitFuckCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.titFuckCount);
-			missingRowBreastOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.orgasmCount);
-			missingRowBreastDryOrgasmCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.dryOrgasmCount);
+			var toRemove = breastRows.Skip(numBreastRows - count);
 
-			missingRowNippleFuckCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.fuckableNippleSexCount);
-			missingRowDickNippleSexCount += (uint)breastRows.Skip(numBreastRows - count).Sum(x => x.dickNippleSexCount);
+			missingRowTitFuckCount += (uint)toRemove.Sum(x => x.totalTitFuckCount);
+			missingRowSelfTitFuckCount += (uint)toRemove.Sum(x => x.selfTitFuckCount);
+			missingRowBreastOrgasmCount += (uint)toRemove.Sum(x => x.orgasmCount);
+			missingRowBreastDryOrgasmCount += (uint)toRemove.Sum(x => x.dryOrgasmCount);
+
+			missingRowNippleFuckCount += (uint)toRemove.Sum(x => x.totalFuckableNippleSexCount);
+			missingRowSelfNippleFuckCount += (uint)toRemove.Sum(x => x.selfFuckableNippleSexCount);
+			missingRowDickNippleSexCount += (uint)toRemove.Sum(x => x.dickNippleSexCount);
 
 			_breasts.RemoveRange(numBreastRows - count, count);
 
@@ -787,9 +843,9 @@ namespace CoC.Backend.BodyParts
 
 		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
 
-		internal void HandleTittyFuck(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm)
+		internal void HandleTittyFuck(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool sourceIsSelf)
 		{
-			breastRows[breastIndex].DoTittyFuck(length, girth, knotWidth, reachOrgasm);
+			breastRows[breastIndex].DoTittyFuck(length, girth, knotWidth, reachOrgasm, sourceIsSelf);
 		}
 
 		internal void HandleTitOrgasmGeneric(int breastIndex, bool dryOrgasm)
@@ -800,9 +856,9 @@ namespace CoC.Backend.BodyParts
 
 		#region Nipple Sex Related Functions
 
-		internal void HandleNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm)
+		internal void HandleNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool sourceIsSelf)
 		{
-			breastRows[breastIndex].DoNippleFuck(length, girth, knotWidth, cumAmount, reachOrgasm);
+			breastRows[breastIndex].DoNippleFuck(length, girth, knotWidth, cumAmount, reachOrgasm, sourceIsSelf);
 		}
 
 		internal void HandleNippleDickPenetrate(int breastIndex, bool reachOrgasm)
@@ -975,7 +1031,7 @@ namespace CoC.Backend.BodyParts
 						}
 						//formula:
 						//(1 + breastCount / 8) * hours / 10. so .1 to .2 per hour, assuming 2 breasts per row. higher if that's not the case anymore.
-						boostLactation((float)((1 + numBreasts / 8) * multiplier));
+						boostLactation((float)((1 + totalBreasts / 8) * multiplier));
 
 						if (lactationStatus < oldStatus)
 						{
@@ -1105,17 +1161,20 @@ namespace CoC.Backend.BodyParts
 
 		#region Public Nipple Related Members
 
-		public readonly bool blackNipples;
-		public readonly bool quadNipples;
-		public readonly NippleStatus nippleType;
-		public readonly float nippleLength;
+		internal NippleAggregateData nippleData;
 
-		public readonly bool unlockedDickNipples;
+		public bool blackNipples => nippleData.hasBlackNipples;
+		public bool quadNipples => nippleData.hasQuadNipples;
+		public NippleStatus nippleType => nippleData.nippleStatus;
+		public float nippleLength => nippleData.length;
+
+		public bool unlockedDickNipples => nippleData.dickNipplesEnabled;
 
 		public int nippleCount => numBreasts * (quadNipples ? 4 : 1);
 
-		public readonly uint fuckableNippleSexCount;
-		public readonly uint dickNippleSexCount;
+		public readonly uint totalFuckableNippleSexCount;
+		public readonly uint selfFuckableNippleSexCount;
+		public readonly uint totalDickNippleSexCount;
 
 		#endregion
 
@@ -1138,9 +1197,10 @@ namespace CoC.Backend.BodyParts
 		#region Public Breast Related Computed Values
 		public int numBreastRows => breasts.Count;
 
-		public int numBreasts => breasts.Sum(x => x.numberOfBreasts);
+		public byte numBreasts => (byte)breasts.Sum(x => x.numBreasts);
 
-		public readonly uint titFuckCount;
+		public readonly uint totalTitFuckCount;
+		public readonly uint selfTitFuckCount;
 
 		public readonly uint breastOrgasmCount;
 		public readonly uint breastDryOrgasmCount;
@@ -1173,6 +1233,8 @@ namespace CoC.Backend.BodyParts
 
 		private readonly Gender gender;
 
+		private readonly BodyType bodyType;
+
 		private readonly CupSize maleMinCupSize;
 
 		internal BreastCollectionData(BreastCollection source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
@@ -1184,9 +1246,8 @@ namespace CoC.Backend.BodyParts
 			this.lactationProductionModifier = source.lactationProductionModifier;
 			this.overfullBuffer = source.overfullBuffer;
 			this.currentLactationAmount = source.currentLactationAmount;
-			this.titFuckCount = source.titFuckCount;
-			this.breastOrgasmCount = source.breastOrgasmCount;
-			this.breastDryOrgasmCount = source.breastDryOrgasmCount;
+
+
 			this.canLessenCurrentLactationLevels = source.canLessenCurrentLactationLevels;
 			this.hoursSinceLastMilked = source.hoursSinceLastMilked;
 			this.isOverfull = source.isOverfull;
@@ -1195,18 +1256,29 @@ namespace CoC.Backend.BodyParts
 			this.currentLactationCapacity = source.currentLactationCapacity;
 			this.lactationRate = source.lactationRate;
 			this.lactationStatus = source.lactationStatus;
-			this.blackNipples = source.hasBlackNipples;
-			this.quadNipples = source.hasQuadNipples;
-			this.nippleType = source.nippleStatus;
-			this.unlockedDickNipples = source.unlockedDickNipples;
-			this.fuckableNippleSexCount = source.totalFuckableNippleSexCount;
-			this.dickNippleSexCount = source.totalDickNippleSexCount;
-			this.nippleLength = source.nippleLength;
+
+			this.nippleData = source.nippleData.AsReadOnlyData();
+
 			this.relativeLust = source.relativeLust;
 			this.isPregnant = source.isPregnant;
 			this.gender = source.gender;
 
 			this.maleMinCupSize = source.breastRows[0].maleMinCup;
+
+			bodyType = source.bodyType;
+
+			this.breastOrgasmCount = source.breastOrgasmCount;
+			this.breastDryOrgasmCount = source.breastDryOrgasmCount;
+
+			totalFuckableNippleSexCount = source.totalFuckableNippleSexCount;
+			selfFuckableNippleSexCount = source.selfFuckableNippleSexCount;
+			totalDickNippleSexCount = source.totalDickNippleSexCount;
+
+			totalTitFuckCount = source.totalTitFuckCount;
+			selfTitFuckCount = source.selfTitFuckCount;
+
+			breastOrgasmCount = source.breastOrgasmCount;
+			breastDryOrgasmCount = source.breastDryOrgasmCount;
 		}
 
 		#region Breast Aggregate Functions
@@ -1244,7 +1316,7 @@ namespace CoC.Backend.BodyParts
 			}
 			var averageCup = AverageCupSize();
 			return Breasts.GenerateAggregate(creatureID, averageCup, nippleLength, blackNipples, quadNipples, unlockedDickNipples, nippleType, lactationRate, lactationStatus,
-				isOverfull, gender, relativeLust, maleMinCupSize);
+				isOverfull, gender, bodyType, relativeLust, maleMinCupSize);
 		}
 
 		#endregion
@@ -1265,5 +1337,11 @@ namespace CoC.Backend.BodyParts
 
 
 		#endregion
+	}
+
+	public sealed class BreastCollectionChanged
+	{
+
+
 	}
 }

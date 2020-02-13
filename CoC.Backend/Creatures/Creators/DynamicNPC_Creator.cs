@@ -8,12 +8,11 @@ using CoC.Backend.BodyParts;
 
 namespace CoC.Backend.Creatures
 {
-	public abstract class PlayerCreatorBase : CombatCreatureCreator
+	public class DynamicNPC_Creator : CreatureCreator
 	{
-		public int gems = 0;
+		public SimpleDescriptor indefiniteArticle;
+		public SimpleDescriptor definiteArticle;
 
-		//public WombType wombType;
-
-		public PlayerCreatorBase(string name) : base(name) { }
+		public DynamicNPC_Creator(string name) : base(name) { }
 	}
 }

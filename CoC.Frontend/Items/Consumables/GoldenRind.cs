@@ -13,7 +13,7 @@ using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	public sealed partial class GoldenRind : ConsumableBase
+	public sealed partial class GoldenRind : StandardConsumable
 	{
 		public GoldenRind() : base()
 		{
@@ -36,14 +36,14 @@ namespace CoC.Frontend.Items.Consumables
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
 			//if your text uses "an" as an article instead of "a", be sure to change that here.
-			string countText = displayCount ? (count == 1 ? "a" : Utils.NumberAsText(count)) : "";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
 			//when the text below is corrected, remove this throw.
 			string itemText = count == 1 ? "rind" : "rinds";
 
-			return $"{count} golden {itemText}";
+			return $"{count}golden {itemText}";
 		}
 
-		public override string Appearance()
+		public override string AboutItem()
 		{
 			return "This shimmering, citrus peel is shaped like a corkscrew and smells sweet and sour at the same time.";
 		}
@@ -62,7 +62,7 @@ namespace CoC.Frontend.Items.Consumables
 		}
 
 		//can we use this item on the given creature? if not, provide a valid string explaining why not. that text will be displayed as a hint to the user.
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -79,13 +79,21 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		{
+			var tf = new DeerTFs();
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+
+			return true;
+		}
+
 		private class DeerTFs : DeerTransformations
 		{
 			public DeerTFs()
 			{
 			}
 
-			protected override bool InitialTransformationText(Creature target)
+			protected override string InitialTransformationText(Creature target)
 			{
 				throw new NotImplementedException();
 			}

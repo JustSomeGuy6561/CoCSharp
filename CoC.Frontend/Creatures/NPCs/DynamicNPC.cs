@@ -1,4 +1,5 @@
-﻿using CoC.Backend.Creatures;
+﻿using CoC.Backend;
+using CoC.Backend.Creatures;
 using CoC.Backend.Perks;
 using CoC.Frontend.Perks;
 using System;
@@ -14,6 +15,17 @@ namespace CoC.Frontend.Creatures.NPCs
 		{
 			extendedPerkModifiers = new ExtendedPerkModifiers(this);
 			extendedData = new ExtendedCreatureData(this, extendedPerkModifiers);
+
+			indefinite = creator.indefiniteArticle;
+			definite = creator.definiteArticle;
+		}
+
+		protected readonly SimpleDescriptor indefinite, definite;
+
+		public override string Article(bool definitiveArticle)
+		{
+			if (definitiveArticle) return definite?.Invoke() ?? "";
+			else return indefinite?.Invoke() ?? "";
 		}
 
 		public ExtendedCreatureData extendedData { get; }

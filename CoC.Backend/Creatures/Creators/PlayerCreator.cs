@@ -5,8 +5,12 @@
 
 namespace CoC.Backend.Creatures
 {
-	public class DynamicNPC_Creator : CreatureCreator
+	public abstract class PlayerCreatorBase : CombatCreatureCreator
 	{
-		public DynamicNPC_Creator(string name) : base(name) { }
+		public int gems = 0;
+
+		//public WombType wombType;
+
+		public PlayerCreatorBase(string name) : base(name) { }
 	}
 }
