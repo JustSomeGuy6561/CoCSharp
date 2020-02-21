@@ -126,13 +126,13 @@ namespace CoC.Backend.BodyParts
 
 		#region Lactation Related Constants
 
-		public const float MIN_LACTATION_MODIFIER = BreastCollection.MIN_LACTATION_MODIFIER;
-		public const float LACTATION_THRESHOLD = BreastCollection.LACTATION_THRESHOLD; //below this: not lactating. above this: lactating.
-		public const float MODERATE_LACTATION_THRESHOLD = BreastCollection.MODERATE_LACTATION_THRESHOLD;
-		public const float STRONG_LACTATION_THRESHOLD = BreastCollection.STRONG_LACTATION_THRESHOLD;
-		public const float HEAVY_LACTATION_THRESHOLD = BreastCollection.HEAVY_LACTATION_THRESHOLD;
-		public const float EPIC_LACTATION_THRESHOLD = BreastCollection.EPIC_LACTATION_THRESHOLD;
-		public const float MAX_LACTATION_MODIFIER = BreastCollection.MAX_LACTATION_MODIFIER;
+		public const double MIN_LACTATION_MODIFIER = BreastCollection.MIN_LACTATION_MODIFIER;
+		public const double LACTATION_THRESHOLD = BreastCollection.LACTATION_THRESHOLD; //below this: not lactating. above this: lactating.
+		public const double MODERATE_LACTATION_THRESHOLD = BreastCollection.MODERATE_LACTATION_THRESHOLD;
+		public const double STRONG_LACTATION_THRESHOLD = BreastCollection.STRONG_LACTATION_THRESHOLD;
+		public const double HEAVY_LACTATION_THRESHOLD = BreastCollection.HEAVY_LACTATION_THRESHOLD;
+		public const double EPIC_LACTATION_THRESHOLD = BreastCollection.EPIC_LACTATION_THRESHOLD;
+		public const double MAX_LACTATION_MODIFIER = BreastCollection.MAX_LACTATION_MODIFIER;
 
 		#endregion
 
@@ -141,7 +141,7 @@ namespace CoC.Backend.BodyParts
 
 		public const ushort CUM_MULTIPLIER_CAP = CockCollection.CUM_MULTIPLIER_CAP;
 
-		public float minimumCockLength => perkData.MinCockLength;
+		public double minimumCockLength => perkData.MinCockLength;
 		#endregion
 
 		#region Public ReadOnly Members
@@ -200,7 +200,7 @@ namespace CoC.Backend.BodyParts
 
 		//public int numCocksOrClitCocks => _cocks.Count == 0 ? (hasClitCock ? 1 : 0) : _cocks.Count;
 
-		internal float relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
+		internal double relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
 
 		#endregion
 
@@ -250,11 +250,11 @@ namespace CoC.Backend.BodyParts
 		public bool hasSheath => allCocks.hasSheath;
 
 		#region Public Cum Related Members
-		public float cumMultiplierTrue => allCocks.cumMultiplierTrue;
+		public double cumMultiplierTrue => allCocks.cumMultiplierTrue;
 
 		public ushort additionalCum => allCocks.additionalCum;
 
-		public float additionalCumTrue => allCocks.additionalCumTrue;
+		public double additionalCumTrue => allCocks.additionalCumTrue;
 
 		#endregion
 		#region Public Cum Related Computed Values
@@ -285,7 +285,7 @@ namespace CoC.Backend.BodyParts
 
 		public NippleStatus nippleType => allBreasts.nippleStatus;
 
-		public float nippleLength => allBreasts.nippleLength;
+		public double nippleLength => allBreasts.nippleLength;
 
 		public bool unlockedDickNipples => allBreasts.unlockedDickNipples;
 
@@ -294,14 +294,14 @@ namespace CoC.Backend.BodyParts
 
 		#region Public Lactation Related Members
 
-		public float lactation_TotalCapacityMultiplier => allBreasts.lactation_TotalCapacityMultiplier;
-		public float lactation_CapacityMultiplier => allBreasts.lactation_CapacityMultiplier;
-		public float lactationProductionModifier => allBreasts.lactationProductionModifier;
+		public double lactation_TotalCapacityMultiplier => allBreasts.lactation_TotalCapacityMultiplier;
+		public double lactation_CapacityMultiplier => allBreasts.lactation_CapacityMultiplier;
+		public double lactationProductionModifier => allBreasts.lactationProductionModifier;
 
 		public uint overfullBuffer => allBreasts.overfullBuffer;
-		public float currentLactationAmount => allBreasts.currentLactationAmount;
+		public double currentLactationAmount => allBreasts.currentLactationAmount;
 
-		public float lactationAmountPerBreast => allBreasts.lactationAmountPerBreast;
+		public double lactationAmountPerBreast => allBreasts.lactationAmountPerBreast;
 		#endregion
 
 		#region Public Breast Related Computed Values
@@ -339,10 +339,10 @@ namespace CoC.Backend.BodyParts
 
 		public int hoursOverfull => allBreasts.hoursOverfull;
 
-		public float maximumLactationCapacity => allBreasts.maximumLactationCapacity;
-		public float currentLactationCapacity => allBreasts.currentLactationCapacity;
+		public double maximumLactationCapacity => allBreasts.maximumLactationCapacity;
+		public double currentLactationCapacity => allBreasts.currentLactationCapacity;
 
-		public float lactationRate => allBreasts.lactationRate;
+		public double lactationRate => allBreasts.lactationRate;
 
 		public LactationStatus lactationStatus => allBreasts.lactationStatus;
 
@@ -393,7 +393,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool isPregnant => womb.isPregnant;
 
-		public float knockupRate(byte bonusVirility = 0) => (fertility.currentFertility + bonusVirility) / 100f;
+		public double knockupRate(byte bonusVirility = 0) => (fertility.currentFertility + bonusVirility) / 100f;
 		#endregion
 
 		#region Gender Related Properties
@@ -473,7 +473,7 @@ namespace CoC.Backend.BodyParts
 			else
 			{
 				CupSize LargestCup = BiggestCupSize();
-				float longestCock = BiggestCockTotalSize();
+				double longestCock = BiggestCockTotalSize();
 
 				//at this point, we are either herm or genderless appearing. there are 3 cases for herm: truly apparent breasts and cock bulge, appears male but with breasts,
 				//and appears female but with a rather obvious dick bulge. genderless is everything else. Originally this was a lot more concise, but this way of writing it is
@@ -853,13 +853,13 @@ namespace CoC.Backend.BodyParts
 
 		public bool SetDickNippleFlag(bool enabled) => allBreasts.SetDickNippleFlag(enabled);
 
-		public float GrowNipples(float amount, bool ignorePerks = false) => allBreasts.GrowNipples(amount, ignorePerks);
+		public double GrowNipples(double amount, bool ignorePerks = false) => allBreasts.GrowNipples(amount, ignorePerks);
 
-		public float ShrinkNipples(float amount, bool ignorePerks = false) => allBreasts.ShrinkNipples(amount, ignorePerks);
+		public double ShrinkNipples(double amount, bool ignorePerks = false) => allBreasts.ShrinkNipples(amount, ignorePerks);
 
-		public float ChangeNippleLength(float delta, bool ignorePerks = false) => allBreasts.ChangeNippleLength(delta, ignorePerks);
+		public double ChangeNippleLength(double delta, bool ignorePerks = false) => allBreasts.ChangeNippleLength(delta, ignorePerks);
 
-		public bool SetNippleLength(float size) => allBreasts.SetNippleLength(size);
+		public bool SetNippleLength(double size) => allBreasts.SetNippleLength(size);
 
 		#endregion
 
@@ -870,7 +870,7 @@ namespace CoC.Backend.BodyParts
 		public bool clearLactation() => allBreasts.clearLactation();
 
 
-		public float boostLactation(float byAmount = 0.1f) => allBreasts.boostLactation(byAmount);
+		public double boostLactation(double byAmount = 0.1f) => allBreasts.boostLactation(byAmount);
 
 
 		public void StartOrBoostLactation() => allBreasts.StartOrBoostLactation();
@@ -952,7 +952,7 @@ namespace CoC.Backend.BodyParts
 		/// Adds the given total of balls to the current amount. If the target does not have balls or the target has a uniball and the optional ignore if uniball flag is set,
 		/// this will fail to add any balls. Returns the number of balls added.
 		/// </summary>
-		/// <param name="additionalBalls">float of balls to add.</param>
+		/// <param name="additionalBalls">double of balls to add.</param>
 		/// <param name="ignoreIfUniball">Should this function respect a uniball, if applicable?</param>
 		/// <returns>The number of balls successfully added.</returns>
 		/// <remarks> The number of balls a target can have is capped; The return value will differ from the given value if this cap is reached.</remarks>
@@ -1055,7 +1055,7 @@ namespace CoC.Backend.BodyParts
 		public bool AddCock(CockType newCockType) => allCocks.AddCock(newCockType);
 
 
-		public bool AddCock(CockType newCockType, float length, float girth, float? knotMultiplier = null) => allCocks.AddCock(newCockType, length, girth, knotMultiplier);
+		public bool AddCock(CockType newCockType, double length, double girth, double? knotMultiplier = null) => allCocks.AddCock(newCockType, length, girth, knotMultiplier);
 
 
 		public string AddedCockText(CockData addedCock) => allCocks.AddedCockText(addedCock);
@@ -1094,7 +1094,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public bool UpdateCockWithLength(Cock cock, CockType newType, float newLength)
+		public bool UpdateCockWithLength(Cock cock, CockType newType, double newLength)
 		{
 			if (allCocks[cock.cockIndex] == cock)
 			{
@@ -1107,7 +1107,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		public bool UpdateCockWithLengthAndGirth(Cock cock, CockType newType, float newLength, float newGirth)
+		public bool UpdateCockWithLengthAndGirth(Cock cock, CockType newType, double newLength, double newGirth)
 		{
 			if (allCocks[cock.cockIndex] == cock)
 			{
@@ -1120,7 +1120,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		public bool UpdateCockWithKnot(Cock cock, CockType newType, float newKnotMultiplier)
+		public bool UpdateCockWithKnot(Cock cock, CockType newType, double newKnotMultiplier)
 		{
 			if (allCocks[cock.cockIndex] == cock)
 			{
@@ -1133,7 +1133,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		public bool UpdateCockWithAll(Cock cock, CockType newType, float newLength, float newGirth, float newKnotMultiplier)
+		public bool UpdateCockWithAll(Cock cock, CockType newType, double newLength, double newGirth, double newKnotMultiplier)
 		{
 			if (allCocks[cock.cockIndex] == cock)
 			{
@@ -1148,16 +1148,16 @@ namespace CoC.Backend.BodyParts
 		public bool UpdateCock(int index, CockType newType) => allCocks.UpdateCock(index, newType);
 
 
-		public bool UpdateCockWithLength(int index, CockType newType, float newLength) => allCocks.UpdateCockWithLength(index, newType, newLength);
+		public bool UpdateCockWithLength(int index, CockType newType, double newLength) => allCocks.UpdateCockWithLength(index, newType, newLength);
 
 
-		public bool UpdateCockWithLengthAndGirth(int index, CockType newType, float newLength, float newGirth) => allCocks.UpdateCockWithLengthAndGirth(index, newType, newLength, newGirth);
+		public bool UpdateCockWithLengthAndGirth(int index, CockType newType, double newLength, double newGirth) => allCocks.UpdateCockWithLengthAndGirth(index, newType, newLength, newGirth);
 
 
-		public bool UpdateCockWithKnot(int index, CockType newType, float newKnotMultiplier) => allCocks.UpdateCockWithKnot(index, newType, newKnotMultiplier);
+		public bool UpdateCockWithKnot(int index, CockType newType, double newKnotMultiplier) => allCocks.UpdateCockWithKnot(index, newType, newKnotMultiplier);
 
 
-		public bool UpdateCockWithAll(int index, CockType newType, float newLength, float newGirth, float newKnotMultiplier) => allCocks.UpdateCockWithAll(index, newType, newLength, newGirth, newKnotMultiplier);
+		public bool UpdateCockWithAll(int index, CockType newType, double newLength, double newGirth, double newKnotMultiplier) => allCocks.UpdateCockWithAll(index, newType, newLength, newGirth, newKnotMultiplier);
 
 		public bool RestoreCock(Cock cock)
 		{
@@ -1176,8 +1176,8 @@ namespace CoC.Backend.BodyParts
 
 		#region Shrink Cock With Remove
 
-		public bool ShrinkCockAndRemoveIfTooSmall(int index, float shrinkAmount, bool ignorePerks = false) => allCocks.ShrinkCockAndRemoveIfTooSmall(index, shrinkAmount, ignorePerks);
-		public bool ShrinkCockAndRemoveIfTooSmall(Cock cock, float shrinkAmount, bool ignorePerks = false)
+		public bool ShrinkCockAndRemoveIfTooSmall(int index, double shrinkAmount, bool ignorePerks = false) => allCocks.ShrinkCockAndRemoveIfTooSmall(index, shrinkAmount, ignorePerks);
+		public bool ShrinkCockAndRemoveIfTooSmall(Cock cock, double shrinkAmount, bool ignorePerks = false)
 		{
 			if (cock == cocks[cock.cockIndex])
 			{
@@ -1196,11 +1196,11 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Cum Update Functions
-		public float IncreaseCumMultiplier(float additionalMultiplier = 1) => allCocks.IncreaseCumMultiplier(additionalMultiplier);
-		public float DecreaseCumMultiplier(float decreaseMultiplier = 1) => allCocks.DecreaseCumMultiplier(decreaseMultiplier);
+		public double IncreaseCumMultiplier(double additionalMultiplier = 1) => allCocks.IncreaseCumMultiplier(additionalMultiplier);
+		public double DecreaseCumMultiplier(double decreaseMultiplier = 1) => allCocks.DecreaseCumMultiplier(decreaseMultiplier);
 
 
-		public float AddFlatCumAmount(float additionalCum) => allCocks.AddFlatCumAmount(additionalCum);
+		public double AddFlatCumAmount(double additionalCum) => allCocks.AddFlatCumAmount(additionalCum);
 
 		//adds a stacking effect to current hours since last cum. this is additive.
 		public uint AddPentUpTime(uint additionalTime) => allCocks.AddHoursPentUp(additionalTime);
@@ -1216,12 +1216,12 @@ namespace CoC.Backend.BodyParts
 		public bool AddVagina(VaginaType newVaginaType) => allVaginas.AddVagina(newVaginaType);
 
 
-		public bool AddVagina(float clitLength) => allVaginas.AddVagina(clitLength);
-		public bool AddVagina(VaginaType newVaginaType, float clitLength) => allVaginas.AddVagina(newVaginaType, clitLength);
+		public bool AddVagina(double clitLength) => allVaginas.AddVagina(clitLength);
+		public bool AddVagina(VaginaType newVaginaType, double clitLength) => allVaginas.AddVagina(newVaginaType, clitLength);
 
 
-		public bool AddVagina(float clitLength, VaginalLooseness looseness, VaginalWetness wetness) => allVaginas.AddVagina(clitLength, looseness, wetness);
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness) => allVaginas.AddVagina(newVaginaType, clitLength, looseness, wetness);
+		public bool AddVagina(double clitLength, VaginalLooseness looseness, VaginalWetness wetness) => allVaginas.AddVagina(clitLength, looseness, wetness);
+		public bool AddVagina(VaginaType newVaginaType, double clitLength, VaginalLooseness looseness, VaginalWetness wetness) => allVaginas.AddVagina(newVaginaType, clitLength, looseness, wetness);
 
 
 		public string AddedVaginaText() => allVaginas.AddedVaginaText();
@@ -1279,7 +1279,7 @@ namespace CoC.Backend.BodyParts
 
 		//ass doesn't have a collection because it always exists, so we don't need any magic to handle it. thus, we do everything here.
 
-		internal bool HandleAnalPenetration(float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount,
+		internal bool HandleAnalPenetration(double length, double girth, double knotWidth, StandardSpawnType knockupType, double cumAmount,
 			byte virilityBonus, bool takeAnalVirginity, bool reachOrgasm, bool sourceIsSelf)
 		{
 			//tell the ass itself to handle an insertion, and become looser if necessary.
@@ -1292,7 +1292,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		internal bool HandleAnalPenetration(Cock source, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm, bool sourceIsSelf)
+		internal bool HandleAnalPenetration(Cock source, StandardSpawnType knockupType, double cumAmountOverride, bool reachOrgasm, bool sourceIsSelf)
 		{
 			return HandleAnalPenetration(source.length, source.girth, source.knotSize, knockupType, cumAmountOverride, source.virility, true, reachOrgasm, sourceIsSelf);
 		}
@@ -1302,12 +1302,12 @@ namespace CoC.Backend.BodyParts
 			return HandleAnalPenetration(source.length, source.girth, source.knotSize, knockupType, source.cumAmount, source.virility, true, reachOrgasm, sourceIsSelf);
 		}
 
-		internal void HandleAnalPenetration(float length, float girth, float knotWidth, float cumAmount, bool takeAnalVirginity, bool reachOrgasm, bool sourceIsSelf)
+		internal void HandleAnalPenetration(double length, double girth, double knotWidth, double cumAmount, bool takeAnalVirginity, bool reachOrgasm, bool sourceIsSelf)
 		{
 			HandleAnalPenetration(length, girth, knotWidth, null, cumAmount, 0, takeAnalVirginity, reachOrgasm, sourceIsSelf);
 		}
 
-		internal bool HandleAnalPregnancyOverride(StandardSpawnType knockupType, float knockupRate)
+		internal bool HandleAnalPregnancyOverride(StandardSpawnType knockupType, double knockupRate)
 		{
 			if (knockupType != null && knockupType is SpawnTypeIncludeAnal analSpawn && womb.canGetAnallyPregnant(true, analSpawn.ignoreAnalPregnancyPreferences))
 			{
@@ -1325,12 +1325,12 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Vagina Sex-Related Functions
-		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool takeVirginity, bool reachOrgasm,
+		internal bool HandleVaginalPenetration(int vaginaIndex, double length, double girth, double knotWidth, double cumAmount, bool takeVirginity, bool reachOrgasm,
 			bool selfPenetrate)
 		{
 			return HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, null, cumAmount, 0, takeVirginity, reachOrgasm, selfPenetrate);
 		}
-		internal bool HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus, bool takeVirginity,
+		internal bool HandleVaginalPenetration(int vaginaIndex, double length, double girth, double knotWidth, StandardSpawnType knockupType, double cumAmount, byte virilityBonus, bool takeVirginity,
 			bool reachOrgasm, bool selfPenetrate)
 		{
 			allVaginas.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, cumAmount, takeVirginity, reachOrgasm, selfPenetrate);
@@ -1353,13 +1353,13 @@ namespace CoC.Backend.BodyParts
 				true, reachOrgasm, selfPenetrate);
 		}
 
-		internal bool HandleVaginalPenetration(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm, bool selfPenetrate)
+		internal bool HandleVaginalPenetration(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, double cumAmountOverride, bool reachOrgasm, bool selfPenetrate)
 		{
 			return HandleVaginalPenetration(vaginaIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, knockupType, cumAmountOverride, sourceCock.virility,
 				true, reachOrgasm, selfPenetrate);
 		}
 
-		internal bool HandleVaginalPregnancyOverride(int vaginaIndex, StandardSpawnType knockupType, float knockupRate)
+		internal bool HandleVaginalPregnancyOverride(int vaginaIndex, StandardSpawnType knockupType, double knockupRate)
 		{
 			if (vaginaIndex == 0 && womb.canGetPregnant(vaginas.Count > 0))
 			{
@@ -1390,7 +1390,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Cock Sex Related Functions
 
-		internal void HandleCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, float knotSize, float cumAmount, bool reachOrgasm)
+		internal void HandleCockSounding(int cockIndex, double penetratorLength, double penetratorWidth, double knotSize, double cumAmount, bool reachOrgasm)
 		{
 			allCocks.HandleCockSounding(cockIndex, penetratorLength, penetratorWidth, knotSize, cumAmount, reachOrgasm);
 		}
@@ -1400,7 +1400,7 @@ namespace CoC.Backend.BodyParts
 			HandleCockSounding(cockIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm);
 		}
 
-		internal void HandleCockSounding(int cockIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm)
+		internal void HandleCockSounding(int cockIndex, Cock sourceCock, double cumAmountOverride, bool reachOrgasm)
 		{
 			HandleCockSounding(cockIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm);
 		}
@@ -1430,12 +1430,12 @@ namespace CoC.Backend.BodyParts
 			HandleTittyFuck(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm, titFuckingSelf);
 		}
 
-		internal void HandleTittyFuck(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm, bool titFuckingSelf)
+		internal void HandleTittyFuck(int breastIndex, Cock sourceCock, double cumAmountOverride, bool reachOrgasm, bool titFuckingSelf)
 		{
 			HandleTittyFuck(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm, titFuckingSelf);
 		}
 
-		internal void HandleTittyFuck(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool titFuckingSelf)
+		internal void HandleTittyFuck(int breastIndex, double length, double girth, double knotWidth, double cumAmount, bool reachOrgasm, bool titFuckingSelf)
 		{
 			allBreasts.HandleTittyFuck(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm, titFuckingSelf);
 		}
@@ -1453,12 +1453,12 @@ namespace CoC.Backend.BodyParts
 			HandleNipplePenetration(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, sourceCock.cumAmount, reachOrgasm, selfPenetrating);
 		}
 
-		internal void HandleNipplePenetration(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm, bool selfPenetrating)
+		internal void HandleNipplePenetration(int breastIndex, Cock sourceCock, double cumAmountOverride, bool reachOrgasm, bool selfPenetrating)
 		{
 			HandleNipplePenetration(breastIndex, sourceCock.length, sourceCock.girth, sourceCock.knotSize, cumAmountOverride, reachOrgasm, selfPenetrating);
 		}
 
-		internal void HandleNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool selfPenetrating)
+		internal void HandleNipplePenetration(int breastIndex, double length, double girth, double knotWidth, double cumAmount, bool reachOrgasm, bool selfPenetrating)
 		{
 			allBreasts.HandleNipplePenetration(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm, selfPenetrating);
 		}
@@ -1472,9 +1472,9 @@ namespace CoC.Backend.BodyParts
 
 		#region Lactation Sex Related Functions
 
-		public float MilkOrSuckle() => allBreasts.MilkOrSuckle();
+		public double MilkOrSuckle() => allBreasts.MilkOrSuckle();
 
-		public float MilkOrSuckle(float maxAmount) => allBreasts.MilkOrSuckle(maxAmount);
+		public double MilkOrSuckle(double maxAmount) => allBreasts.MilkOrSuckle(maxAmount);
 
 		#endregion
 
@@ -1576,13 +1576,13 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Cock Aggregate Functions
-		public float BiggestCockTotalSize() => allCocks.BiggestCockTotalSize();
+		public double BiggestCockTotalSize() => allCocks.BiggestCockTotalSize();
 
 
-		public float LongestCockLength() => allCocks.LongestCockLength();
+		public double LongestCockLength() => allCocks.LongestCockLength();
 
 
-		public float WidestCockMeasure() => allCocks.WidestCockMeasure();
+		public double WidestCockMeasure() => allCocks.WidestCockMeasure();
 
 
 		public Cock BiggestCockByArea() => allCocks.BiggestCockByArea();
@@ -1594,25 +1594,25 @@ namespace CoC.Backend.BodyParts
 		public Cock WidestCock() => allCocks.WidestCock();
 
 
-		public float AverageCockSize() => allCocks.AverageCockSize();
+		public double AverageCockSize() => allCocks.AverageCockSize();
 
 
-		public float AverageCockLength() => allCocks.AverageCockLength();
+		public double AverageCockLength() => allCocks.AverageCockLength();
 
 
-		public float AverageCockGirth() => allCocks.AverageCockGirth();
+		public double AverageCockGirth() => allCocks.AverageCockGirth();
 
 
 		public CockData AverageCock() => allCocks.AverageCock();
 
 
-		public float SmallestCockTotalSize() => allCocks.SmallestCockTotalSize();
+		public double SmallestCockTotalSize() => allCocks.SmallestCockTotalSize();
 
 
-		public float ShortestCockLength() => allCocks.ShortestCockLength();
+		public double ShortestCockLength() => allCocks.ShortestCockLength();
 
 
-		public float ThinnestCockMeasure() => allCocks.ThinnestCockMeasure();
+		public double ThinnestCockMeasure() => allCocks.ThinnestCockMeasure();
 
 
 		public Cock SmallestCockByArea() => allCocks.SmallestCockByArea();
@@ -1699,13 +1699,13 @@ namespace CoC.Backend.BodyParts
 
 		#region Clit Aggregate Functions
 
-		public float LargestClitSize() => allVaginas.LargestClitSize();
+		public double LargestClitSize() => allVaginas.LargestClitSize();
 
 
-		public float SmallestClitSize() => allVaginas.SmallestClitSize();
+		public double SmallestClitSize() => allVaginas.SmallestClitSize();
 
 
-		public float AverageClitSize() => allVaginas.AverageClitSize();
+		public double AverageClitSize() => allVaginas.AverageClitSize();
 
 
 		public Clit LargestClit() => allVaginas.LargestClit();
@@ -1746,7 +1746,7 @@ namespace CoC.Backend.BodyParts
 
 		public readonly WombData womb;
 
-		public readonly float relativeLust;
+		public readonly double relativeLust;
 
 		public readonly ReadOnlyTattooablePart<GenitalTattooLocation> tattoos;
 
@@ -1869,13 +1869,13 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Cock Aggregate Functions
-		public float BiggestCockSize() => allCockData.BiggestCockSize();
+		public double BiggestCockSize() => allCockData.BiggestCockSize();
 
 
-		public float LongestCockLength() => allCockData.LongestCockLength();
+		public double LongestCockLength() => allCockData.LongestCockLength();
 
 
-		public float WidestCockMeasure() => allCockData.WidestCockMeasure();
+		public double WidestCockMeasure() => allCockData.WidestCockMeasure();
 
 
 		public CockData BiggestCock() => allCockData.BiggestCock();
@@ -1887,25 +1887,25 @@ namespace CoC.Backend.BodyParts
 		public CockData WidestCock() => allCockData.WidestCock();
 
 
-		public float AverageCockSize() => allCockData.AverageCockSize();
+		public double AverageCockSize() => allCockData.AverageCockSize();
 
 
-		public float AverageCockLength() => allCockData.AverageCockLength();
+		public double AverageCockLength() => allCockData.AverageCockLength();
 
 
-		public float AverageCockGirth() => allCockData.AverageCockGirth();
+		public double AverageCockGirth() => allCockData.AverageCockGirth();
 
 
 		public CockData AverageCock() => allCockData.AverageCock();
 
 
-		public float SmallestCockSize() => allCockData.SmallestCockSize();
+		public double SmallestCockSize() => allCockData.SmallestCockSize();
 
 
-		public float ShortestCockLength() => allCockData.ShortestCockLength();
+		public double ShortestCockLength() => allCockData.ShortestCockLength();
 
 
-		public float ThinnestCockMeasure() => allCockData.ThinnestCockMeasure();
+		public double ThinnestCockMeasure() => allCockData.ThinnestCockMeasure();
 
 
 		public CockData SmallestCock() => allCockData.SmallestCock();
@@ -1982,13 +1982,13 @@ namespace CoC.Backend.BodyParts
 
 		#region Clit Aggregate Functions
 
-		public float LargestClitSize() => allVaginaData.LargestClitSize();
+		public double LargestClitSize() => allVaginaData.LargestClitSize();
 
 
-		public float SmallestClitSize() => allVaginaData.SmallestClitSize();
+		public double SmallestClitSize() => allVaginaData.SmallestClitSize();
 
 
-		public float AverageClitSize() => allVaginaData.AverageClitSize();
+		public double AverageClitSize() => allVaginaData.AverageClitSize();
 
 
 		public ClitData LargestClit() => allVaginaData.LargestClit();

@@ -5,7 +5,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 	using CoC.Backend.Strings;
 	using CoC.Backend.Tools;
 
-	public class SeductiveArmorUntrapped : ArmorBase, ISluttySeductionItem
+	public class SeductiveArmorUntrapped : ArmorBase
 	{
 
 		protected override string EquipText(Creature wearer)
@@ -27,7 +27,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return $"{count}{setText} of (inert) scandalously seductive armor";
 		}
 
-		public override float DefensiveRating(Creature wearer) => 10;
+		public override double PhysicalDefensiveRating(Creature wearer) => 10;
 
 		protected override int monetaryValue => 1;
 
@@ -42,7 +42,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		{
 		}
 
-		public byte SluttySeductionModifier(Creature wearer) => 5;
+		public override double BonusTeaseDamage(Creature wearer) => 5;
 
 		public override bool Equals(ArmorBase other)
 		{

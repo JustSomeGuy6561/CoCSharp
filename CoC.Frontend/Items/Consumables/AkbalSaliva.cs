@@ -12,6 +12,7 @@ namespace CoC.Frontend.Items.Consumables
 {
 	public sealed class AkbalSaliva : StandardConsumable
 	{
+
 		public AkbalSaliva() : base()
 		{
 
@@ -42,7 +43,7 @@ namespace CoC.Frontend.Items.Consumables
 		}
 		private string UseThatShit()
 		{
-			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			return "You uncork the vial and chug down the saliva. ";
 		}
 
 		public override bool Equals(CapacityItem other)

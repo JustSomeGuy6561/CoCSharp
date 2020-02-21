@@ -16,15 +16,15 @@ namespace CoC.Backend.BodyParts
 	internal sealed partial class NippleAggregate : SimpleSaveablePart<NippleAggregate, NippleAggregateData>, IGrowable, IShrinkable, INipple
 	{
 		#region Nipple Constants
-		internal const float MIN_NIPPLE_LENGTH = 0.25f;
-		internal const float MAX_NIPPLE_LENGTH = 50f;
+		internal const double MIN_NIPPLE_LENGTH = 0.25f;
+		internal const double MAX_NIPPLE_LENGTH = 50f;
 
-		internal const float FULLY_INVERTED_THRESHOLD = 1f; //above this, not fully inverted
-		internal const float FUCKABLE_NIPPLE_THRESHOLD = 3f; //above this, fuckable is possible.
-		internal const float DICK_NIPPLE_THRESHOLD = 5f; //above this, dick nipples possible.
+		internal const double FULLY_INVERTED_THRESHOLD = 1f; //above this, not fully inverted
+		internal const double FUCKABLE_NIPPLE_THRESHOLD = 3f; //above this, fuckable is possible.
+		internal const double DICK_NIPPLE_THRESHOLD = 5f; //above this, dick nipples possible.
 
-		internal const float MALE_DEFAULT_NIPPLE = MIN_NIPPLE_LENGTH;
-		internal const float FEMALE_DEFAULT_NIPPLE = 0.5f;
+		internal const double MALE_DEFAULT_NIPPLE = MIN_NIPPLE_LENGTH;
+		internal const double FEMALE_DEFAULT_NIPPLE = 0.5f;
 		#endregion
 
 		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
@@ -44,7 +44,7 @@ namespace CoC.Backend.BodyParts
 		internal NippleStatus nippleStatus { get; private set; } = NippleStatus.NORMAL;
 
 		//fix the nipple status to reflect the new length.
-		internal static NippleStatus ValidateNippleStatus(NippleStatus nippleStatus, float length, bool unlockedDickNipples)
+		internal static NippleStatus ValidateNippleStatus(NippleStatus nippleStatus, double length, bool unlockedDickNipples)
 		{
 			//if dick nipples are available and it's long enough to be dick nipples, become dick nipples.
 			if (unlockedDickNipples && length > DICK_NIPPLE_THRESHOLD)
@@ -87,7 +87,7 @@ namespace CoC.Backend.BodyParts
 		//this toggles us between dick nipples and fuckable nipples as our over-large state. when true, overly large nipples become dick nipples. when false, they become fuckable
 		internal bool dickNipplesEnabled { get; private set; }
 
-		internal float length
+		internal double length
 		{
 			get => _length;
 			private set
@@ -99,18 +99,18 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		private float _length;
+		private double _length;
 
-		private float growthMultiplier => creature?.genitals.perkData.NippleGrowthMultiplier ?? 1;
-		private float shrinkMultiplier => creature?.genitals.perkData.NippleShrinkMultiplier ?? 1;
+		private double growthMultiplier => creature?.genitals.perkData.NippleGrowthMultiplier ?? 1;
+		private double shrinkMultiplier => creature?.genitals.perkData.NippleShrinkMultiplier ?? 1;
 
 		internal BodyType bodyType => creature?.body.type ?? BodyType.defaultValue;
 
-		internal float width => length < 1 ? length / 2 : (length < 2 ? 0.5f : length / 4);
+		internal double width => length < 1 ? length / 2 : (length < 2 ? 0.5f : length / 4);
 
-		internal float relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
+		internal double relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
 
-		internal float lactationRate => source.lactationRate;
+		internal double lactationRate => source.lactationRate;
 		internal LactationStatus lactationStatus => source.lactationStatus;
 
 		private readonly BreastCollection source;
@@ -131,7 +131,7 @@ namespace CoC.Backend.BodyParts
 
 		//the nipple status here will be respected if possible, though length gets priority.
 		//note that if you set the desired status to fuckable and they aren't long enough, they become inverted.
-		internal void InitializeSettings(float length, bool blackNipples, bool quadNipples, NippleStatus desiredNippleStatus, bool dickNipplesActive)
+		internal void InitializeSettings(double length, bool blackNipples, bool quadNipples, NippleStatus desiredNippleStatus, bool dickNipplesActive)
 		{
 			nippleStatus = desiredNippleStatus;
 
@@ -342,7 +342,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal float GrowNipples(float amount, bool ignorePerks = false)
+		internal double GrowNipples(double amount, bool ignorePerks = false)
 		{
 			if (amount <= 0)
 			{
@@ -359,7 +359,7 @@ namespace CoC.Backend.BodyParts
 			return length - oldSize;
 		}
 
-		internal float ShrinkNipples(float amount, bool ignorePerks = false)
+		internal double ShrinkNipples(double amount, bool ignorePerks = false)
 		{
 			if (amount <= 0)
 			{
@@ -376,7 +376,7 @@ namespace CoC.Backend.BodyParts
 			return oldSize - length;
 		}
 
-		internal float ChangeNippleLength(float delta, bool ignorePerks = false)
+		internal double ChangeNippleLength(double delta, bool ignorePerks = false)
 		{
 			if (delta > 0)
 			{
@@ -392,7 +392,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal bool SetNippleLength(float size)
+		internal bool SetNippleLength(double size)
 		{
 			length = size;
 			return length == size;
@@ -411,24 +411,24 @@ namespace CoC.Backend.BodyParts
 			return length > MIN_NIPPLE_LENGTH;
 		}
 
-		float IGrowable.UseGroPlus()
+		double IGrowable.UseGroPlus()
 		{
 			if (!((IGrowable)this).CanGroPlus())
 			{
 				return 0;
 			}
-			float oldLength = length;
+			double oldLength = length;
 			length += Utils.Rand(6) / 20.0f + 0.25f; //ranges from 1/4- 1/2 inch.
 			return length - oldLength; //returns that change in value. limited only if it reaches the max.
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			if (!((IShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
-			float oldLength = length;
+			double oldLength = length;
 			if (length > 0.5f)
 			{
 				length /= 2f;
@@ -443,7 +443,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Nipple Text
 
-		float INipple.length => length;
+		double INipple.length => length;
 
 		bool INipple.blackNipples => hasBlackNipples;
 
@@ -453,9 +453,9 @@ namespace CoC.Backend.BodyParts
 
 		LactationStatus INipple.lactationStatus => source.lactationStatus;
 
-		float INipple.lactationRate => source.lactationRate;
+		double INipple.lactationRate => source.lactationRate;
 
-		float INipple.relativeLust => relativeLust;
+		double INipple.relativeLust => relativeLust;
 
 		BodyType INipple.bodyType => bodyType;
 
@@ -508,14 +508,14 @@ namespace CoC.Backend.BodyParts
 
 		internal readonly bool dickNipplesEnabled;
 
-		internal readonly float length;
+		internal readonly double length;
 
 		internal readonly BodyType bodyType;
 
-		internal float width => length < 1 ? length / 2 : (length < 2 ? 0.5f : length / 4);
+		internal double width => length < 1 ? length / 2 : (length < 2 ? 0.5f : length / 4);
 
-		internal readonly float relativeLust;
-		internal readonly float lactationRate;
+		internal readonly double relativeLust;
+		internal readonly double lactationRate;
 		internal readonly LactationStatus lactationStatus;
 
 		internal NippleAggregateData(NippleAggregate source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
@@ -535,8 +535,8 @@ namespace CoC.Backend.BodyParts
 			this.lactationStatus = source.lactationStatus;
 	}
 
-		internal NippleAggregateData(Guid creatureID, NippleStatus nippleStatus, bool hasQuadNipples, bool hasBlackNipples, bool unlockedDickNipples, float length,
-			BodyType bodyType, float relativeLust, float lactationRate, LactationStatus lactationStatus) : base(creatureID)
+		internal NippleAggregateData(Guid creatureID, NippleStatus nippleStatus, bool hasQuadNipples, bool hasBlackNipples, bool unlockedDickNipples, double length,
+			BodyType bodyType, double relativeLust, double lactationRate, LactationStatus lactationStatus) : base(creatureID)
 		{
 			this.nippleStatus = nippleStatus;
 			this.hasQuadNipples = hasQuadNipples;
@@ -551,7 +551,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Nipple Text
 
-		float INipple.length => length;
+		double INipple.length => length;
 
 		bool INipple.blackNipples => hasBlackNipples;
 
@@ -561,9 +561,9 @@ namespace CoC.Backend.BodyParts
 
 		LactationStatus INipple.lactationStatus => lactationStatus;
 
-		float INipple.lactationRate => lactationRate;
+		double INipple.lactationRate => lactationRate;
 
-		float INipple.relativeLust => relativeLust;
+		double INipple.relativeLust => relativeLust;
 
 		BodyType INipple.bodyType => bodyType;
 

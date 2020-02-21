@@ -12,7 +12,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 	using CoC.Backend.Strings;
 	using CoC.Backend.Tools;
 
-	public sealed class SluttySwimwear : ArmorBase, IBulgeArmor, ISluttySeductionItem
+	public sealed class SluttySwimwear : ArmorBase, IBulgeArmor, ISwimwear
 	{
 		private bool bulged;
 
@@ -28,22 +28,24 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 			return $"{count}skimpy black {bikiniText}";
 		}
-		public override float DefensiveRating(Creature wearer) => 0;
+		public override double PhysicalDefensiveRating(Creature wearer) => 0;
 
 		protected override int monetaryValue => 6;
 
 		public override string AboutItem() => "An impossibly skimpy black bikini. You feel dirty just looking at it... and a little aroused, actually.";
+
+		public override bool isNearlyNaked => true;
 
 		public bool supportsBulgeArmor => true;
 
 		public SluttySwimwear() : base(ArmorType.LIGHT_ARMOR)
 		{ }
 
-		public byte SluttySeductionModifier(Creature wearer) => 6;
+		public override double BonusTeaseDamage(Creature wearer) => 6;
 
-		public override bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot)
+		public override bool CanWearWithUpperGarment(Creature wearer, UpperGarmentBase upperGarment, out string whyNot)
 		{
-			if (!(upperGarment is null))
+			if (!UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				whyNot = GenericArmorIncompatText(upperGarment);
 				return false;
@@ -55,9 +57,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 		}
 
-		public override bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment, out string whyNot)
+		public override bool CanWearWithLowerGarment(Creature wearer, LowerGarmentBase lowerGarment, out string whyNot)
 		{
-			if (!(lowerGarment is null))
+			if (!LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				whyNot = GenericArmorIncompatText(lowerGarment);
 				return false;
@@ -140,9 +142,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return other is SluttySwimwear;
 		}
 
-		protected override string OnRemoveText()
+		protected override string RemoveText(Creature wearer)
 		{
-			return this.GenericBulgeAwareRemoveText(bulged);
+			return this.GenericBulgeAwareRemoveText(bulged, base.RemoveText(wearer));
 		}
 
 		bool IBulgeArmor.isBulged => bulged;
@@ -164,5 +166,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 				return "The swimwear begins to revert to it's normal form, once again struggling to even remotely contain your manhood";
 			}
 		}
+
+		public bool isSwimwear => true;
 	}
 }

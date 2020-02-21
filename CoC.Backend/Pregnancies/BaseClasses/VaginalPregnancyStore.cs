@@ -24,7 +24,7 @@ namespace CoC.Backend.Pregnancies
 			return retVal;
 		}
 
-		protected override string NotifyTimePassed(float hoursTilBirth, float oldHoursToBirth)
+		protected override string NotifyTimePassed(double hoursTilBirth, double oldHoursToBirth)
 		{
 			return spawnType.NotifyVaginalBirthingProgressed(vaginaIndex, hoursTilBirth, oldHoursToBirth);
 		}

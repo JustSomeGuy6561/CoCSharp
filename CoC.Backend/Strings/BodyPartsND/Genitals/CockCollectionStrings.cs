@@ -7,6 +7,7 @@ using System.Text;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
@@ -244,59 +245,65 @@ namespace CoC.Backend.BodyParts
 
 		//displays
 
-		public string GenericChangeOneCockLengthText(Creature target, CockData oldData, bool wasRemovedBecauseTooSmall)
+		public string GenericChangeOneCockLengthText(CockData oldData, bool treatMissingAsRemoved = true, bool displayRemovedText = true)
 		{
-			if (target == null)
-			{
-				throw new ArgumentNullException(nameof(target));
-			}
-
 			if (oldData == null)
 			{
 				throw new ArgumentNullException(nameof(oldData));
 			}
 
+			if (creatureID != oldData.creatureID)
+			{
+				return "";
+			}
+
 			StringBuilder sb = new StringBuilder();
-			float deltaAmount = wasRemovedBecauseTooSmall ? -oldData.length : target.cocks[oldData.cockIndex].length - oldData.length;
-			Cock newValue = wasRemovedBecauseTooSmall ? null : target.cocks[oldData.cockIndex];
+
+			Cock newValue = cocks.FirstOrDefault(x => x.creatureID == oldData.creatureID && x.collectionID == oldData.collectionID);
+			if (newValue is null && !treatMissingAsRemoved)
+			{
+				return "";
+			}
+
+			double deltaAmount = !(newValue is null) ? newValue.length - oldData.length : -oldData.length;
 
 			if (deltaAmount <= 1 && deltaAmount > 0)
 			{
-				if (target.cocks.Count == 1)
+				if (cocks.Count == 1)
 				{
 					sb.Append("Your " + oldData.LongDescription() + " has grown slightly longer.");
 				}
-				else //if (target.cocks.Count > 1)
+				else //if (cocks.Count > 1)
 				{
-					sb.Append("One of your " + target.genitals.AllCocksShortDescription() + " grows slightly longer.");
+					sb.Append("One of your " + AllCocksShortDescription() + " grows slightly longer.");
 				}
 			}
 			else if (deltaAmount > 1 && deltaAmount < 3)
 			{
-				if (target.cocks.Count == 1)
+				if (cocks.Count == 1)
 				{
 					sb.Append("A very pleasurable feeling spreads from your groin as your " + oldData.LongDescription() + " grows permanently longer - at least "
 						+ (Measurement.UsesMetric ? "a few centimeters" : "an inch") + " - and leaks pre-cum from the pleasure of the change.");
 				}
 
-				else //if (target.cocks.Count > 1)
+				else //if (cocks.Count > 1)
 				{
-						sb.Append("A very pleasurable feeling spreads from your groin as one of your " + target.genitals.AllCocksShortDescription() + " grows permanently longer, " +
-							"by at least " + (Measurement.UsesMetric ? "a few centimeters" : "an inch") + ", and leaks plenty of pre-cum from the pleasure of the change.");
+					sb.Append("A very pleasurable feeling spreads from your groin as one of your " + AllCocksShortDescription() + " grows permanently longer, " +
+						"by at least " + (Measurement.UsesMetric ? "a few centimeters" : "an inch") + ", and leaks plenty of pre-cum from the pleasure of the change.");
 				}
 			}
 			else if (deltaAmount >= 3)
 			{
-				if (target.cocks.Count == 1)
+				if (cocks.Count == 1)
 				{
 					sb.Append("Your " + oldData.LongDescription() + " feels incredibly tight as a few more " + (Measurement.UsesMetric ? "centimeters" : "inches") +
 						" of length seem to pour out from your crotch.");
 				}
 
-				else //if (target.cocks.Count > 1)
+				else //if (cocks.Count > 1)
 				{
-						sb.Append("Your " + target.genitals.AllCocksShortDescription() + " feel incredibly tight as one of their number begins to grow, "
-							+ (Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + ".");
+					sb.Append("Your " + AllCocksShortDescription() + " feel incredibly tight as one of their number begins to grow, "
+						+ (Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + ".");
 				}
 			}
 
@@ -304,47 +311,47 @@ namespace CoC.Backend.BodyParts
 			//Display the degree of length loss.
 			else if (deltaAmount >= -1)
 			{
-				if (target.cocks.Count == 1)
+				if (cocks.Count == 1)
 				{
 					sb.Append("Your " + oldData.ShortDescription() + " has shrunk to a slightly shorter length.");
 				}
-				else //if (target.cocks.Count > 1)
+				else //if (cocks.Count > 1)
 				{
-					sb.Append("You feel one of your " + target.genitals.AllCocksShortDescription() + " shrink to a slightly shorter length.");
+					sb.Append("You feel one of your " + AllCocksShortDescription() + " shrink to a slightly shorter length.");
 				}
 			}
 			else if (deltaAmount > -3)
 			{
-				if (target.cocks.Count == 1)
+				if (cocks.Count == 1)
 				{
 					sb.Append("Your " + oldData.ShortDescription() + " shrinks smaller, flesh vanishing into your groin.");
 				}
-				else //if (target.cocks.Count > 1)
+				else //if (cocks.Count > 1)
 				{
-					sb.Append("You feel one of your " + target.genitals.AllCocksShortDescription() + " shrink smaller, the flesh vanishing into your groin.");
+					sb.Append("You feel one of your " + AllCocksShortDescription() + " shrink smaller, the flesh vanishing into your groin.");
 				}
 			}
 			else //if (deltaAmount <= -3)
 			{
-				if (target.cocks.Count == 1)
+				if (cocks.Count == 1)
 				{
 					sb.Append("A large portion of your " + oldData.ShortDescription() + "'s length shrinks and vanishes.");
 				}
-				else //if (target.cocks.Count > 1)
+				else //if (cocks.Count > 1)
 				{
-					sb.Append("A single member of your " + target.genitals.AllCocksShortDescription() + " vanishes into your groin, receding rapidly in length.");
+					sb.Append("A single member of your " + AllCocksShortDescription() + " vanishes into your groin, receding rapidly in length.");
 				}
 			}
 
 			Cock largestUnchangedCock;
 
-			if (wasRemovedBecauseTooSmall)
+			if (newValue is null)
 			{
-				largestUnchangedCock = target.genitals.LongestCock();
+				largestUnchangedCock = LongestCock();
 			}
 			else
 			{
-				largestUnchangedCock = target.cocks.Where((x, y) => y != x.cockIndex).MaxItem(x => x.length);
+				largestUnchangedCock = cocks.Where(x=> x!=newValue).MaxItem(x => x.length);
 			}
 
 
@@ -363,23 +370,23 @@ namespace CoC.Backend.BodyParts
 							newValue.ShortDescription() + "'s " + newValue.HeadDescription() + " keeps poking its way into your view every time you get hard.", StringFormats.BOLD));
 
 						//then, describe what this entails.
-						if (target.corruption > 80)
+						if (creature?.corruption > 80)
 						{
-							sb.Append(" You find yourself fantasizing about impaling nubile young champions on your " + target.genitals.AllCocksLongDescription() + " in a year's time.");
+							sb.Append(" You find yourself fantasizing about impaling nubile young champions on your " + AllCocksLongDescription() + " in a year's time.");
 						}
-						else if (target.corruption > 60)
+						else if (creature?.corruption > 60)
 						{
-							sb.Append(" You daydream about being attacked by a massive tentacle beast, its tentacles engulfing your " + target.genitals.AllCocksLongDescription() + " to the hilt, milking it of all your cum.\n\nYou smile at the pleasant thought.");
+							sb.Append(" You daydream about being attacked by a massive tentacle beast, its tentacles engulfing your " + AllCocksLongDescription() + " to the hilt, milking it of all your cum.\n\nYou smile at the pleasant thought.");
 						}
-						else if (target.corruption > 40)
+						else if (creature?.corruption > 40)
 						{
-							if (target.cocks.Count == 1)
+							if (cocks.Count == 1)
 							{
 								sb.Append(" You wonder if there is a demon or beast out there that could handle your full length.");
 							}
 							else
 							{
-								sb.Append(" You wonder - is a demon or beast out there that could take the full length of the largest of your " + target.genitals.AllCocksShortDescription() + "?");
+								sb.Append(" You wonder - is a demon or beast out there that could take the full length of the largest of your " + AllCocksShortDescription() + "?");
 							}
 						}
 					}
@@ -405,7 +412,7 @@ namespace CoC.Backend.BodyParts
 					//if it is the longest, that means we've just reached this threshold. mention that we can now tit-fuck ourselves.
 					if (largestUnchangedCock is null || largestUnchangedCock.length < 16)
 					{
-						if (target.genitals.BiggestCupSize() >= CupSize.C)
+						if (source.BiggestCupSize() >= CupSize.C)
 						{
 							sb.Append(" You could easily stuff your " + newValue.LongDescription() + " between your breasts and give yourself the titty-fuck of a lifetime.");
 						}
@@ -420,7 +427,7 @@ namespace CoC.Backend.BodyParts
 				{
 					sb.Append(" <b>");
 
-					sb.Append("Your " + target.cocks[0].LongDescription() + " is so long it nearly swings to your knee at its full length");
+					sb.Append("Your " + cocks[0].LongDescription() + " is so long it nearly swings to your knee at its full length");
 
 					//if multiple cocks, and all the cocks that grew longer are still shorter than the longest, make note of that.
 					if (!(largestUnchangedCock is null) && newValue.length < largestUnchangedCock.length)
@@ -449,445 +456,604 @@ namespace CoC.Backend.BodyParts
 					sb.Append("</b>");
 				}
 			}
-			else if (wasRemovedBecauseTooSmall)
+			else if (newValue is null && displayRemovedText)
 			{
-
+				if (cocks.Count == 0)
+				{
+					sb.Append("<b>Your manhood shrinks into your body, disappearing completely.</b>");
+				}
+				else if (cocks.Count == 1)
+				{
+					sb.Append("<b>Your " + oldData.LongDescription() + " disappears, shrinking into your body and leaving you with just one "
+						+ cocks[0].ShortDescription() + ".</b>");
+				}
+				else
+				{
+					sb.Append("<b>Your smallest penis disappears forever, leaving you with just your " + AllCocksShortDescription() + ".</b>");
+				}
 			}
 
 			return sb.ToString();
 		}
 
+		public string GenericChangeCockLengthText(CockCollectionData oldCockData, bool treatMissingCocksAsRemoved = true, bool displayRemovedText = true)
+		{
+			//handle null checks so we don't have to worry about them.
+			if (creature is null)
+			{
+				throw new ArgumentNullException(nameof(creature));
+			}
+			//var target = creature;
 
+			if (oldCockData == null)
+			{
+				throw new ArgumentNullException(nameof(oldCockData));
+			}
+
+			if (!CollectionChanged(oldCockData, true))
+			{
+				return "";
+			}
+
+			IEnumerable<ValueDifference<CockData>> temp = ChangedCocks(oldCockData, true).Where(x => x.oldValue.length != x.newValue.length);
+			int removedCockCount = 0;
+			ValueDifference<CockData>[] changed;
+			if (treatMissingCocksAsRemoved)
+			{
+				CockData[] removed = RemovedCocks(oldCockData).ToArray();
+				changed = temp.Concat(removed.Select(x => new ValueDifference<CockData>(x, null))).ToArray();
+
+				if (displayRemovedText)
+				{
+					removedCockCount = removed.Length;
+				}
+			}
+			else
+			{
+				changed = temp.ToArray();
+			}
+
+			if (changed.Length == 0)
+			{
+				return "";
+			}
+			if (changed.Length == 1)
+			{
+				return GenericChangeOneCockLengthText(changed[0].oldValue, changed[0].newValue is null);
+			}
+
+			double[] deltas = new double[changed.Length];
+
+			for (int x = 0; x < changed.Length; x++)
+			{
+				if (changed[x].newValue is null)
+				{
+					deltas[x] = changed[x].oldValue.length;
+				}
+				else
+				{
+					deltas[x] = changed[x].oldValue.length - changed[x].newValue.length;
+				}
+			}
+
+			StringBuilder sb = new StringBuilder();
+
+			//int grewCount = deltas.Length;
+			int grewCount = deltas.Count(x => x > 0);
+			int shrunkCount = deltas.Count(x => x < 0);
+
+			//describe cocks getting shorter
+			if (shrunkCount > 0)
+			{
+				double largestNegativeDelta = deltas.Min();
+				double smallestNegativeDelta = deltas.Where(x => x < 0).Max();
+
+				if (largestNegativeDelta >= -1)
+				{
+					if (shrunkCount < deltas.Length)
+					{
+						if (grewCount > 0 && shrunkCount + grewCount == deltas.Length)
+						{
+							sb.Append("Meanwhile, your remaining " + (shrunkCount > 1 ? "cocks have " : "cock has") + " shrunk to a slightly shorter length.");
+						}
+						else
+						{
+							string intro = grewCount > 0 ? "Meanwhile, you" : "You";
+
+							sb.Append(intro + " feel " + Utils.NumberAsText(shrunkCount) + " of your " + AllCocksShortDescription()
+								+ " shrink to a slightly shorter length.");
+						}
+					}
+					else //if (shrinkCount == cocks.Count)
+					{
+						sb.Append("Your " + AllCocksShortDescription() + " have shrunk to a slightly shorter length.");
+					}
+
+				}
+				else if (largestNegativeDelta >= -3)
+				{
+					bool varyingLengths = smallestNegativeDelta >= -1;
+
+					if (shrunkCount < deltas.Length)
+					{
+						if (grewCount > 0 && shrunkCount + grewCount == deltas.Length)
+						{
+							sb.Append("Meanwhile, your remaining" + (shrunkCount > 1 ? "cocks begin " : "cock begins") + " to shrink,");
+						}
+						else
+						{
+							string intro = grewCount > 0 ? "Meanwhile, you" : "You";
+
+							sb.Append(intro + " feel " + Utils.NumberAsText(shrunkCount) + " of your " + AllCocksShortDescription() + " shrink smaller,");
+						}
+
+						sb.Append("the flesh vanishing into your groin" + (varyingLengths ? " in varying lengths." : "."));
+					}
+					else //shrinkCount == deltas.Length
+					{
+						sb.Append("Your " + AllCocksShortDescription() + " shrink smaller, the flesh vanishing into your groin"
+							+ (varyingLengths ? " in varying lengths." : "."));
+					}
+				}
+				else //if (deltaAmount <= -3)
+				{
+					bool varyingLengths = smallestNegativeDelta >= -3;
+					if (shrunkCount < deltas.Length)
+					{
+						if (grewCount > 0 && shrunkCount + grewCount == deltas.Length)
+						{
+							sb.Append("Meanwhile, your remaining " + (shrunkCount > 1 ? "cocks vanish " : "cock vanishes") + " into your groin instead" +
+								(varyingLengths ? ", receeding in length significantly, with some moreso than others." : ", receding rapidly in length."));
+						}
+						else if (shrunkCount == 1)
+						{
+							string intro = grewCount > 0 ? "Meanwhile, another of your " : "A single member of your";
+
+							sb.Append(intro + AllCocksShortDescription() + " vanishes into your groin" + (grewCount > 0 ? " instead" : "") +
+								", receding rapidly in length.");
+						}
+						else //if (shrunkCount > 1)
+						{
+							string intro = grewCount > 0
+								? "Meanwhile, several other of your members begin to"
+								: "Your " + AllCocksShortDescription() + " tingles as " + Utils.NumberAsText(shrunkCount) + " of your members";
+							string outro = varyingLengths
+								? "receeding in length, some moreso than others"
+								: "receding rapidly in length.";
+
+							sb.Append(" vanish into your groin,");
+						}
+					}
+					else //(shrunkCount == cocks.Count)
+					{
+						sb.Append("A large portion of your " + AllCocksShortDescription() + " recedes towards your groin, receding rapidly in length.");
+					}
+				}
+			}
+			//describe any removed cocks.
+			if (removedCockCount > 0)
+			{
+				string shrinkPronoun = shrunkCount > 1 ? "they" : "it";
+
+				string removeCountText = removedCockCount > 1 ? "several of them are" : "one of them is";
+				string removePronoun = removedCockCount > 1 ? "them " : "it";
+				string removePronoun2 = removedCockCount > 1 ? "they " : "it";
+				int remainingCocks = deltas.Length - removedCockCount;
+				string remainingCockText;
+
+				if (remainingCocks == 0)
+				{
+					remainingCockText = "without any cocks.";
+				}
+				else if (remainingCocks == 1)
+				{
+					remainingCockText = "with just one cock.";
+				}
+				else
+				{
+					remainingCockText = "with just " + Utils.NumberAsText(remainingCocks) + " cocks.";
+				}
+
+				sb.Append("As " + shrinkPronoun + " shrink, you notice " + removeCountText + " are becoming incredibly small. As if on cue, <b>you watch " +
+					removePronoun + "continue to shrink until " + removePronoun2 + " disappear into your groin, leaving you " + remainingCockText + "</b>");
+			}
+
+
+			//describe cocks getting longer.
+			if (grewCount > 0)
+			{
+				double largestPositiveDelta = deltas.Max();
+				double smallestPositiveDelta = deltas.Where(x => x > 0).Min();
+
+				bool differentLengths = largestPositiveDelta != smallestPositiveDelta;
+
+				bool capitalize = true;
+
+				if (shrunkCount > 0)
+				{
+					sb.Append("Meanwhile, ");
+					capitalize = false;
+				}
+
+				if (largestPositiveDelta < 1)
+				{
+					string GetIntro(string standardIntro)
+					{
+						string text;
+						if (shrunkCount > 0 && removedCockCount > 0)
+						{
+							text = $"{standardIntro} remaining ";
+						}
+						else if (shrunkCount > 0)
+						{
+							text = $"{standardIntro} other ";
+						}
+						else
+						{
+							text = $"{standardIntro} ".CapitalizeFirstLetter();
+						}
+
+						return text;
+					}
+
+					string intro;
+					string outro = ".";
+
+					if (shrunkCount > 0 && removedCockCount > 0)
+					{
+						outro = ", as if compensating for your lost cocks.";
+					}
+					else
+					{
+						outro = ", countering your previous losses.";
+					}
+
+					if (grewCount == 1 && grewCount + shrunkCount == changed.Length)
+					{
+						intro = capitalize ? "Your" : "your";
+						intro += removedCockCount > 0 ? " remaining" : " other";
+
+						sb.Append(intro + " cock grows slightly longer" + outro);
+					}
+					else if (grewCount == 1)
+					{
+						intro = GetIntro("one of your");
+						sb.Append(intro + AllCocksShortDescription() + " grows slightly longer" + outro);
+					}
+					else if (grewCount < cocks.Count - shrunkCount)
+					{
+						intro = GetIntro("some of your");
+						sb.Append(intro + AllCocksShortDescription() + " grow slightly longer" + outro);
+					}
+					else //if (grewCount == cocks.Count)
+					{
+						intro = GetIntro("your");
+						sb.Append(intro + AllCocksShortDescription() + " seem to fill up... growing a little bit larger" + outro);
+					}
+				}
+				else if (largestPositiveDelta < 3)
+				{
+					string describeCocks;
+
+					string shrinkText = "";
+					if (removedCockCount > 0)
+					{
+						shrinkText = "remaining ";
+					}
+					else if (shrunkCount > 0)
+					{
+						shrinkText = "other";
+					}
+
+					if (grewCount == 1 && grewCount + shrunkCount == changed.Length)
+					{
+						describeCocks = "your " + (removedCockCount > 0 ? "remaining " : "final ") + "cock grows";
+					}
+					else if (grewCount == 1)
+					{
+						describeCocks = "one of your " + shrinkText + AllCocksShortDescription() + " grows";
+					}
+					else if (grewCount < cocks.Count - shrunkCount)
+					{
+						describeCocks = Utils.NumberAsText(grewCount) + " of your " + shrinkText + AllCocksShortDescription() + " grow";
+					}
+					else
+					{
+						describeCocks = "your " + shrinkText + AllCocksShortDescription() + " each grow";
+					}
+
+					string intro = capitalize ? "A" : "a";
+
+					sb.Append(intro + " very pleasurable feeling spreads from your groin as " + describeCocks + " permanently longer, ");
+
+					if (smallestPositiveDelta < 1)
+					{
+						sb.Append(" by varying lengths. The largest change is at least " + (Measurement.UsesMetric ? "a few centimeters" : "an inch") +
+							"and the pleasure has you leaking plenty of pre-cum from all of your recently grown cocks");
+					}
+					else
+					{
+						sb.Append("by at least " + (Measurement.UsesMetric ? "a few centimeters" : "an inch") + ", " + (grewCount > 1 ? "each leaking" : "and leaks") +
+							" plenty of pre-cum from the pleasure of the change.");
+					}
+				}
+				else //if (largestPositiveDelta >= 3)
+				{
+					sb.Append(capitalize ? "Your " : "your ");
+
+					if (grewCount == 1 && grewCount + shrunkCount == changed.Length)
+					{
+						sb.Append("remainings cock feels incredibly tight as it begins to grow, countering your previously lost dick-flesh by growing " + (Measurement.UsesMetric ? "several centimeters" : "several inches") + ".");
+					}
+					else if (grewCount == 1)
+					{
+						sb.Append(AllCocksShortDescription() + " feel incredibly tight as one of their number begins to grow, "
+							+ (Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + ".");
+					}
+					else if (grewCount < cocks.Count)
+					{
+						sb.Append(AllCocksShortDescription() + " feel incredibly numb as " + Utils.NumberAsText(grewCount) + " of them begin to grow");
+
+						if (smallestPositiveDelta < 3)
+						{
+							sb.Append(", albeit at different rates. The largest continues to grow, not stopping until it has put on " +
+								(Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + " of added length.");
+						}
+						else
+						{
+							sb.Append((Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + " of added length pouring from your groin.");
+						}
+					}
+					else //if (grewCount == cocks.Count)
+					{
+						sb.Append(AllCocksShortDescription() + " feel incredibly tight as they grow, ");
+
+						if (smallestPositiveDelta < 3)
+						{
+							sb.Append("albeit at different rates. The largest continues to grow, not stopping until it has put on " +
+								(Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + " of added length.");
+						}
+						else
+						{
+							sb.Append((Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + " of added length pouring from your groin.");
+						}
+					}
+				}
+
+				//Display LengthChange
+
+				//if we did some shrinking or removing, we only count a threshold if we weren't previously there.
+				//if we were previously there, we're just going to exit right away.
+
+				CockData largestNotGrown = UnchangedCocks(oldCockData, true).Select(x => x.AsReadOnlyData()).Union(changed.Where(x =>
+					!(x.newValue is null) && x.newValue.length < x.oldValue.length).Select(x => x.newValue)).MaxItem(x => x.length);
+
+				var tempPair = changed.Where(x => !(x.newValue is null) && x.newValue.length > x.oldValue.length).MaxItem(x => x.newValue.length);
+
+				var largestGrown = tempPair.newValue;
+				var deltaAmount = tempPair.newValue.length - tempPair.oldValue.length;
+
+
+				if (shrunkCount > 0 && (largestNotGrown.length >= largestGrown.length || largestNotGrown.length >= 20 || largestGrown.length < 8
+					|| (largestNotGrown.length >= 16 && largestGrown.length < 20) || (largestNotGrown.length >= 12 && largestGrown.length < 16)
+					|| (largestNotGrown.length >= 8 && largestGrown.length < 12)))
+				{
+					return sb.ToString();
+				}
+
+
+
+				//this now handles multiple cocks better - if we already had a cock at the current threshold, we don't mention what having a cock of that length entails.
+				//we may, however, mention we have another cock at that threshold.
+
+				//start with the largest and work our way down.
+				if (largestGrown.length >= 20 && largestGrown.length - deltaAmount < 20)
+				{
+					bool describeAll = cocks.All(x => x.length >= 20);
+					bool describeSeveral = cocks.Count(x => x.length >= 20) > 1;
+
+					//if we didn't have any cocks above 20 before this, mention how it/they now obscure your lower vision.
+					if (largestNotGrown is null || largestNotGrown.length < 20)
+					{
+						sb.Append("<b>As if the pulsing heat ");
+
+
+						if (cocks.Count == 1)
+						{
+							sb.Append("of your " + largestGrown.LongDescription());
+						}
+						else
+						{
+							sb.Append("of your " + AllCocksShortDescription());
+						}
+						sb.Append(" wasn't bad enough, ");
+
+						if (describeAll || describeSeveral)
+						{
+							sb.Append("every time you get hard, the tips of ");
+
+							if (describeSeveral)
+							{
+								sb.Append("several of ");
+							}
+							sb.Append("your " + AllCocksShortDescription() + "wave before you, obscuring the lower portions of your vision");
+						}
+						else
+						{
+							sb.Append("your " + largestGrown.ShortDescription() + "'s " + largestGrown.HeadDescription() + " keeps poking its way into your view " +
+								"every time you get hard.");
+						}
+
+						sb.Append("</b>");
+
+						//then, describe what this entails.
+						if (creature?.corruption > 80)
+						{
+							sb.Append(" You find yourself fantasizing about impaling nubile young champions on your " + AllCocksLongDescription() + " in a year's time.");
+						}
+						else if (creature?.corruption > 60)
+						{
+							sb.Append(" You daydream about being attacked by a massive tentacle beast, its tentacles engulfing your " + AllCocksLongDescription() + " to the hilt, milking it of all your cum.\n\nYou smile at the pleasant thought.");
+						}
+						else if (creature?.corruption > 40)
+						{
+							if (cocks.Count == 1)
+							{
+								sb.Append(" You wonder if there is a demon or beast out there that could handle your full length.");
+							}
+							else
+							{
+								sb.Append(" You wonder - is a demon or beast out there that could take the full length of the largest of your " + AllCocksShortDescription() + "?");
+							}
+						}
+					}
+					//otherwise, just mention that you now have more that can obscure your vision
+					else
+					{
+						if (describeAll || describeSeveral)
+						{
+							sb.Append((describeAll ? "They've each" : "Several have") + " grown long enough that you now have even more cocks starting to obscure your " +
+								"vision whenever you have an erection.");
+						}
+						else
+						{
+							sb.Append("It's grown so long that you now have yet another cock that partially obscures your vision when erect.");
+						}
+					}
+				}
+				else if (largestGrown.length >= 16 && largestGrown.length - deltaAmount < 16)
+				{
+
+					bool describeAll = cocks.All(x => x.length >= 16);
+
+					sb.Append(" <b>");
+					if (describeAll)
+					{
+						sb.Append("Each one of your " + AllCocksShortDescription() + "now looks like it'd be more at home " +
+							"on a large horse, let alone together on one body");
+					}
+					else if (grewCount == 1)
+					{
+						sb.Append("Your " + largestGrown.LongDescription() + " would look more at home on a large horse than you");
+					}
+					else
+					{
+						sb.Append("The largest of them now looks like it'd be more at home on a large horse than you");
+					}
+
+					//if multiple cocks, and all the cocks that grew longer are still shorter than the longest, make note of that.
+					if (!describeAll && !(largestNotGrown is null) && largestGrown.length < largestNotGrown.length)
+					{
+						sb.Append(", though it's still not as long as your " + largestNotGrown.LongDescription());
+					}
+					sb.Append(".</b>");
+
+					bool onlyOneLarger = grewCount == 1 || changed.All(x => x != tempPair && (x.newValue is null || x.newValue.length < 16));
+
+					//if it is the longest, that means we've just reached this threshold. mention that we can now tit-fuck ourselves.
+					if (largestNotGrown is null || largestNotGrown.length < 16)
+					{
+						if (source.BiggestCupSize() >= CupSize.C)
+						{
+							//you only have one cock that grew larger or all the other ones are still below the threshold.
+							if (onlyOneLarger)
+							{
+								sb.Append(" You could easily stuff your " + largestGrown.LongDescription() + " between your breasts and give yourself the titty-fuck of a lifetime.");
+							}
+							//some (but not all) are now this large.
+							else if (!describeAll)
+							{
+								sb.Append(" Several of your " + AllCocksShortDescription() + " now reach so far up your chest it would be easy to stuff a few of them " +
+									"between your breasts and give yourself the titty-fuck of a lifetime.");
+							}
+							else //if (cocks.Count > 1)
+							{
+								sb.Append(" They reach so far up your chest it would be easy to stuff a few cocks between your breasts and give yourself the titty-fuck of a lifetime.");
+							}
+						}
+						else
+						{
+							if (onlyOneLarger)
+							{
+								sb.Append(" Your " + largestGrown.LongDescription() + " is so long it easily reaches your chest. " +
+									"The possibility of autofellatio is now a foregone conclusion.");
+							}
+							else if (!describeAll)
+							{
+								sb.Append(" Several of your " + AllCocksShortDescription() + "are now long enough to easily reach your chest. " +
+									"Autofellatio would be about as hard as looking down.");
+							}
+							else
+							{
+								sb.Append(" They are so long that they easily reach your chest; you'd be able to perform autofellatio on any of them with little effort.");
+							}
+						}
+					}
+				}
+				else if (largestGrown.length >= 12 && largestGrown.length - deltaAmount < 12)
+				{
+					bool describeAll = cocks.All((x, y) => x.length >= 12);
+					sb.Append(" <b>");
+					if (describeAll)
+					{
+						sb.Append("They are all so long now that they nearly reach your knees when at full length");
+					}
+					else if (grewCount > 1)
+					{
+						sb.Append("The largest of them is now so long, it nearly reaches your knees");
+					}
+					else
+					{
+						sb.Append("Your " + cocks[0].LongDescription() + " is so long it nearly swings to your knee at its full length");
+					}
+
+					//if multiple cocks, and all the cocks that grew longer are still shorter than the longest, make note of that.
+					if (!describeAll && !(largestNotGrown is null) && largestGrown.length < largestNotGrown.length)
+					{
+						sb.Append(", though it's still not as long as your " + largestNotGrown.LongDescription());
+					}
+
+					sb.Append(".</b>");
+				}
+				else if (largestGrown.length >= 8 && largestGrown.length - deltaAmount < 8)
+				{
+					bool describeAll = cocks.All(x => x.length >= 8);
+					bool describeSeveral = cocks.Count(x => x.length >= 8) > 1;
+					sb.Append("<b>");
+
+					if (describeAll)
+					{
+						sb.Append("Most men would be overly proud to have a cock as long as your " + ShortestCock().LongDescription() +
+							", and that's the shortest one you have!");
+					}
+					else if (describeSeveral)
+					{
+						sb.Append("Several have now reached lengths most men would be proud to match");
+					}
+					else if (cocks.Count != 1)
+					{
+						sb.Append("The largest is now long enough most men would be proud to match its length");
+					}
+					else //if (cocks.Count == 1)
+					{
+						sb.Append(" Most men would be overly proud to have a tool as long as yours");
+					}
+
+					//if multiple cocks, and all the cocks that grew longer are still shorter than the longest, make note of that.
+					if (!describeAll && !(largestNotGrown is null) && largestGrown.length < largestNotGrown.length)
+					{
+						sb.Append(", and it's still not as long as your " + largestNotGrown.LongDescription() + "!");
+					}
+					else
+					{
+						sb.Append(".");
+					}
+
+					sb.Append("</b>");
+				}
+			}
+
+			return sb.ToString();
+		}
 	}
-		//handles any amount of cocks growing or shrinking, even cases where some shrink and other grow. note that if you set all to try and reach a certain threshold,
-		//it will probably be a better idea to simply use your own text.
-
-
-		//public string GenericChangeCockLengthText(Creature target, CockCollectionData oldCockData, CollectionChangedHelper adjustedIndices)
-		//{
-		//	//handle null checks so we don't have to worry about them.
-		//	if (target == null)
-		//	{
-		//		throw new ArgumentNullException(nameof(target));
-		//	}
-
-		//	if (oldCockData == null)
-		//	{
-		//		throw new ArgumentNullException(nameof(oldCockData));
-		//	}
-
-		//	if (adjustedIndices == null)
-		//	{
-		//		throw new ArgumentNullException(nameof(adjustedIndices));
-		//	}
-
-		//	List<ValueDifference<CockData>> changed = adjustedIndices.AdjustedElements<CockData>(oldCockData.cocks, target.cocks.Select(x => x.AsReadOnlyData()).ToList());
-		//	return GenericChangeCockLengths(target, changed);
-		//}
-
-		////note: any cocks that were added will be ignored. any cocks that are removed are presumed to have shrunk so much they were removed.
-		//private string GenericChangeCockLengths(Creature target, List<ValueDifference<CockData>> changedCocks)
-		//{
-		//	var changed = changedCocks.Where(x => !(x.oldValue is null)).ToArray();
-
-		//	float[] delta = new float[changed.Length];
-
-
-		//	int oneIndex = -1;
-		//	for (int x = 0; x < changed.Length; x++)
-		//	{
-		//		if (changed[x].newValue is null)
-		//		{
-		//			delta[x] = changed[x].oldValue.length;
-		//		}
-		//		else
-		//		{
-		//			delta[x] = changed[x].oldValue.length - changed[x].newValue.length;
-		//			oneIndex = x;
-		//		}
-		//	}
-
-		//	int cockChangeCount = delta.Count(x => x != 0);
-		//	//handle no cocks changed (either because growCocks is null or delta is 0) with a quick exit.
-		//	if (cockChangeCount == 0)
-		//	{
-		//		return "";
-		//	}
-		//	if (cockChangeCount == 1)
-		//	{
-		//		return GenericChangeOneCockLengthText(target, changed[oneIndex].oldValue, changed[oneIndex].newValue is null);
-		//	}
-
-		//	int mostGrownIndex = delta.MaxIndex(x => x);
-		//	int mostShrunkIndex = delta.MinIndex(x => x);
-
-		//	//growing.
-		//	Cock largestGrownCock = target.cocks.Where((x, y) => cockDeltas[y] > 0).OrderByDescending(x => x.).FirstOrDefault();
-		//	float growthDelta = target.cocks.Where((x, y))
-
-		//	//shrinking.
-		//	Cock shortestShrunkCock = target.cocks.Where(x, y)
-
-		//	StringBuilder sb = new StringBuilder();
-		//	//DIsplay the degree of length change.
-		//	if (deltaAmount <= 1 && deltaAmount > 0)
-		//	{
-		//		if (target.cocks.Count == 1)
-		//		{
-		//			sb.Append("Your " + target.cocks[0].LongDescription() + " has grown slightly longer.");
-		//		}
-		//		else //if (target.cocks.Count > 1)
-		//		{
-		//			if (cockChangeCount == 1)
-		//			{
-		//				sb.Append("One of your " + target.genitals.AllCocksShortDescription() + " grows slightly longer.");
-		//			}
-		//			else if (cockChangeCount < target.cocks.Count)
-		//			{
-		//				sb.Append("Some of your " + target.genitals.AllCocksShortDescription() + " grow slightly longer.");
-		//			}
-		//			else //if (cockChangeCount == target.cocks.Count)
-		//			{
-		//				sb.Append("Your " + target.genitals.AllCocksShortDescription() + " seem to fill up... growing a little bit larger.");
-		//			}
-		//		}
-		//	}
-		//	else if (deltaAmount > 1 && deltaAmount < 3)
-		//	{
-		//		if (target.cocks.Count == 1)
-		//		{
-		//			sb.Append("A very pleasurable feeling spreads from your groin as your " + target.cocks[0].LongDescription() + " grows permanently longer - at least "
-		//				+ (Measurement.UsesMetric ? "a few centimeters" : "an inch") + " - and leaks pre-cum from the pleasure of the change.");
-		//		}
-
-		//		else //if (target.cocks.Count > 1)
-		//		{
-		//			if (cockChangeCount == 1)
-		//			{
-		//				sb.Append("A very pleasurable feeling spreads from your groin as one of your " + target.genitals.AllCocksShortDescription() + " grows permanently longer, " +
-		//					"by at least " + (Measurement.UsesMetric ? "a few centimeters" : "an inch") + ", and leaks plenty of pre-cum from the pleasure of the change.");
-		//			}
-		//			else if (cockChangeCount < target.cocks.Count)
-		//			{
-		//				sb.Append("A very pleasurable feeling spreads from your groin as " + Utils.NumberAsText(cockChangeCount) + " of your "
-		//					+ target.genitals.AllCocksShortDescription() + " grow permanently longer, by at least " + (Measurement.UsesMetric ? "a few centimeters" : "an inch") +
-		//					", and leak plenty of pre-cum from the pleasure of the change.");
-		//			}
-		//			else //if (cockChangeCount == target.cocks.Count)
-		//			{
-		//				sb.Append("A very pleasurable feeling spreads from your groin as your " + target.genitals.AllCocksShortDescription() + " grow permanently longer - at least "
-		//					+ (Measurement.UsesMetric ? "a few centimeters" : "an inch") + " - and leak plenty of pre-cum from the pleasure of the change.");
-		//			}
-		//		}
-		//	}
-		//	else if (deltaAmount >= 3)
-		//	{
-		//		if (target.cocks.Count == 1)
-		//		{
-		//			sb.Append("Your " + target.cocks[0].LongDescription() + " feels incredibly tight as a few more " + (Measurement.UsesMetric ? "centimeters" : "inches") + " of length seem to pour out from your crotch.");
-		//		}
-
-		//		else //if (target.cocks.Count > 1)
-		//		{
-		//			if (cockChangeCount == 1)
-		//			{
-		//				sb.Append("Your " + target.genitals.AllCocksShortDescription() + " feel incredibly tight as one of their number begins to grow, "
-		//					+ (Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + ".");
-		//			}
-		//			else if (cockChangeCount < target.cocks.Count)
-		//			{
-		//				sb.Append("Your " + target.genitals.AllCocksShortDescription() + " feel incredibly numb as " + Utils.NumberAsText(cockChangeCount) + " of them begin to grow, "
-		//					+ (Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + " ");
-		//			}
-		//			else //if (cockChangeCount == target.cocks.Count)
-		//			{
-		//				sb.Append("Your " + target.genitals.AllCocksShortDescription() + " feel incredibly tight as they grow,"
-		//					+ (Measurement.UsesMetric ? "centimeter after centimeter" : "inch after inch") + " of added length pouring from your groin.");
-		//			}
-		//		}
-		//	}
-		//	//Display LengthChange
-		//	if (deltaAmount > 0)
-		//	{
-		//		//this now handles multiple cocks better - if we already had a cock at the current threshold, we don't mention what having a cock of that length entails.
-		//		//we may, however, mention we have another cock at that threshold.
-
-		//		//start with the largest and work our way down.
-		//		if (largestUpdatedCock.length >= 20 && largestUpdatedCock.length - deltaAmount < 20)
-		//		{
-		//			bool describeAll = target.cocks.All((x, y) => x.length >= 20 && cocksChanged[y] && x.length - deltaAmount < 20);
-		//			bool describeSeveral = target.cocks.Any((x, y) => x.length >= 20 && cocksChanged[y] && x != largestUpdatedCock && x.length - deltaAmount < 20);
-
-		//			//if we didn't have any cocks above 20 before this, mention how it/they now obscure your lower vision.
-		//			if (largestUnchangedCock is null || largestUnchangedCock.length < 20)
-		//			{
-		//				sb.Append("<b>As if the pulsing heat ");
-
-
-		//				if (cockChangeCount == 1)
-		//				{
-		//					sb.Append("of your " + largestUpdatedCock.LongDescription());
-		//				}
-		//				else
-		//				{
-		//					sb.Append("of your " + target.genitals.AllCocksShortDescription());
-		//				}
-		//				sb.Append(" wasn't bad enough, ");
-
-		//				if (describeAll || describeSeveral)
-		//				{
-		//					sb.Append("every time you get hard, the tips of ");
-
-		//					if (describeSeveral)
-		//					{
-		//						sb.Append("several of ");
-		//					}
-		//					sb.Append("your " + target.genitals.AllCocksShortDescription() + "wave before you, obscuring the lower portions of your vision");
-		//				}
-		//				else
-		//				{
-		//					sb.Append("your " + largestUpdatedCock.ShortDescription() + "'s " + largestUpdatedCock.HeadDescription() + " keeps poking its way into your view " +
-		//						"every time you get hard.");
-		//				}
-
-		//				sb.Append("</b>");
-
-		//				//then, describe what this entails.
-		//				if (target.corruption > 80)
-		//				{
-		//					sb.Append(" You find yourself fantasizing about impaling nubile young champions on your " + target.genitals.AllCocksLongDescription() + " in a year's time.");
-		//				}
-		//				else if (target.corruption > 60)
-		//				{
-		//					sb.Append(" You daydream about being attacked by a massive tentacle beast, its tentacles engulfing your " + target.genitals.AllCocksLongDescription() + " to the hilt, milking it of all your cum.\n\nYou smile at the pleasant thought.");
-		//				}
-		//				else if (target.corruption > 40)
-		//				{
-		//					if (target.cocks.Count == 1)
-		//					{
-		//						sb.Append(" You wonder if there is a demon or beast out there that could handle your full length.");
-		//					}
-		//					else
-		//					{
-		//						sb.Append(" You wonder - is a demon or beast out there that could take the full length of the largest of your " + target.genitals.AllCocksShortDescription() + "?");
-		//					}
-		//				}
-		//			}
-		//			//otherwise, just mention that you now have more that can obscure your vision
-		//			else
-		//			{
-		//				if (describeAll || describeSeveral)
-		//				{
-		//					sb.Append((describeAll ? "They've each" : "Several have") + " grown long enough that you now have even more cocks starting to obscure your " +
-		//						"vision whenever you have an erection.");
-		//				}
-		//				else
-		//				{
-		//					sb.Append("It's grown so long that you now have yet another cock that partially obscures your vision when erect.");
-		//				}
-		//			}
-		//		}
-		//		else if (largestUpdatedCock.length >= 16 && largestUpdatedCock.length - deltaAmount < 16)
-		//		{
-
-		//			bool describeAll = target.cocks.All((x, y) => x.length >= 16 && cocksChanged[y] && x.length - deltaAmount < 16);
-
-		//			sb.Append(" <b>");
-		//			if (describeAll)
-		//			{
-		//				sb.Append("Each one of your " + target.genitals.AllCocksShortDescription() + "now looks like it'd be more at home " +
-		//					"on a large horse, let alone together on one body");
-		//			}
-		//			else if (cockChangeCount == 1)
-		//			{
-		//				sb.Append("Your " + largestUpdatedCock.LongDescription() + " would look more at home on a large horse than you");
-		//			}
-		//			else
-		//			{
-		//				sb.Append("The largest of them now looks like it'd be more at home on a large horse than you");
-		//			}
-
-		//			//if multiple cocks, and all the cocks that grew longer are still shorter than the longest, make note of that.
-		//			if (!describeAll && !(largestUnchangedCock is null) && largestUpdatedCock.length < largestUnchangedCock.length)
-		//			{
-		//				sb.Append(", though it's still not as long as your " + largestUnchangedCock.LongDescription());
-		//			}
-		//			sb.Append(".</b>");
-
-		//			//if it is the longest, that means we've just reached this threshold. mention that we can now tit-fuck ourselves.
-		//			if (largestUnchangedCock is null || largestUnchangedCock.length < 16)
-		//			{
-		//				if (target.genitals.BiggestCupSize() >= CupSize.C)
-		//				{
-		//					//you only have one cock that grew larger or all the other ones are still below the threshold.
-		//					if (cockChangeCount == 1 || target.cocks.Where((x, y) => cocksChanged[y] && x != largestUpdatedCock).All(x => x.length < 16))
-		//					{
-		//						sb.Append(" You could easily stuff your " + largestUpdatedCock.LongDescription() + " between your breasts and give yourself the titty-fuck of a lifetime.");
-		//					}
-		//					//some (but not all) are now this large.
-		//					else if (!describeAll)
-		//					{
-		//						sb.Append(" Several of your " + target.genitals.AllCocksShortDescription() + " now reach so far up your chest it would be easy to stuff a few of them " +
-		//							"between your breasts and give yourself the titty-fuck of a lifetime.");
-		//					}
-		//					else //if (target.cocks.Count > 1)
-		//					{
-		//						sb.Append(" They reach so far up your chest it would be easy to stuff a few cocks between your breasts and give yourself the titty-fuck of a lifetime.");
-		//					}
-		//				}
-		//				else
-		//				{
-		//					if (cockChangeCount == 1 || target.cocks.Where((x, y) => cocksChanged[y] && x != largestUpdatedCock).All(x => x.length < 16))
-		//					{
-		//						sb.Append(" Your " + largestUpdatedCock.LongDescription() + " is so long it easily reaches your chest. " +
-		//							"The possibility of autofellatio is now a foregone conclusion.");
-		//					}
-		//					else if (!describeAll)
-		//					{
-		//						sb.Append(" Several of your " + target.genitals.AllCocksShortDescription() + "are now long enough to easily reach your chest. " +
-		//							"Autofellatio would be about as hard as looking down.");
-		//					}
-		//					else
-		//					{
-		//						sb.Append(" They are so long that they easily reach your chest; you'd be able to perform autofellatio on any of them with little effort.");
-		//					}
-		//				}
-		//			}
-		//		}
-		//		else if (largestUpdatedCock.length >= 12 && largestUpdatedCock.length - deltaAmount < 12)
-		//		{
-		//			bool describeAll = target.cocks.All((x, y) => x.length >= 12 && cocksChanged[y] && x.length - deltaAmount < 12);
-		//			sb.Append(" <b>");
-		//			if (describeAll)
-		//			{
-		//				sb.Append("They are all so long now that they nearly reach your knees when at full length");
-		//			}
-		//			else if (cockChangeCount > 1)
-		//			{
-		//				sb.Append("The largest of them is now so long, it nearly reaches your knees");
-		//			}
-		//			else //if (cockChangeCount == 1)
-		//			{
-		//				sb.Append("Your " + target.cocks[0].LongDescription() + " is so long it nearly swings to your knee at its full length");
-		//			}
-
-		//			//if multiple cocks, and all the cocks that grew longer are still shorter than the longest, make note of that.
-		//			if (!describeAll && !(largestUnchangedCock is null) && largestUpdatedCock.length < largestUnchangedCock.length)
-		//			{
-		//				sb.Append(", though it's still not as long as your " + largestUnchangedCock.LongDescription());
-		//			}
-
-		//			sb.Append(".</b>");
-		//		}
-		//		else if (largestUpdatedCock.length >= 8 && largestUpdatedCock.length - deltaAmount < 8)
-		//		{
-		//			bool describeAll = target.cocks.All((x, y) => x.length >= 8 && cocksChanged[y] && x.length - deltaAmount < 8);
-		//			bool describeSeveral = target.cocks.Any((x, y) => x.length >= 20 && cocksChanged[y] && x != largestUpdatedCock && x.length - deltaAmount < 20);
-		//			sb.Append("<b>");
-
-		//			if (describeAll)
-		//			{
-		//				sb.Append("Most men would be overly proud to have a cock as long as your " + target.genitals.ShortestCock().LongDescription() +
-		//					", and that's the shortest one you have!");
-		//			}
-		//			else if (describeSeveral)
-		//			{
-		//				sb.Append("Several have now reached lengths most men would be proud to match");
-		//			}
-		//			else if (target.cocks.Count != 1)
-		//			{
-		//				sb.Append("The largest is now long enough most men would be proud to match its length");
-		//			}
-		//			else //if (target.cocks.Count == 1)
-		//			{
-		//				sb.Append(" Most men would be overly proud to have a tool as long as yours");
-		//			}
-
-
-
-		//			//if multiple cocks, and all the cocks that grew longer are still shorter than the longest, make note of that.
-		//			if (!describeAll && !(largestUnchangedCock is null) && largestUpdatedCock.length < largestUnchangedCock.length)
-		//			{
-		//				sb.Append(", and it's still not as long as your " + largestUnchangedCock.LongDescription() + "!");
-		//			}
-		//			else
-		//			{
-		//				sb.Append(".");
-		//			}
-
-		//			sb.Append("</b>");
-		//		}
-		//	}
-
-		//	//Display the degree of length loss.
-		//	else if (deltaAmount >= -1)
-		//	{
-		//		if (target.cocks.Count == 1)
-		//		{
-		//			sb.Append("Your " + target.genitals.AllCocksShortDescription() + " has shrunk to a slightly shorter length.");
-		//		}
-		//		else //if (target.cocks.Count > 1)
-		//		{
-		//			if (cockChangeCount == target.cocks.Count)
-		//			{
-		//				sb.Append("Your " + target.genitals.AllCocksShortDescription() + " have shrunk to a slightly shorter length.");
-		//			}
-		//			else if (cockChangeCount > 1)
-		//			{
-		//				sb.Append("You feel " + Utils.NumberAsText(cockChangeCount) + " of your " + target.genitals.AllCocksShortDescription() + " have shrunk to a slightly shorter length.");
-		//			}
-		//			else //if (cockChangeCount == 1)
-		//			{
-		//				sb.Append("You feel " + Utils.NumberAsText(cockChangeCount) + " of your " + target.genitals.AllCocksShortDescription() + " has shrunk to a slightly shorter length.");
-		//			}
-		//		}
-		//	}
-		//	else if (deltaAmount > -3)
-		//	{
-		//		if (target.cocks.Count == 1)
-		//		{
-		//			sb.Append("Your " + target.genitals.AllCocksShortDescription() + " shrinks smaller, flesh vanishing into your groin.");
-		//		}
-		//		else //if (target.cocks.Count > 1)
-		//		{
-		//			if (cockChangeCount == target.cocks.Count)
-		//			{
-		//				sb.Append("Your " + target.genitals.AllCocksShortDescription() + " shrink smaller, the flesh vanishing into your groin.");
-		//			}
-		//			else if (cockChangeCount > 1)
-		//			{
-		//				sb.Append("You feel " + Utils.NumberAsText(cockChangeCount) + " of your " + target.genitals.AllCocksShortDescription() + " shrink smaller, the flesh vanishing into your groin.");
-		//			}
-		//			else //if (cockChangeCount == 1)
-		//			{
-		//				sb.Append("You feel " + Utils.NumberAsText(cockChangeCount) + " of your " + target.genitals.AllCocksShortDescription() + " shrink smaller, the flesh vanishing into your groin.");
-		//			}
-		//		}
-		//	}
-		//	else //if (deltaAmount <= -3)
-		//	{
-		//		if (target.cocks.Count == 1)
-		//		{
-		//			sb.Append("A large portion of your " + target.genitals.AllCocksShortDescription() + "'s length shrinks and vanishes.");
-		//		}
-		//		else //if (target.cocks.Count > 1)
-		//		{
-		//			if (cockChangeCount == target.cocks.Count)
-		//			{
-		//				sb.Append("A large portion of your " + target.genitals.AllCocksShortDescription() + " recedes towards your groin, receding rapidly in length.");
-		//			}
-		//			else if (cockChangeCount > 1)
-		//			{
-		//				sb.Append("Your " + target.genitals.AllCocksShortDescription() + " tingles as " + Utils.NumberAsText(cockChangeCount) + " of your members vanish into your groin, receding rapidly in length.");
-		//			}
-		//			else //if (cockChangeCount == 1)
-		//			{
-		//				sb.Append("A single member of your " + target.genitals.AllCocksShortDescription() + " vanishes into your groin, receding rapidly in length.");
-		//			}
-		//		}
-		//	}
-
-		//	return sb.ToString();
-		//}
-	//}
 }

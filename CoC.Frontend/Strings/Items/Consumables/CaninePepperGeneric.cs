@@ -581,13 +581,13 @@ namespace CoC.Frontend.Items.Consumables
 		private static string ChangedArmsText(Creature target, ArmData oldArmData)
 		{
 			return GlobalStrings.NewParagraph() + "Weakness overcomes your arms, and no matter what you do, you can't muster the strength to raise or move them."
-			  + " Did the pepper have some drug-like effects? Sitting on the ground, you wait for the limpness to end."
-			  + " As you do so, you realize that the bones at your hands are changing, as well as the muscles on your arms."
-			  + " They're soon covered, from the shoulders to the tip of your digits, on a layer of soft,"
-			  + " fluffy " + target.ActiveHairOrFurColor().AsString() + " fur."
-			  + " Your hands gain pink, padded paws where your palms were once, and your nails become short claws,"
-			  + " not sharp enough to tear flesh, but nimble enough to make climbing and exploring easier. "
-			  + SafelyFormattedString.FormattedText("Your arms have become like those of a dog!", StringFormats.BOLD);
+			 + " Did the pepper have some drug-like effects? Sitting on the ground, you wait for the limpness to end."
+			 + " As you do so, you realize that the bones at your hands are changing, as well as the muscles on your arms."
+			 + " They're soon covered, from the shoulders to the tip of your digits, on a layer of soft,"
+			 + " fluffy " + target.ActiveHairOrFurColor().AsString() + " fur."
+			 + " Your hands gain pink, padded paws where your palms were once, and your nails become short claws,"
+			 + " not sharp enough to tear flesh, but nimble enough to make climbing and exploring easier. "
+			 + SafelyFormattedString.FormattedText("Your arms have become like those of a dog!", StringFormats.BOLD);
 		}
 
 		private static string FallbackToughenUpText(Creature target)

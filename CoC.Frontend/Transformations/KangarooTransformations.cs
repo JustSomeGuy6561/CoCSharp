@@ -72,38 +72,37 @@ namespace CoC.Frontend.Transformations
 			//General Effects:
 			//****************
 			//-Int less than 10
-			if (target is IExtendedCreature extendedCreature && target is CombatCreature badEndCC && !extendedCreature.extendedData.resistsTFBadEnds && badEndCC.intelligence < 10)
+			if (target is IExtendedCreature extendedCreature && !extendedCreature.extendedData.resistsTFBadEnds && target.intelligence < 10)
 			{
-				if (badEndCC.intelligence < 8 && Species.KANGAROO.Score(target) >= 5)
+				if (target.intelligence < 8 && Species.KANGAROO.Score(target) >= 5)
 				{
 					isBadEnd = true;
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
-			if (target is CombatCreature cc)
+
+			//-Speed to 70
+			if (target.relativeSpeed < 70 && Utils.Rand(3) == 0)
 			{
-				//-Speed to 70
-				if (cc.relativeSpeed < 70 && Utils.Rand(3) == 0)
+				//2 points up if below 40!
+				if (target.relativeSpeed < 40)
 				{
-					//2 points up if below 40!
-					if (cc.relativeSpeed < 40)
-					{
-						cc.DeltaCombatCreatureStats(spe: 1);
-					}
-
-					cc.DeltaCombatCreatureStats(spe: 1);
-
+					target.ChangeSpeed(1);
 				}
-				//-Int to 10
-				if (cc.intelligence > 2 && Utils.Rand(3) == 0)
-				{
-					//Gain dumb (smart!)
-					//gain dumb (30-10 int):
 
-					//gain dumb (10-1 int):
-					cc.DeltaCombatCreatureStats(inte: -1);
-				}
+				target.ChangeSpeed(1);
+
 			}
+			//-Int to 10
+			if (target.intelligence > 2 && Utils.Rand(3) == 0)
+			{
+				//Gain dumb (smart!)
+				//gain dumb (30-10 int):
+
+				//gain dumb (10-1 int):
+				target.ChangeIntelligence(-1);
+			}
+
 			//****************
 			//Appearance Effects:
 			//****************
@@ -119,7 +118,9 @@ namespace CoC.Frontend.Transformations
 			//-Restore arms to become human arms again
 			if (Utils.Rand(4) == 0)
 			{
+				ArmData oldData = target.arms.AsReadOnlyData();
 				target.RestoreArms();
+				sb.Append(RestoredArmsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -137,7 +138,9 @@ namespace CoC.Frontend.Transformations
 			//Remove odd eyes
 			if (Utils.Rand(5) == 0 && !target.eyes.isDefault)
 			{
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.RestoreEyes();
+				sb.Append(RestoredEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -212,7 +215,9 @@ namespace CoC.Frontend.Transformations
 			//Neck restore
 			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -222,7 +227,9 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -233,7 +240,12 @@ namespace CoC.Frontend.Transformations
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				sb.Append(ClearOvipositionText(target));
+
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//****************
 			//Big Kanga Morphs
@@ -242,7 +254,9 @@ namespace CoC.Frontend.Transformations
 			//-Face (Req: Fur + Feet)
 			if (target.face.type != FaceType.KANGAROO && ((target.body.IsFurBodyType() && target.lowerBody.type == LowerBodyType.KANGAROO) || isEnhanced) && Utils.Rand(4) == 0)
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.KANGAROO);
+				sb.Append(UpdateFaceText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -253,7 +267,9 @@ namespace CoC.Frontend.Transformations
 			//-Fur (Req: Footsies)
 			if (!target.body.IsFurBodyType() && (target.lowerBody.type == LowerBodyType.KANGAROO || isEnhanced) && Utils.Rand(4) == 0)
 			{
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.SIMPLE_FUR, new FurColor(HairFurColors.BROWN));
+				sb.Append(UpdateBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -263,7 +279,9 @@ namespace CoC.Frontend.Transformations
 			//-Roo footsies (Req: Tail)
 			if (target.lowerBody.type != LowerBodyType.KANGAROO && (isEnhanced || target.tail.type == TailType.KANGAROO) && Utils.Rand(4) == 0)
 			{
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.KANGAROO);
+				sb.Append(UpdateLowerBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -273,7 +291,9 @@ namespace CoC.Frontend.Transformations
 			//-Roo tail (Req: Ears)
 			if (target.tail.type != TailType.KANGAROO && Utils.Rand(4) == 0 && (isEnhanced || target.ears.type == EarType.KANGAROO))
 			{
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.KANGAROO);
+				sb.Append(UpdateTailText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -283,7 +303,9 @@ namespace CoC.Frontend.Transformations
 			//-Roo ears
 			if (target.ears.type != EarType.KANGAROO && Utils.Rand(4) == 0)
 			{
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.KANGAROO);
+				sb.Append(UpdateEarsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -318,6 +340,55 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+{
+return RemovedOvipositionTextGeneric(target);
+}
+
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+		{
+			return target.face.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateBodyText(Creature target, BodyData oldData)
+		{
+			return target.body.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateLowerBodyText(Creature target, LowerBodyData oldData)
+		{
+			return target.lowerBody.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+		{
+			return target.tail.TransformFromText(oldTail);
+		}
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+		{
+			return target.ears.TransformFromText(oldData);
+		}
+		protected virtual string RestoredArmsText(Creature target, ArmData oldData)
+		{
+			return target.arms.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredEyesText(Creature target, EyeData oldData)
+		{
+			return target.eyes.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

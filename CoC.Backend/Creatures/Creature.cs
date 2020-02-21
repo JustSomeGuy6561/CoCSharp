@@ -17,7 +17,9 @@ using CoC.Backend.Inventory;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Wearables.Armor;
 using CoC.Backend.Items.Wearables.LowerGarment;
+using CoC.Backend.Items.Wearables.Shield;
 using CoC.Backend.Items.Wearables.UpperGarment;
+using CoC.Backend.Items.Wearables.Weapon;
 using CoC.Backend.Perks;
 using CoC.Backend.Pregnancies;
 using CoC.Backend.Strings;
@@ -37,54 +39,107 @@ namespace CoC.Backend.Creatures
 		//always start as these values;
 		public const byte DEFAULT_LUST = 0;
 
+		public const byte DEFAULT_STRENGTH = 15;
+		public const byte DEFAULT_TOUGHNESS = 15;
+		public const byte DEFAULT_SPEED = 15;
+		public const byte DEFAULT_INTELLIGENCE = 15;
+
 		internal const byte BASE_MAX_LIBIDO = 100;
 		internal const byte BASE_MAX_SENSITIVITY = 100;
 		internal const byte BASE_MAX_CORRUPTION = 100;
 		internal const byte BASE_MAX_LUST = 100;
+
+		internal const byte BASE_MAX_STRENGTH = 100;
+		internal const byte BASE_MAX_TOUGHNESS = 100;
+		internal const byte BASE_MAX_SPEED = 100;
+		internal const byte BASE_MAX_INTELLIGENCE = 100;
 
 		protected const byte ZERO = 0;
 		public const byte LOWEST_POSSIBLE_MAX = 50;
 
 		#region Stats
 		public byte libido => (byte)Math.Floor(libidoTrue);
-		public float libidoTrue
+		public double libidoTrue
 		{
 			get => _libido;
 			private protected set => _libido = Utils.Clamp2(value, minLibido, maxLibido);
 		}
-		private float _libido = 0;
+		private double _libido = 0;
 
-		public float relativeLibido => libidoTrue * (100f / maxLibido);
+		public double relativeLibido => libidoTrue * (100f / maxLibido);
 
 		public byte sensitivity => (byte)Math.Floor(sensitivityTrue);
-		public float sensitivityTrue
+		public double sensitivityTrue
 		{
 			get => _sensitivity;
 			private protected set => _sensitivity = Utils.Clamp2(value, minSensitivity, maxSensitivity);
 		}
-		private float _sensitivity = 0;
+		private double _sensitivity = 0;
 
-		public float relativeSensitivity => sensitivityTrue * (100f / maxSensitivity);
+		public double relativeSensitivity => sensitivityTrue * (100f / maxSensitivity);
 
 		public byte corruption => (byte)Math.Floor(corruptionTrue);
-		public float corruptionTrue
+		public double corruptionTrue
 		{
 			get => _corruption;
 			private protected set => _corruption = Utils.Clamp2(value, minCorruption, maxCorruption);
 		}
-		private float _corruption = 0;
+		private double _corruption = 0;
 
-		public float relativeCorruption => corruptionTrue * (100f / maxCorruption);
+		public double relativeCorruption => corruptionTrue * (100f / maxCorruption);
 
 		public byte lust => (byte)Math.Floor(lustTrue);
-		public float lustTrue
+		public double lustTrue
 		{
 			get => _lust;
 			private protected set => _lust = Utils.Clamp2(value, minLust, maxLust);
 		}
-		private float _lust = 0;
+		private double _lust = 0;
 
-		public float relativeLust => lustTrue * (100f / maxLust);
+		public double relativeLust => lustTrue * (100f / maxLust);
+
+		public byte strength => (byte)Math.Floor(strengthTrue);
+		public double strengthTrue
+		{
+			get => _strength;
+			private protected set => _strength = Utils.Clamp2(value, minStrength, maxStrength);
+		}
+		private double _strength = 0;
+
+		public double relativeStrength => strengthTrue * (100f / maxStrength);
+
+		public byte toughness => (byte)Math.Floor(toughnessTrue);
+		public double toughnessTrue
+		{
+			get => _toughness;
+			private protected set => _toughness = Utils.Clamp2(value, minToughness, maxToughness);
+		}
+		private double _toughness = 0;
+
+		public double relativeToughness => toughnessTrue * (100f / maxToughness);
+
+		public byte speed => (byte)Math.Floor(speedTrue);
+		public double speedTrue
+		{
+			get => _speed;
+			private protected set => _speed = Utils.Clamp2(value, minSpeed, maxSpeed);
+		}
+		private double _speed = 0;
+
+		public double relativeSpeed => speedTrue * (100f / maxSpeed);
+
+		public byte intelligence => (byte)Math.Floor(intelligenceTrue);
+		public double intelligenceTrue
+		{
+			get => _intelligence;
+			private protected set => _intelligence = Utils.Clamp2(value, minIntelligence, maxIntelligence);
+		}
+		private double _intelligence = 0;
+
+		public double relativeIntelligence => intelligenceTrue * (100f / maxIntelligence);
+
+
+
 
 		protected internal virtual sbyte bonusMinLibido { get; set; }
 		protected virtual byte baseMinLibido => 0;
@@ -105,6 +160,28 @@ namespace CoC.Backend.Creatures
 		protected virtual byte baseMinLust => 0;
 		public byte minLust => baseMinLust.offset(bonusMinLust);
 
+		protected internal virtual sbyte bonusMinStrength { get; set; }
+		protected virtual byte baseMinStrength => 0;
+		public byte minStrength => baseMinStrength.offset(bonusMinStrength);
+
+
+
+		protected internal virtual sbyte bonusMinToughness { get; set; }
+		protected virtual byte baseMinToughness => 0;
+		public byte minToughness => baseMinToughness.offset(bonusMinToughness);
+
+
+
+		protected internal virtual sbyte bonusMinSpeed { get; set; }
+		protected virtual byte baseMinSpeed => 0;
+		public byte minSpeed => baseMinSpeed.offset(bonusMinSpeed);
+
+
+		protected internal virtual sbyte bonusMinIntelligence { get; set; }
+		protected virtual byte baseMinIntelligence => 0;
+		public byte minIntelligence => baseMinIntelligence.offset(bonusMinIntelligence);
+
+
 		protected internal virtual byte baseMaxLibido => BASE_MAX_LIBIDO;
 		protected internal virtual sbyte bonusMaxLibido { get; set; } = 0;
 		public byte maxLibido => HandleMaxStat(baseMaxLibido.offset(bonusMaxLibido), minLibido);
@@ -120,6 +197,22 @@ namespace CoC.Backend.Creatures
 		protected internal virtual byte baseMaxLust => BASE_MAX_LUST;
 		protected internal virtual sbyte bonusMaxLust { get; set; } = 0;
 		public byte maxLust => HandleMaxStat(baseMaxLust.offset(bonusMaxLust), minLust);
+
+		protected internal virtual byte baseMaxStrength => BASE_MAX_STRENGTH;
+		protected internal virtual sbyte bonusMaxStrength { get; set; } = 0;
+		public byte maxStrength => HandleMaxStat(baseMaxStrength.offset(bonusMaxStrength), minStrength);
+
+		protected internal virtual byte baseMaxToughness => BASE_MAX_TOUGHNESS;
+		protected internal virtual sbyte bonusMaxToughness { get; set; } = 0;
+		public byte maxToughness => HandleMaxStat(baseMaxToughness.offset(bonusMaxToughness), minToughness);
+
+		protected internal virtual byte baseMaxSpeed => BASE_MAX_SPEED;
+		protected internal virtual sbyte bonusMaxSpeed { get; set; } = 0;
+		public byte maxSpeed => HandleMaxStat(baseMaxSpeed.offset(bonusMaxSpeed), minSpeed);
+
+		protected internal virtual byte baseMaxIntelligence => BASE_MAX_INTELLIGENCE;
+		protected internal virtual sbyte bonusMaxIntelligence { get; set; } = 0;
+		public byte maxIntelligence => HandleMaxStat(baseMaxIntelligence.offset(bonusMaxIntelligence), minIntelligence);
 
 		protected byte HandleMaxStat(byte computedValue, byte minValue)
 		{
@@ -137,18 +230,58 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		protected internal float LibidoGainMultiplier = 1.0f;
-		protected internal float LibidoLossMultiplier = 1.0f;
+		protected internal double LibidoGainMultiplier = 1.0f;
+		protected internal double LibidoLossMultiplier = 1.0f;
 
-		protected internal float SensitivityGainMultiplier = 1.0f;
-		protected internal float SensitivityLossMultiplier = 1.0f;
+		protected internal double SensitivityGainMultiplier = 1.0f;
+		protected internal double SensitivityLossMultiplier = 1.0f;
 
-		protected internal float CorruptionGainMultiplier = 1.0f;
-		protected internal float CorruptionLossMultiplier = 1.0f;
+		protected internal double CorruptionGainMultiplier = 1.0f;
+		protected internal double CorruptionLossMultiplier = 1.0f;
 
-		protected internal float LustGainMultiplier = 1.0f;
-		protected internal float LustLossMultiplier = 1.0f;
+		protected internal double LustGainMultiplier = 1.0f;
+		protected internal double LustLossMultiplier = 1.0f;
+
+
+		protected internal double StrengthGainMultiplier = 1.0f;
+		protected internal double StrengthLossMultiplier = 1.0f;
+
+		protected internal double ToughnessGainMultiplier = 1.0f;
+		protected internal double ToughnessLossMultiplier = 1.0f;
+
+		protected internal double SpeedGainMultiplier = 1.0f;
+		protected internal double SpeedLossMultiplier = 1.0f;
+
+		protected internal double IntelligenceGainMultiplier = 1.0f;
+		protected internal double IntelligenceLossMultiplier = 1.0f;
 		#endregion
+
+		public int gems { get; protected set; }
+
+		public int addGems(uint amount)
+		{
+			int oldGems = gems;
+			gems += amount > int.MaxValue ? int.MaxValue : (int)amount;
+			return gems - oldGems;
+		}
+
+		public int removeGems(uint amount, bool canGoNegative = false)
+		{
+			int lossAmt = amount > int.MaxValue ? int.MaxValue : (int)amount;
+			int oldGems = gems;
+			if (gems < 0 && !canGoNegative)
+			{
+				return 0;
+			}
+			gems -= lossAmt;
+			if (gems < 0 && !canGoNegative)
+			{
+				gems = 0;
+			}
+			return gems - oldGems; //i can flip this if we want.
+
+		}
+
 
 		public virtual string possessiveNoun => Conjugate.FromCreature(this).PossessiveNoun();
 		public virtual string objectNoun => Conjugate.FromCreature(this).ObjectNoun();
@@ -266,10 +399,13 @@ namespace CoC.Backend.Creatures
 		public UpperGarmentBase upperGarment { get; protected set; }
 		public LowerGarmentBase lowerGarment { get; protected set; }
 
-		public bool wearingArmor => armor != null;
-		public bool wearingUpperGarment => upperGarment != null;
-		public bool wearingLowerGarment => lowerGarment != null;
-		public bool wearingAnything => armor != null || upperGarment != null || lowerGarment != null;
+		public ShieldBase shield { get; protected set; }
+		public WeaponBase weapon { get; protected set; }
+
+		public bool wearingArmor => !ArmorBase.IsNullOrNothing(armor);
+		public bool wearingUpperGarment => !UpperGarmentBase.IsNullOrNothing(upperGarment);
+		public bool wearingLowerGarment => !LowerGarmentBase.IsNullOrNothing(lowerGarment);
+		public bool wearingAnything => !ArmorBase.IsNullOrNothing(armor) || !UpperGarmentBase.IsNullOrNothing(upperGarment) || !LowerGarmentBase.IsNullOrNothing(lowerGarment);
 
 		//public bool HasPerk<T>() where T : PerkBase
 		//{
@@ -803,11 +939,25 @@ namespace CoC.Backend.Creatures
 		}
 
 		#region Stat Updates
-		public float IncreaseLibidoBy(float percent, bool ignorePerks = true)
+		public double IncreaseLibido(double amount = 1, bool ignorePerks = false)
+		{
+			if (!ignorePerks)
+			{
+				amount *= LibidoGainMultiplier;
+			}
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			double oldValue = libidoTrue;
+			libidoTrue += amount;
+			return libidoTrue - oldValue;
+		}
+		public double IncreaseLibidoBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = libidoTrue;
-			float offset = percent * maxLibido;
+			double oldValue = libidoTrue;
+			double offset = percent * maxLibido;
 			if (!ignorePerks)
 			{
 				offset *= LibidoGainMultiplier;
@@ -816,9 +966,7 @@ namespace CoC.Backend.Creatures
 			return libidoTrue - oldValue;
 		}
 
-
-
-		public float IncreaseLibido(float amount = 1, bool ignorePerks = false)
+		public double DecreaseLibido(double amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
 			{
@@ -828,15 +976,15 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			float oldValue = libidoTrue;
-			libidoTrue += amount;
-			return libidoTrue - oldValue;
+			double oldValue = libidoTrue;
+			libidoTrue -= amount;
+			return oldValue - libidoTrue;
 		}
-		public float DecreaseLibidoBy(float percent, bool ignorePerks = true)
+		public double DecreaseLibidoBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = libidoTrue;
-			float offset = percent * maxLibido;
+			double oldValue = libidoTrue;
+			double offset = percent * maxLibido;
 			if (!ignorePerks)
 			{
 				offset *= LibidoLossMultiplier;
@@ -845,39 +993,55 @@ namespace CoC.Backend.Creatures
 			return oldValue - libidoTrue;
 		}
 
-		public float DecreaseLibido(float amount = 1, bool ignorePerks = false)
+		public double ChangeLibido(double delta, bool ignorePerks = false)
+		{
+			if (delta == 0)
+			{
+				return 0;
+			}
+			else if (delta > 0)
+			{
+				return IncreaseLibido(delta, ignorePerks);
+			}
+			else
+			{
+				return -DecreaseLibido(-delta, ignorePerks);
+			}
+		}
+
+		public double SetLibido(byte value)
+		{
+			libidoTrue = value;
+			return libidoTrue;
+		}
+		public double SetLibidoPercent(double percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double value = maxLibido * percent;
+			libidoTrue = value;
+			return libidoTrue;
+		}
+
+
+		public double IncreaseSensitivity(double amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
 			{
-				amount *= LibidoGainMultiplier;
+				amount *= SensitivityGainMultiplier;
 			}
 			if (amount <= 0)
 			{
 				return 0;
 			}
-			float oldValue = libidoTrue;
-			libidoTrue -= amount;
-			return oldValue - libidoTrue;
+			double oldValue = sensitivityTrue;
+			sensitivityTrue += amount;
+			return sensitivityTrue - oldValue;
 		}
-		public float SetLibidoPercent(float percent)
+		public double IncreaseSensitivityBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float value = maxLibido * percent;
-			libidoTrue = value;
-			return libidoTrue;
-		}
-
-		public float SetLibido(byte value)
-		{
-			libidoTrue = value;
-			return libidoTrue;
-		}
-
-		public float IncreaseSensitivityBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = sensitivityTrue;
-			float offset = percent * maxSensitivity;
+			double oldValue = sensitivityTrue;
+			double offset = percent * maxSensitivity;
 			if (!ignorePerks)
 			{
 				offset *= SensitivityGainMultiplier;
@@ -886,7 +1050,7 @@ namespace CoC.Backend.Creatures
 			return sensitivityTrue - oldValue;
 		}
 
-		public float IncreaseSensitivity(float amount = 1, bool ignorePerks = false)
+		public double DecreaseSensitivity(double amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
 			{
@@ -896,15 +1060,15 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			float oldValue = sensitivityTrue;
-			sensitivityTrue += amount;
-			return sensitivityTrue - oldValue;
+			double oldValue = sensitivityTrue;
+			sensitivityTrue -= amount;
+			return oldValue - sensitivityTrue;
 		}
-		public float DecreaseSensitivityBy(float percent, bool ignorePerks = true)
+		public double DecreaseSensitivityBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = sensitivityTrue;
-			float offset = percent * maxSensitivity;
+			double oldValue = sensitivityTrue;
+			double offset = percent * maxSensitivity;
 			if (!ignorePerks)
 			{
 				offset *= SensitivityLossMultiplier;
@@ -913,39 +1077,54 @@ namespace CoC.Backend.Creatures
 			return oldValue - sensitivityTrue;
 		}
 
-		public float DecreaseSensitivity(float amount = 1, bool ignorePerks = false)
+		public double ChangeSensitivity(double delta, bool ignorePerks = false)
+		{
+			if (delta == 0)
+			{
+				return 0;
+			}
+			else if (delta > 0)
+			{
+				return IncreaseSensitivity(delta, ignorePerks);
+			}
+			else
+			{
+				return -DecreaseSensitivity(-delta, ignorePerks);
+			}
+		}
+
+		public double SetSensitivity(byte value)
+		{
+			sensitivityTrue = value;
+			return sensitivityTrue;
+		}
+		public double SetSensitivityPercent(double percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double value = maxSensitivity * percent;
+			sensitivityTrue = value;
+			return sensitivityTrue;
+		}
+
+		public double IncreaseCorruption(double amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
 			{
-				amount *= SensitivityGainMultiplier;
+				amount *= CorruptionGainMultiplier;
 			}
 			if (amount <= 0)
 			{
 				return 0;
 			}
-			float oldValue = sensitivityTrue;
-			sensitivityTrue -= amount;
-			return oldValue - sensitivityTrue;
+			double oldValue = corruptionTrue;
+			corruptionTrue += amount;
+			return corruptionTrue - oldValue;
 		}
-		public float SetSensitivityPercent(float percent)
+		public double IncreaseCorruptionBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float value = maxSensitivity * percent;
-			sensitivityTrue = value;
-			return sensitivityTrue;
-		}
-
-		public float SetSensitivity(byte value)
-		{
-			sensitivityTrue = value;
-			return sensitivityTrue;
-		}
-
-		public float IncreaseCorruptionBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = corruptionTrue;
-			float offset = percent * maxCorruption;
+			double oldValue = corruptionTrue;
+			double offset = percent * maxCorruption;
 			if (!ignorePerks)
 			{
 				offset *= CorruptionGainMultiplier;
@@ -954,7 +1133,7 @@ namespace CoC.Backend.Creatures
 			return corruptionTrue - oldValue;
 		}
 
-		public float IncreaseCorruption(float amount = 1, bool ignorePerks = false)
+		public double DecreaseCorruption(double amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
 			{
@@ -964,15 +1143,15 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			float oldValue = corruptionTrue;
-			corruptionTrue += amount;
-			return corruptionTrue - oldValue;
+			double oldValue = corruptionTrue;
+			corruptionTrue -= amount;
+			return oldValue - corruptionTrue;
 		}
-		public float DecreaseCorruptionBy(float percent, bool ignorePerks = true)
+		public double DecreaseCorruptionBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = corruptionTrue;
-			float offset = percent * maxCorruption;
+			double oldValue = corruptionTrue;
+			double offset = percent * maxCorruption;
 			if (!ignorePerks)
 			{
 				offset *= CorruptionLossMultiplier;
@@ -981,39 +1160,54 @@ namespace CoC.Backend.Creatures
 			return oldValue - corruptionTrue;
 		}
 
-		public float DecreaseCorruption(float amount = 1, bool ignorePerks = false)
+		public double ChangeCorruption(double delta, bool ignorePerks = false)
+		{
+			if (delta == 0)
+			{
+				return 0;
+			}
+			else if (delta > 0)
+			{
+				return IncreaseCorruption(delta, ignorePerks);
+			}
+			else
+			{
+				return -DecreaseCorruption(-delta, ignorePerks);
+			}
+		}
+
+		public double SetCorruption(byte value)
+		{
+			corruptionTrue = value;
+			return corruptionTrue;
+		}
+		public double SetCorruptionPercent(double percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double value = maxCorruption * percent;
+			corruptionTrue = value;
+			return corruptionTrue;
+		}
+
+		public double IncreaseLust(double amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
 			{
-				amount *= CorruptionGainMultiplier;
+				amount *= LustGainMultiplier;
 			}
 			if (amount <= 0)
 			{
 				return 0;
 			}
-			float oldValue = corruptionTrue;
-			corruptionTrue -= amount;
-			return oldValue - corruptionTrue;
+			double oldValue = lustTrue;
+			lustTrue += amount;
+			return lustTrue - oldValue;
 		}
-		public float SetCorruptionPercent(float percent)
+		public double IncreaseLustBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float value = maxCorruption * percent;
-			corruptionTrue = value;
-			return corruptionTrue;
-		}
-
-		public float SetCorruption(byte value)
-		{
-			corruptionTrue = value;
-			return corruptionTrue;
-		}
-
-		public float IncreaseLustBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = lustTrue;
-			float offset = percent * maxLust;
+			double oldValue = lustTrue;
+			double offset = percent * maxLust;
 			if (!ignorePerks)
 			{
 				offset *= LustGainMultiplier;
@@ -1022,7 +1216,7 @@ namespace CoC.Backend.Creatures
 			return lustTrue - oldValue;
 		}
 
-		public float IncreaseLust(float amount = 1, bool ignorePerks = false)
+		public double DecreaseLust(double amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
 			{
@@ -1032,15 +1226,15 @@ namespace CoC.Backend.Creatures
 			{
 				return 0;
 			}
-			float oldValue = lustTrue;
-			lustTrue += amount;
-			return lustTrue - oldValue;
+			double oldValue = lustTrue;
+			lustTrue -= amount;
+			return oldValue - lustTrue;
 		}
-		public float DecreaseLustBy(float percent, bool ignorePerks = true)
+		public double DecreaseLustBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = lustTrue;
-			float offset = percent * maxLust;
+			double oldValue = lustTrue;
+			double offset = percent * maxLust;
 			if (!ignorePerks)
 			{
 				offset *= LustLossMultiplier;
@@ -1049,37 +1243,370 @@ namespace CoC.Backend.Creatures
 			return oldValue - lustTrue;
 		}
 
-		public float DecreaseLust(float amount = 1, bool ignorePerks = false)
+		public double ChangeLust(double delta, bool ignorePerks = false)
+		{
+			if (delta == 0)
+			{
+				return 0;
+			}
+			else if (delta > 0)
+			{
+				return IncreaseLust(delta, ignorePerks);
+			}
+			else
+			{
+				return -DecreaseLust(-delta, ignorePerks);
+			}
+		}
+
+		public double SetLust(byte value)
+		{
+			lustTrue = value;
+			return lustTrue;
+		}
+		public double SetLustPercent(double percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double value = maxLust * percent;
+			lustTrue = value;
+			return lustTrue;
+		}
+
+		public double IncreaseStrength(double amount = 1, bool ignorePerks = false)
 		{
 			if (!ignorePerks)
 			{
-				amount *= LustGainMultiplier;
+				amount *= StrengthGainMultiplier;
 			}
 			if (amount <= 0)
 			{
 				return 0;
 			}
-			float oldValue = lustTrue;
-			lustTrue -= amount;
-			return oldValue - lustTrue;
+			var oldValue = strengthTrue;
+			strengthTrue += amount;
+			return strengthTrue - oldValue;
 		}
-		public float SetLustPercent(float percent)
+		public double IncreaseStrengthBy(double percent, bool ignorePerks = true)
 		{
 			Utils.Clamp(ref percent, 0, 1);
-			float value = maxLust * percent;
-			lustTrue = value;
-			return lustTrue;
+			double oldValue = strengthTrue;
+			double delta = percent * maxStrength;
+			if (!ignorePerks)
+			{
+				delta *= StrengthGainMultiplier;
+			}
+			strengthTrue += delta;
+			return strengthTrue - oldValue;
 		}
 
-		public float SetLust(byte value)
+		public double DecreaseStrength(double amount = 1, bool ignorePerks = false)
 		{
-			lustTrue = value;
-			return lustTrue;
+			if (!ignorePerks)
+			{
+				amount *= StrengthGainMultiplier;
+			}
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			var oldValue = strengthTrue;
+			strengthTrue -= amount;
+			return oldValue - strengthTrue;
+		}
+		public double DecreaseStrengthByPercent(double percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double oldValue = strengthTrue;
+			double delta = percent * maxStrength;
+			if (!ignorePerks)
+			{
+				delta *= StrengthLossMultiplier;
+			}
+			strengthTrue -= delta;
+			return oldValue - strengthTrue;
 		}
 
-		public void IncreaseCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, bool ignorePerks = false)
+		public double ChangeStrength(double delta, bool ignorePerks = false)
 		{
-			float amount;
+			if (delta == 0)
+			{
+				return 0;
+			}
+			else if (delta > 0)
+			{
+				return IncreaseStrength(delta, ignorePerks);
+			}
+			else
+			{
+				return -DecreaseStrength(-delta, ignorePerks);
+			}
+		}
+
+		public double SetStrength(byte value)
+		{
+			strengthTrue = value;
+			return strengthTrue;
+		}
+		public double SetStrengthPercent(double percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double value = maxStrength * percent;
+			strengthTrue = value;
+			return strengthTrue;
+		}
+
+		public double IncreaseToughness(double amount = 1, bool ignorePerks = false)
+		{
+			if (!ignorePerks)
+			{
+				amount *= ToughnessGainMultiplier;
+			}
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			var oldValue = toughnessTrue;
+			toughnessTrue += amount;
+			return toughnessTrue - oldValue;
+		}
+		public double IncreaseToughnessBy(double percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double oldValue = toughnessTrue;
+			double delta = percent * maxToughness;
+			if (!ignorePerks)
+			{
+				delta *= ToughnessGainMultiplier;
+			}
+			toughnessTrue += delta;
+			return toughnessTrue - oldValue;
+		}
+
+		public double DecreaseToughness(double amount = 1, bool ignorePerks = false)
+		{
+			if (!ignorePerks)
+			{
+				amount *= ToughnessGainMultiplier;
+			}
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			var oldValue = toughnessTrue;
+			toughnessTrue -= amount;
+			return oldValue - toughnessTrue;
+		}
+		public double DecreaseToughnessByPercent(double percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double oldValue = toughnessTrue;
+			double delta = percent * maxToughness;
+			if (!ignorePerks)
+			{
+				delta *= ToughnessLossMultiplier;
+			}
+			toughnessTrue -= delta;
+			return oldValue - toughnessTrue;
+		}
+
+		public double ChangeToughness(double delta, bool ignorePerks = false)
+		{
+			if (delta == 0)
+			{
+				return 0;
+			}
+			else if (delta > 0)
+			{
+				return IncreaseToughness(delta, ignorePerks);
+			}
+			else
+			{
+				return -DecreaseToughness(-delta, ignorePerks);
+			}
+		}
+
+		public double SetToughness(byte value)
+		{
+			toughnessTrue = value;
+			return toughnessTrue;
+		}
+		public double SetToughnessPercent(double percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double value = maxToughness * percent;
+			toughnessTrue = value;
+			return toughnessTrue;
+		}
+
+		public double IncreaseSpeed(double amount = 1, bool ignorePerks = false)
+		{
+			if (!ignorePerks)
+			{
+				amount *= SpeedGainMultiplier;
+			}
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			var oldValue = speedTrue;
+			speedTrue += amount;
+			return speedTrue - oldValue;
+		}
+		public double IncreaseSpeedBy(double percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double oldValue = speedTrue;
+			double delta = percent * maxSpeed;
+			if (!ignorePerks)
+			{
+				delta *= SpeedGainMultiplier;
+			}
+			speedTrue += delta;
+			return speedTrue - oldValue;
+		}
+
+		public double DecreaseSpeed(double amount = 1, bool ignorePerks = false)
+		{
+			if (!ignorePerks)
+			{
+				amount *= SpeedGainMultiplier;
+			}
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			var oldValue = speedTrue;
+			speedTrue -= amount;
+			return oldValue - speedTrue;
+		}
+		public double DecreaseSpeedBy(double percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double oldValue = speedTrue;
+			double delta = percent * maxSpeed;
+			if (!ignorePerks)
+			{
+				delta *= SpeedLossMultiplier;
+			}
+			speedTrue -= delta;
+			return oldValue - speedTrue;
+		}
+
+		public double ChangeSpeed(double delta, bool ignorePerks = false)
+		{
+			if (delta == 0)
+			{
+				return 0;
+			}
+			else if (delta > 0)
+			{
+				return IncreaseSpeed(delta, ignorePerks);
+			}
+			else
+			{
+				return -DecreaseSpeed(-delta, ignorePerks);
+			}
+		}
+
+		public double SetSpeed(byte value)
+		{
+			speedTrue = value;
+			return speedTrue;
+		}
+		public double SetSpeedPercent(double percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double value = maxSpeed * percent;
+			speedTrue = value;
+			return speedTrue;
+		}
+
+		public double IncreaseIntelligence(double amount = 1, bool ignorePerks = false)
+		{
+			if (!ignorePerks)
+			{
+				amount *= IntelligenceGainMultiplier;
+			}
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			var oldValue = intelligenceTrue;
+			intelligenceTrue += amount;
+			return intelligenceTrue - oldValue;
+		}
+		public double IncreaseIntelligenceBy(double percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double oldValue = intelligenceTrue;
+			double delta = percent * maxIntelligence;
+			if (!ignorePerks)
+			{
+				delta *= IntelligenceGainMultiplier;
+			}
+			intelligenceTrue += delta;
+			return intelligenceTrue - oldValue;
+		}
+
+		public double DecreaseIntelligence(double amount = 1, bool ignorePerks = false)
+		{
+			if (!ignorePerks)
+			{
+				amount *= IntelligenceGainMultiplier;
+			}
+			if (amount <= 0)
+			{
+				return 0;
+			}
+			var oldValue = intelligenceTrue;
+			intelligenceTrue -= amount;
+			return oldValue - intelligenceTrue;
+		}
+		public double DecreaseIntelligenceBy(double percent, bool ignorePerks = true)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double oldValue = intelligenceTrue;
+			double delta = percent * maxIntelligence;
+			if (!ignorePerks)
+			{
+				delta *= IntelligenceLossMultiplier;
+			}
+			intelligenceTrue -= delta;
+			return oldValue - intelligenceTrue;
+		}
+
+		public double ChangeIntelligence(double delta, bool ignorePerks = false)
+		{
+			if (delta == 0)
+			{
+				return 0;
+			}
+			else if (delta > 0)
+			{
+				return IncreaseIntelligence(delta, ignorePerks);
+			}
+			else
+			{
+				return -DecreaseIntelligence(-delta, ignorePerks);
+			}
+		}
+
+		public double SetIntelligence(byte value)
+		{
+			intelligenceTrue = value;
+			return intelligenceTrue;
+		}
+		public double SetIntelligencePercent(double percent)
+		{
+			Utils.Clamp(ref percent, 0, 1);
+			double value = maxIntelligence * percent;
+			intelligenceTrue = value;
+			return intelligenceTrue;
+		}
+
+		public void IncreaseCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, byte str = 0, byte tou = 0, byte spe = 0, byte inte = 0, bool ignorePerks = false)
+		{
+			double amount;
 			if (lus != 0)
 			{
 				amount = lus;
@@ -1120,11 +1647,36 @@ namespace CoC.Backend.Creatures
 
 				corruptionTrue += amount;
 			}
+
+			if (str != 0)
+			{
+				amount = str;
+				if (!ignorePerks) amount *= StrengthGainMultiplier;
+				strengthTrue += amount;
+			}
+			if (tou != 0)
+			{
+				amount = tou;
+				if (!ignorePerks) amount *= ToughnessGainMultiplier;
+				toughnessTrue += amount;
+			}
+			if (spe != 0)
+			{
+				amount = spe;
+				if (!ignorePerks) amount *= SpeedGainMultiplier;
+				speedTrue += amount;
+			}
+			if (inte != 0)
+			{
+				amount = inte;
+				if (!ignorePerks) amount *= IntelligenceGainMultiplier;
+				intelligenceTrue += amount;
+			}
 		}
 
-		public void DecreaseCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, bool ignorePerks = false)
+		public void DecreaseCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, byte str = 0, byte tou = 0, byte spe = 0, byte inte = 0, bool ignorePerks = false)
 		{
-			float amount;
+			double amount;
 			if (lus != 0)
 			{
 				amount = lus;
@@ -1165,9 +1717,34 @@ namespace CoC.Backend.Creatures
 
 				corruptionTrue -= amount;
 			}
+
+			if (str != 0)
+			{
+				amount = str;
+				if (!ignorePerks) amount *= StrengthLossMultiplier;
+				strengthTrue -= amount;
+			}
+			if (tou != 0)
+			{
+				amount = tou;
+				if (!ignorePerks) amount *= ToughnessLossMultiplier;
+				toughnessTrue -= amount;
+			}
+			if (spe != 0)
+			{
+				amount = spe;
+				if (!ignorePerks) amount *= SpeedLossMultiplier;
+				speedTrue -= amount;
+			}
+			if (inte != 0)
+			{
+				amount = inte;
+				if (!ignorePerks) amount *= IntelligenceLossMultiplier;
+				intelligenceTrue -= amount;
+			}
 		}
 
-		public void SetCreatureStats(byte? lus = null, byte? lib = null, byte? sens = null, byte? corr = null)
+		public void SetCreatureStats(byte? lus = null, byte? lib = null, byte? sens = null, byte? corr = null, byte? str = null, byte? tou = null, byte? spe = null, byte? inte = null)
 		{
 			if (lus is byte ltb)
 			{
@@ -1185,11 +1762,28 @@ namespace CoC.Backend.Creatures
 			{
 				corruptionTrue = cb;
 			}
+
+			if (str is byte stb)
+			{
+				strengthTrue = stb;
+			}
+			if (tou is byte tb)
+			{
+				toughnessTrue = tb;
+			}
+			if (spe is byte spb)
+			{
+				speedTrue = spb;
+			}
+			if (inte is byte ib)
+			{
+				intelligenceTrue = ib;
+			}
 		}
 
-		public void DeltaCreatureStats(float lus = 0, float lib = 0, float sens = 0, float corr = 0, bool ignorePerks = false)
+		public void DeltaCreatureStats(double lus = 0, double lib = 0, double sens = 0, double corr = 0, double str = 0, double tou = 0, double spe = 0, double inte = 0, bool ignorePerks = false)
 		{
-			float amount;
+			double amount;
 			if (lus < 0)
 			{
 				amount = lus;
@@ -1270,7 +1864,57 @@ namespace CoC.Backend.Creatures
 
 				corruptionTrue += amount;
 			}
+
+			if (str < 0)
+			{
+				amount = str;
+				if (!ignorePerks) amount *= StrengthLossMultiplier;
+				strengthTrue += amount;
+			}
+			else if (str > 0)
+			{
+				amount = str;
+				if (!ignorePerks) amount *= StrengthGainMultiplier;
+				strengthTrue += amount;
+			}
+			if (tou < 0)
+			{
+				amount = tou;
+				if (!ignorePerks) amount *= ToughnessLossMultiplier;
+				toughnessTrue += amount;
+			}
+			else if (tou > 0)
+			{
+				amount = tou;
+				if (!ignorePerks) amount *= ToughnessGainMultiplier;
+				toughnessTrue += amount;
+			}
+			if (spe < 0)
+			{
+				amount = spe;
+				if (!ignorePerks) amount *= SpeedLossMultiplier;
+				speedTrue += amount;
+			}
+			else if (spe > 0)
+			{
+				amount = spe;
+				if (!ignorePerks) amount *= SpeedGainMultiplier;
+				speedTrue += amount;
+			}
+			if (inte < 0)
+			{
+				amount = inte;
+				if (!ignorePerks) amount *= IntelligenceLossMultiplier;
+				intelligenceTrue += amount;
+			}
+			else if (inte > 0)
+			{
+				amount = inte;
+				if (!ignorePerks) amount *= IntelligenceGainMultiplier;
+				intelligenceTrue += amount;
+			}
 		}
+
 
 		#endregion
 		#region Add/Remove Genitals Related
@@ -1306,7 +1950,7 @@ namespace CoC.Backend.Creatures
 			return genitals.AddCock(newCockType);
 		}
 
-		public bool AddCock(CockType newCockType, float length, float girth, float? knotMultiplier = null)
+		public bool AddCock(CockType newCockType, double length, double girth, double? knotMultiplier = null)
 		{
 			return genitals.AddCock(newCockType, length, girth, knotMultiplier);
 		}
@@ -1344,14 +1988,14 @@ namespace CoC.Backend.Creatures
 			return genitals.AddVagina(newVaginaType);
 		}
 
-		public bool AddVagina(float clitLength) => genitals.AddVagina(clitLength);
-		public bool AddVagina(VaginaType newVaginaType, float clitLength)
+		public bool AddVagina(double clitLength) => genitals.AddVagina(clitLength);
+		public bool AddVagina(VaginaType newVaginaType, double clitLength)
 		{
 			return genitals.AddVagina(newVaginaType, clitLength);
 		}
 
-		public bool AddVagina(float clitLength, VaginalLooseness looseness, VaginalWetness wetness) => genitals.AddVagina(clitLength, looseness, wetness);
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness)
+		public bool AddVagina(double clitLength, VaginalLooseness looseness, VaginalWetness wetness) => genitals.AddVagina(clitLength, looseness, wetness);
+		public bool AddVagina(VaginaType newVaginaType, double clitLength, VaginalLooseness looseness, VaginalWetness wetness)
 		{
 			return genitals.AddVagina(newVaginaType, clitLength, looseness, wetness);
 		}
@@ -1382,43 +2026,25 @@ namespace CoC.Backend.Creatures
 		//we do and any consequences of doing so. hence, the following internal change functions for the various pieces of equipment.
 
 
-		internal ArmorBase ChangeArmor(ArmorBase armorBase, out string removeText)
+		internal ArmorBase ChangeArmor(ArmorBase armorBase)
 		{
-			ArmorBase retVal = armor;
-			armor = armorBase;
-			retVal?.OnRemove(this);
-			removeText = retVal?.OnRemoveText();
-			if (retVal?.destroyOnRemoval == true)
-			{
-				retVal = null;
-			}
-			return retVal;
+			ArmorBase currentArmor = armor;
+			armor = armorBase ?? ArmorBase.NOTHING;
+			return currentArmor;
 		}
 
-		internal UpperGarmentBase ChangeUpperGarment(UpperGarmentBase upperGarmentBase, out string removeText)
+		internal UpperGarmentBase ChangeUpperGarment(UpperGarmentBase upperGarmentBase)
 		{
-			UpperGarmentBase retVal = upperGarment;
-			upperGarment = upperGarmentBase;
-			retVal?.OnRemove(this);
-			removeText = retVal?.OnRemoveText();
-			if (retVal?.destroyOnRemoval == true)
-			{
-				retVal = null;
-			}
-			return retVal;
+			UpperGarmentBase garment = upperGarment;
+			upperGarment = upperGarmentBase ?? UpperGarmentBase.NOTHING;
+			return garment;
 		}
 
-		internal LowerGarmentBase ChangeLowerGarment(LowerGarmentBase lowerGarmentBase, out string removeText)
+		internal LowerGarmentBase ChangeLowerGarment(LowerGarmentBase lowerGarmentBase)
 		{
-			LowerGarmentBase retVal = lowerGarment;
-			lowerGarment = lowerGarmentBase;
-			retVal?.OnRemove(this);
-			removeText = retVal?.OnRemoveText();
-			if (retVal?.destroyOnRemoval == true)
-			{
-				retVal = null;
-			}
-			return retVal;
+			LowerGarmentBase garment = lowerGarment;
+			this.lowerGarment = lowerGarmentBase ?? LowerGarmentBase.NOTHING;
+			return garment;
 		}
 
 		#endregion
@@ -1582,7 +2208,7 @@ namespace CoC.Backend.Creatures
 
 			if (item.CanUse(this, false, out string whyNot))
 			{
-				return item.AttemptToUse(this, onUseItemReturn);
+				return item.UseItem(this, onUseItemReturn);
 			}
 			else
 			{
@@ -1616,13 +2242,13 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				CapacityItem item = inventoryStore.RemoveItem(index);
-				return item.AttemptToUse(this, onUseItemReturn);
+				return item.UseItem(this, onUseItemReturn);
 			}
 		}
 
 		public DisplayBase EquipArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postEquipCallback)
 		{
-			if (armor is null)
+			if (ArmorBase.IsNullOrNothing(armor))
 			{
 				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
@@ -1634,7 +2260,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return armor.AttemptToUseSafe(this, postEquipCallback);
+				return armor.UseItemSafe(this, postEquipCallback);
 			}
 		}
 
@@ -1658,14 +2284,24 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseSafe(this, postEquipCallback);
+				return item.UseItemSafe(this, postEquipCallback);
 			}
 		}
 
 		//remove the armor, retrieving it for you to manually parse. note that if the armor destroys itself when being removed, this will return null.
 		public ArmorBase RemoveArmorManual(out string removeText)
 		{
-			return ChangeArmor(null, out removeText);
+			var old = ChangeArmor(null);
+
+			if (old is null)
+			{
+				removeText = "";
+				return null;
+			}
+			else
+			{
+				return old.DoRemove(this, out removeText);
+			}
 		}
 
 		//remove the current armor, and replace it with the current one. since it may be possible for an armor equip to use a menu, the removed armor is sent along to the callback.
@@ -1673,7 +2309,7 @@ namespace CoC.Backend.Creatures
 		//callback will be null.
 		public DisplayBase ReplaceArmorManual(ArmorBase armor, UseItemCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
-			if (armor is null)
+			if (ArmorBase.IsNullOrNothing(armor))
 			{
 				ArmorBase item = RemoveArmorManual(out string removeText);
 				postReplaceArmorCallback(true, removeText, item.Author(), item);
@@ -1686,7 +2322,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return armor.AttemptToUseSafe(this, postReplaceArmorCallback);
+				return armor.UseItemSafe(this, postReplaceArmorCallback);
 			}
 		}
 
@@ -1710,13 +2346,13 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseSafe(this, postReplaceArmorCallback);
+				return item.UseItemSafe(this, postReplaceArmorCallback);
 			}
 		}
 
 		public DisplayBase EquipUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postEquipCallback)
 		{
-			if (upperGarment is null)
+			if (UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
@@ -1728,7 +2364,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return upperGarment.AttemptToUseSafe(this, postEquipCallback);
+				return upperGarment.UseItemSafe(this, postEquipCallback);
 			}
 		}
 
@@ -1752,18 +2388,29 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseSafe(this, postEquipCallback);
+				return item.UseItemSafe(this, postEquipCallback);
 			}
 		}
 
 		public UpperGarmentBase RemoveUpperGarmentManual(out string removeText)
 		{
-			return ChangeUpperGarment(null, out removeText);
+			var result = ChangeUpperGarment(null);
+
+			if (result is null)
+			{
+				removeText = "";
+				return null;
+			}
+			else
+			{
+				return result.DoRemove(this, out removeText);
+			}
+
 		}
 
 		public DisplayBase ReplaceUpperGarmentManual(UpperGarmentBase upperGarment, UseItemCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
-			if (upperGarment is null)
+			if (UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				UpperGarmentBase item = RemoveUpperGarmentManual(out string removeText);
 				postReplaceUpperGarmentCallback(true, removeText, item.Author(), item);
@@ -1776,7 +2423,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return upperGarment.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
+				return upperGarment.UseItemSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
 
@@ -1800,13 +2447,13 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseSafe(this, postReplaceUpperGarmentCallback);
+				return item.UseItemSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
 
 		public DisplayBase EquipLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postEquipCallback)
 		{
-			if (lowerGarment is null)
+			if (LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
@@ -1818,7 +2465,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return lowerGarment.AttemptToUseSafe(this, postEquipCallback);
+				return lowerGarment.UseItemSafe(this, postEquipCallback);
 			}
 		}
 
@@ -1842,18 +2489,28 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseSafe(this, postEquipCallback);
+				return item.UseItemSafe(this, postEquipCallback);
 			}
 		}
 
 		public LowerGarmentBase RemoveLowerGarmentManual(out string removeText)
 		{
-			return ChangeLowerGarment(null, out removeText);
+			var result = ChangeLowerGarment(null);
+
+			if (result is null)
+			{
+				removeText = "";
+				return null;
+			}
+			else
+			{
+				return result.DoRemove(this, out removeText);
+			}
 		}
 
 		public DisplayBase ReplaceLowerGarmentManual(LowerGarmentBase lowerGarment, UseItemCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
-			if (lowerGarment is null)
+			if (LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				LowerGarmentBase item = RemoveLowerGarmentManual(out string removeText);
 				postReplaceLowerGarmentCallback(true, removeText, "", item);
@@ -1866,7 +2523,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return lowerGarment.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
+				return lowerGarment.UseItemSafe(this, postReplaceLowerGarmentCallback);
 			}
 		}
 
@@ -1890,7 +2547,7 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseSafe(this, postReplaceLowerGarmentCallback);
+				return item.UseItemSafe(this, postReplaceLowerGarmentCallback);
 			}
 		}
 
@@ -1954,16 +2611,16 @@ namespace CoC.Backend.Creatures
 			SetLust(0);
 			//raise orgasm event.
 		}
-		/*
-		#region Take Anal
+
+		//#region Take Anal
 
 
 
 
-		public bool TakeAnalPenetration(float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus, bool countAsSex,
-			bool reachOrgasm, bool countTowardOrgasmTotal)
+		public bool TakeAnalPenetration(double length, double girth, double knotWidth, StandardSpawnType knockupType, double cumAmount, byte virilityBonus, bool countAsSex,
+			bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			bool retVal = genitals.HandleAnalPenetration(length, girth, knotWidth, knockupType, cumAmount, virilityBonus, countAsSex, reachOrgasm);
+			bool retVal = genitals.HandleAnalPenetration(length, girth, knotWidth, knockupType, cumAmount, virilityBonus, countAsSex, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
@@ -1971,28 +2628,19 @@ namespace CoC.Backend.Creatures
 			return retVal;
 		}
 
-		public void TakeAnalPenetrationNoKnockup(float length, float girth, float knotWidth, float cumAmount, bool countAsSex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void TakeAnalPenetrationNoKnockup(double length, double girth, double knotWidth, double cumAmount, bool countAsSex, bool reachOrgasm,
+			bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			genitals.HandleAnalPenetration(length, girth, knotWidth, cumAmount, countAsSex, reachOrgasm);
+			genitals.HandleAnalPenetration(length, girth, knotWidth, cumAmount, countAsSex, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 		}
 
-		public bool TakeAnalSex(Cock source, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public bool TakeAnalSex(Cock source, StandardSpawnType knockupType, double cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			bool retVal = genitals.HandleAnalPenetration(source, knockupType, cumAmountOverride, reachOrgasm);
-			if (reachOrgasm && countTowardOrgasmTotal)
-			{
-				Orgasmed();
-			}
-			return retVal;
-		}
-
-		public bool TakeAnalSex(Cock source, StandardSpawnType knockupType, bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			bool retVal = genitals.HandleAnalPenetration(source, knockupType, reachOrgasm);
+			bool retVal = genitals.HandleAnalPenetration(source, knockupType, cumAmountOverride, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
@@ -2000,7 +2648,17 @@ namespace CoC.Backend.Creatures
 			return retVal;
 		}
 
-		public bool AttemptManualAnalKnockup(StandardSpawnType knockupType, float knockupRate)
+		public bool TakeAnalSex(Cock source, StandardSpawnType knockupType, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest)
+		{
+			bool retVal = genitals.HandleAnalPenetration(source, knockupType, reachOrgasm, selfCest);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+			return retVal;
+		}
+
+		public bool AttemptManualAnalKnockup(StandardSpawnType knockupType, double knockupRate)
 		{
 			return genitals.HandleAnalPregnancyOverride(knockupType, knockupRate);
 		}
@@ -2045,36 +2703,27 @@ namespace CoC.Backend.Creatures
 
 		//}
 
-		public void PenetrateAButtGeneric()
-		{
-			TimesFuckedAnotherAss++;
-		}
-		#endregion
-		#region Take Vaginal
+		//public void PenetrateAButtGeneric()
+		//{
+		//	TimesFuckedAnotherAss++;
+		//}
+		//#endregion
+		//#region Take Vaginal
 
-		public bool TakeVaginalPenetrationNoKnockup(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool countAsSex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public bool TakeVaginalPenetrationNoKnockup(int vaginaIndex, double length, double girth, double knotWidth, double cumAmount, bool countAsSex, bool reachOrgasm,
+			bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, cumAmount, countAsSex, reachOrgasm);
+			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, cumAmount, countAsSex, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 			return retVal;
 		}
-		public bool TakeVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, StandardSpawnType knockupType, float cumAmount, byte virilityBonus, bool countAsSex,
-			bool reachOrgasm, bool countTowardOrgasmTotal)
+		public bool TakeVaginalPenetration(int vaginaIndex, double length, double girth, double knotWidth, StandardSpawnType knockupType, double cumAmount, byte virilityBonus,
+			bool countAsSex, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, knockupType, cumAmount, virilityBonus, countAsSex, reachOrgasm);
-			if (reachOrgasm && countTowardOrgasmTotal)
-			{
-				Orgasmed();
-			}
-			return retVal;
-		}
-
-		public bool TakeVaginalSex(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, sourceCock, knockupType, reachOrgasm);
+			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, length, girth, knotWidth, knockupType, cumAmount, virilityBonus, countAsSex, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
@@ -2082,9 +2731,9 @@ namespace CoC.Backend.Creatures
 			return retVal;
 		}
 
-		public bool TakeVaginalSex(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public bool TakeVaginalSex(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, sourceCock, knockupType, cumAmountOverride, reachOrgasm);
+			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, sourceCock, knockupType, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
@@ -2092,11 +2741,22 @@ namespace CoC.Backend.Creatures
 			return retVal;
 		}
 
-		public bool AttemptManualVaginalKnockup(int vaginaIndex, StandardSpawnType knockupType, float knockupRate)
+		public bool TakeVaginalSex(int vaginaIndex, Cock sourceCock, StandardSpawnType knockupType, double cumAmountOverride, bool reachOrgasm,
+			bool countTowardOrgasmTotal, bool selfCest = false)
+		{
+			bool retVal = genitals.HandleVaginalPenetration(vaginaIndex, sourceCock, knockupType, cumAmountOverride, reachOrgasm, selfCest);
+			if (reachOrgasm && countTowardOrgasmTotal)
+			{
+				Orgasmed();
+			}
+			return retVal;
+		}
+
+		public bool AttemptManualVaginalKnockup(int vaginaIndex, StandardSpawnType knockupType, double knockupRate)
 		{
 			return genitals.HandleVaginalPregnancyOverride(vaginaIndex, knockupType, knockupRate);
 		}
-		*/
+
 		//'Dry' orgasm is orgasm without stimulation.
 		public void HaveGenericVaginalOrgasm(int vaginaIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
 		{
@@ -2108,29 +2768,28 @@ namespace CoC.Backend.Creatures
 			}
 		}
 		//
-		/*
-		#endregion
-		#region Give Vaginal
-		public uint TimesFuckedAnotherVagina { get; private set; } = 0;
-		public uint TimesSoundedAnotherClitCock { get; private set; } = 0;
+		//#endregion
+		//#region Give Vaginal
+		//public uint TimesFuckedAnotherVagina { get; private set; } = 0;
+		//public uint TimesSoundedAnotherClitCock { get; private set; } = 0;
 
-		public void PenetrateAPussyGeneric()
+		//public void PenetrateAPussyGeneric()
+		//{
+		//	TimesFuckedAnotherVagina++;
+		//}
+
+		//public void SoundAnotherClitCockGeneric()
+		//{
+		//	TimesSoundedAnotherClitCock++;
+		//}
+
+
+		//#endregion
+		//#region Vaginal Penetrates
+
+		internal void PenetrateSomethingWithAClit(int vaginaIndex, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			TimesFuckedAnotherVagina++;
-		}
-
-		public void SoundAnotherClitCockGeneric()
-		{
-			TimesSoundedAnotherClitCock++;
-		}
-
-
-		#endregion
-		#region Vaginal Penetrates
-
-		internal void PenetrateSomethingWithAClit(int vaginaIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			genitals.HandleClitPenetrate(vaginaIndex, reachOrgasm);
+			genitals.HandleClitPenetrate(vaginaIndex, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
@@ -2139,27 +2798,28 @@ namespace CoC.Backend.Creatures
 		#endregion
 		#region Take Tit-Sex
 		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
-		public void GetTittyFucked(int breastIndex, Cock sourceCock, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void GetTittyFucked(int breastIndex, Cock sourceCock, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest= false)
 		{
-			genitals.HandleTittyFuck(breastIndex, sourceCock, reachOrgasm);
+			genitals.HandleTittyFuck(breastIndex, sourceCock, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 		}
 
-		public void GetTittyFucked(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void GetTittyFucked(int breastIndex, Cock sourceCock, double cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			genitals.HandleTittyFuck(breastIndex, sourceCock, cumAmountOverride, reachOrgasm);
+			genitals.HandleTittyFuck(breastIndex, sourceCock, cumAmountOverride, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 		}
 
-		public void GetTittyFucked(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void GetTittyFucked(int breastIndex, double length, double girth, double knotWidth, double cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal,
+			bool selfCest = false)
 		{
-			genitals.HandleTittyFuck(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm);
+			genitals.HandleTittyFuck(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
@@ -2175,60 +2835,61 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public void TakeNipplePenetration(int breastIndex, Cock sourceCock, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void TakeNipplePenetration(int breastIndex, Cock sourceCock, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			genitals.HandleNipplePenetration(breastIndex, sourceCock, reachOrgasm);
+			genitals.HandleNipplePenetration(breastIndex, sourceCock, reachOrgasm, selfCest);
 			if (countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 		}
 
-		public void TakeNipplePenetration(int breastIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void TakeNipplePenetration(int breastIndex, Cock sourceCock, double cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			genitals.HandleNipplePenetration(breastIndex, sourceCock, cumAmountOverride, reachOrgasm);
+			genitals.HandleNipplePenetration(breastIndex, sourceCock, cumAmountOverride, reachOrgasm, selfCest);
 			if (countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 		}
 
-		public void TakeNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void TakeNipplePenetration(int breastIndex, double length, double girth, double knotWidth, double cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal,
+			bool selfCest = false)
 		{
-			genitals.HandleNipplePenetration(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm);
+			genitals.HandleNipplePenetration(breastIndex, length, girth, knotWidth, cumAmount, reachOrgasm, selfCest);
 			if (reachOrgasm && countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 		}
 
-		#endregion
-		#region Penetrate With Tits
-		public void PenetrateSomethingWithNippleDicks(int breastIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			genitals.HandleNippleDickPenetrate(breastIndex, reachOrgasm);
-			if (reachOrgasm && countTowardOrgasmTotal)
-			{
-				Orgasmed();
-			}
-		}
-		#endregion
-		#region Give Tit-Sex
-		public uint TimesFuckedSomeTitties { get; private set; } = 0;
-		public uint TimesFuckedANipple { get; private set; } = 0;
+		//#endregion
+		//#region Penetrate With Tits
+		//public void PenetrateSomethingWithNippleDicks(int breastIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		//{
+		//	genitals.HandleNippleDickPenetrate(breastIndex, reachOrgasm);
+		//	if (reachOrgasm && countTowardOrgasmTotal)
+		//	{
+		//		Orgasmed();
+		//	}
+		//}
+		//#endregion
+		//#region Give Tit-Sex
+		//public uint TimesFuckedSomeTitties { get; private set; } = 0;
+		//public uint TimesFuckedANipple { get; private set; } = 0;
 
-		public void PenetrateANippleGeneric()
-		{
-			TimesFuckedANipple++;
-		}
+		//public void PenetrateANippleGeneric()
+		//{
+		//	TimesFuckedANipple++;
+		//}
 
-		public void DoATitFuckGeneric()
-		{
-			TimesFuckedSomeTitties++;
-		}
-		#endregion
-		#region Take with Cock
-		public void TakeCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, float knotSize, float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
+		//public void DoATitFuckGeneric()
+		//{
+		//	TimesFuckedSomeTitties++;
+		//}
+		//#endregion
+		//#region Take with Cock
+		public void TakeCockSounding(int cockIndex, double penetratorLength, double penetratorWidth, double knotSize, double cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
 			genitals.HandleCockSounding(cockIndex, penetratorLength, penetratorWidth, knotSize, cumAmount, reachOrgasm);
 			if (reachOrgasm && countTowardOrgasmTotal)
@@ -2246,7 +2907,7 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public void TakeCockSounding(int cockIndex, Cock sourceCock, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void TakeCockSounding(int cockIndex, Cock sourceCock, double cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
 		{
 			genitals.HandleCockSounding(cockIndex, sourceCock, cumAmountOverride, reachOrgasm);
 			if (reachOrgasm && countTowardOrgasmTotal)
@@ -2254,11 +2915,11 @@ namespace CoC.Backend.Creatures
 				Orgasmed();
 			}
 		}
-		#endregion
+		//#endregion
 		#region Give Cock Sex
-		public void PenetrateWithCockGeneric(int cockIndex, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void PenetrateWithCockGeneric(int cockIndex, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			genitals.HandleCockPenetrate(cockIndex, reachOrgasm);
+			genitals.HandleCockPenetrate(cockIndex, reachOrgasm, selfCest);
 		}
 
 		public void HaveGenericCockOrgasm(int cockIndex, bool dryOrgasm, bool countTowardOrgasmTotal)
@@ -2272,27 +2933,27 @@ namespace CoC.Backend.Creatures
 		#endregion
 		#region Take in Mouth (Oral)
 
-		public void TakeOralPenetration(float penetratorArea, float knotWidth, int cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void TakeOralPenetration(double penetratorArea, double knotWidth, int cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			face.HandleOralPenetration(penetratorArea, knotWidth, cumAmount, reachOrgasm);
+			face.HandleOralPenetration(penetratorArea, knotWidth, cumAmount, reachOrgasm, selfCest);
 			if (countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 		}
 
-		public void TakeOralSex(Cock penetrator, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void TakeOralSex(Cock penetrator, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			face.HandleOralPenetration(penetrator, reachOrgasm);
+			face.HandleOralPenetration(penetrator, reachOrgasm, selfCest);
 			if (countTowardOrgasmTotal)
 			{
 				Orgasmed();
 			}
 		}
 
-		public void TakeOralSex(Cock penetrator, float cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void TakeOralSex(Cock penetrator, double cumAmountOverride, bool reachOrgasm, bool countTowardOrgasmTotal, bool selfCest = false)
 		{
-			face.HandleOralPenetration(penetrator, cumAmountOverride, reachOrgasm);
+			face.HandleOralPenetration(penetrator, cumAmountOverride, reachOrgasm, selfCest);
 			if (countTowardOrgasmTotal)
 			{
 				Orgasmed();
@@ -2337,45 +2998,23 @@ namespace CoC.Backend.Creatures
 
 		#endregion
 		#region Feet Sex - Take
-		public void TakeFootLicking(bool reachOrgasm, bool countTowardOrgasmTotal)
-		{
-			feet.GetLicked(reachOrgasm);
-			if (reachOrgasm && countTowardOrgasmTotal)
-			{
-				Orgasmed();
-			}
-		}
+		//public void TakeFootLicking()
+		//{
+		//	feet.GetLicked();
+		//}
 		#endregion
 		#region Feet-Sex - Give
-		public void PenetrateSomethingWithFeet(bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void PenetrateSomethingWithFeet()
 		{
-			feet.DoPenetrate(reachOrgasm);
-
-			if (reachOrgasm && countTowardOrgasmTotal)
-			{
-				Orgasmed();
-			}
+			feet.DoPenetrate();
 		}
 
-		public void RubSomethingWithFeet(bool reachOrgasm, bool countTowardOrgasmTotal)
+		public void RubSomethingWithFeet()
 		{
-			feet.DoRubbing(reachOrgasm);
-			if (reachOrgasm && countTowardOrgasmTotal)
-			{
-				Orgasmed();
-			}
-		}
-
-		public void HaveGenericFootOrgasm(bool dryOrgasm, bool countTowardOrgasmTotal)
-		{
-			feet.DoGenericOrgasm(dryOrgasm);
-			if (countTowardOrgasmTotal)
-			{
-				Orgasmed();
-			}
+			feet.DoRubbing();
 		}
 		#endregion
-		*/
+
 		#endregion
 		public string LowerBodyArmorShort(bool both = true)
 		{
@@ -2674,7 +3313,7 @@ namespace CoC.Backend.Creatures
 
 		//may want to create nicer versions of this, idk. i was getting tired of dealing with that shit lol.
 		public bool UpdateHair(HairType newType, bool? setHairGrowthFlag = null, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null,
-			float? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
+			double? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
 		{
 			return hair.UpdateType(newType, setHairGrowthFlag, newHairColor, newHighlightColor, newHairLength, newStyle, ignoreCanLengthenOrCut);
 		}
@@ -2882,17 +3521,17 @@ namespace CoC.Backend.Creatures
 			return hair.SetHairStyle(newStyle);
 		}
 
-		public bool SetHairLength(float newLength)
+		public bool SetHairLength(double newLength)
 		{
 			return hair.SetHairLength(newLength);
 		}
 
-		public float GrowHair(float byAmount, bool ignoreCanLengthen = false)
+		public double GrowHair(double byAmount, bool ignoreCanLengthen = false)
 		{
 			return hair.GrowHair(byAmount, ignoreCanLengthen);
 		}
 
-		public float ShortenHair(float byAmount, bool ignoreCanCut = false)
+		public double ShortenHair(double byAmount, bool ignoreCanCut = false)
 		{
 			return hair.ShortenHair(byAmount, ignoreCanCut);
 		}

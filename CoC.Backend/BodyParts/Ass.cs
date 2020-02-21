@@ -353,7 +353,7 @@ namespace CoC.Backend.BodyParts
 		//Alias these in the creature class, adding the relevant features not in Ass itself (knockup, orgasm)
 		#region Unique Functions
 
-		internal bool PenetrateAsshole(ushort penetratorArea, float knotArea, float cumAmount, bool takeAnalVirginity, bool reachOrgasm, bool sourceIsSelf)
+		internal bool PenetrateAsshole(ushort penetratorArea, double knotArea, double cumAmount, bool takeAnalVirginity, bool reachOrgasm, bool sourceIsSelf)
 		{
 			totalPenetrateCount++;
 			if (sourceIsSelf)
@@ -397,7 +397,7 @@ namespace CoC.Backend.BodyParts
 			totalAnalBirths++;
 		}
 
-		private void HandleStretching(ushort penetratorArea, float knotArea)
+		private void HandleStretching(ushort penetratorArea, double knotArea)
 		{
 			ushort capacity = AnalCapacity();
 			//don't have to worry about overflow, as +1 or +2 will never overflow our artificial max.

@@ -21,14 +21,14 @@ namespace CoC.Backend.Creatures
 		internal const byte MAX_HUNGER = 100;
 
 		public byte hunger => (byte)Math.Floor(hungerTrue);
-		public float hungerTrue
+		public double hungerTrue
 		{
 			get => _hunger;
 			private set => _hunger = Utils.Clamp2(value, minHunger, maxHunger);
 		}
-		private float _hunger = 0;
+		private double _hunger = 0;
 
-		internal float hungerGainRate = 1.0f;
+		internal double hungerGainRate = 1.0f;
 
 		private sbyte bonusMinHunger { get; set; }
 		public byte minHunger => DEFAULT_HUNGER.offset(bonusMinHunger);

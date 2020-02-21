@@ -6,6 +6,7 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
+using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
@@ -93,7 +94,7 @@ namespace CoC.Backend.BodyParts
 
 		private GenitalPerkData perkData => source.perkData;
 
-		public float relativeLust => source.relativeLust;
+		public double relativeLust => source.relativeLust;
 
 		public Gender gender => source.gender;
 
@@ -170,19 +171,57 @@ namespace CoC.Backend.BodyParts
 		{
 			if (original is null) return false;
 
-			Dictionary<uint, Vagina> items = _vaginas.ToDictionary(x => x.collectionID, x => x);
-			Dictionary<uint, VaginaData> dataItems = original.vaginas.ToDictionary(x => (uint)x.collectionID, x => x);
 
 			return totalBonusCapacity == original.totalBonusCapacity && standardBonusCapacity == original.standardBonusCapacity
 				&& (ignoreSexualMetaData || (totalSexCount == original.totalSexCount && selfSexCount == original.selfSexCount
 				&& totalPenetratedCount == original.totalPenetratedCount && selfPenetratedCount == original.selfPenetratedCount
 				&& totalNonPenetratedCount == original.totalNonPenetratedCount && selfNonPenetratedCount == original.selfNonPenetratedCount
 				&& totalOrgasmCount == original.totalOrgasmCount && totalDryOrgasmCount == original.totalDryOrgasmCount && totalBirthCount == original.totalBirthCount))
-				&& items.Keys.Count == dataItems.Keys.Count && items.All(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
+				&& !CollectionChanged(original, ignoreSexualMetaData);
 		}
 
 		#endregion
 
+		public bool CollectionChanged(VaginaCollectionData original, bool ignoreSexualMetaData)
+		{
+			Dictionary<uint, Vagina> items = _vaginas.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, VaginaData> dataItems = original.vaginas.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Keys.Count != dataItems.Keys.Count || items.Any(x => !dataItems.ContainsKey(x.Key) || !x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
+		}
+
+		public IEnumerable<Vagina> AddedVaginas(VaginaCollectionData original)
+		{
+			Dictionary<uint, Vagina> items = _vaginas.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, VaginaData> dataItems = original.vaginas.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Where(x => !dataItems.ContainsKey(x.Key)).Select(x => x.Value);
+		}
+
+		public IEnumerable<VaginaData> RemovedVaginas(VaginaCollectionData original)
+		{
+			Dictionary<uint, Vagina> items = _vaginas.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, VaginaData> dataItems = original.vaginas.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return dataItems.Where(x => !items.ContainsKey(x.Key)).Select(x => x.Value);
+		}
+
+		public IEnumerable<ValueDifference<VaginaData>> ChangedVaginas(VaginaCollectionData original, bool ignoreSexualMetaData)
+		{
+			Dictionary<uint, Vagina> items = _vaginas.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, VaginaData> dataItems = original.vaginas.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Where(x => dataItems.ContainsKey(x.Key) && !x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData))
+				.Select(x => new ValueDifference<VaginaData>(dataItems[x.Key], x.Value.AsReadOnlyData()));
+		}
+
+		public IEnumerable<Vagina> UnchangedVaginas(VaginaCollectionData original, bool ignoreSexualMetaData)
+		{
+			Dictionary<uint, Vagina> items = _vaginas.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, VaginaData> dataItems = original.vaginas.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Where(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData)).Select(x => x.Value);
+		}
 		#region Add/Remove Vaginas
 
 		public bool AddVagina() => AddVagina(VaginaType.defaultValue);
@@ -202,8 +241,8 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public bool AddVagina(float clitLength) => AddVagina(VaginaType.defaultValue, clitLength);
-		public bool AddVagina(VaginaType newVaginaType, float clitLength)
+		public bool AddVagina(double clitLength) => AddVagina(VaginaType.defaultValue, clitLength);
+		public bool AddVagina(VaginaType newVaginaType, double clitLength)
 		{
 			if (numVaginas >= MAX_VAGINAS)
 			{
@@ -218,8 +257,8 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public bool AddVagina(float clitLength, VaginalLooseness looseness, VaginalWetness wetness) => AddVagina(VaginaType.defaultValue, clitLength, looseness, wetness);
-		public bool AddVagina(VaginaType newVaginaType, float clitLength, VaginalLooseness looseness, VaginalWetness wetness)
+		public bool AddVagina(double clitLength, VaginalLooseness looseness, VaginalWetness wetness) => AddVagina(VaginaType.defaultValue, clitLength, looseness, wetness);
+		public bool AddVagina(VaginaType newVaginaType, double clitLength, VaginalLooseness looseness, VaginalWetness wetness)
 		{
 			if (numVaginas >= MAX_VAGINAS)
 			{
@@ -461,17 +500,17 @@ namespace CoC.Backend.BodyParts
 
 		#region Clit Aggregate Functions
 
-		public float LargestClitSize()
+		public double LargestClitSize()
 		{
 			return _vaginas.Max(x => x.clit.length);
 		}
 
-		public float SmallestClitSize()
+		public double SmallestClitSize()
 		{
 			return _vaginas.Min(x => x.clit.length);
 		}
 
-		public float AverageClitSize()
+		public double AverageClitSize()
 		{
 			return _vaginas.Average(x => x.clit.length);
 		}
@@ -505,7 +544,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Vagina Sex-Related Functions
-		internal void HandleVaginalPenetration(int vaginaIndex, float length, float girth, float knotWidth, float cumAmount, bool takeVirginity, bool reachOrgasm,
+		internal void HandleVaginalPenetration(int vaginaIndex, double length, double girth, double knotWidth, double cumAmount, bool takeVirginity, bool reachOrgasm,
 			bool sourceIsSelf)
 		{
 			vaginas[vaginaIndex].PenetrateVagina((ushort)(length * girth), knotWidth, takeVirginity, reachOrgasm, sourceIsSelf);
@@ -731,17 +770,17 @@ namespace CoC.Backend.BodyParts
 
 		#region Clit Aggregate Functions
 
-		public float LargestClitSize()
+		public double LargestClitSize()
 		{
 			return vaginas.Max(x => x.clit.length);
 		}
 
-		public float SmallestClitSize()
+		public double SmallestClitSize()
 		{
 			return vaginas.Min(x => x.clit.length);
 		}
 
-		public float AverageClitSize()
+		public double AverageClitSize()
 		{
 			return vaginas.Average(x => x.clit.length);
 		}

@@ -2,6 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //2/10/2020 2:47:30 PM
+using System;
+using System.Collections;
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
@@ -9,30 +12,54 @@ using CoC.Frontend.Creatures;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Races;
 using CoC.Frontend.Settings.Gameplay;
-using System;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
+	//This one was a bitch to implement. the idea (i think, at least) was non-sequential RNG, as opposed to our standard sequential RNG. this is accomplished by randomly
+	//selecting a function callback. the text is written using a StringBuilder, because i can pass that around and not need to worry about using the 'ref' keyword.
+
 	internal abstract class DryadTransformations : GenericTransformationBase
 	{
-		//a collection of simple effects. the callback will append its results (if applicable) to the stringbuilder, and return a boolean telling us if it did anything.
-		protected static readonly Func<Creature, StringBuilder, bool>[] simpleEffects;
-		//a collection of full effects. the callback will append its results (if applicable) to the stringbuilder, and return a boolean telling us if it did anything.
-		protected static readonly Func<Creature, StringBuilder, bool>[] fullEffects;
 
-		static DryadTransformations()
+		//a collection of simple effects. the callback will append its results (if applicable) to the stringbuilder, and return a boolean telling us if it did anything.
+		protected readonly Func<Creature, StringBuilder, bool>[] simpleEffects;
+		//a collection of full effects. the callback will append its results (if applicable) to the stringbuilder, and return a boolean telling us if it did anything.
+		protected readonly Func<Creature, StringBuilder, bool>[] fullEffects;
+
+		protected readonly bool allowsMultipleTransformations;
+
+		protected DryadTransformations() : this(true)
 		{
+
+		}
+
+		protected DryadTransformations(bool allowMultipleTransformations)
+		{
+			allowsMultipleTransformations = allowMultipleTransformations;
+
 			simpleEffects = new Func<Creature, StringBuilder, bool>[]
 			{
 				ChangeHips,
+				ChangeButt,
+				ChangeCock,
+				ChangeBreasts,
+				ChangeFemininity,
+			};
 
+			fullEffects = new Func<Creature, StringBuilder, bool>[]
+			{
+				ChangeEars,
+				ChangeBody,
+				ChangeLegs,
+				ChangeArms,
+				ChangeFace,
+				ChangeHair,
 			};
 		}
 
-		private static bool ChangeHips(Creature target, StringBuilder content)
+		protected bool ChangeHips(Creature target, StringBuilder content)
 		{
-			var hipData = target.hips.AsReadOnlyData();
+			HipData hipData = target.hips.AsReadOnlyData();
 			bool changed = false;
 			if (target.hips.size < 5)
 			{
@@ -54,9 +81,9 @@ namespace CoC.Frontend.Transformations
 			}
 		}
 
-		private static bool ChangeButt(Creature target, StringBuilder sb)
+		protected bool ChangeButt(Creature target, StringBuilder sb)
 		{
-			var buttData = target.butt.AsReadOnlyData();
+			ButtData buttData = target.butt.AsReadOnlyData();
 			bool changed = false;
 			if (target.butt.size < 5)
 			{
@@ -78,16 +105,7 @@ namespace CoC.Frontend.Transformations
 			}
 		}
 
-		private static string ButtChangeText(Creature target, ButtData oldButt)
-		{
-			string verb = target.butt.size - oldButt.size > 0 ? "enlarge" : "shrink";
-
-			return "You wiggle around in your gown, the pleasant feeling of flower petals rubbing against your skin washes over you." +
-				" The feeling settles on your " + oldButt.ShortDescription() + "." + Environment.NewLine + "You feel it slowly " +
-				verb + ". <b>You now have a " + target.build.ButtShortDescription() + ".</b>" + Environment.NewLine;
-		}
-
-		private static bool ChangeCock(Creature target, StringBuilder sb)
+		protected bool ChangeCock(Creature target, StringBuilder sb)
 		{
 			if (HyperHappySettings.isEnabled)
 			{
@@ -97,8 +115,8 @@ namespace CoC.Frontend.Transformations
 			//find the largest cock. shrink it. if it gets small enough to remove it, do so. if it's the only cock the creature has, grow a vagina in its place.
 			if (target.hasCock)
 			{
-				var oldGenitals = target.genitals.AsReadOnlyData();
-				var largest = target.genitals.LongestCock();
+				GenitalsData oldGenitals = target.genitals.AsReadOnlyData();
+				Cock largest = target.genitals.LongestCock();
 
 				if (largest.DecreaseLengthAndCheckIfNeedsRemoval(Utils.Rand(3) + 1))
 				{
@@ -109,7 +127,7 @@ namespace CoC.Frontend.Transformations
 						target.AddVagina(.25f);
 						target.IncreaseCorruption();
 
-						var oldBalls = target.balls.AsReadOnlyData();
+						BallsData oldBalls = target.balls.AsReadOnlyData();
 						target.balls.RemoveAllBalls();
 					}
 				}
@@ -120,104 +138,125 @@ namespace CoC.Frontend.Transformations
 			return false;
 		}
 
-		private static string CockChangedText(Creature target, GenitalsData oldGenitalData, int changedCock)
+		protected bool ChangeBreasts(Creature target, StringBuilder sb)
 		{
-			bool grewVagina = oldGenitalData.vaginas.Count == 0 && target.vaginas.Count > 0;
-			bool lostBalls = oldGenitalData.balls.hasBalls && !target.balls.hasBalls;
-			bool lostCock = oldGenitalData.cocks.Count > target.cocks.Count;
+			bool changed = false;
 
-			CockData previousCockData = oldGenitalData.cocks[changedCock];
+			BreastCollectionData oldData = target.genitals.allBreasts.AsReadOnlyData();
 
-			return "Your " + previousCockData.LongDescription() + " feels strange as it brushes against the fabric of your gown." + Environment.NewLine +
-				target.genitals.allCocks.GenericChangeOneCockLengthText(target, .
+			if (target.breasts.Count > 1)
+			{
+				changed = target.genitals.RemoveExtraBreastRows() > 0;
+			}
 
+			CupSize targetSize = EnumHelper.Max(target.genitals.smallestPossibleCupSize, CupSize.D);
 
+			if (target.breasts[0].cupSize != targetSize)
+			{
+				changed |= target.breasts[0].SetCupSize(targetSize) != 0;
+			}
+
+			if (changed)
+			{
+				sb.Append(BreastsChangedText(target, oldData));
+				return true;
+			}
+
+			return false;
 		}
 
-
-
-		//private static string CockChangeText(Creature target, CockData )
-
-		//				case "cock":
-		//					sb.Append("Your [cock] feels strange as it brushes against the fabric of your gown." + Environment.NewLine);
-		//					(new BimboProgression).shrinkCock();
-		//changed = true;
-		//					break;
-
-		//				case "breasts":
-		//					sb.Append("You feel like a beautful flower in your gown. Dawn approaches and you place your hands on your chest"
-		//					   + " as if expecting your nipples to bloom to greet the rising sun." + Environment.NewLine);
-
-		//					if (wearer.bRows() > 1)
-		//					{
-		//						sb.Append("Some of your breasts shrink back into your body leaving you with just two.");
-		//						wearer.breasts.Count = 1;
-		//					}
-
-		//					if (wearer.breastRows[0].breastRating != CupSize.D)
-		//					{
-		//						if (wearer.breastRows[0].breastRating > CupSize.D)
-		//						{
-		//							sb.Append(Environment.NewLine + "A chill runs against your chest and your boobs become smaller.");
-		//						}
-		//						else
-		//						{
-		//							sb.Append(Environment.NewLine + "Heat builds in chest and your boobs become bigger.");
-		//						}
-		//						sb.Append(Environment.NewLine + "<b>You now have [breasts]</b>");
-		//						wearer.breastRows[0].breastRating = CupSize.D;
-		//						changed = true;
-		//					}
-		//					break;
-
-		//				case "girlyness":
-		//					text = wearer.modFem(70, 2);
-		//					if (text == "")
-		//					{
-		//						break;
-		//					}
-
-		//					sb.Append("You run your [hands] across the fabric of your Gown, then against your face as it feels like"
-		//				   + " there is something you need to wipe off." + Environment.NewLine);
-		//					sb.Append(text);
-		//					changed = true;
-		//					break;
-
-		//				default:
-		//					// no error, intended
-		//			}
-
-
-
-
-		private static string HipChangeText(Creature target, HipData oldHips)
+		protected bool ChangeFemininity(Creature target, StringBuilder sb)
 		{
-			string verb = target.hips.size - oldHips.size > 0 ? "enlarge" : "shrink";
-
-			return "You wiggle around in your gown, the pleasant feeling of flower petals rubbing against your skin washes over you." +
-				" The feeling settles on your " + oldHips.ShortDescription() + "." + Environment.NewLine + "You feel them slowly " +
-				verb + ". <b>You now have " + target.build.HipsShortDescription() + "</b>." + Environment.NewLine;
-
-			;
+			FemininityData oldFem = target.femininity.AsReadOnlyData();
+			if (target.femininity.ChangeFemininityToward(70, 2) != 0)
+			{
+				sb.Append(FemininityChangedText(target, oldFem));
+				return true;
+			}
+			return false;
 		}
 
-
-		protected readonly bool allowsMultipleTransformations;
-
-		protected DryadTransformations() : this(true)
+		protected bool ChangeEars(Creature target, StringBuilder sb)
 		{
-
+			EarData oldData = target.ears.AsReadOnlyData();
+			if (target.UpdateEars(EarType.ELFIN))
+			{
+				sb.Append(ChangeEarText(target, oldData));
+				return true;
+			}
+			return false;
 		}
 
-		protected DryadTransformations(bool allowMultipleTransformations)
+		protected bool ChangeBody(Creature target, StringBuilder sb)
 		{
-			this.allowsMultipleTransformations = allowMultipleTransformations;
+			BodyData oldBody = target.body.AsReadOnlyData();
+			bool changed = false;
+			if (!target.body.isDefault && target.body.type != BodyType.WOODEN)
+			{
+				changed = target.RestoreBody();
+			}
+			else if (target.body.type != BodyType.WOODEN)
+			{
+				changed = target.UpdateBody(BodyType.WOODEN);
+			}
+
+			if (changed)
+			{
+				sb.Append(ChangeSkinText(target, oldBody));
+			}
+
+			return changed;
 		}
 
+		protected bool ChangeLegs(Creature target, StringBuilder sb)
+		{
+			LowerBodyData oldLowerBody = target.lowerBody.AsReadOnlyData();
+			if (target.RestoreLowerBody())
+			{
+				sb.Append(RestoreLegsText(target, oldLowerBody));
+				return true;
+			}
+			return false;
+		}
 
+		protected bool ChangeArms(Creature target, StringBuilder sb)
+		{
+			ArmData oldArms = target.arms.AsReadOnlyData();
+			if (target.RestoreArms())
+			{
+				sb.Append(RestoredArmsText(target, oldArms));
+				return true;
+			}
+			return false;
+		}
+
+		protected bool ChangeFace(Creature target, StringBuilder sb)
+		{
+			FaceData oldFace = target.face.AsReadOnlyData();
+			if (target.RestoreFace())
+			{
+				sb.Append(RestoredFaceText(target, oldFace));
+				return true;
+			}
+			return false;
+		}
+
+		protected bool ChangeHair(Creature target, StringBuilder sb)
+		{
+			HairData oldHair = target.hair.AsReadOnlyData();
+			if (target.UpdateHair(HairType.LEAF))
+			{
+				//silently start hair growth again.
+				target.hair.ResumeNaturalGrowth();
+				sb.Append(ChangedHairText(target, oldHair));
+				return true;
+			}
+
+			return false;
+		}
 
 		//a helper that gets the currently set hyper happy flag for this game session. generally useful, but feel free to remove this if you don't need it.
-		private bool hyperHappy => HyperHappySettings.isEnabled;
+		protected bool hyperHappy => HyperHappySettings.isEnabled;
 
 
 		protected internal override string DoTransformation(Creature target, out bool isBadEnd)
@@ -235,11 +274,29 @@ namespace CoC.Frontend.Transformations
 
 			//we randomly select a number of simple changes to run. this starts at 0, but is affected by creature perks and two rolls.
 			//if we are only allowing one change, this value is 1.
-			int simpleChangeCount = this.allowsMultipleTransformations ? GenerateChangeCount(target, new int[] { 3, 4 }, 0, 1) : 1;
+			int simpleChangeCount = allowsMultipleTransformations ? GenerateChangeCount(target, new int[] { 3, 4 }, 0, 1) : 1;
 			int remainingChanges = simpleChangeCount;
 
 			//then, we randomly select a simple change and do it, and decrease our remaining simple changes. we repeat this process until the remaining simple changes is 0.
 			//any repeats that we hit are ignored, as are any simple changes that cannot occur because the creature already has the desired value.
+
+			BitArray noRepeats = new BitArray(simpleEffects.Length);
+
+			for (int x = 0; x < simpleChangeCount; x++)
+			{
+				int rand = Utils.Rand(simpleEffects.Length);
+
+				if (!noRepeats[rand])
+				{
+					noRepeats[rand] = true;
+
+					if (simpleEffects[rand](target, sb) == true)
+					{
+						remainingChanges--;
+					}
+				}
+			}
+
 
 			//if we have done any simple changes and we don't allow multiple tfs, immediately exit.
 			if (!allowsMultipleTransformations && remainingChanges != simpleChangeCount)
@@ -274,101 +331,67 @@ namespace CoC.Frontend.Transformations
 			remainingChanges = fullChangeCount;
 
 			//then repeat the process with RNG again, but with full tfs.
+			noRepeats = new BitArray(fullEffects.Length);
+
+			for (int x = 0; x < fullChangeCount; x++)
+			{
+				int rand = Utils.Rand(fullEffects.Length);
+
+				if (!noRepeats[rand])
+				{
+					noRepeats[rand] = true;
+
+					if (fullEffects[rand](target, sb) == true)
+					{
+						remainingChanges--;
+					}
+				}
+			}
 
 			//apply the changes and return.
 			return ApplyChangesAndReturn(target, sb, simpleChangeCount - remainingChanges);
-
-
-
-
-			//progress slowly to the ideal dryad build
-
-
-			//Add any free changes here - these can occur even if the change count is 0. these include things such as change in stats (intelligence, etc)
-			//change in height, hips, and/or butt, or other similar stats.
-
-			//this will handle the edge case where the change count starts out as 0.
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, simpleChangeCount - remainingChanges);
-
-			string tfChoice = Utils.RandomChoice("skin", "ears", "face", "lowerbody", "arms", "hair");
-			sb.Append(GlobalStrings.NewParagraph());
-			switch (tfChoice)
-			{
-				case "ears":
-					if (wearer.ears.type != EarType.ELFIN)
-					{
-						sb.Append("There is a tingling on the sides of your head as your ears change to pointed elfin ears.");
-						wearer.ears.type = EarType.ELFIN;
-					}
-					break;
-
-				case "skin":
-					if (wearer.skin.type != Skin.PLAIN)
-					{
-						sb.Append("A tingling runs up along your [skin] as it changes back to normal");
-					}
-					else if (wearer.skin.tone != "bark" && wearer.skin.type == Skin.PLAIN)
-					{
-						sb.Append("Your skin hardens and becomes the consistency of tree's bark.");
-						wearer.skin.tone = "woodly brown";
-						wearer.skin.type = Skin.BARK;
-					}
-					break;
-
-				case "lowerbody":
-					if (wearer.lowerBody.type != LowerBodyType.HUMAN)
-					{
-						sb.Append("There is a rumbling in your lower body as it returns to a human shape.");
-						wearer.lowerBody.type = LowerBodyType.HUMAN;
-					}
-					break;
-
-				case "arms":
-					if (wearer.arms.type != ArmType.HUMAN || wearer.arms.claws.type != Claws.NORMAL)
-					{
-						sb.Append("Your hands shake and shudder as they slowly transform back into normal human hands.");
-						wearer.arms.restore();
-					}
-					break;
-
-				case "face":
-					if (wearer.face.type != FaceType.HUMAN)
-					{
-						sb.Append("Your face twitches a few times and slowly morphs itself back to a normal human face.");
-						wearer.face.type = FaceType.HUMAN;
-					}
-					break;
-
-				case "hair":
-					if (wearer.hair.type != Hair.LEAF)
-					{
-						sb.Append("Much to your shock, your hair begins falling out in tuffs onto the ground. "
-						   + " Moments later, your scalp sprouts vines all about that extend down and bloom into leafy hair.");
-						wearer.hair.type = Hair.LEAF;
-					}
-					break;
-
-				default:
-					sb.Append(Environment.NewLine + "ERROR: this forest gown TF choice shouldn't ever get called.");
-			}
-
-			//Any transformation related changes go here. these typically cost 1 change. these can be anything from body parts to gender (which technically also changes body parts,
-			//but w/e). You are required to make sure you return as soon as you've applied changeCount changes, but a single line of code can be applied at the end of a change to do
-			//this for you.
-
-			//paste this line after any tf is applied, and it will: automatically decrement the remaining changes count. if it becomes 0 or less, apply the total number of changes
-			//underwent to the target's change count (if applicable) and then return the StringBuilder content.
-			//if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-
-
-
-
-			//this is the fallthrough that occurs when a tf item goes through all the changes, but does not proc enough of them to exit early. it will apply however many changes
-			//occurred, then return the contents of the stringbuilder.
 		}
 
-		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
-		//defined by the base class, feel free to make it virtual instead.
 		protected abstract string InitialTransformationText(Creature target);
+
+		protected abstract string HipChangeText(Creature target, HipData oldHips);
+
+		protected abstract string ButtChangeText(Creature target, ButtData oldButt);
+
+		protected abstract string CockChangedText(Creature target, GenitalsData oldGenitalData, int changedCock);
+
+		protected abstract string BreastsChangedText(Creature target, BreastCollectionData oldData);
+
+		protected abstract string FemininityChangedText(Creature target, FemininityData oldFem);
+
+		protected virtual string ChangeEarText(Creature target, EarData oldData)
+		{
+			return target.ears.TransformFromText(oldData);
+		}
+
+		protected virtual string ChangeSkinText(Creature target, BodyData oldBody)
+		{
+			return target.body.TransformFromText(oldBody);
+		}
+
+		protected virtual string RestoreLegsText(Creature target, LowerBodyData oldLowerBody)
+		{
+			return target.lowerBody.RestoredText(oldLowerBody);
+		}
+
+		protected virtual string RestoredArmsText(Creature creature, ArmData oldArms)
+		{
+			return creature.arms.RestoredText(oldArms);
+		}
+
+		protected virtual string RestoredFaceText(Creature target, FaceData oldFace)
+		{
+			return target.face.RestoredText(oldFace);
+		}
+
+		protected virtual string ChangedHairText(Creature target, HairData oldHair)
+		{
+			return target.hair.TransformFromText(oldHair);
+		}
 	}
 }

@@ -167,7 +167,7 @@ namespace CoC.Backend.BodyParts
 			return size > TIGHT;
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			int oldSize = size;
 			if (size >= HUGE)

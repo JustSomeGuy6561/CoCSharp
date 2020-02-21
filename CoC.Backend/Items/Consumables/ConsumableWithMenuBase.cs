@@ -9,17 +9,36 @@ namespace CoC.Backend.Items.Consumables
 {
 	public abstract class ConsumableWithMenuBase : ConsumableBase
 	{
+		//menu consumables force the creator to build everything from scratch, and use item is only called by the original menu system. further, the use items will be
+		//inaccessible when creating these menu consumables (because they are in the frontend). As a result, they remain unused.
+
+		//unused.
+		private protected override CapacityItem UseItem(Creature target, out string resultsOfUseText)
+		{
+			resultsOfUseText = null;
+			return null;
+		}
+
+		//unused.
+		private protected override CapacityItem UseItemInCombat(CombatCreature target, out bool resultsInLoss, out string resultsOfUseText)
+		{
+			resultsOfUseText = null;
+			resultsInLoss = false;
+			return null;
+		}
+
+
 		protected ConsumableWithMenuBase() : base() { }
 
 		//Note to implementers: OnConsumeAttempt is not used in this class. if you do not need it in your implementation because you did it manually, simply throw a NotSupported or NotImplemented
 		//as it will never be called (and if it is somehow, we'd probably want to know).
 
-		public override DisplayBase AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
+		private protected override DisplayBase AttemptToUseItem(Creature target, UseItemCallback postItemUseCallback)
 		{
 			return BuildMenu(target, postItemUseCallback);
 		}
 
-		public override DisplayBase AttemptToUseInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		private protected override DisplayBase AttemptToUseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
 		{
 			return BuildCombatAwareMenu(target, postItemUseCallback);
 		}

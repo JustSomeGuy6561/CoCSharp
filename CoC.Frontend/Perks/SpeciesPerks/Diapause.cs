@@ -21,23 +21,24 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 			sourceCreature.womb.dataChange -= Womb_dataChange;
 			sourceCreature.womb.dataChange += Womb_dataChange;
 
-			enabled = sourceCreature.womb.hasDiapause;
+			currentlyEnabled = sourceCreature.womb.hasDiapause;
 		}
 
 		private void Womb_dataChange(object sender, SimpleDataChangeEvent<Womb, WombData> e)
 		{
 			if (e.newValues.hasDiapause)
 			{
-				enabled = true;
+				currentlyEnabled = true;
 			}
 			else
 			{
-				enabled = false;
+				currentlyEnabled = false;
 			}
 		}
 
 		protected override void RemoveActivationConditions()
 		{
+			currentlyEnabled = false;
 			sourceCreature.womb.dataChange -= Womb_dataChange;
 		}
 

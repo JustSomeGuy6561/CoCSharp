@@ -23,14 +23,13 @@ namespace CoC.Frontend.Perks
 
 		public byte itemForgeCostReduction;
 
-		public float gemGainMultiplier = 1.0f;
 
-		public float healingMultiplier = 1.0f;
 
 		public bool replaceMasturbateWithMeditate = false;
 
 		public sbyte lustRequiredForSexOffset = 0; //isHornyEnough(value) will be offset by this value
 		public sbyte corruptionRequiredOffset = 0; //isCorruptEnough(value) will be offset by this value
+		public sbyte purityRequiredOffset = 0; //isPureEnough(value) will be offset by this value
 
 		public float teaseStrengthMultiplier = 1.0f;
 

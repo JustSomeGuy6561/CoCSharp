@@ -553,7 +553,7 @@ namespace CoC.Backend.BodyParts
 
 		//simple tail (with optional ovipositor)
 		private protected TailType(OvipositorType ovipositor, EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
-			bool longTail,/*float tailLength,*/ ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc,
+			bool longTail,/*double tailLength,*/ ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc,
 			PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
 			: base(shortDesc, longDesc, playerDesc, ParseTransform(transform), ParseRestore(restore))
 		{
@@ -586,7 +586,7 @@ namespace CoC.Backend.BodyParts
 
 		//simple tail
 		private protected TailType(EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
-			bool longTail,/*float tailLength,*/ ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc,
+			bool longTail,/*double tailLength,*/ ShortDescriptor shortDesc, PartDescriptor<TailData> longDesc,
 			PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
 			: base(shortDesc, longDesc, playerDesc, ParseTransform(transform), ParseRestore(restore))
 		{
@@ -621,7 +621,7 @@ namespace CoC.Backend.BodyParts
 
 		//multi-tail
 		private protected TailType(EpidermisType epidermis, bool toneFurMutable, //AttackBase attackData,
-			bool longTail,/*float tailLength,*/ byte initialTailCount, byte maxTailCount, ShortMaybePluralDescriptor shortDesc, SimpleDescriptor singleDesc,
+			bool longTail,/*double tailLength,*/ byte initialTailCount, byte maxTailCount, ShortMaybePluralDescriptor shortDesc, SimpleDescriptor singleDesc,
 			MaybePluralPartDescriptor<TailData> longDesc, PlayerBodyPartDelegate<Tail> playerDesc, TailTransform transform, TailRestore restore)
 			: base(PluralHelper(shortDesc), singleDesc, LongPluralHelper(longDesc), playerDesc, ParseTransform(transform), ParseRestore(restore))
 		{

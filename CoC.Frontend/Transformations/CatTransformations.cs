@@ -58,50 +58,49 @@ namespace CoC.Frontend.Transformations
 
 
 			//Text go!
-			if (target is CombatCreature cc)
+
+			//Speed raises up to 75
+			if (target.relativeSpeed < 75 && Utils.Rand(3) == 0)
 			{
-				//Speed raises up to 75
-				if (cc.relativeSpeed < 75 && Utils.Rand(3) == 0)
+				//low speed
+				if (target.relativeSpeed <= 30)
 				{
-					//low speed
-					if (cc.relativeSpeed <= 30)
-					{
-						cc.DeltaCombatCreatureStats(spe: 2);
-					}
-					//medium speed
-					else if (cc.relativeSpeed <= 60)
-					{
-						cc.DeltaCombatCreatureStats(spe: 1);
-					}
-					//high speed
-					else
-					{
-						cc.DeltaCombatCreatureStats(spe: .5f);
-					}
+					target.ChangeSpeed(2);
 				}
-				//Strength raises to 40
-				if (cc.relativeStrength < 40 && Utils.Rand(3) == 0)
+				//medium speed
+				else if (target.relativeSpeed <= 60)
 				{
-					cc.DeltaCombatCreatureStats(str: 1);
+					target.ChangeSpeed(1);
 				}
-				//Strength ALWAYS drops if over 60
-				//Does not add to change total
-				else if (cc.relativeStrength > 60 && Utils.Rand(2) == 0)
+				//high speed
+				else
 				{
-					cc.DeltaCombatCreatureStats(str: -2);
-				}
-				//Toughness drops if over 50
-				//Does not add to change total
-				if (cc.relativeToughness > 50 && Utils.Rand(2) == 0)
-				{
-					cc.DeltaCombatCreatureStats(tou: -2);
-				}
-				//Intelliloss
-				if (Utils.Rand(4) == 0)
-				{
-					cc.DeltaCombatCreatureStats(inte: -1);
+					target.ChangeSpeed(.5f);
 				}
 			}
+			//Strength raises to 40
+			if (target.relativeStrength < 40 && Utils.Rand(3) == 0)
+			{
+				target.ChangeStrength(1);
+			}
+			//Strength ALWAYS drops if over 60
+			//Does not add to change total
+			else if (target.relativeStrength > 60 && Utils.Rand(2) == 0)
+			{
+				target.ChangeStrength(-2);
+			}
+			//Toughness drops if over 50
+			//Does not add to change total
+			if (target.relativeToughness > 50 && Utils.Rand(2) == 0)
+			{
+				target.ChangeToughness(-2);
+			}
+			//Intelliloss
+			if (Utils.Rand(4) == 0)
+			{
+				target.ChangeIntelligence(-1);
+			}
+
 			//Libido gain
 			if (target.relativeLibido < 80 && Utils.Rand(4) == 0)
 			{
@@ -203,7 +202,7 @@ namespace CoC.Frontend.Transformations
 				}
 
 				//(big sensitivity boost)
-				target.DeltaCreatureStats(sens: 5);
+				target.ChangeSensitivity(5);
 				//Make note of other dicks changing
 				if (--remainingChanges <= 0)
 				{
@@ -213,35 +212,43 @@ namespace CoC.Frontend.Transformations
 			//Neck restore
 			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Ovi perk loss
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Body type changes. Teh rarest of the rare.
 			// Catgirl-face -> cat-morph-face
-			if (target.face.type == FaceType.CAT && !target.face.isFullMorph &&
-				target.tongue.type == TongueType.CAT &&
-				target.ears.type == EarType.CAT &&
-				target.tail.type == TailType.CAT &&
-				target.lowerBody.type == LowerBodyType.CAT &&
-				target.arms.type == ArmType.CAT &&
-				(target.body.IsFurBodyType() /*|| (target.body.type == BodyType.REPTILE && Species.SPHINX.Score(target) >= 4)*/) &&
-				Utils.Rand(5) == 0
-			)
+			if (target.face.type == FaceType.CAT && !target.face.isFullMorph && target.tongue.type == TongueType.CAT && target.ears.type == EarType.CAT &&
+				target.tail.type == TailType.CAT && target.lowerBody.type == LowerBodyType.CAT && target.arms.type == ArmType.CAT &&
+				(target.body.IsFurBodyType() /*|| (target.body.type == BodyType.REPTILE && Species.SPHINX.Score(target) >= 4)*/) && Utils.Rand(5) == 0)
 			{
 				target.face.StrengthenFacialMorph();
 				if (--remainingChanges <= 0)
@@ -252,15 +259,10 @@ namespace CoC.Frontend.Transformations
 			//DA EARZ
 			if (target.ears.type != EarType.CAT && Utils.Rand(5) == 0)
 			{
-				//human to cat:
-				if (target.ears.type == EarType.HUMAN)
-				{
-				}
-				//non human to cat:
-				else
-				{
-				}
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.CAT);
+				sb.Append(UpdateEarsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -269,7 +271,10 @@ namespace CoC.Frontend.Transformations
 			//DA TAIL (IF ALREADY HAZ URZ)
 			if (target.tail.type != TailType.CAT && target.ears.type == EarType.CAT && Utils.Rand(5) == 0)
 			{
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.CAT);
+				sb.Append(UpdateTailText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -287,7 +292,10 @@ namespace CoC.Frontend.Transformations
 				{
 				}
 				//non hoof to cat:
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.CAT);
+				sb.Append(UpdateLowerBodyText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -297,7 +305,9 @@ namespace CoC.Frontend.Transformations
 			if (target.tail.type == TailType.CAT && target.ears.type == EarType.CAT && Utils.Rand(5) == 0 && target.lowerBody.type == LowerBodyType.CAT && !target.body.IsFurBodyType())
 			{
 
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.UNDERBODY_FUR);
+				sb.Append(UpdateBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -307,7 +317,10 @@ namespace CoC.Frontend.Transformations
 			// Fix old cat faces without cat-eyes.
 			if (target.face.type == FaceType.CAT && target.eyes.type != EyeType.CAT && Utils.Rand(3) == 0)
 			{
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.UpdateEyes(EyeType.CAT);
+				sb.Append(UpdateEyesText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -319,7 +332,9 @@ namespace CoC.Frontend.Transformations
 			{
 				//Gain cat face, replace old face
 				//MOD NOTE: but not a full-morph cat face. just level 1.
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.CAT);
+				sb.Append(UpdateFaceText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -329,7 +344,10 @@ namespace CoC.Frontend.Transformations
 			// Cat-tongue
 			if (target.face.type == FaceType.CAT && target.tongue.type != TongueType.CAT && Utils.Rand(5) == 0)
 			{
+				TongueData oldData = target.tongue.AsReadOnlyData();
 				target.UpdateTongue(TongueType.CAT);
+				sb.Append(UpdateTongueText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -338,7 +356,10 @@ namespace CoC.Frontend.Transformations
 			//Arms
 			if (target.arms.type != ArmType.CAT && target.body.IsFurBodyType() && target.tail.type == TailType.CAT && target.lowerBody.type == LowerBodyType.CAT && Utils.Rand(4) == 0)
 			{
+				ArmData oldData = target.arms.AsReadOnlyData();
 				target.UpdateArms(ArmType.CAT);
+				sb.Append(UpdateArmsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -347,7 +368,9 @@ namespace CoC.Frontend.Transformations
 			// Remove gills
 			if (Utils.Rand(4) == 0 && !target.gills.isDefault)
 			{
+				GillData oldData = target.gills.AsReadOnlyData();
 				target.RestoreGills();
+				sb.Append(RestoredGillsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -358,13 +381,72 @@ namespace CoC.Frontend.Transformations
 			if (remainingChanges == changeCount)
 			{
 				(target as CombatCreature)?.AddHP(50);
-				target.DeltaCreatureStats(lus: 3);
+				target.ChangeLust(3);
 			}
 
 			//this is the fallthrough that occurs when a tf item goes through all the changes, but does not proc enough of them to exit early. it will apply however many changes
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+		{
+			return RemovedOvipositionTextGeneric(target);
+		}
+
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+		{
+			return target.ears.TransformFromText(oldData);
+		}
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+		{
+			return target.tail.TransformFromText(oldTail);
+		}
+		protected virtual string UpdateLowerBodyText(Creature target, LowerBodyData oldData)
+		{
+			return target.lowerBody.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateBodyText(Creature target, BodyData oldData)
+		{
+			return target.body.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateEyesText(Creature target, EyeData oldData)
+		{
+			return target.eyes.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+		{
+			return target.face.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateTongueText(Creature target, TongueData oldData)
+		{
+			return target.tongue.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateArmsText(Creature target, ArmData oldData)
+		{
+			return target.arms.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredGillsText(Creature target, GillData oldData)
+		{
+			return target.gills.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

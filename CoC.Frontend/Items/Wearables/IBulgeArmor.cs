@@ -30,7 +30,7 @@ namespace CoC.Frontend.Items.Wearables
 
 	internal static class ArmorPerkGenericText
 	{
-		internal static string GenericBulgeAwareRemoveText<T>(this T item, bool bulgified) where T:ArmorBase, IBulgeArmor
+		internal static string GenericBulgeAwareRemoveText<T>(this T item, bool bulgified, string defaultText) where T:ArmorBase, IBulgeArmor
 		{
 			if (bulgified)
 			{
@@ -39,7 +39,7 @@ namespace CoC.Frontend.Items.Wearables
 			}
 			else
 			{
-				return "";
+				return defaultText;
 			}
 		}
 	}

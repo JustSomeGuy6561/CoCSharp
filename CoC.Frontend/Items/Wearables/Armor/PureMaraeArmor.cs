@@ -17,6 +17,10 @@ namespace CoC.Frontend.Items.Wearables.Armor
 	{
 		private bool bulged;
 
+		public PureMaraeArmor() : base(ArmorType.HEAVY_ARMOR)
+		{
+		}
+
 		public override string AbbreviatedName() => "D.B.Armor";
 
 		public override string ItemName() => (bulged? "crotch-hugging " : "") + "divine bark armor";
@@ -30,24 +34,23 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return $"{count}{setText} of {crotchText}divine bark armor";
 		}
 
-
-
 		public override string AboutItem()
 		{
 			return "This suit of armor is finely made from the white bark you've received from Marae as a reward." + (bulged ? " It has been magically modified to prominently " +
 				"display every facet of your manly bulge" : "");
 		}
 
+		public override double PhysicalDefensiveRating(Creature wearer) => 40 - (int)Math.Floor(wearer.corruptionTrue / 5);
+
+		//provides a 10% reduction in lust gain over time.
+		public override double LustGainOffset(Creature wearer) => -0.1;
+
 		protected override int monetaryValue => 1100;
 
 
-		public PureMaraeArmor() : base(ArmorType.HEAVY_ARMOR)
-		{
-		}
 
-		public bool supportsBulgeArmor => true;
 
-		public override float DefensiveRating(Creature wearer) => 40 - (int)Math.Floor(wearer.corruptionTrue / 5);
+
 
 		protected override string EquipText(Creature wearer)
 		{
@@ -145,16 +148,17 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 			return sb.ToString();
 		}
+		protected override string RemoveText(Creature wearer)
+		{
+			return this.GenericBulgeAwareRemoveText(bulged, base.RemoveText(wearer));
+		}
 
 		public override bool Equals(ArmorBase other)
 		{
 			return other is PureMaraeArmor;
 		}
 
-		protected override string OnRemoveText()
-		{
-			return this.GenericBulgeAwareRemoveText(bulged);
-		}
+		public bool supportsBulgeArmor => true;
 
 		string IBulgeArmor.SetBulgeState(Creature wearer, bool bulgified)
 		{

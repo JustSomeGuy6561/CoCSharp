@@ -8,13 +8,14 @@ namespace CoC.Backend.Pregnancies
 {
 	public abstract class SpawnTypeIncludeAnal : StandardSpawnType
 	{
-		protected SpawnTypeIncludeAnal(Guid creatureID, SimpleDescriptor desc, SimpleDescriptor nameOfFather, ushort birthTime) : base(creatureID, desc, nameOfFather, birthTime)
+		protected SpawnTypeIncludeAnal(Guid creatureID, Guid spawnTypeID, SimpleDescriptor desc, SimpleDescriptor nameOfFather, ushort birthTime)
+			: base(creatureID, spawnTypeID, desc, nameOfFather, birthTime)
 		{
 		}
 
 		protected internal abstract DynamicTimeReaction HandleAnalBirth(Guid creatureID);
 
-		protected internal abstract string NotifyAnalBirthingProgressed(Guid creatureID, float hoursToBirth, float previousHoursToBirth);
+		protected internal abstract string NotifyAnalBirthingProgressed(Guid creatureID, double hoursToBirth, double previousHoursToBirth);
 
 		//does this source ignore the target's anal pregnancy preferences? Note this value is ignored if allowAnalPregnancy is false.
 

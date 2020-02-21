@@ -55,7 +55,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 		protected override int monetaryValue => 0;
 
-		public override float DefensiveRating(Creature wearer) => 0;
+		public override double PhysicalDefensiveRating(Creature wearer) => 0;
 
 
 		protected override string EquipText(Creature wearer)
@@ -72,7 +72,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 		TimeReactionBase IWearableDailyFull.ReactToDailyTrigger(Creature wearer)
 		{
-			if ((wearer is CombatCreature cc && cc.relativeSpeed < 70) ||
+			if ((wearer.relativeSpeed < 70) ||
 				wearer.neck.type != NeckType.HUMANOID ||
 				wearer.back.type != BackType.SHARK_FIN ||
 				(wearer.breasts.Count > 1 && !HyperHappySettings.isEnabled) ||

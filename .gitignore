@@ -281,3 +281,5 @@ __pycache__/
 *.leu
 /Areas
 /Parser
+/CoC.Frontend/Items/Consumables/Not Ported
+/CoC.Frontend/Items/Wearables/Weapon

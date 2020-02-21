@@ -15,6 +15,34 @@ namespace CoC.Backend.Attacks
 
 	public abstract class AttackBase
 	{
+		//libido affects lust damage.
+		//toughness affects physical damage.
+		//intellect affects magic damage.
+		//speed affects evasion.
+		//sensitivity: affects physical sexual stimulation. generally not in combat, but some attacks may use it.
+		//libido: affects general lust generation over time, and any lust damage obtained during combat.
+		//corruption: affects lust gain over time, and allows certain interactions or attacks. some combat abilities may be affected by corruption as well.
+
+		//lust: causes combat loss if maxed.
+		//hp: causes combat loss if drops to 0.
+
+		//
+		//Range stats: close, medium, far. knockback causes player to reach medium level.
+		//
+
+
+		//hit rate - should generally factor in attacker's speed, defender's evade, but can be overridden to ignore if needed.
+		//crit rate - physical only? idk.
+		//range type - ranged, melee?
+		//attack type - physical, magical, mixed?
+		//damage type - lust, hp, both.
+		//on hit text - damage dealt, critical hit
+		//generic on miss text
+
+		//attack, tease, physical special, magical special. special attacks assume a 100% hitrate, though you can override this if necessary.
+		//attack takes weapon attack, attack rate, etc.
+
+
 		protected abstract bool CanUseAttack(CombatCreature attacker, CombatCreature defender);
 
 		protected abstract SimpleDescriptor DoAttack(CombatCreature attacker, CombatCreature defender);
@@ -32,4 +60,7 @@ namespace CoC.Backend.Attacks
 		protected abstract bool isPhysical { get; }
 
 	}
+
+
+
 }

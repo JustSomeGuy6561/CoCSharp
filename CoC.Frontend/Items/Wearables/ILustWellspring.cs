@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CoC.Backend.Creatures;
 
 namespace CoC.Frontend.Items.Wearables
 {
-	interface ISluttySeductionItem
+	interface ILustWellspring
 	{
-		byte SluttySeductionModifier(Creature wearer);
+		bool hasWellspringOfLust { get; }
 	}
 }

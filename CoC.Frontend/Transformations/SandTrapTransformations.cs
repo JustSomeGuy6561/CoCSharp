@@ -56,32 +56,29 @@ namespace CoC.Frontend.Transformations
 			//if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 
 
-			if (target is CombatCreature cc)
+			//Speed Increase:
+			if (target.relativeSpeed < 100 && Utils.Rand(3) == 0)
 			{
-				//Speed Increase:
-				if (cc.relativeSpeed < 100 && Utils.Rand(3) == 0)
-				{
 
-					cc.DeltaCombatCreatureStats(spe: 1);
-				}
-				//Strength Loss:
-				else if (cc.relativeStrength > 40 && Utils.Rand(3) == 0)
-				{
-					cc.DeltaCombatCreatureStats(str: -1);
-				}
+				target.ChangeSpeed(1);
+			}
+			//Strength Loss:
+			else if (target.relativeStrength > 40 && Utils.Rand(3) == 0)
+			{
+				target.ChangeStrength(-1);
 			}
 			//Sensitivity Increase:
 			if (target.relativeSensitivity < 70 && target.hasCock && Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(sens: 5);
+				target.ChangeSensitivity(5);
 			}
 			//Libido Increase:
 			if (target.relativeLibido < 70 && target.hasVagina && Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(lib: 2);
+				target.ChangeLibido(2);
 				if (target.relativeLibido < 30)
 				{
-					target.DeltaCreatureStats(lib: 2);
+					target.ChangeLibido(2);
 				}
 			}
 			//Body Mass Loss:
@@ -224,12 +221,12 @@ namespace CoC.Frontend.Transformations
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 
-				target.DeltaCreatureStats(sens: 2);
+				target.ChangeSensitivity(2);
 			}
 			//Fertility Decrease:
 			if (target.hasVagina && Utils.Rand(4) == 0)
 			{
-				target.DeltaCreatureStats(sens: -2);
+				target.ChangeSensitivity(-2);
 
 				target.fertility.DecreaseFertility((byte)(1 + Utils.Rand(3)));
 				if (target.fertility.currentFertility < 4)
@@ -321,7 +318,10 @@ namespace CoC.Frontend.Transformations
 			//Neck restore
 			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -330,7 +330,9 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -340,6 +342,8 @@ namespace CoC.Frontend.Transformations
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -358,7 +362,9 @@ namespace CoC.Frontend.Transformations
 			//Remove odd eyes
 			if (target.eyes.count != 2 && target.eyes.type != EyeType.SAND_TRAP && Utils.Rand(2) == 0)
 			{
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.RestoreEyes();
+				sb.Append(RestoredEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -369,7 +375,9 @@ namespace CoC.Frontend.Transformations
 			if (target.eyes.type != EyeType.SAND_TRAP && Utils.Rand(4) == 0)
 			{
 				//Eyes Turn Black:
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.UpdateEyes(EyeType.SAND_TRAP);
+				sb.Append(UpdateEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -413,6 +421,32 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+{
+return RemovedOvipositionTextGeneric(target);
+}
+
+		protected virtual string UpdateEyesText(Creature target, EyeData oldData)
+		{
+			return target.eyes.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredEyesText(Creature target, EyeData oldData)
+		{
+			return target.eyes.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

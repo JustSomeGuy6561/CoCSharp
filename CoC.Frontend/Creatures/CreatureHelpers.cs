@@ -35,15 +35,27 @@ namespace CoC.Frontend.Creatures
 			return null;
 		}
 
-		public static bool IsCorruptEnough(this Creature creature, byte playerLevel)
+		public static bool IsCorruptEnough(this Creature creature, byte targetCorruption)
 		{
 			if (creature is IExtendedCreature extended)
 			{
-				return playerLevel <= creature.corruption + extended.extendedPerkModifiers.corruptionRequiredOffset;
+				return targetCorruption <= creature.corruption + extended.extendedPerkModifiers.corruptionRequiredOffset;
 			}
 			else
 			{
-				return playerLevel <= creature.corruption;
+				return targetCorruption <= creature.corruption;
+			}
+		}
+
+		public static bool IsPureEnough(this Creature creature, byte targetPurity)
+		{
+			if (creature is IExtendedCreature extended)
+			{
+				return targetPurity >= creature.corruption - extended.extendedPerkModifiers.purityRequiredOffset;
+			}
+			else
+			{
+				return targetPurity >= creature.corruption;
 			}
 		}
 
@@ -225,7 +237,7 @@ namespace CoC.Frontend.Creatures
 		//	public static void RemoveArmor(this Creature creature, Action resumeCallback)
 		//	{
 		//		var armor = creature.RemoveArmorManual();
-		//		if (armor != null)
+		//		if (!ArmorBase.IsNullOrNothing(armor))
 		//		{
 		//			creature.AddItem(armor, resumeCallback);
 		//		}
@@ -248,7 +260,7 @@ namespace CoC.Frontend.Creatures
 		//	public static void RemoveUpperGarment(this Creature creature, Action resumeCallback)
 		//	{
 		//		var upperGarment = creature.RemoveUpperGarmentManual();
-		//		if (upperGarment != null)
+		//		if (!UpperGarmentBase.IsNullOrNothing(upperGarment))
 		//		{
 		//			creature.AddItem(upperGarment, resumeCallback);
 		//		}
@@ -271,7 +283,7 @@ namespace CoC.Frontend.Creatures
 		//	public static void RemoveLowerGarment(this Creature creature, Action resumeCallback)
 		//	{
 		//		var lowerGarment = creature.RemoveLowerGarmentManual();
-		//		if (lowerGarment != null)
+		//		if (!LowerGarmentBase.IsNullOrNothing(lowerGarment))
 		//		{
 		//			creature.AddItem(lowerGarment, resumeCallback);
 		//		}

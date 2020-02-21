@@ -20,14 +20,19 @@ namespace CoC.Backend.Pregnancies
 
 	public abstract partial class StandardSpawnType : SimpleSaveablePart<StandardSpawnType, StandardSpawnData>
 	{
+		protected internal readonly Guid id;
+
+
 		private readonly SimpleDescriptor description; //what is it?
 
 		public readonly SimpleDescriptor father;
 		public readonly ushort hoursToBirth;
 
 		// will probably need father text, youngling text. but for now all i need is the father, i guess.
-		protected StandardSpawnType(Guid creatureID, SimpleDescriptor desc, SimpleDescriptor nameOfFather, ushort birthTime) : base(creatureID)
+		protected StandardSpawnType(Guid creatureID, Guid spawnTypeID, SimpleDescriptor desc, SimpleDescriptor nameOfFather, ushort birthTime) : base(creatureID)
 		{
+			id = spawnTypeID;
+
 			father = nameOfFather?? throw new ArgumentNullException(nameof(nameOfFather));
 			description = desc ?? throw new ArgumentNullException(nameof(desc));
 			hoursToBirth = birthTime;
@@ -38,7 +43,7 @@ namespace CoC.Backend.Pregnancies
 			return description();
 		}
 
-		protected float percentAlong(ushort currentTimeLeft) => 1 - (currentTimeLeft / hoursToBirth);
+		protected double percentAlong(ushort currentTimeLeft) => 1 - (currentTimeLeft / hoursToBirth);
 
 		//called when another potential pregnancy source is introduced. I dunno, you might want to get fancy with shit and abort your pregnancy if the PC gets worm-infested or some shit.
 		//right now the eggs need it. jfc i hate eggs.
@@ -60,7 +65,7 @@ namespace CoC.Backend.Pregnancies
 		//and how often she gets to check in with the PC. Note that this will not run every hour, to prevent edge cases where in the same waiting span, you see two progress texts. Instead, it will be "lazy"
 		//and run as often as the pc is aware that time passed. So if the PC gets knocked out for 8 hours, it'll only run once, in the last hour of that 8 hour span.
 
-		protected internal abstract string NotifyVaginalBirthingProgressed(byte vaginalIndex, float hoursToBirth, float previousHoursToBirth);
+		protected internal abstract string NotifyVaginalBirthingProgressed(byte vaginalIndex, double hoursToBirth, double previousHoursToBirth);
 
 		//by default, will advance pregnancy to a certain point, and return the amount of time the pregnancy advanced, if any.
 		//If you want to change this behavior or add additional behavior (like adding additional eggs in the case of egg pregnancy)
@@ -108,15 +113,23 @@ namespace CoC.Backend.Pregnancies
 
 		protected virtual bool AdditionalValidation(bool currentlyValid, bool correctInvalidData) => currentlyValid;
 
+		public override bool IsIdenticalTo(StandardSpawnData original, bool ignoreSexualMetaData)
+		{
+			return !(original is null) && original.spawnID == id;
+		}
+
 	}
 
 	public class StandardSpawnData : SimpleData
 	{
 		public readonly SimpleDescriptor fatherName;
 
+		public readonly Guid spawnID;
+
 		protected internal StandardSpawnData(StandardSpawnType source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			fatherName = source.father;
+			this.spawnID = source.id;
 		}
 	}
 }

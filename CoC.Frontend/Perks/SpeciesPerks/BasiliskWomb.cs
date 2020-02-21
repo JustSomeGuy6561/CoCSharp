@@ -15,23 +15,24 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 			sourceCreature.womb.dataChange -= Womb_dataChange;
 			sourceCreature.womb.dataChange += Womb_dataChange;
 
-			enabled = sourceCreature.womb is PlayerWomb playerWomb && playerWomb.basiliskWomb;
+			currentlyEnabled = sourceCreature.womb is PlayerWomb playerWomb && playerWomb.basiliskWomb;
 		}
 
 		private void Womb_dataChange(object sender, SimpleDataChangeEvent<Womb, WombData> e)
 		{
 			if (e.newValues is PlayerWombData playerWombData)
 			{
-				enabled = playerWombData.basiliskWomb;
+				currentlyEnabled = playerWombData.basiliskWomb;
 			}
 			else
 			{
-				enabled = false;
+				currentlyEnabled = false;
 			}
 		}
 
 		protected override void RemoveActivationConditions()
 		{
+			currentlyEnabled = false;
 			sourceCreature.womb.dataChange -= Womb_dataChange;
 		}
 

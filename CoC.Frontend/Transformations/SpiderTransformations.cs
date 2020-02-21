@@ -31,38 +31,12 @@ namespace CoC.Frontend.Transformations
 		{
 			isBadEnd = false;
 
-			//by default, this is 2 rolls at 50%, so a 25% chance of 0 additional tfs, 50% chance of 1 additional tf, 25% chance of 2 additional tfs.
-			//also takes into consideration any perks that increase or decrease tf effectiveness. if you need to roll out your own, feel free to do so.
 			int changeCount = GenerateChangeCount(target, new int[] { 2, 2 });
 			int remainingChanges = changeCount;
 
 			StringBuilder sb = new StringBuilder();
 
-			//For all of these, any text regarding the transformation should be instead abstracted out as an abstract string function. append the result of this abstract function
-			//to the string builder declared above (aka sb.Append(FunctionCall(variables));) string builder is just a fancy way of telling the compiler that you'll be creating a
-			//long string, piece by piece, so don't do any crazy optimizations first.
-
-			//the initial text for starting the transformation. feel free to add additional variables to this if needed.
 			sb.Append(InitialTransformationText(target));
-
-			//Add any free changes here - these can occur even if the change count is 0. these include things such as change in stats (intelligence, etc)
-			//change in height, hips, and/or butt, or other similar stats.
-
-			//this will handle the edge case where the change count starts out as 0.
-			if (remainingChanges <= 0)
-			{
-				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-			}
-
-			//Any transformation related changes go here. these typically cost 1 change. these can be anything from body parts to gender (which technically also changes body parts,
-			//but w/e). You are required to make sure you return as soon as you've applied changeCount changes, but a single line of code can be applied at the end of a change to do
-			//this for you.
-
-			//paste this line after any tf is applied, and it will: automatically decrement the remaining changes count. if it becomes 0 or less, apply the total number of changes
-			//underwent to the target's change count (if applicable) and then return the StringBuilder content.
-			//if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-
-			//Consuming Text
 
 			//*************
 			//Stat Changes
@@ -70,41 +44,47 @@ namespace CoC.Frontend.Transformations
 			//(increases sensitivity)
 			if (Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(sens: 1);
+				target.ChangeSensitivity(1);
+
 			}
 			//(Increase libido)
 			if (Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(lib: 1);
+				target.ChangeLibido(1);
 			}
-			if (target is CombatCreature cc)
+			//MOD: speed now has a common roll.
+			if (Utils.Rand(3) == 0)
 			{
-				//MOD: speed now has a common roll.
-				if (Utils.Rand(3) == 0)
+				//(If speed<70, increases speed)
+				if (target.relativeSpeed < 70)
 				{
-					//(If speed<70, increases speed)
-					if (cc.relativeSpeed < 70)
-					{
-						cc.DeltaCombatCreatureStats(spe: 1.5f);
-					}
-					//(If speed>80, decreases speed down to minimum of 80)
-					else if (cc.relativeSpeed > 80)
-					{
-						cc.DeltaCombatCreatureStats(spe: -1.5f);
-					}
+					target.ChangeSpeed(1.5f);
 				}
-
-				//(increase toughness to 60)
-				if (Utils.Rand(3) == 0 && cc.relativeToughness < 60)
+				//(If speed>80, decreases speed down to minimum of 80)
+				else if (target.relativeSpeed > 80)
 				{
-					cc.DeltaCombatCreatureStats(tou: 1);
-				}
-				//(decrease strength to 70)
-				if (cc.relativeStrength > 70 && Utils.Rand(3) == 0)
-				{
-					cc.DeltaCombatCreatureStats(str: -1);
+					target.ChangeSpeed(-1.5f);
 				}
 			}
+
+			//(increase toughness to 60)
+			if (Utils.Rand(3) == 0 && target.relativeToughness < 60)
+			{
+				target.ChangeToughness(1);
+			}
+			//(decrease strength to 70)
+			if (target.relativeStrength > 70 && Utils.Rand(3) == 0)
+			{
+				target.ChangeStrength(-1);
+			}
+
+
+			//this will handle the edge case where the change count starts out as 0.
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			}
+
 			//****************
 			//Sexual Changes
 			//****************
@@ -119,11 +99,12 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 			//(tightens vagina to 1, increases lust/libido)
-			if (target.hasVagina)
+			if (target.hasVagina && Utils.Rand(3) == 0)
 			{
 				//respects any perks that prevent us from dropping too loose (like marae perk).
+				//shrink largest if possible. if 2 (or more if that happens) and both(all) at min, remove extra one.
 				VaginalLooseness minVaginalLooseness = EnumHelper.Max(VaginalLooseness.NORMAL, target.genitals.minVaginalLooseness);
-				if (target.genitals.LargestVaginalLooseness() > minVaginalLooseness && Utils.Rand(3) == 0)
+				if (target.genitals.LargestVaginalLooseness() > minVaginalLooseness)
 				{
 					foreach (Vagina vagina in target.vaginas)
 					{
@@ -139,6 +120,10 @@ namespace CoC.Frontend.Transformations
 					{
 						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 					}
+				}
+				else if (target.vaginas.Count > 1)
+				{
+					target.RemoveExtraVaginas();
 				}
 			}
 			AnalLooseness minAnalLooseness = EnumHelper.Max(AnalLooseness.LOOSE, target.genitals.minAnalLooseness);
@@ -192,7 +177,9 @@ namespace CoC.Frontend.Transformations
 			//Neck restore
 			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -201,7 +188,9 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -211,6 +200,8 @@ namespace CoC.Frontend.Transformations
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -223,7 +214,10 @@ namespace CoC.Frontend.Transformations
 			//(Ears become pointed if not human)
 			if (target.ears.type != EarType.HUMAN && target.ears.type != EarType.ELFIN && Utils.Rand(4) == 0)
 			{
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.ELFIN);
+				sb.Append(UpdateEarsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -232,7 +226,9 @@ namespace CoC.Frontend.Transformations
 			//(Fur/Scales fall out)
 			if (target.body.type != BodyType.HUMANOID && (target.ears.type == EarType.HUMAN || target.ears.type == EarType.ELFIN) && Utils.Rand(4) == 0)
 			{
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.HUMANOID, Tones.PALE);
+				sb.Append(UpdateBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -242,7 +238,10 @@ namespace CoC.Frontend.Transformations
 			//(Gain human face)
 			if (target.body.type == BodyType.HUMANOID && (target.face.type != FaceType.SPIDER && target.face.type != FaceType.HUMAN) && Utils.Rand(4) == 0)
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.HUMAN);
+				sb.Append(UpdateFaceText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -280,11 +279,10 @@ namespace CoC.Frontend.Transformations
 			//eyes!
 			if (target.body.type == BodyType.HUMANOID && target.eyes.type != EyeType.SPIDER && Utils.Rand(4) == 0)
 			{
-				if (target is CombatCreature eyeInt)
-				{
-					eyeInt.IncreaseIntelligence(5);
-				}
+				target.IncreaseIntelligence(5);
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.UpdateEyes(EyeType.SPIDER);
+				sb.Append(UpdateEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -294,7 +292,9 @@ namespace CoC.Frontend.Transformations
 			//(Gain spider fangs)
 			if (target.face.type == FaceType.HUMAN && target.body.type == BodyType.HUMANOID && Utils.Rand(4) == 0)
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.SPIDER);
+				sb.Append(UpdateFaceText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -304,7 +304,9 @@ namespace CoC.Frontend.Transformations
 			//(Arms to carapace-covered arms)
 			if (target.arms.type != ArmType.SPIDER && Utils.Rand(4) == 0)
 			{
+				ArmData oldData = target.arms.AsReadOnlyData();
 				target.UpdateArms(ArmType.SPIDER);
+				sb.Append(UpdateArmsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -337,7 +339,9 @@ namespace CoC.Frontend.Transformations
 			//(Normal Biped Legs -> Carapace-Clad Legs)
 			if (((isDrider && target.lowerBody.type != LowerBodyType.DRIDER && target.lowerBody.type != LowerBodyType.CHITINOUS_SPIDER) || (!isDrider && target.lowerBody.type != LowerBodyType.CHITINOUS_SPIDER)) && target.lowerBody.isBiped && Utils.Rand(4) == 0)
 			{
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.CHITINOUS_SPIDER);
+				sb.Append(UpdateLowerBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -349,7 +353,9 @@ namespace CoC.Frontend.Transformations
 			{
 				//(Pre-existing tails)
 				//(No tail)
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.SPIDER_SPINNERET);
+				sb.Append(UpdateTailText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -359,7 +365,10 @@ namespace CoC.Frontend.Transformations
 			//(Drider Item Only: Carapace-Clad Legs to Drider Legs)
 			if (isDrider && target.lowerBody.type == LowerBodyType.CHITINOUS_SPIDER && Utils.Rand(4) == 0 && target.tail.type == TailType.SPIDER_SPINNERET)
 			{
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.DRIDER);
+				sb.Append(UpdateLowerBodyText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -381,6 +390,55 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+{
+return RemovedOvipositionTextGeneric(target);
+}
+
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+		{
+			return target.ears.TransformFromText(oldData);
+		}
+		protected virtual string UpdateBodyText(Creature target, BodyData oldData)
+		{
+			return target.body.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateEyesText(Creature target, EyeData oldData)
+		{
+			return target.eyes.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+		{
+			return target.face.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateArmsText(Creature target, ArmData oldData)
+		{
+			return target.arms.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+		{
+			return target.tail.TransformFromText(oldTail);
+		}
+		protected virtual string UpdateLowerBodyText(Creature target, LowerBodyData oldData)
+		{
+			return target.lowerBody.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

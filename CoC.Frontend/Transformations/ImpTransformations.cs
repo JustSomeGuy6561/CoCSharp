@@ -1,4 +1,6 @@
-﻿using CoC.Backend.BodyParts;
+﻿using System;
+using System.Text;
+using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
@@ -7,8 +9,6 @@ using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Races;
 using CoC.Frontend.Settings.Gameplay;
 using CoC.Frontend.UI;
-using System;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
@@ -38,8 +38,9 @@ namespace CoC.Frontend.Transformations
 			{
 				if (target.cocks[0].length < 12)
 				{
+					CockData oldData = target.cocks[0].AsReadOnlyData();
 					float temp = target.cocks[0].IncreaseLength(Utils.Rand(2) + 2);
-					sb.Append(OneCockGrewLarger(target, 0, temp));
+					sb.Append(OneCockGrewLarger(target, oldData, temp));
 				}
 				hpDelta = 30;
 			}
@@ -53,17 +54,23 @@ namespace CoC.Frontend.Transformations
 				healthCheck.AddHP((uint)(hpDelta + healthCheck.toughness / 3));
 				sb.Append(GainVitalityText(target));
 			}
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			}
 
 			//Red or orange skin!
 			if (Utils.Rand(30) == 0 && !Array.Exists(Species.IMP.availableTones, x => x == target.body.primarySkin.tone))
 			{
-				var oldSkinTone = target.body.primarySkin.tone;
+				Tones oldSkinTone = target.body.primarySkin.tone;
 				if (target.body.ChangeMainSkin(Utils.RandomChoice(Species.IMP.availableTones)))
 				{
 					sb.Append(ChangeSkinColorText(target, oldSkinTone));
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 
@@ -76,7 +83,10 @@ namespace CoC.Frontend.Transformations
 				{
 					sb.Append(GetShorterText(target, heightDelta));
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 			//Imp wings - I just kinda robbed this from demon changeCount ~Foxwells
@@ -94,7 +104,7 @@ namespace CoC.Frontend.Transformations
 				}
 				else
 				{
-					var oldData = target.wings.AsReadOnlyData();
+					WingData oldData = target.wings.AsReadOnlyData();
 					if (target.UpdateWings(WingType.IMP))
 					{
 						sb.Append(GrowOrChangeWingsText(target, oldData));
@@ -104,74 +114,92 @@ namespace CoC.Frontend.Transformations
 
 				if (changedWings)
 				{
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 
 			//Imp tail, because that's a unique thing from what I see?
 			if (Utils.Rand(3) == 0 && target.tail.type != TailType.IMP)
 			{
-				var oldData = target.tail.AsReadOnlyData();
+				TailData oldData = target.tail.AsReadOnlyData();
 				if (target.UpdateTail(TailType.IMP))
 				{
 					sb.Append(GrowOrChangeTailText(target, oldData));
 					target.IncreaseCorruption(2);
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 
 			//Feets, needs red/orange skin and tail
 			if (Species.IMP.availableTones.Contains(target.body.primarySkin.tone) && target.tail.type == TailType.IMP && target.lowerBody.type != LowerBodyType.IMP && Utils.Rand(3) == 0)
 			{
-				var oldData = target.lowerBody.AsReadOnlyData();
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				if (target.UpdateLowerBody(LowerBodyType.IMP))
 				{
 					sb.Append(ChangeLowerBodyText(target, oldData));
 
 					target.IncreaseCorruption(2);
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 
 			//Imp ears, needs red/orange skin and horns
 			if (target.horns.type == HornType.IMP && Array.Exists(Species.IMP.availableTones, x => target.body.primarySkin.tone == x) && target.ears.type != EarType.IMP && Utils.Rand(3) == 0)
 			{
-				var oldData = target.ears.AsReadOnlyData();
+				EarData oldData = target.ears.AsReadOnlyData();
 				if (target.UpdateEars(EarType.IMP))
 				{
 					sb.Append(ChangeEarsText(target, oldData));
 
 					target.IncreaseCorruption(2);
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 
 			//Horns, because why not?
 			if (target.horns.type != HornType.IMP && Utils.RandBool())
 			{
-				var oldData = target.horns.AsReadOnlyData();
+				HornData oldData = target.horns.AsReadOnlyData();
 				if (target.UpdateHorns(HornType.IMP))
 				{
 					sb.Append(ChangeOrGrowHornsText(target, oldData));
 
 					target.IncreaseCorruption(2);
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 
 			//Imp arms, needs orange/red skin. Also your hands turn human.
 			if (Species.IMP.availableTones.Contains(target.body.primarySkin.tone) && target.arms.type != ArmType.IMP && Utils.Rand(3) == 0)
 			{
-				var oldData = target.arms.AsReadOnlyData();
+				ArmData oldData = target.arms.AsReadOnlyData();
 				if (target.UpdateArms(ArmType.IMP))
 				{
 					sb.Append(ChangeArmText(target, oldData));
 
 					target.IncreaseCorruption(2);
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 
 			}
@@ -179,10 +207,10 @@ namespace CoC.Frontend.Transformations
 			//Changes hair to red/dark red, shortens it, sets it normal, and makes it curly.
 			if (!Species.IMP.availableHairColors.Contains(target.hair.hairColor) && Utils.Rand(3) == 0)
 			{
-				var oldHairData = target.hair.AsReadOnlyData();
+				HairData oldHairData = target.hair.AsReadOnlyData();
 
-				var hairColor = Utils.RandomChoice(Species.IMP.availableHairColors);
-				var hairLength = 1f;
+				HairFurColors hairColor = Utils.RandomChoice(Species.IMP.availableHairColors);
+				float hairLength = 1f;
 
 				if (target.hair.type != HairType.NORMAL)
 				{
@@ -196,21 +224,26 @@ namespace CoC.Frontend.Transformations
 				}
 				sb.Append(HairChangedText(target, oldHairData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//Remove spare titties
 			if (target.breasts.Count > 1 && Utils.Rand(3) == 0 && !hyperHappy)
 			{
 
-				var toRemove = target.breasts[target.breasts.Count - 1].AsReadOnlyData();
+				BreastData toRemove = target.breasts[target.breasts.Count - 1].AsReadOnlyData();
 
 				if (target.genitals.RemoveBreastRows() > 0)
 				{
 					sb.Append(RemovedAnExtraRowOfBreasts(target, toRemove));
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 			//Shrink titties
@@ -245,7 +278,10 @@ namespace CoC.Frontend.Transformations
 					}
 
 				}
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 
@@ -257,31 +293,40 @@ namespace CoC.Frontend.Transformations
 				sb.Append(RemovedQuadNippleText(target));
 
 				target.DecreaseSensitivity(3);
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//Neck restore
 			if (target.neck.type != NeckType.defaultValue && Utils.Rand(4) == 0)
 			{
 
-				var oldData = target.neck.AsReadOnlyData();
+				NeckData oldData = target.neck.AsReadOnlyData();
 				if (target.RestoreNeck())
 				{
 					sb.Append(RestoredNeckText(target, oldData));
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 
 			}
 			//Rear body restore
 			if (target.back.type != BackType.defaultValue && Utils.Rand(5) == 0)
 			{
-				var oldData = target.back.AsReadOnlyData();
+				BackData oldData = target.back.AsReadOnlyData();
 				if (target.RestoreBack())
 				{
 					sb.Append(RestoredBackText(target, oldData));
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 			//Ovi perk loss
@@ -291,7 +336,10 @@ namespace CoC.Frontend.Transformations
 				{
 					sb.Append(RemovedOvipositionText(target));
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 
@@ -301,7 +349,7 @@ namespace CoC.Frontend.Transformations
 			if (target.ImpScore() >= 4 && !hyperHappy)
 			{
 				bool changedSomething = false;
-				var oldGenitals = target.genitals.AsReadOnlyData();
+				GenitalsData oldGenitals = target.genitals.AsReadOnlyData();
 
 				changedSomething |= target.genitals.RemoveExtraBreastRows() > 0;
 				changedSomething |= target.breasts[0].MakeMale(true);
@@ -357,16 +405,16 @@ namespace CoC.Frontend.Transformations
 		{
 			return target.horns.TransformFromText(oldHorns);
 		}
-		protected virtual string ChangeEarsText(Creature target, EarData oldEars)
+		protected virtual string ChangeEarsText(Creature target, EarData oldData)
 		{
-			return target.ears.TransformFromText(oldEars);
+			return target.ears.TransformFromText(oldData);
 		}
 		protected virtual string ChangeLowerBodyText(Creature target, LowerBodyData oldLegs)
 		{
 			return target.lowerBody.TransformFromText(oldLegs);
 		}
 		protected abstract string InitialTransformText(Creature target);
-		protected abstract string OneCockGrewLarger(Creature target, int index, float deltaSize);
+		protected abstract string OneCockGrewLarger(Creature target, CockData oldData, float deltaSize);
 		protected abstract string GainVitalityText(Creature target);
 		protected abstract string ChangeSkinColorText(Creature target, Tones oldSkinTone);
 		protected abstract string GetShorterText(Creature target, byte heightDelta);

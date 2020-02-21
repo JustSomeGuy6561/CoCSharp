@@ -1,8 +1,8 @@
-﻿using CoC.Backend.BodyParts;
+﻿using System.Text;
+using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using CoC.Frontend.UI;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
@@ -25,36 +25,39 @@ namespace CoC.Frontend.Transformations
 			//sb.Append(InitialTransformText(target));
 
 			// Stat changes!
-			if (target is CombatCreature cc)
+			if (target.intelligence > 90 && Utils.Rand(3) == 0)
 			{
-				if (cc.intelligence > 90 && Utils.Rand(3) == 0)
-				{
-					cc.DeltaCombatCreatureStats(inte: -(Utils.Rand(2) + 1));
-				}
-				if (Utils.Rand(3) == 0)
-				{
-					cc.DeltaCombatCreatureStats(tou: Utils.Rand(2) + 1);
-				}
-				if (cc.speed < 75 && Utils.Rand(3) == 0)
-				{
-					cc.DeltaCombatCreatureStats(spe: Utils.Rand(2) + 1);
-				}
+				target.ChangeIntelligence(-(Utils.Rand(2) + 1));
 			}
 			if (Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(sens: -(Utils.Rand(2) + 1));
+				target.ChangeToughness(Utils.Rand(2) + 1);
+			}
+			if (target.speed < 75 && Utils.Rand(3) == 0)
+			{
+				target.ChangeSpeed(Utils.Rand(2) + 1);
 			}
 			if (Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(corr: -(Utils.Rand(3) + 2));
+				target.ChangeSensitivity(-(Utils.Rand(2) + 1));
+			}
+			if (Utils.Rand(3) == 0)
+			{
+				target.ChangeCorruption(-(Utils.Rand(3) + 2));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (target.heightInInches > 67 && Utils.Rand(2) == 0)
 			{
 				target.build.DecreaseHeight((byte)(1 + Utils.Rand(4)));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (target.butt.size < 6 && Utils.Rand(3) == 0)
 			{
@@ -69,73 +72,105 @@ namespace CoC.Frontend.Transformations
 
 			}
 
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			}
 
 			//Neck restore
 			if (target.neck.type != NeckType.defaultValue && Utils.Rand(4) == 0)
 			{
-				var oldNeck = target.neck.AsReadOnlyData();
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Rear body restore
 			if (target.back.type != BackType.defaultValue && Utils.Rand(5) == 0)
 			{
-				var oldBack = target.back.AsReadOnlyData();
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (target.ears.type != EarType.SHEEP && Utils.Rand(3) == 0)
 			{
-				var oldEars = target.ears.AsReadOnlyData();
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.SHEEP);
+				sb.Append(UpdateEarsText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (target.tail.type != TailType.SHEEP && Utils.Rand(3) == 0)
 			{
-				var oldTail = target.tail.AsReadOnlyData();
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.SHEEP);
+				sb.Append(UpdateTailText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (target.lowerBody.type != LowerBodyType.CLOVEN_HOOVED && target.tail.type == TailType.SHEEP && Utils.Rand(3) == 0)
 			{
-				var oldLegs = target.lowerBody.AsReadOnlyData();
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.CLOVEN_HOOVED);
+				sb.Append(UpdateLowerBodyText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (target.horns.type != HornType.SHEEP && target.ears.type == EarType.SHEEP && Utils.Rand(3) == 0)
 			{
-				var oldHorns = target.horns.AsReadOnlyData();
+				HornData oldData = target.horns.AsReadOnlyData();
 				target.UpdateHorns(HornType.SHEEP);
+				sb.Append(UpdateHornsText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (Utils.Rand(3) == 0 && target.lowerBody.type == LowerBodyType.CLOVEN_HOOVED && target.horns.type == HornType.SHEEP && target.tail.type == TailType.SHEEP &&
 				target.ears.type == EarType.SHEEP && target.body.type != BodyType.WOOL)
 			{
-				var oldBody = target.body.AsReadOnlyData();
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.WOOL);
+				sb.Append(UpdateBodyText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//shrinks horns if too feminine and grows if masculine
 			if (target.horns.type == HornType.SHEEP && target.body.type == BodyType.WOOL && target.femininity <= 45 && Utils.Rand(3) == 0)
 			{
-				var oldHornData = target.horns.AsReadOnlyData();
+				HornData oldHornData = target.horns.AsReadOnlyData();
 				target.horns.StrengthenTransform();
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (target.body.type == BodyType.WOOL && target.hair.type != HairType.WOOL && target.femininity >= 65 && Utils.Rand(3) == 0)
 			{
-				var oldHair = target.hair.AsReadOnlyData();
+				HairData oldHair = target.hair.AsReadOnlyData();
 				target.UpdateHair(HairType.WOOL);
 			}
 			if (target.hips.size < 10 && target.femininity >= 65 && Utils.Rand(3) == 0)
@@ -150,7 +185,10 @@ namespace CoC.Frontend.Transformations
 					target.hips.GrowHips((byte)(Utils.Rand(2) + 1));
 				}
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges); ;
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				};
 			}
 			if (target.breasts[0].cupSize < CupSize.DD && target.femininity >= 65 && Utils.Rand(3) == 0)
 			{
@@ -166,5 +204,39 @@ namespace CoC.Frontend.Transformations
 
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+		{
+			return target.ears.TransformFromText(oldData);
+		}
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+		{
+			return target.tail.TransformFromText(oldTail);
+		}
+		protected virtual string UpdateLowerBodyText(Creature target, LowerBodyData oldData)
+		{
+			return target.lowerBody.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateHornsText(Creature target, HornData oldData)
+		{
+			return target.horns.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateBodyText(Creature target, BodyData oldData)
+		{
+			return target.body.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
 	}
 }

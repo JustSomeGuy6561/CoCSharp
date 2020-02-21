@@ -63,7 +63,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		public static float MinThreshold(this LactationStatus lactationStatus)
+		public static double MinThreshold(this LactationStatus lactationStatus)
 		{
 			switch (lactationStatus)
 			{

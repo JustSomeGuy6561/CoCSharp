@@ -237,52 +237,52 @@ namespace CoC.Backend.BodyParts
 		public static string FacialStructureText(FemininityData femininity)
 		{
 			//0-10
-			if (femininity.value < 10)
+			if (femininity.value < FemininityData.HYPER_MASCULINE)
 			{
 				return "a square chin and chiseled jawline";
 			}
 			//10+ -20
-			else if (femininity.value < 20)
+			else if (femininity.value < FemininityData.VERY_MASCULINE)
 			{
 				return "a rugged, handsome look to it";
 			}
 			//21-28
-			else if (femininity.value < 28)
+			else if (femininity.value < FemininityData.MASCULINE)
 			{
 				return "a well-defined jawline and a fairly masculine profile";
 			}
 			//28+-35
-			else if (femininity.value < 35)
+			else if (femininity.value < FemininityData.MIN_ANDROGYNOUS)
 			{
 				return "a somewhat masculine, angular jawline";
 			}
 			//35-45
-			else if (femininity.value < 45)
+			else if (femininity.value < FemininityData.SLIGHTLY_MASCULINE)
 			{
 				return "the barest hint of masculinity on its features";
 			}
 			//45-55
-			else if (femininity.value <= 55)
+			else if (femininity.value <= Femininity.SLIGHTLY_FEMININE)
 			{
 				return "an androgynous set of features that would look normal on a male or female";
 			}
 			//55+-65
-			else if (femininity.value <= 65)
+			else if (femininity.value <= FemininityData.MAX_ANDROGYNOUS)
 			{
 				return "a tiny touch of femininity.value to it, with gentle curves";
 			}
 			//65+-72
-			else if (femininity.value <= 72)
+			else if (femininity.value <= FemininityData.FEMININE)
 			{
 				return "a nice set of cheekbones and lips that have the barest hint of pout";
 			}
 			//72+-80
-			else if (femininity.value <= 80)
+			else if (femininity.value <= FemininityData.VERY_FEMININE)
 			{
 				return "a beautiful, feminine shapeliness that's sure to draw the attention of males";
 			}
 			//81-90
-			else if (femininity.value <= 90)
+			else if (femininity.value <= FemininityData.HYPER_FEMININE)
 			{
 				return "a gorgeous profile with full lips, a button nose, and noticeable eyelashes";
 			}

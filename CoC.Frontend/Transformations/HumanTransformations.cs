@@ -57,7 +57,9 @@ namespace CoC.Frontend.Transformations
 			//1st priority: Change lower body to bipedal.
 			if (Utils.Rand(4) == 0)
 			{
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.RestoreLowerBody();
+				sb.Append(RestoredLowerBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -68,6 +70,8 @@ namespace CoC.Frontend.Transformations
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -86,7 +90,9 @@ namespace CoC.Frontend.Transformations
 			//Restore neck
 			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(5) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -95,7 +101,9 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -114,7 +122,9 @@ namespace CoC.Frontend.Transformations
 			//Change skin to normal
 			if (target.body.type != BodyType.HUMANOID && (target.ears.type == EarType.HUMAN || target.ears.type == EarType.ELFIN) && Utils.Rand(4) == 0)
 			{
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.RestoreBody();
+				sb.Append(RestoredBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -124,7 +134,9 @@ namespace CoC.Frontend.Transformations
 			//Restore arms to become human arms again
 			if (Utils.Rand(4) == 0)
 			{
+				ArmData oldData = target.arms.AsReadOnlyData();
 				target.RestoreArms();
+				sb.Append(RestoredArmsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -137,7 +149,9 @@ namespace CoC.Frontend.Transformations
 			//-Human face
 			if (target.face.type != FaceType.HUMAN && Utils.Rand(4) == 0)
 			{
-				target.UpdateFace(FaceType.HUMAN);
+				FaceData oldData = target.face.AsReadOnlyData();
+				target.RestoreFace();
+				sb.Append(RestoreFaceText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -147,7 +161,9 @@ namespace CoC.Frontend.Transformations
 			//-Human tongue
 			if (target.tongue.type != TongueType.HUMAN && Utils.Rand(4) == 0)
 			{
-				target.UpdateTongue(TongueType.HUMAN);
+				TongueData oldData = target.tongue.AsReadOnlyData();
+				target.RestoreTongue();
+				sb.Append(RestoreTongueText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -157,7 +173,9 @@ namespace CoC.Frontend.Transformations
 			//Remove odd eyes
 			if (Utils.Rand(5) == 0 && target.eyes.type != EyeType.HUMAN)
 			{
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.RestoreEyes();
+				sb.Append(RestoredEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -167,7 +185,9 @@ namespace CoC.Frontend.Transformations
 			//-Gain human ears (If you have human face)
 			if (target.ears.type != EarType.HUMAN && target.face.type == FaceType.HUMAN && Utils.Rand(4) == 0)
 			{
-				target.UpdateEars(EarType.HUMAN);
+				EarData oldData = target.ears.AsReadOnlyData();
+				target.RestoreEar();
+				sb.Append(RestoreEarsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -177,7 +197,9 @@ namespace CoC.Frontend.Transformations
 			//Removes gills
 			if (Utils.Rand(4) == 0 && !target.gills.isDefault)
 			{
+				GillData oldData = target.gills.AsReadOnlyData();
 				target.RestoreGills();
+				sb.Append(RestoredGillsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -215,7 +237,9 @@ namespace CoC.Frontend.Transformations
 			//Removes antennae
 			if (target.antennae.type != AntennaeType.NONE && Utils.Rand(3) == 0)
 			{
+				AntennaeData oldData = target.antennae.AsReadOnlyData();
 				target.RestoreAntennae();
+				sb.Append(RestoredAntennaeText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -224,7 +248,9 @@ namespace CoC.Frontend.Transformations
 			//Removes horns
 			if ((target.horns.type != HornType.NONE) && Utils.Rand(5) == 0)
 			{
+				HornData oldData = target.horns.AsReadOnlyData();
 				target.RestoreHorns();
+				sb.Append(RestoredHornsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -234,7 +260,9 @@ namespace CoC.Frontend.Transformations
 			//Removes wings
 			if (target.wings.type != WingType.NONE && Utils.Rand(5) == 0)
 			{
+				WingData oldData = target.wings.AsReadOnlyData();
 				target.RestoreWings();
+				sb.Append(RestoredWingsText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -243,7 +271,9 @@ namespace CoC.Frontend.Transformations
 			//Removes tail
 			if (target.tail.type != TailType.NONE && Utils.Rand(5) == 0)
 			{
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.RestoreTail();
+				sb.Append(RestoredTailText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -328,7 +358,7 @@ namespace CoC.Frontend.Transformations
 			if (target.hasCock && !target.genitals.OnlyHasCocksOfType(CockType.HUMAN) && Utils.Rand(3) == 0)
 			{
 				//Select first non-human cock
-				var firstNonHuman = target.cocks.First(x => x.type != CockType.HUMAN);
+				Cock firstNonHuman = target.cocks.First(x => x.type != CockType.HUMAN);
 
 				target.genitals.UpdateCock(firstNonHuman, CockType.HUMAN);
 				if (--remainingChanges <= 0)
@@ -336,7 +366,7 @@ namespace CoC.Frontend.Transformations
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
-			var longest = target.genitals.LongestCock();
+			Cock longest = target.genitals.LongestCock();
 			float targetSize = Math.Max(7, target.genitals.minimumCockLength);
 
 			//Shrink oversized cocks
@@ -362,12 +392,12 @@ namespace CoC.Frontend.Transformations
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
-			var biggestCup = target.genitals.LargestBreast();
-			var targetCup = EnumHelper.Max(CupSize.D, target.genitals.smallestPossibleFemaleCupSize);
+			Breasts biggestCup = target.genitals.LargestBreast();
+			CupSize targetCup = EnumHelper.Max(CupSize.D, target.genitals.smallestPossibleFemaleCupSize);
 			//Shrink tits!
 			if (Utils.Rand(3) == 0 && biggestCup.cupSize > targetCup)
 			{
-				foreach (var tits in target.breasts)
+				foreach (Breasts tits in target.breasts)
 				{
 					tits.ShrinkBreasts();
 				}
@@ -379,7 +409,7 @@ namespace CoC.Frontend.Transformations
 			//Change vagina back to normal
 			if (Utils.Rand(3) == 0 && target.hasVagina && !target.genitals.OnlyHasVaginasOfType(VaginaType.defaultValue))
 			{
-				foreach (var vag in target.vaginas)
+				foreach (Vagina vag in target.vaginas)
 				{
 					target.genitals.RestoreVagina(vag);
 				}
@@ -390,18 +420,18 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 
-			var targetWetness = EnumHelper.Max(VaginalWetness.WET, target.genitals.minVaginalWetness);
+			VaginalWetness targetWetness = EnumHelper.Max(VaginalWetness.WET, target.genitals.minVaginalWetness);
 			//Reduce wetness down to a minimum of 2
 			if (Utils.Rand(3) == 0 && target.hasVagina && target.genitals.LargestVaginalWetness() > targetWetness)
 			{
-				foreach (var vag in target.vaginas)
+				foreach (Vagina vag in target.vaginas)
 				{
 					if (vag.wetness > targetWetness)
 					{
 						vag.DecreaseWetness();
 					}
 				}
-					if (--remainingChanges <= 0)
+				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
@@ -448,6 +478,69 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+{
+return RemovedOvipositionTextGeneric(target);
+}
+		protected abstract string RestoreFaceText(Creature target, FaceData oldData);
+		protected abstract string RestoreTongueText(Creature target, TongueData oldData);
+		protected abstract string RestoreEarsText(Creature target, EarData oldData);
+		protected virtual string RestoredLowerBodyText(Creature target, LowerBodyData oldData)
+		{
+			return target.lowerBody.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBodyText(Creature target, BodyData oldData)
+		{
+			return target.body.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredArmsText(Creature target, ArmData oldData)
+		{
+			return target.arms.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredEyesText(Creature target, EyeData oldData)
+		{
+			return target.eyes.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredGillsText(Creature target, GillData oldData)
+		{
+			return target.gills.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredAntennaeText(Creature target, AntennaeData oldData)
+		{
+			return target.antennae.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredHornsText(Creature target, HornData oldData)
+		{
+			return target.horns.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredWingsText(Creature target, WingData oldData)
+		{
+			return target.wings.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredTailText(Creature target, TailData oldData)
+		{
+			return target.tail.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

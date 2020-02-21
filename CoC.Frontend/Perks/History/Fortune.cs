@@ -13,10 +13,7 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			if (sourceCreature is CombatCreature combatCreature)
-			{
-				combatCreature.addGems(250);
-			}
+			sourceCreature.addGems(250);
 			if (hasExtraModifiers)
 			{
 				extraModifiers.gemGainMultiplier += 0.15f;

@@ -25,7 +25,9 @@ namespace CoC.Backend.Perks
 		public BasePerkModifiers baseModifiers => basicData.baseModifiers; //allows you to update base stats.
 		public PerkBase() {}
 
-		public abstract bool isEnabled { get; }
+		private protected abstract bool enabled { get; }
+
+		public bool isEnabled => enabled;
 
 		internal void Activate(Creature source)
 		{

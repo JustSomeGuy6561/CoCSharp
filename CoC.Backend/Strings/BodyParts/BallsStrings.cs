@@ -12,7 +12,7 @@ namespace CoC.Backend.BodyParts
 		byte count { get; }
 		byte size { get; }
 		int hoursSinceLastCum { get; }
-		float relativeLust { get; }
+		double relativeLust { get; }
 		BodyType bodyType { get; }
 	}
 
@@ -20,7 +20,7 @@ namespace CoC.Backend.BodyParts
 	{
 		int IBalls.hoursSinceLastCum => hoursSinceCum;
 
-		float IBalls.relativeLust => relativeLust;
+		double IBalls.relativeLust => relativeLust;
 
 		BodyType IBalls.bodyType => bodyType;
 
@@ -98,7 +98,7 @@ namespace CoC.Backend.BodyParts
 
 		int IBalls.hoursSinceLastCum => hoursSinceLastCum;
 
-		float IBalls.relativeLust => relativeLust;
+		double IBalls.relativeLust => relativeLust;
 
 		BodyType IBalls.bodyType => bodyType;
 

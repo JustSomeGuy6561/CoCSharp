@@ -27,266 +27,170 @@ namespace CoC.Backend.Perks
 
 		public sbyte minStrength
 		{
-			get => combatSource?.bonusMinStrength ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMinStrength = value;
-			}
+			get => source.bonusMinStrength;
+			set => source.bonusMinStrength = value;
 		}
 		public sbyte bonusMaxStrength
 		{
-			get => combatSource?.bonusMaxStrength ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMaxStrength = value;
-			}
+			get => source.bonusMaxStrength;
+			set => source.bonusMaxStrength = value;
 		}
-		public float StrengthGainMultiplier
+		public double StrengthGainMultiplier
 		{
-			get => combatSource?.StrengthGainMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.StrengthGainMultiplier = value;
-			}
+			get => source.StrengthGainMultiplier;
+			set => source.StrengthGainMultiplier = value;
 		}
-		public float StrengthLossMultiplier
+		public double StrengthLossMultiplier
 		{
-			get => combatSource?.StrengthLossMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.StrengthLossMultiplier = value;
-			}
+			get => source.StrengthLossMultiplier;
+			set => source.StrengthLossMultiplier = value;
 		}
 
 		public sbyte minToughness
 		{
-			get => combatSource?.bonusMinToughness ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMinToughness = value;
-			}
+			get => source.bonusMinToughness;
+			set => source.bonusMinToughness = value;
 		}
 		public sbyte bonusMaxToughness
 		{
-			get => combatSource?.bonusMaxToughness ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMaxToughness = value;
-			}
+			get => source.bonusMaxToughness;
+			set => source.bonusMaxToughness = value;
 		}
-		public float ToughnessGainMultiplier
+		public double ToughnessGainMultiplier
 		{
-			get => combatSource?.ToughnessGainMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.ToughnessGainMultiplier = value;
-			}
+			get => source.ToughnessGainMultiplier;
+			set => source.ToughnessGainMultiplier = value;
 		}
-		public float ToughnessLossMultiplier
+		public double ToughnessLossMultiplier
 		{
-			get => combatSource?.ToughnessLossMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.ToughnessLossMultiplier = value;
-			}
+			get => source.ToughnessLossMultiplier;
+			set => source.ToughnessLossMultiplier = value;
 		}
 
 		public sbyte minSpeed
 		{
-			get => combatSource?.bonusMinSpeed ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMinSpeed = value;
-			}
+			get => source.bonusMinSpeed;
+			set => source.bonusMinSpeed = value;
 		}
 		public sbyte bonusMaxSpeed
 		{
-			get => combatSource?.bonusMaxSpeed ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMaxSpeed = value;
-			}
+			get => source.bonusMaxSpeed;
+			set => source.bonusMaxSpeed = value;
 		}
-		public float SpeedGainMultiplier
+		public double SpeedGainMultiplier
 		{
-			get => combatSource?.SpeedGainMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.SpeedGainMultiplier = value;
-			}
+			get => source.SpeedGainMultiplier;
+			set => source.SpeedGainMultiplier = value;
 		}
-		public float SpeedLossMultiplier
+		public double SpeedLossMultiplier
 		{
-			get => combatSource?.SpeedLossMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.SpeedLossMultiplier = value;
-			}
+			get => source.SpeedLossMultiplier;
+			set => source.SpeedLossMultiplier = value;
 		}
 
 		public sbyte minIntelligence
 		{
-			get => combatSource?.bonusMinIntelligence ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMinIntelligence = value;
-			}
+			get => source.bonusMinIntelligence;
+			set => source.bonusMinIntelligence = value;
 		}
 		public sbyte bonusMaxIntelligence
 		{
-			get => combatSource?.bonusMaxIntelligence ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMaxIntelligence = value;
-			}
+			get => source.bonusMaxIntelligence;
+			set => source.bonusMaxIntelligence = value;
 		}
-		public float IntelligenceGainMultiplier
+		public double IntelligenceGainMultiplier
 		{
-			get => combatSource?.IntelligenceGainMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.IntelligenceGainMultiplier = value;
-			}
+			get => source.IntelligenceGainMultiplier;
+			set => source.IntelligenceGainMultiplier = value;
 		}
-		public float IntelligenceLossMultiplier
+		public double IntelligenceLossMultiplier
 		{
-			get => combatSource?.IntelligenceLossMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.IntelligenceLossMultiplier = value;
-			}
+			get => source.IntelligenceLossMultiplier;
+			set => source.IntelligenceLossMultiplier = value;
 		}
 
 		public sbyte minSensitivity
 		{
-			get => combatSource?.bonusMinSensitivity ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMinSensitivity = value;
-			}
+			get => source.bonusMinSensitivity;
+			set => source.bonusMinSensitivity = value;
 		}
 		public sbyte bonusMaxSensitivity
 		{
-			get => combatSource?.bonusMaxSensitivity ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMaxSensitivity = value;
-			}
+			get => source.bonusMaxSensitivity;
+			set => source.bonusMaxSensitivity = value;
 		}
-		public float SensitivityGainMultiplier
+		public double SensitivityGainMultiplier
 		{
-			get => combatSource?.SensitivityGainMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.SensitivityGainMultiplier = value;
-			}
+			get => source.SensitivityGainMultiplier;
+			set => source.SensitivityGainMultiplier = value;
 		}
-		public float SensitivityLossMultiplier
+		public double SensitivityLossMultiplier
 		{
-			get => combatSource?.SensitivityLossMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.SensitivityLossMultiplier = value;
-			}
+			get => source.SensitivityLossMultiplier;
+			set => source.SensitivityLossMultiplier = value;
 		}
 
 		public sbyte minLust
 		{
-			get => combatSource?.bonusMinLust ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMinLust = value;
-			}
+			get => source.bonusMinLust;
+			set => source.bonusMinLust = value;
 		}
 		public sbyte bonusMaxLust
 		{
-			get => combatSource?.bonusMaxLust ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMaxLust = value;
-			}
+			get => source.bonusMaxLust;
+			set => source.bonusMaxLust = value;
 		}
-		public float LustGainMultiplier
+		public double LustGainMultiplier
 		{
-			get => combatSource?.LustGainMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.LustGainMultiplier = value;
-			}
+			get => source.LustGainMultiplier;
+			set => source.LustGainMultiplier = value;
 		}
-		public float LustLossMultiplier
+		public double LustLossMultiplier
 		{
-			get => combatSource?.LustLossMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.LustLossMultiplier = value;
-			}
+			get => source.LustLossMultiplier;
+			set => source.LustLossMultiplier = value;
 		}
 
 		public sbyte minLibido
 		{
-			get => combatSource?.bonusMinLibido ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMinLibido = value;
-			}
+			get => source.bonusMinLibido;
+			set => source.bonusMinLibido = value;
 		}
 		public sbyte bonusMaxLibido
 		{
-			get => combatSource?.bonusMaxLibido ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMaxLibido = value;
-			}
+			get => source.bonusMaxLibido;
+			set => source.bonusMaxLibido = value;
 		}
-		public float LibidoGainMultiplier
+		public double LibidoGainMultiplier
 		{
-			get => combatSource?.LibidoGainMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.LibidoGainMultiplier = value;
-			}
+			get => source.LibidoGainMultiplier;
+			set => source.LibidoGainMultiplier = value;
 		}
-		public float LibidoLossMultiplier
+		public double LibidoLossMultiplier
 		{
-			get => combatSource?.LibidoLossMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.LibidoLossMultiplier = value;
-			}
+			get => source.LibidoLossMultiplier;
+			set => source.LibidoLossMultiplier = value;
 		}
 
 		public sbyte minCorruption
 		{
-			get => combatSource?.bonusMinCorruption ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMinCorruption = value;
-			}
+			get => source.bonusMinCorruption;
+			set => source.bonusMinCorruption = value;
 		}
-		public float CorruptionGainMultiplier
+		public double CorruptionGainMultiplier
 		{
-			get => combatSource?.CorruptionGainMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.CorruptionGainMultiplier = value;
-			}
+			get => source.CorruptionGainMultiplier;
+			set => source.CorruptionGainMultiplier = value;
 		}
-		public float CorruptionLossMultiplier
+		public double CorruptionLossMultiplier
 		{
-			get => combatSource?.CorruptionLossMultiplier ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.CorruptionLossMultiplier = value;
-			}
+			get => source.CorruptionLossMultiplier;
+			set => source.CorruptionLossMultiplier = value;
 		}
 		public sbyte bonusMaxCorruption
 		{
-			get => combatSource?.bonusMaxCorruption ?? 0;
-			set
-			{
-				if (combatSource != null) combatSource.bonusMaxCorruption = value;
-			}
+			get => source.bonusMaxCorruption;
+			set => source.bonusMaxCorruption = value;
 		}
 
 		public sbyte bonusMaxFatigue
@@ -307,7 +211,7 @@ namespace CoC.Backend.Perks
 			}
 		}
 
-		public float HungerGainRate
+		public double HungerGainRate
 		{
 			get => playerSource?.hungerGainRate ?? 0f;
 			set
@@ -316,7 +220,7 @@ namespace CoC.Backend.Perks
 			}
 		}
 
-		public float fatigueRegenMultiplier
+		public double fatigueRegenMultiplier
 		{
 			get => combatSource?.FatigueRegenRate ?? 0;
 			set
@@ -325,33 +229,35 @@ namespace CoC.Backend.Perks
 			}
 		}
 		#endregion
+		public double gemGainMultiplier = 1.0f;
 
+		public double healingMultiplier = 1.0f;
 		#region Combat Perks
 		//Not Implemented
-		//public float combatDamageModifier
+		//public double combatDamageModifier
 		//{
 		//	get => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		//	set => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		//}
-		//public float magicalSpellCost
+		//public double magicalSpellCost
 		//{
 		//	get => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		//	set => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		//}
-		//public float physicalSpellCost
+		//public double physicalSpellCost
 		//{
 		//	get => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		//	set => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		//}
-		//public float armorEffectivenessMultiplier
+		//public double armorEffectivenessMultiplier
 		//{
 		//	get => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		//	set => throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		//}
-		public float combatDamageModifier { get; set; } = 1;
-		public float magicalSpellCost { get; set; } = 1;
-		public float physicalSpellCost { get; set; } = 1;
-		public float armorEffectivenessMultiplier { get; set; } = 1;
+		public double combatDamageModifier { get; set; } = 1;
+		public double magicalSpellCost { get; set; } = 1;
+		public double physicalSpellCost { get; set; } = 1;
+		public double armorEffectivenessMultiplier { get; set; } = 1;
 		#endregion
 
 		#region Pregnancy/Fertility
@@ -380,7 +286,7 @@ namespace CoC.Backend.Perks
 			source.genitals.womb.pregnancyMultiplierCounter -= 1;
 		}
 
-		public float pregnancyMultiplier => source.genitals.womb.pregnancyMultiplier;
+		public double pregnancyMultiplier => source.genitals.womb.pregnancyMultiplier;
 
 
 		//below is the actual formula.
@@ -409,40 +315,40 @@ namespace CoC.Backend.Perks
 
 		#region Cock
 		//added to any non-default cock size.
-		public float NewCockSizeDelta
+		public double NewCockSizeDelta
 		{
 			get => source.genitals.perkData.NewCockSizeDelta;
 			set => source.genitals.perkData.NewCockSizeDelta = value;
 		}
 
 		//affects the rate at which the cock grows. this base growth amount is multiplied by this value.
-		public float CockGrowthMultiplier
+		public double CockGrowthMultiplier
 		{
 			get => source.genitals.perkData.CockGrowthMultiplier;
 			set => source.genitals.perkData.CockGrowthMultiplier = value;
 		}
 		//affects the rate at which the cock shrinks. this base shrink amount is multiplied by this value.
-		public float CockShrinkMultiplier
+		public double CockShrinkMultiplier
 		{
 			get => source.genitals.perkData.CockShrinkMultiplier;
 			set => source.genitals.perkData.CockShrinkMultiplier = value;
 		}
 
 		//if no size is provided, this value is used for a new cock.
-		public float NewCockDefaultSize
+		public double NewCockDefaultSize
 		{
 			get => source.genitals.perkData.NewCockDefaultSize;
 			set => source.genitals.perkData.NewCockDefaultSize = value;
 		}
 
 		//minimum size for a cock. behavior for what happens when attempting to shrink below this depends on the source.
-		public float MinCockSize
+		public double MinCockSize
 		{
 			get => source.genitals.perkData.MinCockLength;
 			set => source.genitals.perkData.MinCockLength = value;
 		}
 
-		public float perkBonusVirilityMultiplier
+		public double perkBonusVirilityMultiplier
 		{
 			get => source.genitals.perkData.perkBonusVirilityMultiplier;
 			set => source.genitals.perkData.perkBonusVirilityMultiplier = value;
@@ -457,34 +363,34 @@ namespace CoC.Backend.Perks
 		#region Vagina
 		#region Clit
 		//offset for new clits with non-default value.
-		public float NewClitSizeDelta
+		public double NewClitSizeDelta
 		{
 			get => source.genitals.perkData.NewClitSizeDelta;
 			set => source.genitals.perkData.NewClitSizeDelta = value;
 		}
 
 		//affects rate of growth of clit.
-		public float ClitGrowthMultiplier
+		public double ClitGrowthMultiplier
 		{
 			get => source.genitals.perkData.ClitGrowthMultiplier;
 			set => source.genitals.perkData.ClitGrowthMultiplier = value;
 		}
 
 		//affects clit shrink rate.
-		public float ClitShrinkMultiplier
+		public double ClitShrinkMultiplier
 		{
 			get => source.genitals.perkData.ClitShrinkMultiplier;
 			set => source.genitals.perkData.ClitShrinkMultiplier = value;
 		}
 
 		//affects new clit size.
-		public float DefaultNewClitSize
+		public double DefaultNewClitSize
 		{
 			get => source.genitals.perkData.DefaultNewClitSize;
 			set => source.genitals.perkData.DefaultNewClitSize = value;
 		}
 
-		public float MinClitSize
+		public double MinClitSize
 		{
 			get => source.genitals.perkData.MinClitSize;
 			set => source.genitals.perkData.MinClitSize = value;
@@ -572,38 +478,38 @@ namespace CoC.Backend.Perks
 		}
 
 
-		public float TitsGrowthMultiplier
+		public double TitsGrowthMultiplier
 		{
 			get => source.genitals.perkData.TitsGrowthMultiplier;
 			set => source.genitals.perkData.TitsGrowthMultiplier = value;
 		}
 
-		public float TitsShrinkMultiplier
+		public double TitsShrinkMultiplier
 		{
 			get => source.genitals.perkData.TitsShrinkMultiplier;
 			set => source.genitals.perkData.TitsShrinkMultiplier = value;
 		}
 		#region Nipples
 
-		public float NewNippleSizeDelta
+		public double NewNippleSizeDelta
 		{
 			get => source.genitals.perkData.NewNippleSizeDelta;
 			set => source.genitals.perkData.NewNippleSizeDelta = value;
 		}
 
-		public float NippleGrowthMultiplier
+		public double NippleGrowthMultiplier
 		{
 			get => source.genitals.perkData.NippleGrowthMultiplier;
 			set => source.genitals.perkData.NippleGrowthMultiplier = value;
 		}
 
-		public float NippleShrinkMultiplier
+		public double NippleShrinkMultiplier
 		{
 			get => source.genitals.perkData.NippleShrinkMultiplier;
 			set => source.genitals.perkData.NippleShrinkMultiplier = value;
 		}
 
-		public float NewNippleDefaultLength
+		public double NewNippleDefaultLength
 		{
 			get => source.genitals.perkData.NewNippleDefaultLength;
 			set => source.genitals.perkData.NewNippleDefaultLength = value;
@@ -617,13 +523,13 @@ namespace CoC.Backend.Perks
 			set => source.genitals.balls.newSizeOffset = value;
 		}
 
-		public float BallsGrowthMultiplier
+		public double BallsGrowthMultiplier
 		{
 			get => source.genitals.balls.growthMultiplier;
 			set => source.genitals.balls.growthMultiplier = value;
 		}
 
-		public float BallsShrinkMultiplier
+		public double BallsShrinkMultiplier
 		{
 			get => source.genitals.balls.shrinkMultiplier;
 			set => source.genitals.balls.shrinkMultiplier = value;
@@ -674,7 +580,7 @@ namespace CoC.Backend.Perks
 		}
 
 		//multiplies the base cum and all non-perk bonus cum by the stack amount.
-		public float BonusCumStacked
+		public double BonusCumStacked
 		{
 			get => source.genitals.perkData.bonusCumMultiplier;
 			set => source.genitals.perkData.bonusCumMultiplier = value;
@@ -703,33 +609,33 @@ namespace CoC.Backend.Perks
 		//if no size is provided, the size will be the default new value.
 		//if a size is provided, the delta value will be added to it. if this value is still lower than the default new value, the default new value will be used instead.
 
-		public float NewCockSizeDelta; //how much do we add or remove for new cocks? //big cock perk for now. would allow a small cock perk as well
-		public float CockGrowthMultiplier = 1f; //how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
-		public float CockShrinkMultiplier = 1f; //how much more/less should we shrink a cock over base amount? //big cock, cockSock;
-		public float NewCockDefaultSize; //minimum size for any new cocks; //bro/futa perks for now
-		public float NewClitSizeDelta; //how much do we add or remove to base amount for new Clits? //NYI, but BigClit Perks
-		public float ClitGrowthMultiplier = 1f; //how much more/less should we grow a Clit over the base amount?
-		public float ClitShrinkMultiplier = 1f; //how much more/less should we shrink a Clit over base amount?
-		public float MinNewClitSize; //minimum size for any new Clits; //bro/futa perks for now
-		public float MinClitSize; //minimum size for any Clit; //bro/futa perks for now
+		public double NewCockSizeDelta; //how much do we add or remove for new cocks? //big cock perk for now. would allow a small cock perk as well
+		public double CockGrowthMultiplier = 1f; //how much more/less should we grow a cock over the base amount? //big cock perk, cockSock;
+		public double CockShrinkMultiplier = 1f; //how much more/less should we shrink a cock over base amount? //big cock, cockSock;
+		public double NewCockDefaultSize; //minimum size for any new cocks; //bro/futa perks for now
+		public double NewClitSizeDelta; //how much do we add or remove to base amount for new Clits? //NYI, but BigClit Perks
+		public double ClitGrowthMultiplier = 1f; //how much more/less should we grow a Clit over the base amount?
+		public double ClitShrinkMultiplier = 1f; //how much more/less should we shrink a Clit over base amount?
+		public double MinNewClitSize; //minimum size for any new Clits; //bro/futa perks for now
+		public double MinClitSize; //minimum size for any Clit; //bro/futa perks for now
 		//These are split by gender. Note that herms use female, and genderless use male.
 		public sbyte FemaleNewBreastCupSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
 		public CupSize FemaleNewBreastDefaultCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
 		public sbyte MaleNewBreastCupSizeDelta; //how much do we add or remove to base amount for new Breast Rows?// BigTits Perks
 		public CupSize MaleNewBreastDefaultCupSize; //minimum size for any new row of breasts; //bro/futa perks for now
 		//these are used regardless of gender.
-		public float TitsGrowthMultiplier = 1f; //how much more/less should we grow the breasts over the base amount?
-		public float TitsShrinkMultiplier = 1f; //how much more/less should we shrink the breasts over base amount?
-		public float NewNippleSizeDelta; //how much do we add or remove to base amount for new Nipples? //NYI, but BigNipple Perks
-		public float NippleGrowthMultiplier = 1.0f; //how much more/less should we grow a Nipple over the base amount?
-		public float NippleShrinkMultiplier = 1.0f; //how much more/less should we shrink a Nipple over base amount?
-		public float NewNippleDefaultLength; //minimum size for any new Nipples; //bro/futa perks for now
+		public double TitsGrowthMultiplier = 1f; //how much more/less should we grow the breasts over the base amount?
+		public double TitsShrinkMultiplier = 1f; //how much more/less should we shrink the breasts over base amount?
+		public double NewNippleSizeDelta; //how much do we add or remove to base amount for new Nipples? //NYI, but BigNipple Perks
+		public double NippleGrowthMultiplier = 1.0f; //how much more/less should we grow a Nipple over the base amount?
+		public double NippleShrinkMultiplier = 1.0f; //how much more/less should we shrink a Nipple over base amount?
+		public double NewNippleDefaultLength; //minimum size for any new Nipples; //bro/futa perks for now
 		public byte NewBallsSizeDelta; //how much do we add or remove to base amount for new Balls? //note, will only go to max size for uniball if uniball.
-		public float BallsGrowthMultiplier = 1.0f; //how much more/less should we grow the Balls over the base amount? 1-3, expecting roughly 1.5
-		public float BallsShrinkMultiplier = 1.0f; //how much more/less should we shrink the Balls over base amount? 1-3, expecting roughly 1.5
+		public double BallsGrowthMultiplier = 1.0f; //how much more/less should we grow the Balls over the base amount? 1-3, expecting roughly 1.5
+		public double BallsShrinkMultiplier = 1.0f; //how much more/less should we shrink the Balls over base amount? 1-3, expecting roughly 1.5
 		public byte NewBallsDefaultSize; //note: will only go to uniball max if uniball.
 		public bool AlwaysProducesMaxCum; //pilgrim perk
-		public float BonusCumStacked = 1; //muliplicative
+		public double BonusCumStacked = 1; //muliplicative
 		public uint BonusCumAdded = 0; //additive.
 		public ushort PerkBasedBonusVaginalCapacity; //vag of holding, elastic innards
 		public ushort PerkBasedBonusAnalCapacity; //elastic innards

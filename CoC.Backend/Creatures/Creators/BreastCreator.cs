@@ -15,7 +15,7 @@ namespace CoC.Backend.Creatures
 
 		public readonly ReadOnlyDictionary<NipplePiercingLocation, PiercingJewelry> nipplePiercings;
 
-		public BreastCreator(CupSize cup, float? nippleLengthInInches = null, Dictionary<NipplePiercingLocation, PiercingJewelry> nippleJewelry = null)
+		public BreastCreator(CupSize cup, double? nippleLengthInInches = null, Dictionary<NipplePiercingLocation, PiercingJewelry> nippleJewelry = null)
 		{
 			cupSize = cup;
 			nipplePiercings = nippleJewelry == null ? null : new ReadOnlyDictionary<NipplePiercingLocation, PiercingJewelry>(nippleJewelry);

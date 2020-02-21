@@ -13,7 +13,7 @@ namespace CoC.Backend.Items.Consumables
 	//as that really wouldn't make sense anyway. The chest storage stores anything.
 	public abstract class ConsumableBase : CapacityItem
 	{
-		protected const int DEFAULT_VALUE = 6;
+
 
 		protected ConsumableBase() : base()
 		{ }
@@ -26,9 +26,31 @@ namespace CoC.Backend.Items.Consumables
 		public abstract byte sateHungerAmount { get; } //i'd make it virtual and set it to 0, but if it's virtual people are likely to miss it.
 	}
 
-	//variation of consumable that does not use a menu.
+	//variation of consumable that does not use a menu (unless it causes a bad end, of course) if you need a menu at all, use the consumable with menu base variant.
 	public abstract class StandardConsumable : ConsumableBase
 	{
+		//Standard consumables break the normal convention - normally, any item that causes a bad end would have to override attempt to use themselves, and return the bad end
+		//menu if necessary. However, since consumables do it so often (and as of this writing, are the only items to do so), it makes more sense to build it into the
+		//standard consumable class. this means that the regular UseItem & UseItemInCombat don't give us enough information, so we can't use them. Instead,
+		//we define two protected functions: ConsumeItem and CombatConsumeItem, which handle this with an extra isBadEnd out flag. they are exposed to the child classes outside
+		//of this project, too.
+
+		//unused.
+		private protected override CapacityItem UseItem(Creature target, out string resultsOfUseText)
+		{
+			resultsOfUseText = null;
+			return null;
+		}
+
+		//unused.
+		private protected override CapacityItem UseItemInCombat(CombatCreature target, out bool resultsInLoss, out string resultsOfUseText)
+		{
+			resultsOfUseText = null;
+			resultsInLoss = false;
+			return null;
+		}
+
+
 		/// <summary>
 		/// called when the item is actually used, or used unsuccessfully. Important distinction: this is not always immediately after the creature attempts to use it - for example, it may
 		/// be delayed until after the player chooses HOW/WHERE to use it. If the implementing class overrides AttemptToUse and otherwise does not call this, it can be safely ignored.
@@ -44,41 +66,55 @@ namespace CoC.Backend.Items.Consumables
 			return OnConsumeAttempt(consumer, out resultsOfUse, out isBadEnd);
 		}
 
-		public override DisplayBase AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
+		private protected override DisplayBase AttemptToUseItem(Creature target, UseItemCallback postItemUseCallback)
 		{
-			bool result = OnConsumeAttempt(target, out string consumeResults, out bool isBadEnd);
-			CapacityItem item = this;
-
-			if (result)
+			if (!CanUse(target, false, out string whyNot))
 			{
-				if (target is PlayerBase player)
-				{
-					player.refillHunger(sateHungerAmount);
-				}
-				item = null;
-			}
-
-			if (isBadEnd)
-			{
-				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-				//if we hit a bad end, don't resume whatever we were doing - we treat it as if it was a nightmare and nothing happened, except for the stuff that did happen, because continuity
-				//is hard to enforce in this shit. Just lampshade it - it was a nightmare, but you still suffer the effects of it as if it happened, but only up until the point you realized it
-				//was a bad end. so, you'll lose any items you were gonna get afterward, etc, but if your butt was stretched to gaping, it'll still be gaping after resuming from the bad end.
-				//same with piercings, tfs, etc. No time is lost, however, just resume from camp as soon as possible.
-				//example of lampshading: "it was just a nightmare... but it felt so real - and your eyebrow has a piercing in it, just like in the dream. strange..."
-
-				//GameEngine.DoBadEnd();
+				postItemUseCallback(false, whyNot, Author(), this);
+				return null;
 			}
 			else
 			{
-				postItemUseCallback(result, consumeResults, Author(), item);
-				return null;
+				CapacityItem retVal = ConsumeItem(target, out string resultsOfUse, out bool isBadEnd);
+
+				if (!isBadEnd)
+				{
+					postItemUseCallback(true, resultsOfUse, Author(), retVal);
+					return null;
+				}
+				else
+				{
+					throw new System.NotImplementedException();
+				}
 			}
 		}
 
-		public override DisplayBase AttemptToUseInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		private protected override DisplayBase AttemptToUseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
 		{
-			bool result = OnCombatConsumeAttempt(target, out string consumeResults, out bool isLoss, out bool isBadEnd);
+			if (!CanUse(target, true, out string whyNot))
+			{
+				postItemUseCallback(false, false, whyNot, Author(), this);
+				return null;
+			}
+			else
+			{
+				CapacityItem retVal = CombatConsumeItem(target, out string resultsOfUse, out bool causesCombatLoss, out bool isBadEnd);
+
+				if (!isBadEnd)
+				{
+					postItemUseCallback(true, causesCombatLoss, resultsOfUse, Author(), retVal);
+					return null;
+				}
+				else
+				{
+					throw new System.NotImplementedException();
+				}
+			}
+		}
+
+		protected CapacityItem ConsumeItem(Creature target, out string resultsOfUseText, out bool isBadEnd)
+		{
+			bool result = OnConsumeAttempt(target, out resultsOfUseText, out isBadEnd);
 			CapacityItem item = this;
 
 			if (result)
@@ -90,22 +126,24 @@ namespace CoC.Backend.Items.Consumables
 				item = null;
 			}
 
-			if (isBadEnd)
-			{
-				throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-				//if we hit a bad end, don't resume whatever we were doing - we treat it as if it was a nightmare and nothing happened, except for the stuff that did happen, because continuity
-				//is hard to enforce in this shit. Just lampshade it - it was a nightmare, but you still suffer the effects of it as if it happened, but only up until the point you realized it
-				//was a bad end. so, you'll lose any items you were gonna get afterward, etc, but if your butt was stretched to gaping, it'll still be gaping after resuming from the bad end.
-				//same with piercings, tfs, etc. No time is lost, however, just resume from camp as soon as possible.
-				//example of lampshading: "it was just a nightmare... but it felt so real - and your eyebrow has a piercing in it, just like in the dream. strange..."
+			return null;
+		}
 
-				//GameEngine.DoBadEnd();
-			}
-			else
+		protected CapacityItem CombatConsumeItem(CombatCreature target, out string resultsOfUseText, out bool causesCombatLoss, out bool isBadEnd)
+		{
+			bool result = OnCombatConsumeAttempt(target, out resultsOfUseText, out causesCombatLoss, out isBadEnd);
+			CapacityItem item = this;
+
+			if (result)
 			{
-				postItemUseCallback(result, isLoss, consumeResults, Author(), item);
-				return null;
+				if (target is PlayerBase player)
+				{
+					player.refillHunger(sateHungerAmount);
+				}
+				item = null;
 			}
+
+			return null;
 		}
 
 		public override byte maxCapacityPerSlot => 10;

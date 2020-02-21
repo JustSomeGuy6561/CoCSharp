@@ -12,7 +12,7 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 		{
 		}
 
-		public override float DefensiveRating(Creature wearer) => 0;
+		public override double PhysicalDefensiveRating(Creature wearer) => 0;
 
 		protected override int monetaryValue => throw new System.NotImplementedException();
 
@@ -31,7 +31,12 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 			throw new System.NotImplementedException();
 		}
 
-		protected override string OnEquip()
+		protected override void OnEquip(Creature wearer)
+		{
+			base.OnEquip(wearer);
+		}
+
+		protected override string EquipText(Creature wearer)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -41,9 +46,9 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		protected override void OnRemove(Creature wearer)
+		protected override CockSockBase OnRemove(Creature wearer)
 		{
-			base.OnRemove(wearer);
+			return base.OnRemove(wearer);
 		}
 
 		public override string AbbreviatedName()

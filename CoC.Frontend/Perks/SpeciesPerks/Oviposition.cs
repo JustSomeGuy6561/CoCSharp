@@ -17,23 +17,24 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 			sourceCreature.womb.dataChange -= Womb_dataChange;
 			sourceCreature.womb.dataChange += Womb_dataChange;
 
-			enabled = sourceCreature.womb.hasOviposition;
+			currentlyEnabled = sourceCreature.womb.hasOviposition;
 		}
 
 		private void Womb_dataChange(object sender, SimpleDataChangeEvent<Womb, WombData> e)
 		{
 			if (e.newValues.hasOviposition)
 			{
-				enabled = e.newValues.hasOviposition;
+				currentlyEnabled = e.newValues.hasOviposition;
 			}
 			else
 			{
-				enabled = false;
+				currentlyEnabled = false;
 			}
 		}
 
 		protected override void RemoveActivationConditions()
 		{
+			currentlyEnabled = false;
 			sourceCreature.womb.dataChange -= Womb_dataChange;
 		}
 

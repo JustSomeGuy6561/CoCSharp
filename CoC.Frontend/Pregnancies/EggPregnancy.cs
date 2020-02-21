@@ -19,8 +19,8 @@ namespace CoC.Frontend.Pregnancies
 		protected internal bool largeEggs { get; protected set; }
 		protected internal Func<bool, EggBase> knownEggType { get; protected set; }
 
-		public EggPregnancy(Guid creatureID, SimpleDescriptor eggText, SimpleDescriptor eggSourceText, ushort spawnTimer, bool largeClutch = false, bool? isLarge = null,
-			Func<bool, EggBase> color = null) : base(creatureID, eggText, eggSourceText, spawnTimer)
+		public EggPregnancy(Guid creatureID, Guid spawnTypeID, SimpleDescriptor eggText, SimpleDescriptor eggSourceText, ushort spawnTimer,
+			bool largeClutch = false, bool? isLarge = null, Func<bool, EggBase> color = null) : base(creatureID, spawnTypeID, eggText, eggSourceText, spawnTimer)
 		{
 			largeEggs = isLarge ?? Utils.RandBool();
 			knownEggType = color;
@@ -73,6 +73,13 @@ namespace CoC.Frontend.Pregnancies
 			}
 
 			return currentlyValid;
+		}
+
+
+		public override bool IsIdenticalTo(StandardSpawnData original, bool ignoreSexualMetaData)
+		{
+			return original is EggSpawnData eggSpawn && this.eggCount == eggSpawn.currentEggCount && this.largeEggs == eggSpawn.eggsCurrentlyLarge
+				&& eggSpawn.currentEggColor == this.knownEggType(largeEggs);
 		}
 	}
 

@@ -7,15 +7,15 @@ namespace CoC.Backend.BodyParts
 {
 	internal interface INipple
 	{
-		float length { get; }
+		double length { get; }
 		bool blackNipples { get; }
 		NippleStatus status { get; }
 		bool quadNipples { get; }
 
 		LactationStatus lactationStatus { get; }
-		float lactationRate { get; }
+		double lactationRate { get; }
 
-		float relativeLust { get; }
+		double relativeLust { get; }
 
 		BodyType bodyType { get; }
 	}
@@ -435,7 +435,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public static string NippleSizeAdjective(float length, bool withArticle = false)
+		public static string NippleSizeAdjective(double length, bool withArticle = false)
 		{
 			//TINAHHHH
 			if (length < .25)

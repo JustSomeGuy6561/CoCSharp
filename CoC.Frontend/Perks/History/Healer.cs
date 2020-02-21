@@ -7,24 +7,21 @@ namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class Healer : HistoryPerkBase
 	{
+		private double delta;
 		public Healer() : base(HealerStr, HealerBtn, HealerHint, HealerDesc)
 		{
 		}
 
 		protected override void OnActivation()
 		{
-			if (hasExtraModifiers)
-			{
-				extraModifiers.healingMultiplier += 0.2f;
-			}
+			var oldVal = baseModifiers.healingMultiplier;
+			baseModifiers.healingMultiplier += 0.2;
+			delta = baseModifiers.healingMultiplier - oldVal;
 		}
 
 		protected override void OnRemoval()
 		{
-			if (hasExtraModifiers)
-			{
-				extraModifiers.healingMultiplier -= 0.2f;
-			}
+			baseModifiers.healingMultiplier -= delta;
 		}
 	}
 }

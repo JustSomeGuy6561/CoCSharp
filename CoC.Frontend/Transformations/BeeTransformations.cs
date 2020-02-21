@@ -73,7 +73,7 @@ namespace CoC.Frontend.Transformations
 			if (isPure)
 			{ //Special honey will also reduce corruption, but uses different text and is handled separately
 
-				target.DeltaCreatureStats(corr: -(1 + (target.corruptionTrue / 20)));
+				target.ChangeCorruption(-(1 + (target.corruptionTrue / 20)));
 				//Libido Reduction
 				if (target.corruption > 0 && Utils.Rand(3) < 2 && target.relativeLibido > 40)
 				{
@@ -81,19 +81,21 @@ namespace CoC.Frontend.Transformations
 				}
 
 			}
-			if (target is CombatCreature cc)
+			//Intelligence Boost
+			if (Utils.Rand(2) == 0 && target.relativeIntelligence < 80)
 			{
-				//Intelligence Boost
-				if (Utils.Rand(2) == 0 && cc.relativeIntelligence < 80)
-				{
-					cc.IncreaseIntelligence(0.1f * (80 - cc.relativeIntelligence));
-				}
+				target.IncreaseIntelligence(0.1f * (80 - target.relativeIntelligence));
 			}
 			//bee item corollary:
 			if (target.hair.type == HairType.ANEMONE && Utils.Rand(2) == 0)
 			{
+				HairData oldData = target.hair.AsReadOnlyData();
 				target.RestoreHair();
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				sb.Append(RestoredHairText(target, oldData));
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//Sexual Stuff
@@ -111,13 +113,19 @@ namespace CoC.Frontend.Transformations
 					target.hair.SetHairColor(HairFurColors.BLACK);
 				}
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Hair Length
 			if (target.hair.length < 25 && target.hair.type.canLengthen && Utils.Rand(3) == 0)
 			{
 				target.hair.GrowHair(Utils.Rand(4) + 1);
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//-Remove extra breast rows
 			if (target.breasts.Count > 2 && Utils.Rand(3) == 0 && !hyperHappy)
@@ -127,57 +135,95 @@ namespace CoC.Frontend.Transformations
 			//Antennae
 			if (target.antennae.type == AntennaeType.NONE && target.horns.numHorns == 0 && Utils.Rand(3) == 0)
 			{
+				AntennaeData oldData = target.antennae.AsReadOnlyData();
 				target.UpdateAntennae(AntennaeType.BEE);
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				sb.Append(UpdateAntennaeText(target, oldData));
+
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Horns
 			if (!target.horns.isDefault && Utils.Rand(3) == 0)
 			{
+				HornData oldData = target.horns.AsReadOnlyData();
 				target.RestoreHorns();
+				sb.Append(RestoredHornsText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Bee Legs
 			if (target.lowerBody.type != LowerBodyType.BEE && Utils.Rand(4) == 0)
 			{
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.BEE);
+				sb.Append(UpdateLowerBodyText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//(Arms to carapace-covered arms)
 			if (target.arms.type != ArmType.BEE && Utils.Rand(4) == 0)
 			{
+				ArmData oldData = target.arms.AsReadOnlyData();
 				target.UpdateArms(ArmType.BEE);
+				sb.Append(UpdateArmsText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//-Nipples reduction to 1 per tit.
 			if (target.genitals.hasQuadNipples && Utils.Rand(4) == 0)
 			{
 				target.genitals.SetQuadNipples(false);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Neck restore
 			if (!target.neck.isDefault && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Lose reptile oviposition!
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Gain bee ovipositor!
 			if (target.tail.type == TailType.BEE_STINGER && !target.tail.hasOvipositor && Utils.Rand(2) == 0)
@@ -191,7 +237,10 @@ namespace CoC.Frontend.Transformations
 				target.UpdateTail(TailType.BEE_STINGER);
 				target.tail.UpdateResources((short)(10 - target.tail.resources), (short)(2 - target.tail.regenRate));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Venom Increase
 			if (target.tail.type == TailType.BEE_STINGER && target.tail.regenRate < 15 && Utils.Rand(2) == 0)
@@ -208,7 +257,10 @@ namespace CoC.Frontend.Transformations
 
 				target.tail.UpdateResources(50, additionalRegen);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Wings
 			//Grow bigger bee wings!
@@ -216,7 +268,10 @@ namespace CoC.Frontend.Transformations
 			{
 				target.wings.GrowLarge();
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//Grow new bee wings if target has none.
@@ -226,23 +281,38 @@ namespace CoC.Frontend.Transformations
 				{
 					target.RestoreBack();
 				}
+				WingData oldData = target.wings.AsReadOnlyData();
 				target.UpdateWings(WingType.BEE_LIKE);
+				sb.Append(UpdateWingsText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Melt demon wings!
 			if (target.wings.type == WingType.BAT_LIKE)
 			{
+				WingData oldData = target.wings.AsReadOnlyData();
 				target.RestoreWings();
+				sb.Append(RestoredWingsText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Remove gills!
 			if (Utils.Rand(4) == 0 && !target.gills.isDefault)
 			{
+				GillData oldData = target.gills.AsReadOnlyData();
 				target.RestoreGills();
+				sb.Append(RestoredGillsText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//All the speical honey effects occur after any normal bee transformations (if the target wasn't a full bee morph)
@@ -254,7 +324,7 @@ namespace CoC.Frontend.Transformations
 				{
 					target.genitals.AddCock(CockType.defaultValue, Utils.Rand(3) + 8, 2);
 					target.HaveGenericCockOrgasm(0, false, true);
-					target.DeltaCreatureStats(sens: 10);
+					target.ChangeSensitivity(10);
 				}
 				//if multiple cocks, remove the largest cock by area. combine its length/girth into the first cock.
 				else if (target.cocks.Count > 1)
@@ -279,7 +349,7 @@ namespace CoC.Frontend.Transformations
 					if (target.cocks[0].type != CockType.BEE && Species.CurrentSpecies(target) == Species.BEE)
 					{
 						target.genitals.UpdateCock(0, CockType.BEE);
-						target.DeltaCreatureStats(sens: 15);
+						target.ChangeSensitivity(15);
 
 						baseLengthChange = 5;
 						baseGirthChange = 1;
@@ -291,7 +361,7 @@ namespace CoC.Frontend.Transformations
 					}
 
 					double mult;
-					var cock = target.cocks[0];
+					Cock cock = target.cocks[0];
 					if (cock.area >= 400)
 					{
 						mult = 0; //Cock stops growing at that point.
@@ -324,7 +394,7 @@ namespace CoC.Frontend.Transformations
 				}
 				else
 				{
-					target.DeltaCreatureStats(lib: 5);
+					target.ChangeLibido(5);
 				}
 
 				if (target.femininity >= 60 || target.femininity <= 40)
@@ -338,7 +408,7 @@ namespace CoC.Frontend.Transformations
 						target.femininity.IncreaseFemininity(3);
 					}
 				}
-				target.DeltaCreatureStats(lus: 0.2f * target.libidoTrue + 5);
+				target.ChangeLust(0.2f * target.libidoTrue + 5);
 			}
 
 
@@ -346,6 +416,62 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+		{
+			return RemovedOvipositionTextGeneric(target);
+		}
+
+		protected virtual string UpdateAntennaeText(Creature target, AntennaeData oldData)
+		{
+			return target.antennae.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateLowerBodyText(Creature target, LowerBodyData oldData)
+		{
+			return target.lowerBody.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateArmsText(Creature target, ArmData oldData)
+		{
+			return target.arms.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateWingsText(Creature target, WingData oldData)
+		{
+			return target.wings.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredHairText(Creature target, HairData oldData)
+		{
+			return target.hair.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredHornsText(Creature target, HornData oldData)
+		{
+			return target.horns.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredWingsText(Creature target, WingData oldData)
+		{
+			return target.wings.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredGillsText(Creature target, GillData oldData)
+		{
+			return target.gills.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

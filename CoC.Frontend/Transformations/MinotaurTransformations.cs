@@ -59,89 +59,86 @@ namespace CoC.Frontend.Transformations
 
 
 			//STATS
-			if (target is CombatCreature cc)
+			//Strength h
+			if (Utils.Rand(3) == 0)
 			{
-				//Strength h
-				if (Utils.Rand(3) == 0)
+				//weaker characters gain more
+				if (target.relativeStrength <= 50)
 				{
-					//weaker characters gain more
-					if (cc.relativeStrength <= 50)
+					//very weak targets gain more
+					if (target.relativeStrength <= 20)
 					{
-						//very weak targets gain more
-						if (cc.relativeStrength <= 20)
-						{
-							cc.DeltaCombatCreatureStats(str: 3);
-						}
-						else
-						{
-							cc.DeltaCombatCreatureStats(str: 2);
-						}
+						target.ChangeStrength(3);
 					}
-					//stronger characters gain less
 					else
 					{
-						//small growth if over 75
-						if (cc.relativeStrength >= 75)
-						{
-							cc.DeltaCombatCreatureStats(str: .5f);
-						}
-						//faster from 50-75
-						else
-						{
-							cc.DeltaCombatCreatureStats(str: 1);
-						}
-					}
-					//Chance of speed drop
-					if (Utils.Rand(2) == 0 && cc.relativeStrength > 50)
-					{
-						cc.DeltaCombatCreatureStats(spe: -1);
+						target.ChangeStrength(2);
 					}
 				}
-				//Toughness (chance of - sensitivity)
-				if (Utils.Rand(3) == 0)
+				//stronger characters gain less
+				else
 				{
-					//weaker characters gain more
-					if (cc.relativeToughness <= 50)
+					//small growth if over 75
+					if (target.relativeStrength >= 75)
 					{
-						//very weak targets gain more
-						if (cc.relativeToughness <= 20)
-						{
-							cc.DeltaCombatCreatureStats(tou: 3);
-						}
-						else
-						{
-							cc.DeltaCombatCreatureStats(tou: 2);
-						}
+						target.ChangeStrength(.5f);
 					}
-					//stronger characters gain less
+					//faster from 50-75
 					else
 					{
-						//small growth if over 75
-						if (cc.relativeToughness >= 75)
-						{
-							cc.DeltaCombatCreatureStats(tou: .5f);
-						}
-						//faster from 50-75
-						else
-						{
-							cc.DeltaCombatCreatureStats(tou: 1);
-						}
+						target.ChangeStrength(1);
 					}
-					//chance of less sensitivity
-					if (Utils.Rand(2) == 0 && cc.relativeSensitivity > 10)
+				}
+				//Chance of speed drop
+				if (Utils.Rand(2) == 0 && target.relativeStrength > 50)
+				{
+					target.ChangeSpeed(-1);
+				}
+			}
+			//Toughness (chance of - sensitivity)
+			if (Utils.Rand(3) == 0)
+			{
+				//weaker characters gain more
+				if (target.relativeToughness <= 50)
+				{
+					//very weak targets gain more
+					if (target.relativeToughness <= 20)
 					{
-						if (cc.relativeToughness > 75)
-						{
-							cc.DeltaCreatureStats(sens: -3);
-						}
-						if (cc.relativeToughness <= 75 && cc.relativeToughness > 50)
-						{
-							cc.DeltaCreatureStats(sens: -2);
-						}
-						if (cc.relativeToughness <= 50)
-						{
-							cc.DeltaCreatureStats(sens: -3);
-						}
+						target.ChangeToughness(3);
+					}
+					else
+					{
+						target.ChangeToughness(2);
+					}
+				}
+				//stronger characters gain less
+				else
+				{
+					//small growth if over 75
+					if (target.relativeToughness >= 75)
+					{
+						target.ChangeToughness(.5f);
+					}
+					//faster from 50-75
+					else
+					{
+						target.ChangeToughness(1);
+					}
+				}
+				//chance of less sensitivity
+				if (Utils.Rand(2) == 0 && target.relativeSensitivity > 10)
+				{
+					if (target.relativeToughness > 75)
+					{
+						target.ChangeSensitivity(-3);
+					}
+					if (target.relativeToughness <= 75 && target.relativeToughness > 50)
+					{
+						target.ChangeSensitivity(-2);
+					}
+					if (target.relativeToughness <= 50)
+					{
+						target.ChangeSensitivity(-3);
 					}
 				}
 			}
@@ -194,7 +191,7 @@ namespace CoC.Frontend.Transformations
 				{
 					//Catch-all
 					target.UpdateLowerBody(LowerBodyType.HOOVED);
-					(target as CombatCreature)?.DeltaCombatCreatureStats(spe: 1);
+					target.ChangeSpeed(1);
 
 					if (--remainingChanges <= 0)
 					{
@@ -365,7 +362,9 @@ namespace CoC.Frontend.Transformations
 			if (target.ears.type == EarType.COW && target.lowerBody.type == LowerBodyType.HOOVED && target.build.heightInInches >= 90
 					&& target.face.type != FaceType.COW_MINOTAUR && Utils.Rand(3) == 0)
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.COW_MINOTAUR);
+				sb.Append(UpdateFaceText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -387,7 +386,7 @@ namespace CoC.Frontend.Transformations
 							if (target.horns.significantHornSize > 4)
 							{
 								target.genitals.AddPentUpTime(200);
-								target.DeltaCreatureStats(lus: 20);
+								target.ChangeLust(20);
 							}
 							else
 							{
@@ -408,7 +407,7 @@ namespace CoC.Frontend.Transformations
 							if (Utils.Rand(2) == 0)
 							{
 								target.genitals.AddPentUpTime(200);
-								target.DeltaCreatureStats(lus: 20);
+								target.ChangeLust(20);
 							}
 							if (--remainingChanges <= 0)
 							{
@@ -419,7 +418,9 @@ namespace CoC.Frontend.Transformations
 					//If no horns yet..
 					else
 					{
+						HornData oldData = target.horns.AsReadOnlyData();
 						target.UpdateHorns(HornType.BULL_LIKE);
+						sb.Append(UpdateHornsText(target, oldData));
 
 						if (--remainingChanges <= 0)
 						{
@@ -430,7 +431,9 @@ namespace CoC.Frontend.Transformations
 				//Not mino horns, change to cow-horns
 				else
 				{
+					HornData oldData = target.horns.AsReadOnlyData();
 					target.UpdateHorns(HornType.BULL_LIKE);
+					sb.Append(UpdateHornsText(target, oldData));
 
 					if (--remainingChanges <= 0)
 					{
@@ -441,7 +444,10 @@ namespace CoC.Frontend.Transformations
 			//+cow ears	- requires tail
 			if (target.ears.type != EarType.COW && target.tail.type == TailType.COW && Utils.Rand(2) == 0)
 			{
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.COW);
+				sb.Append(UpdateEarsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -450,7 +456,9 @@ namespace CoC.Frontend.Transformations
 			//+cow tail
 			if (Utils.Rand(2) == 0 && target.tail.type != TailType.COW)
 			{
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.COW);
+				sb.Append(UpdateTailText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -460,7 +468,9 @@ namespace CoC.Frontend.Transformations
 			// Remove gills
 			if (Utils.Rand(4) == 0 && !target.gills.isDefault)
 			{
+				GillData oldData = target.gills.AsReadOnlyData();
 				target.RestoreGills();
+				sb.Append(RestoredGillsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -471,7 +481,7 @@ namespace CoC.Frontend.Transformations
 			if (Utils.Rand(4) == 0 && target.ass.wetness > target.ass.minWetness)
 			{
 				target.ass.DecreaseWetness();
-				var targetLooseness = EnumHelper.Max(AnalLooseness.LOOSE, target.ass.minLooseness);
+				AnalLooseness targetLooseness = EnumHelper.Max(AnalLooseness.LOOSE, target.ass.minLooseness);
 				if (target.ass.looseness > targetLooseness)
 				{
 					target.ass.DecreaseLooseness();
@@ -491,13 +501,37 @@ namespace CoC.Frontend.Transformations
 					target.genitals.AddPentUpTime(200);
 				}
 				(target as CombatCreature)?.AddHP(50);
-				target.DeltaCreatureStats(lus: 50);
+				target.ChangeLust(50);
 			}
 
 			//this is the fallthrough that occurs when a tf item goes through all the changes, but does not proc enough of them to exit early. it will apply however many changes
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+{
+return target.face.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateHornsText(Creature target, HornData oldData)
+{
+return target.horns.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+{
+return target.ears.TransformFromText(oldData);
+}
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+{
+return target.tail.TransformFromText(oldTail);
+}
+		protected virtual string RestoredGillsText(Creature target, GillData oldData)
+{
+return target.gills.RestoredText(oldData);
+}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

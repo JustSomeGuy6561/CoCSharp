@@ -15,7 +15,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 	using CoC.Backend.Strings;
 	using CoC.Backend.Tools;
 
-	public sealed class LustyMaidensArmor : ArmorBase, ITimeDailyListenerSimple, ISluttySeductionItem
+	public sealed class LustyMaidensArmor : ArmorBase, ITimeDailyListenerSimple
 	{
 		private byte paizuriStacks = 0;
 
@@ -37,13 +37,14 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return "This skimpy chain bikini barely qualifies as armor. Indeed, the chain is made from links much finer and lighter than normal, so fine that it feels almost silken under your fingertips. A simple seal in the g-string-like undergarment states, \"Virgins only.\" " + Environment.NewLine + "Requirements: breast size of at least DD-cups and be a female.";
 		}
 
+		public override bool isNearlyNaked => true;
 
 
 		protected override int monetaryValue => 400;
 
-		public override bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot)
+		public override bool CanWearWithUpperGarment(Creature wearer, UpperGarmentBase upperGarment, out string whyNot)
 		{
-			if (!(upperGarment is null))
+			if (!UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				whyNot = GenericArmorIncompatText(upperGarment);
 				return false;
@@ -55,9 +56,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 		}
 
-		public override bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment, out string whyNot)
+		public override bool CanWearWithLowerGarment(Creature wearer, LowerGarmentBase lowerGarment, out string whyNot)
 		{
-			if (!(lowerGarment is null))
+			if (!LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				whyNot = GenericArmorIncompatText(lowerGarment);
 				return false;
@@ -73,7 +74,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		{
 		}
 
-		public override float DefensiveRating(Creature wearer)
+		public override double PhysicalDefensiveRating(Creature wearer)
 		{
 			if (wearer.genitals.HasVirginVagina())
 			{
@@ -111,10 +112,11 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			wearer.IncreaseLust(25);
 		}
 
-		protected override void OnRemove(Creature wearer)
+		protected override ArmorBase OnRemove(Creature wearer)
 		{
-			base.OnRemove(wearer);
 			paizuriStacks = 0;
+
+			return this;
 		}
 
 		//try to put the armor on, and return the text accordingly. this is used both for the equip text and the can't use text.
@@ -270,7 +272,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return other is LustyMaidensArmor;
 		}
 
-		public byte SluttySeductionModifier(Creature wearer)
+		public override double BonusTeaseDamage(Creature wearer)
 		{
 			if (wearer.genitals.HasVirginVagina())
 			{

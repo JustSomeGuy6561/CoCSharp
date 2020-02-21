@@ -132,7 +132,7 @@ namespace CoC.Backend.Creatures
 		//Hair
 		public HairFurColors hairColor;
 		public HairFurColors hairHighlightColor;
-		public float? hairLength = null;
+		public double? hairLength = null;
 		public HairStyle hairStyle = HairStyle.NO_STYLE;
 		//Tongue
 		public Dictionary<TonguePiercingLocation, PiercingJewelry> tonguePiercings = null;
@@ -170,7 +170,7 @@ namespace CoC.Backend.Creatures
 		public CockCreator[] cocks = null;
 		public bool cockVirgin = true;
 		public VaginaCreator[] vaginas = null;
-		public float? cumMultiplier = null; //if have cocks, defaults to 1, otherwise 0.
+		public double? cumMultiplier = null; //if have cocks, defaults to 1, otherwise 0.
 
 		//i suppose this could be a perk (and may make more sense that way), but w/e.
 		public bool hasOmnibusClit = false;
@@ -255,9 +255,9 @@ namespace CoC.Backend.Creatures
 		public NippleStatus? nippleStatus = null; //allows you to make nipples fuckable or whatever.
 		public bool blackNipples = false;
 		public bool quadNipples = false;
-		public float? nippleLength = null; //if unset, will use the default value for the largest given cup size. if set, use the max between this value and the default for largest cup size.
+		public double? nippleLength = null; //if unset, will use the default value for the largest given cup size. if set, use the max between this value and the default for largest cup size.
 		public bool unlockedDickNipples = false;
-		public float lactationMultiplier = 0;
+		public double lactationMultiplier = 0;
 
 		//perks
 

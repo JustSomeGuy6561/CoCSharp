@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/24/2020 9:43:06 PM
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
@@ -9,7 +10,6 @@ using CoC.Frontend.Creatures;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Races;
 using CoC.Frontend.Settings.Gameplay;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
@@ -42,7 +42,10 @@ namespace CoC.Frontend.Transformations
 			//change in height, hips, and/or butt, or other similar stats.
 
 			//this will handle the edge case where the change count starts out as 0.
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			}
 
 			//Any transformation related changes go here. these typically cost 1 change. these can be anything from body parts to gender (which technically also changes body parts,
 			//but w/e). You are required to make sure you return as soon as you've applied changeCount changes, but a single line of code can be applied at the end of a change to do
@@ -52,12 +55,10 @@ namespace CoC.Frontend.Transformations
 			//underwent to the target's change count (if applicable) and then return the StringBuilder content.
 			//if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 
-			CombatCreature combatCreature = target as CombatCreature;
-
 			//will be false if combat creature is null.
-			if (Utils.Rand(2) == 0 && combatCreature?.relativeSpeed < 80)
+			if (Utils.Rand(2) == 0 && target.relativeSpeed < 80)
 			{
-				combatCreature.DeltaCombatCreatureStats( spe: 1);
+				target.ChangeSpeed(1);
 			}
 			if (target.lowerBody.type != LowerBodyType.CENTAUR && !target.lowerBody.isQuadruped)
 			{
@@ -65,31 +66,24 @@ namespace CoC.Frontend.Transformations
 				//classic horse-taur version
 				if (Utils.RandBool() && target.feet.type == FootType.HOOVES && !target.lowerBody.isQuadruped)
 				{
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-
-					combatCreature?.DeltaCombatCreatureStats(spe: 3);
-
 					target.UpdateLowerBody(LowerBodyType.CENTAUR);
+					target.IncreaseSpeed(3);
+
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 				else if (Utils.Rand(3) == 0)
 				{
-					//generic version
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-					if (target.lowerBody.type == LowerBodyType.NAGA)
-					{
-						target.UpdateLowerBody(LowerBodyType.HOOVED);
-					}
-					//Catch-all
-					else
-					{
-						if (target.lowerBody.type == LowerBodyType.HUMAN)
-							target.UpdateLowerBody(LowerBodyType.HOOVED);
-					}
+					target.UpdateLowerBody(LowerBodyType.HOOVED);
+					target.ChangeSpeed(3);
 
-					combatCreature?.DeltaCombatCreatureStats(spe: 3);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
-
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 			}
 
 

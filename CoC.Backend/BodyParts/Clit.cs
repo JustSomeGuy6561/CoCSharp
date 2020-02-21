@@ -93,11 +93,11 @@ namespace CoC.Backend.BodyParts
 	//note: perks are guarenteed to be valid by the time this is created, so it's post perk init won't be called.
 	public sealed partial class Clit : SimpleSaveablePart<Clit, ClitData>, IGrowable, IShrinkable
 	{
-		public const float MIN_CLIT_SIZE = 0.25f;
-		public const float DEFAULT_CLIT_SIZE = 0.25f;
-		public const float MAX_CLIT_SIZE = 100f;
+		public const double MIN_CLIT_SIZE = 0.25f;
+		public const double DEFAULT_CLIT_SIZE = 0.25f;
+		public const double MAX_CLIT_SIZE = 100f;
 
-		public const float LARGEST_NATURAL_SIZE = 3f;
+		public const double LARGEST_NATURAL_SIZE = 3f;
 
 
 		public override string BodyPartName() => Name();
@@ -105,16 +105,16 @@ namespace CoC.Backend.BodyParts
 		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
 
 
-		private float clitGrowthMultiplier => creature?.genitals.perkData.ClitGrowthMultiplier ?? 1;
-		private float clitShrinkMultiplier => creature?.genitals.perkData.ClitShrinkMultiplier ?? 1;
+		private double clitGrowthMultiplier => creature?.genitals.perkData.ClitGrowthMultiplier ?? 1;
+		private double clitShrinkMultiplier => creature?.genitals.perkData.ClitShrinkMultiplier ?? 1;
 
-		public float minClitSize => creature?.genitals.perkData.MinClitSize ?? MIN_CLIT_SIZE;
+		public double minClitSize => creature?.genitals.perkData.MinClitSize ?? MIN_CLIT_SIZE;
 
 		//the largest this clit can be through 'natural' means. this factors in any perks that might alter the normal size. considering what game this is, this is hardly used.
-		public float largestNormalSize => LARGEST_NATURAL_SIZE + (creature?.genitals.perkData.NewClitSizeDelta ?? 0);
+		public double largestNormalSize => LARGEST_NATURAL_SIZE + (creature?.genitals.perkData.NewClitSizeDelta ?? 0);
 
-		private float defaultNewClitSize => creature?.genitals.perkData.DefaultNewClitSize ?? MIN_CLIT_SIZE;
-		private float newClitSizeDelta => creature?.genitals.perkData.NewClitSizeDelta ?? 0;
+		private double defaultNewClitSize => creature?.genitals.perkData.DefaultNewClitSize ?? MIN_CLIT_SIZE;
+		private double newClitSizeDelta => creature?.genitals.perkData.NewClitSizeDelta ?? 0;
 
 		//called by perks when min clit size changes. this ensures the clit size is still valid.
 		internal void CheckClitSize()
@@ -123,7 +123,7 @@ namespace CoC.Backend.BodyParts
 			length = length;
 		}
 
-		private float resetSize => Math.Max(defaultNewClitSize, minClitSize);
+		private double resetSize => Math.Max(defaultNewClitSize, minClitSize);
 
 		public uint totalPenetrateCount { get; private set; } = 0;
 		public uint selfPenetrateCount { get; private set; } = 0;
@@ -140,15 +140,15 @@ namespace CoC.Backend.BodyParts
 
 
 
-		private float minSize
+		private double minSize
 		{
 			get
 			{
-				float currMin = minClitSize;
+				double currMin = minClitSize;
 				return Math.Max(MIN_CLIT_SIZE, currMin);
 			}
 		}
-		public float length
+		public double length
 		{
 			get => _length;
 			private set
@@ -162,7 +162,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		private float _length;
+		private double _length;
 
 		public readonly ClitPiercing piercings;
 
@@ -170,7 +170,7 @@ namespace CoC.Backend.BodyParts
 			: this(creatureID, source, null)
 		{ }
 
-		internal Clit(Guid creatureID, Vagina source, float? clitSize) : base(creatureID)
+		internal Clit(Guid creatureID, Vagina source, double? clitSize) : base(creatureID)
 		{
 			parent = source ?? throw new ArgumentNullException(nameof(source));
 			_length = NewClitSize(clitSize);
@@ -178,9 +178,9 @@ namespace CoC.Backend.BodyParts
 			piercings = new ClitPiercing(this, PiercingLocationUnlocked, AllClitPiercingsShort, AllClitPiercingsLong);
 		}
 
-		private float NewClitSize(float? givenSize = null)
+		private double NewClitSize(double? givenSize = null)
 		{
-			float minValue = Utils.Clamp2(Math.Max(defaultNewClitSize, minClitSize), MIN_CLIT_SIZE, MAX_CLIT_SIZE);
+			double minValue = Utils.Clamp2(Math.Max(defaultNewClitSize, minClitSize), MIN_CLIT_SIZE, MAX_CLIT_SIZE);
 			if (givenSize != null)
 			{
 				givenSize += newClitSizeDelta;
@@ -191,7 +191,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return (float)givenSize;
+				return (double)givenSize;
 			}
 		}
 
@@ -200,7 +200,7 @@ namespace CoC.Backend.BodyParts
 			return new ClitData(this, vaginaIndex);
 		}
 
-		public static ClitData GenerateAggregate(Guid creatureID, float averageSize)
+		public static ClitData GenerateAggregate(Guid creatureID, double averageSize)
 		{
 			return new ClitData(creatureID, -1, averageSize, new ReadOnlyPiercing<ClitPiercingLocation>());
 		}
@@ -222,15 +222,15 @@ namespace CoC.Backend.BodyParts
 
 
 
-		internal float GrowClit(float amount, bool ignorePerks = false)
+		internal double GrowClit(double amount, bool ignorePerks = false)
 		{
 			if (length >= MAX_CLIT_SIZE || amount <= 0)
 			{
 				return 0;
 			}
 
-			//hope this never matters but floats don't wrap. which means we're fine, though if it ever happens in debug land, we'll know.
-			float oldLength = length;
+			//hope this never matters but doubles don't wrap. which means we're fine, though if it ever happens in debug land, we'll know.
+			double oldLength = length;
 			if (!ignorePerks)
 			{
 				length += amount * clitGrowthMultiplier;
@@ -242,14 +242,14 @@ namespace CoC.Backend.BodyParts
 			return length - oldLength;
 		}
 
-		internal float ShrinkClit(float amount, bool ignorePerks = false)
+		internal double ShrinkClit(double amount, bool ignorePerks = false)
 		{
 			if (length <= MIN_CLIT_SIZE || amount <= 0)
 			{
 				return 0;
 			}
-			//hope this never matters but floats don't wrap. which means we're fine, though if it ever happens in debug land, we'll know.
-			float oldLength = length;
+			//hope this never matters but doubles don't wrap. which means we're fine, though if it ever happens in debug land, we'll know.
+			double oldLength = length;
 			if (!ignorePerks)
 			{
 				length -= amount * clitShrinkMultiplier;
@@ -261,7 +261,7 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length;
 		}
 
-		internal float SetClitSize(float newSize)
+		internal double SetClitSize(double newSize)
 		{
 			length = newSize;
 			return length;
@@ -344,24 +344,24 @@ namespace CoC.Backend.BodyParts
 			return length > minSize;
 		}
 
-		float IGrowable.UseGroPlus()
+		double IGrowable.UseGroPlus()
 		{
 			if (!((IGrowable)this).CanGroPlus())
 			{
 				return 0;
 			}
-			float oldLength = length;
+			double oldLength = length;
 			length += 1;
 			return length - oldLength;
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			if (!((IShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
-			float oldLength = length;
+			double oldLength = length;
 			length /= 1.7f;
 			return oldLength - length;
 		}
@@ -372,7 +372,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed partial class ClitData : SimpleData
 	{
-		public readonly float length;
+		public readonly double length;
 		public readonly int vaginaIndex;
 
 		public readonly ReadOnlyPiercing<ClitPiercingLocation> clitPiercings;
@@ -399,7 +399,7 @@ namespace CoC.Backend.BodyParts
 			totalPenetrateCount = source.totalPenetrateCount;
 		}
 
-		public ClitData(Guid creatureID, int currentIndex, float length, ReadOnlyPiercing<ClitPiercingLocation> piercings) : base(creatureID)
+		public ClitData(Guid creatureID, int currentIndex, double length, ReadOnlyPiercing<ClitPiercingLocation> piercings) : base(creatureID)
 		{
 			this.length = length;
 
@@ -411,7 +411,7 @@ namespace CoC.Backend.BodyParts
 			totalPenetrateCount = 0;
 		}
 
-		public ClitData(Guid creatureID, int currentIndex, float length, ReadOnlyPiercing<ClitPiercingLocation> piercings, uint totalPenetrateCount,
+		public ClitData(Guid creatureID, int currentIndex, double length, ReadOnlyPiercing<ClitPiercingLocation> piercings, uint totalPenetrateCount,
 			uint selfPenetrateCount) : base(creatureID)
 		{
 			this.length = length;

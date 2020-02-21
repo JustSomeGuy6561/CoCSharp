@@ -22,7 +22,7 @@ namespace CoC.Backend.Pregnancies
 
 		public bool hasDiapause => source?.hasDiapause ?? false;
 
-		public float pregnancyMultiplier => source?.pregnancyMultiplier ?? 1.0f;
+		public double pregnancyMultiplier => source?.pregnancyMultiplier ?? 1.0f;
 
 		public uint birthCount { get; private set; } = 0;
 		public uint totalBirthCount => CreatureStore.GetCreatureClean(creatureID)?.womb.totalBirthCount ?? birthCount;
@@ -55,14 +55,14 @@ namespace CoC.Backend.Pregnancies
 
 		public ushort birthCountdown => hoursTilBirth <= 0 ? (ushort)0 : (ushort)Math.Ceiling(hoursTilBirth); //unless a pregnancy takes 7.50 years, a ushort is enough lol.
 
-		private float hoursTilBirth; //note that this is passed in as a ushort, but we use float for more accurate pregnancy speed multiplier math, though i suppose this opens us up to floating point rounding errors.
+		private double hoursTilBirth; //note that this is passed in as a ushort, but we use double for more accurate pregnancy speed multiplier math, though i suppose this opens us up to floating point rounding errors.
 
 		private ushort diapauseHours = 0;
 		private bool doDiapauseText = false;
 
 		public bool isPregnant => spawnType != null;
 
-		internal virtual bool attemptKnockUp(float knockupChance, StandardSpawnType type)
+		internal virtual bool attemptKnockUp(double knockupChance, StandardSpawnType type)
 		{
 			if (knockupChance < 0 || type is null)
 			{
@@ -207,7 +207,7 @@ namespace CoC.Backend.Pregnancies
 		{
 			if (isPregnant)
 			{
-				float oldHours = hoursTilBirth + pregnancyMultiplier * hoursPassed;
+				double oldHours = hoursTilBirth + pregnancyMultiplier * hoursPassed;
 				return NotifyTimePassed(hoursTilBirth, oldHours);
 			}
 			else
@@ -216,7 +216,7 @@ namespace CoC.Backend.Pregnancies
 			}
 		}
 
-		protected abstract string NotifyTimePassed(float hoursTilBirth, float oldHoursToBirth);
+		protected abstract string NotifyTimePassed(double hoursTilBirth, double oldHoursToBirth);
 
 		#endregion
 	}
@@ -228,7 +228,7 @@ namespace CoC.Backend.Pregnancies
 
 		public readonly bool hasDiapause;
 
-		public readonly float pregnancyMultiplier;
+		public readonly double pregnancyMultiplier;
 
 		public readonly bool eggSizeKnown;
 

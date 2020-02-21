@@ -1,16 +1,18 @@
-﻿using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
-using CoC.Backend.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.UI;
 
 namespace CoC.Backend.Items
 {
 
-
+	//Note: this class cannot be derived outside of the backend.
+	//By default, this assumes any capacity item will not allow a menu. you can override this to allow menus.
 	public abstract class CapacityItem : IEquatable<CapacityItem>
 	{
+		protected const int DEFAULT_VALUE = 6;
 
 		//unlike the original, which put all of the data in the constructor, C# doesn't let us pass along function pointers to the base that use data from the current object
 		//because the current object doesn't technically exist yet - the functions need to be static. personally, i'm not a fan of this approach, but there's nothing i can
@@ -21,81 +23,77 @@ namespace CoC.Backend.Items
 
 		protected CapacityItem() { }
 
-		//an abbreviated (~9 Characters or less) name for the item. this is primarily used for buttons, which need space to write 'x10' afterward. Note that if a capacity item limits
-		//the number to only 1 per slot, you may use 12 characters, but that's really only recommended for armor or accessories. if the name is longer than the provided space, it will
-		//be truncated (cut short).
 		public abstract string AbbreviatedName();
 
-		//name used when we don't have any character limit. there are situations where calling an item by it's name (like when gifting one to an NPC) is useful.
 		public abstract string ItemName();
-
-		//a short description of the item. primarily used when you initially obtain an item, and as part of the tooltip header. It includes a count and a display count flag.
-		//the count tells you how many we are describing, so you know whether or not to make it plural. the display count flag tells you whether or not to display that count
-		//as part of the description.
-		//This lets us deal with multiple items nicely.
-		//Example: enemy drops LaBova x1. Note that the reads section below add <> around the text that aren't normally there, to show what is being read from the function.
-		//$"It seems the enemy dropped {ItemDescription(1,true)} as they fled. You place the {ItemDescription(1,false)} in your second pouch"
-		//reads: "It seems the enemy dropped <A bottle of 'LaBova'> as they fled. You place the <bottle of LaBova> in your second pouch.
-		//Example 2: same as above, but enemy drops LaBova x3
-		//$"It seems the enemy dropped {ItemDescription(3,true)} as they fled. You place the {ItemDescription(3,false)} in your second pouch"
-		//reads: "It seems the enemy dropped <three bottles of 'LaBova'> as they fled. You place the <bottles of LaBova> in your second pouch.
-		//for the most part, make sure this sounds nice with count =1, for both display count and not. nearly all interactions only do one item at a time.
 
 		public abstract string ItemDescription(byte count = 1, bool displayCount = false);
 
-		//a more verbose description of the object, explaining any defining traits along with its physical appearance. this is used as part of the tooltip for the given item
 		public abstract string AboutItem();
 
 
 		public abstract byte maxCapacityPerSlot { get; }
 
-		/// <summary>
-		/// Checks to see if the given creature can use this item. Note that just because an item can be used doesn't mean it will ultimately succeed, i.e. if the player cancels it.
-		/// </summary>
-		/// <param name="target">The creature attempting to use this item.</param>
-		/// <param name="currentlyInCombat">Is the creature attempting to use this item currently in combat?</param>
-		/// <param name="whyNot">A string explaining why the current item cannot be used. only checked if this returns false.</param>
-		/// <returns>true if the creature can use this item, false otherwise.</returns>
-		/// <remarks>This technically allows you to make items that cannot be used unless in combat or out of combat. as of this writing, this is not expected, and thus the UI
-		/// doesn't really handle them that well. we'll see if that gets added later. </remarks>
-		public abstract bool CanUse(Creature target, bool currentlyInCombat, out string whyNot);
-
-		/// <summary>
-		/// Attempts to use the item, returning either its own page if it needs several pages, or calling postItemUseCallback immediately and returning null.
-		/// </summary>
-		/// <param name="target">the creature attempting to use this item.</param>
-		/// <param name="postItemUseCallback">Callback to call when the item is actually used. </param>
-		/// <returns>A display containing all the menu data required for this item if it requires one, or null.</returns>
-		/// <remarks>Items that can result in a bad end will not call the post item use callback. If the base class they inherit does not have a built-in means of dealing with
-		/// a bad end, it will need to override this.
-		/// The expected behavior is to only get a valid display when the item uses a menu, which would prevent the postItemUseCallback from being called. If you return null,
-		/// and postItemUsedCallback is not called beforehand, it will never be called. If you return a display after calling postItemUseCallback, the behavior is undefined,
-		/// but will likely result in text displaying out of order. Basically, only return a display when you need a menu. otherwise return null. </remarks>
-		public abstract DisplayBase AttemptToUse(Creature target, UseItemCallback postItemUseCallback);
-
-		//Variation of attempt to use item, but allows the item maker to specify that the item should cause a combat loss when used. for nearly all items, this is not expected
-		//to be any different than the regular, but it remains possible. for consumables, however, this will be overridden and accounted for.
-		public virtual DisplayBase AttemptToUseInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
-		{
-			return AttemptToUse(target, (success, resultText, author, replacement) => postItemUseCallback(success, false, resultText, author, replacement));
-		}
-
-		//how much it costs to buy this item. Generally, the sell price is 1/2 it's value because video game capitalism. Items that cannot be bought should be given a price of 0;
 		protected abstract int monetaryValue { get; }
 
 		public int buyPrice => Math.Max(monetaryValue, 0);
 
-		//by default, items that can be bought are given a positive value. you may override this if you want an item that can be sold and thus has a price,
 		public virtual bool canBuy => buyPrice > 0;
 		public virtual bool canSell => true;
 
-		//by default, no author. if there's an author, override this. the author credit will be passed along to the results, which should display it. note that the behavior for
-		//using an item that does not get its own page while on another page is undefined - you don't want to override the original author's wall of text to say "you drank a potion
-		//and got 50 health back". Generally, though, all items get their own page. (afaik, they always do, but don't quote me).
 		public virtual string Author() => "";
 
-		//equatable is used to determine items that are the same. it's not possible to simply go by type, because items may have variables that differentiate them (i.e. succubi milk
-		//vs Purified Succubi Milk)
 		public abstract bool Equals(CapacityItem other);
+
+		public abstract bool CanUse(Creature target, bool currentlyInCombat, out string whyNot);
+
+		public DisplayBase UseItem(Creature target, UseItemCallback postItemUseCallback)
+		{
+			return AttemptToUseItem(target, postItemUseCallback);
+		}
+
+		public DisplayBase UseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		{
+			return AttemptToUseItemInCombat(target, postItemUseCallback);
+		}
+
+		private protected virtual DisplayBase AttemptToUseItem(Creature target, UseItemCallback postItemUseCallback)
+		{
+			if (!CanUse(target, false, out string whyNot))
+			{
+				postItemUseCallback(false, whyNot, Author(), this);
+				return null;
+			}
+			else
+			{
+				CapacityItem retVal = UseItem(target, out string resultsOfUse);
+				postItemUseCallback(true, resultsOfUse, Author(), retVal);
+				return null;
+			}
+		}
+		private protected virtual DisplayBase AttemptToUseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		{
+			if (!CanUse(target, true, out string whyNot))
+			{
+				postItemUseCallback(false, false, whyNot, Author(), this);
+				return null;
+			}
+			else
+			{
+				CapacityItem retVal = UseItemInCombat(target, out bool causesLoss, out string resultsOfUse);
+				postItemUseCallback(true, causesLoss, resultsOfUse, Author(), retVal);
+				return null;
+			}
+		}
+
+		//Expose these to the end user where useful. I've made whatever i can private protected to hide it from the end user. the less they see
+		//(while still being able to do everything) the better
+		private protected abstract CapacityItem UseItem(Creature target, out string resultsOfUseText);
+		private protected virtual CapacityItem UseItemInCombat(CombatCreature target, out bool resultsInLoss, out string resultsOfUseText)
+		{
+			resultsInLoss = false;
+			return UseItem(target, out resultsOfUseText);
+		}
+
 	}
 }

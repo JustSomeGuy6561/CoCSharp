@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 4:08 PM
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 
@@ -44,6 +45,40 @@ namespace CoC.Backend.BodyParts
 			else return "";
 		}
 
-
+		public string FemininityChangedText(FemininityData oldFemininity)
+		{
+			var strength = value - oldFemininity.value;
+			 if (strength == 0)
+			{
+				return "";
+			}
+			//See if a change happened!
+			if (ThresholdChanged(oldFemininity))
+            {
+				//Gain fem?
+				if (strength > 0)
+				{
+					return GlobalStrings.NewParagraph() + "<b>Your facial features soften as your body becomes more feminine. (+" + strength + ")</b>";
+				}
+				else
+				{
+					strength *= -1;
+					return GlobalStrings.NewParagraph() + "<b>Your facial features harden as your body becomes more masculine. (+" + strength + ")</b>";
+				}
+			}
+            //Barely noticable change!
+            else
+            {
+                if (strength > 0)
+				{
+					return GlobalStrings.NewParagraph() + "Your face tingles slightly as it changes imperceptibly towards being more feminine. (+" + strength + ")";
+				}
+				else
+				{
+					strength *= -1;
+					return GlobalStrings.NewParagraph() + "Your face tingles slightly as it changes imperceptibly towards being more masculine. (+" + strength + ")";
+				}
+			}
+		}
 	}
 }

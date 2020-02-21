@@ -55,7 +55,7 @@ namespace CoC.Frontend.Areas.Locations
 			randomEncounters.Add(new IzumiEncounter());
 			randomEncounters.Add(new SophieMountainEncounter());
 			randomEncounters.Add(new ChickenHarpyEncounter()); //i always thought this was a bunny ngl.
-															   //monsters
+															  //monsters
 			randomEncounters.Add(new MinotaurMobEncounter());
 			randomEncounters.Add(new MinotaurEncounter());
 			randomEncounters.Add(new PhoenixEncounter());

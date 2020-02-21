@@ -2,8 +2,8 @@
 //Description:
 //Author: JustSomeGuy
 //1/23/2020 4:08:12 AM
-using System.Text;
 using System.Linq;
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
@@ -62,36 +62,56 @@ namespace CoC.Frontend.Transformations
 			//Main TFs
 			if (!target.neck.isDefault && Utils.Rand(4) == 0) //neck restore
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			if (!target.back.isDefault && Utils.Rand(5) == 0) //rear body restore
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
-			if (target.womb.canRemoveOviposition &&Utils.Rand(5) == 0) //ovi perk loss
+			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0) //ovi perk loss
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			if (Utils.Rand(3) == 0 && target.ears.type != EarType.DEER)
 			{
 				target.UpdateEars(EarType.DEER); //gain deer ears
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (Utils.Rand(3) == 0 && target.ears.type == EarType.DEER && target.tail.type != TailType.DEER)
 			{
 				target.UpdateTail(TailType.DEER); //gain deer tail
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//MOD: Horns now get a common check.
@@ -102,14 +122,20 @@ namespace CoC.Frontend.Transformations
 
 					target.UpdateHorns(HornType.DEER_ANTLERS); //gain deer horns AKA antlers
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 				else if (target.horns.type != HornType.DEER_ANTLERS)
 				{
 					target.UpdateHornsAndStrengthenTransform(HornType.DEER_ANTLERS, 1); //gain deer horns AKA antlers
 
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 				else if (target.horns.numHorns < 30)
 				{
@@ -123,46 +149,66 @@ namespace CoC.Frontend.Transformations
 						target.horns.StrengthenTransform();
 					}
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 
 			if (Utils.Rand(4) == 0 && target.horns.numHorns > 0 && !target.body.IsFurBodyType())
 			{
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.UNDERBODY_FUR, new FurColor(HairFurColors.BROWN), new FurColor(HairFurColors.WHITE));
+				sb.Append(UpdateBodyText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (Utils.Rand(3) == 0 && target.ears.type == EarType.DEER && !target.face.isDefault && target.face.type != FaceType.DEER)
 			{
 				target.RestoreFace(); //change face to human
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (Utils.Rand(4) == 0 && target.body.IsFurBodyType() && target.ears.type == EarType.DEER && target.tail.type == TailType.DEER && target.face.type != FaceType.DEER)
 			{
 				target.UpdateFace(FaceType.DEER); //gain deer face
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (Utils.Rand(4) == 0 && target.ears.type == EarType.DEER && target.tail.type == TailType.DEER && target.body.IsFurBodyType() && target.lowerBody.type != LowerBodyType.CLOVEN_HOOVED)
 			{
 				target.UpdateLowerBody(LowerBodyType.CLOVEN_HOOVED); //change legs to cloven hooves
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Genital Changes
 			//morph dick to horsediiiiick
 			//MOD: now checks to see if you have a cock that isn't a horse dick first.
-			if (Utils.Rand(3) == 0 && target.cocks.Count > 0 && target.cocks.Any(x=>x.type != CockType.HORSE))
+			if (Utils.Rand(3) == 0 && target.cocks.Count > 0 && target.cocks.Any(x => x.type != CockType.HORSE))
 			{
-				var selectedCock = target.cocks.First(x => x.type != CockType.HORSE);
+				Cock selectedCock = target.cocks.First(x => x.type != CockType.HORSE);
 
 				target.genitals.UpdateCockWithLength(selectedCock, CockType.HORSE, selectedCock.length + 4);
 
 				target.IncreaseCreatureStats(lib: 5, sens: 4, lus: 35);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Body thickness/tone changes
 			if (Utils.Rand(3) == 0 && target.build.muscleTone > 20)
@@ -199,6 +245,27 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+		{
+			return RemovedOvipositionTextGeneric(target);
+		}
+
+		protected virtual string UpdateBodyText(Creature target, BodyData oldData)
+		{
+			return target.body.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

@@ -91,7 +91,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 #warning handle initial velaria meeting text where it's called.
 
-		protected override string OnRemoveText()
+		protected override string RemoveText(Creature wearer)
 		{ //Produces any text seen when removing the armor normally
 			return "Valeria picks herself up and huffs, \"" + SafelyFormattedString.FormattedText("Maybe we can adventure some more later on?", StringFormats.ITALIC) +
 				"\" before undulating off towards your camp." + GlobalStrings.NewParagraph() + "(" + SafelyFormattedString.FormattedText("Valeria now available in the " +
@@ -104,9 +104,10 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			Valeria.SetCampState(false);
 		}
 
-		protected override void OnRemove(Creature wearer)
+		protected override ArmorBase OnRemove(Creature wearer)
 		{
 			Valeria.SetCampState(true);
+			return null;
 		}
 
 		public override bool Equals(ArmorBase other)
@@ -114,9 +115,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return other is GooArmor;
 		}
 
-		protected override bool destroyOnRemoval => true;
-
-		public override float DefensiveRating(Creature wearer)
+		public override double PhysicalDefensiveRating(Creature wearer)
 		{
 			//Bonus from spar victories! Max +4.
 			int bonus = 0;

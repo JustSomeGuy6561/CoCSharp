@@ -14,15 +14,15 @@ namespace CoC.Backend.Creatures
 	public sealed class CockCreator
 	{
 		public readonly CockType type;
-		public float? length;
-		public float? girth;
-		public float? knot;
+		public double? length;
+		public double? girth;
+		public double? knot;
 		public readonly ReadOnlyDictionary<CockPiercingLocation, PiercingJewelry> piercings;
 		public readonly CockSockBase cockSock;
 
-		public float validLength => length ?? Cock.DEFAULT_COCK_LENGTH;
-		public float validGirth => girth ?? Cock.DEFAULT_COCK_GIRTH;
-		public float validKnot
+		public double validLength => length ?? Cock.DEFAULT_COCK_LENGTH;
+		public double validGirth => girth ?? Cock.DEFAULT_COCK_GIRTH;
+		public double validKnot
 		{
 			get
 			{
@@ -36,13 +36,13 @@ namespace CoC.Backend.Creatures
 				}
 				else
 				{
-					return Utils.Clamp2((float)knot, Cock.MIN_KNOT_MULTIPLIER, Cock.MAX_KNOT_MULTIPLIER);
+					return Utils.Clamp2((double)knot, Cock.MIN_KNOT_MULTIPLIER, Cock.MAX_KNOT_MULTIPLIER);
 				}
 			}
 		}
-		public CockCreator(float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, CockSockBase cockSock = null,
+		public CockCreator(double? cockLength = null, double? cockGirth = null, double? knotMultiplier = null, CockSockBase cockSock = null,
 			Dictionary<CockPiercingLocation, PiercingJewelry> cockJewelry = null) : this(CockType.HUMAN, cockLength, cockGirth, knotMultiplier, cockSock, cockJewelry) { }
-		public CockCreator(CockType cockType, float? cockLength = null, float? cockGirth = null, float? knotMultiplier = null, CockSockBase cockSock = null,
+		public CockCreator(CockType cockType, double? cockLength = null, double? cockGirth = null, double? knotMultiplier = null, CockSockBase cockSock = null,
 			Dictionary<CockPiercingLocation, PiercingJewelry> cockJewelry = null)
 		{
 			type = cockType;

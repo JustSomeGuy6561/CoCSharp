@@ -448,14 +448,14 @@ namespace CoC.Frontend.Races
 
 		//public static const COCKATRICE:Array = [
 
-		//	["blue",  "turquoise", "blue"],
-		//     ["orange", "red",    "orange"],
-		//     ["green", "yellow",  "green"],
-		//     ["purple", "pink",   "purple"],
-		//     ["black", "white",   "black"],
-		//     ["blonde", "brown",   "blonde"],
-		//     ["white", "grey",   "white"],
-		//   ];
+		//	["blue", "turquoise", "blue"],
+		//   ["orange", "red",  "orange"],
+		//   ["green", "yellow", "green"],
+		//   ["purple", "pink",  "purple"],
+		//   ["black", "white",  "black"],
+		//   ["blonde", "brown",  "blonde"],
+		//   ["white", "grey",  "white"],
+		//  ];
 
 		public HairFurColors[] availablePrimaryFeatherColors => new HairFurColors[]
 		{
@@ -2246,18 +2246,18 @@ namespace CoC.Frontend.Races
 		private readonly Dictionary<FurColor, FurColor> bodyTailMapper = new Dictionary<FurColor, FurColor>()
 		{
 			{new FurColor(HairFurColors.AUBURN), new FurColor(HairFurColors.RUSSET)},
-			{new FurColor(HairFurColors.BLACK),  new FurColor(HairFurColors.GRAY)},
-			{new FurColor(HairFurColors.BLONDE),  new FurColor(HairFurColors.SANDY_BLONDE)},
-			{new FurColor(HairFurColors.BROWN),  new FurColor(HairFurColors.AUBURN)},
-			{new FurColor(HairFurColors.RED),   new FurColor(HairFurColors.ORANGE)},
-			{new FurColor(HairFurColors.WHITE),  new FurColor(HairFurColors.GRAY)},
-			{new FurColor(HairFurColors.GRAY),  new FurColor(HairFurColors.WHITE)},
-			{new FurColor(HairFurColors.BLUE),  new FurColor(HairFurColors.LIGHT_BLUE)},
-			{new FurColor(HairFurColors.GREEN),  new FurColor(HairFurColors.CHARTREUSE)},
+			{new FurColor(HairFurColors.BLACK), new FurColor(HairFurColors.GRAY)},
+			{new FurColor(HairFurColors.BLONDE), new FurColor(HairFurColors.SANDY_BLONDE)},
+			{new FurColor(HairFurColors.BROWN), new FurColor(HairFurColors.AUBURN)},
+			{new FurColor(HairFurColors.RED),  new FurColor(HairFurColors.ORANGE)},
+			{new FurColor(HairFurColors.WHITE), new FurColor(HairFurColors.GRAY)},
+			{new FurColor(HairFurColors.GRAY), new FurColor(HairFurColors.WHITE)},
+			{new FurColor(HairFurColors.BLUE), new FurColor(HairFurColors.LIGHT_BLUE)},
+			{new FurColor(HairFurColors.GREEN), new FurColor(HairFurColors.CHARTREUSE)},
 			{new FurColor(HairFurColors.ORANGE), new FurColor(HairFurColors.YELLOW)},
 			{new FurColor(HairFurColors.YELLOW), new FurColor(HairFurColors.SANDY_BLONDE)},
 			{new FurColor(HairFurColors.PURPLE), new FurColor(HairFurColors.PINK)},
-			{new FurColor(HairFurColors.PINK),  new FurColor(HairFurColors.PURPLE)},
+			{new FurColor(HairFurColors.PINK), new FurColor(HairFurColors.PURPLE)},
 			{new FurColor(HairFurColors.RAINBOW), new FurColor(HairFurColors.WHITE)},
 			{new FurColor(HairFurColors.RUSSET), new FurColor(HairFurColors.ORANGE)}
 		};

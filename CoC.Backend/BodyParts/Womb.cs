@@ -22,7 +22,7 @@ namespace CoC.Backend.BodyParts
 
 		//Note: we don't attach these to vagina and ass b/c it's possible to lose a vagina (and perhaps an asshole too if it's possible to TF to anemone or something)
 		//and we wouldn't want this to cause the pregnancy to be lost.
-		public float pregnancyMultiplier
+		public double pregnancyMultiplier
 		{
 			get
 			{
@@ -216,7 +216,7 @@ namespace CoC.Backend.BodyParts
 				allowsOviposition, hasOviposition, allowsOvipositionRemoval));
 		}
 
-		protected internal bool AttemptNormalKnockUp(float knockupChance, StandardSpawnType type)
+		protected internal bool AttemptNormalKnockUp(double knockupChance, StandardSpawnType type)
 		{
 			return normalPregnancy.attemptKnockUp(knockupChance, type);
 		}
@@ -253,7 +253,7 @@ namespace CoC.Backend.BodyParts
 			normalPregnancy.Reset(clearEggSize);
 		}
 
-		protected internal bool AttemptSecondaryKnockUp(float knockupChance, StandardSpawnType type)
+		protected internal bool AttemptSecondaryKnockUp(double knockupChance, StandardSpawnType type)
 		{
 			return secondaryNormalPregnancy.attemptKnockUp(knockupChance, type);
 		}
@@ -276,7 +276,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//note: allows standard spawn type for sake of convenience, however, if a spawn type does not derive SpawnTypeIncludeAnal, this will always fail.
-		protected internal bool AttemptAnalKnockUp(float knockupChance, StandardSpawnType type)
+		protected internal bool AttemptAnalKnockUp(double knockupChance, StandardSpawnType type)
 		{
 			return analPregnancy.attemptKnockUp(knockupChance, type);
 		}

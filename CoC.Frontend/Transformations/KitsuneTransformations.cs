@@ -2,6 +2,8 @@
 //Description:
 //Author: JustSomeGuy
 //1/20/2020 3:04:30 AM
+using System.Linq;
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
@@ -12,8 +14,6 @@ using CoC.Frontend.Items.Wearables.Tattoos;
 using CoC.Frontend.Perks.SpeciesPerks;
 using CoC.Frontend.Races;
 using CoC.Frontend.Settings.Gameplay;
-using System.Text;
-using System.Linq;
 
 namespace CoC.Frontend.Transformations
 {
@@ -67,55 +67,57 @@ namespace CoC.Frontend.Transformations
 			//BASIC STATS
 			//**********************
 			//[increase Intelligence, Libido and Sensitivity]
-			if (target is CombatCreature cc)
+
+			if (target.relativeIntelligence < 100 && Utils.Rand(enhanced ? 2 : 4) == 0)
 			{
-				if (cc.relativeIntelligence < 100 && Utils.Rand(enhanced ? 2 : 4) == 0)
+				//Raise INT, Lib, Sens. and +10 LUST
+				target.DeltaCreatureStats(inte: 2, lib: 1, sens: 2, lus: 10);
+			}
+			//[decrease Strength toward 15]
+			if (target.relativeStrength > 15 && Utils.Rand(enhanced ? 2 : 3) == 0)
+			{
+				//MOD NOTE: Changed this from flat delta to percent delta. feel free to change back to flat.
+				if (target.relativeStrength > 70)
 				{
-					//Raise INT, Lib, Sens. and +10 LUST
-					cc.DeltaCombatCreatureStats(inte: 2, lib: 1, sens: 2, lus: 10);
+					target.DecreaseStrengthByPercent(4);
 				}
-				//[decrease Strength toward 15]
-				if (cc.relativeStrength > 15 && Utils.Rand(enhanced ? 2 : 3) == 0)
+				else if (target.relativeStrength > 50)
 				{
-					//MOD NOTE: Changed this from flat delta to percent delta. feel free to change back to flat.
-					if (cc.relativeStrength > 70)
-					{
-						cc.DecreaseStrengthByPercent(4);
-					}
-					else if (cc.relativeStrength > 50)
-					{
-						cc.DecreaseStrengthByPercent(3);
-					}
-					else if (cc.relativeStrength > 30)
-					{
-						cc.DecreaseStrengthByPercent(2);
-					}
-					else
-					{
-						cc.DecreaseStrengthByPercent(1);
-					}
+					target.DecreaseStrengthByPercent(3);
 				}
-				//[decrease Toughness toward 20]
-				if (cc.relativeToughness > 20 && Utils.Rand(enhanced ? 2 : 3) == 0)
+				else if (target.relativeStrength > 30)
 				{
-					//MOD NOTE: Changed this from flat delta to percent delta. feel free to change back to flat.
-					if (cc.relativeToughness > 66)
-					{
-						cc.DecreaseToughnessByPercent(2);
-					}
-					else
-					{
-						cc.DecreaseToughnessByPercent(1);
-					}
+					target.DecreaseStrengthByPercent(2);
+				}
+				else
+				{
+					target.DecreaseStrengthByPercent(1);
 				}
 			}
+			//[decrease Toughness toward 20]
+			if (target.relativeToughness > 20 && Utils.Rand(enhanced ? 2 : 3) == 0)
+			{
+				//MOD NOTE: Changed this from flat delta to percent delta. feel free to change back to flat.
+				if (target.relativeToughness > 66)
+				{
+					target.DecreaseToughnessByPercent(2);
+				}
+				else
+				{
+					target.DecreaseToughnessByPercent(1);
+				}
+			}
+
 			if (enhanced && Utils.Rand(2) == 0 && target.corruption < 100)
 			{
 
 				target.IncreaseCorruption(1);
 			}
 			//this will handle the edge case where the change count starts out as 0.
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			}
 
 			//**********************
 			//MEDIUM/SEXUAL CHANGES
@@ -128,14 +130,20 @@ namespace CoC.Frontend.Transformations
 			if (Utils.Rand(enhanced ? 2 : 4) == 0 && target.femininity != 50)
 			{
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//[decrease muscle tone toward 40]
 			if (target.build.muscleTone >= 40 && Utils.Rand(enhanced ? 2 : 4) == 0)
 			{
 				target.build.DecreaseMuscleTone((byte)(2 + Utils.Rand(3)));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//MOD NOTE: This now is one check - if hips aren't 10, and we roll a 0, adjust them, regardless of size.
@@ -170,7 +178,10 @@ namespace CoC.Frontend.Transformations
 					target.build.ShrinkHips(3);
 				}
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//[Adjust hair length toward range of 16-26 – very long to ass-length]
 			if ((target.hair.length < 16 || target.hair.length > 26) && Utils.Rand(enhanced ? 2 : 3) == 0)
@@ -189,7 +200,10 @@ namespace CoC.Frontend.Transformations
 				if (changedLength)
 				{
 					remainingChanges--;
-					if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					if (remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+					}
 				}
 			}
 			//[Increase Vaginal Capacity] - requires vagina, of course
@@ -198,14 +212,20 @@ namespace CoC.Frontend.Transformations
 
 				target.genitals.IncreaseBonusVaginalCapacity((ushort)(10 + Utils.Rand(10)));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			else if (Utils.Rand(enhanced ? 2 : 3) == 0 && target.genitals.standardBonusAnalCapacity < 150)
 			{
 				target.genitals.IncreaseBonusAnalCapacity((ushort)(10 + Utils.Rand(10)));
 
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 
@@ -217,7 +237,10 @@ namespace CoC.Frontend.Transformations
 			{
 				target.perks.AddPerk<VagOfHolding>();
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 
@@ -242,19 +265,27 @@ namespace CoC.Frontend.Transformations
 			//[Grow Fox Tail]
 			if (target.tail.type != TailType.FOX && Utils.Rand(enhanced ? 2 : 4) == 0)
 			{
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.FOX);
+				sb.Append(UpdateTailText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//[Grow Addtl. Fox Tail]
 			//(rare effect, up to max of 8 tails, requires PC level and int*10 = number of tail to be added)
 			//MOD Note: now works with non-combat creatures if that ever happens.
-			if (target.tail.type == TailType.FOX && target.tail.tailCount < TailType.FOX.maxTailCount - 1 && (!(target is CombatCreature tailCheck) ||
-				(tailCheck.level > target.tail.tailCount && tailCheck.intelligence / 10 > target.tail.tailCount)) && Utils.Rand(enhanced ? 2 : 3) == 0)
+			if (target.tail.type == TailType.FOX && target.tail.tailCount < TailType.FOX.maxTailCount - 1 && (!(target is CombatCreature tailCheck)
+				|| (tailCheck.level > target.tail.tailCount && tailCheck.intelligence / 10 > target.tail.tailCount)) && Utils.Rand(enhanced ? 2 : 3) == 0)
 			{
 				target.tail.GrowAdditionalTail();
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//MOD NOTE: moved below previous check for logical consistency. Informs targets on how to get the 9th tail.
 			else if (!enhanced && target.ears.type == EarType.FOX && target.tail.type == TailType.FOX && target.tail.tailCount == TailType.FOX.maxTailCount - 1 && Utils.Rand(3) == 0)
@@ -263,8 +294,9 @@ namespace CoC.Frontend.Transformations
 			}
 			//[Grow 9th tail and gain Corrupted Nine-tails perk]
 			//MOD NOTE: Note that this check requires fox ears, but the others do not. is this a mistake - should they all have the ear check?
-			else if (enhanced && Utils.Rand(4) == 0 && target.tail.type == TailType.FOX && target.ears.type == EarType.FOX && target.tail.tailCount == TailType.FOX.maxTailCount - 1 &&
-				(!(target is CombatCreature corruptedPerkCheck) || (corruptedPerkCheck.level >= 9 && corruptedPerkCheck.intelligence >= 90)))
+			else if (enhanced && Utils.Rand(4) == 0 && target.tail.type == TailType.FOX && target.ears.type == EarType.FOX &&
+				target.tail.tailCount == TailType.FOX.maxTailCount - 1 && (!(target is CombatCreature corruptedPerkCheck)
+				|| (corruptedPerkCheck.level >= 9 && corruptedPerkCheck.intelligence >= 90)))
 			{
 
 				target.tail.GrowAdditionalTail();
@@ -276,14 +308,23 @@ namespace CoC.Frontend.Transformations
 
 				target.IncreaseCreatureStats(lib: 2, lus: 10, corr: 10);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//[Grow Fox Ears]
 			if (target.tail.type == TailType.FOX && Utils.Rand(enhanced ? 2 : 4) == 0 && target.ears.type != EarType.FOX)
 			{
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.FOX);
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				sb.Append(UpdateEarsText(target, oldData));
+
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//[Change Hair Color: Golden-blonde, SIlver Blonde, White, Black, Red]
 			if (Utils.Rand(enhanced ? 2 : 4) == 0 && !Species.KITSUNE.elderKitsuneHairColors.Contains(target.hair.hairColor) &&
@@ -301,7 +342,10 @@ namespace CoC.Frontend.Transformations
 
 				target.hair.SetHairColor(color);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//MOD: Body Changes. with the body changes, this has been fully reworked. If enhanced, always runs. otherwise, 50% chance.
@@ -353,19 +397,25 @@ namespace CoC.Frontend.Transformations
 			{
 				target.genitals.SetBlackNipples(false);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Debugcunt(s)
-			if (target.KitsuneLikeBody() && target.hasVagina && target.vaginas.Any(x=>!x.isDefault) && Utils.Rand(3) == 0)
+			if (target.KitsuneLikeBody() && target.hasVagina && target.vaginas.Any(x => !x.isDefault) && Utils.Rand(3) == 0)
 			{
-				foreach (var vagina in target.vaginas)
+				foreach (Vagina vagina in target.vaginas)
 				{
 					if (!vagina.isDefault)
 					{
 						target.genitals.RestoreVagina(vagina);
 					}
 				}
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			// Kitsunes should have normal arms and legs. especially skinny arms with claws are somewhat weird (Stadler76).
 			//MOD NOTE: not really a thing anymore since we made all the body parts have their own rules. but i guess i could make it so that any arms or legs that don't use skin
@@ -375,22 +425,51 @@ namespace CoC.Frontend.Transformations
 			//is more in the spirit of the original code, i guess.
 			if (target.KitsuneLikeBody() && !target.arms.isDefault && Utils.Rand(4) == 0)
 			{
+				ArmData oldData = target.arms.AsReadOnlyData();
 				target.RestoreArms();
+				sb.Append(RestoredArmsText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			if (target.KitsuneLikeBody() && !target.lowerBody.isDefault && Utils.Rand(4) == 0)
 			{
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.RestoreLowerBody();
+				sb.Append(RestoredLowerBodyText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			//this is the fallthrough that occurs when a tf item goes through all the changes, but does not proc enough of them to exit early. it will apply however many changes
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+{
+return target.tail.TransformFromText(oldTail);
+}
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+{
+return target.ears.TransformFromText(oldData);
+}
+		protected virtual string RestoredArmsText(Creature target, ArmData oldData)
+{
+return target.arms.RestoredText(oldData);
+}
+
+		protected virtual string RestoredLowerBodyText(Creature target, LowerBodyData oldData)
+{
+return target.lowerBody.RestoredText(oldData);
+}
+
 
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been

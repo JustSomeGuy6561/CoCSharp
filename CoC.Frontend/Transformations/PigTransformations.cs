@@ -22,7 +22,7 @@ namespace CoC.Frontend.Transformations
 		protected readonly bool isEnhanced;
 		protected PigTransformations(bool enhanced)
 		{
-			this.isEnhanced = enhanced;
+			isEnhanced = enhanced;
 		}
 
 
@@ -114,7 +114,9 @@ namespace CoC.Frontend.Transformations
 			//Neck restore
 			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -124,12 +126,20 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
+
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Ovi perk loss
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
 
 				if (--remainingChanges <= 0)
 				{
@@ -158,7 +168,10 @@ namespace CoC.Frontend.Transformations
 			//Gain pig ears!
 			if (Utils.Rand(isEnhanced ? 3 : 4) == 0 && target.ears.type != EarType.PIG)
 			{
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.PIG);
+				sb.Append(UpdateEarsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -168,7 +181,7 @@ namespace CoC.Frontend.Transformations
 			if (Utils.Rand(isEnhanced ? 2 : 3) == 0 && target.ears.type == EarType.PIG && target.tail.type != TailType.PIG)
 			{
 				if (!target.tail.isDefault) //If you have non-pig tail.
-				{}
+				{ }
 				else //If you don't have a tail.
 				{
 					target.UpdateTail(TailType.PIG);
@@ -182,7 +195,10 @@ namespace CoC.Frontend.Transformations
 			//Gain pig tail even when centaur, needs pig ears.
 			if (Utils.Rand(isEnhanced ? 2 : 3) == 0 && target.ears.type == EarType.PIG && target.tail.type != TailType.PIG && target.lowerBody.isQuadruped && (target.lowerBody.type == LowerBodyType.HOOVED || target.lowerBody.type == LowerBodyType.PONY))
 			{
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.PIG);
+				sb.Append(UpdateTailText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -192,9 +208,9 @@ namespace CoC.Frontend.Transformations
 			if (Utils.Rand(isEnhanced ? 3 : 4) == 0 && target.ears.type == EarType.PIG && target.tail.type == TailType.PIG && target.lowerBody.type != LowerBodyType.CLOVEN_HOOVED)
 			{
 				if (target.lowerBody.isQuadruped) //Centaur
-				{}
+				{ }
 				else if (target.lowerBody.type == LowerBodyType.NAGA) //Naga
-				{}
+				{ }
 				else //Bipedal
 				{
 					target.UpdateLowerBody(LowerBodyType.CLOVEN_HOOVED);
@@ -208,7 +224,10 @@ namespace CoC.Frontend.Transformations
 			//Gain pig face when you have the first three pig TFs.
 			if (Utils.Rand(isEnhanced ? 2 : 3) == 0 && target.ears.type == EarType.PIG && target.tail.type == TailType.PIG && target.lowerBody.type == LowerBodyType.CLOVEN_HOOVED && target.face.type != FaceType.PIG)
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.PIG);
+				sb.Append(UpdateFaceText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -243,6 +262,35 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+{
+return RemovedOvipositionTextGeneric(target);
+}
+
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+		{
+			return target.ears.TransformFromText(oldData);
+		}
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+		{
+			return target.tail.TransformFromText(oldTail);
+		}
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+		{
+			return target.face.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

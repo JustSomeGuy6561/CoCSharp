@@ -70,38 +70,35 @@ namespace CoC.Frontend.Transformations
 			//clear screen
 
 			//Statistical changes:
-			if (target is CombatCreature cc)
+			//-Reduces speed down to 50.
+			if (target.speed > ngPlus(50) && Utils.Rand(4) == 0)
 			{
-				//-Reduces speed down to 50.
-				if (cc.speed > ngPlus(50) && Utils.Rand(4) == 0)
+				target.ChangeSpeed(-1);
+			}
+			//-Raises toughness to 70
+			//(+3 to 40, +2 to 55, +1 to 70)
+			if (target.toughness < ngPlus(70) && Utils.Rand(3) == 0)
+			{
+				//(+3)
+				if (target.toughness < ngPlus(40))
 				{
-					cc.DeltaCombatCreatureStats(spe: -1);
+					target.ChangeToughness(3);
 				}
-				//-Raises toughness to 70
-				//(+3 to 40, +2 to 55, +1 to 70)
-				if (cc.toughness < ngPlus(70) && Utils.Rand(3) == 0)
+				//(+2)
+				else if (target.toughness < ngPlus(55))
 				{
-					//(+3)
-					if (cc.toughness < ngPlus(40))
-					{
-						cc.DeltaCombatCreatureStats(tou: 3);
-					}
-					//(+2)
-					else if (cc.toughness < ngPlus(55))
-					{
-						cc.DeltaCombatCreatureStats(tou: 2);
-					}
-					//(+1)
-					else
-					{
-						cc.DeltaCombatCreatureStats(tou: 1);
-					}
+					target.ChangeToughness(2);
+				}
+				//(+1)
+				else
+				{
+					target.ChangeToughness(1);
 				}
 			}
 			//-Reduces sensitivity.
 			if (target.relativeSensitivity > 20 && Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(sens: -1);
+				target.ChangeSensitivity(-1);
 			}
 			//Raises libido greatly to 50, then somewhat to 75, then slowly to 100.
 			if (target.relativeLibido < 100 && Utils.Rand(3) == 0)
@@ -109,15 +106,15 @@ namespace CoC.Frontend.Transformations
 				//+3 lib if less than 50
 				if (target.relativeLibido < 50)
 				{
-					target.DeltaCreatureStats(lib: 1);
+					target.ChangeLibido(1);
 				}
 				//+2 lib if less than 75
 				if (target.relativeLibido < 75)
 				{
-					target.DeltaCreatureStats(lib: 1);
+					target.ChangeLibido(1);
 				}
 				//+1 if above 75.
-				target.DeltaCreatureStats(lib: 1);
+				target.ChangeLibido(1);
 			}
 
 
@@ -138,7 +135,7 @@ namespace CoC.Frontend.Transformations
 				target.DeltaCreatureStats(lib: 3, lus: 10);
 			}
 			//(CHANGE OTHER DICK)
-			var lizardCocks = target.genitals.CountCocksOfType(CockType.LIZARD);
+			int lizardCocks = target.genitals.CountCocksOfType(CockType.LIZARD);
 			//Requires 1 lizard cock, multiple cocks
 			if (target.hasCock && (lizardCocks != target.cocks.Count || target.cocks.Count == 1) && ScalingChance(2, currentChanges(), 4))
 			{
@@ -197,8 +194,8 @@ namespace CoC.Frontend.Transformations
 					}
 				}
 				//(+2 speed)
-				(target as CombatCreature)?.IncreaseSpeed(2);
-				target.DeltaCreatureStats(lib: 2);
+				target.IncreaseSpeed(2);
+				target.ChangeLibido(2);
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -243,6 +240,7 @@ namespace CoC.Frontend.Transformations
 			if (target.hasVagina && target.womb.canObtainOviposition && Species.LIZARD.Score(target) > 3 && ScalingChance(3, currentChanges(), 5))
 			{
 				target.womb.GrantOviposition();
+				sb.Append(GrantOvipositionText(target));
 
 				if (--remainingChanges <= 0)
 				{
@@ -254,7 +252,10 @@ namespace CoC.Frontend.Transformations
 			//-Existing horns become draconic, max of 4, max length of 1'
 			if (target.horns.type != HornType.DRACONIC && ScalingChance(3, currentChanges(), 5))
 			{
+				HornData oldData = target.horns.AsReadOnlyData();
 				target.UpdateHorns(HornType.DRACONIC);
+				sb.Append(UpdateHornsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -264,7 +265,9 @@ namespace CoC.Frontend.Transformations
 			//Neck restore
 			if (target.neck.type != NeckType.HUMANOID && ScalingChance(2, currentChanges(), 4))
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -273,7 +276,9 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && ScalingChance(3, currentChanges(), 5))
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -286,7 +291,9 @@ namespace CoC.Frontend.Transformations
 				{
 					if (target.corruption > 65 && target.face.IsReptilian() && target.body.type == BodyType.REPTILE && target.hair.type != HairType.BASILISK_SPINES)
 					{
+						HairData oldData = target.hair.AsReadOnlyData();
 						target.UpdateHair(HairType.BASILISK_SPINES);
+						sb.Append(UpdateHairText(target, oldData));
 
 						if (--remainingChanges <= 0)
 						{
@@ -296,7 +303,9 @@ namespace CoC.Frontend.Transformations
 					else if (target.corruption < 15 && target.gender.HasFlag(Gender.FEMALE) && target.hair.type != HairType.BASILISK_PLUME)
 					{
 						target.hair.ResumeNaturalGrowth();
+						HairData oldData = target.hair.AsReadOnlyData();
 						target.UpdateHair(HairType.BASILISK_PLUME);
+						sb.Append(UpdateHairText(target, oldData));
 
 						if (--remainingChanges <= 0)
 						{
@@ -331,7 +340,10 @@ namespace CoC.Frontend.Transformations
 				//TAURS -
 				//feet types -
 				//Else –
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.LIZARD);
+				sb.Append(UpdateLowerBodyText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -344,7 +356,9 @@ namespace CoC.Frontend.Transformations
 			//now, you get the arms (and thus, the claws) if they aren't a predator type and have lizard legs, or switch to lizard arms from any other predator type.
 			if ((target.arms.IsPredatorArms() || target.lowerBody.type == LowerBodyType.LIZARD) && target.body.type == BodyType.REPTILE && ScalingChance(2, currentChanges(), 3))
 			{
+				ArmData oldData = target.arms.AsReadOnlyData();
 				target.UpdateArms(ArmType.LIZARD);
+				sb.Append(UpdateArmsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -358,7 +372,10 @@ namespace CoC.Frontend.Transformations
 			{
 				//No tail
 				//Yes tail
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.LIZARD);
+				sb.Append(UpdateTailText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -367,7 +384,9 @@ namespace CoC.Frontend.Transformations
 			//Remove odd eyes
 			if (ScalingChance(3, currentChanges(), 5) && target.eyes.type != EyeType.HUMAN && !target.eyes.isReptilian)
 			{
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.RestoreEyes();
+				sb.Append(RestoredEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -377,7 +396,10 @@ namespace CoC.Frontend.Transformations
 			//-Ears become smaller nub-like openings?
 			if (target.ears.type != EarType.LIZARD && target.tail.type == TailType.LIZARD && target.lowerBody.type == LowerBodyType.LIZARD && ScalingChance(3, currentChanges(), 5))
 			{
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.LIZARD);
+				sb.Append(UpdateEarsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -401,7 +423,10 @@ namespace CoC.Frontend.Transformations
 			if (target.face.type != FaceType.LIZARD && target.body.type == BodyType.REPTILE && target.ears.type == EarType.LIZARD && target.tail.type == TailType.LIZARD
 				&& target.lowerBody.type == LowerBodyType.LIZARD && ScalingChance(3, currentChanges(), 5))
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.LIZARD);
+				sb.Append(UpdateFaceText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -411,7 +436,9 @@ namespace CoC.Frontend.Transformations
 			if (target.tongue.type == TongueType.SNAKE && Utils.Rand(10) < 6)
 			{
 				// Higher (60%) chance to be 'fixed' if old variant
+				TongueData oldData = target.tongue.AsReadOnlyData();
 				target.UpdateTongue(TongueType.LIZARD);
+				sb.Append(UpdateTongueText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -421,7 +448,9 @@ namespace CoC.Frontend.Transformations
 
 			if (target.tongue.type != TongueType.LIZARD && target.tongue.type != TongueType.SNAKE && target.face.IsReptilian() && ScalingChance(2, currentChanges(), 3))
 			{
+				TongueData oldData = target.tongue.AsReadOnlyData();
 				target.UpdateTongue(TongueType.LIZARD);
+				sb.Append(UpdateTongueText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -431,7 +460,9 @@ namespace CoC.Frontend.Transformations
 			//-Remove Gills
 			if (ScalingChance(2, currentChanges(), 4) && !target.gills.isDefault)
 			{
+				GillData oldData = target.gills.AsReadOnlyData();
 				target.RestoreGills();
+				sb.Append(RestoredGillsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -443,7 +474,9 @@ namespace CoC.Frontend.Transformations
 			if (target.eyes.type != EyeType.LIZARD && target.face.type == FaceType.LIZARD && target.body.type == BodyType.REPTILE && target.ears.type == EarType.LIZARD
 				&& ScalingChance(2, currentChanges(), 4))
 			{
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.UpdateEyes(EyeType.LIZARD);
+				sb.Append(UpdateEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -455,7 +488,7 @@ namespace CoC.Frontend.Transformations
 			if (remainingChanges == changeCount)
 			{
 				(target as CombatCreature)?.AddHP(50);
-				target.DeltaCreatureStats(lus: 3);
+				target.ChangeLust(3);
 			}
 
 
@@ -463,6 +496,75 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string GrantOvipositionText(Creature target)
+{
+return GainedOvipositionTextGeneric(target);
+}
+
+		protected virtual string UpdateHornsText(Creature target, HornData oldData)
+{
+return target.horns.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateHairText(Creature target, HairData oldData)
+{
+return target.hair.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateLowerBodyText(Creature target, LowerBodyData oldData)
+{
+return target.lowerBody.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateArmsText(Creature target, ArmData oldData)
+{
+return target.arms.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+{
+return target.tail.TransformFromText(oldTail);
+}
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+{
+return target.ears.TransformFromText(oldData);
+}
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+{
+return target.face.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateTongueText(Creature target, TongueData oldData)
+{
+return target.tongue.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateEyesText(Creature target, EyeData oldData)
+{
+return target.eyes.TransformFromText(oldData);
+}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+{
+return target.neck.RestoredText(oldData);
+}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+{
+return target.back.RestoredText(oldData);
+}
+
+		protected virtual string RestoredEyesText(Creature target, EyeData oldData)
+{
+return target.eyes.RestoredText(oldData);
+}
+
+		protected virtual string RestoredGillsText(Creature target, GillData oldData)
+{
+return target.gills.RestoredText(oldData);
+}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

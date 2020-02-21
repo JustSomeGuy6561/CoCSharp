@@ -23,43 +23,43 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Cock Perks
-		internal float NewCockSizeDelta
+		internal double NewCockSizeDelta
 		{
 			get => _NewCockSizeDelta;
 			set => _NewCockSizeDelta = value;
 		}
-		private float _NewCockSizeDelta = 0;
-		internal float CockGrowthMultiplier
+		private double _NewCockSizeDelta = 0;
+		internal double CockGrowthMultiplier
 		{
 			get => _CockGrowthMultiplier;
 			set => _CockGrowthMultiplier = value;
 		}
-		private float _CockGrowthMultiplier = 1;
-		internal float CockShrinkMultiplier
+		private double _CockGrowthMultiplier = 1;
+		internal double CockShrinkMultiplier
 		{
 			get => _CockShrinkMultiplier;
 			set => _CockShrinkMultiplier = value;
 		}
-		private float _CockShrinkMultiplier = 1;
-		internal float NewCockDefaultSize
+		private double _CockShrinkMultiplier = 1;
+		internal double NewCockDefaultSize
 		{
 			get => _NewCockDefaultSize;
 			set => _NewCockDefaultSize = value;
 		}
-		private float _NewCockDefaultSize = Cock.DEFAULT_COCK_LENGTH;
-		internal float MinCockLength
+		private double _NewCockDefaultSize = Cock.DEFAULT_COCK_LENGTH;
+		internal double MinCockLength
 		{
 			get => _MinCockLength;
 			set => CheckChanged(ref _MinCockLength, value, () => source.cocks.ForEach(x => x.ValidateLength()));
 		}
-		private float _MinCockLength = Cock.MIN_COCK_LENGTH;
+		private double _MinCockLength = Cock.MIN_COCK_LENGTH;
 
-		internal float perkBonusVirilityMultiplier
+		internal double perkBonusVirilityMultiplier
 		{
 			get => _perkBonusVirilityMultiplier;
 			set => _perkBonusVirilityMultiplier = value;
 		}
-		private float _perkBonusVirilityMultiplier;
+		private double _perkBonusVirilityMultiplier;
 
 		internal sbyte perkBonusVirility
 		{
@@ -91,12 +91,12 @@ namespace CoC.Backend.BodyParts
 			set => CheckChanged(ref _bonusCumAdded, value, handleCumChange);
 		}
 		private uint _bonusCumAdded = 0;
-		internal float bonusCumMultiplier
+		internal double bonusCumMultiplier
 		{
 			get => _bonusCumMultiplier;
 			set => CheckChanged(ref _bonusCumMultiplier, value, handleCumChange);
 		}
-		private float _bonusCumMultiplier = 1f;
+		private double _bonusCumMultiplier = 1f;
 
 		private void handleCumChange()
 		{
@@ -142,47 +142,47 @@ namespace CoC.Backend.BodyParts
 			internal set => CheckChanged(ref _MaleMinCup, value, () => source.breastRows.ForEach(x => x.ValidateCupSize()));
 		}
 		private CupSize _MaleMinCup = CupSize.FLAT;
-		internal float TitsGrowthMultiplier
+		internal double TitsGrowthMultiplier
 		{
 			get => _TitsGrowthMultiplier;
 			set => _TitsGrowthMultiplier = value;
 		}
-		private float _TitsGrowthMultiplier = 1;
-		internal float TitsShrinkMultiplier
+		private double _TitsGrowthMultiplier = 1;
+		internal double TitsShrinkMultiplier
 		{
 			get => _TitsShrinkMultiplier;
 			set => _TitsShrinkMultiplier = value;
 		}
-		private float _TitsShrinkMultiplier = 1;
-		internal float NewNippleSizeDelta
+		private double _TitsShrinkMultiplier = 1;
+		internal double NewNippleSizeDelta
 		{
 			get => _NewNippleSizeDelta;
 			set => _NewNippleSizeDelta = value;
 		}
-		private float _NewNippleSizeDelta = 0;
+		private double _NewNippleSizeDelta = 0;
 
 		#endregion
 
 		#region Nipples Perk Data
 
-		internal float NippleGrowthMultiplier
+		internal double NippleGrowthMultiplier
 		{
 			get => _NippleGrowthMultiplier;
 			set => _NippleGrowthMultiplier = value;
 		}
-		private float _NippleGrowthMultiplier = 1;
-		internal float NippleShrinkMultiplier
+		private double _NippleGrowthMultiplier = 1;
+		internal double NippleShrinkMultiplier
 		{
 			get => _NippleShrinkMultiplier;
 			set => _NippleShrinkMultiplier = value;
 		}
-		private float _NippleShrinkMultiplier = 1;
-		internal float NewNippleDefaultLength
+		private double _NippleShrinkMultiplier = 1;
+		internal double NewNippleDefaultLength
 		{
 			get => _NewNippleDefaultLength;
 			set => _NewNippleDefaultLength = value;
 		}
-		private float _NewNippleDefaultLength = NippleAggregate.MIN_NIPPLE_LENGTH;
+		private double _NewNippleDefaultLength = NippleAggregate.MIN_NIPPLE_LENGTH;
 		#endregion
 
 		#region Vaginas
@@ -231,38 +231,38 @@ namespace CoC.Backend.BodyParts
 		private VaginalWetness _maxVaginalWetness = VaginalWetness.SLAVERING;
 
 		#region Clits
-		internal float NewClitSizeDelta
+		internal double NewClitSizeDelta
 		{
 			get => _NewClitSizeDelta;
 			set => _NewClitSizeDelta = value;
 		}
-		private float _NewClitSizeDelta = 0;
+		private double _NewClitSizeDelta = 0;
 
-		internal float ClitGrowthMultiplier
+		internal double ClitGrowthMultiplier
 		{
 			get => _ClitGrowthMultiplier;
 			set => _ClitGrowthMultiplier = value;
 		}
-		private float _ClitGrowthMultiplier = 1f;
-		internal float ClitShrinkMultiplier
+		private double _ClitGrowthMultiplier = 1f;
+		internal double ClitShrinkMultiplier
 		{
 			get => _ClitShrinkMultiplier;
 			set => _ClitShrinkMultiplier = value;
 		}
-		private float _ClitShrinkMultiplier = 1;
+		private double _ClitShrinkMultiplier = 1;
 
-		internal float DefaultNewClitSize
+		internal double DefaultNewClitSize
 		{
 			get => _MinNewClitSize;
 			set => _MinNewClitSize = value;
 		}
-		private float _MinNewClitSize;
-		internal float MinClitSize
+		private double _MinNewClitSize;
+		internal double MinClitSize
 		{
 			get => _MinClitSize;
 			set => CheckChanged(ref _MinClitSize, value, () => source.vaginas.ForEach(x => x.clit.CheckClitSize()));
 		}
-		private float _MinClitSize = Clit.MIN_CLIT_SIZE;
+		private double _MinClitSize = Clit.MIN_CLIT_SIZE;
 		#endregion
 		#endregion
 
@@ -276,7 +276,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private void CheckChanged(ref float target, float newValue, Action ifDifferentCallback)
+		private void CheckChanged(ref double target, double newValue, Action ifDifferentCallback)
 		{
 			if (target != newValue)
 			{

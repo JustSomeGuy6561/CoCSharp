@@ -13,20 +13,20 @@ namespace CoC.Backend.Creatures
 	{
 		public readonly VaginaType type;
 
-		public float? clitLength;
+		public double? clitLength;
 		public readonly ReadOnlyDictionary<ClitPiercingLocation, PiercingJewelry> clitPiercings;
 		public readonly ReadOnlyDictionary<LabiaPiercingLocation, PiercingJewelry> labiaPiercings;
 		public VaginalWetness wetness;
 		public VaginalLooseness looseness;
 		public bool virgin;
 		public readonly bool hasClitCock;
-		public float validClitLength => clitLength ?? Clit.DEFAULT_CLIT_SIZE;
+		public double validClitLength => clitLength ?? Clit.DEFAULT_CLIT_SIZE;
 
-		public VaginaCreator(float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL,
+		public VaginaCreator(double? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL,
 			VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool omnibusClit = false, bool isVirgin = true,
 			Dictionary<ClitPiercingLocation, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercingLocation, PiercingJewelry> labiaJewelry = null)
 			: this(VaginaType.HUMAN, clitLengthInInches, vaginalWetness, vaginalLooseness, omnibusClit, isVirgin, clitJewelry, labiaJewelry) { }
-		public VaginaCreator(VaginaType vaginaType, float? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL,
+		public VaginaCreator(VaginaType vaginaType, double? clitLengthInInches = null, VaginalWetness vaginalWetness = VaginalWetness.NORMAL,
 			VaginalLooseness vaginalLooseness = VaginalLooseness.TIGHT, bool omnibusClit = false, bool isVirgin = true,
 			Dictionary<ClitPiercingLocation, PiercingJewelry> clitJewelry = null, Dictionary<LabiaPiercingLocation, PiercingJewelry> labiaJewelry = null)
 		{

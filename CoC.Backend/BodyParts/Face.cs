@@ -367,7 +367,7 @@ namespace CoC.Backend.BodyParts
 
 		//private GameDateTime timeLastIngestedCum;
 		//public int hoursSinceIngestedCum => timeLastIngestedCum.hoursToNow();
-		//public float lastCumIngestAmount { get; private set; } = 0;
+		//public double lastCumIngestAmount { get; private set; } = 0;
 
 		public readonly FaceTattoo tattoos;
 
@@ -537,7 +537,7 @@ namespace CoC.Backend.BodyParts
 
 		//default restore is fine.
 
-		internal void HandleOralPenetration(float penetratorArea, float knotWidth, float cumAmount, bool reachOrgasm, bool selfOral = false)
+		internal void HandleOralPenetration(double penetratorArea, double knotWidth, double cumAmount, bool reachOrgasm, bool selfOral)
 		{
 			totalOralCount++;
 			if (selfOral)
@@ -552,7 +552,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		//internal void IngestCum(float cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
+		//internal void IngestCum(double cumAmount, bool reachOrgasm, bool countTowardOrgasmTotal)
 		//{
 		//	if (cumAmount > 0)
 		//	{
@@ -572,13 +572,13 @@ namespace CoC.Backend.BodyParts
 				&& orgasmCount == original.orgasmCount && dryOrgasmCount == original.dryOrgasmCount));
 		}
 
-		internal void HandleOralPenetration(Cock penetrator, bool reachOrgasm)
+		internal void HandleOralPenetration(Cock penetrator, bool reachOrgasm, bool autoFellatio)
 		{
-			HandleOralPenetration(penetrator.area, penetrator.knotSize, penetrator.cumAmount, reachOrgasm);
+			HandleOralPenetration(penetrator.area, penetrator.knotSize, penetrator.cumAmount, reachOrgasm, autoFellatio);
 		}
-		internal void HandleOralPenetration(Cock penetrator, float cumAmountOverride, bool reachOrgasm)
+		internal void HandleOralPenetration(Cock penetrator, double cumAmountOverride, bool reachOrgasm, bool autoFellatio)
 		{
-			HandleOralPenetration(penetrator.area, penetrator.knotSize, cumAmountOverride, reachOrgasm);
+			HandleOralPenetration(penetrator.area, penetrator.knotSize, cumAmountOverride, reachOrgasm, autoFellatio);
 		}
 		internal void HandleOralOrgasmGeneric(bool dryOrgasm)
 		{
@@ -589,7 +589,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal void HandleTonguePenetrate(bool reachOrgasm, bool selfPenetrating = false)
+		internal void HandleTonguePenetrate(bool reachOrgasm, bool selfPenetrating)
 		{
 			CreatureStore.GetCreatureClean(creatureID)?.tongue.DoPenetrate(selfPenetrating);
 			if (reachOrgasm)

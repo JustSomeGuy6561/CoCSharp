@@ -1,13 +1,13 @@
-﻿using CoC.Backend.BodyParts;
+﻿using System;
+using System.Linq;
+using System.Text;
+using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Races;
-using System;
-using System.Linq;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
@@ -45,7 +45,7 @@ namespace CoC.Frontend.Transformations
 				if (target.hasCock)
 				{
 					bool changed = false;
-					var dogCockCount = target.genitals.CountCocksOfType(CockType.DOG);
+					int dogCockCount = target.genitals.CountCocksOfType(CockType.DOG);
 					if (dogCockCount > 0)
 					{
 						Cock smallestKnot = target.cocks.MinItem(x => x.type == CockType.DOG ? (float?)x.knotMultiplier : null);
@@ -114,26 +114,23 @@ namespace CoC.Frontend.Transformations
 				target.IncreaseCreatureStats(lus: (byte)(5 + Utils.Rand(5)), lib: (byte)(2 + Utils.Rand(4)), corr: (byte)(2 + Utils.Rand(4)));
 			}
 			//stat changes (cont.)
-			if (target is CombatCreature combat)
+			float strengthIncrease = 0;
+			float speedIncrease = 0;
+			float intelligenceDecrease = 0;
+			if (target.relativeStrength < 50 && Utils.Rand(3) == 0)
 			{
-				float strengthIncrease = 0;
-				float speedIncrease = 0;
-				float intelligenceDecrease = 0;
-				if (combat.relativeStrength < 50 && Utils.Rand(3) == 0)
-				{
-					strengthIncrease = combat.IncreaseStrength(crit);
-				}
-				if (combat.relativeSpeed < 30 && Utils.Rand(3) == 0)
-				{
-					speedIncrease = combat.IncreaseSpeed(crit);
-				}
-				if (combat.relativeIntelligence > 30 && Utils.Rand(3) == 0)
-				{
-					intelligenceDecrease = combat.DecreaseIntelligence(crit);
-				}
-
-				sb.Append(StatChangeText(target, strengthIncrease, speedIncrease, intelligenceDecrease));
+				strengthIncrease = target.IncreaseStrength(crit);
 			}
+			if (target.relativeSpeed < 30 && Utils.Rand(3) == 0)
+			{
+				speedIncrease = target.IncreaseSpeed(crit);
+			}
+			if (target.relativeIntelligence > 30 && Utils.Rand(3) == 0)
+			{
+				intelligenceDecrease = target.DecreaseIntelligence(crit);
+			}
+
+			sb.Append(StatChangeText(target, strengthIncrease, speedIncrease, intelligenceDecrease));
 
 			//modifier effects (no cost)
 
@@ -162,7 +159,7 @@ namespace CoC.Frontend.Transformations
 					//has one cock. - grow one, change one
 					else if (target.cocks.Count == 1)
 					{
-						var oldCockData = target.cocks[0].AsReadOnlyData();
+						CockData oldCockData = target.cocks[0].AsReadOnlyData();
 
 						target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5f);
 						if (target.cocks[0].length < 10)
@@ -176,8 +173,8 @@ namespace CoC.Frontend.Transformations
 					//has 2+ cocks. -change 2
 					else
 					{
-						var firstOldData = target.cocks[0].AsReadOnlyData();
-						var secondOldData = target.cocks[1].AsReadOnlyData();
+						CockData firstOldData = target.cocks[0].AsReadOnlyData();
+						CockData secondOldData = target.cocks[1].AsReadOnlyData();
 
 						target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5f);
 						if (target.cocks[0].length < 10)
@@ -204,7 +201,7 @@ namespace CoC.Frontend.Transformations
 					{
 						if (target.cocks[0].type == CockType.DOG)
 						{
-							var oldData = target.cocks[1].AsReadOnlyData();
+							CockData oldData = target.cocks[1].AsReadOnlyData();
 							target.genitals.UpdateCockWithKnot(1, CockType.DOG, 1.5f);
 							if (target.cocks[1].length < 10)
 							{
@@ -214,7 +211,7 @@ namespace CoC.Frontend.Transformations
 						}
 						else
 						{
-							var oldData = target.cocks[0].AsReadOnlyData();
+							CockData oldData = target.cocks[0].AsReadOnlyData();
 
 							target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5f);
 							if (target.cocks[0].length < 10)
@@ -240,9 +237,9 @@ namespace CoC.Frontend.Transformations
 				{
 					if (target.hasCock)
 					{
-						var oldCockData = target.cocks[0].AsReadOnlyData();
+						CockData oldCockData = target.cocks[0].AsReadOnlyData();
 
-						var knotSize = 1.75f;
+						float knotSize = 1.75f;
 
 						if (target.cocks[0].hasKnot)
 						{
@@ -276,7 +273,7 @@ namespace CoC.Frontend.Transformations
 				}
 				else if (target.balls.uniBall)
 				{
-					var oldData = target.balls.AsReadOnlyData();
+					BallsData oldData = target.balls.AsReadOnlyData();
 					target.genitals.ConvertToNormalBalls();
 					target.DeltaCreatureStats(lib: 1, lus: 1);
 
@@ -284,9 +281,9 @@ namespace CoC.Frontend.Transformations
 				}
 				else
 				{
-					var oldData = target.balls.AsReadOnlyData();
+					BallsData oldData = target.balls.AsReadOnlyData();
 
-					var enlargeAmount = target.genitals.balls.EnlargeBalls(1);
+					byte enlargeAmount = target.genitals.balls.EnlargeBalls(1);
 					target.IncreaseCreatureStats(lib: 1, lus: 3);
 
 					sb.Append(EnlargedBallsText(target, oldData));
@@ -294,18 +291,24 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+			}
 
 			//tfs (cost 1).
 
 			//restore neck
 			if (target.neck.type != NeckType.defaultValue && Utils.Rand(4) == 0)
 			{
-				var oldNeck = target.neck.AsReadOnlyData();
+				NeckData oldNeck = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
 
 				sb.Append(RestoredNeckText(target, oldNeck));
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			//remove oviposition
@@ -314,7 +317,10 @@ namespace CoC.Frontend.Transformations
 				if (target.womb.ClearOviposition())
 				{
 					sb.Append(RemovedOvipositionText(target));
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+					}
 				}
 			}
 
@@ -322,38 +328,47 @@ namespace CoC.Frontend.Transformations
 			if (RemoveFeatheryHair(target))
 			{
 				sb.Append(RemovedFeatheryHairText(target));
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			//knot multiplier (but not knotty)
 			if (!modifiers.HasFlag(CanineModifiers.KNOTTY) && target.genitals.CountCocksOfType(CockType.DOG) > 0 && (modifiers.HasFlag(CanineModifiers.LARGE) || Utils.Rand(7) < 5))
 			{
-				var delta = ((Utils.Rand(2) + 1) / 20f) * crit;
+				float delta = ((Utils.Rand(2) + 1) / 20f) * crit;
 				if (DoKnotChanges(delta))
 				{
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+					}
 				}
 			}
 
 			//transform a cock.
 			if (target.genitals.CountCocksOfType(CockType.DOG) < target.cocks.Count && (modifiers.HasFlag(CanineModifiers.LARGE) || Utils.Rand(8) < 5))
 			{
-				var nonDoggo = target.cocks.FirstOrDefault(x => x.type != CockType.DOG && x.type != CockType.DEMON); //find any cock that isn't a dog, but also isn't a demon cock.
+				Cock nonDoggo = target.cocks.FirstOrDefault(x => x.type != CockType.DOG && x.type != CockType.DEMON); //find any cock that isn't a dog, but also isn't a demon cock.
 				if (nonDoggo != null)
 				{
-					var oldData = nonDoggo.AsReadOnlyData();
-					var index = target.cocks.IndexOf(nonDoggo);
+					CockData oldData = nonDoggo.AsReadOnlyData();
+					int index = target.cocks.IndexOf(nonDoggo);
 					target.genitals.UpdateCock(index, CockType.DOG);
 
 					sb.Append(ConvertedOneCockToDog(target, index, oldData));
 
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+					}
 				}
 				else
 				{
-					var demonSpecialCase = target.cocks.FirstOrDefault(x => x.type == CockType.DEMON);
-					var index = demonSpecialCase.cockIndex;
+					Cock demonSpecialCase = target.cocks.FirstOrDefault(x => x.type == CockType.DEMON);
+					int index = demonSpecialCase.cockIndex;
 					if (demonSpecialCase != null)
 					{
 						float delta = demonSpecialCase.IncreaseThickness(2);
@@ -361,7 +376,10 @@ namespace CoC.Frontend.Transformations
 						if (delta != 0)
 						{
 							sb.Append(CouldntConvertDemonCockThickenedInstead(target, index, delta));
-							if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+							if (--remainingChanges <= 0)
+							{
+								return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+							}
 						}
 					}
 				}
@@ -390,13 +408,13 @@ namespace CoC.Frontend.Transformations
 
 			if (target.hasCock && modifiers.HasFlag(CanineModifiers.LARGE))
 			{
-				var smallest = target.genitals.ShortestCock();
-				var oldData = smallest.AsReadOnlyData();
+				Cock smallest = target.genitals.ShortestCock();
+				CockData oldData = smallest.AsReadOnlyData();
 
 				smallest.IncreaseLength(Utils.Rand(4) + 3);
 				if (smallest.girth < 1)
 				{
-					var delta = 1 - smallest.girth;
+					float delta = 1 - smallest.girth;
 					smallest.IncreaseThickness(delta);
 				}
 				sb.Append(GrewSmallestCockText(target, smallest.cockIndex, oldData));
@@ -410,7 +428,7 @@ namespace CoC.Frontend.Transformations
 				byte breastCount = (byte)target.breasts.Count;
 				if (breastCount < 3)
 				{
-					var oldBreastData = target.genitals.allBreasts.AsReadOnlyData();
+					BreastCollectionData oldBreastData = target.genitals.allBreasts.AsReadOnlyData();
 
 					//in vanilla code, we had some strange checks here that required the first row (and only the first row) be a certain size.
 					//now, we check all the rows, but no longer require any of them to be a certain size. instead, if it's not the right size, we make it that size,
@@ -456,12 +474,14 @@ namespace CoC.Frontend.Transformations
 					sb.Append(UpdateAndGrowAdditionalRowText(target, oldBreastData, doCrit, uberCrit));
 
 
-					if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
-
+					if (--remainingChanges <= 0)
+					{
+						return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+					}
 				}
 				else
 				{
-					var oldBreastData = target.genitals.allBreasts.AsReadOnlyData();
+					BreastCollectionData oldBreastData = target.genitals.allBreasts.AsReadOnlyData();
 
 					//only call the normalize text if we actually did anything. related, anthro breasts now returns a bool. thanks, fox tfs.
 					if (target.genitals.AnthropomorphizeBreasts())
@@ -476,8 +496,10 @@ namespace CoC.Frontend.Transformations
 			{
 				sb.Append(EnterOrIncreaseHeatText(target, increased));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
-
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			//doggo fantasies
@@ -487,20 +509,26 @@ namespace CoC.Frontend.Transformations
 				sb.Append(DoggoFantasyText(target));
 				target.IncreaseLust(5 + (target.libidoTrue / 20f));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			//doggo tfs.
 
 			if (!target.eyes.isDefault && Utils.Rand(5) == 0)
 			{
-				var oldData = target.eyes.AsReadOnlyData();
+				EyeData oldData = target.eyes.AsReadOnlyData();
 
 				target.RestoreEyes();
 
 				sb.Append(RestoredEyesText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			if (modifiers.HasFlag(CanineModifiers.BLACK) && !target.body.mainEpidermis.fur.IsIdenticalTo(HairFurColors.BLACK))
@@ -509,7 +537,7 @@ namespace CoC.Frontend.Transformations
 				if (target.body.type != BodyType.SIMPLE_FUR)
 				//if (target.body.mainEpidermis.currentType != EpidermisType.FUR)
 				{
-					var oldBodyData = target.body.AsReadOnlyData();
+					BodyData oldBodyData = target.body.AsReadOnlyData();
 
 					target.UpdateBody(BodyType.SIMPLE_FUR, new FurColor(HairFurColors.BLACK), FurTexture.THICK);
 
@@ -517,12 +545,15 @@ namespace CoC.Frontend.Transformations
 				}
 				else
 				{
-					var oldFur = target.body.mainEpidermis.fur.AsReadOnly();
+					ReadOnlyFurColor oldFur = target.body.mainEpidermis.fur.AsReadOnly();
 					target.body.ChangeMainFur(new FurColor(HairFurColors.MIDNIGHT_BLACK), FurTexture.THICK);
 					sb.Append(ChangedFurText(target, oldFur));
 				}
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 			//again, we're ignoring underbody for now, idk.
 			else if (target.lowerBody.type == LowerBodyType.DOG && target.tail.type == TailType.DOG &&
@@ -530,7 +561,7 @@ namespace CoC.Frontend.Transformations
 				target.body.type != BodyType.SIMPLE_FUR
 				&& Utils.Rand(4) == 0)
 			{
-				var oldBodyData = target.body.AsReadOnlyData();
+				BodyData oldBodyData = target.body.AsReadOnlyData();
 
 				FurColor oldFur = target.body.mainEpidermis.fur;
 
@@ -538,69 +569,90 @@ namespace CoC.Frontend.Transformations
 
 				sb.Append(ChangedBodyTypeText(target, oldBodyData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			if (target.lowerBody.type != LowerBodyType.DOG && target.tail.type == TailType.DOG && target.ears.type == EarType.DOG && Utils.Rand(3) == 0)
 			{
-				var oldData = target.lowerBody.AsReadOnlyData();
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 
 				target.UpdateLowerBody(LowerBodyType.DOG);
 				sb.Append(ChangedLowerBodyText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			if (target.ears.type != EarType.DOG && target.tail.type == TailType.DOG && Utils.RandBool())
 			{
-				var oldData = target.ears.AsReadOnlyData();
+				EarData oldData = target.ears.AsReadOnlyData();
 
 				target.UpdateEars(EarType.DOG);
 
 				sb.Append(ChangedEarsText(target, oldData));
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			if (target.tail.type != TailType.DOG && Utils.Rand(3) == 0)
 			{
-				var oldData = target.tail.AsReadOnlyData();
+				TailData oldData = target.tail.AsReadOnlyData();
 
 				target.UpdateTail(TailType.DOG);
 
 				sb.Append(ChangedTailText(target, oldData));
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			if (target.arms.type != ArmType.DOG && target.body.isFurry && target.tail.type == TailType.DOG
 				&& target.lowerBody.type == LowerBodyType.DOG && Utils.Rand(4) == 0)
 			{
-				var oldArmData = target.arms.AsReadOnlyData();
+				ArmData oldArmData = target.arms.AsReadOnlyData();
 
 				target.UpdateArms(ArmType.DOG);
 
 				sb.Append(ChangedArmsText(target, oldArmData));
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			if (!target.gills.isDefault && Utils.Rand(4) == 0)
 			{
-				var oldGillData = target.gills.AsReadOnlyData();
+				GillData oldGillData = target.gills.AsReadOnlyData();
 
 				target.RestoreGills();
 
 				sb.Append(RemovedGillsText(target, oldGillData));
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
-			if (target is CombatCreature cc && target.body.isFurry && Utils.Rand(3) == 0)
+			if (target.body.isFurry && Utils.Rand(3) == 0)
 			{
 
-				cc.DeltaCombatCreatureStats(tou: 4, sens: -3);
+				target.DeltaCreatureStats(tou: 4, sens: -3);
 
 
 				sb.Append(FallbackToughenUpText(target));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeLimit - remainingChanges);
+				}
 			}
 
 			if (target is CombatCreature cc2 && remainingChanges == changeLimit)

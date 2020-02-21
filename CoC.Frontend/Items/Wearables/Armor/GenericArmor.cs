@@ -11,7 +11,7 @@ using CoC.Backend.Perks;
 namespace CoC.Frontend.Items.Wearables.Armor
 {
 	//A generic format for armors that does not require a new class. i'm not overly fond of this approach, but whatever. it uses a Guid to determine if two items are equal.
-	class GenericArmor : ArmorBase, ISluttySeductionItem, IWizardEnduranceItem
+	class GenericArmor : ArmorBase, IWizardEnduranceItem
 	{
 		protected readonly float defense;
 		protected readonly Guid id;
@@ -43,7 +43,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		}
 
 
-		public override float DefensiveRating(Creature wearer) => defense;
+		public override double PhysicalDefensiveRating(Creature wearer) => defense;
 
 		public override bool Equals(ArmorBase other)
 		{
@@ -60,12 +60,12 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 		protected override int monetaryValue => value;
 
-		public byte SluttySeductionModifier(Creature wearer) => this.sluttySeduction;
+		public override double BonusTeaseDamage(Creature wearer) => this.sluttySeduction;
 		public byte WizardsEnduranceModifier(Creature wearer) => this.wizardsEndurance;
 
-		public override bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot)
+		public override bool CanWearWithUpperGarment(Creature wearer, UpperGarmentBase upperGarment, out string whyNot)
 		{
-			if (!worksWithUnderclothes && !(upperGarment is null))
+			if (!worksWithUnderclothes && !UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				whyNot = GenericArmorIncompatText(upperGarment);
 				return false;
@@ -77,9 +77,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 		}
 
-		public override bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment, out string whyNot)
+		public override bool CanWearWithLowerGarment(Creature wearer, LowerGarmentBase lowerGarment, out string whyNot)
 		{
-			if (!worksWithUnderclothes && !(lowerGarment is null))
+			if (!worksWithUnderclothes && !LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				whyNot = GenericArmorIncompatText(lowerGarment);
 				return false;
@@ -95,7 +95,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 	internal delegate string BulgeAwareItemDescription(bool isBulged, byte count, bool displayCount);
 	internal delegate string BulgeAwareStateChange(Creature wearer, bool isBulged);
 
-	class GenericArmorWithBulge : ArmorBase, IBulgeArmor, ISluttySeductionItem, IWizardEnduranceItem
+	class GenericArmorWithBulge : ArmorBase, IBulgeArmor, IWizardEnduranceItem
 	{
 		protected readonly float defense;
 		protected readonly Guid id;
@@ -137,7 +137,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		}
 
 
-		public override float DefensiveRating(Creature wearer) => defense;
+		public override double PhysicalDefensiveRating(Creature wearer) => defense;
 
 		public override bool Equals(ArmorBase other)
 		{
@@ -154,12 +154,12 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 		protected override int monetaryValue => value;
 
-		public byte SluttySeductionModifier(Creature wearer) => this.sluttySeduction;
+		public override double BonusTeaseDamage(Creature wearer) => this.sluttySeduction;
 		public byte WizardsEnduranceModifier(Creature wearer) => this.wizardsEndurance;
 
-		public override bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot)
+		public override bool CanWearWithUpperGarment(Creature wearer, UpperGarmentBase upperGarment, out string whyNot)
 		{
-			if (!worksWithUnderclothes && !(upperGarment is null))
+			if (!worksWithUnderclothes && !UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				whyNot = GenericArmorIncompatText(upperGarment);
 				return false;
@@ -171,9 +171,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 		}
 
-		public override bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment, out string whyNot)
+		public override bool CanWearWithLowerGarment(Creature wearer, LowerGarmentBase lowerGarment, out string whyNot)
 		{
-			if (!worksWithUnderclothes && !(lowerGarment is null))
+			if (!worksWithUnderclothes && !LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				whyNot = GenericArmorIncompatText(lowerGarment);
 				return false;
@@ -201,5 +201,16 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		}
 
 		bool IBulgeArmor.isBulged => bulged;
+
+		protected override ArmorBase OnRemove(Creature wearer)
+		{
+			bulged = false;
+			return base.OnRemove(wearer);
+		}
+
+		protected override string RemoveText(Creature wearer)
+		{
+			return this.GenericBulgeAwareRemoveText(bulged, base.RemoveText(wearer));
+		}
 	}
 }

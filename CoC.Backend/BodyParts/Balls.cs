@@ -48,8 +48,8 @@ namespace CoC.Backend.BodyParts
 		private byte getNewSize() => Utils.Clamp2(defaultNewSize, MIN_BALLS_SIZE, MAX_BALLS_SIZE);
 		private byte getNewSize(byte baseSize) => Utils.Clamp2(baseSize.offset(newSizeOffset), MIN_BALLS_SIZE, MAX_BALLS_SIZE);
 
-		internal float shrinkMultiplier = 1.0f;
-		internal float growthMultiplier = 1.0f;
+		internal double shrinkMultiplier = 1.0f;
+		internal double growthMultiplier = 1.0f;
 
 		//recommend saving the hasBalls bool even though it is a determined property - in the event of malformed data, it allows an additional way to catch
 		//if the save should have balls.
@@ -74,7 +74,7 @@ namespace CoC.Backend.BodyParts
 		private byte _size;
 
 		internal int hoursSinceCum => CreatureStore.GetCreatureClean(creatureID)?.genitals.hoursSinceLastCum ?? 0;
-		internal float relativeLust => CreatureStore.GetCreatureClean(creatureID)?.relativeLust ?? Creature.DEFAULT_LUST;
+		internal double relativeLust => CreatureStore.GetCreatureClean(creatureID)?.relativeLust ?? Creature.DEFAULT_LUST;
 		internal BodyType bodyType => CreatureStore.GetCreatureClean(creatureID)?.body.type ?? BodyType.defaultValue;
 
 
@@ -251,7 +251,7 @@ namespace CoC.Backend.BodyParts
 			byte originalSize = size;
 			if (!ignorePerks)
 			{
-				//multiply it by the perk. float should be sanitized within passiveBaseStatModifier class.
+				//multiply it by the perk. double should be sanitized within passiveBaseStatModifier class.
 				ushort val = (ushort)Math.Round(growthMultiplier * amount);
 				amount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
 			}
@@ -379,7 +379,7 @@ namespace CoC.Backend.BodyParts
 			return size > MIN_BALLS_SIZE;
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			byte startVal = size;
 			//even chance of 2 - 5, or 3-6 if we have a somewhat large shrink multiplier.
@@ -396,7 +396,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//executive deicision: GRO+ always removes uniball. idgaf.
-		float IGrowable.UseGroPlus()
+		double IGrowable.UseGroPlus()
 		{
 			int startVal = size;
 			if (((IGrowable)this).CanGroPlus())
@@ -491,7 +491,7 @@ namespace CoC.Backend.BodyParts
 		public bool uniBall => count == Balls.UNIBALL_COUNT;
 
 		internal readonly BodyType bodyType;
-		internal readonly float relativeLust;
+		internal readonly double relativeLust;
 		internal readonly int hoursSinceLastCum;
 		#region Text
 		//overloads that control the fallback text when the creature has no balls. by default, it goes to prostate, though some text like 'non-existant balls'
@@ -550,7 +550,7 @@ namespace CoC.Backend.BodyParts
 			bodyType = source.bodyType;
 			relativeLust = source.relativeLust;
 		}
-		internal BallsData(Guid id, byte numBalls, byte ballSize, int hoursSinceLastCum, float relativeLust, BodyType bodyType) : base(id)
+		internal BallsData(Guid id, byte numBalls, byte ballSize, int hoursSinceLastCum, double relativeLust, BodyType bodyType) : base(id)
 		{
 			this.count = numBalls;
 			this.size = ballSize;

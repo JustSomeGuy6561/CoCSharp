@@ -25,7 +25,10 @@ namespace CoC.Frontend.Items.Wearables.Armor
 				return Utils.NumberAsText(count) + "sets of matching front and back loincloths";
 			}
 		}
-		public override float DefensiveRating(Creature wearer) => 0;
+
+		public override bool isNearlyNaked => true;
+
+		public override double PhysicalDefensiveRating(Creature wearer) => 0;
 
 		protected override int monetaryValue => 100;
 

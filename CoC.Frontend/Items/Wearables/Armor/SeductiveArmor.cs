@@ -35,7 +35,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		}
 
 
-		public override float DefensiveRating(Creature wearer) => 0;
+		public override double PhysicalDefensiveRating(Creature wearer) => 0;
 
 		protected override int monetaryValue => 1;
 
@@ -136,16 +136,6 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return sb.ToString();
 		}
 
-		protected override bool destroyOnRemoval => true;
-
-		protected override ArmorBase EquipItem(Creature wearer, out string equipOutput)
-		{
-			var retVal = base.EquipItem(wearer, out equipOutput);
-
-			base.EquipArmor(null, out string _);
-			return retVal;
-		}
-
 		private ReadOnlyPiercing<NipplePiercingLocation> oldPiercings;
 
 		protected override void OnEquip(Creature wearer)
@@ -171,6 +161,15 @@ namespace CoC.Frontend.Items.Wearables.Armor
 				wearer.breasts[0].nipplePiercings.EquipOrPierceAndEquip(NipplePiercingLocation.LEFT_HORIZONTAL, new CeraphNipplePiercings(), true);
 				wearer.breasts[0].nipplePiercings.EquipOrPierceAndEquip(NipplePiercingLocation.RIGHT_HORIZONTAL, new CeraphNipplePiercings(), true);
 			}
+
+			//then silently remove the armor.
+			wearer.RemoveArmorManual(out _);
+		}
+
+		//if you somehow procc this, it should destroy itself on removal.
+		protected override ArmorBase OnRemove(Creature wearer)
+		{
+			return null;
 		}
 
 		public override bool Equals(ArmorBase other)

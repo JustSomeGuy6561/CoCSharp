@@ -561,7 +561,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		public static string LengthText(float length, float creatureHeight)
+		public static string LengthText(double length, double creatureHeight)
 		{
 			if (length == 0) return BaldText();
 

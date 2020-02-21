@@ -64,16 +64,16 @@ namespace CoC.Backend.BodyParts
 		//right now, accelerated growth lasts 8 hours. changing the accelorator level to non-zero will reset this to 8 hours. Changing it to zero will immediately set the duration to zero.
 		public const byte ACCELERATOR_DURATION = 8;
 		//accelerated growth can be stacked 3 times.
-		//if you want to go nuts, you can set this up to a max of 126. after that, we are no longer in the range of float. personally, i'd highly recommend leaving it at 3, as that's already
+		//if you want to go nuts, you can set this up to a max of 126. after that, we are no longer in the range of double. personally, i'd highly recommend leaving it at 3, as that's already
 		//1.1 inches of growth an hour, up from the default of 0.1, though you could probably get away with a value up to 5 or 6 (5 is 4.7 inches per hour, 6 is 9.5)
 		//alternatively, you could alter the growth rate function, but whatever.
 		public const byte MAX_ACCELERATOR_LEVEL = 3;
 
 
-		//currently only limited by the range of a float in centimeters. we store things in imperial measures, however, so this is actually limited to
-		//max float divided by 2.54. In the future a more convenient value (like say, 360, or 30 feet long) may be used, but for now, i'm not limiting it. Go nuts, people!
-		public const float MAX_LENGTH = (float)(float.MaxValue * Measurement.TO_INCHES);
-		public const float MIN_LENGTH = 0;
+		//currently only limited by the range of a double in centimeters. we store things in imperial measures, however, so this is actually limited to
+		//max double divided by 2.54. In the future a more convenient value (like say, 360, or 30 feet long) may be used, but for now, i'm not limiting it. Go nuts, people!
+		public const double MAX_LENGTH = (double)(double.MaxValue * Measurement.TO_INCHES);
+		public const double MIN_LENGTH = 0;
 
 		private BuildData buildData => CreatureStore.TryGetCreature(creatureID, out Creature creature) ? creature.build.AsReadOnlyData() : new BuildData(creatureID);
 		private Tones skinTone => CreatureStore.GetCreatureClean(creatureID)?.body.primarySkin.tone ?? Tones.LIGHT;
@@ -130,12 +130,12 @@ namespace CoC.Backend.BodyParts
 
 		public bool isSemiTransparent { get; private set; } = false;
 
-		public float length
+		public double length
 		{
 			get => _length;
 			private set => _length = Utils.Clamp2(value, MIN_LENGTH, MAX_LENGTH);
 		}
-		private float _length = 10;
+		private double _length = 10;
 
 		//growthAcceleration level is capped at 3 (right now)
 		//i use the sequence currently used in game (1,2), (2,5), (3,11), which implies => (4,23), (5,47), etc.
@@ -145,17 +145,17 @@ namespace CoC.Backend.BodyParts
 		//for 0, we use 1.
 
 		//use growth rate for all values not 0, otherwise use 1.
-		private float growthMultiplier => growthAccelerationLevel > 0 ? growthRateFn(growthAccelerationLevel) : 1.0f;
+		private double growthMultiplier => growthAccelerationLevel > 0 ? growthRateFn(growthAccelerationLevel) : 1.0f;
 
-		//max for amount: 127 after that we're out of range for a float.
-		//floats are weird, man. max is 1.99999999999999999999999^128 iirc
-		private float growthRateFn(byte amount)
+		//max for amount: 127 after that we're out of range for a double.
+		//doubles are weird, man. max is 1.99999999999999999999999^128 iirc
+		private double growthRateFn(byte amount)
 		{
 			//3*2^(n-1) -1;
 			//takes advantage of the fact that 2^n == 1 << (n+1). a bit shift right is the same as multiplying a number by 2 each time you shift it. right shift 5 of x and x * 2^5 are identical.
 			//thus, 2^(n-1) == 1 << n. bit shifts use massively less resources than Pow, though idk if they were smart enough to optimize in powers of 2.
 			//for reference, a bit shift is a single opcode in every assembly i'm aware of. technically a multiply is two opcodes, and pow is a series of multiplies.
-			//plus C# abstraction, accounting for floating point values, etc. long story short, this is faster.
+			//plus C# abstraction, accounting for doubleing point values, etc. long story short, this is faster.
 			return 3 * (1 << amount) - 1;
 		}
 
@@ -172,14 +172,14 @@ namespace CoC.Backend.BodyParts
 		internal Hair(Guid creatureID) : this(creatureID, HairType.defaultValue)
 		{ }
 
-		internal Hair(Guid creatureID, HairType hairType, HairFurColors color = null, HairFurColors highlight = null, float? hairLength = null,
+		internal Hair(Guid creatureID, HairType hairType, HairFurColors color = null, HairFurColors highlight = null, double? hairLength = null,
 			HairStyle? hairStyle = null, bool hairTransparent = false) : base(creatureID)
 		{
 			_type = hairType ?? throw new ArgumentNullException(nameof(hairType));
 
 
 			_length = type.defaultHairLength;
-			if (!type.isFixedLength && hairLength is float validLength) SetHairLengthPrivate(validLength);
+			if (!type.isFixedLength && hairLength is double validLength) SetHairLengthPrivate(validLength);
 
 			style = hairStyle ?? HairStyle.NO_STYLE;
 
@@ -200,7 +200,7 @@ namespace CoC.Backend.BodyParts
 			{
 				if (_type != value)
 				{
-					float len = length;
+					double len = length;
 					HairStyle sty = style;
 					value.ChangeTypeFrom(_type, ref len, ref _hairColor, ref _highlightColor, ref sty, skinTone);
 					style = sty;
@@ -241,7 +241,7 @@ namespace CoC.Backend.BodyParts
 		//Updates the type. returns true if it actually changed type. if it didn't change type, all other variables are ignored, and it returns false
 		//all variables beyond type are optional. All hair will first do its default action on transform, then update with any values here.
 		//this is to prevent overriding when calling the tf on change effects.
-		internal bool UpdateType(HairType newType, bool? enableHairGrowth = null, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null, float? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
+		internal bool UpdateType(HairType newType, bool? enableHairGrowth = null, HairFurColors newHairColor = null, HairFurColors newHighlightColor = null, double? newHairLength = null, HairStyle? newStyle = null, bool ignoreCanLengthenOrCut = false)
 		{
 			if (newType == null || type == newType)
 			{
@@ -253,7 +253,7 @@ namespace CoC.Backend.BodyParts
 			type = newType;
 
 			//if we have a new, valid hair length, and we can set the length
-			if (newHairLength is float validLength && !type.isFixedLength)
+			if (newHairLength is double validLength && !type.isFixedLength)
 			{
 				//if we can cut it and our new length is shorter, or if we can lengthen and our length is longer, the length is not already correct
 				if ((type.canCut && validLength < length) || (type.canLengthen && validLength > length) || (validLength != length && ignoreCanLengthenOrCut))
@@ -350,12 +350,12 @@ namespace CoC.Backend.BodyParts
 		//of course, if the type has a single, fixed size for hair length, this will not be possible, and therefore return false.
 		//otherwise, it will return true.
 
-		public bool SetHairLength(float newLength)
+		public bool SetHairLength(double newLength)
 		{
 			return HandleHairChange(() => SetHairLengthPrivate(newLength));
 		}
 
-		private bool SetHairLengthPrivate(float newLength)
+		private bool SetHairLengthPrivate(double newLength)
 		{
 			if (type.isFixedLength)
 			{
@@ -383,10 +383,10 @@ namespace CoC.Backend.BodyParts
 		//though you do have the option to ignore this variable. Note that even if you ignore this variable, types with a fixed hair Length
 		//will never change length.
 		//returns the amount the hair grew.
-		public float GrowHair(float byAmount, bool ignoreCanLengthen = false)
+		public double GrowHair(double byAmount, bool ignoreCanLengthen = false)
 		{
 			var oldData = AsReadOnlyData();
-			float currLen = length;
+			double currLen = length;
 			if (type.canLengthen || (ignoreCanLengthen && !type.isFixedLength))
 			{
 				length += byAmount;
@@ -406,10 +406,10 @@ namespace CoC.Backend.BodyParts
 		//will never change length.
 		//returns the amount the hair shortened.
 
-		public float ShortenHair(float byAmount, bool ignoreCanCut = false)
+		public double ShortenHair(double byAmount, bool ignoreCanCut = false)
 		{
 			var oldData = AsReadOnlyData();
-			float currLen = length;
+			double currLen = length;
 			if (type.canCut || (!type.isFixedLength && ignoreCanCut))
 			{
 				length -= byAmount;
@@ -422,16 +422,16 @@ namespace CoC.Backend.BodyParts
 			return currLen - length;
 		}
 
-		public bool SetAll(float? newLength = null, bool? enableHairGrowth = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
+		public bool SetAll(double? newLength = null, bool? enableHairGrowth = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
 		{
 
 			return HandleHairChange(() => SetAllPrivate(newLength, enableHairGrowth, mainColor, highlight, style));
 		}
 
-		private bool SetAllPrivate(float? newLength = null, bool? enableHairGrowth = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
+		private bool SetAllPrivate(double? newLength = null, bool? enableHairGrowth = null, HairFurColors mainColor = null, HairFurColors highlight = null, HairStyle? style = null)
 		{
 			bool retVal = false;
-			if (newLength is float length)
+			if (newLength is double length)
 			{
 				retVal |= SetHairLengthPrivate(length);
 			}
@@ -521,7 +521,7 @@ namespace CoC.Backend.BodyParts
 		internal override bool Validate(bool correctInvalidData)
 		{
 
-			float len = length;
+			double len = length;
 			HairStyle hairStyle = style;
 			bool valid = HairType.Validate(ref _type, ref len, ref _hairColor, ref _highlightColor, ref hairStyle, correctInvalidData);
 			style = hairStyle;
@@ -688,9 +688,9 @@ namespace CoC.Backend.BodyParts
 
 			StringBuilder sb = new StringBuilder();
 			HairStyle hairStyle = style;
-			float newLength = length;
+			double newLength = length;
 
-			float unitsGrown;
+			double unitsGrown;
 			if (growthCountdownTimer > 0 && growthAccelerationLevel > 0)
 			{
 				byte growMin = Math.Min(hoursPassed, growthCountdownTimer);
@@ -760,7 +760,7 @@ namespace CoC.Backend.BodyParts
 		public static HairType defaultValue => NORMAL;
 
 		public readonly HairFurColors defaultColor;
-		public readonly float defaultHairLength;
+		public readonly double defaultHairLength;
 
 
 		public override int id => _index;
@@ -787,7 +787,7 @@ namespace CoC.Backend.BodyParts
 
 		public abstract bool canDye { get; }
 
-		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, SimpleDescriptor strandsOfShort, PartDescriptor<HairData> longDesc,
+		private protected HairType(HairFurColors defaultHairColor, double defaultLength, SimpleDescriptor shortDesc, SimpleDescriptor strandsOfShort, PartDescriptor<HairData> longDesc,
 			SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
 			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, strandsOfShort, longDesc, DefaultPlayerDesc, transform, restore)
 		{
@@ -801,7 +801,7 @@ namespace CoC.Backend.BodyParts
 			flavorTextForMagicHairGrowth = growFlavorText;
 
 		}
-		private protected HairType(HairFurColors defaultHairColor, float defaultLength, SimpleDescriptor shortDesc, SimpleDescriptor strandsOfShort, PartDescriptor<HairData> longDesc,
+		private protected HairType(HairFurColors defaultHairColor, double defaultLength, SimpleDescriptor shortDesc, SimpleDescriptor strandsOfShort, PartDescriptor<HairData> longDesc,
 			PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growFlavorText, SimpleDescriptor cutFlavorText,
 			ChangeType<HairData> transform, RestoreType<HairData> restore) : base(shortDesc, strandsOfShort, longDesc, playerDesc, transform, restore)
 		{
@@ -831,7 +831,7 @@ namespace CoC.Backend.BodyParts
 
 		//validate is called after deserialization. This means that the data passed in is NOT null, with exception to type. length is positive.
 
-		internal static bool Validate(ref HairType type, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
+		internal static bool Validate(ref HairType type, ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
 		{
 			bool valid = true;
 			if (!hairTypes.Contains(type))
@@ -846,10 +846,10 @@ namespace CoC.Backend.BodyParts
 			return valid & type.ValidateData(ref length, ref primaryColor, ref highlightColor, ref hairStyle, correctInvalidData);
 		}
 
-		private protected abstract bool ValidateData(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData);
+		private protected abstract bool ValidateData(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData);
 
 
-		internal abstract void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone);
+		internal abstract void ChangeTypeFrom(HairType oldType, ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone);
 
 
 		//super complicated but a lot more flexible this way - basically, you can choose to set anything you want as time passes. Does having living hair mean your hair randomly gets
@@ -857,18 +857,18 @@ namespace CoC.Backend.BodyParts
 		//Don't worry about saying that the hair grew to a certain length relative to the player - that's taken care of by the Hair class, and it'll be appended after any other
 		//special text you set here. also, return true if something happened to the hair - even if it didn't change length, the game needs to know that you messed with the hair style,
 		//for example. false otherwise.
-		internal abstract bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, byte hoursPassed,
-			float unitsGrown, out string SpecialOutput);
+		internal abstract bool reactToTimePassing(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, byte hoursPassed,
+			double unitsGrown, out string SpecialOutput);
 
 		public bool IsBasiliskHair()
 		{
 			return this == BASILISK_PLUME || this == BASILISK_SPINES;
 		}
 
-		protected static Func<float, float> KeepSize() => (x) => x;
-		protected static Func<float, float> KeepSizeUnlessBald(float defaultSize) => (x) => x != 0 ? x : defaultSize; //currently unused, idk if that's a behavior someone would prefer.
-		protected static Func<float, float> AtLeastThisBig(float defaultSize) => (x) => x > defaultSize ? x : defaultSize;
-		protected static Func<float, float> SetTo(float defaultSize) => (x) => defaultSize;
+		protected static Func<double, double> KeepSize() => (x) => x;
+		protected static Func<double, double> KeepSizeUnlessBald(double defaultSize) => (x) => x != 0 ? x : defaultSize; //currently unused, idk if that's a behavior someone would prefer.
+		protected static Func<double, double> AtLeastThisBig(double defaultSize) => (x) => x > defaultSize ? x : defaultSize;
+		protected static Func<double, double> SetTo(double defaultSize) => (x) => defaultSize;
 
 		public static readonly HairType NO_HAIR = new NoHair(); //0.0
 		public static readonly HairType NORMAL = new NormalHair();
@@ -895,7 +895,7 @@ namespace CoC.Backend.BodyParts
 
 			public override bool canStyle => false;
 
-			internal override void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
+			internal override void ChangeTypeFrom(HairType oldType, ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
 			{
 				length = defaultHairLength;
 				//keep the main color. See top of this file for why i chose this, but feel free to override me.
@@ -907,11 +907,11 @@ namespace CoC.Backend.BodyParts
 			}
 
 			//all data is guarenteed to be NOT NULL. length is guarenteed to be positive.
-			private protected override bool ValidateData(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
+			private protected override bool ValidateData(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
 			{
 				bool valid = true;
 
-				if (length > 0.001 || length < 0.001) //let weird floating point shit go.
+				if (length > 0.001 || length < 0.001) //let weird doubleing point shit go.
 				{
 					if (correctInvalidData)
 					{
@@ -942,8 +942,8 @@ namespace CoC.Backend.BodyParts
 				return valid;
 			}
 
-			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor,
-				ref HairStyle hairStyle, byte hoursPassed, float unitsGrown, out string SpecialOutput)
+			internal override bool reactToTimePassing(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor,
+				ref HairStyle hairStyle, byte hoursPassed, double unitsGrown, out string SpecialOutput)
 			{
 				SpecialOutput = "";
 				if (length != 0)
@@ -961,7 +961,7 @@ namespace CoC.Backend.BodyParts
 			//one exception is that some hair types act differently when transforming. some keep the hair length, some reset it to a specific length,
 			//and still others force the hair to be at least a certain length, or they will grow to that length. So, we use a function callback here to set the size on transform
 			//and this solves our problem.
-			private readonly Func<float, float> SetHairLengthOnTransform;
+			private readonly Func<double, double> SetHairLengthOnTransform;
 
 			//this allows you to define text for magically growing hair, or cutting hair. It's supposed to be useable for anything, but right now the only place this happens is the hair salon.
 			//i'll modify existing text to a sort of generic intro text for both the hair you can cut, and the hair you can't. this will be appended on to it.
@@ -972,7 +972,7 @@ namespace CoC.Backend.BodyParts
 
 			public override bool canStyle => true;
 
-			public GenericHairType(HairFurColors defaultHairColor, float defaultLength, Func<float, float> handleHairLengthOnTransform,
+			public GenericHairType(HairFurColors defaultHairColor, double defaultLength, Func<double, double> handleHairLengthOnTransform,
 				SimpleDescriptor shortDesc, PartDescriptor<HairData> longDesc, SimpleDescriptor strandDesc, PlayerBodyPartDelegate<Hair> playerDesc, SimpleDescriptor growStr,
 				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, strandDesc, longDesc, playerDesc, growStr, cutStr, transform, restore)
@@ -980,7 +980,7 @@ namespace CoC.Backend.BodyParts
 				SetHairLengthOnTransform = handleHairLengthOnTransform;
 			}
 
-			public GenericHairType(HairFurColors defaultHairColor, float defaultLength, Func<float, float> handleHairLengthOnTransform,
+			public GenericHairType(HairFurColors defaultHairColor, double defaultLength, Func<double, double> handleHairLengthOnTransform,
 				SimpleDescriptor shortDesc, SimpleDescriptor strandDesc, PartDescriptor<HairData> longDesc, SimpleDescriptor growStr,
 				SimpleDescriptor cutStr, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, strandDesc, longDesc, growStr, cutStr, transform, restore)
@@ -992,7 +992,7 @@ namespace CoC.Backend.BodyParts
 			public override bool canDye => true;
 
 			//all data is guarenteed to be NOT NULL. length is guarenteed to be positive.
-			private protected override bool ValidateData(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
+			private protected override bool ValidateData(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
 			{
 				//highlight is fine, length is fine. so is style.
 				//so this is all we need to check.
@@ -1008,7 +1008,7 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 
-			internal override void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
+			internal override void ChangeTypeFrom(HairType oldType, ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
 			{
 				length = SetHairLengthOnTransform(length);
 				if (HairFurColors.IsNullOrEmpty(primaryColor))
@@ -1019,8 +1019,8 @@ namespace CoC.Backend.BodyParts
 				//same with the hair style.
 			}
 
-			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
-				byte hoursPassed, float unitsGrown, out string SpecialOutput)
+			internal override bool reactToTimePassing(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
+				byte hoursPassed, double unitsGrown, out string SpecialOutput)
 			{
 				SpecialOutput = "";
 				length += unitsGrown * 0.1f;
@@ -1058,14 +1058,14 @@ namespace CoC.Backend.BodyParts
 			internal override AttackBase attack => _attack; //caught a stack overflow here because attack was attack.
 			private readonly AttackBase _attack;
 
-			public LivingHair(HairFurColors defaultHairColor, float defaultLength, AttackBase attack, SimpleDescriptor shortDesc, SimpleDescriptor strandDesc,
+			public LivingHair(HairFurColors defaultHairColor, double defaultLength, AttackBase attack, SimpleDescriptor shortDesc, SimpleDescriptor strandDesc,
 				PartDescriptor<HairData> longDesc, SimpleDescriptor whyNoGrowingDesc, SimpleDescriptor whyNoCuttingDesc, ChangeType<HairData> transform, RestoreType<HairData> restore)
 				: base(defaultHairColor, defaultLength, shortDesc, strandDesc, longDesc, whyNoGrowingDesc, whyNoCuttingDesc, transform, restore)
 			{
 				_attack = attack;
 			}
 
-			private protected override bool ValidateData(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
+			private protected override bool ValidateData(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
 			{
 				//highlight is fine, length is fine. so is style.
 				//so this is all we need to check.
@@ -1081,7 +1081,7 @@ namespace CoC.Backend.BodyParts
 				return true;
 			}
 
-			internal override void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
+			internal override void ChangeTypeFrom(HairType oldType, ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
 			{
 				length = defaultHairLength;
 				if (HairFurColors.IsNullOrEmpty(primaryColor))
@@ -1096,8 +1096,8 @@ namespace CoC.Backend.BodyParts
 
 			}
 
-			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
-				byte hoursPassed, float unitsGrown, out string SpecialOutput)
+			internal override bool reactToTimePassing(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
+				byte hoursPassed, double unitsGrown, out string SpecialOutput)
 			{
 				SpecialOutput = "";
 				length += unitsGrown * 0.1f;
@@ -1121,11 +1121,11 @@ namespace CoC.Backend.BodyParts
 			public override bool canStyle => false;
 
 			//all data is guarenteed to be NOT NULL. length is guarenteed to be positive.
-			private protected override bool ValidateData(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
+			private protected override bool ValidateData(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, bool correctInvalidData)
 			{
 				bool valid = true;
 
-				if (length > defaultHairLength + 0.01 || length < defaultHairLength - 0.01) //handle floating point shit.
+				if (length > defaultHairLength + 0.01 || length < defaultHairLength - 0.01) //handle doubleing point shit.
 				{
 					if (correctInvalidData)
 					{
@@ -1133,7 +1133,7 @@ namespace CoC.Backend.BodyParts
 					}
 					valid = false;
 				}
-				else if (length != defaultHairLength) //catch weird floating point BS. treat this as valid though.
+				else if (length != defaultHairLength) //catch weird doubleing point BS. treat this as valid though.
 				{
 					length = defaultHairLength;
 				}
@@ -1161,7 +1161,7 @@ namespace CoC.Backend.BodyParts
 				return valid;
 			}
 
-			internal override void ChangeTypeFrom(HairType oldType, ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
+			internal override void ChangeTypeFrom(HairType oldType, ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle, in Tones skinTone)
 			{
 				length = defaultHairLength;
 				if (HairFurColors.IsNullOrEmpty(primaryColor))
@@ -1180,8 +1180,8 @@ namespace CoC.Backend.BodyParts
 
 			}
 
-			internal override bool reactToTimePassing(ref float length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
-				byte hoursPassed, float unitsGrown, out string SpecialOutput)
+			internal override bool reactToTimePassing(ref double length, ref HairFurColors primaryColor, ref HairFurColors highlightColor, ref HairStyle hairStyle,
+				byte hoursPassed, double unitsGrown, out string SpecialOutput)
 			{
 				SpecialOutput = "";
 				return false;
@@ -1194,7 +1194,7 @@ namespace CoC.Backend.BodyParts
 		public readonly HairFurColors hairColor;
 		public readonly HairFurColors highlightColor;
 		public readonly HairStyle style;
-		public readonly float length;
+		public readonly double length;
 		public readonly bool isSemiTransparent;
 		public readonly bool isGrowing;
 		public bool isNoHair => type == HairType.NO_HAIR;
@@ -1218,7 +1218,7 @@ namespace CoC.Backend.BodyParts
 			return this;
 		}
 
-		internal HairData(Guid id, HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, float hairLen, bool semiTransparent, bool growing) : base(id, type)
+		internal HairData(Guid id, HairType type, HairFurColors color, HairFurColors highlight, HairStyle style, double hairLen, bool semiTransparent, bool growing) : base(id, type)
 		{
 			hairColor = color;
 			highlightColor = highlight;

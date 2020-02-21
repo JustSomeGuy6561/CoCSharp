@@ -13,6 +13,9 @@ namespace CoC.Backend.Strings
 	//most text doesn't care. but for the player description, for example, it's possible to change that to work with any creature if we replace the string "You" or "your" (etc)
 	//with the correct pronoun.
 
+	//i, you, he/she/it, we, you all, they
+	public enum ConjugateForm { FIRST_SINGULAR, SECOND_SINGULAR, THIRD_SINGULAR, FIRST_PLURAL, SECOND_PLURAL, THIRD_PLURAL}
+
 	public sealed class Conjugate
 	{
 		private readonly SimpleDescriptor possessiveNoun; //his, hers, mine, etc.

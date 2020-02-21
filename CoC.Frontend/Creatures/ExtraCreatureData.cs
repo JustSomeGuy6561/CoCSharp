@@ -22,6 +22,7 @@ namespace CoC.Frontend.Creatures
 		internal bool hasFerretWarning;
 		internal bool hasFoxWarning;
 		internal bool knowsAboutBlackEggs;
+		internal bool everUsedDragonshellShield;
 
 		public ExtendedCreatureData(Creature creature, ExtendedPerkModifiers extraPerkData)
 		{

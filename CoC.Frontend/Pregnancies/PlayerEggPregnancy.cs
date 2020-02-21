@@ -4,6 +4,7 @@
 //4/7/2019, 8:42 PM
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Pregnancies;
 using CoC.Backend.Reaction;
 using CoC.Backend.Tools;
 using CoC.Frontend.Creatures.PlayerData;
@@ -25,8 +26,10 @@ namespace CoC.Frontend.Pregnancies
 		private const ushort BIRTH_TIME = 50;
 		private const ushort BIRTH_SIZE = 20;
 
+		private static readonly Guid SPAWN_ID = Guid.Parse("39a82798-9915-4590-bdfa-7954c34794fe");
+
 		public PlayerEggPregnancy(Guid creatureID, bool largeClutch = false, bool? isLarge = null, Func<bool, EggBase> color = null)
-			: base(creatureID, EggDesc, EggSource, BIRTH_TIME, largeClutch, isLarge, color)
+			: base(creatureID, SPAWN_ID, EggDesc, EggSource, BIRTH_TIME, largeClutch, isLarge, color)
 		{ }
 
 		protected override DynamicTimeReaction HandleVaginalBirth(byte vaginalIndex)

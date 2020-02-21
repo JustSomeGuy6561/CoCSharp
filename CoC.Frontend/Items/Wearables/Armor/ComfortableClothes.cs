@@ -29,7 +29,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return $"{count}{setText} of {bulgifiedText} clothes";
 		}
 
-		public override float DefensiveRating(Creature wearer) => 0;
+		public override double PhysicalDefensiveRating(Creature wearer) => 0;
 
 		protected override int monetaryValue => 0;
 
@@ -73,17 +73,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 		bool IBulgeArmor.isBulged => bulgified;
 
-		protected override string OnRemoveText()
+		protected override string RemoveText(Creature wearer)
 		{
-			if (bulgified)
-			{
-				return "As you remove your clothes, you notice the modifications that made them hug your crotch and prominently display your bulge gradually disappear, " +
-					"as if by magic.";
-			}
-			else
-			{
-				return base.OnRemoveText();
-			}
+			return this.GenericBulgeAwareRemoveText(bulgified, base.RemoveText(wearer));
 		}
 
 	}

@@ -97,7 +97,7 @@ namespace CoC.Backend.BodyParts
 			return size > SLENDER;
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			if (!((IShrinkable)this).CanReducto())
 			{

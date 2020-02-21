@@ -34,13 +34,13 @@ namespace CoC.Backend.BodyParts
 
 		#region Lactation Related Constants
 
-		public const float MIN_LACTATION_MODIFIER = 0;
-		public const float LACTATION_THRESHOLD = 1.0f; //below this: not lactating. above this: lactating.
-		public const float MODERATE_LACTATION_THRESHOLD = 2.5f;
-		public const float STRONG_LACTATION_THRESHOLD = 5f;
-		public const float HEAVY_LACTATION_THRESHOLD = 7f;
-		public const float EPIC_LACTATION_THRESHOLD = 9f;
-		public const float MAX_LACTATION_MODIFIER = 10;
+		public const double MIN_LACTATION_MODIFIER = 0;
+		public const double LACTATION_THRESHOLD = 1.0f; //below this: not lactating. above this: lactating.
+		public const double MODERATE_LACTATION_THRESHOLD = 2.5f;
+		public const double STRONG_LACTATION_THRESHOLD = 5f;
+		public const double HEAVY_LACTATION_THRESHOLD = 7f;
+		public const double EPIC_LACTATION_THRESHOLD = 9f;
+		public const double MAX_LACTATION_MODIFIER = 10;
 
 		#endregion
 
@@ -61,7 +61,7 @@ namespace CoC.Backend.BodyParts
 		//public bool quadNipples { get; private set; } = false;
 		//public NippleStatus nippleType { get; private set; } = NippleStatus.NORMAL;
 
-		//public float nippleLength { get; private set; } = 0.5f;
+		//public double nippleLength { get; private set; } = 0.5f;
 
 		internal readonly NippleAggregate nippleData;
 
@@ -69,7 +69,7 @@ namespace CoC.Backend.BodyParts
 		public bool hasQuadNipples => nippleData.hasQuadNipples;
 		public NippleStatus nippleStatus => nippleData.nippleStatus;
 
-		public float nippleLength => nippleData.length;
+		public double nippleLength => nippleData.length;
 
 		public bool unlockedDickNipples
 		{
@@ -83,16 +83,16 @@ namespace CoC.Backend.BodyParts
 		#region Public Lactation Related Members
 
 		//multiplies capacity volume by this value to determine actual amount you can lactate. completely breaks physics, but so does most of this game, so...
-		public float lactation_TotalCapacityMultiplier => lactation_CapacityMultiplier + perkLactationCapacityMultiplierOffset;
+		public double lactation_TotalCapacityMultiplier => lactation_CapacityMultiplier + perkLactationCapacityMultiplierOffset;
 
 		//some items may make your milk more "dense" for lack of better word, allowing you to lactate more without altering your capacity. this is that value.
-		public float lactation_CapacityMultiplier { get; private set; } = 1;
+		public double lactation_CapacityMultiplier { get; private set; } = 1;
 
 		//This is the internal value that helps determine how much you're lactating. It's a range from 0-10, with 0 being not lactating and 10 being lactating at an ungodly rate.
 		//it will update automatically based on how often you breastfeed and how full you are. Boosting lactation will directly update this value.
 		//This value is used in calculations, and you should try not to use it in your logic. Lactation Status is much less arbitrary and thus are better to use.
 		//however, there may be cases where you want to boost lactation based on the current value, so this is available to you.
-		public float lactationProductionModifier
+		public double lactationProductionModifier
 		{
 			get => _lactationModifier;
 			private set
@@ -100,21 +100,21 @@ namespace CoC.Backend.BodyParts
 				_lactationModifier = Utils.Clamp2(value, MIN_LACTATION_MODIFIER, MAX_LACTATION_MODIFIER);
 			}
 		}
-		private float _lactationModifier = 0;
+		private double _lactationModifier = 0;
 
 		//how much time does this character have at full capacity before their lactation modifier starts decreasing, stored in hours. Note that at epic level, this value is halved, rounded up.
 		public uint overfullBuffer { get; private set; } = 0;
 
-		public float currentLactationAmount { get; private set; }
+		public double currentLactationAmount { get; private set; }
 
-		public float lactationAmountPerBreast => currentLactationAmount / totalBreasts;
+		public double lactationAmountPerBreast => currentLactationAmount / totalBreasts;
 		#endregion
 
 		#region Lactation Perk Data
 
 #warning Consider adding text for lactation rate increase so that can be handled.
 		//increase or decrease the lactation capacity based on perk data.
-		internal float perkLactationCapacityMultiplierOffset { get; set; } = 0;
+		internal double perkLactationCapacityMultiplierOffset { get; set; } = 0;
 
 		//prevent the character from decreasing their current production rate at all.
 		internal bool preventLactationDecrease { get; set; } = false;
@@ -169,8 +169,8 @@ namespace CoC.Backend.BodyParts
 		public CupSize smallestPossibleCupSize => gender.HasFlag(Gender.FEMALE) ? smallestPossibleFemaleCupSize : smallestPossibleMaleCupSize;
 
 
-		internal float titsGrowthMultiplier => perkData.TitsGrowthMultiplier;
-		internal float titsShrinkMultiplier => perkData.TitsShrinkMultiplier;
+		internal double titsGrowthMultiplier => perkData.TitsGrowthMultiplier;
+		internal double titsShrinkMultiplier => perkData.TitsShrinkMultiplier;
 
 		public uint totalTitFuckCount => missingRowTitFuckCount + (uint)breastRows.Sum(x => x.totalTitFuckCount);
 		public uint selfTitFuckCount => missingRowSelfTitFuckCount + (uint)breastRows.Sum(x => x.selfTitFuckCount);
@@ -200,14 +200,14 @@ namespace CoC.Backend.BodyParts
 		public int hoursOverfull => timeBecameFull?.hoursToNow() ?? -1;
 
 		//note: it's possible to actually go over the max capacity if you're overfull, and going at the highest lactation level. Original game set this to 1.5; i'm going to cap it at 1.1
-		public float maximumLactationCapacity => lactation_TotalCapacityMultiplier * (float)breastRows.Sum(x => volumeFromCupSize(x.cupSize) * x.numBreasts);
+		public double maximumLactationCapacity => lactation_TotalCapacityMultiplier * (double)breastRows.Sum(x => volumeFromCupSize(x.cupSize) * x.numBreasts);
 		//current maximum capacity. if you aren't lactating, this is 0.
-		public float currentLactationCapacity => maximumLactationCapacity * lactationLevel * (isOverfull ? 1.1f : 1.0f);
+		public double currentLactationCapacity => maximumLactationCapacity * lactationLevel * (isOverfull ? 1.1f : 1.0f);
 
-		public float lactationRate => Utils.Lerp(LACTATION_THRESHOLD, EPIC_LACTATION_THRESHOLD, lactationProductionModifier, 0, 1.0f);
+		public double lactationRate => Utils.Lerp(LACTATION_THRESHOLD, EPIC_LACTATION_THRESHOLD, lactationProductionModifier, 0, 1.0f);
 
 		//when you boost lactation to certain thresholds, your body can carry a larger amount of the full capacity.
-		private float lactationLevel
+		private double lactationLevel
 		{
 			get
 			{
@@ -217,7 +217,7 @@ namespace CoC.Backend.BodyParts
 				}
 				else
 				{
-					float currLevel = (int)lactationStatus * 0.25f;
+					double currLevel = (int)lactationStatus * 0.25f;
 					if (currLevel > 1) return 1;
 					else return currLevel;
 				}
@@ -225,7 +225,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//takes 48 hours to fill when less than strong. 24 when strong, 12 when heavy, 6 when epic.
-		private float hourlyFillRate
+		private double hourlyFillRate
 		{
 			get
 			{
@@ -255,7 +255,7 @@ namespace CoC.Backend.BodyParts
 		//and your intent is much clearer.
 		public LactationStatus lactationStatus => StatusFromRate(lactationRate);
 
-		internal static LactationStatus StatusFromRate(float lactationRate)
+		internal static LactationStatus StatusFromRate(double lactationRate)
 		{
 			if (lactationRate < LACTATION_THRESHOLD)
 			{
@@ -294,7 +294,7 @@ namespace CoC.Backend.BodyParts
 
 		internal BodyType bodyType => CreatureStore.GetCreatureClean(creatureID)?.body.type ?? BodyType.defaultValue;
 
-		public float relativeLust => source.relativeLust;
+		public double relativeLust => source.relativeLust;
 
 		public bool isPregnant => source.isPregnant;
 
@@ -366,8 +366,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (original is null) return false;
 
-			Dictionary<uint, Breasts> items = _breasts.ToDictionary(x => x.collectionID, x => x);
-			Dictionary<uint, BreastData> dataItems = original.breasts.ToDictionary(x => (uint)x.collectionID, x => x);
+
 
 			//this was a fucking bitch to figure out lmao.
 			return nippleData.IsIdenticalTo(original.nippleData, ignoreSexualMetaData) && lactation_TotalCapacityMultiplier == original.lactation_TotalCapacityMultiplier
@@ -378,11 +377,51 @@ namespace CoC.Backend.BodyParts
 				&& currentLactationCapacity == original.currentLactationCapacity && lactationStatus == original.lactationStatus
 				&& (ignoreSexualMetaData || (totalTitFuckCount == original.totalTitFuckCount && selfTitFuckCount == original.selfTitFuckCount
 				&& totalFuckableNippleSexCount == original.totalFuckableNippleSexCount && selfFuckableNippleSexCount == original.selfFuckableNippleSexCount
-				&& totalDickNippleSexCount == original.totalDickNippleSexCount))
-				&& items.Keys.Count == dataItems.Keys.Count && items.All(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
+				&& totalDickNippleSexCount == original.totalDickNippleSexCount)) && !CollectionChanged(original, ignoreSexualMetaData);
 		}
 
 		#endregion
+		public bool CollectionChanged(BreastCollectionData original, bool ignoreSexualMetaData)
+		{
+			if (original is null) return false;
+
+			Dictionary<uint, Breasts> items = _breasts.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, BreastData> dataItems = original.breasts.ToDictionary(x => (uint)x.collectionID, x => x);
+			return items.Keys.Count != dataItems.Keys.Count || items.Any(x => !dataItems.ContainsKey(x.Key) || !x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
+		}
+
+		public IEnumerable<Breasts> AddedBreastRows(BreastCollectionData original)
+		{
+			Dictionary<uint, Breasts> items = _breasts.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, BreastData> dataItems = original.breasts.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Where(x => !dataItems.ContainsKey(x.Key)).Select(x => x.Value);
+		}
+
+		public IEnumerable<BreastData> RemovedBreastRows(BreastCollectionData original)
+		{
+			Dictionary<uint, Breasts> items = _breasts.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, BreastData> dataItems = original.breasts.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return dataItems.Where(x => !items.ContainsKey(x.Key)).Select(x => x.Value);
+		}
+
+		public IEnumerable<ValueDifference<BreastData>> ChangedBreastRows(BreastCollectionData original, bool ignoreSexualMetaData)
+		{
+			Dictionary<uint, Breasts> items = _breasts.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, BreastData> dataItems = original.breasts.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Where(x => dataItems.ContainsKey(x.Key) && !x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData))
+				.Select(x => new ValueDifference<BreastData>(dataItems[x.Key], x.Value.AsReadOnlyData()));
+		}
+
+		public IEnumerable<Breasts> UnchangedBreastRows(BreastCollectionData original, bool ignoreSexualMetaData)
+		{
+			Dictionary<uint, Breasts> items = _breasts.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, BreastData> dataItems = original.breasts.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Where(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData)).Select(x => x.Value);
+		}
 
 		#region Breast Aggregate Functions
 
@@ -759,13 +798,13 @@ namespace CoC.Backend.BodyParts
 
 		public bool SetDickNippleFlag(bool enabled) => nippleData.SetDickNippleFlag(enabled);
 
-		public float GrowNipples(float amount, bool ignorePerks = false) => nippleData.GrowNipples(amount, ignorePerks);
+		public double GrowNipples(double amount, bool ignorePerks = false) => nippleData.GrowNipples(amount, ignorePerks);
 
-		public float ShrinkNipples(float amount, bool ignorePerks = false) => nippleData.ShrinkNipples(amount, ignorePerks);
+		public double ShrinkNipples(double amount, bool ignorePerks = false) => nippleData.ShrinkNipples(amount, ignorePerks);
 
-		public float ChangeNippleLength(float delta, bool ignorePerks = false) => nippleData.ChangeNippleLength(delta, ignorePerks);
+		public double ChangeNippleLength(double delta, bool ignorePerks = false) => nippleData.ChangeNippleLength(delta, ignorePerks);
 
-		public bool SetNippleLength(float size) => nippleData.SetNippleLength(size);
+		public bool SetNippleLength(double size) => nippleData.SetNippleLength(size);
 
 		#endregion
 
@@ -797,7 +836,7 @@ namespace CoC.Backend.BodyParts
 		/// <param name="byAmount">The amount to change the lactation modifier</param>
 		/// <returns>the amount the modifier changed.</returns>
 		/// <remarks>This will return 0 if the creature is currently pregnant or if they have a perk that prevents this number from decreasing.</remarks>
-		public float boostLactation(float byAmount = 0.1f)
+		public double boostLactation(double byAmount = 0.1f)
 		{
 			if (!canLessenCurrentLactationLevels && byAmount < 0)
 			{
@@ -843,7 +882,7 @@ namespace CoC.Backend.BodyParts
 
 		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
 
-		internal void HandleTittyFuck(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool sourceIsSelf)
+		internal void HandleTittyFuck(int breastIndex, double length, double girth, double knotWidth, double cumAmount, bool reachOrgasm, bool sourceIsSelf)
 		{
 			breastRows[breastIndex].DoTittyFuck(length, girth, knotWidth, reachOrgasm, sourceIsSelf);
 		}
@@ -856,7 +895,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Nipple Sex Related Functions
 
-		internal void HandleNipplePenetration(int breastIndex, float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool sourceIsSelf)
+		internal void HandleNipplePenetration(int breastIndex, double length, double girth, double knotWidth, double cumAmount, bool reachOrgasm, bool sourceIsSelf)
 		{
 			breastRows[breastIndex].DoNippleFuck(length, girth, knotWidth, cumAmount, reachOrgasm, sourceIsSelf);
 		}
@@ -873,7 +912,7 @@ namespace CoC.Backend.BodyParts
 		/// Attempt to milk the current character, with as much milk as they can provide. Can be called when the character is not lactating, which will help induce lactation.
 		/// </summary>
 		/// <returns>The amount of milk lactated</returns>
-		internal float MilkOrSuckle()
+		internal double MilkOrSuckle()
 		{
 			timeLastMilked = GameDateTime.Now;
 			var retVal = currentLactationAmount;
@@ -889,11 +928,11 @@ namespace CoC.Backend.BodyParts
 		/// </summary>
 		/// <param name="maxAmount">The maximum amount allowed to be lactated</param>
 		/// <returns>The amount of milk lactated</returns>
-		internal float MilkOrSuckle(float maxAmount)
+		internal double MilkOrSuckle(double maxAmount)
 		{
 			if (maxAmount < 0)
 			{
-				maxAmount = float.MaxValue;
+				maxAmount = double.MaxValue;
 			}
 			if (maxAmount == 0)
 			{
@@ -985,7 +1024,7 @@ namespace CoC.Backend.BodyParts
 				if (currentLactationAmount < currentLactationCapacity)
 				{
 
-					float hoursRequiredToFill = (currentLactationCapacity - currentLactationAmount) / hourlyFillRate;
+					double hoursRequiredToFill = (currentLactationCapacity - currentLactationAmount) / hourlyFillRate;
 					//and still aren't full.
 					if (hoursRequiredToFill > hoursPassed)
 					{
@@ -1031,7 +1070,7 @@ namespace CoC.Backend.BodyParts
 						}
 						//formula:
 						//(1 + breastCount / 8) * hours / 10. so .1 to .2 per hour, assuming 2 breasts per row. higher if that's not the case anymore.
-						boostLactation((float)((1 + totalBreasts / 8) * multiplier));
+						boostLactation((double)((1 + totalBreasts / 8) * multiplier));
 
 						if (lactationStatus < oldStatus)
 						{
@@ -1125,7 +1164,7 @@ namespace CoC.Backend.BodyParts
 			return _breasts.Any(x => (x as IGrowable).CanGroPlus());
 		}
 
-		float IGrowable.UseGroPlus()
+		double IGrowable.UseGroPlus()
 		{
 			return _breasts.Average(x => (x as IGrowable).UseGroPlus());
 		}
@@ -1139,7 +1178,7 @@ namespace CoC.Backend.BodyParts
 			return _breasts.Any(x => (x as IShrinkable).CanReducto());
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			return _breasts.Average(x => (x as IShrinkable).UseReducto());
 		}
@@ -1166,7 +1205,7 @@ namespace CoC.Backend.BodyParts
 		public bool blackNipples => nippleData.hasBlackNipples;
 		public bool quadNipples => nippleData.hasQuadNipples;
 		public NippleStatus nippleType => nippleData.nippleStatus;
-		public float nippleLength => nippleData.length;
+		public double nippleLength => nippleData.length;
 
 		public bool unlockedDickNipples => nippleData.dickNipplesEnabled;
 
@@ -1181,17 +1220,17 @@ namespace CoC.Backend.BodyParts
 		#region Public Lactation Related Members
 
 		//multiplies capacity volume by this value to determine actual amount you can lactate. completely breaks physics, but so does most of this game, so...
-		public readonly float lactation_TotalCapacityMultiplier;
+		public readonly double lactation_TotalCapacityMultiplier;
 
-		public readonly float lactation_CapacityMultiplier;
-		public readonly float lactationProductionModifier;
+		public readonly double lactation_CapacityMultiplier;
+		public readonly double lactationProductionModifier;
 
 		//how much time does this character have at full capacity before their lactation modifier starts decreasing, stored in hours. Note that at epic level, this value is halved, rounded up.
 		public readonly uint overfullBuffer;
 
-		public readonly float currentLactationAmount;
+		public readonly double currentLactationAmount;
 
-		public float lactationAmountPerBreast => currentLactationAmount / numBreasts;
+		public double lactationAmountPerBreast => currentLactationAmount / numBreasts;
 		#endregion
 
 		#region Public Breast Related Computed Values
@@ -1216,18 +1255,18 @@ namespace CoC.Backend.BodyParts
 
 		public readonly int hoursOverfull;
 
-		public readonly float maximumLactationCapacity;
+		public readonly double maximumLactationCapacity;
 		//current maximum capacity. if you aren't lactating, this is 0.
-		public readonly float currentLactationCapacity;
+		public readonly double currentLactationCapacity;
 
-		public readonly float lactationRate;
+		public readonly double lactationRate;
 
 		public readonly LactationStatus lactationStatus;
 
 		public bool isLactating => lactationStatus != LactationStatus.NOT_LACTATING;
 		#endregion
 
-		public readonly float relativeLust;
+		public readonly double relativeLust;
 
 		private readonly bool isPregnant;
 
@@ -1337,11 +1376,5 @@ namespace CoC.Backend.BodyParts
 
 
 		#endregion
-	}
-
-	public sealed class BreastCollectionChanged
-	{
-
-
 	}
 }

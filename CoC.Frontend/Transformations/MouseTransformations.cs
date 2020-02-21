@@ -63,7 +63,7 @@ namespace CoC.Frontend.Transformations
 			//lose height + gain speed (42" height floor, no speed ceiling but no speed changes without height change)
 			if (target.build.heightInInches >= 45 && Utils.Rand(3) == 0)
 			{
-				(target as CombatCreature)?.IncreaseSpeed();
+				target.IncreaseSpeed();
 
 				target.build.DecreaseHeight();
 				if (target.build.heightInInches > 60)
@@ -96,21 +96,18 @@ namespace CoC.Frontend.Transformations
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
-			if (target is CombatCreature cc)
+			//lose tough
+			if (target.relativeToughness > 50 && Utils.Rand(3) == 0)
 			{
-				//lose tough
-				if (cc.relativeToughness > 50 && Utils.Rand(3) == 0)
+				target.ChangeToughness(-1);
+				if (target.relativeToughness >= 75)
 				{
-					cc.DeltaCombatCreatureStats(tou: -1);
-					if (cc.relativeToughness >= 75)
-					{
-						cc.DeltaCombatCreatureStats(tou: -1);
-					}
+					target.ChangeToughness(-1);
+				}
 
-					if (cc.relativeToughness >= 90)
-					{
-						cc.DeltaCombatCreatureStats(tou: -1);
-					}
+				if (target.relativeToughness >= 90)
+				{
+					target.ChangeToughness(-1);
 				}
 			}
 
@@ -120,7 +117,7 @@ namespace CoC.Frontend.Transformations
 			{
 
 				//adds some lust
-				target.DeltaCreatureStats(lus: 10 + target.sensitivity / 5);
+				target.ChangeLust(10 + target.sensitivity / 5);
 				if (target.genitals.standardBonusVaginalCapacity < 100 && target.hasVagina)
 				{
 					target.genitals.IncreaseBonusVaginalCapacity(5);
@@ -174,7 +171,9 @@ namespace CoC.Frontend.Transformations
 			//Neck restore
 			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -184,7 +183,9 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -195,6 +196,8 @@ namespace CoC.Frontend.Transformations
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -204,7 +207,10 @@ namespace CoC.Frontend.Transformations
 			//gain ears
 			if (target.ears.type != EarType.MOUSE && Utils.Rand(4) == 0)
 			{
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.MOUSE);
+				sb.Append(UpdateEarsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -215,7 +221,9 @@ namespace CoC.Frontend.Transformations
 			if (target.ears.type == EarType.MOUSE && target.tail.type != TailType.MOUSE && Utils.Rand(4) == 0)
 			{
 				//from other tail
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.MOUSE);
+				sb.Append(UpdateTailText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -225,7 +233,10 @@ namespace CoC.Frontend.Transformations
 			//get teeth - from human, bunny, coonmask, or other humanoid teeth faces
 			if (target.ears.type == EarType.MOUSE && target.face.isHumanoid && target.face.type != FaceType.MOUSE && Utils.Rand(4) == 0)
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.MOUSE);
+				sb.Append(UpdateFaceText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -256,7 +267,9 @@ namespace CoC.Frontend.Transformations
 				{
 					color = new FurColor(HairFurColors.WHITE);
 				}
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.SIMPLE_FUR, color);
+				sb.Append(UpdateBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -269,6 +282,40 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+{
+return RemovedOvipositionTextGeneric(target);
+}
+
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+		{
+			return target.ears.TransformFromText(oldData);
+		}
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+		{
+			return target.tail.TransformFromText(oldTail);
+		}
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+		{
+			return target.face.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateBodyText(Creature target, BodyData oldData)
+		{
+			return target.body.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

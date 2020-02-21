@@ -12,13 +12,13 @@ namespace CoC.Backend.Perks
 	public abstract class ConditionalPerk : PerkBase
 	{
 
-		protected bool enabled;
+		protected bool currentlyEnabled;
 
 		protected ConditionalPerk()
 		{
 		}
 
-		public override bool isEnabled => enabled;
+		private protected override bool enabled => currentlyEnabled;
 
 		private protected override void OnCreate()
 		{

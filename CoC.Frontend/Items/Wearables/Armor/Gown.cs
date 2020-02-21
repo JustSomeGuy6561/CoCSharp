@@ -31,7 +31,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return $"{count}forest {gownText}";
 		}
 
-		public override float DefensiveRating(Creature wearer) => 1;
+		public override double PhysicalDefensiveRating(Creature wearer) => 1;
 
 		protected override int monetaryValue => 10;
 
@@ -54,13 +54,13 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			if (wearer.gender == Gender.FEMALE)
 			{
 				sb.Append("You comfortably slide into the forest gown. You spin around several times and giggle happily."
-					   + " Where did that come from?");
+					  + " Where did that come from?");
 			}
 			else if (wearer.gender == Gender.MALE)
 			{
 				sb.Append("You slide forest gown over your head and down to your toes. It obviously would fit someone more female."
-				   + " You feel sad and wish you had the svelte body that would look amazing in this gown."
-				   + " Wait, did you always think that way?");
+				  + " You feel sad and wish you had the svelte body that would look amazing in this gown."
+				  + " Wait, did you always think that way?");
 			}
 			else
 			{
@@ -72,6 +72,11 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 
 			return sb.ToString();
+		}
+
+		public override bool Equals(ArmorBase other)
+		{
+			return other is Gown;
 		}
 
 		byte IWearableDailyFull.hourToTrigger => 5;
@@ -132,12 +137,137 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			{
 				return Utils.RandomChoice(dreams);
 			}
+
+			protected override string HipChangeText(Creature target, HipData oldHips)
+			{
+				string verb = target.hips.size - oldHips.size > 0 ? "enlarge" : "shrink";
+
+				return "You wiggle around in your gown, the pleasant feeling of flower petals rubbing against your skin washes over you." +
+					" The feeling settles on your " + oldHips.ShortDescription() + "." + Environment.NewLine + "You feel them slowly " +
+					verb + ". <b>You now have " + target.build.HipsShortDescription() + "</b>." + Environment.NewLine;
+
+				;
+			}
+
+			protected override string ButtChangeText(Creature target, ButtData oldButt)
+			{
+				string verb = target.butt.size - oldButt.size > 0 ? "enlarge" : "shrink";
+
+				return "You wiggle around in your gown, the pleasant feeling of flower petals rubbing against your skin washes over you." +
+					" The feeling settles on your " + oldButt.ShortDescription() + "." + Environment.NewLine + "You feel it slowly " +
+					verb + ". <b>You now have a " + target.build.ButtShortDescription() + ".</b>" + Environment.NewLine;
+			}
+
+			protected override string CockChangedText(Creature target, GenitalsData oldGenitalData, int changedCock)
+			{
+				bool grewVagina = oldGenitalData.vaginas.Count == 0 && target.vaginas.Count > 0;
+				bool lostBalls = oldGenitalData.balls.hasBalls && !target.balls.hasBalls;
+				bool lostCock = oldGenitalData.cocks.Count > target.cocks.Count;
+
+				CockData previousCockData = oldGenitalData.cocks[changedCock];
+
+				string end;
+
+				if (!grewVagina)
+				{
+					end = target.genitals.allCocks.GenericChangeOneCockLengthText(previousCockData);
+				}
+				else
+				{
+					end = target.genitals.allCocks.GenericChangeOneCockLengthText(previousCockData, lostCock, false) +
+						"Your " + oldGenitalData.cocks[0].LongDescription() + " suddenly starts tingling. It's a familiar feeling, similar to an orgasm." +
+						"However, this one seems to start from the top down, instead of gushing up from your loins. You spend a few seconds frozen to the odd sensation, " +
+						"when it suddenly feels as though your own body starts sucking on the base of your shaft. Almost instantly, " +
+						"your cock sinks into your crotch with a wet slurp. The tip gets stuck on the front of your body on the way down, " +
+						"but your glans soon loses all volume to turn into a shiny new clit." +
+						(lostBalls ? " At the same time, your " + oldGenitalData.balls.ShortDescription() + " fall victim to the same sensation; " +
+						"eagerly swallowed whole by your crotch." : "") + " Curious, you touch around down there, to find you don't have any exterior organs left." +
+						"All of it got swallowed into the gash you now have running between two fleshy folds, like sensitive lips. " +
+						"It suddenly occurs to you; <b> you now have a vagina!</b> ";
+				}
+
+				return "Your " + previousCockData.LongDescription() + " feels strange as it brushes against the fabric of your gown." + Environment.NewLine +
+					end;
+			}
+
+			protected override string BreastsChangedText(Creature target, BreastCollectionData oldData)
+			{
+				string removeText = target.breasts.Count < oldData.breasts.Count ? Environment.NewLine + "Some of your breasts shrink back into your body leaving you with just two." : "";
+
+				string cupText = "";
+
+				if (target.breasts[0].cupSize != oldData[0].cupSize)
+				{
+					if (target.breasts[0].cupSize > oldData[0].cupSize)
+					{
+						cupText = Environment.NewLine + "Heat builds in chest and your boobs become bigger.";
+					}
+					else if (target.breasts[0].cupSize < oldData[0].cupSize)
+					{
+						cupText = Environment.NewLine + "A chill runs against your chest and your boobs become smaller.";
+					}
+
+					cupText += Environment.NewLine + "<b>You now have " + target.breasts[0].LongDescription() + "</b>";
+				}
+
+				return "You feel like a beautful flower in your gown. Dawn approaches and you place your hands on your chest"
+					+ " as if expecting your nipples to bloom to greet the rising sun." + removeText + cupText;
+			}
+
+			protected override string FemininityChangedText(Creature target, FemininityData oldFem)
+			{
+				return "You run your " + target.hands.ShortDescription() + " across the fabric of your Gown, then against your face as it feels like"
+					+ " there is something you need to wipe off. " + target.femininity.FemininityChangedText(oldFem);
+			}
+
+			protected override string ChangeEarText(Creature target, EarData oldEars)
+			{
+				return "There is a tingling on the sides of your head as your ears change to pointed elfin ears.";
+			}
+
+			protected override string ChangeSkinText(Creature target, BodyData oldBody)
+			{
+				if (oldBody.type != BodyType.defaultValue)
+				{
+					return "A tingling runs through your " + oldBody.LongDescription() + " as it changes back to normal";
+				}
+				else
+				{
+					return "Your skin hardens and becomes the consistency of tree's bark.";
+				}
+			}
+
+			protected override string RestoreLegsText(Creature target, LowerBodyData oldLowerBody)
+			{
+				return "There is a rumbling in your lower body as it returns to a human shape.";
+			}
+
+			protected override string RestoredArmsText(Creature creature, ArmData oldArms)
+			{
+				if (oldArms.hands.isHands)
+				{
+					return "Your hands shake and shudder as they slowly transform back into normal human hands. The change radiates through your arms as well, " +
+						"finally stopping when they return to normal too.";
+				}
+				else
+				{
+					return "Your arms twitch, then slowly shift towards something more normal until they match your human hands.";
+				}
+			}
+
+			protected override string RestoredFaceText(Creature target, FaceData oldFace)
+			{
+				return "Your face twitches a few times and slowly morphs itself back to a normal human face.";
+			}
+
+			protected override string ChangedHairText(Creature target, HairData oldHair)
+			{
+				return "Much to your shock, your hair begins falling out in tuffs onto the ground. Moments later, " +
+					"your scalp sprouts vines all about that extend down and bloom into leafy hair.";
+			}
 		}
 
-		public override bool Equals(ArmorBase other)
-		{
-			return other is Gown;
-		}
+
 
 	}
 }

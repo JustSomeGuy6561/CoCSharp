@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 
 	internal interface IClit
 	{
-		float length { get; }
+		double length { get; }
 
 		ReadOnlyPiercing<ClitPiercingLocation> piercings { get; }
 
@@ -105,12 +105,12 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string RequiresClitBeAtLeastThisLong(float length)
+		private string RequiresClitBeAtLeastThisLong(double length)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		float IClit.length => length;
+		double IClit.length => length;
 
 
 		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => piercings.AsReadOnlyData();
@@ -127,7 +127,7 @@ namespace CoC.Backend.BodyParts
 	{
 
 
-		float IClit.length => length;
+		double IClit.length => length;
 
 		ReadOnlyPiercing<ClitPiercingLocation> IClit.piercings => clitPiercings;
 
@@ -148,7 +148,7 @@ namespace CoC.Backend.BodyParts
 			else return Utils.RandomChoice("clits", "buttons", "pleasure-buzzers", "clits", "buttons", "clits", "clits", "love-buttons");
 		}
 
-		internal static string ShortDesc(float length)
+		internal static string ShortDesc(double length)
 		{
 			return Measurement.ToNearestHalfSmallUnit(length, false, true, false) + " clit";
 		}
@@ -156,7 +156,7 @@ namespace CoC.Backend.BodyParts
 		//some of these get an oxford comma on full description, some don't. Sue me.
 		internal static string Desc(IClit clit, bool alternateFormat, bool full)
 		{
-			float relativeLibido, relativeLust;
+			double relativeLibido, relativeLust;
 
 			if (CreatureStore.TryGetCreature(clit.creatureID, out Creature source))
 			{

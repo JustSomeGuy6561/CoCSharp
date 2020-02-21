@@ -45,7 +45,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 		public bool supportsBulgeArmor => true;
 
-		public override float DefensiveRating(Creature wearer)
+		public override double PhysicalDefensiveRating(Creature wearer)
 		{
 			return 20 + (int)Math.Floor(wearer.corruptionTrue / 5);
 		}
@@ -53,6 +53,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		protected override void OnEquip(Creature wearer)
 		{
 			base.OnEquip(wearer);
+			//min lust is 20.
 			if (wearer.relativeLust < 20)
 			{
 				wearer.IncreaseLust(30);
@@ -179,9 +180,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return other is MaraeArmor;
 		}
 
-		protected override string OnRemoveText()
+		protected override string RemoveText(Creature wearer)
 		{
-			return this.GenericBulgeAwareRemoveText(bulged);
+			return this.GenericBulgeAwareRemoveText(bulged, base.RemoveText(wearer));
 		}
 
 		string IBulgeArmor.SetBulgeState(Creature wearer, bool bulgified)

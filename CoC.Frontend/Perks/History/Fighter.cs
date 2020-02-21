@@ -13,10 +13,8 @@ namespace CoC.Frontend.Perks.History
 		protected override void OnActivation()
 		{
 			baseModifiers.combatDamageModifier += 0.1f;
-			if (sourceCreature is CombatCreature combatCreature)
-			{
-				combatCreature.addGems(50);
-			}
+
+			sourceCreature.addGems(50);
 		}
 
 		protected override void OnRemoval()

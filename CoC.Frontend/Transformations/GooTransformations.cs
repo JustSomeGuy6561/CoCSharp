@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //1/24/2020 9:38:40 PM
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
@@ -11,7 +12,6 @@ using CoC.Frontend.Perks.SpeciesPerks;
 using CoC.Frontend.Races;
 using CoC.Frontend.Settings.Gameplay;
 using CoC.Frontend.StatusEffect;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
@@ -43,7 +43,10 @@ namespace CoC.Frontend.Transformations
 			//change in height, hips, and/or butt, or other similar stats.
 
 			//this will handle the edge case where the change count starts out as 0.
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			}
 
 			//Any transformation related changes go here. these typically cost 1 change. these can be anything from body parts to gender (which technically also changes body parts,
 			//but w/e). You are required to make sure you return as soon as you've applied changeCount changes, but a single line of code can be applied at the end of a change to do
@@ -63,23 +66,34 @@ namespace CoC.Frontend.Transformations
 			//sensitivity moves towards 50
 			if (target.relativeSensitivity < 50)
 			{
-				target.DeltaCreatureStats(sens: 1);
+				target.ChangeSensitivity(1);
 			}
 			else if (target.relativeSensitivity > 50)
 			{
-				target.DeltaCreatureStats(sens: -1);
+				target.ChangeSensitivity(-1);
 			}
 
 			//Cosmetic changes based on 'goopyness'
 			//Neck restore
-			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0) target.RestoreNeck();
+			if (target.neck.type != NeckType.HUMANOID && Utils.Rand(4) == 0)
+			{
+				target.RestoreNeck();
+			}
 			//Rear body restore
-			if (!target.back.isDefault && Utils.Rand(5) == 0) target.RestoreBack();
+			if (!target.back.isDefault && Utils.Rand(5) == 0)
+			{
+				target.RestoreBack();
+			}
 			//Ovi perk loss
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				sb.Append(ClearOvipositionText(target));
+
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Remove wings and shark fin
 			if (target.wings.type != WingType.NONE || target.back.type == BackType.SHARK_FIN)
@@ -89,8 +103,13 @@ namespace CoC.Frontend.Transformations
 					target.RestoreBack();
 				}
 
+				WingData oldData = target.wings.AsReadOnlyData();
 				target.RestoreWings();
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				sb.Append(RestoredWingsText(target, oldData));
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 
 			if (target.hair.type != HairType.GOO)
@@ -107,9 +126,12 @@ namespace CoC.Frontend.Transformations
 				{
 					target.hair.SetHairColor(Species.GOO.GetRandomHairColor(), true);
 				}
-				target.DeltaCreatureStats(lus: 10);
+				target.ChangeLust(10);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//1.Goopy skin
 			if (target.hair.type == HairType.GOO && target.body.type != BodyType.GOO)
@@ -128,7 +150,10 @@ namespace CoC.Frontend.Transformations
 					target.UpdateBody(BodyType.GOO);
 				}
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			////1a.Make alterations to dick/vaginal/nippular descriptors to match
 			//DONE EXCEPT FOR TITS & MULTIDICKS (UNFINISHED KINDA)
@@ -140,16 +165,24 @@ namespace CoC.Frontend.Transformations
 				{
 					target.build.SetHeight(36);
 				}
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.GOO);
+				sb.Append(UpdateLowerBodyText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//3a. Grow vagina if none
 			if (!target.hasVagina)
 			{
 				target.genitals.AddVagina(VaginaType.defaultValue, 0.4f, VaginalLooseness.GAPING, VaginalWetness.DROOLING);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//3b.Infinite Vagina
 			else if (!target.HasPerk<ElasticInnards>())
@@ -159,7 +192,7 @@ namespace CoC.Frontend.Transformations
 			else if (target.build.heightInInches < 100 && Utils.Rand(3) <= 1)
 			{
 				target.build.IncreaseHeight(2);
-				(target as CombatCreature)?.DeltaCombatCreatureStats(str: 1, tou: 1);
+				target.DeltaCreatureStats(str: 1, tou: 1);
 			}
 			//Big slime girl
 			else if (!target.HasPerk<SlimeCraving>())
@@ -172,6 +205,22 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+{
+return RemovedOvipositionTextGeneric(target);
+}
+
+		protected virtual string UpdateLowerBodyText(Creature target, LowerBodyData oldData)
+		{
+			return target.lowerBody.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredWingsText(Creature target, WingData oldData)
+		{
+			return target.wings.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

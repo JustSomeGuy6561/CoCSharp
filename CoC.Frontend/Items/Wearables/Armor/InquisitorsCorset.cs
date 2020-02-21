@@ -13,7 +13,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 	using CoC.Backend.Tools;
 	using CoC.Frontend.Perks.ArmorPerks;
 
-	public sealed class InquisitorsCorset : ArmorBase, ISluttySeductionItem
+	public sealed class InquisitorsCorset : ArmorBase
 	{
 
 		public override string AbbreviatedName() => "I.Corst";
@@ -29,7 +29,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return $"{count} inquisitor's {corsetText}";
 		}
 
-		public override float DefensiveRating(Creature wearer) => 4;
+		public override double PhysicalDefensiveRating(Creature wearer) => 4;
 
 		protected override int monetaryValue => 2000;
 
@@ -40,9 +40,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		}
 
 
-		public override bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot)
+		public override bool CanWearWithUpperGarment(Creature wearer, UpperGarmentBase upperGarment, out string whyNot)
 		{
-			if (!(upperGarment is null))
+			if (!UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				whyNot = GenericArmorIncompatText(upperGarment);
 				return false;
@@ -54,9 +54,9 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 		}
 
-		public override bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment, out string whyNot)
+		public override bool CanWearWithLowerGarment(Creature wearer, LowerGarmentBase lowerGarment, out string whyNot)
 		{
-			if (!(lowerGarment is null))
+			if (!LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				whyNot = GenericArmorIncompatText(lowerGarment);
 				return false;
@@ -137,15 +137,17 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 		}
 
-		protected override void OnRemove(Creature wearer)
+		protected override ArmorBase OnRemove(Creature wearer)
 		{
 			if (wearer.HasPerk<BloodMage>())
 			{
 				wearer.RemovePerk<BloodMage>();
 			}
+
+			return this;
 		}
 
-		public byte SluttySeductionModifier(Creature wearer) => 10;
+		public override double BonusTeaseDamage(Creature wearer) => 10;
 
 		public override string AboutItemWithStats(Creature target)
 		{

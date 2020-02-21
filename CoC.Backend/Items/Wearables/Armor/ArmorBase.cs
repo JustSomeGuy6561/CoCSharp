@@ -5,6 +5,7 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Items.Wearables.LowerGarment;
 using CoC.Backend.Items.Wearables.UpperGarment;
 using CoC.Backend.Strings;
+using CoC.Backend.UI;
 
 namespace CoC.Backend.Items.Wearables.Armor
 {
@@ -12,41 +13,52 @@ namespace CoC.Backend.Items.Wearables.Armor
 
 	public abstract class ArmorBase : WearableItemBase<ArmorBase>
 	{
+		public readonly ArmorType armorType;
+
 		protected ArmorBase(ArmorType armor) : base()
 		{
 			armorType = armor;
 		}
 
-		//only called if can use returns true.
-		protected override ArmorBase EquipItem(Creature wearer, out string equipOutput)
+		private protected override ArmorBase UpdateCreatureEquipmentInternal(Creature target)
 		{
-			return EquipArmor(wearer, out equipOutput);
+			return target.ChangeArmor(this);
 		}
 
-		//changing armor is not exposed publicly, so we potentially could run into issues if EquipItem is ever overridden, and then potentially overridden again.
-		//this ensures that regardless of how crazy we go with inheritance, we can still do the bare necessities to change armor and go from there.
-		protected ArmorBase EquipArmor(Creature wearer, out string equipOutput)
+		private protected override DisplayBase AttemptToUseSafe(Creature target, UseItemCallbackSafe<ArmorBase> postItemUseCallbackSafe)
 		{
-			ArmorBase retVal = wearer.ChangeArmor(this, out string removeText);
-			OnEquip(wearer);
-			equipOutput = EquipText(wearer) + removeText;
-
-			return retVal;
+			return AttemptToUse(target, postItemUseCallbackSafe);
 		}
 
-		protected virtual void OnEquip(Creature wearer) { }
-		protected virtual string EquipText(Creature wearer)
+		public virtual bool isNearlyNaked => false;
+
+#warning implement combat tease related armor thing either here or as interface in backend, idk.
+		//protected internal virtual CombatTeast combatTeast => null;
+
+
+		//you can now give this a menu if you really want. for a valid example, see bimbo skirt.
+		protected virtual DisplayBase AttemptToUse(Creature creature, UseItemCallbackSafe<ArmorBase> useItemCallback)
 		{
-			return GenericEquipText(wearer);
+			if (!CanUse(creature, false, out string whyNot))
+			{
+				useItemCallback(false, whyNot, Author(), this);
+				return null;
+			}
+			else
+			{
+				ArmorBase retVal = ChangeEquipment(creature, out string resultsOfUse);
+				useItemCallback(true, resultsOfUse, Author(), retVal);
+				return null;
+			}
 		}
 
-		public readonly ArmorType armorType;
 
-		//This is only virtual in case you want to alter how the checks are done or provide some random text explaining why it fails so hard.
-		public virtual bool CanWearWithUndergarments(UpperGarmentBase upperGarment, LowerGarmentBase lowerGarment, out string whyNot)
+
+		//This is virtual in case you want to alter how the checks are done or provide some random text explaining why it fails so hard.
+		public virtual bool CanWearWithUndergarments(Creature wearer, UpperGarmentBase upperGarment, LowerGarmentBase lowerGarment, out string whyNot)
 		{
-			bool allowsUpper = CanWearWithUpperGarment(upperGarment, out string _);
-			bool allowsLower = CanWearWithLowerGarment(lowerGarment, out string _);
+			bool allowsUpper = CanWearWithUpperGarment(wearer, upperGarment, out string _);
+			bool allowsLower = CanWearWithLowerGarment(wearer, lowerGarment, out string _);
 
 			if (allowsLower && allowsUpper)
 			{
@@ -60,13 +72,13 @@ namespace CoC.Backend.Items.Wearables.Armor
 			}
 		}
 
-		public virtual bool CanWearWithUpperGarment(UpperGarmentBase upperGarment, out string whyNot)
+		public virtual bool CanWearWithUpperGarment(Creature wearer, UpperGarmentBase upperGarment, out string whyNot)
 		{
 			whyNot = null;
 			return true;
 		}
 
-		public virtual bool CanWearWithLowerGarment(LowerGarmentBase lowerGarment, out string whyNot)
+		public virtual bool CanWearWithLowerGarment(Creature wearer, LowerGarmentBase lowerGarment, out string whyNot)
 		{
 			whyNot = null;
 			return true;
@@ -82,7 +94,7 @@ namespace CoC.Backend.Items.Wearables.Armor
 			}
 			else
 			{
-				return CanWearWithUndergarments(creature.upperGarment, creature.lowerGarment, out whyNot);
+				return CanWearWithUndergarments(creature, creature.upperGarment, creature.lowerGarment, out whyNot);
 			}
 		}
 
@@ -94,7 +106,7 @@ namespace CoC.Backend.Items.Wearables.Armor
 
 
 			return AboutItem() + GlobalStrings.NewParagraph() + "Type: " + armorType.AsText() + Environment.NewLine
-				+ "Defense: " + DefensiveRating(target) + defenseDifference + Environment.NewLine
+				+ "Defense: " + PhysicalDefensiveRating(target) + defenseDifference + Environment.NewLine
 				+ "Base value: " + monetaryValue;
 		}
 
@@ -112,12 +124,12 @@ namespace CoC.Backend.Items.Wearables.Armor
 
 			sb.Append("It would be awkward to put on the" + ItemDescription() + " when you're currently wearing ");
 
-			if (upperGarment != null && !allowsUpperGarment)
+			if (!UpperGarmentBase.IsNullOrNothing(upperGarment) && !allowsUpperGarment)
 			{
 				sb.Append(upperGarment.ItemDescription(1,true));
 			}
 
-			if (lowerGarment != null && !allowsLowerGarment)
+			if (!LowerGarmentBase.IsNullOrNothing(lowerGarment) && !allowsLowerGarment)
 			{
 				if (both)
 				{
@@ -145,6 +157,68 @@ namespace CoC.Backend.Items.Wearables.Armor
 				"you'll need to remove it first.";
 		}
 
+		public static ArmorBase NOTHING { get; } = new Nothing();
+
+		public bool isNothing => this is Nothing;
+
+		public static bool IsNullOrNothing(ArmorBase armor)
+		{
+			return armor is null || armor.isNothing;
+		}
+
+		private sealed class Nothing : ArmorBase
+		{
+			public Nothing() : base(ArmorType.CLOTHING)
+			{
+			}
+
+			public override double PhysicalDefensiveRating(Creature wearer) => 0;
+
+			public override bool Equals(ArmorBase other)
+			{
+				return other is null || other is Nothing;
+			}
+
+			public override string AbbreviatedName() => "";
+
+			public override string ItemName() => "";
+
+			public override string ItemDescription(byte count = 1, bool displayCount = false) => "";
+			public override string AboutItem() => "";
+
+			protected override int monetaryValue => 0;
+
+			public override bool canBuy => false;
+
+			public override bool canSell => false;
+
+			public override bool isNearlyNaked => true;
+
+			public override string AboutItemWithStats(Creature target) => "";
+
+			public override bool CanUse(Creature creature, bool isInCombat, out string whyNot)
+			{
+				whyNot = "Error: Does Not Exist";
+				return false;
+			}
+
+			protected override string EquipText(Creature wearer)
+			{
+				return "";
+			}
+
+			protected override ArmorBase OnRemove(Creature wearer)
+			{
+				return null;
+			}
+
+			protected override string RemoveText(Creature wearer)
+			{
+				return "";
+			}
+
+			public override byte maxCapacityPerSlot => 1;
+		}
 	}
 
 	public static class ArmorHelpers

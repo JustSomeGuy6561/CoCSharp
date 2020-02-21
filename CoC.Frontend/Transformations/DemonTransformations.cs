@@ -108,11 +108,8 @@ namespace CoC.Frontend.Transformations
 					{
 						target.IncreaseCorruption();
 					}
-					if (target is CombatCreature cc)
-					{
-						//no idea why this occurs, but ok.
-						cc.IncreaseIntelligence(1);
-					}
+					//no idea why this occurs, but ok.
+					target.IncreaseIntelligence(1);
 				}
 			}
 			//Otherwise, we're targeting female demon tfs only. this means we need to shrink (and possibly remove) the largest cock the target has, unless hyper happy is on.
@@ -255,7 +252,9 @@ namespace CoC.Frontend.Transformations
 			//Neck restore
 			if (!target.neck.isDefault && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -265,7 +264,9 @@ namespace CoC.Frontend.Transformations
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -276,6 +277,7 @@ namespace CoC.Frontend.Transformations
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
 
 				if (--remainingChanges <= 0)
 				{
@@ -290,7 +292,9 @@ namespace CoC.Frontend.Transformations
 				if (target.tail.type != TailType.DEMONIC && !target.horns.isDefault)
 				{
 					target.IncreaseCorruption(4);
+					TailData oldData = target.tail.AsReadOnlyData();
 					target.UpdateTail(TailType.DEMONIC);
+					sb.Append(UpdateTailText(target, oldData));
 
 					if (--remainingChanges <= 0)
 					{
@@ -355,7 +359,9 @@ namespace CoC.Frontend.Transformations
 				//Demon tongue
 				if (target.tongue.type == TongueType.SNAKE && Utils.Rand(3) == 0)
 				{
+					TongueData oldData = target.tongue.AsReadOnlyData();
 					target.UpdateTongue(TongueType.DEMONIC);
+					sb.Append(UpdateTongueText(target, oldData));
 
 					if (--remainingChanges <= 0)
 					{
@@ -411,6 +417,31 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+		{
+			return RemovedOvipositionTextGeneric(target);
+		}
+
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+		{
+			return target.tail.TransformFromText(oldTail);
+		}
+		protected virtual string UpdateTongueText(Creature target, TongueData oldData)
+		{
+			return target.tongue.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

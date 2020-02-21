@@ -24,13 +24,13 @@ namespace CoC.Frontend.Perks.ArmorPerks
 			//sourceCreature.equipmentChanged -= ArmorChanged;
 			//sourceCreature.equipmentChanged += ArmorChanged;
 
-			enabled = sourceCreature.armor is ISluttySeductionItem slutty && slutty.SluttySeductionModifier(sourceCreature) > 0;
+			currentlyEnabled = sourceCreature.armor?.BonusTeaseDamage(sourceCreature) > 0;
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 		protected override void RemoveActivationConditions()
 		{
-			enabled = false;
+			currentlyEnabled = false;
 			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
 			//sourceCreature.equipmentChanged -= ArmorChanged;
 		}

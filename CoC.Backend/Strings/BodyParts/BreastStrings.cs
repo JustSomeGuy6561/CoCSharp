@@ -58,7 +58,7 @@ namespace CoC.Backend.BodyParts
 
 		Gender gender { get; }
 
-		float lactationRate { get; }
+		double lactationRate { get; }
 
 		LactationStatus lactationStatus { get; }
 
@@ -68,7 +68,7 @@ namespace CoC.Backend.BodyParts
 
 
 		ReadOnlyPiercing<NipplePiercingLocation> piercings { get; }
-		float nippleLength { get; }
+		double nippleLength { get; }
 
 		string FullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false);
 	}
@@ -98,7 +98,7 @@ namespace CoC.Backend.BodyParts
 
 		bool IBreast.isMaleBreasts => isMale;
 
-		float IBreast.lactationRate => lactationRate;
+		double IBreast.lactationRate => lactationRate;
 
 		LactationStatus IBreast.lactationStatus => lactationStatus;
 
@@ -106,7 +106,7 @@ namespace CoC.Backend.BodyParts
 
 		ReadOnlyPiercing<NipplePiercingLocation> IBreast.piercings => nipplePiercings.AsReadOnlyData();
 
-		float IBreast.nippleLength => nippleLength;
+		double IBreast.nippleLength => nippleLength;
 	}
 
 	public partial class BreastData : IBreast
@@ -115,7 +115,7 @@ namespace CoC.Backend.BodyParts
 
 		byte IBreast.numberOfBreasts => numBreasts;
 
-		float IBreast.lactationRate => lactationRate;
+		double IBreast.lactationRate => lactationRate;
 
 		LactationStatus IBreast.lactationStatus => lactationStatus;
 

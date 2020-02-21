@@ -5,23 +5,24 @@ using System;
 
 namespace CoC.Backend.Items
 {
+	//Note: this class cannot be derived outside of the backend.
 	public abstract class CapacityItem<T> : CapacityItem, IEquatable<T> where T : CapacityItem<T>
 	{
 		protected CapacityItem() : base() { }
 
-		public override DisplayBase AttemptToUse(Creature target, UseItemCallback postItemUseCallback)
+		public DisplayBase UseItemSafe(Creature target, UseItemCallbackSafe<T> postItemUseCallback)
 		{
-			return AttemptToUseSafe(target, (w, x, y, z) => postItemUseCallback(w, x, y, z));
+			return AttemptToUseSafe(target, postItemUseCallback);
 		}
 
-		public override DisplayBase AttemptToUseInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		public DisplayBase UseItemInCombatSafe(CombatCreature target, UseItemCombatCallbackSafe<T> postItemUseCallback)
 		{
-			return AttemptToUseInCombatSafe(target, (v, w, x, y, z) => postItemUseCallback(v, w, x, y, z));
+			return AttemptToUseInCombatSafe(target, postItemUseCallback);
 		}
 
 		//safe variant that ensures T->T when item is used. this allows us to enforce inventories that require a certain Base Item Type.
 		//for example: the weapon rack will always have weapons; you can't pull a fast one and swap in a non-weapon when equipping a weapon off the rack.
-		public virtual DisplayBase AttemptToUseSafe(Creature target, UseItemCallbackSafe<T> postItemUseCallbackSafe)
+		private protected virtual DisplayBase AttemptToUseSafe(Creature target, UseItemCallbackSafe<T> postItemUseCallbackSafe)
 		{
 			if (!CanUse(target, false, out string whyNot))
 			{
@@ -30,13 +31,13 @@ namespace CoC.Backend.Items
 			}
 			else
 			{
-				T retVal = UseItem(target, out string resultsOfUse);
+				T retVal = UseItemSafe(target, out string resultsOfUse);
 				postItemUseCallbackSafe(true, resultsOfUse, Author(), retVal);
 				return null;
 			}
 		}
 
-		public virtual DisplayBase AttemptToUseInCombatSafe(Creature target, UseItemCombatCallbackSafe<T> postItemUseCallbackSafe)
+		private protected virtual DisplayBase AttemptToUseInCombatSafe(CombatCreature target, UseItemCombatCallbackSafe<T> postItemUseCallbackSafe)
 		{
 			if (!CanUse(target, true, out string whyNot))
 			{
@@ -45,24 +46,38 @@ namespace CoC.Backend.Items
 			}
 			else
 			{
-				T retVal = UseItemInCombat(target, out bool causesLoss, out string resultsOfUse);
+				T retVal = UseItemInCombatSafe(target, out bool causesLoss, out string resultsOfUse);
 				postItemUseCallbackSafe(true, causesLoss, resultsOfUse, Author(), retVal);
 				return null;
 			}
 		}
 
 
-		/// <summary>
-		/// Do any internal logic for using the item. if this item overrides AttemptToUseSafe, this can be ignored.
-		/// </summary>
-		/// <param name="target"></param>
-		/// <param name="resultsOfUseText">Text explaining the results of the current use. </param>
-		/// <returns></returns>
-		protected abstract T UseItem(Creature target, out string resultsOfUseText);
-		protected virtual T UseItemInCombat(Creature target, out bool resultsInLoss, out string resultsOfUseText)
+		private protected override DisplayBase AttemptToUseItem(Creature target, UseItemCallback postItemUseCallback)
+		{
+			return AttemptToUseSafe(target, (w, x, y, z) => postItemUseCallback(w, x, y, z));
+		}
+
+		private protected override DisplayBase AttemptToUseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		{
+			return AttemptToUseInCombatSafe(target, (v, w, x, y, z) => postItemUseCallback(v, w, x, y, z));
+		}
+
+		private protected abstract T UseItemSafe(Creature target, out string resultsOfUseText);
+		private protected virtual T UseItemInCombatSafe(CombatCreature target, out bool resultsInLoss, out string resultsOfUseText)
 		{
 			resultsInLoss = false;
-			return UseItem(target, out resultsOfUseText);
+			return UseItemSafe(target, out resultsOfUseText);
+		}
+
+		private protected override CapacityItem UseItem(Creature target, out string resultsOfUseText)
+		{
+			return UseItemSafe(target, out resultsOfUseText);
+		}
+
+		private protected override CapacityItem UseItemInCombat(CombatCreature target, out bool resultsInLoss, out string resultsOfUseText)
+		{
+			return UseItemInCombatSafe(target, out resultsInLoss, out resultsOfUseText);
 		}
 
 		public override bool Equals(CapacityItem other)

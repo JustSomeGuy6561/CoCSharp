@@ -576,14 +576,14 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				float size = Math.Min(6, grownCock.length);
+				double size = Math.Min(6, grownCock.length);
 				sb.Append("Your tiny dick's crown becomes more and more defined as it grows larger, until you have what looks like a normal " +
 					Measurement.ToNearestHalfSmallUnit(size, false, true, false) + " dick. ");
 			}
 			sb.Append("You sigh with happiness and desire at your new addition. ");
 			if (grownCock.length > 6)
 			{
-				float size = Math.Min(8, grownCock.length);
+				double size = Math.Min(8, grownCock.length);
 				sb.Append("Before you can enjoy it, another wave of heat washes through you, making your new addition respond. It grows painfully hard as it crests at " +
 					Measurement.ToNearestHalfSmallUnit(grownCock.length, false, false) + " in length. ");
 			}

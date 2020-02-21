@@ -37,7 +37,7 @@
 
 //		//Members
 //		private readonly bool isActive;
-//		protected float lengthInInches;
+//		protected double lengthInInches;
 //		protected int hoursSinceTrimmed;
 //		private int hoursCounter = 0;
 //		public BeardStyle style
@@ -183,10 +183,10 @@
 //		private const int ONE_MONTH = ONE_DAY * 31;
 //		private const int ONE_WEEK = ONE_DAY * 7;
 
-//		private float growthRate(bool trimmedRecently, float baseGrowthRate, float length)
+//		private double growthRate(bool trimmedRecently, double baseGrowthRate, double length)
 //		{
 //			//hair grows slightly faster if it's been trimmed recently
-//			float boostValue = trimmedRecently ? 1.1f : 1.0f;
+//			double boostValue = trimmedRecently ? 1.1f : 1.0f;
 //			//diminishing returns of growth after 2 inches.
 //			if (length <= 2.0f)
 //			{

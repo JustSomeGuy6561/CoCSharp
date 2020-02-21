@@ -26,7 +26,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 			return $"{count}{setText} of inquisitor's robes";
 		}
-		public override float DefensiveRating(Creature wearer) => 8;
+		public override double PhysicalDefensiveRating(Creature wearer) => 8;
 
 		protected override int monetaryValue => 2000;
 
@@ -65,12 +65,13 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 		}
 
-		protected override void OnRemove(Creature wearer)
+		protected override ArmorBase OnRemove(Creature wearer)
 		{
 			if (wearer.HasPerk<BloodMage>())
 			{
 				wearer.RemovePerk<BloodMage>();
 			}
+			return this;
 		}
 
 		public override bool Equals(ArmorBase other)

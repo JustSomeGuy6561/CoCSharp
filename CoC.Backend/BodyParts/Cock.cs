@@ -133,20 +133,20 @@ namespace CoC.Backend.BodyParts
 
 		#region Consts
 
-		public const float MAX_COCK_LENGTH = 240f;
-		public const float MAX_COCK_THICKNESS = 50f;
-		public const float MIN_COCK_THICKNESS = 0.2f;
-		public const float MAX_KNOT_MULTIPLIER = 10f;
-		public const float MIN_KNOT_MULTIPLIER = 1.1f;
-		public const float MIN_COCK_LENGTH = 3.0f;
+		public const double MAX_COCK_LENGTH = 240f;
+		public const double MAX_COCK_THICKNESS = 50f;
+		public const double MIN_COCK_THICKNESS = 0.2f;
+		public const double MAX_KNOT_MULTIPLIER = 10f;
+		public const double MIN_KNOT_MULTIPLIER = 1.1f;
+		public const double MIN_COCK_LENGTH = 3.0f;
 
-		public const float DEFAULT_COCK_LENGTH = 5.5f;
-		//public const float DEFAULT_BIG_COCK_LENGTH = 8f;
-		public const float DEFAULT_COCK_GIRTH = 1.25f;
-		//public const float DEFAULT_BIG_COCK_GIRTH = 1.5f;
+		public const double DEFAULT_COCK_LENGTH = 5.5f;
+		//public const double DEFAULT_BIG_COCK_LENGTH = 8f;
+		public const double DEFAULT_COCK_GIRTH = 1.25f;
+		//public const double DEFAULT_BIG_COCK_GIRTH = 1.5f;
 
-		public const float MIN_URETHRA_WIDTH = (float)(0.5 * Measurement.TO_INCHES);
-		public const float MIN_CUM = 2;
+		public const double MIN_URETHRA_WIDTH = (double)(0.5 * Measurement.TO_INCHES);
+		public const double MIN_CUM = 2;
 
 		#endregion
 
@@ -158,24 +158,24 @@ namespace CoC.Backend.BodyParts
 		public int cockIndex => source.cocks.IndexOf(this);
 
 		//perk values that alter how the cock changes size.
-		private float cockGrowthMultiplier => source.cockGrowthMultiplier + (cockSock?.cockGrowthMultiplier ?? 0);
-		private float cockShrinkMultiplier => source.cockShrinkMultiplier + (cockSock?.cockShrinkMultiplier ?? 0);
+		private double cockGrowthMultiplier => source.cockGrowthMultiplier + (cockSock?.cockGrowthMultiplier ?? 0);
+		private double cockShrinkMultiplier => source.cockShrinkMultiplier + (cockSock?.cockShrinkMultiplier ?? 0);
 
 		//perk values that alter the size of any new cock.
-		private float newCockDefaultSize => source.newCockDefaultSize;
-		private float newCockSizeDelta => source.newCockSizeDelta;
+		private double newCockDefaultSize => source.newCockDefaultSize;
+		private double newCockSizeDelta => source.newCockSizeDelta;
 
 		//perk value that sets the absolute minimum size for any cock. this is given priority, even over new size perk data.
-		public float minCockLength => source.minCockLength;
+		public double minCockLength => source.minCockLength;
 
 		//perk values used to alter virility of a creature (and by extension, all of its cocks).
-		private float perkBonusVirilityMultiplier => source.perkBonusVirilityMultiplier;
+		private double perkBonusVirilityMultiplier => source.perkBonusVirilityMultiplier;
 		private sbyte perkBonusVirility => source.perkBonusVirility;
 
 		//used to validate the length whenever a perk changes the min or max length. will fire off length changed as needed.
 		internal void ValidateLength()
 		{
-			float newLength = Utils.Clamp2(_cockLength, minCockLength, maxLength);
+			double newLength = Utils.Clamp2(_cockLength, minCockLength, maxLength);
 			if (newLength != _cockLength)
 			{
 				CockData oldData = AsReadOnlyData();
@@ -187,17 +187,17 @@ namespace CoC.Backend.BodyParts
 		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
 
 		public byte currentLust => creature?.lust ?? Creature.DEFAULT_LUST;
-		public float currentRelativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
+		public double currentRelativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
 
-		private float resetLength => Math.Max(newCockDefaultSize, minCockLength);
+		private double resetLength => Math.Max(newCockDefaultSize, minCockLength);
 
 		public readonly CockPiercing piercings;
 
-		public float urethraWidth => Math.Max(type.UrethraWidth(girth), MIN_URETHRA_WIDTH);
+		public double urethraWidth => Math.Max(type.UrethraWidth(girth), MIN_URETHRA_WIDTH);
 
-		public float minCumAmount => Math.Max(MIN_CUM, (float)(Math.Pow((urethraWidth * Measurement.TO_CENTIMETERS), 2) * Math.PI * length));
+		public double minCumAmount => Math.Max(MIN_CUM, (double)(Math.Pow((urethraWidth * Measurement.TO_CENTIMETERS), 2) * Math.PI * length));
 
-		public float knotMultiplier
+		public double knotMultiplier
 		{
 			get => _knotMultiplier;
 			private set
@@ -212,19 +212,19 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		private float _knotMultiplier;
+		private double _knotMultiplier;
 
 		public bool hasKnot => knotMultiplier >= 1.1f;
 
-		public float knotSize => type.knotSize(girth, knotMultiplier);
-		public float relativeKnotSize => type.relativeKnotSize(knotMultiplier);
+		public double knotSize => type.knotSize(girth, knotMultiplier);
+		public double relativeKnotSize => type.relativeKnotSize(knotMultiplier);
 
-		public float length => _cockLength;
-		private float _cockLength;
+		public double length => _cockLength;
+		private double _cockLength;
 
-		public float girth => _cockGirth;
-		private float _cockGirth;
-		public float area => girth * length;
+		public double girth => _cockGirth;
+		private double _cockGirth;
+		public double area => girth * length;
 
 		public CockSockBase cockSock { get; private set; } = null;
 
@@ -241,7 +241,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool requiresASheath => type.usesASheath;
 
-		public float cumAmount => source.totalCum;
+		public double cumAmount => source.totalCum;
 
 		public override CockType type
 		{
@@ -284,7 +284,7 @@ namespace CoC.Backend.BodyParts
 			piercings = new CockPiercing(this, PiercingLocationUnlocked, AllCockPiercingsShort, AllCockPiercingsLong);
 		}
 
-		internal Cock(CockCollection parent, uint id, CockType cockType, float length, float girth, float? initialKnotMultiplier = null, CockSockBase cockSock = null,
+		internal Cock(CockCollection parent, uint id, CockType cockType, double length, double girth, double? initialKnotMultiplier = null, CockSockBase cockSock = null,
 			ReadOnlyDictionary<CockPiercingLocation, PiercingJewelry> piercings = null) : base(parent?.creatureID ?? throw new ArgumentNullException(nameof(parent)))
 		{
 			source = parent;
@@ -304,8 +304,8 @@ namespace CoC.Backend.BodyParts
 			this.piercings.InitializePiercings(piercings);
 		}
 
-		private Cock(CockCollection parent, uint id, CockType cockType, float length, float girth,
-			float? initialKnotMultiplier) : base(parent?.creatureID ?? throw new ArgumentNullException(nameof(parent)))
+		private Cock(CockCollection parent, uint id, CockType cockType, double length, double girth,
+			double? initialKnotMultiplier) : base(parent?.creatureID ?? throw new ArgumentNullException(nameof(parent)))
 		{
 			source = parent;
 			collectionID = id;
@@ -321,9 +321,9 @@ namespace CoC.Backend.BodyParts
 			piercings = new CockPiercing(this, PiercingLocationUnlocked, AllCockPiercingsShort, AllCockPiercingsLong);
 		}
 
-		private float NewLength(float? givenLength = null)
+		private double NewLength(double? givenLength = null)
 		{
-			float minLength = Utils.Clamp2(Math.Max(minCockLength, newCockDefaultSize), Cock.MIN_COCK_LENGTH, Cock.MAX_COCK_LENGTH);
+			double minLength = Utils.Clamp2(Math.Max(minCockLength, newCockDefaultSize), Cock.MIN_COCK_LENGTH, Cock.MAX_COCK_LENGTH);
 			if (givenLength != null)
 			{
 				givenLength += newCockSizeDelta;
@@ -334,15 +334,15 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return (float)givenLength;
+				return (double)givenLength;
 			}
 		}
 
 		#endregion
 
 		#region Generate
-		internal static CockData GenerateAggregate(Guid creatureID, CockType type, float averageKnotMultiplier, float averageKnotSize, float averageLength, float averageGirth,
-			float cumAmount, bool currentlyHasSheath, byte currentLust, float currentRelativeLust)
+		internal static CockData GenerateAggregate(Guid creatureID, CockType type, double averageKnotMultiplier, double averageKnotSize, double averageLength, double averageGirth,
+			double cumAmount, bool currentlyHasSheath, byte currentLust, double currentRelativeLust)
 		{
 			return new CockData(creatureID, type, -1, averageLength, averageGirth, averageKnotMultiplier, averageKnotSize, cumAmount, currentlyHasSheath, currentLust, currentRelativeLust);
 		}
@@ -354,7 +354,13 @@ namespace CoC.Backend.BodyParts
 		}
 
 
+		internal CockSockBase ChangeCockSock(CockSockBase cockSock)
+		{
+			var oldSock = this.cockSock;
+			this.cockSock = cockSock;
 
+			return oldSock;
+		}
 
 
 
@@ -378,22 +384,22 @@ namespace CoC.Backend.BodyParts
 			return UpdateCock(newType, () => SetLength(length));
 		}
 
-		internal bool UpdateCockTypeWithLength(CockType cockType, float newLength)
+		internal bool UpdateCockTypeWithLength(CockType cockType, double newLength)
 		{
 			return UpdateCock(cockType, () => SetLength(newLength));
 		}
 
-		internal bool UpdateCockTypeWithLengthAndGirth(CockType cockType, float newLength, float newGirth)
+		internal bool UpdateCockTypeWithLengthAndGirth(CockType cockType, double newLength, double newGirth)
 		{
 			return UpdateCock(cockType, () => SetLengthAndGirth(newLength, newGirth));
 		}
 
-		internal bool UpdateCockTypeWithKnotMultiplier(CockType cockType, float newKnotMultiplier)
+		internal bool UpdateCockTypeWithKnotMultiplier(CockType cockType, double newKnotMultiplier)
 		{
 			return UpdateCock(cockType, () => knotMultiplier = newKnotMultiplier);
 		}
 
-		internal bool UpdateCockTypeWithAll(CockType cockType, float newLength, float newGirth, float newKnotMultiplier)
+		internal bool UpdateCockTypeWithAll(CockType cockType, double newLength, double newGirth, double newKnotMultiplier)
 		{
 			return UpdateCock(cockType, () =>
 			{
@@ -425,8 +431,8 @@ namespace CoC.Backend.BodyParts
 		internal void Reset(bool resetPiercings = true)
 		{
 			type = CockType.HUMAN;
-			float length = resetLength;
-			float girth = DEFAULT_COCK_GIRTH;
+			double length = resetLength;
+			double girth = DEFAULT_COCK_GIRTH;
 			updateLengthAndGirth(length, girth);
 
 			if (resetPiercings)
@@ -439,14 +445,14 @@ namespace CoC.Backend.BodyParts
 
 		#region Attribute Updates
 
-		public float IncreaseLength(float lengthenAmount = 1, bool ignorePerk = false)
+		public double IncreaseLength(double lengthenAmount = 1, bool ignorePerk = false)
 		{
 			if (lengthenAmount <= 0)
 			{
 				return 0;
 			}
 
-			float oldLength = length;
+			double oldLength = length;
 			if (!ignorePerk)
 			{
 				lengthenAmount *= cockGrowthMultiplier;
@@ -459,14 +465,14 @@ namespace CoC.Backend.BodyParts
 
 		//calling this will not cause a cock to be removed, should it become too small. Note that perks may prevent this from shrinking beyond a certain size, so
 		//you'll need to keep that in mind when checking for that.
-		public float DecreaseLength(float shortenAmount = 1, bool ignorePerk = false)
+		public double DecreaseLength(double shortenAmount = 1, bool ignorePerk = false)
 		{
 			if (shortenAmount <= 0)
 			{
 				return 0;
 			}
 
-			float oldLength = length;
+			double oldLength = length;
 			if (!ignorePerk)
 			{
 				shortenAmount *= cockShrinkMultiplier;
@@ -483,7 +489,7 @@ namespace CoC.Backend.BodyParts
 		//a cock below it's minimum length, it will simply stop there and return the amount it did shrink, unless you call this variant. this variant will stop at the minimum length
 		//like the other check, but it will also set the should remove boolean to true when you are trying to shrink well beyond the possible length.
 		//if you are certain you wish to remove the cock when it tries to shrink beyond it's minimum length, use this variant.
-		public bool DecreaseLengthAndCheckIfNeedsRemoval(float shortenAmount, bool ignorePerks = false)
+		public bool DecreaseLengthAndCheckIfNeedsRemoval(double shortenAmount, bool ignorePerks = false)
 		{
 
 			if (shortenAmount <= 0)
@@ -491,7 +497,7 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 
-			float oldLength = length;
+			double oldLength = length;
 			if (!ignorePerks)
 			{
 				shortenAmount *= cockShrinkMultiplier;
@@ -505,7 +511,7 @@ namespace CoC.Backend.BodyParts
 			return oldLength - length + 1 < shortenAmount || oldLength - shortenAmount < MIN_COCK_LENGTH;
 		}
 
-		public float SetLength(float newLength)
+		public double SetLength(double newLength)
 		{
 			CockData oldData = AsReadOnlyData();
 			updateLength(newLength);
@@ -513,25 +519,25 @@ namespace CoC.Backend.BodyParts
 			return length;
 		}
 
-		public float IncreaseThickness(float thickenAmount)
+		public double IncreaseThickness(double thickenAmount)
 		{
-			float oldGirth = girth;
+			double oldGirth = girth;
 			CockData oldData = AsReadOnlyData();
 			updateGirth(girth + thickenAmount);
 			CheckDataChanged(oldData);
 			return girth - oldGirth;
 		}
 
-		public float DecreaseThickness(float thinAmount)
+		public double DecreaseThickness(double thinAmount)
 		{
-			float oldGirth = girth;
+			double oldGirth = girth;
 			CockData oldData = AsReadOnlyData();
 			updateGirth(girth - thinAmount);
 			CheckDataChanged(oldData);
 			return oldGirth - girth;
 		}
 
-		public float SetGirth(float newGirth)
+		public double SetGirth(double newGirth)
 		{
 			CockData oldData = AsReadOnlyData();
 			updateGirth(newGirth);
@@ -539,52 +545,52 @@ namespace CoC.Backend.BodyParts
 			return girth;
 		}
 
-		public Pair<float> DeltaLengthAndGirth(float lengthDelta, float girthDelta)
+		public Pair<double> DeltaLengthAndGirth(double lengthDelta, double girthDelta)
 		{
-			float oldLength = length;
-			float oldGirth = girth;
+			double oldLength = length;
+			double oldGirth = girth;
 
 			CockData oldData = AsReadOnlyData();
 			updateLengthAndGirth(length + lengthDelta, girth + girthDelta);
 			CheckDataChanged(oldData);
 
-			return new Pair<float>(length - oldLength, girth - oldGirth);
+			return new Pair<double>(length - oldLength, girth - oldGirth);
 		}
 
-		public void SetLengthAndGirth(float newLength, float newGirth)
+		public void SetLengthAndGirth(double newLength, double newGirth)
 		{
 			CockData oldData = AsReadOnlyData();
 			updateLengthAndGirth(newLength, newGirth);
 			CheckDataChanged(oldData);
 		}
 
-		public float IncreaseKnotMultiplier(float amount)
+		public double IncreaseKnotMultiplier(double amount)
 		{
 			if (!type.hasKnot)
 			{
 				return 0;
 			}
-			float oldMultiplier = knotMultiplier;
+			double oldMultiplier = knotMultiplier;
 			CockData oldData = AsReadOnlyData();
 			knotMultiplier += amount;
 			CheckDataChanged(oldData);
 			return knotMultiplier - oldMultiplier;
 		}
 
-		public float DecreaseKnotMultiplier(float amount)
+		public double DecreaseKnotMultiplier(double amount)
 		{
 			if (!type.hasKnot)
 			{
 				return 0;
 			}
-			float oldMultiplier = knotMultiplier;
+			double oldMultiplier = knotMultiplier;
 			CockData oldData = AsReadOnlyData();
 			knotMultiplier -= amount;
 			CheckDataChanged(oldData);
 			return oldMultiplier - knotMultiplier;
 		}
 
-		public float SetKnotMultiplier(float multiplier)
+		public double SetKnotMultiplier(double multiplier)
 		{
 			Utils.Clamp(ref multiplier, MIN_KNOT_MULTIPLIER, MAX_KNOT_MULTIPLIER);
 			if (type.hasKnot)
@@ -596,7 +602,7 @@ namespace CoC.Backend.BodyParts
 			return knotMultiplier;
 		}
 
-		public void SetAll(float newLength, float newGirth, float newKnotMultiplier)
+		public void SetAll(double newLength, double newGirth, double newKnotMultiplier)
 		{
 			CockData oldData = AsReadOnlyData();
 			updateLengthAndGirth(newLength, newGirth);
@@ -609,7 +615,7 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Sex-Related
-		internal void SoundCock(float penetratorLength, float penetratorWidth, float penetratorKnotSize, bool reachOrgasm)
+		internal void SoundCock(double penetratorLength, double penetratorWidth, double penetratorKnotSize, bool reachOrgasm)
 		{
 			soundCount++;
 			//i guess we could do stuff with the cock being sore af or whatever, but whatever.
@@ -715,14 +721,14 @@ namespace CoC.Backend.BodyParts
 			return area > 6;
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			if (!((IShrinkable)this).CanReducto())
 			{
 				return 0;
 			}
-			float oldLength = length;
-			float multiplier = 2.0f / 3 * cockShrinkMultiplier;
+			double oldLength = length;
+			double multiplier = 2.0f / 3 * cockShrinkMultiplier;
 			updateLength(length * multiplier);
 			return oldLength - length;
 
@@ -736,17 +742,17 @@ namespace CoC.Backend.BodyParts
 		//grows cock 1-2 inches, in increments of 0.25.
 		//automatically increases cockGirth to min value.
 		//if possible, will also increase cockGirth, up to 0.5 inches
-		float IGrowable.UseGroPlus()
+		double IGrowable.UseGroPlus()
 		{
 			if (!((IGrowable)this).CanGroPlus())
 			{
 				return 0;
 			}
-			float oldCockLength = length;
+			double oldCockLength = length;
 
 			if (cockGrowthMultiplier != 1)
 			{
-				float multiplier = cockGrowthMultiplier;
+				double multiplier = cockGrowthMultiplier;
 				int rand;
 				if (multiplier < 1)
 				{
@@ -774,21 +780,21 @@ namespace CoC.Backend.BodyParts
 		}
 		#endregion
 		#region Helpers
-		private void updateLength(float newLength)
+		private void updateLength(double newLength)
 		{
 			_cockLength = newLength;
 			Utils.Clamp(ref _cockLength, minCockLength, MAX_COCK_LENGTH);
 			Utils.Clamp(ref _cockGirth, minGirth, maxGirth);
 		}
 
-		private void updateGirth(float newGirth)
+		private void updateGirth(double newGirth)
 		{
 			_cockGirth = newGirth;
 			Utils.Clamp(ref _cockGirth, MIN_COCK_THICKNESS, MAX_COCK_THICKNESS);
 			Utils.Clamp(ref _cockLength, minCockLength, maxLength);
 		}
 
-		private void updateLengthAndGirth(float newLength, float newGirth)
+		private void updateLengthAndGirth(double newLength, double newGirth)
 		{
 			_cockLength = newLength;
 			_cockGirth = newGirth;
@@ -797,10 +803,10 @@ namespace CoC.Backend.BodyParts
 		}
 
 
-		private float maxGirth => _cockLength * type.maxGirthToLengthRatio;
-		private float minGirth => _cockLength * type.minGirthToLengthRatio;
-		private float minLength => _cockGirth / type.maxGirthToLengthRatio;
-		private float maxLength => _cockGirth / type.minGirthToLengthRatio;
+		private double maxGirth => _cockLength * type.maxGirthToLengthRatio;
+		private double minGirth => _cockLength * type.minGirthToLengthRatio;
+		private double minLength => _cockGirth / type.maxGirthToLengthRatio;
+		private double maxLength => _cockGirth / type.minGirthToLengthRatio;
 
 		public byte virility
 		{
@@ -842,20 +848,20 @@ namespace CoC.Backend.BodyParts
 		public override int id => _index;
 		private readonly int _index;
 
-		public const float MAX_INITIAL_MULTIPLIER = 2.5f;
+		public const double MAX_INITIAL_MULTIPLIER = 2.5f;
 
 		public static CockType defaultValue => HUMAN;
 
 		public bool hasKnot => baseKnotMultiplier > 1.0f;
-		public readonly float baseKnotMultiplier;
+		public readonly double baseKnotMultiplier;
 
 		//vanilla game limited cock width to 2/5 the length. i realize that some cocks may require that ratio be lower, so if it irks you, you
 		//now have the option to change that.
 
-		public virtual float maxGirthToLengthRatio => 0.4f;
+		public virtual double maxGirthToLengthRatio => 0.4f;
 
 		//similarly, you now have the option to mess with min ratio. by default, any cock will at the very least, have one inch in width per 10 inches in length.
-		public virtual float minGirthToLengthRatio => 0.1f;
+		public virtual double minGirthToLengthRatio => 0.1f;
 
 		//allows a straightforward way to check for flexible, extendable cocks, like tentacles. also allows other cocks to act like tentacles (see the newly added goo-cock)
 		//i'm aware this breaks all the rules with length and girth, but tentacles need to tentacle things, so.
@@ -865,9 +871,9 @@ namespace CoC.Backend.BodyParts
 
 		//you can now alter the formula for knots. Iirc, the text for dragon cock knots said it didn't swell with size like the others, but still used the formula. if it's important enough to you to change this,
 		//you can.
-		public float knotSize(float girth, float multiplier) => girth * relativeKnotSize(multiplier);
+		public double knotSize(double girth, double multiplier) => girth * relativeKnotSize(multiplier);
 
-		public virtual float relativeKnotSize(float baseMultiplier) => baseMultiplier;
+		public virtual double relativeKnotSize(double baseMultiplier) => baseMultiplier;
 
 		public readonly bool usesASheath;
 
@@ -918,7 +924,7 @@ namespace CoC.Backend.BodyParts
 			removedCockStr = removeCockText ?? throw new ArgumentNullException(nameof(removeCockText));
 		}
 
-		private protected CockType(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor headDesc,
+		private protected CockType(CockGroup cockGroup, bool hasSheath, double initialKnotMultiplier, SimpleDescriptor headDesc,
 			CockDescriptor shortDescWithAdjFlag, CockSingleDescriptor singleDescWithAdjFlag, PartDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc,
 			ChangeType<CockData> transform, GrowCockDescriptor growCockText, RestoreType<CockData> restore, RemoveCockDescriptor removeCockText)
 			: base(shortDescMaker(shortDescWithAdjFlag), singleDescMaker(singleDescWithAdjFlag), longDesc, playerDesc, transform, restore)
@@ -997,7 +1003,7 @@ namespace CoC.Backend.BodyParts
 			return false;
 		}
 
-		internal virtual float UrethraWidth(float girth)
+		internal virtual double UrethraWidth(double girth)
 		{
 			return girth / 8f;
 		}
@@ -1033,7 +1039,7 @@ namespace CoC.Backend.BodyParts
 				RemoveCockDescriptor removeCockText) : base(cockGroup, hasSheath, headDesc, shortDesc, singleDesc, longDesc, playerDesc, transform, growCockText, restore, removeCockText)
 			{ }
 
-			public FlexiCock(CockGroup cockGroup, bool hasSheath, float initialKnotMultiplier, SimpleDescriptor headDesc, CockDescriptor shortDescWithAdjFlag,
+			public FlexiCock(CockGroup cockGroup, bool hasSheath, double initialKnotMultiplier, SimpleDescriptor headDesc, CockDescriptor shortDescWithAdjFlag,
 				CockSingleDescriptor singleDesc, PartDescriptor<CockData> longDesc, PlayerBodyPartDelegate<Cock> playerDesc, ChangeType<CockData> transform,
 				GrowCockDescriptor growCockText, RestoreType<CockData> restore, RemoveCockDescriptor removeCockText)
 				: base(cockGroup, hasSheath, initialKnotMultiplier, headDesc, shortDescWithAdjFlag, singleDesc, longDesc, playerDesc, transform, growCockText, restore, removeCockText) { }
@@ -1046,18 +1052,18 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class CockData : FullBehavioralData<CockData, Cock, CockType>, ICock
 	{
-		public readonly float knotMultiplier;
-		public readonly float knotSize;
-		public readonly float length;
-		public readonly float girth;
+		public readonly double knotMultiplier;
+		public readonly double knotSize;
+		public readonly double length;
+		public readonly double girth;
 		public readonly int cockIndex;
 
 		internal readonly uint? collectionID;
 
 		public readonly byte currentLust;
-		public readonly float currentRelativeLust;
+		public readonly double currentRelativeLust;
 
-		public readonly float cumAmount;
+		public readonly double cumAmount;
 
 		public readonly CockSockBase cockSock;
 
@@ -1068,7 +1074,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool hasKnot => knotMultiplier >= 1.1f;
 
-		public float area => length * girth;
+		public double area => length * girth;
 
 		#region Sexual MetaData
 		public readonly uint soundCount;
@@ -1137,8 +1143,8 @@ namespace CoC.Backend.BodyParts
 			dryOrgasmCount = source.dryOrgasmCount;
 		}
 
-		public CockData(Guid creatureID, CockType cockType, int cockIndex, float length, float girth, float knotMultiplier, float knotSize, float cumAmount,
-			bool currentlyHasSheath, byte currentLust = Creature.DEFAULT_LUST, float currentRelativeLust = Creature.DEFAULT_LUST, CockSockBase cockSock = null,
+		public CockData(Guid creatureID, CockType cockType, int cockIndex, double length, double girth, double knotMultiplier, double knotSize, double cumAmount,
+			bool currentlyHasSheath, byte currentLust = Creature.DEFAULT_LUST, double currentRelativeLust = Creature.DEFAULT_LUST, CockSockBase cockSock = null,
 			ReadOnlyPiercing<CockPiercingLocation> cockPiercings = null) : base(creatureID, cockType)
 		{
 			this.knotMultiplier = knotMultiplier;
@@ -1156,9 +1162,9 @@ namespace CoC.Backend.BodyParts
 			collectionID = null;
 		}
 
-		public CockData(Guid creatureID, CockType cockType, int cockIndex, float length, float girth, float knotMultiplier, float knotSize, float cumAmount,
+		public CockData(Guid creatureID, CockType cockType, int cockIndex, double length, double girth, double knotMultiplier, double knotSize, double cumAmount,
 			bool currentlyHasSheath, uint soundCount, uint totalSexCount, uint selfSexCount, uint orgasmCount, uint dryOrgasmCount,
-			byte currentLust = Creature.DEFAULT_LUST, float currentRelativeLust = Creature.DEFAULT_LUST, CockSockBase cockSock = null,
+			byte currentLust = Creature.DEFAULT_LUST, double currentRelativeLust = Creature.DEFAULT_LUST, CockSockBase cockSock = null,
 			ReadOnlyPiercing<CockPiercingLocation> cockPiercings = null) : base(creatureID, cockType)
 		{
 			this.knotMultiplier = knotMultiplier;

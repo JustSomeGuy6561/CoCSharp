@@ -1,11 +1,11 @@
-﻿using CoC.Backend.BodyParts;
+﻿using System.Text;
+using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Tools;
 using CoC.Frontend.Creatures.PlayerData;
 using CoC.Frontend.Perks;
 using CoC.Frontend.Perks.SpeciesPerks;
-using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
@@ -25,26 +25,38 @@ namespace CoC.Frontend.Transformations
 			//No cost stat changes.
 
 			//Effect script 1: (higher intelligence)
-			if (target is CombatCreature cc && cc.relativeIntelligence < 100 && Utils.Rand(3) == 0)
+			if (target.relativeIntelligence < 100 && Utils.Rand(3) == 0)
 			{
-				cc.IncreaseIntelligence(1);
-				if (cc.relativeIntelligence < 50) cc.IncreaseIntelligence(1);
+				target.IncreaseIntelligence(1);
+				if (target.relativeIntelligence < 50)
+				{
+					target.IncreaseIntelligence(1);
+				}
 			}
 			//Effect script 2: (lower sensitivity)
 			if (target.relativeSensitivity >= 20 && Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(sens: -2);
-				if (target.relativeSensitivity >= 75) target.DeltaCreatureStats(sens: -2);
+				target.ChangeSensitivity(-2);
+				if (target.relativeSensitivity >= 75)
+				{
+					target.ChangeSensitivity(-2);
+				}
 			}
 			//Effect script 3: (higher libido)
 			if (target.relativeLibido < 100 && Utils.Rand(3) == 0)
 			{
-				target.DeltaCreatureStats(lib: 1);
-				if (target.relativeLibido < 50) target.DeltaCreatureStats(lib: 1);
+				target.ChangeLibido(1);
+				if (target.relativeLibido < 50)
+				{
+					target.ChangeLibido(1);
+				}
 			}
 
 			//this will handle the edge case where the change count starts out as 0.
-			if (remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			if (remainingChanges <= 0)
+			{
+				return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+			}
 
 			//Effect script a: (human wang)
 			if (target.hasCock && target.cocks[0].type != CockType.defaultValue)
@@ -52,29 +64,45 @@ namespace CoC.Frontend.Transformations
 				//sb.Append("\n\nA strange tingling begins behind your " + target.cockDescript(0) + ", slowly crawling up across its entire length. While neither particularly arousing nor uncomfortable, you do shift nervously as the feeling intensifies. You resist the urge to undo your " + target.armorName + " to check, but by the feel of it, your penis is shifting form. Eventually the transformative sensation fades, <b>leaving you with a completely human penis.</b>");
 				target.genitals.RestoreCock(0);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Neck restore
 			if (!target.neck.isDefault && Utils.Rand(4) == 0)
 			{
+				NeckData oldData = target.neck.AsReadOnlyData();
 				target.RestoreNeck();
+				sb.Append(RestoredNeckText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
-
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Rear body restore
 			if (!target.back.isDefault && Utils.Rand(5) == 0)
 			{
+				BackData oldData = target.back.AsReadOnlyData();
 				target.RestoreBack();
+				sb.Append(RestoredBackText(target, oldData));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Ovi perk loss
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Appearnace Change
 			//Hair
@@ -87,7 +115,10 @@ namespace CoC.Frontend.Transformations
 				//Plucking a strand, you hold it up before you, surprised to see... it's completely transparent! You have transparent hair!");
 				target.hair.SetTransparency(true);
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Skin
 			if (Utils.Rand(4) == 0 && target.body.type != BodyType.HUMANOID || (target.body.mainEpidermis.tone != Tones.SABLE && target.body.mainEpidermis.tone != Tones.WHITE &&
@@ -111,7 +142,10 @@ namespace CoC.Frontend.Transformations
 
 				//sb.Append("\n\nA warmth begins in your belly, slowly spreading through your torso and appendages. The heat builds, becoming uncomfortable, then painful, then nearly unbearable. Your eyes unfocus from the pain, and by the time the burning sensation fades, you can already tell something's changed. You raise a hand, staring at the {tone} flesh. Your eyes are drawn to the veins in the back of your {hand}, {(tone == MILKY_WHITE ? "brightening to an ashen tone" : "darkening to a jet black")} as you watch. <b>You have {tone} skin, with {vein} veins!</b>");
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			if (!target.HasPerk<Incorporeal>() && target.hair.isSemiTransparent &&
 				(target.body.mainEpidermis.tone == Tones.SABLE || target.body.mainEpidermis.tone == Tones.WHITE || target.body.mainEpidermis.tone == Tones.MILKY_WHITE))
@@ -128,7 +162,10 @@ namespace CoC.Frontend.Transformations
 				//sb.Append("<b>(Gained Perk: Incorporeality</b>)");
 				target.perks.AddPerk<Incorporeal>();
 
-				if (--remainingChanges <= 0) return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				if (--remainingChanges <= 0)
+				{
+					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
+				}
 			}
 			//Effect Script 8: 100% chance of healing
 			if (remainingChanges == changeCount && target is CombatCreature cc2)
@@ -145,6 +182,22 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+{
+return RemovedOvipositionTextGeneric(target);
+}
+
+		protected virtual string RestoredNeckText(Creature target, NeckData oldData)
+		{
+			return target.neck.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredBackText(Creature target, BackData oldData)
+		{
+			return target.back.RestoredText(oldData);
+		}
+
 
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been

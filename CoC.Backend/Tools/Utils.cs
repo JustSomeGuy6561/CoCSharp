@@ -163,7 +163,7 @@ namespace CoC.Backend.Tools
 			return min + (max - min) * percent;
 		}
 
-		public static float Lerp(int minX, int maxX, float x, int minY, int maxY)
+		public static double Lerp(int minX, int maxX, double x, int minY, int maxY)
 		{
 			if (x >= maxX)
 			{
@@ -177,7 +177,7 @@ namespace CoC.Backend.Tools
 			return (minY * (maxX - x) + maxY * (x - minX)) / (maxX - minX);
 		}
 
-		public static float Lerp(float minX, float maxX, float x, float minY, float maxY)
+		public static double Lerp(double minX, double maxX, double x, double minY, double maxY)
 		{
 			if (x >= maxX)
 			{
@@ -248,7 +248,7 @@ namespace CoC.Backend.Tools
 			}
 		}
 
-		public static string DescribeByScale(float value, float[] scale, string lessThan = "less than", string moreThan = "more than")
+		public static string DescribeByScale(double value, double[] scale, string lessThan = "less than", string moreThan = "more than")
 		{
 			if (scale.Length == 0) return "indescribable";
 			if (scale.Length == 1) return "about " + scale[0];

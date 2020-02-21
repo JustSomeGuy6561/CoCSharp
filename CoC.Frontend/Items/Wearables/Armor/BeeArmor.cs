@@ -30,7 +30,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			return $"{count}{setText} of {crotchText}chitinous armor";
 		}
 
-		public override float DefensiveRating(Creature wearer) => 18;
+		public override double PhysicalDefensiveRating(Creature wearer) => 18;
 
 		protected override int monetaryValue => 200;
 
@@ -173,9 +173,15 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 		bool IBulgeArmor.isBulged => bulged;
 
-		protected override string OnRemoveText()
+		protected override string RemoveText(Creature wearer)
 		{
-			return this.GenericBulgeAwareRemoveText(bulged);
+			return this.GenericBulgeAwareRemoveText(bulged, base.RemoveText(wearer));
+		}
+
+		protected override ArmorBase OnRemove(Creature wearer)
+		{
+			bulged = false;
+			return base.OnRemove(wearer);
 		}
 
 	}

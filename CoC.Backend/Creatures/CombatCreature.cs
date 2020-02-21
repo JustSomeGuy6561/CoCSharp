@@ -15,26 +15,21 @@ namespace CoC.Backend.Creatures
 
 	public abstract class CombatCreature : Creature
 	{
-		public const byte DEFAULT_STRENGTH = 15;
-		public const byte DEFAULT_TOUGHNESS = 15;
-		public const byte DEFAULT_SPEED = 15;
-		public const byte DEFAULT_INTELLIGENCE = 15;
+
 
 		public const byte DEFAULT_FATIGUE = 0;
 		//public const byte DEFAULT_HUNGER = 0;
 
-		internal const byte BASE_MAX_STRENGTH = 100;
-		internal const byte BASE_MAX_TOUGHNESS = 100;
-		internal const byte BASE_MAX_SPEED = 100;
-		internal const byte BASE_MAX_INTELLIGENCE = 100;
+
 		internal const byte BASE_MAX_FATIGUE = 100;
 
 		public void AddHP(uint flatAmount)
 		{
+			var res = flatAmount * perks.baseModifiers.HungerGainRate;
 			throw new NotImplementedException();
 		}
 
-		public void AddHPPercent(float percent)
+		public void AddHPPercent(double percent)
 		{
 			throw new NotImplementedException();
 		}
@@ -75,83 +70,23 @@ namespace CoC.Backend.Creatures
 			private protected set => _currentHealth = Utils.Clamp2(value, (uint)0, maxHealth);
 		}
 		private uint _currentHealth = 0;
-		public byte strength => (byte)Math.Floor(strengthTrue);
-		public float strengthTrue
-		{
-			get => _strength;
-			private protected set => _strength = Utils.Clamp2(value, minStrength, maxStrength);
-		}
-		private float _strength = 0;
 
-		public float relativeStrength => strengthTrue * (100f / maxStrength);
-
-		public byte toughness => (byte)Math.Floor(toughnessTrue);
-		public float toughnessTrue
-		{
-			get => _toughness;
-			private protected set => _toughness = Utils.Clamp2(value, minToughness, maxToughness);
-		}
-		private float _toughness = 0;
-
-		public float relativeToughness => toughnessTrue * (100f / maxToughness);
-
-		public byte speed => (byte)Math.Floor(speedTrue);
-		public float speedTrue
-		{
-			get => _speed;
-			private protected set => _speed = Utils.Clamp2(value, minSpeed, maxSpeed);
-		}
-		private float _speed = 0;
-
-		public float relativeSpeed => speedTrue * (100f / maxSpeed);
-
-		public byte intelligence => (byte)Math.Floor(intelligenceTrue);
-		public float intelligenceTrue
-		{
-			get => _intelligence;
-			private protected set => _intelligence = Utils.Clamp2(value, minIntelligence, maxIntelligence);
-		}
-		private float _intelligence = 0;
-
-		public float relativeIntelligence => intelligenceTrue * (100f / maxIntelligence);
 
 		public byte fatigue => (byte)Math.Floor(fatigueTrue);
-		public float fatigueTrue
+		public double fatigueTrue
 		{
 			get => _fatigue;
 			private protected set => _fatigue = Utils.Clamp2(value, minFatigue, maxFatigue);
 		}
-		private float _fatigue = 0;
+		private double _fatigue = 0;
 
-		public float relativeFatigue => fatigueTrue * (100f / maxFatigue);
-
-		protected internal virtual sbyte bonusMinStrength { get; set; }
-		protected virtual byte baseMinStrength => 0;
-		public byte minStrength => baseMinStrength.offset(bonusMinStrength);
+		public double relativeFatigue => fatigueTrue * (100f / maxFatigue);
 
 
-
-		protected internal virtual sbyte bonusMinToughness { get; set; }
-		protected virtual byte baseMinToughness => 0;
-		public byte minToughness => baseMinToughness.offset(bonusMinToughness);
-
-
-
-		protected internal virtual sbyte bonusMinSpeed { get; set; }
-		protected virtual byte baseMinSpeed => 0;
-		public byte minSpeed => baseMinSpeed.offset(bonusMinSpeed);
-
-
-		protected internal virtual sbyte bonusMinIntelligence { get; set; }
-		protected virtual byte baseMinIntelligence => 0;
-		public byte minIntelligence => baseMinIntelligence.offset(bonusMinIntelligence);
 
 		protected internal virtual sbyte bonusMinFatigue { get; set; }
 		protected virtual byte baseMinFatigue => 0;
 		public byte minFatigue => baseMinFatigue.offset(bonusMinFatigue);
-
-
-
 
 		//public byte minHunger => 0;
 
@@ -159,39 +94,11 @@ namespace CoC.Backend.Creatures
 
 		protected internal int perkBonusHealth { get; set; }
 
-		protected internal virtual byte baseMaxStrength => BASE_MAX_STRENGTH;
-		protected internal virtual sbyte bonusMaxStrength { get; set; } = 0;
-		public byte maxStrength => HandleMaxStat(baseMaxStrength.offset(bonusMaxStrength), minStrength);
-
-		protected internal virtual byte baseMaxToughness => BASE_MAX_TOUGHNESS;
-		protected internal virtual sbyte bonusMaxToughness { get; set; } = 0;
-		public byte maxToughness => HandleMaxStat(baseMaxToughness.offset(bonusMaxToughness), minToughness);
-
-		protected internal virtual byte baseMaxSpeed => BASE_MAX_SPEED;
-		protected internal virtual sbyte bonusMaxSpeed { get; set; } = 0;
-		public byte maxSpeed => HandleMaxStat(baseMaxSpeed.offset(bonusMaxSpeed), minSpeed);
-
-		protected internal virtual byte baseMaxIntelligence => BASE_MAX_INTELLIGENCE;
-		protected internal virtual sbyte bonusMaxIntelligence { get; set; } = 0;
-		public byte maxIntelligence => HandleMaxStat(baseMaxIntelligence.offset(bonusMaxIntelligence), minIntelligence);
-
 		protected internal virtual byte baseMaxFatigue => BASE_MAX_FATIGUE;
 		protected internal virtual sbyte bonusMaxFatigue { get; set; } = 0;
 		public byte maxFatigue => HandleMaxStat(baseMaxFatigue.offset(bonusMaxFatigue), minFatigue);
 
-		protected internal float StrengthGainMultiplier = 1.0f;
-		protected internal float StrengthLossMultiplier = 1.0f;
-
-		protected internal float ToughnessGainMultiplier = 1.0f;
-		protected internal float ToughnessLossMultiplier = 1.0f;
-
-		protected internal float SpeedGainMultiplier = 1.0f;
-		protected internal float SpeedLossMultiplier = 1.0f;
-
-		protected internal float IntelligenceGainMultiplier = 1.0f;
-		protected internal float IntelligenceLossMultiplier = 1.0f;
-
-		protected internal float FatigueRegenRate = 1.0f;
+		protected internal double FatigueRegenRate = 1.0f;
 
 		//public virtual byte maxHunger => BASE_MAX_HUNGER.offset(modifiers.bonusMaxHunger);
 
@@ -201,31 +108,7 @@ namespace CoC.Backend.Creatures
 		//Equipment
 		//Inventory
 
-		public int gems { get; protected set; }
 
-		public int addGems(uint amount)
-		{
-			int oldGems = gems;
-			gems += amount > int.MaxValue ? int.MaxValue : (int)amount;
-			return gems - oldGems;
-		}
-
-		public int removeGems(uint amount, bool canGoNegative = false)
-		{
-			int lossAmt = amount > int.MaxValue ? int.MaxValue : (int)amount;
-			int oldGems = gems;
-			if (gems < 0 && !canGoNegative)
-			{
-				return 0;
-			}
-			gems -= lossAmt;
-			if (gems < 0 && !canGoNegative)
-			{
-				gems = 0;
-			}
-			return gems - oldGems; //i can flip this if we want.
-
-		}
 
 		//public void dynStats(sbyte str = 0, sbyte tou = 0, sbyte spd = 0, sbyte inte = 0, sbyte lib = 0, sbyte sens = 0, sbyte corr = 0, sbyte lus = 0)
 		//{
@@ -263,430 +146,15 @@ namespace CoC.Backend.Creatures
 		//	private protected set => _currentHealth = Utils.Clamp2(value, (uint)0, maxHealth);
 		//}
 		//private uint _currentHealth = 0;
-		public float IncreaseStrengthBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = strengthTrue;
-			float delta = percent * maxStrength;
-			if (!ignorePerks)
-			{
-				delta *= StrengthGainMultiplier;
-			}
-			strengthTrue += delta;
-			return strengthTrue - oldValue;
-		}
 
-		public float IncreaseStrength(float amount = 1, bool ignorePerks = false)
-		{
-			if (!ignorePerks)
-			{
-				amount *= StrengthGainMultiplier;
-			}
-			if (amount <= 0)
-			{
-				return 0;
-			}
-			var oldValue = strengthTrue;
-			strengthTrue += amount;
-			return strengthTrue - oldValue;
-		}
-
-		public float IncreaseToughnessBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = toughnessTrue;
-			float delta = percent * maxToughness;
-			if (!ignorePerks)
-			{
-				delta *= ToughnessGainMultiplier;
-			}
-			toughnessTrue += delta;
-			return toughnessTrue - oldValue;
-		}
-
-		public float IncreaseToughness(float amount = 1, bool ignorePerks = false)
-		{
-			if (!ignorePerks)
-			{
-				amount *= ToughnessGainMultiplier;
-			}
-			if (amount <= 0)
-			{
-				return 0;
-			}
-			var oldValue = toughnessTrue;
-			toughnessTrue += amount;
-			return toughnessTrue - oldValue;
-		}
-
-		public float IncreaseSpeedBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = speedTrue;
-			float delta = percent * maxSpeed;
-			if (!ignorePerks)
-			{
-				delta *= SpeedGainMultiplier;
-			}
-			speedTrue += delta;
-			return speedTrue - oldValue;
-		}
-
-		public float IncreaseSpeed(float amount = 1, bool ignorePerks = false)
-		{
-			if (!ignorePerks)
-			{
-				amount *= SpeedGainMultiplier;
-			}
-			if (amount <= 0)
-			{
-				return 0;
-			}
-			var oldValue = speedTrue;
-			speedTrue += amount;
-			return speedTrue - oldValue;
-		}
-
-		public float IncreaseIntelligenceBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = intelligenceTrue;
-			float delta = percent * maxIntelligence;
-			if (!ignorePerks)
-			{
-				delta *= IntelligenceGainMultiplier;
-			}
-			intelligenceTrue += delta;
-			return intelligenceTrue - oldValue;
-		}
-
-		public float IncreaseIntelligence(float amount = 1, bool ignorePerks = false)
-		{
-			if (!ignorePerks)
-			{
-				amount *= IntelligenceGainMultiplier;
-			}
-			if (amount <= 0)
-			{
-				return 0;
-			}
-			var oldValue = intelligenceTrue;
-			intelligenceTrue += amount;
-			return intelligenceTrue - oldValue;
-		}
-
-		public float DecreaseStrengthByPercent(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = strengthTrue;
-			float delta = percent * maxStrength;
-			if (!ignorePerks)
-			{
-				delta *= StrengthLossMultiplier;
-			}
-			strengthTrue -= delta;
-			return oldValue - strengthTrue;
-		}
-
-		public float DecreaseStrength(float amount = 1, bool ignorePerks = false)
-		{
-			if (!ignorePerks)
-			{
-				amount *= StrengthGainMultiplier;
-			}
-			if (amount <= 0)
-			{
-				return 0;
-			}
-			var oldValue = strengthTrue;
-			strengthTrue -= amount;
-			return oldValue - strengthTrue;
-		}
-
-		public float DecreaseToughnessByPercent(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = toughnessTrue;
-			float delta = percent * maxToughness;
-			if (!ignorePerks)
-			{
-				delta *= ToughnessLossMultiplier;
-			}
-			toughnessTrue -= delta;
-			return oldValue - toughnessTrue;
-		}
-
-		public float DecreaseToughness(float amount = 1, bool ignorePerks = false)
-		{
-			if (!ignorePerks)
-			{
-				amount *= ToughnessGainMultiplier;
-			}
-			if (amount <= 0)
-			{
-				return 0;
-			}
-			var oldValue = toughnessTrue;
-			toughnessTrue -= amount;
-			return oldValue - toughnessTrue;
-		}
-
-		public float DecreaseSpeedBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = speedTrue;
-			float delta = percent * maxSpeed;
-			if (!ignorePerks)
-			{
-				delta *= SpeedLossMultiplier;
-			}
-			speedTrue -= delta;
-			return oldValue - speedTrue;
-		}
-
-		public float DecreaseSpeed(float amount = 1, bool ignorePerks = false)
-		{
-			if (!ignorePerks)
-			{
-				amount *= SpeedGainMultiplier;
-			}
-			if (amount <= 0)
-			{
-				return 0;
-			}
-			var oldValue = speedTrue;
-			speedTrue -= amount;
-			return oldValue - speedTrue;
-		}
-
-		public float DecreaseIntelligenceBy(float percent, bool ignorePerks = true)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float oldValue = intelligenceTrue;
-			float delta = percent * maxIntelligence;
-			if (!ignorePerks)
-			{
-				delta *= IntelligenceLossMultiplier;
-			}
-			intelligenceTrue -= delta;
-			return oldValue - intelligenceTrue;
-		}
-
-		public float DecreaseIntelligence(float amount = 1, bool ignorePerks = false)
-		{
-			if (!ignorePerks)
-			{
-				amount *= IntelligenceGainMultiplier;
-			}
-			if (amount <= 0)
-			{
-				return 0;
-			}
-			var oldValue = intelligenceTrue;
-			intelligenceTrue -= amount;
-			return oldValue - intelligenceTrue;
-		}
-
-		public float SetStrengthPercent(float percent)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float value = maxStrength * percent;
-			strengthTrue = value;
-			return strengthTrue;
-		}
-
-		public float SetStrength(byte value)
-		{
-			strengthTrue = value;
-			return strengthTrue;
-		}
-		public float SetToughnessPercent(float percent)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float value = maxToughness * percent;
-			toughnessTrue = value;
-			return toughnessTrue;
-		}
-
-		public float SetToughness(byte value)
-		{
-			toughnessTrue = value;
-			return toughnessTrue;
-		}
-		public float SetSpeedPercent(float percent)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float value = maxSpeed * percent;
-			speedTrue = value;
-			return speedTrue;
-		}
-
-		public float SetSpeed(byte value)
-		{
-			speedTrue = value;
-			return speedTrue;
-		}
-		public float SetIntelligencePercent(float percent)
-		{
-			Utils.Clamp(ref percent, 0, 1);
-			float value = maxIntelligence * percent;
-			intelligenceTrue = value;
-			return intelligenceTrue;
-		}
-
-		public float SetIntelligence(byte value)
-		{
-			intelligenceTrue = value;
-			return intelligenceTrue;
-		}
-
-		public void IncreaseCombatCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, byte str = 0, byte tou = 0, byte spe = 0, byte inte = 0, bool ignorePerks = false)
-		{
-			IncreaseCreatureStats(lust, lib, sens, corr);
-
-			float amount;
-			if (str != 0)
-			{
-				amount = str;
-				if (!ignorePerks) amount *= StrengthGainMultiplier;
-				strengthTrue += amount;
-			}
-			if (tou != 0)
-			{
-				amount = tou;
-				if (!ignorePerks) amount *= ToughnessGainMultiplier;
-				toughnessTrue += amount;
-			}
-			if (spe != 0)
-			{
-				amount = spe;
-				if (!ignorePerks) amount *= SpeedGainMultiplier;
-				speedTrue += amount;
-			}
-			if (inte != 0)
-			{
-				amount = inte;
-				if (!ignorePerks) amount *= IntelligenceGainMultiplier;
-				intelligenceTrue += amount;
-			}
-		}
-
-		public void DecreaseCombatCreatureStats(byte lus = 0, byte lib = 0, byte sens = 0, byte corr = 0, byte str = 0, byte tou = 0, byte spe = 0, byte inte = 0, bool ignorePerks = false)
-		{
-			DecreaseCreatureStats(lust, lib, sens, corr);
-
-			float amount;
-			if (str != 0)
-			{
-				amount = str;
-				if (!ignorePerks) amount *= StrengthLossMultiplier;
-				strengthTrue -= amount;
-			}
-			if (tou != 0)
-			{
-				amount = tou;
-				if (!ignorePerks) amount *= ToughnessLossMultiplier;
-				toughnessTrue -= amount;
-			}
-			if (spe != 0)
-			{
-				amount = spe;
-				if (!ignorePerks) amount *= SpeedLossMultiplier;
-				speedTrue -= amount;
-			}
-			if (inte != 0)
-			{
-				amount = inte;
-				if (!ignorePerks) amount *= IntelligenceLossMultiplier;
-				intelligenceTrue -= amount;
-			}
-		}
-
-		public void SetCombatCreatureStats(byte? lus = null, byte? lib = null, byte? sens = null, byte? corr = null, byte? str = null, byte? tou = null, byte? spe = null, byte? inte = null)
-		{
-			SetCreatureStats(lust, lib, sens, corr);
-
-			if (str is byte ltb)
-			{
-				strengthTrue = ltb;
-			}
-			if (tou is byte lbb)
-			{
-				toughnessTrue = lbb;
-			}
-			if (spe is byte sb)
-			{
-				speedTrue = sb;
-			}
-			if (inte is byte cb)
-			{
-				intelligenceTrue = cb;
-			}
-		}
-
-		public void DeltaCombatCreatureStats(float lus = 0, float lib = 0, float sens = 0, float corr = 0, float str = 0, float tou = 0, float spe = 0, float inte = 0, bool ignorePerks = false)
-		{
-			DeltaCreatureStats(lust, lib, sens, corr);
-
-			float amount;
-			if (str < 0)
-			{
-				amount = str;
-				if (!ignorePerks) amount *= StrengthLossMultiplier;
-				strengthTrue += amount;
-			}
-			else if (str > 0)
-			{
-				amount = str;
-				if (!ignorePerks) amount *= StrengthGainMultiplier;
-				strengthTrue += amount;
-			}
-			if (tou < 0)
-			{
-				amount = tou;
-				if (!ignorePerks) amount *= ToughnessLossMultiplier;
-				toughnessTrue += amount;
-			}
-			else if (tou > 0)
-			{
-				amount = tou;
-				if (!ignorePerks) amount *= ToughnessGainMultiplier;
-				toughnessTrue += amount;
-			}
-			if (spe < 0)
-			{
-				amount = spe;
-				if (!ignorePerks) amount *= SpeedLossMultiplier;
-				speedTrue += amount;
-			}
-			else if (spe > 0)
-			{
-				amount = spe;
-				if (!ignorePerks) amount *= SpeedGainMultiplier;
-				speedTrue += amount;
-			}
-			if (inte < 0)
-			{
-				amount = inte;
-				if (!ignorePerks) amount *= IntelligenceLossMultiplier;
-				intelligenceTrue += amount;
-			}
-			else if (inte > 0)
-			{
-				amount = inte;
-				if (!ignorePerks) amount *= IntelligenceGainMultiplier;
-				intelligenceTrue += amount;
-			}
-		}
-
-		public float GainFatigue(float amount, bool ignorePerks = false)
+		public double GainFatigue(double amount, bool ignorePerks = false)
 		{
 			var oldValue = fatigueTrue;
 			fatigueTrue += amount;
 			return fatigueTrue - oldValue;
 		}
 
-		public float RecoverFatigue(float amount, bool ignorePerks = false)
+		public double RecoverFatigue(double amount, bool ignorePerks = false)
 		{
 			var oldValue = fatigueTrue;
 			if (!ignorePerks)
@@ -696,7 +164,7 @@ namespace CoC.Backend.Creatures
 			fatigueTrue -= amount;
 			return oldValue - fatigueTrue;
 		}
-		public float ChangeFatigue(short delta, bool ignorePerks = false)
+		public double ChangeFatigue(short delta, bool ignorePerks = false)
 		{
 			bool lose = delta < 0;
 
@@ -716,13 +184,13 @@ namespace CoC.Backend.Creatures
 				return GainFatigue(amount, ignorePerks);
 			}
 		}
-		public float spellCost(double baseCost)
+		public double spellCost(double baseCost)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
 
-		public float physicalCost(double baseCost)
+		public double physicalCost(double baseCost)
 		{
 			throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -748,7 +216,7 @@ namespace CoC.Backend.Creatures
 
 			if (item.CanUse(this, true, out string whyNot))
 			{
-				return item.AttemptToUseInCombat(this, onUseItemReturn);
+				return item.UseItemInCombat(this, onUseItemReturn);
 			}
 			else
 			{
@@ -782,13 +250,13 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				CapacityItem item = inventoryStore.RemoveItem(index);
-				return item.AttemptToUseInCombat(this, onUseItemReturn);
+				return item.UseItemInCombat(this, onUseItemReturn);
 			}
 		}
 
 		public DisplayBase EquipArmorDuringCombatManual(ArmorBase armor, UseItemCombatCallbackSafe<ArmorBase> postEquipCallback)
 		{
-			if (armor is null)
+			if (ArmorBase.IsNullOrNothing(armor))
 			{
 				postEquipCallback(false, false, YouGaveMeANull(), null, null);
 				return null;
@@ -800,7 +268,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return armor.AttemptToUseInCombatSafe(this, postEquipCallback);
+				return armor.UseItemInCombatSafe(this, postEquipCallback);
 			}
 		}
 
@@ -824,7 +292,7 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseInCombatSafe(this, postEquipCallback);
+				return item.UseItemInCombatSafe(this, postEquipCallback);
 			}
 		}
 
@@ -833,7 +301,7 @@ namespace CoC.Backend.Creatures
 		//callback will be null.
 		public DisplayBase ReplaceArmorDuringCombatManual(ArmorBase armor, UseItemCombatCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
-			if (armor is null)
+			if (ArmorBase.IsNullOrNothing(armor))
 			{
 				ArmorBase item = RemoveArmorManual(out string removeText);
 				postReplaceArmorCallback(true, false, removeText, item.Author(), item);
@@ -846,7 +314,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return armor.AttemptToUseInCombatSafe(this, postReplaceArmorCallback);
+				return armor.UseItemInCombatSafe(this, postReplaceArmorCallback);
 			}
 		}
 
@@ -870,13 +338,13 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseInCombatSafe(this, postReplaceArmorCallback);
+				return item.UseItemInCombatSafe(this, postReplaceArmorCallback);
 			}
 		}
 
 		public DisplayBase EquipUpperGarmentDuringCombatManual(UpperGarmentBase upperGarment, UseItemCombatCallbackSafe<UpperGarmentBase> postEquipCallback)
 		{
-			if (upperGarment is null)
+			if (UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				postEquipCallback(false, false, YouGaveMeANull(), null, null);
 				return null;
@@ -888,7 +356,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return upperGarment.AttemptToUseInCombatSafe(this, postEquipCallback);
+				return upperGarment.UseItemInCombatSafe(this, postEquipCallback);
 			}
 		}
 
@@ -912,13 +380,13 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseInCombatSafe(this, postEquipCallback);
+				return item.UseItemInCombatSafe(this, postEquipCallback);
 			}
 		}
 
 		public DisplayBase ReplaceUpperGarmentDuringCombatManual(UpperGarmentBase upperGarment, UseItemCombatCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
-			if (upperGarment is null)
+			if (UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				UpperGarmentBase item = RemoveUpperGarmentManual(out string removeText);
 				postReplaceUpperGarmentCallback(true, false, removeText, item.Author(), item);
@@ -931,7 +399,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return upperGarment.AttemptToUseInCombatSafe(this, postReplaceUpperGarmentCallback);
+				return upperGarment.UseItemInCombatSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
 
@@ -955,13 +423,13 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseInCombatSafe(this, postReplaceUpperGarmentCallback);
+				return item.UseItemInCombatSafe(this, postReplaceUpperGarmentCallback);
 			}
 		}
 
 		public DisplayBase EquipLowerGarmentDuringCombatManual(LowerGarmentBase lowerGarment, UseItemCombatCallbackSafe<LowerGarmentBase> postEquipCallback)
 		{
-			if (lowerGarment is null)
+			if (LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				postEquipCallback(false, false, YouGaveMeANull(), null, null);
 				return null;
@@ -973,7 +441,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return lowerGarment.AttemptToUseInCombatSafe(this, postEquipCallback);
+				return lowerGarment.UseItemInCombatSafe(this, postEquipCallback);
 			}
 		}
 
@@ -997,13 +465,13 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseInCombatSafe(this, postEquipCallback);
+				return item.UseItemInCombatSafe(this, postEquipCallback);
 			}
 		}
 
 		public DisplayBase ReplaceLowerGarmentDuringCombatManual(LowerGarmentBase lowerGarment, UseItemCombatCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
-			if (lowerGarment is null)
+			if (LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				LowerGarmentBase item = RemoveLowerGarmentManual(out string removeText);
 				postReplaceLowerGarmentCallback(true, false, removeText, "", item);
@@ -1016,7 +484,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return lowerGarment.AttemptToUseInCombatSafe(this, postReplaceLowerGarmentCallback);
+				return lowerGarment.UseItemInCombatSafe(this, postReplaceLowerGarmentCallback);
 			}
 		}
 
@@ -1040,7 +508,7 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				return item.AttemptToUseInCombatSafe(this, postReplaceLowerGarmentCallback);
+				return item.UseItemInCombatSafe(this, postReplaceLowerGarmentCallback);
 			}
 		}
 

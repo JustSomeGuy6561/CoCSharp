@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items.Wearables.Armor;
+using CoC.Backend.Items.Wearables.LowerGarment;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 
@@ -31,17 +32,21 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			}
 		}
 
-		//public override float DefensiveRating(Creature wearer) => 28;
+		//public override double DefensiveRating(Creature wearer) => 28;
 
 		protected override int monetaryValue => 3000;
 
-		public override string AboutItem() => "This is a suit of lethicite armor. It's all purple and it seems to glow. The pauldrons are spiky to give this armor an imposing appearance. It doesn't seem to cover your crotch and nipples though. It appears to be enchanted to never break and you highly doubt the demons might be able to eat it!";
+		public override string AboutItem()
+		{
+			return "This is a suit of lethicite armor. It's all purple and it seems to glow. The pauldrons are spiky to give this armor an imposing appearance. " +
+				"It doesn't seem to cover your crotch and nipples though. It appears to be enchanted to never break and you highly doubt the demons will be able to eat it!";
+		}
 
 		public LethiciteArmor() : base(ArmorType.HEAVY_ARMOR)
 		{
 		}
 
-		public override float DefensiveRating(Creature wearer) => 20 + (int)Math.Floor(wearer.corruptionTrue / 10);
+		public override double PhysicalDefensiveRating(Creature wearer) => 20 + (int)Math.Floor(wearer.corruptionTrue / 10);
 
 		protected override string EquipText(Creature wearer)
 		{
@@ -71,14 +76,14 @@ namespace CoC.Frontend.Items.Wearables.Armor
 			if (wearer.isBiped)
 			{
 				sb.Append(GlobalStrings.NewParagraph() + "Next, you slip into the leggings. By the time you get the leggings fully adjusted, you realize that the intricately-designed opening gives access to your groin! ");
-				if (wearer.hasCock && wearer.lowerGarment == null)
+				if (wearer.hasCock && !wearer.wearingLowerGarment)
 				{
 					sb.Append("Your " + wearer.genitals.AllCocksShortDescription(out bool isPlural) + (isPlural ? " hang" : "hangs") + " freely. ");
 				}
 
 				if (wearer.corruption < 33)
 				{ //Low corruption
-					if (wearer.lowerGarment != null)
+					if (wearer.wearingLowerGarment)
 					{
 						sb.Append("Good thing you have your " + wearer.lowerGarment + " on!");
 					}
@@ -89,7 +94,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 				}
 				else if (wearer.corruption < 66)
 				{ //Medium corruption
-					if (wearer.lowerGarment != null)
+					if (wearer.wearingLowerGarment)
 					{
 						sb.Append("You are unsure about whether you should keep your " + wearer.lowerGarment + " on or not.");
 					}
@@ -100,7 +105,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 				}
 				else //if (wearer.corruption >= 66)
 				{ //High corruption
-					if (wearer.lowerGarment != null)
+					if (wearer.wearingLowerGarment)
 					{
 						sb.Append("You ponder over taking off your undergarments.");
 					}

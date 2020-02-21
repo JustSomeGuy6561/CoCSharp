@@ -141,7 +141,7 @@ namespace CoC.Backend.BodyParts
 		internal readonly uint collectionID; //used so we can easily determine how the collection changed. it's a huge hassle otherwise.
 
 		#region Breast Data From Collection
-		public float lactationRate => source.lactationRate;
+		public double lactationRate => source.lactationRate;
 		public LactationStatus lactationStatus => source.lactationStatus;
 
 		public bool isOverFull => source.isOverfull;
@@ -155,7 +155,7 @@ namespace CoC.Backend.BodyParts
 		public bool hasBlackNipples => nippleData.hasBlackNipples;
 		public bool hasQuadNipples => nippleData.hasQuadNipples;
 		public NippleStatus nippleStatus => nippleData.nippleStatus;
-		public float nippleLength => nippleData.length;
+		public double nippleLength => nippleData.length;
 
 		#endregion
 
@@ -173,8 +173,8 @@ namespace CoC.Backend.BodyParts
 		private CupSize maleDefaultCup => EnumHelper.Max(maleDefaultNewCup.ByteEnumOffset(maleNewCupDelta), maleMinCup);
 
 		//perk values for tit size growth/shrink. defaults to 1 if not applicable.
-		private float bigTiddyMultiplier => source.titsGrowthMultiplier;
-		private float tinyTiddyMultiplier => source.titsShrinkMultiplier;
+		private double bigTiddyMultiplier => source.titsGrowthMultiplier;
+		private double tinyTiddyMultiplier => source.titsShrinkMultiplier;
 
 		#endregion
 
@@ -184,7 +184,7 @@ namespace CoC.Backend.BodyParts
 		internal Gender currGender => creature?.genitals.gender ?? Gender.MALE;
 
 		//used to describe the nipples.
-		internal float relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
+		internal double relativeLust => creature?.relativeLust ?? Creature.DEFAULT_LUST;
 		internal BodyType bodyType => creature?.body.type ?? BodyType.defaultValue;
 		#endregion
 
@@ -207,7 +207,7 @@ namespace CoC.Backend.BodyParts
 		private bool makeBigTits => bigTiddyMultiplier > 1.1f;
 		private bool makeSmallTits => tinyTiddyMultiplier > 1.1f;
 
-		public float lactationAmount(bool perBreast)
+		public double lactationAmount(bool perBreast)
 		{
 			if (!perBreast)
 			{
@@ -389,9 +389,9 @@ namespace CoC.Backend.BodyParts
 			return cupSize - oldSize;
 		}
 
-		public void SetCupSize(CupSize size)
+		public short SetCupSize(CupSize size)
 		{
-
+			var oldSize = (byte)cupSize;
 			Utils.ClampEnum(ref size, CupSize.FLAT, CupSize.JACQUES00);
 			if (cupSize != size)
 			{
@@ -399,6 +399,8 @@ namespace CoC.Backend.BodyParts
 				cupSize = size;
 				NotifyDataChanged(oldData);
 			}
+
+			return oldSize.delta((byte)cupSize);
 		}
 
 		public bool MakeMale(bool removeStatus = true)
@@ -448,9 +450,9 @@ namespace CoC.Backend.BodyParts
 			//dickNippleFuckCount = 0;
 		}
 
-		public static BreastData GenerateAggregate(Guid creatureID, CupSize averageCup, float averageNippleLength, bool blackNipples, bool quadNipples,
-			bool largeNipplesAreDickNipples, NippleStatus nippleType, float lactationRate, LactationStatus lactationStatus, bool overfull, Gender gender,
-			BodyType bodyType, float relativeLust, CupSize maleMinCupSize)
+		public static BreastData GenerateAggregate(Guid creatureID, CupSize averageCup, double averageNippleLength, bool blackNipples, bool quadNipples,
+			bool largeNipplesAreDickNipples, NippleStatus nippleType, double lactationRate, LactationStatus lactationStatus, bool overfull, Gender gender,
+			BodyType bodyType, double relativeLust, CupSize maleMinCupSize)
 		{
 			return new BreastData(creatureID, -1, NUM_BREASTS, averageCup, averageNippleLength, blackNipples, quadNipples, largeNipplesAreDickNipples, nippleType,
 				lactationRate, lactationStatus, overfull, gender, bodyType, relativeLust:relativeLust, maleMinCupSize:maleMinCupSize);
@@ -528,7 +530,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//to be frank, idk what would actually orgasm when being titty fucked, but, uhhhh... i guess it can be stored in stats or some shit?
-		internal void DoTittyFuck(float length, float girth, float knotWidth, bool reachOrgasm, bool sourceIsSelf)
+		internal void DoTittyFuck(double length, double girth, double knotWidth, bool reachOrgasm, bool sourceIsSelf)
 		{
 			totalTitFuckCount++;
 
@@ -543,7 +545,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		internal void DoNippleFuck(float length, float girth, float knotWidth, float cumAmount, bool reachOrgasm, bool sourceIsSelf)
+		internal void DoNippleFuck(double length, double girth, double knotWidth, double cumAmount, bool reachOrgasm, bool sourceIsSelf)
 		{
 			totalFuckableNippleSexCount++;
 
@@ -584,7 +586,7 @@ namespace CoC.Backend.BodyParts
 			return cupSize > minimumCupSize;
 		}
 
-		float IGrowable.UseGroPlus()
+		double IGrowable.UseGroPlus()
 		{
 			if (!((IGrowable)this).CanGroPlus())
 			{
@@ -597,7 +599,7 @@ namespace CoC.Backend.BodyParts
 			return cupSize - oldSize;
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			if (!((IShrinkable)this).CanReducto())
 			{
@@ -632,14 +634,14 @@ namespace CoC.Backend.BodyParts
 
 		internal readonly NippleAggregateData nippleData;
 
-		public float nippleLength => nippleData.length;
+		public double nippleLength => nippleData.length;
 		public bool hasQuadNipples => nippleData.hasQuadNipples;
 		public bool hasBlackNipples => nippleData.hasBlackNipples;
 		public NippleStatus nippleType => nippleData.nippleStatus;
 
 		public readonly ReadOnlyPiercing<NipplePiercingLocation> nipplePiercings;
 
-		public readonly float lactationRate;
+		public readonly double lactationRate;
 		public readonly LactationStatus lactationStatus;
 		public readonly bool isOverFull;
 
@@ -659,7 +661,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		internal readonly Gender gender;
 		internal readonly BodyType bodyType;
-		internal readonly float relativeLust;
+		internal readonly double relativeLust;
 
 		public bool isMaleBreasts => cupSize <= maleMinSize && nippleLength <= 0.5f;
 
@@ -747,21 +749,21 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		public BreastData(Guid creatureID, int rowIndex, byte totalNumberOfBreasts, CupSize cupSize, float nippleLength, bool blackNipples, bool quadNipples,
-			bool largeNipplesBecomeDickNipples, NippleStatus nippleType, float lactationRate, LactationStatus lactationStatus, bool overfull, Gender gender,
+		public BreastData(Guid creatureID, int rowIndex, byte totalNumberOfBreasts, CupSize cupSize, double nippleLength, bool blackNipples, bool quadNipples,
+			bool largeNipplesBecomeDickNipples, NippleStatus nippleType, double lactationRate, LactationStatus lactationStatus, bool overfull, Gender gender,
 			uint orgasmCount = 0, uint dryOrgasmCount = 0, uint totalTitFuckCount = 0, uint selfTitFuckCount = 0, uint dickNippleSexCount = 0,
 			uint totalFuckableNippleSexCount = 0, uint selfFuckableNippleSexCount = 0, ReadOnlyPiercing<NipplePiercingLocation> piercings = null,
-			float relativeLust = Creature.DEFAULT_LUST, CupSize maleMinCupSize = CupSize.FLAT) : this(creatureID, rowIndex, totalNumberOfBreasts,
+			double relativeLust = Creature.DEFAULT_LUST, CupSize maleMinCupSize = CupSize.FLAT) : this(creatureID, rowIndex, totalNumberOfBreasts,
 				cupSize, nippleLength, blackNipples, quadNipples, largeNipplesBecomeDickNipples, nippleType, lactationRate, lactationStatus, overfull,
 				gender, BodyType.defaultValue, orgasmCount, dryOrgasmCount, totalTitFuckCount, selfTitFuckCount, dickNippleSexCount,
 				totalFuckableNippleSexCount, selfFuckableNippleSexCount, piercings, relativeLust, maleMinCupSize)
 		{ }
 
-		public BreastData(Guid creatureID, int rowIndex, byte totalNumberOfBreasts, CupSize cupSize, float nippleLength, bool blackNipples, bool quadNipples,
-			bool largeNipplesBecomeDickNipples, NippleStatus nippleType, float lactationRate, LactationStatus lactationStatus, bool overfull, Gender gender,
+		public BreastData(Guid creatureID, int rowIndex, byte totalNumberOfBreasts, CupSize cupSize, double nippleLength, bool blackNipples, bool quadNipples,
+			bool largeNipplesBecomeDickNipples, NippleStatus nippleType, double lactationRate, LactationStatus lactationStatus, bool overfull, Gender gender,
 			BodyType bodyType, uint orgasmCount = 0, uint dryOrgasmCount = 0, uint totalTitFuckCount = 0, uint selfTitFuckCount = 0, uint dickNippleSexCount = 0,
 			uint totalFuckableNippleSexCount = 0, uint selfFuckableNippleSexCount = 0, ReadOnlyPiercing<NipplePiercingLocation> piercings = null,
-			float relativeLust = Creature.DEFAULT_LUST, CupSize maleMinCupSize = CupSize.FLAT) : base(creatureID)
+			double relativeLust = Creature.DEFAULT_LUST, CupSize maleMinCupSize = CupSize.FLAT) : base(creatureID)
 		{
 			this.currBreastRowIndex = rowIndex;
 			this.numBreasts = totalNumberOfBreasts;

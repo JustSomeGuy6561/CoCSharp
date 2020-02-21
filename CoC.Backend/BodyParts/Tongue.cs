@@ -94,7 +94,7 @@ namespace CoC.Backend.BodyParts
 
 		public bool isLongTongue => type.longTongue;
 		public ushort length => type.length;
-		public float width => type.width;
+		public double width => type.width;
 
 		public uint penetrateCount { get; private set; } = 0;
 		public uint cullingusCount { get; private set; } = 0;
@@ -213,12 +213,12 @@ namespace CoC.Backend.BodyParts
 		private readonly int _index;
 		public readonly ushort length;
 
-		public readonly float width;
+		public readonly double width;
 
 		public static TongueType defaultValue => HUMAN;
 
 
-		private protected TongueType(ushort tongueLength, float tongueWidth, ShortDescriptor shortDesc, PartDescriptor<TongueData> longDesc,
+		private protected TongueType(ushort tongueLength, double tongueWidth, ShortDescriptor shortDesc, PartDescriptor<TongueData> longDesc,
 			PlayerBodyPartDelegate<Tongue> playerDesc, ChangeType<TongueData> transform, RestoreType<TongueData> restore) : base(shortDesc, longDesc, playerDesc, transform, restore)
 		{
 			_index = indexMaker++;
@@ -284,7 +284,7 @@ namespace CoC.Backend.BodyParts
 	public sealed class TongueData : FullBehavioralData<TongueData, Tongue, TongueType>
 	{
 		//standard data
-		public float width => type.width;
+		public double width => type.width;
 		public ushort length => type.length;
 		public bool isLongTongue => type.longTongue;
 

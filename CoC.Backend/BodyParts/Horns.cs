@@ -287,7 +287,7 @@ namespace CoC.Backend.BodyParts
 			return type.AllowsReducto && CanWeaken;
 		}
 
-		float IShrinkable.UseReducto()
+		double IShrinkable.UseReducto()
 		{
 			if (!((IShrinkable)this).CanReducto())
 			{
@@ -303,7 +303,7 @@ namespace CoC.Backend.BodyParts
 			return type.AllowsGroPlus && CanStrengthen;
 		}
 
-		float IGrowable.UseGroPlus()
+		double IGrowable.UseGroPlus()
 		{
 			if (!((IGrowable)this).CanGroPlus())
 			{
@@ -494,12 +494,12 @@ namespace CoC.Backend.BodyParts
 		}
 
 		internal virtual bool AllowsReducto => false;
-		internal virtual float ReductoHorns(ref byte numHorns, ref byte maxHornLength, in FemininityData masculinity)
+		internal virtual double ReductoHorns(ref byte numHorns, ref byte maxHornLength, in FemininityData masculinity)
 		{
 			return 0;
 		}
 		internal virtual bool AllowsGroPlus => false;
-		internal virtual float GroPlusHorns(ref byte numHorns, ref byte maxHornLength, in FemininityData masculinity)
+		internal virtual double GroPlusHorns(ref byte numHorns, ref byte maxHornLength, in FemininityData masculinity)
 		{
 			return 0;
 		}
@@ -672,7 +672,7 @@ namespace CoC.Backend.BodyParts
 				return BullHornsReactToFemDeltaStr(oldLength, in hornLength, oldMasculinity, in femininity);
 			}
 
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override double ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				if (!CanShrink(numHorns, hornLength, masculinity))
 				{
@@ -895,7 +895,7 @@ namespace CoC.Backend.BodyParts
 
 			//Executive decision: second pair of dragon horns can't be shrunk.
 			internal override bool AllowsReducto => true;
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override double ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				byte reduced = hornLength.subtract(2);
 				byte oldHornLength = hornLength;
@@ -905,7 +905,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override double GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				byte grown = hornLength.add(2);
 				byte oldHornLength = hornLength;
@@ -982,7 +982,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override double ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				byte reduced = numHorns.subtract(4);
 				byte oldHornCount = numHorns;
@@ -993,7 +993,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsGroPlus => isReindeer;
 
-			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinitiy)
+			internal override double GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinitiy)
 			{
 				if (!isReindeer || numHorns >= maxHorns)
 				{
@@ -1096,7 +1096,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override double ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				byte changeAmount = 0;
 				if (hornLength <= minHornLength)
@@ -1115,7 +1115,7 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override double GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				byte changeAmount = 0;
 				if (hornLength >= maxHornLength)
@@ -1181,26 +1181,26 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool AllowsReducto => true;
 
-			internal override float ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override double ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				if (hornLength <= minHornLength)
 					return 0;
 				else
 				{
-					float retVal = hornLength - minHornLength;
+					double retVal = hornLength - minHornLength;
 					hornLength = minHornLength;
 					return retVal;
 				}
 			}
 			internal override bool AllowsGroPlus => true;
 
-			internal override float GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
+			internal override double GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				if (hornLength >= maxHornLength)
 					return 0;
 				else
 				{
-					float retVal = maxHornLength - hornLength;
+					double retVal = maxHornLength - hornLength;
 					hornLength = maxHornLength;
 					return retVal;
 				}
@@ -1337,7 +1337,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			internal override bool AllowsReducto => true;
-			internal override float ReductoHorns(ref byte numHorns, ref byte largestHornLength, in FemininityData masculinity)
+			internal override double ReductoHorns(ref byte numHorns, ref byte largestHornLength, in FemininityData masculinity)
 			{
 
 				byte reduceAmount = 0;

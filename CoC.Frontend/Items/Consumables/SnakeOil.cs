@@ -66,7 +66,7 @@ namespace CoC.Frontend.Items.Consumables
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
 			var tf = new NagaTFs();
-			resultsOfUse =  tf.DoTransformation(consumer, out isBadEnd);
+			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
 
 			return true;
 		}
@@ -74,7 +74,7 @@ namespace CoC.Frontend.Items.Consumables
 		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
 		{
 			var tf = new NagaTFs();
-			resultsOfUse =  tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
 
 			return true;
 		}

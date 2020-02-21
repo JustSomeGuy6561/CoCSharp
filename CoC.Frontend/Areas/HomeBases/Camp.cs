@@ -189,10 +189,10 @@ namespace CoC.Frontend.Areas.HomeBases
 			}
 			if (player.lust >= player.maxLust)
 			{ //the uber horny
-			  //if (player.hasStatusEffect(StatusEffects.Dysfunction)) sb.Append("<b>You are debilitatingly aroused, but your sexual organs are so numbed the only way to get off would be to find something tight to fuck or get fucked...</b>" + Environment.NewLine + Environment.NewLine);
-			  //else if (flags[kFLAGS.UNABLE_TO_MASTURBATE_BECAUSE_CENTAUR] > 0 && player.isTaur()) sb.Append("<b>You are delibitatingly aroused, but your sex organs are so difficult to reach that masturbation isn't at the forefront of your mind.</b>" + Environment.NewLine + Environment.NewLine);
-			  //else
-			  //{
+			 //if (player.hasStatusEffect(StatusEffects.Dysfunction)) sb.Append("<b>You are debilitatingly aroused, but your sexual organs are so numbed the only way to get off would be to find something tight to fuck or get fucked...</b>" + Environment.NewLine + Environment.NewLine);
+			 //else if (flags[kFLAGS.UNABLE_TO_MASTURBATE_BECAUSE_CENTAUR] > 0 && player.isTaur()) sb.Append("<b>You are delibitatingly aroused, but your sex organs are so difficult to reach that masturbation isn't at the forefront of your mind.</b>" + Environment.NewLine + Environment.NewLine);
+			 //else
+			 //{
 				sb.Append("<b>You are debilitatingly aroused, and can think of doing nothing other than masturbating.</b>" + Environment.NewLine + Environment.NewLine);
 				//This once disabled the ability to rest, sleep or wait, but ir hasn't done that for many many builds
 				//}
@@ -212,7 +212,7 @@ namespace CoC.Frontend.Areas.HomeBases
 						case Weather.PARTLY_CLOUDY:
 						default:
 							sb.Append("A blood-red moon hangs in the sky, seeming to watch you, but providing little light. Despite the plethora of stars dotting the night sky, they too provide almost no light. " +
-					   "It's far too dark to leave camp." + Environment.NewLine + Environment.NewLine); break;
+					  "It's far too dark to leave camp." + Environment.NewLine + Environment.NewLine); break;
 					}
 				}
 				if (hasAnyVisitors && (GameDateTime.Now.hour < 4 || GameDateTime.Now.hour < 23))

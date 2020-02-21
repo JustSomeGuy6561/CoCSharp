@@ -280,7 +280,7 @@ namespace CoC.Backend.BodyParts
 			labiaPiercings = new LabiaPiercing(this, PiercingLocationUnlocked, AllLabiaPiercingsShort, AllLabiaPiercingsLong);
 		}
 
-		internal Vagina(VaginaCollection parent, uint id, VaginaType vaginaType, float clitLength, VaginalLooseness? vaginalLooseness = null,
+		internal Vagina(VaginaCollection parent, uint id, VaginaType vaginaType, double clitLength, VaginalLooseness? vaginalLooseness = null,
 			VaginalWetness? vaginalWetness = null, bool? isVirgin = null, IEnumerable<KeyValuePair<LabiaPiercingLocation, PiercingJewelry>> initialLabiaPiercings = null,
 			IEnumerable<KeyValuePair<ClitPiercingLocation, PiercingJewelry>> initialClitPiercings = null)
 			: base(parent?.creatureID ?? throw new ArgumentNullException(nameof(parent)))
@@ -394,7 +394,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Sexual Functions
 
-		internal bool PenetrateVagina(ushort penetratorArea, float knotArea, bool takeVirginity, bool reachOrgasm, bool sourceIsSelf)
+		internal bool PenetrateVagina(ushort penetratorArea, double knotArea, bool takeVirginity, bool reachOrgasm, bool sourceIsSelf)
 		{
 			totalPenetrationCount++;
 
@@ -457,7 +457,7 @@ namespace CoC.Backend.BodyParts
 			HandleStretching(size, 0);
 		}
 
-		private void HandleStretching(ushort penetratorArea, float knotArea)
+		private void HandleStretching(ushort penetratorArea, double knotArea)
 		{
 			ushort capacity = VaginalCapacity();
 
@@ -539,10 +539,10 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Clit Helpers
 
-		public float GrowClit(float amount, bool ignorePerks = false)
+		public double GrowClit(double amount, bool ignorePerks = false)
 		{
 			VaginaData oldData = AsReadOnlyData();
-			float retVal = clit.GrowClit(amount, ignorePerks);
+			double retVal = clit.GrowClit(amount, ignorePerks);
 			if (retVal != 0)
 			{
 				NotifyDataChanged(oldData);
@@ -550,10 +550,10 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		public float ShrinkClit(float amount, bool ignorePerks = false)
+		public double ShrinkClit(double amount, bool ignorePerks = false)
 		{
 			VaginaData oldData = AsReadOnlyData();
-			float retVal = clit.ShrinkClit(amount, ignorePerks);
+			double retVal = clit.ShrinkClit(amount, ignorePerks);
 			if (retVal != 0)
 			{
 				NotifyDataChanged(oldData);
@@ -561,11 +561,11 @@ namespace CoC.Backend.BodyParts
 			return retVal;
 		}
 
-		public float SetClitSize(float newSize)
+		public double SetClitSize(double newSize)
 		{
 			VaginaData oldData = AsReadOnlyData();
-			float oldSize = clit.length;
-			float retVal = clit.SetClitSize(newSize);
+			double oldSize = clit.length;
+			double retVal = clit.SetClitSize(newSize);
 			if (clit.length != oldSize)
 			{
 				NotifyDataChanged(oldData);

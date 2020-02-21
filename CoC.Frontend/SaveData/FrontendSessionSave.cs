@@ -2,6 +2,7 @@
 //Description:
 //Author: JustSomeGuy
 //4/5/2019, 11:12 PM
+using CoC.Backend.BodyParts;
 using CoC.Backend.SaveData;
 
 namespace CoC.Frontend.SaveData
@@ -125,5 +126,9 @@ namespace CoC.Frontend.SaveData
 		internal byte ValeriaTotalFluids;
 		internal byte ValeriaSparIntensity;
 		internal bool ValeriaFluidsEnabled;
+
+		internal bool emberHatched;
+		internal Gender EmberGender;
+
 	}
 }

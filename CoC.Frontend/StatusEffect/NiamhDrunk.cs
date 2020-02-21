@@ -31,14 +31,12 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (sourceCreature is CombatCreature combatCreature)
 			{
-				deltaIntelligence = combatCreature.DecreaseSpeed(5, true);
-				deltaSpeed = combatCreature.DecreaseIntelligence(5, true);
-
-				var oldModifier = baseModifiers.combatDamageModifier;
+				float oldModifier = baseModifiers.combatDamageModifier;
 				baseModifiers.combatDamageModifier *= .75f;
 				deltaCombatModifier = baseModifiers.combatDamageModifier / oldModifier;
 			}
-
+			deltaIntelligence = sourceCreature.DecreaseSpeed(5, true);
+			deltaSpeed = sourceCreature.DecreaseIntelligence(5, true);
 			sourceCreature.IncreaseLust(20 + Utils.Rand(sourceCreature.libido / 4));
 
 			deltaLibido = sourceCreature.IncreaseLibido(10, true);
@@ -46,17 +44,21 @@ namespace CoC.Frontend.StatusEffect
 
 		protected override void OnRemoval()
 		{
-			if (sourceCreature is CombatCreature cc)
+			if (sourceCreature is CombatCreature target)
 			{
-				cc.IncreaseIntelligence(0.9f * deltaIntelligence, true);
-				cc.IncreaseSpeed(0.9f * deltaSpeed, true);
-
-				deltaSpeed = 0;
-				deltaIntelligence = 0;
+				if (deltaCombatModifier != 0)
+				{
+					baseModifiers.combatDamageModifier /= deltaCombatModifier;
+					deltaCombatModifier = 0;
+				}
 			}
 
 			sourceCreature.DecreaseLibido(deltaLibido, true);
+			sourceCreature.IncreaseIntelligence(0.9f * deltaIntelligence, true);
+			sourceCreature.IncreaseSpeed(0.9f * deltaSpeed, true);
 
+			deltaSpeed = 0;
+			deltaIntelligence = 0;
 
 			deltaLibido = 0;
 			//no lust change.
@@ -64,11 +66,8 @@ namespace CoC.Frontend.StatusEffect
 
 		public void StackEffect(byte strength = 1)
 		{
-			if (sourceCreature is CombatCreature cc)
-			{
-				deltaIntelligence += cc.DecreaseIntelligence(strength, true);
-				deltaSpeed += cc.DecreaseSpeed(strength, true);
-			}
+			deltaIntelligence += sourceCreature.DecreaseIntelligence(strength, true);
+			deltaSpeed += sourceCreature.DecreaseSpeed(strength, true);
 
 			//delay the wears off timer.
 			timeWearsOff = base.timeWearsOff.Delta(2 * strength);

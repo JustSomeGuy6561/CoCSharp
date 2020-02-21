@@ -66,32 +66,29 @@ namespace CoC.Frontend.Transformations
 			//STATS
 			if (target.relativeSensitivity > 25 && Utils.Rand(3) < 2)
 			{
-				target.DeltaCreatureStats(sens: (-1 - Utils.Rand(3)));
+				target.ChangeSensitivity((-1 - Utils.Rand(3)));
 			}
-			if (target is CombatCreature cc)
+			//Increase strength 1-2 points (Up to 50) (60 for tiger)
+			if (((target.relativeStrength < 60 && isTigerShark) || target.relativeStrength < 50) && Utils.Rand(3) == 0)
 			{
-				//Increase strength 1-2 points (Up to 50) (60 for tiger)
-				if (((cc.relativeStrength < 60 && isTigerShark) || cc.relativeStrength < 50) && Utils.Rand(3) == 0)
-				{
-					cc.DeltaCombatCreatureStats(str: 1 + Utils.Rand(2));
-				}
-				//Increase Speed 1-3 points (Up to 75) (100 for tigers)
-				if (((cc.relativeSpeed < 100 && isTigerShark) || cc.relativeSpeed < 75) && Utils.Rand(3) == 0)
-				{
-					cc.DeltaCombatCreatureStats(spe: 1 + Utils.Rand(3));
-				}
-				//Reduce sensitivity 1-3 Points (Down to 25 points)
+				target.ChangeStrength(1 + Utils.Rand(2));
+			}
+			//Increase Speed 1-3 points (Up to 75) (100 for tigers)
+			if (((target.relativeSpeed < 100 && isTigerShark) || target.relativeSpeed < 75) && Utils.Rand(3) == 0)
+			{
+				target.ChangeSpeed(1 + Utils.Rand(3));
+			}
+			//Reduce sensitivity 1-3 Points (Down to 25 points)
 
-				//Increase Libido 2-4 points (Up to 75 points) (100 for tigers)
-				if (((cc.relativeLibido < 100 && isTigerShark) || cc.relativeLibido < 75) && Utils.Rand(3) == 0)
-				{
-					cc.DeltaCreatureStats(lib: (1 + Utils.Rand(3)));
-				}
-				//Decrease intellect 1-3 points (Down to 40 points)
-				if (cc.relativeIntelligence > 40 && Utils.Rand(3) == 0)
-				{
-					cc.DeltaCombatCreatureStats(inte: -(1 + Utils.Rand(3)));
-				}
+			//Increase Libido 2-4 points (Up to 75 points) (100 for tigers)
+			if (((target.relativeLibido < 100 && isTigerShark) || target.relativeLibido < 75) && Utils.Rand(3) == 0)
+			{
+				target.ChangeLibido((1 + Utils.Rand(3)));
+			}
+			//Decrease intellect 1-3 points (Down to 40 points)
+			if (target.relativeIntelligence > 40 && Utils.Rand(3) == 0)
+			{
+				target.ChangeIntelligence(-(1 + Utils.Rand(3)));
 			}
 			//Smexual stuff!
 			//-TIGGERSHARK ONLY: Grow a cunt (guaranteed if no gender)
@@ -105,7 +102,7 @@ namespace CoC.Frontend.Transformations
 				//(dick)
 				//(neither)
 				target.genitals.AddVagina();
-				target.DeltaCreatureStats(sens: 10);
+				target.ChangeSensitivity(10);
 			}
 			//WANG GROWTH - TIGGERSHARK ONLY
 			if (isTigerShark && (!target.hasCock) && Utils.Rand(3) == 0)
@@ -160,6 +157,7 @@ namespace CoC.Frontend.Transformations
 			if (target.womb.canRemoveOviposition && Utils.Rand(5) == 0)
 			{
 				target.womb.ClearOviposition();
+				sb.Append(ClearOvipositionText(target));
 
 				if (--remainingChanges <= 0)
 				{
@@ -170,7 +168,10 @@ namespace CoC.Frontend.Transformations
 			//Mouth TF
 			if (target.face.type != FaceType.SHARK && Utils.Rand(3) == 0)
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.SHARK);
+				sb.Append(UpdateFaceText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -179,7 +180,9 @@ namespace CoC.Frontend.Transformations
 			//Remove odd eyes
 			if (Utils.Rand(5) == 0 && target.eyes.type != EyeType.HUMAN)
 			{
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.RestoreEyes();
+				sb.Append(RestoredEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -189,7 +192,9 @@ namespace CoC.Frontend.Transformations
 			//Tail TF
 			if (target.tail.type != TailType.SHARK && Utils.Rand(3) == 0)
 			{
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.SHARK);
+				sb.Append(UpdateTailText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -199,7 +204,9 @@ namespace CoC.Frontend.Transformations
 			//Gills TF
 			if (target.gills.type != GillType.FISH && target.tail.type == TailType.SHARK && target.face.type == FaceType.SHARK && Utils.Rand(3) == 0)
 			{
+				GillData oldData = target.gills.AsReadOnlyData();
 				target.UpdateGills(GillType.FISH);
+				sb.Append(UpdateGillsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -226,7 +233,9 @@ namespace CoC.Frontend.Transformations
 				SkinTexture targetTexture = SkinTexture.ROUGH;
 				//getGame().rathazul.addMixologyXP(20);
 
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.HUMANOID, targetTone, targetTexture);
+				sb.Append(UpdateBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -237,7 +246,9 @@ namespace CoC.Frontend.Transformations
 			if ((target.wings.type != WingType.NONE || target.back.type != BackType.SHARK_FIN) && Utils.Rand(3) == 0)
 			{
 				target.UpdateBack(BackType.SHARK_FIN);
+				WingData oldData = target.wings.AsReadOnlyData();
 				target.RestoreWings();
+				sb.Append(RestoredWingsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -249,6 +260,41 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+		{
+			return RemovedOvipositionTextGeneric(target);
+		}
+
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+		{
+			return target.face.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+		{
+			return target.tail.TransformFromText(oldTail);
+		}
+		protected virtual string UpdateGillsText(Creature target, GillData oldData)
+		{
+			return target.gills.TransformFromText(oldData);
+		}
+
+		protected virtual string UpdateBodyText(Creature target, BodyData oldData)
+		{
+			return target.body.TransformFromText(oldData);
+		}
+
+		protected virtual string RestoredEyesText(Creature target, EyeData oldData)
+		{
+			return target.eyes.RestoredText(oldData);
+		}
+
+		protected virtual string RestoredWingsText(Creature target, WingData oldData)
+		{
+			return target.wings.RestoredText(oldData);
+		}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

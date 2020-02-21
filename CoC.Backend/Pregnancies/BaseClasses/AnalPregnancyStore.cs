@@ -22,7 +22,7 @@ namespace CoC.Backend.Pregnancies
 			return retVal;
 		}
 
-		protected override string NotifyTimePassed(float hoursTilBirth, float oldHoursToBirth)
+		protected override string NotifyTimePassed(double hoursTilBirth, double oldHoursToBirth)
 		{
 			return ((SpawnTypeIncludeAnal)spawnType).NotifyAnalBirthingProgressed(creatureID, hoursTilBirth, oldHoursToBirth);
 		}
@@ -32,7 +32,7 @@ namespace CoC.Backend.Pregnancies
 			return GenericDiapauseText();
 		}
 
-		internal override bool attemptKnockUp(float knockupChance, StandardSpawnType type)
+		internal override bool attemptKnockUp(double knockupChance, StandardSpawnType type)
 		{
 			if (type is SpawnTypeIncludeAnal)
 			{

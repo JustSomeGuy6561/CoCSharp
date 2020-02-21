@@ -45,26 +45,26 @@ namespace CoC.Backend.BodyParts
 			get => _cocks[index];
 		}
 
-		public float minimumCockLength => source.perkData.MinCockLength;
+		public double minimumCockLength => source.perkData.MinCockLength;
 
 		#endregion
 
 		#region Public Cum Related Members
-		public float cumMultiplierTrue
+		public double cumMultiplierTrue
 		{
 			get => _cumMultiplierTrue;
 			private set => _cumMultiplierTrue = Utils.Clamp2(value, 1, CUM_MULTIPLIER_CAP);
 		}
-		private float _cumMultiplierTrue = 1;
+		private double _cumMultiplierTrue = 1;
 
 		public ushort additionalCum => (ushort)additionalCumTrue;
 
-		public float additionalCumTrue
+		public double additionalCumTrue
 		{
 			get => _additionalCumTrue;
 			private set => _additionalCumTrue = Utils.Clamp2(value, ushort.MinValue, ushort.MaxValue);
 		}
-		private float _additionalCumTrue = 0;
+		private double _additionalCumTrue = 0;
 
 		public uint pentUpBonus
 		{
@@ -190,18 +190,18 @@ namespace CoC.Backend.BodyParts
 
 		#region Perk Data
 
-		internal float cockGrowthMultiplier => perkData.CockGrowthMultiplier;
-		internal float cockShrinkMultiplier => perkData.CockShrinkMultiplier;
+		internal double cockGrowthMultiplier => perkData.CockGrowthMultiplier;
+		internal double cockShrinkMultiplier => perkData.CockShrinkMultiplier;
 
 		//perk values that alter the size of any new cock.
-		internal float newCockDefaultSize => perkData.NewCockDefaultSize;
-		internal float newCockSizeDelta => perkData.NewCockSizeDelta;
+		internal double newCockDefaultSize => perkData.NewCockDefaultSize;
+		internal double newCockSizeDelta => perkData.NewCockSizeDelta;
 
 		//perk value that sets the absolute minimum size for any cock. this is given priority, even over new size perk data.
-		public float minCockLength => perkData.MinCockLength;
+		public double minCockLength => perkData.MinCockLength;
 
 		//perk values used to alter virility of a creature (and by extension, all of its cocks).
-		internal float perkBonusVirilityMultiplier => perkData.perkBonusVirilityMultiplier;
+		internal double perkBonusVirilityMultiplier => perkData.perkBonusVirilityMultiplier;
 		internal sbyte perkBonusVirility => perkData.perkBonusVirility;
 
 		#endregion
@@ -216,7 +216,7 @@ namespace CoC.Backend.BodyParts
 
 		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
 
-		internal float relativeLust => source.relativeLust;
+		internal double relativeLust => source.relativeLust;
 
 		internal byte currentLust => creature?.lust ?? Creature.DEFAULT_LUST;
 
@@ -271,17 +271,63 @@ namespace CoC.Backend.BodyParts
 		{
 			if (original is null) return false;
 
-			Dictionary<uint, Cock> items = _cocks.ToDictionary(x => x.collectionID, x => x);
-			Dictionary<uint, CockData> dataItems = original.cocks.ToDictionary(x => (uint)x.collectionID, x => x);
 
 			return cumMultiplierTrue == original.cumMultiplierTrue && additionalCumTrue == original.additionalCumTrue && totalCum == original.totalCum
 				&& hoursSinceLastCum == original.hoursSinceLastCum && simulatedHoursSinceLastCum == original.simulatedHoursSinceLastCum
 				&& (ignoreSexualMetaData || (totalSoundCount == original.totalSoundCount && totalSexCount == original.totalSexCount
 				&& selfSexCount == original.selfSexCount && totalOrgasmCount == original.totalOrgasmCount && dryOrgasmCount == original.dryOrgasmCount))
-				&& items.Keys.Count == dataItems.Keys.Count && items.All(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
+				&& !CollectionChanged(original, ignoreSexualMetaData);
 		}
 
 		#endregion
+
+		public bool CollectionChanged(CockCollectionData original, bool ignoreSexualMetaData)
+		{
+			if (original is null) return false;
+
+			Dictionary<uint, Cock> items = _cocks.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, CockData> dataItems = original.cocks.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Keys.Count != dataItems.Keys.Count || items.Any(x => !dataItems.ContainsKey(x.Key) || !x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData));
+		}
+
+		public IEnumerable<Cock> AddedCocks(CockCollectionData original)
+		{
+			Dictionary<uint, Cock> items = _cocks.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, CockData> dataItems = original.cocks.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Where(x => !dataItems.ContainsKey(x.Key)).Select(x => x.Value);
+		}
+
+		public IEnumerable<CockData> RemovedCocks(CockCollectionData original)
+		{
+			Dictionary<uint, Cock> items = _cocks.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, CockData> dataItems = original.cocks.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return dataItems.Where(x => !items.ContainsKey(x.Key)).Select(x => x.Value);
+		}
+
+		public IEnumerable<ValueDifference<CockData>> ChangedCocks(CockCollectionData original, bool ignoreSexualMetaData)
+		{
+			Dictionary<uint, Cock> items = _cocks.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, CockData> dataItems = original.cocks.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			if (original.creatureID != creatureID)
+			{
+				throw new ArgumentException("this collection is from a different source from the original data provided. Behavior is undefined.");
+			}
+
+			return items.Where(x => dataItems.ContainsKey(x.Key) && !x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData))
+				.Select(x => new ValueDifference<CockData>(dataItems[x.Key], x.Value.AsReadOnlyData()));
+		}
+
+		public IEnumerable<Cock> UnchangedCocks(CockCollectionData original, bool ignoreSexualMetaData)
+		{
+			Dictionary<uint, Cock> items = _cocks.ToDictionary(x => x.collectionID, x => x);
+			Dictionary<uint, CockData> dataItems = original.cocks.ToDictionary(x => (uint)x.collectionID, x => x);
+
+			return items.Where(x => dataItems.ContainsKey(x.Key) && x.Value.IsIdenticalTo(dataItems[x.Key], ignoreSexualMetaData)).Select(x => x.Value);
+		}
 
 		internal void Initialize(CockCreator[] cockCreators)
 		{
@@ -297,17 +343,17 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region Cock Aggregate Functions
-		public float BiggestCockTotalSize()
+		public double BiggestCockTotalSize()
 		{
 			return _cocks.Max(x => x.area);
 		}
 
-		public float LongestCockLength()
+		public double LongestCockLength()
 		{
 			return _cocks.Max(x => x.length);
 		}
 
-		public float WidestCockMeasure()
+		public double WidestCockMeasure()
 		{
 			return _cocks.Max(x => x.girth);
 		}
@@ -327,17 +373,17 @@ namespace CoC.Backend.BodyParts
 			return _cocks.MaxItem(x => x.girth);
 		}
 
-		public float AverageCockSize()
+		public double AverageCockSize()
 		{
 			return _cocks.Average(x => x.area);
 		}
 
-		public float AverageCockLength()
+		public double AverageCockLength()
 		{
 			return _cocks.Average(x => x.length);
 		}
 
-		public float AverageCockGirth()
+		public double AverageCockGirth()
 		{
 			return _cocks.Average(x => x.girth);
 		}
@@ -348,26 +394,26 @@ namespace CoC.Backend.BodyParts
 			{
 				return null;
 			}
-			float averageLength = _cocks.Average(x => x.length);
-			float averageGirth = cocks.Average(x => x.girth);
-			float averageKnot = cocks.Average(x => x.knotMultiplier);
-			float averageKnotSize = cocks.Average(x => x.knotSize);
+			double averageLength = _cocks.Average(x => x.length);
+			double averageGirth = cocks.Average(x => x.girth);
+			double averageKnot = cocks.Average(x => x.knotMultiplier);
+			double averageKnotSize = cocks.Average(x => x.knotSize);
 			//first initially gets the first group. the second call to first gets the first element of the first group.
 			CockType type = _cocks.GroupBy(x => x.type).OrderByDescending(y => y.Count()).First().First().type;
 			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth, totalCum, hasSheath, currentLust, relativeLust);
 		}
 
-		public float SmallestCockTotalSize()
+		public double SmallestCockTotalSize()
 		{
 			return _cocks.Min(x => x.area);
 		}
 
-		public float ShortestCockLength()
+		public double ShortestCockLength()
 		{
 			return _cocks.Min(x => x.length);
 		}
 
-		public float ThinnestCockMeasure()
+		public double ThinnestCockMeasure()
 		{
 			return _cocks.Min(x => x.girth);
 		}
@@ -455,7 +501,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		public bool AddCock(CockType newCockType, float length, float girth, float? knotMultiplier = null)
+		public bool AddCock(CockType newCockType, double length, double girth, double? knotMultiplier = null)
 		{
 			if (numCocks >= MAX_COCKS)
 			{
@@ -573,22 +619,22 @@ namespace CoC.Backend.BodyParts
 			return _cocks[index].UpdateType(newType);
 		}
 
-		public bool UpdateCockWithLength(int index, CockType newType, float newLength)
+		public bool UpdateCockWithLength(int index, CockType newType, double newLength)
 		{
 			return _cocks[index].UpdateCockTypeWithLength(newType, newLength);
 		}
 
-		public bool UpdateCockWithLengthAndGirth(int index, CockType newType, float newLength, float newGirth)
+		public bool UpdateCockWithLengthAndGirth(int index, CockType newType, double newLength, double newGirth)
 		{
 			return _cocks[index].UpdateCockTypeWithLengthAndGirth(newType, newLength, newGirth);
 		}
 
-		public bool UpdateCockWithKnot(int index, CockType newType, float newKnotMultiplier)
+		public bool UpdateCockWithKnot(int index, CockType newType, double newKnotMultiplier)
 		{
 			return _cocks[index].UpdateCockTypeWithKnotMultiplier(newType, newKnotMultiplier);
 		}
 
-		public bool UpdateCockWithAll(int index, CockType newType, float newLength, float newGirth, float newKnotMultiplier)
+		public bool UpdateCockWithAll(int index, CockType newType, double newLength, double newGirth, double newKnotMultiplier)
 		{
 			return _cocks[index].UpdateCockTypeWithAll(newType, newLength, newGirth, newKnotMultiplier);
 		}
@@ -602,7 +648,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Shrink Cock With Remove
 
-		public bool ShrinkCockAndRemoveIfTooSmall(int index, float shrinkAmount, bool ignorePerks = false)
+		public bool ShrinkCockAndRemoveIfTooSmall(int index, double shrinkAmount, bool ignorePerks = false)
 		{
 			if (shrinkAmount <= 0)
 			{
@@ -628,8 +674,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return;
 			}
-			float avgLength = AverageCockLength();
-			float avgGirth = AverageCockGirth();
+			double avgLength = AverageCockLength();
+			double avgGirth = AverageCockGirth();
 			if (untilEven)
 			{
 				foreach (Cock cock in _cocks)
@@ -672,23 +718,23 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Cum Update Functions
-		public float IncreaseCumMultiplier(float additionalMultiplier = 1)
+		public double IncreaseCumMultiplier(double additionalMultiplier = 1)
 		{
-			float oldValue = cumMultiplierTrue;
+			double oldValue = cumMultiplierTrue;
 			cumMultiplierTrue += additionalMultiplier;
 			return cumMultiplierTrue - oldValue;
 		}
 
-		public float DecreaseCumMultiplier(float decreaseInMultiplier = 1)
+		public double DecreaseCumMultiplier(double decreaseInMultiplier = 1)
 		{
-			float oldValue = cumMultiplierTrue;
+			double oldValue = cumMultiplierTrue;
 			cumMultiplierTrue -= decreaseInMultiplier;
 			return oldValue - cumMultiplierTrue;
 		}
 
-		public float AddFlatCumAmount(float additionalCum)
+		public double AddFlatCumAmount(double additionalCum)
 		{
-			float oldValue = additionalCumTrue;
+			double oldValue = additionalCumTrue;
 			additionalCumTrue += additionalCum;
 			return additionalCumTrue - oldValue;
 		}
@@ -710,7 +756,7 @@ namespace CoC.Backend.BodyParts
 
 		#region Cock Sex Related Functions
 
-		internal void HandleCockSounding(int cockIndex, float penetratorLength, float penetratorWidth, float knotSize, float cumAmount, bool reachOrgasm)
+		internal void HandleCockSounding(int cockIndex, double penetratorLength, double penetratorWidth, double knotSize, double cumAmount, bool reachOrgasm)
 		{
 			cocks[cockIndex].SoundCock(penetratorLength, penetratorWidth, knotSize, reachOrgasm);
 			if (reachOrgasm)
@@ -785,9 +831,9 @@ namespace CoC.Backend.BodyParts
 
 	public sealed partial class CockCollectionData : SimpleData, ICockCollection<CockData>
 	{
-		public readonly float cumMultiplierTrue;
+		public readonly double cumMultiplierTrue;
 
-		public readonly float additionalCumTrue;
+		public readonly double additionalCumTrue;
 
 		public readonly int hoursSinceLastCum;
 
@@ -807,7 +853,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		internal readonly byte currentLust;
-		internal readonly float relativeLust;
+		internal readonly double relativeLust;
 
 		public readonly ReadOnlyCollection<CockData> cocks;
 		ReadOnlyCollection<CockData> ICockCollection<CockData>.cocks => cocks;
@@ -882,17 +928,17 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region CockData Aggregate Functions
-		public float BiggestCockSize()
+		public double BiggestCockSize()
 		{
 			return cocks.Max(x => x.area);
 		}
 
-		public float LongestCockLength()
+		public double LongestCockLength()
 		{
 			return cocks.Max(x => x.length);
 		}
 
-		public float WidestCockMeasure()
+		public double WidestCockMeasure()
 		{
 			return cocks.Max(x => x.girth);
 		}
@@ -912,17 +958,17 @@ namespace CoC.Backend.BodyParts
 			return cocks.MaxItem(x => x.girth);
 		}
 
-		public float AverageCockSize()
+		public double AverageCockSize()
 		{
 			return cocks.Average(x => x.area);
 		}
 
-		public float AverageCockLength()
+		public double AverageCockLength()
 		{
 			return cocks.Average(x => x.length);
 		}
 
-		public float AverageCockGirth()
+		public double AverageCockGirth()
 		{
 			return cocks.Average(x => x.girth);
 		}
@@ -933,26 +979,26 @@ namespace CoC.Backend.BodyParts
 			{
 				return null;
 			}
-			float averageLength = cocks.Average(x => x.length);
-			float averageGirth = cocks.Average(x => x.girth);
-			float averageKnot = cocks.Average(x => x.knotMultiplier);
-			float averageKnotSize = cocks.Average(x => x.knotSize);
+			double averageLength = cocks.Average(x => x.length);
+			double averageGirth = cocks.Average(x => x.girth);
+			double averageKnot = cocks.Average(x => x.knotMultiplier);
+			double averageKnotSize = cocks.Average(x => x.knotSize);
 			//first initially gets the first group. the second call to first gets the first element of the first group.
 			CockType type = cocks.GroupBy(x => x.type).OrderByDescending(y => y.Count()).First().First().type;
 			return Cock.GenerateAggregate(creatureID, type, averageKnot, averageKnotSize, averageLength, averageGirth, totalCum, hasSheath, currentLust, relativeLust);
 		}
 
-		public float SmallestCockSize()
+		public double SmallestCockSize()
 		{
 			return cocks.Min(x => x.area);
 		}
 
-		public float ShortestCockLength()
+		public double ShortestCockLength()
 		{
 			return cocks.Min(x => x.length);
 		}
 
-		public float ThinnestCockMeasure()
+		public double ThinnestCockMeasure()
 		{
 			return cocks.Min(x => x.girth);
 		}

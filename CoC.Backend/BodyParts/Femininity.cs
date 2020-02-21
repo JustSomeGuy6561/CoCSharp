@@ -41,12 +41,14 @@ namespace CoC.Backend.BodyParts
 		public const byte ANDROGYNOUS = 50;
 		public const byte MAX_ANDROGYNOUS = 65;
 
-		public const byte SLIGHTLY_FEMININE = 60;
+		public const byte SLIGHTLY_FEMININE = 55;
 		public const byte FEMININE = 70;
+		public const byte VERY_FEMININE = 80;
 		public const byte HYPER_FEMININE = 90;
 
-		public const byte SLIGHTLY_MASCULINE = 40;
+		public const byte SLIGHTLY_MASCULINE = 45;
 		public const byte MASCULINE = 30;
+		public const byte VERY_MASCULINE = 20;
 		public const byte HYPER_MASCULINE = 10;
 
 		private const byte HERM_GENDERLESS_MIN = 20;
@@ -56,6 +58,10 @@ namespace CoC.Backend.BodyParts
 		public const byte MALE_DEFAULT = 25;
 		public const byte GENDERLESS_DEFAULT = ANDROGYNOUS;
 		public const byte HERM_DEFAULT = SLIGHTLY_FEMININE;
+
+		//0, 10,20,30,35,45,55,65,70, 80, 90, 100
+
+
 
 		public byte value
 		{
@@ -152,6 +158,21 @@ namespace CoC.Backend.BodyParts
 		{
 			return femininityListeners.Remove(listener);
 		}
+
+		public bool ThresholdChanged(FemininityData original)
+		{
+			return (value < HYPER_MASCULINE && original.value >= HYPER_MASCULINE) || (value >= HYPER_MASCULINE && original.value < HYPER_MASCULINE)
+				|| (value < VERY_MASCULINE && original.value >= VERY_MASCULINE) || (value >= VERY_MASCULINE && original.value < VERY_MASCULINE)
+				|| (value < MASCULINE && original.value >= MASCULINE) || (value >= MASCULINE && original.value < MASCULINE)
+				|| (value < MIN_ANDROGYNOUS && original.value >= MIN_ANDROGYNOUS) || (value >= MIN_ANDROGYNOUS && original.value < MIN_ANDROGYNOUS)
+				|| (value < SLIGHTLY_MASCULINE && original.value >= SLIGHTLY_MASCULINE) || (value >= SLIGHTLY_MASCULINE && original.value < SLIGHTLY_MASCULINE)
+				|| (value < SLIGHTLY_FEMININE && original.value >= SLIGHTLY_FEMININE) || (value >= SLIGHTLY_FEMININE && original.value < SLIGHTLY_FEMININE)
+				|| (value < MAX_ANDROGYNOUS && original.value >= MAX_ANDROGYNOUS) || (value >= MAX_ANDROGYNOUS && original.value < MAX_ANDROGYNOUS)
+				|| (value < FEMININE && original.value >= FEMININE) || (value >= FEMININE && original.value < FEMININE)
+				|| (value < VERY_FEMININE && original.value >= VERY_FEMININE) || (value >= VERY_FEMININE && original.value < VERY_FEMININE)
+				|| (value < HYPER_FEMININE && original.value >= HYPER_FEMININE) || (value >= HYPER_FEMININE && original.value < HYPER_FEMININE);
+		}
+
 
 		public bool ActivateAndrogyny()
 		{
@@ -396,10 +417,12 @@ namespace CoC.Backend.BodyParts
 
 		public const byte SLIGHTLY_FEMININE = Femininity.SLIGHTLY_FEMININE;
 		public const byte FEMININE = Femininity.FEMININE;
+		public const byte VERY_FEMININE = Femininity.VERY_FEMININE;
 		public const byte HYPER_FEMININE = Femininity.HYPER_FEMININE;
 
 		public const byte SLIGHTLY_MASCULINE = Femininity.SLIGHTLY_MASCULINE;
 		public const byte MASCULINE = Femininity.MASCULINE;
+		public const byte VERY_MASCULINE = Femininity.VERY_MASCULINE;
 		public const byte HYPER_MASCULINE = Femininity.HYPER_MASCULINE;
 
 		public readonly byte value;
@@ -417,6 +440,7 @@ namespace CoC.Backend.BodyParts
 			value = fem;
 			femininityLimitedByGender = limitedByGender;
 		}
+
 
 		public static implicit operator byte(FemininityData femininity)
 		{

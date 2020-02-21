@@ -60,23 +60,20 @@ namespace CoC.Frontend.Transformations
 			int ngPlus(int value) => value;
 
 
-			if (target is CombatCreature cc && cc.speed < ngPlus(100) && Utils.Rand(3) == 0)
+			//+3 spe if less than 50
+			if (target.speed < ngPlus(50))
 			{
-				//+3 spe if less than 50
-				if (cc.speed < ngPlus(50))
-				{
-					cc.IncreaseSpeed(3);
-				}
-				//+2 spe if less than 75
-				else if (cc.speed < ngPlus(75))
-				{
-					cc.IncreaseSpeed(2);
-				}
-				//+1 if above 75.
-				else
-				{
-					cc.IncreaseSpeed();
-				}
+				target.IncreaseSpeed(3);
+			}
+			//+2 spe if less than 75
+			else if (target.speed < ngPlus(75))
+			{
+				target.IncreaseSpeed(2);
+			}
+			//+1 if above 75.
+			else
+			{
+				target.IncreaseSpeed();
 			}
 
 			// ------------- Sexual changes -------------
@@ -192,10 +189,7 @@ namespace CoC.Frontend.Transformations
 						}
 					}
 
-					if (target is CombatCreature cc2)
-					{
-						cc2.IncreaseSpeed();
-					}
+					target.IncreaseSpeed();
 
 					if (--remainingChanges <= 0)
 					{
@@ -348,7 +342,10 @@ namespace CoC.Frontend.Transformations
 			// Ears
 			if (target.ears.type != EarType.RED_PANDA && Utils.Rand(3) == 0)
 			{
+				EarData oldData = target.ears.AsReadOnlyData();
 				target.UpdateEars(EarType.RED_PANDA);
+				sb.Append(UpdateEarsText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -358,7 +355,9 @@ namespace CoC.Frontend.Transformations
 			// Remove non-cockatrice antennae
 			if (target.antennae.type != AntennaeType.COCKATRICE && !target.antennae.isDefault && Utils.Rand(3) == 0)
 			{
+				AntennaeData oldData = target.antennae.AsReadOnlyData();
 				target.RestoreAntennae();
+				sb.Append(RestoredAntennaeText(target, oldData));
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -368,7 +367,9 @@ namespace CoC.Frontend.Transformations
 			// Restore eyes, if more than two
 			if (target.eyes.count > 2 && Utils.Rand(4) == 0)
 			{
+				EyeData oldData = target.eyes.AsReadOnlyData();
 				target.RestoreEyes();
+				sb.Append(RestoredEyesText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -406,7 +407,10 @@ namespace CoC.Frontend.Transformations
 			// Face
 			if (target.face.type != FaceType.RED_PANDA && target.ears.type == EarType.RED_PANDA && target.body.IsFurBodyType() && Utils.Rand(3) == 0)
 			{
+				FaceData oldData = target.face.AsReadOnlyData();
 				target.UpdateFace(FaceType.RED_PANDA);
+				sb.Append(UpdateFaceText(target, oldData));
+
 				if (--remainingChanges <= 0)
 				{
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
@@ -416,7 +420,9 @@ namespace CoC.Frontend.Transformations
 			// Arms
 			if (target.arms.type != ArmType.RED_PANDA && target.ears.type == EarType.RED_PANDA && target.tail.type == TailType.RED_PANDA && Utils.Rand(3) == 0)
 			{
+				ArmData oldData = target.arms.AsReadOnlyData();
 				target.UpdateArms(ArmType.RED_PANDA);
+				sb.Append(UpdateArmsText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -427,7 +433,9 @@ namespace CoC.Frontend.Transformations
 			// Legs
 			if (target.lowerBody.type != LowerBodyType.RED_PANDA && target.arms.type == ArmType.RED_PANDA && Utils.Rand(4) == 0)
 			{
+				LowerBodyData oldData = target.lowerBody.AsReadOnlyData();
 				target.UpdateLowerBody(LowerBodyType.RED_PANDA);
+				sb.Append(UpdateLowerBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -438,7 +446,9 @@ namespace CoC.Frontend.Transformations
 			// Tail
 			if (target.tail.type != TailType.RED_PANDA && Utils.Rand(4) == 0)
 			{
+				TailData oldData = target.tail.AsReadOnlyData();
 				target.UpdateTail(TailType.RED_PANDA);
+				sb.Append(UpdateTailText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -452,7 +462,9 @@ namespace CoC.Frontend.Transformations
 			// Fix the underBody, if the skin is already furred
 			if (target.body.type == BodyType.SIMPLE_FUR && Utils.Rand(3) == 0)
 			{
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.UNDERBODY_FUR, new FurColor(HairFurColors.RUSSET), new FurColor(HairFurColors.BLACK));
+				sb.Append(UpdateBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -462,7 +474,9 @@ namespace CoC.Frontend.Transformations
 
 			else if (!target.body.IsFurBodyType() && target.arms.type == ArmType.RED_PANDA && target.lowerBody.type == LowerBodyType.RED_PANDA && Utils.Rand(4) == 0)
 			{
+				BodyData oldData = target.body.AsReadOnlyData();
 				target.UpdateBody(BodyType.UNDERBODY_FUR, new FurColor(HairFurColors.RUSSET), new FurColor(HairFurColors.BLACK));
+				sb.Append(UpdateBodyText(target, oldData));
 
 				if (--remainingChanges <= 0)
 				{
@@ -483,7 +497,7 @@ namespace CoC.Frontend.Transformations
 						((CombatCreature)target).AddHP(250);
 					}
 
-					target.DeltaCreatureStats(lus: 3);
+					target.ChangeLust(3);
 				}
 			}
 
@@ -492,6 +506,45 @@ namespace CoC.Frontend.Transformations
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
+
+		protected virtual string UpdateEarsText(Creature target, EarData oldData)
+{
+return target.ears.TransformFromText(oldData);
+}
+		protected virtual string UpdateFaceText(Creature target, FaceData oldData)
+{
+return target.face.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateArmsText(Creature target, ArmData oldData)
+{
+return target.arms.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateLowerBodyText(Creature target, LowerBodyData oldData)
+{
+return target.lowerBody.TransformFromText(oldData);
+}
+
+		protected virtual string UpdateTailText(Creature target, TailData oldTail)
+{
+return target.tail.TransformFromText(oldTail);
+}
+		protected virtual string UpdateBodyText(Creature target, BodyData oldData)
+{
+return target.body.TransformFromText(oldData);
+}
+
+		protected virtual string RestoredAntennaeText(Creature target, AntennaeData oldData)
+{
+return target.antennae.RestoredText(oldData);
+}
+
+		protected virtual string RestoredEyesText(Creature target, EyeData oldData)
+{
+return target.eyes.RestoredText(oldData);
+}
+
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.

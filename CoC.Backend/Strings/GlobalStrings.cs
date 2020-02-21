@@ -110,6 +110,11 @@ namespace CoC.Backend.Strings
 		public static string CONFIRM() => CONFIRM(true);
 		public static string NEVERMIND() => NEVERMIND(true);
 
+		public static string ENABLE() => ENABLE(true);
+		public static string DISABLE() => DISABLE(true);
+
+
+
 		public static string NEVERMIND(bool capital)
 		{
 			return capital ? "Nevermind" : "nevermind";
@@ -190,6 +195,16 @@ namespace CoC.Backend.Strings
 		public static string CONFIRM(bool capital)
 		{
 			return capital ? "Confirm" : "confirm";
+		}
+
+		public static string ENABLE(bool capital)
+		{
+			return capital ? "Enable" : "enable";
+		}
+
+		public static string DISABLE(bool capital)
+		{
+			return capital ? "Disable" : "disable";
 		}
 	}
 
