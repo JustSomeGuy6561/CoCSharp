@@ -81,7 +81,7 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			public CanineTFs(CanineModifiers canineModifiers) : base(canineModifiers) { }
 
-			protected override string AddedCumText(Creature target, float delta, bool deltaIsMultiplier) => CaninePepperGeneric.AddedCumText(target, delta, deltaIsMultiplier);
+			protected override string AddedCumText(Creature target, double delta, bool deltaIsMultiplier) => CaninePepperGeneric.AddedCumText(target, delta, deltaIsMultiplier);
 
 			protected override string BadEndText(Creature target) => CaninePepperGeneric.BadEndText(target);
 
@@ -100,7 +100,7 @@ namespace CoC.Frontend.Items.Consumables
 				CaninePepperGeneric.ConvertedTwoCocksToDog(target, firstOldData, secondOldData);
 
 
-			protected override string CouldntConvertDemonCockThickenedInstead(Creature target, int index, float delta) =>
+			protected override string CouldntConvertDemonCockThickenedInstead(Creature target, int index, double delta) =>
 				CaninePepperGeneric.CouldntConvertDemonCockThickenedInstead(target, index, delta);
 
 
@@ -113,7 +113,7 @@ namespace CoC.Frontend.Items.Consumables
 			protected override string EnlargedBallsText(Creature target, BallsData oldData) => CaninePepperGeneric.EnlargedBallsText(target, oldData);
 
 
-			protected override string EnlargedSmallestKnotText(Creature target, int indexOfSmallestKnotCock, float knotMultiplierDelta, bool hasOtherDogCocks) =>
+			protected override string EnlargedSmallestKnotText(Creature target, int indexOfSmallestKnotCock, double knotMultiplierDelta, bool hasOtherDogCocks) =>
 				CaninePepperGeneric.EnlargedSmallestKnotText(target, indexOfSmallestKnotCock, knotMultiplierDelta, hasOtherDogCocks);
 
 
@@ -141,7 +141,7 @@ namespace CoC.Frontend.Items.Consumables
 			protected override string NothingHappenedGainHpText(Creature target) => CaninePepperGeneric.NothingHappenedGainHpText(target);
 
 
-			protected override string StatChangeText(Creature target, float strengthIncrease, float speedIncrease, float intelligenceDecrease) =>
+			protected override string StatChangeText(Creature target, double strengthIncrease, double speedIncrease, double intelligenceDecrease) =>
 				CaninePepperGeneric.StatChangeText(target, modifiers, strengthIncrease, speedIncrease, intelligenceDecrease);
 
 

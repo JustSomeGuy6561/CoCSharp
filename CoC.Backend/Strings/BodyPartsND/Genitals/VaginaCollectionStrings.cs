@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Linq;
-using CoC.Backend.Tools;
-using CoC.Backend.Engine;
+using System.Text;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Strings;
+using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
-	internal interface IVaginaCollection<T> where T:IVagina
+	internal interface IVaginaCollection<T> where T : IVagina
 	{
 		ReadOnlyCollection<T> vaginas { get; }
 
@@ -26,6 +27,55 @@ namespace CoC.Backend.BodyParts
 
 		ReadOnlyCollection<Vagina> IVaginaCollection<Vagina>.vaginas => vaginas;
 
+		public string RestoredAllVaginasGeneric(VaginaCollectionData oldVaginas)
+		{
+			//if changed has elements, we know they still exist in the current collection.
+			IEnumerable<ValueDifference<VaginaData>> changed = ChangedVaginas(oldVaginas, true);
+			int changeCount = changed.Count(x => x.newValue.isDefault && !x.oldValue.isDefault);
+			if (changeCount == 0)
+			{
+				return "";
+			}
+
+			int humanVags = CountVaginasOfType(VaginaType.HUMAN);
+
+			string changeText;
+
+			if (vaginas.Count == 1)
+			{
+				//old should never be null.
+				VaginaData old = oldVaginas.vaginas.FirstOrDefault(x => x.collectionID == vaginas[0].collectionID);
+				if (old is null)
+				{
+					return "";
+				}
+				else
+				{
+					return vaginas[0].RestoredText(old);
+				}
+			}
+
+			if (humanVags < vaginas.Count)
+			{
+				changeText = "vaginas and find that one has returned back to a more natural, human size and color.";
+			}
+			else if (humanVags > changeCount)
+			{
+				changeText = "vaginas and find that one has returned back to something more fit on a human, matching the other one.";
+			}
+			else
+			{
+				changeText = "vaginas and find that they have turned back to their more natural, human size and color.";
+
+			}
+
+			string armorText = creature?.wearingArmor == true || creature?.wearingUpperGarment == true ? "Undoing your clothes" : "Looking down";
+
+			return GlobalStrings.NewParagraph() + "nSomething invisible brushes against your sex, making you twinge. " + armorText + ", you take a look at your "
+				+ changeText;
+
+		}
+
 		private string AllVaginasPlayerText(PlayerBase player)
 		{
 			if (_vaginas.Count == 0)
@@ -40,7 +90,7 @@ namespace CoC.Backend.BodyParts
 			}
 			if (vaginas.Count == 1)
 			{
-				var vagina = vaginas[0];
+				Vagina vagina = vaginas[0];
 				sb.Append("You have " + vagina.LongDescription(true) + ", with " + vagina.clit.LongDescription(true));
 				if (vagina.isVirgin)
 				{
@@ -74,7 +124,7 @@ namespace CoC.Backend.BodyParts
 				sb.Append("Unlike most " + gender.AsText() + "s, you have a pair of vaginas, situated alongside one another. ");
 				for (int x = 0; x < 2; x++)
 				{
-					var vagina = vaginas[x];
+					Vagina vagina = vaginas[x];
 					sb.Append("Your " + Utils.NumberAsPlace(x) + " is " + vagina.LongDescription(true) + ", with " + vagina.clit.LongDescription(true));
 					if (vagina.isVirgin)
 					{
@@ -200,7 +250,7 @@ namespace CoC.Backend.BodyParts
 
 			if (player.vaginas.Count == 1)
 			{
-				var vagina = player.vaginas[0];
+				Vagina vagina = player.vaginas[0];
 				//the original source repeated the same text for various options, though it did so in a specific way. this does the same, but makes it cleaner.
 
 
@@ -406,13 +456,13 @@ namespace CoC.Backend.BodyParts
 
 	internal static class VaginaCollectionStrings
 	{
-		private static int NumVaginas<T>(this IVaginaCollection<T> collection) where T:IVagina
+		private static int NumVaginas<T>(this IVaginaCollection<T> collection) where T : IVagina
 		{
 			return collection.vaginas.Count;
 		}
 
 		#region Vagina Text
-		internal static string AllVaginasShortDescription<T>(IVaginaCollection<T> collection) where T:IVagina
+		internal static string AllVaginasShortDescription<T>(IVaginaCollection<T> collection) where T : IVagina
 		{
 			if (collection.vaginas.Count == 0)
 			{
@@ -427,47 +477,51 @@ namespace CoC.Backend.BodyParts
 			return mismatched ? VaginaType.VaginaNoun(true) : collection.vaginas[0].ShortDescription(false);
 		}
 
-		internal static string AllVaginasLongDescription<T>(IVaginaCollection<T> collection) where T:IVagina
+		internal static string AllVaginasLongDescription<T>(IVaginaCollection<T> collection) where T : IVagina
 		{
 			return AllVaginasDesc(collection, false);
 		}
 
-		internal static string AllVaginasFullDescription<T>(IVaginaCollection<T> collection) where T:IVagina
+		internal static string AllVaginasFullDescription<T>(IVaginaCollection<T> collection) where T : IVagina
 		{
 			return AllVaginasDesc(collection, true);
 		}
 
-		internal static string OneVaginaOrVaginasNoun<T>(IVaginaCollection<T> collection, string pronoun = "your") where T:IVagina
+		internal static string OneVaginaOrVaginasNoun<T>(IVaginaCollection<T> collection) where T : IVagina => OneVaginaOrVaginasNoun(collection, Conjugate.YOU);
+		internal static string OneVaginaOrVaginasNoun<T>(IVaginaCollection<T> collection, Conjugate conjugate) where T : IVagina
 		{
 			if (collection.vaginas.Count == 0)
 			{
 				return "";
 			}
 
-			return CommonBodyPartStrings.OneOfDescription(collection.vaginas.Count > 1, pronoun, VaginaType.VaginaNoun(collection.vaginas.Count > 1));
+			return CommonBodyPartStrings.OneOfDescription(collection.vaginas.Count > 1, conjugate, VaginaType.VaginaNoun(collection.vaginas.Count > 1));
 		}
 
-		internal static string OneVaginaOrVaginasShort<T>(IVaginaCollection<T> collection, string pronoun = "your") where T:IVagina
+		internal static string OneVaginaOrVaginasShort<T>(IVaginaCollection<T> collection) where T : IVagina => OneVaginaOrVaginasShort(collection, Conjugate.YOU);
+		internal static string OneVaginaOrVaginasShort<T>(IVaginaCollection<T> collection, Conjugate conjugate) where T : IVagina
 		{
 			if (collection.vaginas.Count == 0)
 			{
 				return "";
 			}
 
-			return CommonBodyPartStrings.OneOfDescription(collection.vaginas.Count > 1, pronoun, AllVaginasShortDescription(collection));
+			return CommonBodyPartStrings.OneOfDescription(collection.vaginas.Count > 1, conjugate, AllVaginasShortDescription(collection));
 		}
 
-		internal static string EachVaginaOrVaginasNoun<T>(IVaginaCollection<T> collection, string pronoun = "your") where T:IVagina
+		internal static string EachVaginaOrVaginasNoun<T>(IVaginaCollection<T> collection) where T : IVagina => EachVaginaOrVaginasNoun(collection, Conjugate.YOU);
+		internal static string EachVaginaOrVaginasNoun<T>(IVaginaCollection<T> collection, Conjugate conjugate) where T : IVagina
 		{
-			return EachVaginaOrVaginasNoun(collection, pronoun, out bool _);
+			return EachVaginaOrVaginasNoun(collection, conjugate, out bool _);
 		}
 
-		internal static string EachVaginaOrVaginasShort<T>(IVaginaCollection<T> collection, string pronoun = "your") where T:IVagina
+		internal static string EachVaginaOrVaginasShort<T>(IVaginaCollection<T> collection) where T : IVagina => EachVaginaOrVaginasShort(collection, Conjugate.YOU);
+		internal static string EachVaginaOrVaginasShort<T>(IVaginaCollection<T> collection, Conjugate conjugate) where T : IVagina
 		{
-			return EachVaginaOrVaginasShort(collection, pronoun, out bool _);
+			return EachVaginaOrVaginasShort(collection, conjugate, out bool _);
 		}
 
-		internal static string EachVaginaOrVaginasNoun<T>(IVaginaCollection<T> collection, string pronoun, out bool isPlural) where T:IVagina
+		internal static string EachVaginaOrVaginasNoun<T>(IVaginaCollection<T> collection, Conjugate conjugate, out bool isPlural) where T : IVagina
 		{
 			isPlural = collection.vaginas.Count != 1;
 			if (collection.vaginas.Count == 0)
@@ -475,10 +529,10 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 
-			return CommonBodyPartStrings.EachOfDescription(collection.vaginas.Count > 1, pronoun, VaginaType.VaginaNoun(collection.vaginas.Count > 1));
+			return CommonBodyPartStrings.EachOfDescription(collection.vaginas.Count > 1, conjugate, VaginaType.VaginaNoun(collection.vaginas.Count > 1));
 		}
 
-		internal static string EachVaginaOrVaginasShort<T>(IVaginaCollection<T> collection, string pronoun, out bool isPlural) where T:IVagina
+		internal static string EachVaginaOrVaginasShort<T>(IVaginaCollection<T> collection, Conjugate conjugate, out bool isPlural) where T : IVagina
 		{
 			isPlural = collection.vaginas.Count != 1;
 			if (collection.vaginas.Count == 0)
@@ -486,7 +540,7 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 
-			return CommonBodyPartStrings.EachOfDescription(collection.vaginas.Count > 1, pronoun, AllVaginasShortDescription(collection));
+			return CommonBodyPartStrings.EachOfDescription(collection.vaginas.Count > 1, conjugate, AllVaginasShortDescription(collection));
 		}
 		#endregion
 		private static string RandomMixedVaginasText()
@@ -494,7 +548,7 @@ namespace CoC.Backend.BodyParts
 			return Utils.RandomChoice("mixed ", "mixed ", "mismatched ") + VaginaType.VaginaNoun(true);
 		}
 
-		private static string AllVaginasDesc<T>(IVaginaCollection<T> collection, bool full) where T:IVagina
+		private static string AllVaginasDesc<T>(IVaginaCollection<T> collection, bool full) where T : IVagina
 		{
 
 			if (collection.vaginas.Count == 0)

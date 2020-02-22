@@ -28,10 +28,10 @@ namespace CoC.Frontend.Perks
 		public bool replaceMasturbateWithMeditate = false;
 
 		public sbyte lustRequiredForSexOffset = 0; //isHornyEnough(value) will be offset by this value
-		public sbyte corruptionRequiredOffset = 0; //isCorruptEnough(value) will be offset by this value
+		public sbyte corruptionRequiredOffset = 0; //IsCorruptEnough(value) will be offset by this value
 		public sbyte purityRequiredOffset = 0; //isPureEnough(value) will be offset by this value
 
-		public float teaseStrengthMultiplier = 1.0f;
+		public double teaseStrengthMultiplier = 1.0f;
 
 		public bool IsASlut = false;
 

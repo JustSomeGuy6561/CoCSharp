@@ -7,6 +7,7 @@ using CoC.Backend.Tools;
 
 namespace CoC.Frontend.Items.Wearables.Armor
 {
+	//broken out because it provides a health bonus.
 	class NursesOutfit : ArmorBase
 	{
 		public NursesOutfit() : base(ArmorType.LIGHT_ARMOR)

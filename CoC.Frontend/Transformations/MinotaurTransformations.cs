@@ -375,10 +375,10 @@ namespace CoC.Frontend.Transformations
 			if (Utils.Rand(3) == 0 && target.ears.type == EarType.COW && target.tail.type == TailType.COW)
 			{
 				//New horns or expanding mino horns
-				if (target.horns.type == HornType.BULL_LIKE || target.horns.type == HornType.NONE)
+				if (target.horns.type == HornType.BOVINE || target.horns.type == HornType.NONE)
 				{
 					//Get bigger if target has horns
-					if (target.horns.type == HornType.BULL_LIKE)
+					if (target.horns.type == HornType.BOVINE)
 					{
 						//Fems horns don't get bigger.
 						if (target.vaginas.Count > 0)
@@ -419,7 +419,7 @@ namespace CoC.Frontend.Transformations
 					else
 					{
 						HornData oldData = target.horns.AsReadOnlyData();
-						target.UpdateHorns(HornType.BULL_LIKE);
+						target.UpdateHorns(HornType.BOVINE);
 						sb.Append(UpdateHornsText(target, oldData));
 
 						if (--remainingChanges <= 0)
@@ -432,7 +432,7 @@ namespace CoC.Frontend.Transformations
 				else
 				{
 					HornData oldData = target.horns.AsReadOnlyData();
-					target.UpdateHorns(HornType.BULL_LIKE);
+					target.UpdateHorns(HornType.BOVINE);
 					sb.Append(UpdateHornsText(target, oldData));
 
 					if (--remainingChanges <= 0)

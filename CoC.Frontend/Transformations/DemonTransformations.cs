@@ -87,7 +87,7 @@ namespace CoC.Frontend.Transformations
 				else
 				{
 					Cock shortest = target.genitals.ShortestCock();
-					float lengthDelta;
+					double lengthDelta;
 
 					if (rando >= 45)
 					{

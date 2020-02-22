@@ -9,6 +9,7 @@ using CoC.Backend.Tools;
 
 namespace CoC.Frontend.Items.Wearables.Armor
 {
+	//broken out because it should also qualify for the nearly naked checks that affect some combat attacks.
 	class ChainmailBikini : ArmorBase, IBulgeArmor
 	{
 		private bool bulged;
@@ -32,7 +33,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		{
 			string bikiniText = count != 1 ? "bikinis" : "bikini";
 			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count) + " ") : "";
-			string bulgeText = bulged ? "crotch-hugging " : "";
+			string bulgeText = bulged ? "crotch-hugging " : "revealing ";
 
 			return $"{countText}{bulgeText}chainmail {bikiniText}";
 		}

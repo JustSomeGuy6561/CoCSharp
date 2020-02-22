@@ -168,11 +168,11 @@ namespace CoC.Backend.BodyParts
 			return "Cock";
 		}
 
-		private string AllCockPiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllCockPiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllCockPiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllCockPiercingsLong(Creature creature)
 		{
 			StringBuilder sb = new StringBuilder();
 			//full piercings, or full piercings without prince albert.

@@ -2,14 +2,15 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:27 AM
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -67,7 +68,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return Equals(nipplePiercing);
 			}
-			else return false;
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool Equals(NipplePiercingLocation other)
@@ -100,7 +104,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NipplePiercing : Piercing<NipplePiercingLocation>
 	{
-		public NipplePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public NipplePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, CreatureStr playerShortDesc, CreatureStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -195,7 +199,7 @@ namespace CoC.Backend.BodyParts
 		{
 			if (cupSize < minimumCupSize)
 			{
-				var oldValue = AsReadOnlyData();
+				BreastData oldValue = AsReadOnlyData();
 				cupSize = minimumCupSize;
 				NotifyDataChanged(oldValue);
 			}
@@ -234,7 +238,7 @@ namespace CoC.Backend.BodyParts
 				Utils.ClampEnum(ref value, minimumCupSize, CupSize.JACQUES00); //enums: icomparable, but not really. woooo!
 				if (_cupSize != value)
 				{
-					var oldData = AsReadOnlyData();
+					BreastData oldData = AsReadOnlyData();
 					_cupSize = value;
 					NotifyDataChanged(oldData);
 				}
@@ -276,7 +280,7 @@ namespace CoC.Backend.BodyParts
 				cupSize = min;
 			}
 
-			this.nipplePiercings = new NipplePiercing(this, PiercingLocationUnlocked, AllNipplePiercingsShort, AllNipplePiercingsLong);
+			nipplePiercings = new NipplePiercing(this, PiercingLocationUnlocked, AllNipplePiercingsShort, AllNipplePiercingsLong);
 		}
 		internal Breasts(BreastCollection source, uint id, CupSize cup) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
@@ -284,7 +288,7 @@ namespace CoC.Backend.BodyParts
 			collectionID = id;
 			_cupSize = Utils.ClampEnum2(cup, CupSize.FLAT, CupSize.JACQUES00);
 
-			this.nipplePiercings = new NipplePiercing(this, PiercingLocationUnlocked, AllNipplePiercingsShort, AllNipplePiercingsLong);
+			nipplePiercings = new NipplePiercing(this, PiercingLocationUnlocked, AllNipplePiercingsShort, AllNipplePiercingsLong);
 		}
 
 		internal Breasts(BreastCollection source, uint id, CupSize cup, IEnumerable<KeyValuePair<NipplePiercingLocation, PiercingJewelry>> nipplePiercings)
@@ -318,7 +322,7 @@ namespace CoC.Backend.BodyParts
 
 		private CupSize FemaleNewLength(CupSize? givenCup = null)
 		{
-			var minCup = Utils.ClampEnum2(femaleDefaultCup, CupSize.FLAT, CupSize.JACQUES00);
+			CupSize minCup = Utils.ClampEnum2(femaleDefaultCup, CupSize.FLAT, CupSize.JACQUES00);
 			if (!(givenCup is null))
 			{
 				((CupSize)givenCup).ByteEnumOffset(femaleNewCupDelta);
@@ -342,7 +346,10 @@ namespace CoC.Backend.BodyParts
 
 		protected internal override void LateInit()
 		{
-			if (creature != null) creature.genitals.onGenderChanged += OnGenderChanged;
+			if (creature != null)
+			{
+				creature.genitals.onGenderChanged += OnGenderChanged;
+			}
 		}
 
 		public byte GrowBreasts(byte byAmount = 1, bool ignorePerks = false)
@@ -358,7 +365,7 @@ namespace CoC.Backend.BodyParts
 				byAmount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
 			}
 
-			var oldData = AsReadOnlyData();
+			BreastData oldData = AsReadOnlyData();
 			cupSize = cupSize.ByteEnumAdd(byAmount);
 			if (cupSize != oldSize)
 			{
@@ -379,7 +386,7 @@ namespace CoC.Backend.BodyParts
 				ushort val = (ushort)Math.Round(byAmount * tinyTiddyMultiplier);
 				byAmount = val > byte.MaxValue ? byte.MaxValue : (byte)val;
 			}
-			var oldData = AsReadOnlyData();
+			BreastData oldData = AsReadOnlyData();
 
 			cupSize = cupSize.ByteEnumSubtract(byAmount);
 			if (cupSize != oldSize)
@@ -391,11 +398,11 @@ namespace CoC.Backend.BodyParts
 
 		public short SetCupSize(CupSize size)
 		{
-			var oldSize = (byte)cupSize;
+			byte oldSize = (byte)cupSize;
 			Utils.ClampEnum(ref size, CupSize.FLAT, CupSize.JACQUES00);
 			if (cupSize != size)
 			{
-				var oldData = AsReadOnlyData();
+				BreastData oldData = AsReadOnlyData();
 				cupSize = size;
 				NotifyDataChanged(oldData);
 			}
@@ -409,7 +416,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldData = AsReadOnlyData();
+			BreastData oldData = AsReadOnlyData();
 
 			cupSize = maleMinCup;
 			NotifyDataChanged(oldData);
@@ -422,7 +429,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldData = AsReadOnlyData();
+			BreastData oldData = AsReadOnlyData();
 			if (cupSize < femaleMinCup)
 			{
 				cupSize = femaleMinCup;
@@ -455,7 +462,7 @@ namespace CoC.Backend.BodyParts
 			BodyType bodyType, double relativeLust, CupSize maleMinCupSize)
 		{
 			return new BreastData(creatureID, -1, NUM_BREASTS, averageCup, averageNippleLength, blackNipples, quadNipples, largeNipplesAreDickNipples, nippleType,
-				lactationRate, lactationStatus, overfull, gender, bodyType, relativeLust:relativeLust, maleMinCupSize:maleMinCupSize);
+				lactationRate, lactationStatus, overfull, gender, bodyType, relativeLust: relativeLust, maleMinCupSize: maleMinCupSize);
 		}
 
 		private bool PiercingLocationUnlocked(NipplePiercingLocation piercingLocation, out string whyNot)
@@ -504,13 +511,15 @@ namespace CoC.Backend.BodyParts
 		public string FullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.FullNippleDescription(this, alternateFormat, plural, usePreciseMeasurements);
 
 
-		public string OneNippleOrOneOfQuadNipplesShort(string pronoun = "your") => nippleData.OneNippleOrOneOfQuadNipplesShort(this, pronoun);
+		public string OneNippleOrOneOfQuadNipplesShort() => nippleData.OneNippleOrOneOfQuadNipplesShort(this);
+		public string OneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => nippleData.OneNippleOrOneOfQuadNipplesShort(this, conjugate);
 
 
-		public string OneNippleOrEachOfQuadNipplesShort(string pronoun = "your") => nippleData.OneNippleOrEachOfQuadNipplesShort(this, pronoun);
+		public string OneNippleOrEachOfQuadNipplesShort() => nippleData.OneNippleOrEachOfQuadNipplesShort(this);
+		public string OneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, conjugate);
 
 
-		public string OneNippleOrEachOfQuadNipplesShort(string pronoun, out bool isPlural) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, pronoun, out isPlural);
+		public string OneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, conjugate, out isPlural);
 
 
 		#endregion
@@ -572,7 +581,10 @@ namespace CoC.Backend.BodyParts
 		internal void OrgasmTits(bool dryOrgasm)
 		{
 			orgasmCount++;
-			if (dryOrgasm) dryOrgasmCount++;
+			if (dryOrgasm)
+			{
+				dryOrgasmCount++;
+			}
 		}
 
 		#region IGrowShrinkable
@@ -593,9 +605,9 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			CupSize oldSize = cupSize;
-			this.cupSize += (byte)(Utils.Rand(2) + 1);
+			cupSize += (byte)(Utils.Rand(2) + 1);
 			//c# is a bitch in that all numbers are treated as ints or doubles unless explicitly cast - byte me
-			this.cupSize += (byte)(makeBigTits && Utils.RandBool() ? 1 : 0); //add one for big tits perk 50% of the time
+			cupSize += (byte)(makeBigTits && Utils.RandBool() ? 1 : 0); //add one for big tits perk 50% of the time
 			return cupSize - oldSize;
 		}
 
@@ -705,13 +717,15 @@ namespace CoC.Backend.BodyParts
 		public string FullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.FullNippleDescription(this, alternateFormat, plural, usePreciseMeasurements);
 
 
-		public string OneNippleOrOneOfQuadNipplesShort(string pronoun = "your") => nippleData.OneNippleOrOneOfQuadNipplesShort(this, pronoun);
+		public string OneNippleOrOneOfQuadNipplesShort() => nippleData.OneNippleOrOneOfQuadNipplesShort(this);
+		public string OneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => nippleData.OneNippleOrOneOfQuadNipplesShort(this, conjugate);
 
 
-		public string OneNippleOrEachOfQuadNipplesShort(string pronoun = "your") => nippleData.OneNippleOrEachOfQuadNipplesShort(this, pronoun);
+		public string OneNippleOrEachOfQuadNipplesShort() => nippleData.OneNippleOrEachOfQuadNipplesShort(this);
+		public string OneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, conjugate);
 
 
-		public string OneNippleOrEachOfQuadNipplesShort(string pronoun, out bool isPlural) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, pronoun, out isPlural);
+		public string OneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, conjugate, out isPlural);
 
 
 		#endregion
@@ -765,23 +779,23 @@ namespace CoC.Backend.BodyParts
 			uint totalFuckableNippleSexCount = 0, uint selfFuckableNippleSexCount = 0, ReadOnlyPiercing<NipplePiercingLocation> piercings = null,
 			double relativeLust = Creature.DEFAULT_LUST, CupSize maleMinCupSize = CupSize.FLAT) : base(creatureID)
 		{
-			this.currBreastRowIndex = rowIndex;
-			this.numBreasts = totalNumberOfBreasts;
+			currBreastRowIndex = rowIndex;
+			numBreasts = totalNumberOfBreasts;
 			this.cupSize = cupSize;
 
 			nippleData = new NippleAggregateData(creatureID, nippleType, quadNipples, blackNipples, largeNipplesBecomeDickNipples, nippleLength, bodyType, relativeLust, lactationRate, lactationStatus);
 
-			this.nipplePiercings = piercings ?? new ReadOnlyPiercing<NipplePiercingLocation>();
+			nipplePiercings = piercings ?? new ReadOnlyPiercing<NipplePiercingLocation>();
 
 			this.lactationRate = lactationRate;
 			this.lactationStatus = lactationStatus;
-			this.isOverFull = overfull;
+			isOverFull = overfull;
 
 			this.gender = gender;
 			this.bodyType = bodyType;
 			this.relativeLust = relativeLust;
 
-			this.maleMinSize = maleMinCupSize;
+			maleMinSize = maleMinCupSize;
 
 			collectionID = null;
 		}

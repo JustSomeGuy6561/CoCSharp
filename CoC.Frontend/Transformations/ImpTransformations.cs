@@ -39,7 +39,7 @@ namespace CoC.Frontend.Transformations
 				if (target.cocks[0].length < 12)
 				{
 					CockData oldData = target.cocks[0].AsReadOnlyData();
-					float temp = target.cocks[0].IncreaseLength(Utils.Rand(2) + 2);
+					double temp = target.cocks[0].IncreaseLength(Utils.Rand(2) + 2);
 					sb.Append(OneCockGrewLarger(target, oldData, temp));
 				}
 				hpDelta = 30;
@@ -210,7 +210,7 @@ namespace CoC.Frontend.Transformations
 				HairData oldHairData = target.hair.AsReadOnlyData();
 
 				HairFurColors hairColor = Utils.RandomChoice(Species.IMP.availableHairColors);
-				float hairLength = 1f;
+				double hairLength = 1f;
 
 				if (target.hair.type != HairType.NORMAL)
 				{
@@ -414,7 +414,7 @@ namespace CoC.Frontend.Transformations
 			return target.lowerBody.TransformFromText(oldLegs);
 		}
 		protected abstract string InitialTransformText(Creature target);
-		protected abstract string OneCockGrewLarger(Creature target, CockData oldData, float deltaSize);
+		protected abstract string OneCockGrewLarger(Creature target, CockData oldData, double deltaSize);
 		protected abstract string GainVitalityText(Creature target);
 		protected abstract string ChangeSkinColorText(Creature target, Tones oldSkinTone);
 		protected abstract string GetShorterText(Creature target, byte heightDelta);

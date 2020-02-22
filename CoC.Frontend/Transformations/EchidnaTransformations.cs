@@ -163,7 +163,7 @@ namespace CoC.Frontend.Transformations
 				target.genitals.UpdateCock(firstNonEchidna, CockType.ECHIDNA);
 
 				//sb.Append("\n\n");
-				//if (target.cockTotal() == 1) //sb.Append("Your [cock] suddenly becomes rock hard out of nowhere. You " + target.clothedOrNakedLower("pull it out from your [armor], right in the middle of the food tent, watching", "watch") + " as it begins to shift and change. It becomes pink in color, and you feel a pinch at the head as it splits to become four heads. " + (target.hasSheath() ? "" : "The transformation finishes off with a fleshy sheath forming at the base.") + " It ejaculates before going limp, retreating into your sheath.");
+				//if (target.cocks.Count == 1) //sb.Append("Your [cock] suddenly becomes rock hard out of nowhere. You " + target.clothedOrNakedLower("pull it out from your [armor], right in the middle of the food tent, watching", "watch") + " as it begins to shift and change. It becomes pink in color, and you feel a pinch at the head as it splits to become four heads. " + (target.hasSheath() ? "" : "The transformation finishes off with a fleshy sheath forming at the base.") + " It ejaculates before going limp, retreating into your sheath.");
 				//else //sb.Append("One of your penises begins to feel strange. You " + target.clothedOrNakedLower("pull the offending cock out from your [armor], right in the middle of the food tent, watching", "watch") + " as it begins to shift and change. It becomes pink in color, and you feel a pinch at the head as it splits to become four heads. " + (target.hasSheath() ? "" : "The transformation finishes off with a fleshy sheath forming at the base.") + " It ejaculates before going limp, retreating into your sheath.");
 				//sb.Append(" <b>You now have an echidna penis!</b>");
 
@@ -224,7 +224,7 @@ namespace CoC.Frontend.Transformations
 			//Sexual changes
 			if (Utils.Rand(3) == 0 && target.hasCock && target.genitals.cumMultiplierTrue < 25)
 			{
-				float temp = 1 + Utils.Rand(5);
+				double temp = 1 + Utils.Rand(5);
 				//really not a fan of this hard coded check b/c its not future proof, but it seems to be limited in scope enough i guess i can allow it.
 				//Lots of cum raises cum multiplier cap to 2 instead of 1.5
 				if (target.HasPerk<MessyOrgasms>())

@@ -40,7 +40,7 @@ namespace CoC.Frontend.Transformations
 
 			StringBuilder sb = new StringBuilder();
 
-			bool DoKnotChanges(float delta)
+			bool DoKnotChanges(double delta)
 			{
 				if (target.hasCock)
 				{
@@ -48,7 +48,7 @@ namespace CoC.Frontend.Transformations
 					int dogCockCount = target.genitals.CountCocksOfType(CockType.DOG);
 					if (dogCockCount > 0)
 					{
-						Cock smallestKnot = target.cocks.MinItem(x => x.type == CockType.DOG ? (float?)x.knotMultiplier : null);
+						Cock smallestKnot = target.cocks.MinItem(x => x.type == CockType.DOG ? (double?)x.knotMultiplier : null);
 						if (smallestKnot.knotMultiplier > 2)
 						{
 							delta /= 10;
@@ -62,7 +62,7 @@ namespace CoC.Frontend.Transformations
 							delta /= 2;
 						}
 
-						float knotMultiplierDelta = smallestKnot.IncreaseKnotMultiplier(delta);
+						double knotMultiplierDelta = smallestKnot.IncreaseKnotMultiplier(delta);
 						if (knotMultiplierDelta != 0)
 						{
 							sb.Append(EnlargedSmallestKnotText(target, target.cocks.IndexOf(smallestKnot), knotMultiplierDelta, dogCockCount > 1));
@@ -114,9 +114,9 @@ namespace CoC.Frontend.Transformations
 				target.IncreaseCreatureStats(lus: (byte)(5 + Utils.Rand(5)), lib: (byte)(2 + Utils.Rand(4)), corr: (byte)(2 + Utils.Rand(4)));
 			}
 			//stat changes (cont.)
-			float strengthIncrease = 0;
-			float speedIncrease = 0;
-			float intelligenceDecrease = 0;
+			double strengthIncrease = 0;
+			double speedIncrease = 0;
+			double intelligenceDecrease = 0;
 			if (target.relativeStrength < 50 && Utils.Rand(3) == 0)
 			{
 				strengthIncrease = target.IncreaseStrength(crit);
@@ -231,7 +231,7 @@ namespace CoC.Frontend.Transformations
 			//however, a knotty pepper modifier has no tf cost, the other check does. also, this will modify a cock if none have a dog knot, the other will not.
 			if (modifiers.HasFlag(CanineModifiers.KNOTTY))
 			{
-				float delta = ((Utils.Rand(2) + 5) / 20f) * crit;
+				double delta = ((Utils.Rand(2) + 5) / 20f) * crit;
 
 				if (!DoKnotChanges(delta))
 				{
@@ -239,7 +239,7 @@ namespace CoC.Frontend.Transformations
 					{
 						CockData oldCockData = target.cocks[0].AsReadOnlyData();
 
-						float knotSize = 1.75f;
+						double knotSize = 1.75f;
 
 						if (target.cocks[0].hasKnot)
 						{
@@ -337,7 +337,7 @@ namespace CoC.Frontend.Transformations
 			//knot multiplier (but not knotty)
 			if (!modifiers.HasFlag(CanineModifiers.KNOTTY) && target.genitals.CountCocksOfType(CockType.DOG) > 0 && (modifiers.HasFlag(CanineModifiers.LARGE) || Utils.Rand(7) < 5))
 			{
-				float delta = ((Utils.Rand(2) + 1) / 20f) * crit;
+				double delta = ((Utils.Rand(2) + 1) / 20f) * crit;
 				if (DoKnotChanges(delta))
 				{
 					if (--remainingChanges <= 0)
@@ -371,7 +371,7 @@ namespace CoC.Frontend.Transformations
 					int index = demonSpecialCase.cockIndex;
 					if (demonSpecialCase != null)
 					{
-						float delta = demonSpecialCase.IncreaseThickness(2);
+						double delta = demonSpecialCase.IncreaseThickness(2);
 
 						if (delta != 0)
 						{
@@ -391,7 +391,7 @@ namespace CoC.Frontend.Transformations
 			//that's fine. i dunno, it's difficult to try and clean everything up without being able to predict the future, which is admittedly impossible)
 			if (target.hasCock && (target.genitals.cumMultiplier < 1.5f || target.genitals.additionalCum < 500) && Utils.RandBool())
 			{
-				float delta;
+				double delta;
 				bool wasMultiplier;
 				if (target.genitals.cumMultiplier < 1.5f)
 				{
@@ -414,7 +414,7 @@ namespace CoC.Frontend.Transformations
 				smallest.IncreaseLength(Utils.Rand(4) + 3);
 				if (smallest.girth < 1)
 				{
-					float delta = 1 - smallest.girth;
+					double delta = 1 - smallest.girth;
 					smallest.IncreaseThickness(delta);
 				}
 				sb.Append(GrewSmallestCockText(target, smallest.cockIndex, oldData));
@@ -670,8 +670,8 @@ namespace CoC.Frontend.Transformations
 		protected abstract string InitialTransformationText(CanineModifiers modifiers, bool crit);
 		protected abstract string BadEndText(Creature target);
 		protected abstract string DoggoWarningText(Creature target, bool wasPreviouslyWarned);
-		protected abstract string StatChangeText(Creature target, float strengthIncrease, float speedIncrease, float intelligenceDecrease);
-		protected abstract string EnlargedSmallestKnotText(Creature target, int indexOfSmallestKnotCock, float knotMultiplierDelta, bool hasOtherDogCocks);
+		protected abstract string StatChangeText(Creature target, double strengthIncrease, double speedIncrease, double intelligenceDecrease);
+		protected abstract string EnlargedSmallestKnotText(Creature target, int indexOfSmallestKnotCock, double knotMultiplierDelta, bool hasOtherDogCocks);
 		protected abstract string GrewTwoDogCocksHadNone(Creature target);
 		protected abstract string ConvertedFirstDogCockGrewSecond(Creature target, CockData oldCockData);
 		protected abstract string ConvertedTwoCocksToDog(Creature target, CockData firstOldData, CockData secondOldData);
@@ -696,8 +696,8 @@ namespace CoC.Frontend.Transformations
 		{
 			return target.cocks[index].TransformFromText(oldData);
 		}
-		protected abstract string CouldntConvertDemonCockThickenedInstead(Creature target, int index, float delta);
-		protected abstract string AddedCumText(Creature target, float delta, bool deltaIsMultiplier);
+		protected abstract string CouldntConvertDemonCockThickenedInstead(Creature target, int index, double delta);
+		protected abstract string AddedCumText(Creature target, double delta, bool deltaIsMultiplier);
 		protected abstract string GrewSmallestCockText(Creature target, int index, CockData oldData);
 		protected abstract string UpdateAndGrowAdditionalRowText(Creature target, BreastCollectionData oldBreasts, bool crit, bool uberCrit);
 

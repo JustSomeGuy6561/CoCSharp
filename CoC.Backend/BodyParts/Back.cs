@@ -74,7 +74,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class BackTattoo : TattooablePart<BackTattooLocation>
 	{
-		public BackTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong) {}
+		public BackTattoo(IBodyPart source, CreatureStr allTattoosShort, CreatureStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong) {}
 
 		public override int MaxTattoos => BackTattooLocation.allLocations.Count;
 
@@ -506,5 +506,7 @@ namespace CoC.Backend.BodyParts
 			regenRate = back.regenRate;
 			resources = back.resources;
 		}
+
+		public override BackType defaultType => BackType.defaultValue;
 	}
 }

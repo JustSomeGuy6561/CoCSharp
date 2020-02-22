@@ -96,11 +96,11 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllClitPiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllClitPiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllClitPiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllClitPiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

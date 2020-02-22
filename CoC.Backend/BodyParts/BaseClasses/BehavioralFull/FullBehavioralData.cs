@@ -30,6 +30,9 @@ namespace CoC.Backend.BodyParts
 		{
 		}
 
+		public bool isDefault => type == defaultType;
+		public abstract BehaviorClass defaultType { get; }
+
 		public string LongDescriptionPrimary() => type.LongDescriptionPrimary(AsCurrentData());
 
 		public string LongDescriptionAlternate() => type.LongDescriptionAlternate(AsCurrentData());

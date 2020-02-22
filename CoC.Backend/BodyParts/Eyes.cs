@@ -338,6 +338,8 @@ namespace CoC.Backend.BodyParts
 		public bool isHeterochromia => leftIrisColor != rightIrisColor && eyeCount > 1;
 
 		public bool isReptilian => type.isReptilianEyes;
+
+		public override EyeType defaultType => EyeType.defaultValue;
 	}
 
 }

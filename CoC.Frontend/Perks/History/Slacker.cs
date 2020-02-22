@@ -7,13 +7,13 @@ namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class Slacker : HistoryPerkBase
 	{
-		private float delta;
+		private double delta;
 
 		public Slacker() : base(SlackerStr, SlackerBtn, SlackerHint, SlackerDesc) { }
 
 		protected override void OnActivation()
 		{
-			float oldVal = baseModifiers.fatigueRegenMultiplier;
+			double oldVal = baseModifiers.fatigueRegenMultiplier;
 			baseModifiers.fatigueRegenMultiplier += 0.2f;
 			delta = baseModifiers.fatigueRegenMultiplier - oldVal;
 		}

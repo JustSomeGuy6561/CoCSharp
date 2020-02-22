@@ -331,7 +331,7 @@ namespace CoC.Frontend.Transformations
 				{
 					//find the biggest cock that isn't the first one.
 					Cock biggest = target.cocks.Skip(1).MaxItem(x => x.area);
-					float delta = (float)(5 * Math.Sqrt(0.2 * biggest.area));
+					double delta = (double)(5 * Math.Sqrt(0.2 * biggest.area));
 
 					target.cocks[0].DeltaLengthAndGirth(delta, delta);
 					target.HaveGenericCockOrgasm(0, false, true);
@@ -344,8 +344,8 @@ namespace CoC.Frontend.Transformations
 				//
 				else
 				{
-					float baseLengthChange;
-					float baseGirthChange;
+					double baseLengthChange;
+					double baseGirthChange;
 					if (target.cocks[0].type != CockType.BEE && Species.CurrentSpecies(target) == Species.BEE)
 					{
 						target.genitals.UpdateCock(0, CockType.BEE);
@@ -380,8 +380,8 @@ namespace CoC.Frontend.Transformations
 						mult = 1;
 					}
 
-					float deltaLength = (float)(mult * baseLengthChange);
-					float deltaGirth = (float)(mult * baseGirthChange);
+					double deltaLength = (double)(mult * baseLengthChange);
+					double deltaGirth = (double)(mult * baseGirthChange);
 
 					target.cocks[0].DeltaLengthAndGirth(deltaLength, deltaGirth);
 				}
@@ -389,7 +389,7 @@ namespace CoC.Frontend.Transformations
 
 				if (target.corruption >= 5)
 				{
-					float corrLoss = Math.Min(0.1f * target.corruptionTrue + 5, target.corruptionTrue);
+					double corrLoss = Math.Min(0.1f * target.corruptionTrue + 5, target.corruptionTrue);
 					target.DeltaCreatureStats(corr: -corrLoss, lib: corrLoss); //Lose corruption and gains that much libido
 				}
 				else

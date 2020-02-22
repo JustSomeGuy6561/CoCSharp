@@ -124,5 +124,7 @@ namespace CoC.Backend.BodyParts
 		}
 
 		internal GillData(Gills source) : base(GetID(source), GetBehavior(source)) { }
+
+		public override GillType defaultType => GillType.defaultValue;
 	}
 }

@@ -250,7 +250,7 @@ namespace CoC.Frontend.Transformations
 				//Cock < 6 inches - increase by 1-2 inches
 				if (shortest.length < 6 && Utils.Rand(3) == 0)
 				{
-					float increment = shortest.IncreaseLength(1 + Utils.Rand(2));
+					double increment = shortest.IncreaseLength(1 + Utils.Rand(2));
 					if (--remainingChanges <= 0)
 					{
 						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);

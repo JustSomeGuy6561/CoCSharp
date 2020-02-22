@@ -8,7 +8,7 @@ namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class BigClit : EndowmentPerkBase
 	{
-		private const float DELTA = 1.0f - Clit.DEFAULT_CLIT_SIZE;
+		private const double DELTA = 1.0f - Clit.DEFAULT_CLIT_SIZE;
 		public BigClit() : base(BigClitStr, BigClitBtn, BigClitHint, BigClitDesc)
 		{ }
 		protected override void OnActivation()

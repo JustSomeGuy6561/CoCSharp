@@ -52,12 +52,12 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTonguePiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllTonguePiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTonguePiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllTonguePiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

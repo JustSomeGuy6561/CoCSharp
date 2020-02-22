@@ -13,7 +13,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 	//A generic format for armors that does not require a new class. i'm not overly fond of this approach, but whatever. it uses a Guid to determine if two items are equal.
 	class GenericArmor : ArmorBase, IWizardEnduranceItem
 	{
-		protected readonly float defense;
+		protected readonly double defense;
 		protected readonly Guid id;
 		protected readonly SimpleDescriptor abbr;
 		protected readonly SimpleDescriptor full;
@@ -26,7 +26,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 		protected readonly byte sluttySeduction;
 
 		public GenericArmor(Guid uniqueID, ArmorType armorRating, SimpleDescriptor abbreviatedName, SimpleDescriptor fullName, ItemDescriptor description,
-			SimpleDescriptor aboutText, float defenseRating, int price, byte seductiveModifier = 0, byte wizardModifier = 0, bool allowsUnderGarments = true) : base(armorRating)
+			SimpleDescriptor aboutText, double defenseRating, int price, byte seductiveModifier = 0, byte wizardModifier = 0, bool allowsUnderGarments = true) : base(armorRating)
 		{
 			this.id = uniqueID;
 			this.defense = defenseRating;
@@ -97,7 +97,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 	class GenericArmorWithBulge : ArmorBase, IBulgeArmor, IWizardEnduranceItem
 	{
-		protected readonly float defense;
+		protected readonly double defense;
 		protected readonly Guid id;
 		protected readonly SimpleDescriptor abbr;
 		protected readonly DescriptorWithArg<bool> full;
@@ -117,7 +117,7 @@ namespace CoC.Frontend.Items.Wearables.Armor
 
 		public GenericArmorWithBulge(Guid uniqueID, ArmorType armorRating, SimpleDescriptor abbreviatedName, DescriptorWithArg<bool> fullName,
 			BulgeAwareItemDescription description, DescriptorWithArg<bool> aboutText, BulgeAwareStateChange onBulgeChange,
-			float defenseRating, int price, byte seductiveModifier = 0, byte wizardModifier = 0, bool allowsUnderGarments = true) : base(armorRating)
+			double defenseRating, int price, byte seductiveModifier = 0, byte wizardModifier = 0, bool allowsUnderGarments = true) : base(armorRating)
 		{
 			this.id = uniqueID;
 			this.defense = defenseRating;

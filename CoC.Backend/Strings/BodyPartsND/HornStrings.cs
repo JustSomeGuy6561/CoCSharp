@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/12/2019, 3:34 AM
 using CoC.Backend.Creatures;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
@@ -10,8 +11,10 @@ namespace CoC.Backend.BodyParts
 	public partial class Horns
 	{
 
-		public string OneHornShortDescription(string pronoun = "your")
+		public string OneHornShortDescription() => OneHornShortDescription(Conjugate.YOU);
+		public string OneHornShortDescription(Conjugate conjugate)
 		{
+			string pronoun = conjugate.PossessiveAdjective();
 			if (numHorns == 0)
 			{
 				return "";
@@ -20,11 +23,16 @@ namespace CoC.Backend.BodyParts
 			{
 				return pronoun + " " + ShortDescription();
 			}
-			else return "one of " + pronoun + " " + ShortDescription();
+			else
+			{
+				return "one of " + pronoun + " " + ShortDescription();
+			}
 		}
 
-		public string EachHornShortDescription(string pronoun = "your")
+		public string EachHornShortDescription() => EachHornShortDescription(Conjugate.YOU);
+		public string EachHornShortDescription(Conjugate conjugate)
 		{
+			string pronoun = conjugate.PossessiveAdjective();
 			if (numHorns == 0)
 			{
 				return "";
@@ -33,7 +41,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return pronoun + " " + ShortDescription();
 			}
-			else return "each of " + pronoun + " " + ShortDescription();
+			else
+			{
+				return "each of " + pronoun + " " + ShortDescription();
+			}
 		}
 
 		public static string Name()
@@ -85,8 +96,10 @@ namespace CoC.Backend.BodyParts
 		private static string DemonPlayerStr(Horns horns, PlayerBase player)
 		{
 			if (horns.numHorns <= 2)
+			{
 				return " A small pair of pointed horns has broken through the " + player.face.facialSkin.LongDescription() + " on your forehead, " +
 					"proclaiming some demonic taint to any who see them.";
+			}
 			else if (horns.numHorns <= 4)
 			{
 				return " A quartet of prominent horns has broken through your " + player.face.facialSkin.LongDescription() + ". The back pair are longer, " +

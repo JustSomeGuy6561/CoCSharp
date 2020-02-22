@@ -6,6 +6,7 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
@@ -112,9 +113,9 @@ namespace CoC.Backend.BodyParts
 		#region Late Init
 		internal void Initialize(VaginaCreator[] vaginaCreators)
 		{
-			var vags = vaginaCreators.Where(x => x != null).Take(MAX_VAGINAS);
+			IEnumerable<VaginaCreator> vags = vaginaCreators.Where(x => x != null).Take(MAX_VAGINAS);
 
-			foreach (var vag in vags)
+			foreach (VaginaCreator vag in vags)
 			{
 				_vaginas.Add(new Vagina(this, currentVaginaID, vag.type, vag.validClitLength, vag.looseness, vag.wetness, vag.virgin, vag.labiaPiercings, vag.clitPiercings));
 				currentVaginaID++;
@@ -151,7 +152,7 @@ namespace CoC.Backend.BodyParts
 
 			if (valid || correctInvalidData)
 			{
-				foreach (var vag in _vaginas)
+				foreach (Vagina vag in _vaginas)
 				{
 					valid |= vag.Validate(correctInvalidData);
 
@@ -169,8 +170,10 @@ namespace CoC.Backend.BodyParts
 
 		public override bool IsIdenticalTo(VaginaCollectionData original, bool ignoreSexualMetaData)
 		{
-			if (original is null) return false;
-
+			if (original is null)
+			{
+				return false;
+			}
 
 			return totalBonusCapacity == original.totalBonusCapacity && standardBonusCapacity == original.standardBonusCapacity
 				&& (ignoreSexualMetaData || (totalSexCount == original.totalSexCount && selfSexCount == original.selfSexCount
@@ -232,7 +235,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldGender = gender;
+			Gender oldGender = gender;
 
 			_vaginas.Add(new Vagina(this, currentVaginaID, newVaginaType));
 			currentVaginaID++;
@@ -248,7 +251,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldGender = gender;
+			Gender oldGender = gender;
 
 			_vaginas.Add(new Vagina(this, currentVaginaID, newVaginaType, clitLength));
 			currentVaginaID++;
@@ -264,7 +267,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldGender = gender;
+			Gender oldGender = gender;
 
 			_vaginas.Add(new Vagina(this, currentVaginaID, newVaginaType, clitLength, looseness, wetness, true));
 			currentVaginaID++;
@@ -275,9 +278,12 @@ namespace CoC.Backend.BodyParts
 
 		public string AddedVaginaText()
 		{
-			if (numVaginas == 0 || !(creature is PlayerBase player)) return "";
+			if (numVaginas == 0 || !(creature is PlayerBase player))
+			{
+				return "";
+			}
 
-			var lastVagina = _vaginas[_vaginas.Count - 1];
+			Vagina lastVagina = _vaginas[_vaginas.Count - 1];
 
 			return lastVagina.type.GrewVaginaText(player, (byte)(_vaginas.Count - 1));
 		}
@@ -290,7 +296,7 @@ namespace CoC.Backend.BodyParts
 			}
 
 			int oldCount = numVaginas;
-			var oldGender = gender;
+			Gender oldGender = gender;
 
 			if (count >= numVaginas)
 			{
@@ -316,7 +322,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				var toRemove = _vaginas.Skip(numVaginas - count);
+				IEnumerable<Vagina> toRemove = _vaginas.Skip(numVaginas - count);
 
 				missingVaginaSexCount.addIn((uint)toRemove.Sum(x => x.totalSexCount));
 				missingVaginaSelfSexCount.addIn((uint)toRemove.Sum(x => x.selfSexCount));
@@ -369,21 +375,21 @@ namespace CoC.Backend.BodyParts
 		//only affects standard capacity. perks use their own special values.
 		public ushort IncreaseBonusCapacity(ushort amount)
 		{
-			var oldCap = standardBonusCapacity;
+			ushort oldCap = standardBonusCapacity;
 			standardBonusCapacity = standardBonusCapacity.add(amount);
 			return standardBonusCapacity.subtract(oldCap);
 		}
 
 		public ushort DecreaseBonusCapacity(ushort amount)
 		{
-			var oldCap = standardBonusCapacity;
+			ushort oldCap = standardBonusCapacity;
 			standardBonusCapacity = standardBonusCapacity.subtract(amount);
 			return oldCap.subtract(standardBonusCapacity);
 		}
 
 		public int SetBonusCapacity(ushort targetCapacity)
 		{
-			var oldCap = standardBonusCapacity;
+			ushort oldCap = standardBonusCapacity;
 			standardBonusCapacity = targetCapacity;
 
 			return standardBonusCapacity - oldCap;
@@ -583,22 +589,26 @@ namespace CoC.Backend.BodyParts
 		public string AllVaginasFullDescription() => VaginaCollectionStrings.AllVaginasFullDescription(this);
 
 
-		public string OneVaginaOrVaginasNoun(string pronoun = "your") => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this, pronoun);
+		public string OneVaginaOrVaginasNoun() => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this);
+		public string OneVaginaOrVaginasNoun(Conjugate conjugate) => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this, conjugate);
 
 
-		public string OneVaginaOrVaginasShort(string pronoun = "your") => VaginaCollectionStrings.OneVaginaOrVaginasShort(this, pronoun);
+		public string OneVaginaOrVaginasShort() => VaginaCollectionStrings.OneVaginaOrVaginasShort(this);
+		public string OneVaginaOrVaginasShort(Conjugate conjugate) => VaginaCollectionStrings.OneVaginaOrVaginasShort(this, conjugate);
 
 
-		public string EachVaginaOrVaginasNoun(string pronoun = "your") => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, pronoun);
+		public string EachVaginaOrVaginasNoun() => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate);
 
 
-		public string EachVaginaOrVaginasShort(string pronoun = "your") => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, pronoun);
+		public string EachVaginaOrVaginasShort() => VaginaCollectionStrings.EachVaginaOrVaginasShort(this);
+		public string EachVaginaOrVaginasShort(Conjugate conjugate) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, conjugate);
 
 
-		public string EachVaginaOrVaginasNoun(string pronoun, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, pronoun, out isPlural);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate, out isPlural);
 
 
-		public string EachVaginaOrVaginasShort(string pronoun, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, pronoun, out isPlural);
+		public string EachVaginaOrVaginasShort(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, conjugate, out isPlural);
 
 		#endregion
 
@@ -657,7 +667,7 @@ namespace CoC.Backend.BodyParts
 
 		internal VaginaCollectionData(VaginaCollection source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			this.vaginas = new ReadOnlyCollection<VaginaData>(source.vaginas.Select(x => x.AsReadOnlyData()).ToList());
+			vaginas = new ReadOnlyCollection<VaginaData>(source.vaginas.Select(x => x.AsReadOnlyData()).ToList());
 
 			standardBonusCapacity = source.standardBonusCapacity;
 			totalBonusCapacity = source.totalBonusCapacity;
@@ -675,7 +685,7 @@ namespace CoC.Backend.BodyParts
 
 			totalBirthCount = source.totalBirthCount;
 
-	}
+		}
 
 		#region Vagina Related Aggregate Functions
 
@@ -813,7 +823,7 @@ namespace CoC.Backend.BodyParts
 
 		#endregion
 
-		#region Vagina Text
+		#region Vagina Common Text
 		public string AllVaginasShortDescription() => VaginaCollectionStrings.AllVaginasShortDescription(this);
 
 		public string AllVaginasLongDescription() => VaginaCollectionStrings.AllVaginasLongDescription(this);
@@ -821,27 +831,26 @@ namespace CoC.Backend.BodyParts
 		public string AllVaginasFullDescription() => VaginaCollectionStrings.AllVaginasFullDescription(this);
 
 
-		public string OneVaginaOrVaginasNoun(string pronoun = "your") => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this, pronoun);
+		public string OneVaginaOrVaginasNoun() => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this);
+		public string OneVaginaOrVaginasNoun(Conjugate conjugate) => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this, conjugate);
 
 
-		public string OneVaginaOrVaginasShort(string pronoun = "your") => VaginaCollectionStrings.OneVaginaOrVaginasShort(this, pronoun);
+		public string OneVaginaOrVaginasShort() => VaginaCollectionStrings.OneVaginaOrVaginasShort(this);
+		public string OneVaginaOrVaginasShort(Conjugate conjugate) => VaginaCollectionStrings.OneVaginaOrVaginasShort(this, conjugate);
 
 
-		public string EachVaginaOrVaginasNoun(string pronoun = "your") => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, pronoun);
+		public string EachVaginaOrVaginasNoun() => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate);
 
 
-		public string EachVaginaOrVaginasShort(string pronoun = "your") => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, pronoun);
+		public string EachVaginaOrVaginasShort() => VaginaCollectionStrings.EachVaginaOrVaginasShort(this);
+		public string EachVaginaOrVaginasShort(Conjugate conjugate) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, conjugate);
 
 
-		public string EachVaginaOrVaginasNoun(string pronoun, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, pronoun, out isPlural);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate, out isPlural);
 
 
-		public string EachVaginaOrVaginasShort(string pronoun, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, pronoun, out isPlural);
-
-		VaginaData IVaginaCollection<VaginaData>.AverageVagina()
-		{
-			throw new NotImplementedException();
-		}
+		public string EachVaginaOrVaginasShort(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, conjugate, out isPlural);
 
 		#endregion
 	}

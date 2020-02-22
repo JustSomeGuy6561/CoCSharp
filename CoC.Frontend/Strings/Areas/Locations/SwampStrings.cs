@@ -22,7 +22,7 @@ namespace CoC.Frontend.Areas.Locations
 				" As you watch, the three ghostly lights begin to move off, and though the thought of a trap crosses your mind, you decide to follow." +
 				Environment.NewLine + Environment.NewLine + "Before long, you start to detect traces of change in the environment. " +
 				"The most immediate difference is the increasingly sweltering heat. A few minutes pass, then the will-o'-the-wisps plunge into the boundaries of a dark, " +
-				"murky, stagnant swamp; after a steadying breath you follow them into the bog. Once within, however, the gaseous balls float off in different directions, " +
+				"murky, stagnant swamp; after a steadying breath you follow them into the bog. Once within, however, the gaseous balls double off in different directions, " +
 				"causing you to lose track of them. You sigh resignedly and retrace your steps, satisfied with your discovery. " +
 				"Further exploration can wait. For now, your camp is waiting." + Environment.NewLine + Environment.NewLine +
 				SafelyFormattedString.FormattedText("You've discovered the Swamp!", StringFormats.BOLD);

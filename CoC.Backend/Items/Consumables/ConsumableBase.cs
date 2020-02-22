@@ -43,7 +43,7 @@ namespace CoC.Backend.Items.Consumables
 		}
 
 		//unused.
-		private protected override CapacityItem UseItemInCombat(CombatCreature target, out bool resultsInLoss, out string resultsOfUseText)
+		private protected override CapacityItem UseItemInCombat(CombatCreature target, CombatCreature opponent, out bool resultsInLoss, out string resultsOfUseText)
 		{
 			resultsOfUseText = null;
 			resultsInLoss = false;
@@ -60,7 +60,7 @@ namespace CoC.Backend.Items.Consumables
 		/// <returns></returns>
 		protected abstract bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd);
 
-		protected virtual bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		protected virtual bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
 		{
 			isCombatLoss = false;
 			return OnConsumeAttempt(consumer, out resultsOfUse, out isBadEnd);
@@ -89,16 +89,16 @@ namespace CoC.Backend.Items.Consumables
 			}
 		}
 
-		private protected override DisplayBase AttemptToUseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		private protected override DisplayBase AttemptToUseItemInCombat(CombatCreature user, CombatCreature opponent, UseItemCombatCallback postItemUseCallback)
 		{
-			if (!CanUse(target, true, out string whyNot))
+			if (!CanUse(user, true, out string whyNot))
 			{
 				postItemUseCallback(false, false, whyNot, Author(), this);
 				return null;
 			}
 			else
 			{
-				CapacityItem retVal = CombatConsumeItem(target, out string resultsOfUse, out bool causesCombatLoss, out bool isBadEnd);
+				CapacityItem retVal = CombatConsumeItem(user, opponent, out string resultsOfUse, out bool causesCombatLoss, out bool isBadEnd);
 
 				if (!isBadEnd)
 				{
@@ -129,14 +129,14 @@ namespace CoC.Backend.Items.Consumables
 			return null;
 		}
 
-		protected CapacityItem CombatConsumeItem(CombatCreature target, out string resultsOfUseText, out bool causesCombatLoss, out bool isBadEnd)
+		protected CapacityItem CombatConsumeItem(CombatCreature user, CombatCreature opponent, out string resultsOfUseText, out bool causesCombatLoss, out bool isBadEnd)
 		{
-			bool result = OnCombatConsumeAttempt(target, out resultsOfUseText, out causesCombatLoss, out isBadEnd);
+			bool result = OnCombatConsumeAttempt(user, opponent, out resultsOfUseText, out causesCombatLoss, out isBadEnd);
 			CapacityItem item = this;
 
 			if (result)
 			{
-				if (target is PlayerBase player)
+				if (user is PlayerBase player)
 				{
 					player.refillHunger(sateHungerAmount);
 				}

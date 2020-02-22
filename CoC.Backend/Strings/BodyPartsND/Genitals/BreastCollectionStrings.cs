@@ -1,4 +1,6 @@
 ﻿using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.ObjectModel;
@@ -127,12 +129,35 @@ namespace CoC.Backend.BodyParts
 			return sb.ToString();
 		}
 
-		public string RemovedExtraBreastRowGenericText(Creature target, BreastData removedBreastRow)
+		public string RemovedExtraBreastRowGenericText(BreastData removedBreastRow)
 		{
+			Creature target = CreatureStore.GetCreatureClean(creatureID);
+			string skinText;
+			bool plural;
+			if (target is null)
+			{
+				skinText = new BodyData(Guid.Empty).ShortEpidermisDescription(out plural);
+			}
+			else
+			{
+				skinText = target.body.ShortEpidermisDescription(out plural);
+			}
+
 			return $"You stumble back when your center of balance shifts, and though you adjust before you can fall over, you're left to watch in awe as your bottom-most " +
-				$"{removedBreastRow.ShortDescription()} shrink down, disappearing completely into your {(target.breasts.Count > 2 ? "abdomen" : "chest")}. The " +
-				$"{removedBreastRow.ShortNippleDescription()} even fade until nothing but {target.body.mainEpidermis.ShortDescription()} remains. " +
+				$"{removedBreastRow.ShortDescription()} shrink down, disappearing completely into your {(breastRows.Count > 2 ? "abdomen" : "chest")}. The " +
+				$"{removedBreastRow.ShortNippleDescription()} even fade until nothing but {skinText} {(plural ? "remain" :"remains")}. " +
 				SafelyFormattedString.FormattedText("You've lost a row of breasts!", StringFormats.BOLD);
+		}
+
+		public string GenericRemovedBlackNipples()
+		{
+			var creature = CreatureStore.GetCreatureClean(creatureID);
+
+			string armorText = creature?.wearingArmor == true || creature?.wearingUpperGarment == true ? "Undoing your clothes" : "Looking down";
+
+			return GlobalStrings.NewParagraph() + "Something invisible brushes against your " + CommonShortNippleDescription()
+				+ ", making you twitch. " + armorText + ", you take a look at your"
+				+ " chest and find that your nipples have turned back to their natural flesh color.";
 		}
 	}
 

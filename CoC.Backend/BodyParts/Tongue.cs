@@ -71,7 +71,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TonguePiercing : Piercing<TonguePiercingLocation>
 	{
-		public TonguePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public TonguePiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, CreatureStr playerShortDesc, CreatureStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -312,5 +312,7 @@ namespace CoC.Backend.BodyParts
 			selfPenetrateCount = tongue.selfPenetrateCount;
 			selfCullingusCount = tongue.selfCullingusCount;
 		}
+
+		public override TongueType defaultType => TongueType.defaultValue;
 	}
 }

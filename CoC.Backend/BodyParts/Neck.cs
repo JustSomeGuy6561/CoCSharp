@@ -46,7 +46,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NeckTattoo : TattooablePart<NeckTattooLocation>
 	{
-		public NeckTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public NeckTattoo(IBodyPart source, CreatureStr allTattoosShort, CreatureStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 
@@ -478,5 +478,7 @@ namespace CoC.Backend.BodyParts
 
 			tattoos = neck.tattoos.AsReadOnlyData();
 		}
+
+		public override NeckType defaultType => NeckType.defaultValue;
 	}
 }

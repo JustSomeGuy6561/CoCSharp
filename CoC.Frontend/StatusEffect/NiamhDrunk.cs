@@ -13,10 +13,10 @@ namespace CoC.Frontend.StatusEffect
 		private const byte TIMER = 8;
 		//drops intelligence, speed by 5, +1 per repeat dose while still drunk.
 		//you retrieve 90% of this drop when it wears off.
-		private float deltaIntelligence, deltaSpeed, deltaLibido;
+		private double deltaIntelligence, deltaSpeed, deltaLibido;
 
 		//drops combat damage by 25%. reverts when wears off.
-		private float deltaCombatModifier;
+		private double deltaCombatModifier;
 
 		public NiamhDrunk() : base(TIMER)
 		{
@@ -31,7 +31,7 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (sourceCreature is CombatCreature combatCreature)
 			{
-				float oldModifier = baseModifiers.combatDamageModifier;
+				double oldModifier = baseModifiers.combatDamageModifier;
 				baseModifiers.combatDamageModifier *= .75f;
 				deltaCombatModifier = baseModifiers.combatDamageModifier / oldModifier;
 			}

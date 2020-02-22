@@ -9,6 +9,7 @@ using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using CoC.LinqHelpers;
 
 namespace CoC.Backend.BodyParts
 {
@@ -67,37 +68,41 @@ namespace CoC.Backend.BodyParts
 			return AllCocksDesc(collection, true, out isPlural);
 		}
 
-		internal static string OneCockOrCocksNoun<T>(ICockCollection<T> collection, string pronoun = "your") where T : ICock
+		internal static string OneCockOrCocksNoun<T>(ICockCollection<T> collection) where T : ICock => OneCockOrCocksNoun(collection, Conjugate.YOU);
+		internal static string OneCockOrCocksNoun<T>(ICockCollection<T> collection, Conjugate conjugate) where T : ICock
 		{
 			if (collection.cocks.Count == 0)
 			{
 				return "";
 			}
 
-			return CommonBodyPartStrings.OneOfDescription(collection.cocks.Count > 1, pronoun, CockType.GenericCockNoun(collection.cocks.Count > 1));
+			return CommonBodyPartStrings.OneOfDescription(collection.cocks.Count > 1, conjugate, CockType.GenericCockNoun(collection.cocks.Count > 1));
 		}
 
-		internal static string OneCockOrCocksShort<T>(ICockCollection<T> collection, string pronoun = "your") where T : ICock
+		internal static string OneCockOrCocksShort<T>(ICockCollection<T> collection) where T : ICock => OneCockOrCocksShort(collection, Conjugate.YOU);
+		internal static string OneCockOrCocksShort<T>(ICockCollection<T> collection, Conjugate conjugate) where T : ICock
 		{
 			if (collection.cocks.Count == 0)
 			{
 				return "";
 			}
 
-			return CommonBodyPartStrings.OneOfDescription(collection.cocks.Count > 1, pronoun, AllCocksShortDescription(collection, out bool _));
+			return CommonBodyPartStrings.OneOfDescription(collection.cocks.Count > 1, conjugate, AllCocksShortDescription(collection, out bool _));
 		}
 
-		internal static string EachCockOrCocksNoun<T>(ICockCollection<T> collection, string pronoun = "your") where T : ICock
+		internal static string EachCockOrCocksNoun<T>(ICockCollection<T> collection) where T : ICock => EachCockOrCocksNoun(collection, Conjugate.YOU);
+		internal static string EachCockOrCocksNoun<T>(ICockCollection<T> collection, Conjugate conjugate) where T : ICock
 		{
-			return EachCockOrCocksNoun(collection, pronoun, out bool _);
+			return EachCockOrCocksNoun(collection, conjugate, out bool _);
 		}
 
-		internal static string EachCockOrCocksShort<T>(ICockCollection<T> collection, string pronoun = "your") where T : ICock
+		internal static string EachCockOrCocksShort<T>(ICockCollection<T> collection) where T : ICock => EachCockOrCocksShort(collection, Conjugate.YOU);
+		internal static string EachCockOrCocksShort<T>(ICockCollection<T> collection, Conjugate conjugate) where T : ICock
 		{
-			return EachCockOrCocksShort(collection, pronoun, out bool _);
+			return EachCockOrCocksShort(collection, conjugate, out bool _);
 		}
 
-		internal static string EachCockOrCocksNoun<T>(ICockCollection<T> collection, string pronoun, out bool isPlural) where T : ICock
+		internal static string EachCockOrCocksNoun<T>(ICockCollection<T> collection, Conjugate conjugate, out bool isPlural) where T : ICock
 		{
 			isPlural = collection.cocks.Count != 1;
 			if (collection.cocks.Count == 0)
@@ -105,10 +110,10 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 
-			return CommonBodyPartStrings.EachOfDescription(collection.cocks.Count > 1, pronoun, CockType.GenericCockNoun(collection.cocks.Count > 1));
+			return CommonBodyPartStrings.EachOfDescription(collection.cocks.Count > 1, conjugate, CockType.GenericCockNoun(collection.cocks.Count > 1));
 		}
 
-		internal static string EachCockOrCocksShort<T>(ICockCollection<T> collection, string pronoun, out bool isPlural) where T : ICock
+		internal static string EachCockOrCocksShort<T>(ICockCollection<T> collection, Conjugate conjugate, out bool isPlural) where T : ICock
 		{
 			if (collection.cocks.Count == 0)
 			{
@@ -116,7 +121,7 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 
-			return CommonBodyPartStrings.EachOfDescription(collection.cocks.Count > 1, pronoun, AllCocksShortDescription(collection, out isPlural));
+			return CommonBodyPartStrings.EachOfDescription(collection.cocks.Count > 1, conjugate, AllCocksShortDescription(collection, out isPlural));
 		}
 		#endregion
 

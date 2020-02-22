@@ -104,7 +104,7 @@ namespace CoC.Frontend.Transformations
 			//INTELLECT
 			if (Utils.Rand(3) == 0)
 			{
-				float oldRelativeInt = target.relativeIntelligence;
+				double oldRelativeInt = target.relativeIntelligence;
 
 				if (target.relativeIntelligence < 10 && target.relativeIntelligence > 5)
 				{
@@ -233,7 +233,7 @@ namespace CoC.Frontend.Transformations
 				//Players cocks are all horse-type - increase size!
 				else
 				{
-					float sizeDelta;
+					double sizeDelta;
 					//single cock
 					if (target.cocks.Count == 1)
 					{

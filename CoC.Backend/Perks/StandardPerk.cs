@@ -9,7 +9,7 @@ namespace CoC.Backend.Perks
 	public abstract class StandardPerk : PerkBase
 	{
 		//as long as a standard perk is attached to a creature, it's enabled
-		public override bool isEnabled => !(sourceCreature is null);
+		private protected override bool enabled => !(sourceCreature is null);
 
 		private protected override void OnCreate()
 		{

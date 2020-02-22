@@ -82,6 +82,8 @@ namespace CoC.Backend.BodyParts
 		private readonly ChangeType<DataClass> transformFromStr;
 		public string TransformFrom(DataClass oldData, PlayerBase player)
 		{
+			if (oldData is null) return "";
+
 			return transformFromStr(oldData, player);
 		}
 
@@ -91,6 +93,8 @@ namespace CoC.Backend.BodyParts
 		private readonly RestoreType<DataClass> restoredStr;
 		public string RestoredString(DataClass originalData, PlayerBase player)
 		{
+			if (originalData is null) return "";
+
 			return restoredStr(originalData, player);
 		}
 

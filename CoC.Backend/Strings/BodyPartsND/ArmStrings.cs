@@ -156,7 +156,7 @@ namespace CoC.Backend.BodyParts
 			return "Arms";
 		}
 
-		private string AllTattoosShort(Creature creature, Conjugate conjugate)
+		private string AllTattoosShort(Creature creature)
 		{
 			//feel free to alter this flavor text or rewrite some of these to use other flavor text.
 			string armFlavorText = ", visible for all to see.";
@@ -309,7 +309,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private string AllTattoosLong(Creature creature, Conjugate conjugate)
+		private string AllTattoosLong(Creature creature)
 		{
 			StringBuilder sb = new StringBuilder("Your " + ShortDescription());
 			if (tattoos.currentTattooCount == tattoos.MaxTattoos)

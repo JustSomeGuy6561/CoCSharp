@@ -251,7 +251,7 @@
 //				{
 //					display.OutputText("She begins gently rubbing her hand up and down your " + player.multiCockDescriptLight() + " while looking at you in uncertainty. <i>\"Where do you want thizzz? I'm actually not zzzure what would be the mozzzt enjoyable for you...\"</i> she asks. You smile and indicate her honeypot, and say that you want to put your " + player.cockDescript(cockIndex) + " in there. She looks at you confused for a few moments before saying, <i>\"Really? That doezzzn't zzzound right, but ok.\"</i> She picks herself up with her wings and slowly lowers her honey pot onto your waiting shaft. In short order, you're fully engulfed by her.\n\n");
 //					display.OutputText("Her cunny feels like a vice on your " + player.cockDescript(cockIndex) + ", but at the same time, her warm honey juices make it very slick. The bee girl gasps from the sensations. Clearly this feeling is almost unknown to her, and she has never willingly partaken before with an individual such as yourself. You gently push her up your shaft, but are surprised when she slams your " + player.cockDescript(cockIndex) + " back home. You look up at her face to see that her lips have formed into an 'O' shape. She is clearly enjoying this immensely, and she continues to slam herself back down on you each time you push her even slightly off of your length. Each time she impales herself, another excited moan of pleasure escapes her.\n\n");
-//					display.OutputText("The rough slick texture of her honey pot is incredible. Combine that with the wild abandon that the handmaiden is riding your member, it takes only a few minutes to push you over the edge. Your bee lover seems to be having the same troubles as you, since she is in the process of letting out an excited buzz or squeal, it's hard to tell which, that you're certain is an orgasm. As your " + player.cockDescript(cockIndex) + " unleashes its contents, her honey pot gushes out an odd layer of unusually viscous honey onto your crotch. The bee girl floats off of you slightly dizzed, gives an attempt at a bow at you before flying off. Once you've had a chance to recover, you dress and return to camp. After that experience, you're very much looking forward to your next encounter with the bee handmaiden.");
+//					display.OutputText("The rough slick texture of her honey pot is incredible. Combine that with the wild abandon that the handmaiden is riding your member, it takes only a few minutes to push you over the edge. Your bee lover seems to be having the same troubles as you, since she is in the process of letting out an excited buzz or squeal, it's hard to tell which, that you're certain is an orgasm. As your " + player.cockDescript(cockIndex) + " unleashes its contents, her honey pot gushes out an odd layer of unusually viscous honey onto your crotch. The bee girl doubles off of you slightly dizzed, gives an attempt at a bow at you before flying off. Once you've had a chance to recover, you dress and return to camp. After that experience, you're very much looking forward to your next encounter with the bee handmaiden.");
 //				}
 //			}
 //			else if (player.hasVagina)
@@ -322,11 +322,11 @@
 //				display.OutputText("Your experience in this world has well prepared your " + player.assholeDescript() + " for the knotted appendage. Its lubricated surface gives nothing but pleasure to your used rear, and both you and your insectoid lover give nothing but moans of pleasure as each new bump passes into your body.\n\n");
 //			}
 //			display.OutputText("Once the ovipositor is all the way inside you, the bee girl pulls herself up and wraps her arms around you. She rubs her large chest into yours, hugging ");
-//			if (player.tallness <= 50)
+//			if (player.build.heightInInches <= 50)
 //			{
 //				display.OutputText("your tiny body against her. Clinging to you almost like a mother would cling to her child. Considering that you're being used as an egg sack, that might not be too far off.");
 //			}
-//			else if (player.tallness <= 68)
+//			else if (player.build.heightInInches <= 68)
 //			{
 //				display.OutputText("you tightly. She gently blows into your ears, while whispering sweet nothings about how wonderful you will soon feel.");
 //			}
@@ -443,7 +443,7 @@
 //		{
 //			display.ClearOutput();
 //			spriteSelect(SpriteDb.s_bee_girl);
-//			display.OutputText("<i>\"Zzzo, you're being nizzze today?\"</i> she smiles as she gently floats over towards you. <i>\"I know what you're really here for, you can't fight it anymore.\"</i> she gently slaps your " + player.buttDescript() + " and you find yourself start to walk towards the large flower, the bee girl gently floating behind you. She giggles at you and says, <i>\"Zzzee? You really juzzzt want the eggzzz and honey. You're a zzzpecial one, made juzzzt for carrying the hive'zzz eggzzz.\"</i> You fall into the flower and feel the bee girl gently land on your back. <i>\"Are you ready?\"</i> she asks you.");
+//			display.OutputText("<i>\"Zzzo, you're being nizzze today?\"</i> she smiles as she gently doubles over towards you. <i>\"I know what you're really here for, you can't fight it anymore.\"</i> she gently slaps your " + player.buttDescript() + " and you find yourself start to walk towards the large flower, the bee girl gently doubleing behind you. She giggles at you and says, <i>\"Zzzee? You really juzzzt want the eggzzz and honey. You're a zzzpecial one, made juzzzt for carrying the hive'zzz eggzzz.\"</i> You fall into the flower and feel the bee girl gently land on your back. <i>\"Are you ready?\"</i> she asks you.");
 //			beeEncounterSheBeatsYouRegularlyLastChance();
 //		}
 
@@ -547,7 +547,7 @@
 //			display.OutputText("<i>\"By my queen! That izzz dizzzguzzting! How can you zzztand it? Ugh, no, I can't lay my queen'zzz preciouzzz eggzzz in a body with thozzze.\"</i> A few drips of fluid dribble from the tip of her ovipositor and she adds, <i>\"and I zzzo wanted to. I really have to find zzzomeone who can take thezzze and keep them zzzafe.\"</i>\n\n");
 //			display.OutputText("She lifts off, hovering a few feet off the ground. <i>\"Good luck getting rid of thozzze thingzzz. When you do, come find me and I'll fill you zzzo full of lovely eggzzz,\"</i> she promises, her fingers idly stroking her sex. She shakes her head, deliberately getting control of herself and forcing her fingers away from her slit, then flies up through a hole in the canopy.\n\n");
 //			display.OutputText("Alone and aroused, all you can do is put your clothes back on and travel back to your camp, hoping no imps ambush you on the way.");
-//			dynStats("lus", 0.5 * player.lib + 20);
+//			dynStats("lus", 0.5 * player.libido + 20);
 //			doNext(camp.returnToCampUseOneHour);
 //		}
 
@@ -596,7 +596,7 @@
 //					if (player.gender == 1)
 //					{
 //						display.OutputText("You grasp ");
-//						if (player.cockTotal() > 1)
+//						if (player.cocks.Count > 1)
 //						{
 //							display.OutputText("one of ");
 //						}
@@ -851,12 +851,12 @@
 //				}
 
 //				display.OutputText(". Nor do you protest as she leans over you, her stinger- thank goodness it isn't poison- looming close to your anus. With no more words she shoves the thick, lengthy stinger and knot inside of you. Her 'cock' slips in slowly, the lubricant keeping you from shaking out of your scent-induced pleasure coma. Your hand even ventures to your own engorged ");
-//				if (player.cockTotal() == 1)
+//				if (player.cocks.Count == 1)
 //				{
 //					display.OutputText("member");
 //				}
 
-//				if (player.cockTotal() > 1)
+//				if (player.cocks.Count > 1)
 //				{
 //					display.OutputText("members");
 //				}
@@ -917,7 +917,7 @@
 //				{
 //					display.OutputText("The cool hardness of her hands startles you as she reaches around to massage your ample bosom, tweaking your hard nipples between her fingers");
 //					//if lactating
-//					if (player.biggestLactation() > 1)
+//					if (player.genitals.isLactating)
 //					{
 //						display.OutputText(", humming in surprise as a squirt of milk splatters across the flower's petals. ");
 //					}
@@ -931,7 +931,7 @@
 //				{
 //					display.OutputText("The cool hardness of her hands startles you as she begins running her hands over your many breasts, tweaking each hard nipple between her fingers, leaning around to lick them with her curving sinuous tongue, and humming softly");
 //					//Milk bit
-//					if (player.biggestLactation() > 1)
+//					if (player.genitals.isLactating)
 //					{
 //						display.OutputText(" in surprise as a squirt of milk splashes across the flower's petals. ");
 //					}
@@ -1246,7 +1246,7 @@
 //				case BEE_GIRL_TALKED_AND_LEFT_TWICE:
 //					display.OutputText("\n\nThe handmaiden stands up on the flower, and puts her hands on her hips. <i>\"Why not? Thizzz will be abzzzolutly wonderful for you, I promizzze. Why won't you aczzzept me?\"</i> she pouts through her glossy lips.\n\n");
 //					display.OutputText("You stop for a moment and wonder exactly why you've refused her up until now. Is it because you are afraid of her and the effect she has on your mind? Is it because the idea of her eggs inside you is disgusting? Is it because of your duty as a champion? Or are you just going to leave her there wondering?");
-//					dynStats("lus", 5 + player.lib / 25);
+//					dynStats("lus", 5 + player.libido / 25);
 //					display.AddButtonWithToolTip(0, "Afraid", beeEncounterRefusedHerEggsAfraid, "You have the fear of eggs being put inside you. The mere thoughts of eggs hatching inside you and seeing all those bees crawl out of you make you shiver with fear.");
 //					display.AddButtonWithToolTip(1, "Disgusted", beeEncounterRefusedHerEggsDisgusted, "The thought of eggs disgust you, you do not want any more of those offers.");
 //					display.AddButtonWithToolTip(2, "Duty", beeEncounterRefusedHerEggsDuty, "You have a duty as a Champion and you cannot give it up.");
@@ -1259,7 +1259,7 @@
 //					attitude = BEE_GIRL_TALKED_AND_LEFT;
 //			}
 //			display.OutputText("\n\nHer face falls at your refusal, but she makes no move against you. <i>\"Okay, I won't try to forzzze you, maybe you'll be more willing next time?\"</i> You give a half hearted chuckle before going back to your camp.");
-//			dynStats("lus", 5 + player.lib / 25);
+//			dynStats("lus", 5 + player.libido / 25);
 //			doNext(camp.returnToCampUseOneHour);
 //		}
 
@@ -1267,8 +1267,8 @@
 //		{
 //			spriteSelect(SpriteDb.s_bee_girl);
 //			attitude = BEE_GIRL_PLAYER_AFRAID;
-//			display.OutputText("\n\nYou move away from her and explain that it isn't that you don't like the idea of bearing the eggs, it's that you're afraid of the effect she has on your mind. You're uncomfortable that you can't think clearly around her, and you really can't agree to anything when you can't remember it and thus can't really enjoy it. She tips her head to the side in surprise, before pursing her glossy lips in worry and saying, <i>\"Really? You mean there are people who don't like it when they lozzze themzzzelvezzz? Hmm, maybe I should tell my queen about thizzz.\"</i> She smiles back at you and starts to fly away, before stopping in midair and floating over to you and saying <i>\"Come back another time, and maybe I can work out zzzomething you'll be comfortable with, ok?\"</i>");
-//			dynStats("lus", 5 + player.lib / 25);
+//			display.OutputText("\n\nYou move away from her and explain that it isn't that you don't like the idea of bearing the eggs, it's that you're afraid of the effect she has on your mind. You're uncomfortable that you can't think clearly around her, and you really can't agree to anything when you can't remember it and thus can't really enjoy it. She tips her head to the side in surprise, before pursing her glossy lips in worry and saying, <i>\"Really? You mean there are people who don't like it when they lozzze themzzzelvezzz? Hmm, maybe I should tell my queen about thizzz.\"</i> She smiles back at you and starts to fly away, before stopping in midair and doubleing over to you and saying <i>\"Come back another time, and maybe I can work out zzzomething you'll be comfortable with, ok?\"</i>");
+//			dynStats("lus", 5 + player.libido / 25);
 //			doNext(camp.returnToCampUseOneHour);
 //		}
 
@@ -1277,7 +1277,7 @@
 //			spriteSelect(SpriteDb.s_bee_girl);
 //			attitude = BEE_GIRL_PLAYER_DISGUSTED;
 //			display.OutputText("\n\nYou tell her that you find the idea of her laying eggs in you repulsive, and that you're tired of her trying to constantly tempt you into accepting against your will. She gives you an annoyed look before stomping her foot down on the flower she is standing on, almost causing her to tumble over to the side while saying, <i>\"Fine, ah!\"</i> before righting herself with her wings. <i>\"If I ever zzzee you again, you can forget about getting a good time.\"</i> Before directing you away from the clearing. You smile as you leave, now you don't have to worry about her song getting to you anymore.");
-//			dynStats("lus", 5 + player.lib / 25);
+//			dynStats("lus", 5 + player.libido / 25);
 //			doNext(camp.returnToCampUseOneHour);
 //		}
 
@@ -1288,7 +1288,7 @@
 //			display.OutputText("\n\nYou explain to her that you are a champion of your village, and what that means. You explain your duty, and that you can't do anything that might push you away from accomplishing that.\n\n");
 
 //			display.OutputText("The bee girl nods and seems to smile in understanding. <i>\"I zzzee, I'm bound to a duty too. I have to find people to lay my queen'zzz eggzzz. If you have a duty too, I won't get in your way, and I won't forzzze you to carry them.\"</i> You thank the bee girl for her considerations and apologize that you can't help her more directly. She smiles at you and says, <i>\"That'zzz ok champion; if you ever want to just talk, feel free to come vizzzit. Our queen is againzzzt the demon, zzzo we will zzzuport you in our heartzzz.\"</i>");
-//			dynStats("lus", 5 + player.lib / 25);
+//			dynStats("lus", 5 + player.libido / 25);
 //			doNext(camp.returnToCampUseOneHour);
 //		}
 
@@ -1296,7 +1296,7 @@
 //		{
 //			spriteSelect(SpriteDb.s_bee_girl);
 //			display.OutputText("\n\nYou aren't going to deal with this girl right now, so you just turn and walk away.");
-//			dynStats("lus", 5 + player.lib / 25);
+//			dynStats("lus", 5 + player.libido / 25);
 //			doNext(camp.returnToCampUseOneHour);
 //		}
 
@@ -1305,7 +1305,7 @@
 //				{
 //					spriteSelect(SpriteDb.s_bee_girl);
 //					display.OutputText("She pouts and returns to her sing-song buzzing. Her fingers trace circles between her thighs and the sweet scent intensifies. You beat a hasty retreat before her efforts overcome your reason.");
-//					dynStats("lus", (20 + player.lib / 15));
+//					dynStats("lus", (20 + player.libido / 15));
 //					doNext(camp.returnToCampUseOneHour);
 //				}
 //		*/
@@ -1347,7 +1347,7 @@
 //				display.OutputText(" cover them with your own fluids.\n\n");
 //				display.OutputText(images.showImage("beegirl-loss-female"));
 //				display.OutputText("She raises her drenched hand, gives it a playful lick, and moves it down to your " + player.vaginaDescript() + " while you do the same to hers. You gasp as her honey covered lower fingers quickly slip inside your " + player.vaginaDescript(0) + " and start to wriggle around. You try to focus on matching her stimulations. While you can hear her gasp in enjoyment from your ministrations, you can barely keep your mind straight let alone match her expert movements. Keeping your brain from becoming mush becomes especially difficult when she brings her thumb and index finger to your " + player.clitDescript() + ".\n\n");
-//				if (player.sens100 < 40)
+//				if (player.relativeSensitivity < 40)
 //				{
 //					display.OutputText("Still, you manage to hold on against the sensations and continue to run your fingers through her honey coated lower lips while hers plow through yours. It is actually a pretty fun bonding experience, and you feel oddly close to the bee at the end when both of you cum over each others fingers together.");
 //				}
@@ -1696,7 +1696,7 @@
 //						display.OutputText("She returns to your rear end and assesses it some more. With an almost desperate scrabbling she climbs on top of you, jabbing you repeatedly with her outstretched stinger and causing " + player.sMultiCockDesc() + " to go rock hard.\n\n");
 
 //						display.OutputText("She can't see that, of course, and busies herself with inserting her ovipositor into your " + player.assholeDescript() + ". Its thick lubrication allows it quick entrance, and soon she's pumping her fluids into your bowels. The sensation proves too much for your massively engorged " + player.multiCockDescriptLight() + " to take and you begin to shake violently, incapable of touching ");
-//						if (player.cockTotal() == 1)
+//						if (player.cocks.Count == 1)
 //						{
 //							display.OutputText("it as it's ");
 //						}
@@ -1776,7 +1776,7 @@
 //			else
 //			{
 //				//Male + venomz
-//				if ((player.hasStatusEffect(StatusEffects.ParalyzeVenom) || player.hasStatusEffect(StatusEffects.lustvenom)) && !sexed && player.cockTotal() == 1)
+//				if ((player.hasStatusEffect(StatusEffects.ParalyzeVenom) || player.hasStatusEffect(StatusEffects.lustvenom)) && !sexed && player.cocks.Count == 1)
 //				{
 //					display.OutputText("The bee-girl stands directly over you, looking down at you with a triumphant cute smile across her face, her eyes surveying every millimeter of your body. All you can do is lay there looking up at her fine figure and a profile of her ample breasts with a knowing smile on your face. She crouches down on all fours, just out of your reach, and begins to rhythmically shake her extended abdomen like a child's toy.\n\n");
 
@@ -1806,12 +1806,12 @@
 
 //					display.OutputText(images.showImage("beegirl-loss-male"));
 //					display.OutputText("At first she holds you close, but as she does, a stinger slowly emerges from her abdomen, as well as a thick knot like organ, both covered in a sweet-smelling lubricant. Your mind synaesthetically sees a myriad of colors and scents, and you don't resist as she gently pushes you down to your stomach. Nor do you protest as she leans over you, her stinger - thank goodness it isn't poison - looming close to your anus. With no more words she shoves the thick, lengthy stinger and knot inside of you. Her 'cock' slipping in slowly, the lube keeping you from shaking out of your scent-induced pleasure coma. Your hand even ventures to your own engorged ");
-//					if (player.cockTotal() == 1)
+//					if (player.cocks.Count == 1)
 //					{
 //						display.OutputText("member");
 //					}
 
-//					if (player.cockTotal() > 1)
+//					if (player.cocks.Count > 1)
 //					{
 //						display.OutputText("members");
 //					}
@@ -1944,7 +1944,7 @@
 //			{
 //				display.AddButtonWithToolTip(0, "Use Cock", rapeTheBeeGirlWithADick, "You could fuck her with " + player.oMultiCockDesc() + ".", "Use Cock");
 //			}
-//			if (player.cockTotal() > 1)
+//			if (player.cocks.Count > 1)
 //			{
 //				display.AddButtonWithToolTip(1, "Use Cocks", rapeTheBeeMultiCockStuff, "You could use more than one of your " + player.multiCockDescriptLight() + " on her.", "Use Cocks");
 //			}
@@ -1968,7 +1968,7 @@
 //			{
 //				display.AddButtonWithToolTip(6, "Naga", corruptNagaBitchesRapeABee, "You could focus on your snakelike, 'naga' attributes.", "Naga");
 //			}
-//			if ((player.isCorruptEnough(75) || player.findPerk(PerkLib.Pervert) >= 0 || player.findPerk(PerkLib.Sadist) >= 0)
+//			if ((player.IsCorruptEnough(75) || player.findPerk(PerkLib.Pervert) >= 0 || player.findPerk(PerkLib.Sadist) >= 0)
 //					&& player.str >= 60
 //					&& (player.tongue.type == Tongue.SNAKE || player.hasCock || player.hasVagina || player.biggestTitSize() >= 4))
 //			{
@@ -2003,7 +2003,7 @@
 //			display.ClearOutput();
 //			//Doubledick special
 //			//HermCock supreme by mallowman
-//			if (player.cockTotal() >= 5 && player.biggestTitSize() > 2
+//			if (player.cocks.Count >= 5 && player.biggestTitSize() > 2
 //					&& player.vaginas.length > 0 && Utils.Rand(2) == 0)
 //			{
 //				display.OutputText("As you approach, she starts to edge away, her battered wings flapping in a futile attempt to escape. Reaching her, you grip her wrists before she can fight back, squeezing tightly as her struggling increases. Forcing her onto her back, you hold her wrists tightly in one hand to allow you to pull off your " + player.armorName + ", freeing your " + player.multiCockDescript() + " and " + player.vaginaDescript(0) + ". She gasps at the alien sight of your multiple 'stingers', while you take a moment to decide what's going to go where.\n\n");
@@ -2018,7 +2018,7 @@
 //				combat.cleanupAfterCombat();
 //				return;
 //			}
-//			if (player.cockTotal() == 2 && Utils.Rand(2) == 0)
+//			if (player.cocks.Count == 2 && Utils.Rand(2) == 0)
 //			{
 //				display.OutputText("The bee-girl turns around, scampering across the floor to try to escape. As you close in to your prey you can feel your " + player.multiCockDescriptLight() + " harden and rise up at the sight of her form and you swiftly grab on to her abdomen and hold fast. She screams in futility as you flip her over and greedily look across her body.\n\n");
 //				display.OutputText(images.showImage("beegirl-win-male"));
@@ -2169,7 +2169,7 @@
 
 //					display.OutputText(" The thing in your " + player.assholeDescript() + " (which you believe is her ovipositor) is vibrating along with her as it pumps fluid inside, and you feel yourself puckering in pleasure.");
 //					//Cock long enough to masturbate:
-//					if (player.tallness * (5 / 6) < player.cocks[player.longestCock()].cockLength)
+//					if (player.build.heightInInches * (5 / 6) < player.cocks[player.longestCock()].cockLength)
 //					{
 //						display.OutputText(" Her tongue wraps around your " + player.cockDescript(x) + " and starts jerking off the small section it can reach. The wet ring feels amazing and you decide to help her efforts by gripping the head of your member and playing with it yourself. Soon though, your cock trembles as the familiar sensation of orgasm begins creeping up on you.");
 //					}
@@ -2183,7 +2183,7 @@
 
 //					display.OutputText("With all the combined sensations your " + player.cockDescript(x) + " begins to unload. ");
 //					//With testicles, masturbatable cock:
-//					if (player.balls > 0 && player.tallness * (5 / 6) < player.cocks[player.longestCock()].cockLength)
+//					if (player.balls > 0 && player.build.heightInInches * (5 / 6) < player.cocks[player.longestCock()].cockLength)
 //					{
 //						display.OutputText("Your " + player.ballsDescriptLight() + " contract and propel your seed down your member toward the fresh air. It fires out of you and hits the bee's flower, splattering it in white.");
 //						//Huge cum amount:
@@ -2235,19 +2235,19 @@
 //				}
 
 //				display.OutputText(" Wasting no time, you get down to the business of ");
-//				if (player.cockTotal() == 1)
+//				if (player.cocks.Count == 1)
 //				{
 //					display.OutputText("penetrating her slick snatch, forcing in inch after inch. ");
 //				}
 
-//				if (player.cockTotal() == 2)
+//				if (player.cocks.Count == 2)
 //				{
 //					display.OutputText("cramming your " + player.multiCockDescript() + " into her, double-stuffing the poor bee-slut with your double dongs. ");
 //				}
 
-//				if (player.cockTotal() >= 3)
+//				if (player.cocks.Count >= 3)
 //				{
-//					display.OutputText("cramming two out of your " + num2Text(player.cockTotal()) + " " + player.multiCockDescript() + "s into her, double-stuffing the poor bee-slut with double the dicks. ");
+//					display.OutputText("cramming two out of your " + num2Text(player.cocks.Count) + " " + player.multiCockDescript() + "s into her, double-stuffing the poor bee-slut with double the dicks. ");
 //				}
 
 //				display.OutputText("She swoons, flopping back and opening her legs completely, an expression of shock crossing her features, as if she can't comprehend why her body isn't listening to her.\n\n");
@@ -2264,7 +2264,7 @@
 //				display.OutputText("\n\n");
 //				//wind down
 //				display.OutputText("At last her quivering quim releases your sore member");
-//				if (player.cockTotal() > 1)
+//				if (player.cocks.Count > 1)
 //				{
 //					display.OutputText("s");
 //				}
@@ -2530,7 +2530,7 @@
 //				{
 //					display.OutputText("You pinch a nipple hard");
 //					//Lactation junction!
-//					if (player.biggestLactation() > 1 && player.biggestLactation() <= 2)
+//					if (player.genitals.isLactating && player.biggestLactation() <= 2)
 //					{
 //						display.OutputText(", squirting milk all over the bee-girl's midsection. ");
 //					}
@@ -2906,7 +2906,7 @@
 //			if (player.gender == 1 || (player.gender == 3 && Utils.Rand(3) == 0))
 //			{
 //				display.OutputText("By now ");
-//				if (player.cockTotal() > 1)
+//				if (player.cocks.Count > 1)
 //				{
 //					display.OutputText("each of ");
 //				}
@@ -3054,7 +3054,7 @@
 //				display.OutputText("You place a hand on top of the bee-girl's head, and watch as she drops to her knees, craning her head to continue looking up at you. With a fistful of hair in one hand, you point to her wrist and crook your finger in a 'come hither' motion, and gesture towards your scaly snatch. Like clockwork, her arm reaches up and two fingers go inside you, seeking out and quickly finding that spot of spongy tissue up and behind your pubic bone. You begin to pant involuntarily as she starts to work it rhythmically. You let her settle into a steady pace before moving on to her next task.\n\n");
 
 //				display.OutputText("Touching a single index finger to the underside of your captive's chin, you pull with the slightest of forces and watch as she is dutifully drawn to your " + player.multiCockDescriptLight() + ", running her lengthy prehensile tongue up and down ");
-//				if (player.cockTotal() > 1)
+//				if (player.cocks.Count > 1)
 //				{
 //					display.OutputText("each of your shafts");
 //				}
@@ -3076,7 +3076,7 @@
 //				{
 //					display.OutputText(" Letting go once it is fitted neatly inside, she uses her free hand to stroke your other cock");
 //					//[three or more]
-//					if (player.cockTotal() > 2)
+//					if (player.cocks.Count > 2)
 //					{
 //						display.OutputText("s, giving each a few pumps before moving on to the next");
 //					}
@@ -3087,7 +3087,7 @@
 
 //				display.OutputText("Gulping, slurping, ");
 //				//[if Player has multiple cocks]
-//				if (player.cockTotal() > 1)
+//				if (player.cocks.Count > 1)
 //				{
 //					display.OutputText("jacking, ");
 //				}
@@ -3155,7 +3155,7 @@
 //			}
 
 //			display.OutputText("ou really need to get back to camp and get off after such an intense experience. Maybe you should give your honey-flavored dildo a shot?");
-//			dynStats("lus", (20 + player.lib / 5 + player.corruption / 10));
+//			dynStats("lus", (20 + player.libido / 5 + player.corruption / 10));
 //			combat.cleanupAfterCombat();
 //		}
 

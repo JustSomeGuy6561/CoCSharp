@@ -1,6 +1,9 @@
 ﻿using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using System;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
@@ -156,11 +159,31 @@ namespace CoC.Backend.BodyParts
 			return Utils.PluralizeIf("nipple", plural);
 		}
 
+		public static string GenericShortDescription(INipple nipple, bool plural, bool allowQuadNippleText) => GenericShortDesc(nipple, plural, false, allowQuadNippleText);
 		public static string ShortDescription(INipple nipple, IBreast breast, bool plural, bool allowQuadNippleText) => ShortDesc(nipple, breast, plural, false, allowQuadNippleText);
 
+		public static string GenericSingleItemDescription(INipple nipple, bool allowQuadNippleText) => GenericShortDesc(nipple, false, true, allowQuadNippleText);
 		public static string SingleItemDescription(INipple nipple, IBreast breast, bool allowQuadNippleText) => ShortDesc(nipple, breast, false, true, allowQuadNippleText);
 
 		private static string ShortDesc(INipple nipple, IBreast breast, bool plural, bool singleMemberFormatIfNotPlural, bool allowQuadNippleText)
+		{
+			bool needsArticle = !plural && singleMemberFormatIfNotPlural;
+
+			if (Utils.Rand(3) == 0 && breast.piercings.wearingJewelry)
+			{
+				var leftHorJewelry = breast.piercings[NipplePiercingLocation.LEFT_HORIZONTAL];
+				//if (piercing is nipple chain) return "chained " + nount;
+
+				return (needsArticle ? "a " : "") + "pierced " + NounText(nipple, plural, allowQuadNippleText);
+			}
+			else
+			{
+				return GenericShortDesc(nipple, plural, singleMemberFormatIfNotPlural, allowQuadNippleText);
+			}
+
+		}
+
+		private static string GenericShortDesc(INipple nipple, bool plural, bool singleMemberFormatIfNotPlural, bool allowQuadNippleText)
 		{
 
 			bool needsArticle = !plural && singleMemberFormatIfNotPlural;
@@ -185,18 +208,11 @@ namespace CoC.Backend.BodyParts
 			//the original odds were conviluted to say the least, with mixes of  anywhere from 0-75% available in some cases.
 
 			bool isLactating = nipple.lactationStatus > LactationStatus.NOT_LACTATING;
-			bool wearingJewelry = breast.piercings.wearingJewelry;
 
-			if (randVal == 0 && (wearingJewelry || nipple.bodyType == BodyType.GOO || nipple.blackNipples))
+			if (randVal == 0 && (nipple.bodyType == BodyType.GOO || nipple.blackNipples))
 			{
-				if (wearingJewelry)
-				{
-					var leftHorJewelry = breast.piercings[NipplePiercingLocation.LEFT_HORIZONTAL];
-					//if (piercing is nipple chain) return "chained " + nount;
 
-					return (needsArticle ? "a " : "") + "pierced " + noun;
-				}
-				else if (nipple.bodyType == BodyType.GOO)
+				if (nipple.bodyType == BodyType.GOO)
 				{
 					return (needsArticle ? "a " : "") + Utils.RandomChoice("slime-slick ", "goopy ", "slippery ") + noun;
 				}
@@ -291,24 +307,46 @@ namespace CoC.Backend.BodyParts
 
 		}
 
+		internal static string GenericLongDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
+		{
+			return GenericLongFullDesc(nipple, alternateFormat, plural, usePreciseMeasurements, false);
+
+		}
 		internal static string LongDescription(INipple nipple, IBreast breast, bool alternateFormat, bool plural, bool usePreciseMeasurements)
 		{
 			return LongFullDesc(nipple, breast, alternateFormat, plural, usePreciseMeasurements, false);
 		}
 
+
+		internal static string GenericFullDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
+		{
+			return GenericLongFullDesc(nipple, alternateFormat, plural, usePreciseMeasurements, true);
+		}
 		internal static string FullDescription(INipple nipple, IBreast breast, bool alternateFormat, bool plural, bool usePreciseMeasurements)
 		{
 			return LongFullDesc(nipple, breast, alternateFormat, plural, usePreciseMeasurements, true);
 		}
 
+
+
 		//note: if plural is set to true, with article is ignored. the alternate format for plural is identical to the regular format.
 		private static string LongFullDesc(INipple nipple, IBreast breast, bool withArticle, bool allAvailableNipples, bool preciseMeasurements, bool full)
 		{
+			string pierced = null;
+			if (breast.piercings.wearingJewelry)
+			{
+				pierced = "pierced";
+			}
+
+			return GenericLongFullDesc(nipple, withArticle, allAvailableNipples, preciseMeasurements, full, pierced);
+		}
+		private static string GenericLongFullDesc(INipple nipple, bool withArticle, bool allAvailableNipples, bool preciseMeasurements, bool full, string pierced = null)
+		{
 			StringBuilder sb = new StringBuilder();
 
-			if (full && breast.piercings.wearingJewelry)
+			if (full && !string.IsNullOrWhiteSpace(pierced))
 			{
-				sb.Append("pierced");
+				sb.Append(pierced);
 			}
 
 			if (nipple.blackNipples)

@@ -80,12 +80,12 @@ namespace CoC.Backend.BodyParts
 			return "Breasts";
 		}
 
-		private string AllNipplePiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllNipplePiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllNipplePiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllNipplePiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

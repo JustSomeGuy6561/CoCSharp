@@ -9,6 +9,7 @@ using CoC.Backend.Tools;
 
 namespace CoC.Frontend.Items.Wearables.Armor
 {
+	//broken out as they provide a nearly-naked flag (were previously hard-coded to check for this and only this type)
 	class BondageStraps : ArmorBase
 	{
 		public BondageStraps() : base(ArmorType.LIGHT_ARMOR)

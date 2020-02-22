@@ -157,7 +157,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class ArmTattoo : TattooablePart<ArmTattooLocation>
 	{
-		public ArmTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong) { }
+		public ArmTattoo(IBodyPart source, CreatureStr allTattoosShort, CreatureStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong) { }
 
 		public override int MaxTattoos => ArmTattooLocation.allLocations.Count;
 
@@ -686,6 +686,8 @@ namespace CoC.Backend.BodyParts
 		{
 			return ArmType.ArmEpidermisDescription(epidermis, secondaryEpidermis);
 		}
+
+		public override ArmType defaultType => ArmType.defaultValue;
 
 		public override ArmData AsCurrentData()
 		{

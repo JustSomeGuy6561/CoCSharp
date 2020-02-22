@@ -120,7 +120,7 @@ namespace CoC.Frontend.Transformations
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}
-			//- If butt rating is greater than \"petite\":
+			//- If butt.size is greater than \"petite\":
 			if (target.butt.size > Butt.NOTICEABLE && Utils.Rand(3) == 0)
 			{
 				if (target.butt.size > 15)
@@ -274,7 +274,7 @@ namespace CoC.Frontend.Transformations
 			{
 				HairData oldHairData = target.hair.AsReadOnlyData();
 
-				float length = target.hair.length == 0 ? 1 : target.hair.length;
+				double length = target.hair.length == 0 ? 1 : target.hair.length;
 				HairFurColors color = setFerretHairColor ? Utils.RandomChoice(Species.FERRET.availableHairColors) : target.hair.hairColor;
 
 				if (target.hair.type != HairType.NORMAL)

@@ -85,7 +85,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LabiaPiercing : Piercing<LabiaPiercingLocation>
 	{
-		public LabiaPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public LabiaPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, CreatureStr playerShortDesc, CreatureStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -960,6 +960,9 @@ namespace CoC.Backend.BodyParts
 
 		public bool everPracticedVaginal => totalPenetrationCount > 0;
 		#endregion
+
+		public override VaginaType defaultType => VaginaType.defaultValue;
+
 		public override VaginaData AsCurrentData()
 		{
 			return this;

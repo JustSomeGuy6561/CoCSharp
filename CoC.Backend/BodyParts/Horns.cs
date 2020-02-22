@@ -2,16 +2,17 @@
 //Description:
 //Author: JustSomeGuy
 //12/28/2018, 1:50 AM
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -82,7 +83,11 @@ namespace CoC.Backend.BodyParts
 
 		protected internal override void LateInit()
 		{
-			if (CreatureStore.TryGetCreature(creatureID, out Creature creature)) creature.genitals.femininity.dataChange += FemininityChangedEvent;
+			if (CreatureStore.TryGetCreature(creatureID, out Creature creature))
+			{
+				creature.genitals.femininity.dataChange += FemininityChangedEvent;
+			}
+
 			type.onInit(type, ref _numHorns, ref _significantHornSize, femininity);
 		}
 
@@ -105,8 +110,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldType = type;
-			var oldData = AsReadOnlyData();
+			HornType oldType = type;
+			HornData oldData = AsReadOnlyData();
 			type = newType;
 
 			CheckDataChanged(oldData);
@@ -120,8 +125,8 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldType = type;
-			var oldData = AsReadOnlyData();
+			HornType oldType = type;
+			HornData oldData = AsReadOnlyData();
 			type = newType;
 			StrengthenTransformPrivate(byAmount, uniform);
 
@@ -156,8 +161,8 @@ namespace CoC.Backend.BodyParts
 
 		public bool StrengthenTransform(byte numberOfTimes = 1, bool uniform = false)
 		{
-			var oldData = AsReadOnlyData();
-			var retVal = StrengthenTransformPrivate(numberOfTimes, uniform);
+			HornData oldData = AsReadOnlyData();
+			bool retVal = StrengthenTransformPrivate(numberOfTimes, uniform);
 			CheckDataChanged(oldData);
 			return retVal;
 		}
@@ -174,8 +179,8 @@ namespace CoC.Backend.BodyParts
 
 		public bool WeakenTransform(byte byAmount = 1)
 		{
-			var oldData = AsReadOnlyData();
-			var retVal = WeakenTransformPrivate(byAmount);
+			HornData oldData = AsReadOnlyData();
+			bool retVal = WeakenTransformPrivate(byAmount);
 			CheckDataChanged(oldData);
 			return retVal;
 		}
@@ -226,22 +231,26 @@ namespace CoC.Backend.BodyParts
 		public string SingleHornLongDescription(bool alternateFormat) => type.LongDescription(AsReadOnlyData(), alternateFormat, false);
 
 
-		public string OneOfHornsShort(string pronoun = "your")
+		public string OneOfHornsShort() => OneOfHornsShort(Conjugate.YOU);
+		public string OneOfHornsShort(Conjugate conjugate)
 		{
+
 			if (numHorns == 0)
 			{
 				return "";
 			}
 
-			return CommonBodyPartStrings.OneOfDescription(numHorns > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.OneOfDescription(numHorns > 1, conjugate, ShortDescription());
 		}
 
-		public string EachOfHornsShort(string pronoun = "your")
+		public string EachOfHornsShort() => EachOfHornsShort(Conjugate.YOU);
+		public string EachOfHornsShort(Conjugate conjugate)
 		{
-			return EachOfHornsShort(pronoun, out bool _);
+
+			return EachOfHornsShort(conjugate, out bool _);
 		}
 
-		public string EachOfHornsShort(string pronoun, out bool isPlural)
+		public string EachOfHornsShort(Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = numHorns != 1;
 
@@ -250,7 +259,7 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 
-			return CommonBodyPartStrings.EachOfDescription(numHorns > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.EachOfDescription(numHorns > 1, conjugate, ShortDescription());
 		}
 
 		#endregion
@@ -271,7 +280,11 @@ namespace CoC.Backend.BodyParts
 		#region IFemininityListener
 		string IFemininityListenerInternal.reactToFemininityChangeFromTimePassing(bool isPlayer, byte hoursPassed, byte oldFemininity)
 		{
-			if (isPlayer) return type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, oldFemininity, femininity);
+			if (isPlayer)
+			{
+				return type.reactToChangesInMasculinity(ref _numHorns, ref _significantHornSize, oldFemininity, femininity);
+			}
+
 			return "";
 		}
 
@@ -525,7 +538,7 @@ namespace CoC.Backend.BodyParts
 
 		public static readonly HornType NONE = new SimpleOrNoHorns(0, 0, NoHornsShortDesc, NoHornsSingleDesc, NoHornsLongDesc, NoHornsPlayerStr, NoHornsTransformStr, NoHornsRestoreStr);
 		public static readonly HornType DEMON = new DemonHorns();
-		public static readonly HornType BULL_LIKE = new BullHorns(); //female aware. fuck me. //OLD COW_MINOTAUR
+		public static readonly HornType BOVINE = new BullHorns(); //female aware. fuck me. //OLD COW_MINOTAUR
 		public static readonly HornType DRACONIC = new DragonHorns();
 		//Fun fact: female reindeer (aka caribou in North America) grow horns. no other species of deer do that. which leads to the weird distinction here.
 		//I've tried to remove clones, but i think this is the exception. On that note, water deer have long teeth, not horns. I'm, not adding them.
@@ -621,10 +634,22 @@ namespace CoC.Backend.BodyParts
 
 			private byte demonLengthFromHornCount(byte hornCount)
 			{
-				if (hornCount >= 8) return 10;
-				else if (hornCount >= 6) return 8;
-				else if (hornCount >= 4) return 4;
-				else return 2;
+				if (hornCount >= 8)
+				{
+					return 10;
+				}
+				else if (hornCount >= 6)
+				{
+					return 8;
+				}
+				else if (hornCount >= 4)
+				{
+					return 4;
+				}
+				else
+				{
+					return 2;
+				}
 			}
 		}
 
@@ -715,8 +740,14 @@ namespace CoC.Backend.BodyParts
 
 			internal override bool CanGrow(byte numHorns, byte largestHornLength, in FemininityData masculinity)
 			{
-				if (masculinity.isFemale) return largestHornLength < maxFeminineLength;
-				else return largestHornLength < maxHornLength;
+				if (masculinity.isFemale)
+				{
+					return largestHornLength < maxFeminineLength;
+				}
+				else
+				{
+					return largestHornLength < maxHornLength;
+				}
 			}
 
 			internal override bool StrengthenTransform(byte byAmount, ref byte numHorns, ref byte hornLength, in FemininityData masculinity, bool uniform = false)
@@ -1100,7 +1131,9 @@ namespace CoC.Backend.BodyParts
 			{
 				byte changeAmount = 0;
 				if (hornLength <= minHornLength)
+				{
 					return 0;
+				}
 				else if (hornLength + 1 == maxHornLength)
 				{
 					changeAmount = 1;
@@ -1184,7 +1217,9 @@ namespace CoC.Backend.BodyParts
 			internal override double ReductoHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				if (hornLength <= minHornLength)
+				{
 					return 0;
+				}
 				else
 				{
 					double retVal = hornLength - minHornLength;
@@ -1197,7 +1232,9 @@ namespace CoC.Backend.BodyParts
 			internal override double GroPlusHorns(ref byte numHorns, ref byte hornLength, in FemininityData masculinity)
 			{
 				if (hornLength >= maxHornLength)
+				{
 					return 0;
+				}
 				else
 				{
 					double retVal = maxHornLength - hornLength;
@@ -1342,7 +1379,9 @@ namespace CoC.Backend.BodyParts
 
 				byte reduceAmount = 0;
 				if (largestHornLength > maxFeminineLength)
+				{
 					reduceAmount = 6;
+				}
 				else if (largestHornLength > minHornLength)
 				{
 					reduceAmount = Math.Min((byte)2, largestHornLength.subtract(minHornLength));
@@ -1555,22 +1594,26 @@ namespace CoC.Backend.BodyParts
 
 		public string SingleHornLongDescription(bool alternateFormat) => type.LongDescription(this, alternateFormat, false);
 
-		public string OneOfHornsShort(string pronoun = "your")
+		public string OneOfHornsShort() => OneOfHornsShort(Conjugate.YOU);
+		public string OneOfHornsShort(Conjugate conjugate)
 		{
+
 			if (hornCount == 0)
 			{
 				return "";
 			}
 
-			return CommonBodyPartStrings.OneOfDescription(hornCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.OneOfDescription(hornCount > 1, conjugate, ShortDescription());
 		}
 
-		public string EachOfHornsShort(string pronoun = "your")
+		public string EachOfHornsShort() => EachOfHornsShort(Conjugate.YOU);
+		public string EachOfHornsShort(Conjugate conjugate)
 		{
-			return EachOfHornsShort(pronoun, out bool _);
+
+			return EachOfHornsShort(conjugate, out bool _);
 		}
 
-		public string EachOfHornsShort(string pronoun, out bool isPlural)
+		public string EachOfHornsShort(Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = hornCount != 1;
 
@@ -1579,7 +1622,7 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 
-			return CommonBodyPartStrings.EachOfDescription(hornCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.EachOfDescription(hornCount > 1, conjugate, ShortDescription());
 		}
 
 		#endregion
@@ -1594,5 +1637,7 @@ namespace CoC.Backend.BodyParts
 			hornCount = source.numHorns;
 			hornLength = source.significantHornSize;
 		}
+
+		public override HornType defaultType => HornType.defaultValue;
 	}
 }

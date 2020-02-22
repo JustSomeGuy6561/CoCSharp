@@ -403,61 +403,7 @@ namespace CoC
 			return result;
 		}
 
-		public static bool All<T>(this IEnumerable<T> collection, Func<T, int, bool> checkWithIndex)
-		{
-			if (collection is null)
-			{
-				return false;
-			}
-			if (checkWithIndex is null) throw new ArgumentNullException(nameof(checkWithIndex));
 
-
-			var enumerator = collection.GetEnumerator();
-			if (!enumerator.MoveNext())
-			{
-				return false;
-			}
-			int x = 0;
-			do
-			{
-				if (!checkWithIndex(enumerator.Current, x))
-				{
-					return false;
-				}
-				x++;
-			}
-			while (enumerator.MoveNext());
-
-			return true;
-		}
-
-		public static bool Any<T>(this IEnumerable<T> collection, Func<T, int, bool> checkWithIndex)
-		{
-			if (collection is null)
-			{
-				return false;
-			}
-			if (checkWithIndex is null) throw new ArgumentNullException(nameof(checkWithIndex));
-
-
-			var enumerator = collection.GetEnumerator();
-			if (!enumerator.MoveNext())
-			{
-				return false;
-			}
-			int x = 0;
-			do
-			{
-				if (checkWithIndex(enumerator.Current, x))
-				{
-					return true;
-				}
-				x++;
-			}
-			while (enumerator.MoveNext());
-
-			return false;
-		}
 
 		public static T MinItem<T, U>(this IEnumerable<T> collection, Func<T, U?> getValue) where U : struct, IComparable<U>
 		{
@@ -546,4 +492,66 @@ namespace CoC
 		}
 	}
 
+}
+
+namespace CoC.LinqHelpers
+{
+	public static class LinqHelper
+	{
+		public static bool All<T>(this IEnumerable<T> collection, Func<T, int, bool> checkWithIndex)
+		{
+			if (collection is null)
+			{
+				return false;
+			}
+			if (checkWithIndex is null) throw new ArgumentNullException(nameof(checkWithIndex));
+
+
+			var enumerator = collection.GetEnumerator();
+			if (!enumerator.MoveNext())
+			{
+				return false;
+			}
+			int x = 0;
+			do
+			{
+				if (!checkWithIndex(enumerator.Current, x))
+				{
+					return false;
+				}
+				x++;
+			}
+			while (enumerator.MoveNext());
+
+			return true;
+		}
+
+		public static bool Any<T>(this IEnumerable<T> collection, Func<T, int, bool> checkWithIndex)
+		{
+			if (collection is null)
+			{
+				return false;
+			}
+			if (checkWithIndex is null) throw new ArgumentNullException(nameof(checkWithIndex));
+
+
+			var enumerator = collection.GetEnumerator();
+			if (!enumerator.MoveNext())
+			{
+				return false;
+			}
+			int x = 0;
+			do
+			{
+				if (checkWithIndex(enumerator.Current, x))
+				{
+					return true;
+				}
+				x++;
+			}
+			while (enumerator.MoveNext());
+
+			return false;
+		}
+	}
 }

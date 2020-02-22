@@ -367,7 +367,7 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 			Cock longest = target.genitals.LongestCock();
-			float targetSize = Math.Max(7, target.genitals.minimumCockLength);
+			double targetSize = Math.Max(7, target.genitals.minimumCockLength);
 
 			//Shrink oversized cocks
 			if (target.hasCock && longest.length > targetSize && Utils.Rand(3) == 0)

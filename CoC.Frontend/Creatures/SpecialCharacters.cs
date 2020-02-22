@@ -1848,10 +1848,10 @@ namespace CoC.Frontend.Creatures
 		//						creator.faceType = rand(20) + 1; // since it is not a enum, it is impossible to make it auto-ajust...
 
 		//					if (creator.faceType == FaceType.SPIDER_FANGS && rand(2) == 0)
-		//						creator.eyesType = Eyes.FOUR_SPIDER_EYES; // 50% to have spider eyes with spider fangs
+		//						creator.eyesType = Eyes.SPIDER; // 50% to have spider eyes with spider fangs
 		//					else if (rand(20) == 0) // 5% for inhuman eyes otherwise
 		//						if (rand(2) == 0)
-		//							creator.eyesType = Eyes.FOUR_SPIDER_EYES;
+		//							creator.eyesType = Eyes.SPIDER;
 		//						else
 		//							creator.eyesType = Eyes.BLACK_EYES_SAND_TRAP;
 
@@ -1866,7 +1866,7 @@ namespace CoC.Frontend.Creatures
 		//						creator.lowerBodyType = rand(21) + 1; // since it is not a enum, it is impossible to make it auto-ajust...
 		//						if (creator.lowerBodyType == 4)
 		//						{
-		//							creator.lowerBodyType = LowerBodyType.HOOFED;
+		//							creator.lowerBodyType = LowerBodyType.HOOVED;
 		//							creator.lowerBody.legCount = 4;
 		//						}
 		//						else if (creator.lowerBodyType == LowerBodyType.DRIDER)
@@ -1878,10 +1878,10 @@ namespace CoC.Frontend.Creatures
 		//					}
 
 		//					creator.tailType = rand(21); // always have totally random tail
-		//					if (creator.tailType == TailType.SPIDER_ABDOMEN || creator.tailType == TailType.BEE_ABDOMEN)
+		//					if (creator.tailType == TailType.SPIDER_SPINNERET || creator.tailType == TailType.BEE_STINGER)
 		//					{ // insect abdomens comes with poison
 		//						creator.tailCount = 5;
-		//						if (creator.tailType == TailType.SPIDER_ABDOMEN && rand(2) == 0)
+		//						if (creator.tailType == TailType.SPIDER_SPINNERET && rand(2) == 0)
 		//							creator.createPerk(PerkLib.SpiderOvipositor, 0, 0, 0, 0); // spider abdomen have chance 50/50 to have ovipositor
 		//					}
 
@@ -1900,7 +1900,7 @@ namespace CoC.Frontend.Creatures
 		//					}
 		//					else if (horns < 90)
 		//					{
-		//						creator.hornType = HornType.COW_MINOTAUR;
+		//						creator.hornType = HornType.BULL_LIKE;
 		//						creator.hornCount = 2;
 		//					}
 		//					else

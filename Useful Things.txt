@@ -5,6 +5,9 @@ Regex to match braces. paste this after some function header and it'll match all
 Same, but for parenthesis
 \r?\((?>\((?<c>)|[^()]+|\)(?<-c>))*(?(c)(?!))\)
 
+regex to match a quoted text, taking into consideration any escaped quotes:
+\r?"(?:[^"\\]|\\.)*"
+
 Regex to fix old type compares
 find:
 (Antennae|Arm|Back|Body|Ear|Eye|Face|Gills|Hair|LowerBody|Neck|Tail|Tongue|Vagina|Wing)s?\.([A-Z_]+)

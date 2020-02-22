@@ -43,7 +43,7 @@ namespace CoC.Frontend.Transformations
 
 
 
-			float crit = 0;
+			double crit = 0;
 
 			if (Utils.Rand(100) < 15)
 			{
@@ -59,17 +59,17 @@ namespace CoC.Frontend.Transformations
 			target.DeltaCreatureStats(lib: 1 + Utils.Rand(2), lus: 5 + Utils.Rand(10), corr: 1 + Utils.Rand(5));
 			if (target.relativeToughness < 70 && Utils.Rand(3) == 0)
 			{
-				float delta = target.ChangeToughness(crit);
+				double delta = target.ChangeToughness(crit);
 				sb.Append(IncreasedToughnessText(crit, delta));
 			}
 			if (target.relativeSpeed > 30 && Utils.Rand(7) == 0)
 			{
-				float loss = target.DecreaseSpeed(crit);
+				double loss = target.DecreaseSpeed(crit);
 				sb.Append(DecreasedSpeedText(crit, loss));
 			}
 			if (target.relativeIntelligence < 60 && Utils.Rand(7) == 0)
 			{
-				float delta = target.ChangeIntelligence(crit);
+				double delta = target.ChangeIntelligence(crit);
 				sb.Append(IncreasedIntelligenceText(crit, delta));
 			}
 
@@ -210,6 +210,9 @@ namespace CoC.Frontend.Transformations
 			{
 				HairData oldData = target.hair.AsReadOnlyData();
 				target.RestoreHair();
+				target.hair.SetHairLength(0);
+				target.hair.ResumeNaturalGrowth();
+
 				sb.Append(RemovedBasiliskHair(target, oldData));
 
 				if (--remainingChanges <= 0)
@@ -220,6 +223,7 @@ namespace CoC.Frontend.Transformations
 			//MUTATIONZ AT ANY TIME: wolf dick, add/decrease breasts, decrease breast size if above D
 			//get a wolf dick
 			//if ya genderless we give ya a dick cuz we nice like that
+			//MOD: Now respects hyper happy.
 			if (target.gender == Gender.GENDERLESS && !hyperHappy)
 			{
 				target.genitals.AddCock(CockType.WOLF, Utils.Rand(4) + 4, Utils.Rand(8) / 4.0f + 0.25f, 1.5f);
@@ -264,7 +268,7 @@ namespace CoC.Frontend.Transformations
 				target.genitals.UpdateCockWithKnot(firstNonWolf, CockType.WOLF, 1.5f);
 				firstNonWolf.IncreaseThickness(2);
 
-				sb.Append(ChangedCockDog(target, oldData, oldData.cockIndex));
+				sb.Append(ChangedCockToWolf(target, oldData, oldData.cockIndex));
 
 				if (--remainingChanges <= 0)
 				{
@@ -345,13 +349,13 @@ namespace CoC.Frontend.Transformations
 			}
 
 
-			//Remove breast rows if over 4
+			//Remove a breast row if over 4. afaik this should never happen.
 			if (target.breasts.Count > 4 && Utils.Rand(3) == 0)
 			{
-				BreastCollectionData oldCollection = target.genitals.allBreasts.AsReadOnlyData();
-				target.genitals.RemoveBreastRows(target.breasts.Count - 4);
+				var oldData = target.breasts[target.breasts.Count-1].AsReadOnlyData();
+				target.genitals.RemoveBreastRows(1);
 
-				sb.Append(RemovedExcessRows(target, oldCollection));
+				sb.Append(RemovedExcessRow(target, oldData));
 
 			}
 			//Grow breasts if has vagina and has no breasts/nips
@@ -526,30 +530,43 @@ namespace CoC.Frontend.Transformations
 				}
 			}
 
+			if (Utils.Rand(3) == 0)
+			{
+				var res = target.build.ChangeMuscleToneToward(100, 4);
+				sb.Append(AdjustToneText(target, 4, res));
+			}
+			if (Utils.Rand(3) == 0)
+			{
+				var adjustedAmount = target.build.ChangeThicknessToward(75, 3);
+				sb.Append(AdjustThicknessText(target, adjustedAmount));
+			}
+
+
 
 			//this is the fallthrough that occurs when a tf item goes through all the changes, but does not proc enough of them to exit early. it will apply however many changes
 			//occurred, then return the contents of the stringbuilder.
 			return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 		}
 
-		protected virtual string ClearOvipositionText(Creature target)
-{
-return RemovedOvipositionTextGeneric(target);
-}
-
-
-
+		protected virtual string AdjustToneText(Creature target, short desiredDelta, short actualDelta)
+		{
+			return target.build.AdjustToneWithLimits(desiredDelta, actualDelta);
+		}
+		protected virtual string AdjustThicknessText(Creature target, short adjustedAmount)
+		{
+			return target.build.GenericAdjustThickness(adjustedAmount);
+		}
 
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
-		protected abstract string InitialTransformationText(Creature target, float crit);
+		protected abstract string InitialTransformationText(Creature target, double crit);
 
 		protected abstract string NormalizedBreastSizeText(Creature target, BreastCollectionData oldBreastData);
 		protected abstract string UpdateAndGrowAdditionalRowText(Creature target, BreastCollectionData oldBreastData, bool doCrit, bool uberCrit);
 
-		protected abstract string IncreasedToughnessText(float desiredAmount, float actualAmount);
-		protected abstract string DecreasedSpeedText(float desiredAmount, float actualAmount);
-		protected abstract string IncreasedIntelligenceText(float desiredAmount, float actualAmount);
+		protected abstract string IncreasedToughnessText(double desiredAmount, double actualAmount);
+		protected abstract string DecreasedSpeedText(double desiredAmount, double actualAmount);
+		protected abstract string IncreasedIntelligenceText(double desiredAmount, double actualAmount);
 
 		protected virtual string RestoredArmsText(Creature target, ArmData oldData)
 		{
@@ -585,8 +602,11 @@ return RemovedOvipositionTextGeneric(target);
 			return target.body.TransformFromText(oldData);
 		}
 		protected abstract string ShrunkRowsText(Creature target, BreastCollectionData oldCollection);
-		protected abstract string RemovedExcessRows(Creature target, BreastCollectionData oldCollection);
-		protected abstract string ChangedCockDog(Creature target, CockData oldData, int cockIndex);
+		protected virtual string RemovedExcessRow(Creature target, BreastData oldRow)
+		{
+			return target.genitals.allBreasts.RemovedExtraBreastRowGenericText(oldRow);
+		}
+		protected abstract string ChangedCockToWolf(Creature target, CockData oldData, int cockIndex);
 		protected abstract string BecameMaleByGrowingCock(Creature target);
 		protected abstract string RemovedFeatheryHairText(Creature target, HairData oldHair);
 		protected abstract string RestoredBackAndWings(Creature target, WingData oldWings, BackData oldBack);
@@ -618,6 +638,11 @@ return RemovedOvipositionTextGeneric(target);
 		protected virtual string RestoredAntennaeText(Creature target, AntennaeData oldData)
 		{
 			return target.antennae.RestoredText(oldData);
+		}
+
+		protected virtual string ClearOvipositionText(Creature target)
+		{
+			return RemovedOvipositionTextGeneric(target);
 		}
 	}
 }

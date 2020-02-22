@@ -200,7 +200,7 @@ namespace CoC.Frontend.Transformations
 			{
 				if (target.cocks[0].length > 12)
 				{
-					float delta = target.cocks[0].DecreaseLength(1 + Utils.Rand(3));
+					double delta = target.cocks[0].DecreaseLength(1 + Utils.Rand(3));
 
 					if (--remainingChanges <= 0)
 					{

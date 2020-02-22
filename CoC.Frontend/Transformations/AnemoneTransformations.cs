@@ -183,7 +183,7 @@ namespace CoC.Frontend.Transformations
 			//-eat more, grow more 'hair':
 			if (target.hair.type == HairType.ANEMONE && target.hair.length < 36 && Utils.Rand(2) == 0)
 			{
-				float temp = 5 + Utils.Rand(3);
+				double temp = 5 + Utils.Rand(3);
 
 				//grow it, and force growth. ignore the natural growth because that's how anemone hair works - it lengthens with tf item.
 				target.hair.GrowHair(temp, true);

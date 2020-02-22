@@ -202,7 +202,7 @@ namespace CoC.Backend.Creatures
 
 		//Combat variations. Might want to be internal since they are only used by the combat system, idk.
 
-		public DisplayBase UseItemDuringCombatManual(CapacityItem item, UseItemCombatCallback onUseItemReturn)
+		public DisplayBase UseItemDuringCombatManual(CapacityItem item, CombatCreature opponent, UseItemCombatCallback onUseItemReturn)
 		{
 			if (item is null)
 			{
@@ -216,7 +216,7 @@ namespace CoC.Backend.Creatures
 
 			if (item.CanUse(this, true, out string whyNot))
 			{
-				return item.UseItemInCombat(this, onUseItemReturn);
+				return item.UseItemInCombat(this, opponent, onUseItemReturn);
 			}
 			else
 			{
@@ -225,7 +225,7 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		public DisplayBase UseItemInInventoryDuringCombatManual(byte index, UseItemCombatCallback onUseItemReturn)
+		public DisplayBase UseItemInInventoryDuringCombatManual(byte index, CombatCreature opponent, UseItemCombatCallback onUseItemReturn)
 		{
 			if (onUseItemReturn is null)
 			{
@@ -250,11 +250,11 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				CapacityItem item = inventoryStore.RemoveItem(index);
-				return item.UseItemInCombat(this, onUseItemReturn);
+				return item.UseItemInCombat(this, opponent, onUseItemReturn);
 			}
 		}
 
-		public DisplayBase EquipArmorDuringCombatManual(ArmorBase armor, UseItemCombatCallbackSafe<ArmorBase> postEquipCallback)
+		public DisplayBase EquipArmorDuringCombatManual(ArmorBase armor, CombatCreature opponent, UseItemCombatCallbackSafe<ArmorBase> postEquipCallback)
 		{
 			if (ArmorBase.IsNullOrNothing(armor))
 			{
@@ -268,11 +268,11 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return armor.UseItemInCombatSafe(this, postEquipCallback);
+				return armor.UseItemInCombatSafe(this, opponent, postEquipCallback);
 			}
 		}
 
-		public DisplayBase EquipArmorFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<ArmorBase> postEquipCallback)
+		public DisplayBase EquipArmorFromInventoryDuringCombatManual(byte index, CombatCreature opponent, UseItemCombatCallbackSafe<ArmorBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
@@ -292,14 +292,14 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
-				return item.UseItemInCombatSafe(this, postEquipCallback);
+				return item.UseItemInCombatSafe(this, opponent, postEquipCallback);
 			}
 		}
 
 		//remove the current armor, and replace it with the current one. since it may be possible for an armor equip to use a menu, the removed armor is sent along to the callback.
 		//you will need to manually parse the display returned by this. if the removed armor destroys itself when being removed, the corresponding value passed along to the
 		//callback will be null.
-		public DisplayBase ReplaceArmorDuringCombatManual(ArmorBase armor, UseItemCombatCallbackSafe<ArmorBase> postReplaceArmorCallback)
+		public DisplayBase ReplaceArmorDuringCombatManual(ArmorBase armor, CombatCreature opponent, UseItemCombatCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
 			if (ArmorBase.IsNullOrNothing(armor))
 			{
@@ -314,11 +314,11 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return armor.UseItemInCombatSafe(this, postReplaceArmorCallback);
+				return armor.UseItemInCombatSafe(this, opponent, postReplaceArmorCallback);
 			}
 		}
 
-		public DisplayBase ReplaceArmorFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<ArmorBase> postReplaceArmorCallback)
+		public DisplayBase ReplaceArmorFromInventoryDuringCombatManual(byte index, CombatCreature opponent, UseItemCombatCallbackSafe<ArmorBase> postReplaceArmorCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
@@ -338,11 +338,11 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				ArmorBase item = (ArmorBase)inventoryStore.RemoveItem(index);
-				return item.UseItemInCombatSafe(this, postReplaceArmorCallback);
+				return item.UseItemInCombatSafe(this, opponent, postReplaceArmorCallback);
 			}
 		}
 
-		public DisplayBase EquipUpperGarmentDuringCombatManual(UpperGarmentBase upperGarment, UseItemCombatCallbackSafe<UpperGarmentBase> postEquipCallback)
+		public DisplayBase EquipUpperGarmentDuringCombatManual(UpperGarmentBase upperGarment, CombatCreature opponent, UseItemCombatCallbackSafe<UpperGarmentBase> postEquipCallback)
 		{
 			if (UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
@@ -356,11 +356,11 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return upperGarment.UseItemInCombatSafe(this, postEquipCallback);
+				return upperGarment.UseItemInCombatSafe(this, opponent, postEquipCallback);
 			}
 		}
 
-		public DisplayBase EquipUpperGarmentFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<UpperGarmentBase> postEquipCallback)
+		public DisplayBase EquipUpperGarmentFromInventoryDuringCombatManual(byte index, CombatCreature opponent, UseItemCombatCallbackSafe<UpperGarmentBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
@@ -380,11 +380,11 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				return item.UseItemInCombatSafe(this, postEquipCallback);
+				return item.UseItemInCombatSafe(this, opponent, postEquipCallback);
 			}
 		}
 
-		public DisplayBase ReplaceUpperGarmentDuringCombatManual(UpperGarmentBase upperGarment, UseItemCombatCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
+		public DisplayBase ReplaceUpperGarmentDuringCombatManual(UpperGarmentBase upperGarment, CombatCreature opponent, UseItemCombatCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
 			if (UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
@@ -399,11 +399,11 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return upperGarment.UseItemInCombatSafe(this, postReplaceUpperGarmentCallback);
+				return upperGarment.UseItemInCombatSafe(this, opponent, postReplaceUpperGarmentCallback);
 			}
 		}
 
-		public DisplayBase ReplaceUpperGarmentFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
+		public DisplayBase ReplaceUpperGarmentFromInventoryDuringCombatManual(byte index, CombatCreature opponent, UseItemCombatCallbackSafe<UpperGarmentBase> postReplaceUpperGarmentCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
@@ -423,11 +423,11 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				UpperGarmentBase item = (UpperGarmentBase)inventoryStore.RemoveItem(index);
-				return item.UseItemInCombatSafe(this, postReplaceUpperGarmentCallback);
+				return item.UseItemInCombatSafe(this, opponent, postReplaceUpperGarmentCallback);
 			}
 		}
 
-		public DisplayBase EquipLowerGarmentDuringCombatManual(LowerGarmentBase lowerGarment, UseItemCombatCallbackSafe<LowerGarmentBase> postEquipCallback)
+		public DisplayBase EquipLowerGarmentDuringCombatManual(LowerGarmentBase lowerGarment, CombatCreature opponent, UseItemCombatCallbackSafe<LowerGarmentBase> postEquipCallback)
 		{
 			if (LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
@@ -441,11 +441,11 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return lowerGarment.UseItemInCombatSafe(this, postEquipCallback);
+				return lowerGarment.UseItemInCombatSafe(this, opponent, postEquipCallback);
 			}
 		}
 
-		public DisplayBase EquipLowerGarmentFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<LowerGarmentBase> postEquipCallback)
+		public DisplayBase EquipLowerGarmentFromInventoryDuringCombatManual(byte index, CombatCreature opponent, UseItemCombatCallbackSafe<LowerGarmentBase> postEquipCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
@@ -465,11 +465,11 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				return item.UseItemInCombatSafe(this, postEquipCallback);
+				return item.UseItemInCombatSafe(this, opponent, postEquipCallback);
 			}
 		}
 
-		public DisplayBase ReplaceLowerGarmentDuringCombatManual(LowerGarmentBase lowerGarment, UseItemCombatCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
+		public DisplayBase ReplaceLowerGarmentDuringCombatManual(LowerGarmentBase lowerGarment, CombatCreature opponent, UseItemCombatCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
 			if (LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
@@ -484,11 +484,11 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				return lowerGarment.UseItemInCombatSafe(this, postReplaceLowerGarmentCallback);
+				return lowerGarment.UseItemInCombatSafe(this, opponent, postReplaceLowerGarmentCallback);
 			}
 		}
 
-		public DisplayBase ReplaceLowerGarmentFromInventoryDuringCombatManual(byte index, UseItemCombatCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
+		public DisplayBase ReplaceLowerGarmentFromInventoryDuringCombatManual(byte index, CombatCreature opponent, UseItemCombatCallbackSafe<LowerGarmentBase> postReplaceLowerGarmentCallback)
 		{
 			if (inventory[index].isEmpty)
 			{
@@ -508,7 +508,7 @@ namespace CoC.Backend.Creatures
 			else
 			{
 				LowerGarmentBase item = (LowerGarmentBase)inventoryStore.RemoveItem(index);
-				return item.UseItemInCombatSafe(this, postReplaceLowerGarmentCallback);
+				return item.UseItemInCombatSafe(this, opponent, postReplaceLowerGarmentCallback);
 			}
 		}
 

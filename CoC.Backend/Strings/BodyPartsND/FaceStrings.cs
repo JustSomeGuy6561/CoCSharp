@@ -293,36 +293,36 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		private string AllLipPiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllLipPiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllNosePiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllNosePiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllEyebrowPiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllEyebrowPiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllLipPiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllLipPiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllNosePiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllNosePiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllEyebrowPiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllEyebrowPiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosShort(Creature creature, Conjugate conjugate)
+		private string AllTattoosShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllTattoosLong(Creature creature, Conjugate conjugate)
+		private string AllTattoosLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

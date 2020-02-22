@@ -254,7 +254,7 @@ namespace CoC.Frontend.Transformations
 
 					//Tweak length/thickness.
 
-					float deltaLength;
+					double deltaLength;
 					if (toChange.length > 6)
 					{
 						deltaLength = -2;

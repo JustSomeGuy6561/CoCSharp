@@ -3,17 +3,18 @@
 //Author: JustSomeGuy
 //12/28/2018, 10:09 PM
 
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
@@ -82,7 +83,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class LowerBodyTattoo : TattooablePart<LowerBodyTattooLocation>
 	{
-		public LowerBodyTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public LowerBodyTattoo(IBodyPart source, CreatureStr allTattoosShort, CreatureStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 
@@ -174,8 +175,8 @@ namespace CoC.Backend.BodyParts
 
 		public override bool IsIdenticalTo(LowerBodyData original, bool ignoreSexualMetaData)
 		{
-			return !(original is null) && type == original.type && this.primaryEpidermis.Equals(original.primaryEpidermis)
-				&& this.secondaryEpidermis.Equals(original.secondaryEpidermis) && tattoos.IsIdenticalTo(original.tattoos)
+			return !(original is null) && type == original.type && primaryEpidermis.Equals(original.primaryEpidermis)
+				&& secondaryEpidermis.Equals(original.secondaryEpidermis) && tattoos.IsIdenticalTo(original.tattoos)
 				&& feet.IsIdenticalTo(original.footData, ignoreSexualMetaData);
 		}
 
@@ -211,21 +212,23 @@ namespace CoC.Backend.BodyParts
 
 		public string FullDescriptionAlternate(bool plural = true, bool includeToes = false) => type.FullDescriptionAlternate(AsReadOnlyData(), plural, includeToes);
 
-		public string OneOfLegsShort(string pronoun = "your")
+		public string OneOfLegsShort() => OneOfLegsShort(Conjugate.YOU);
+		public string OneOfLegsShort(Conjugate conjugate)
 		{
-			return CommonBodyPartStrings.OneOfDescription(legCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.OneOfDescription(legCount > 1, conjugate, ShortDescription());
 		}
 
-		public string EachOfLegsShort(string pronoun = "your")
+		public string EachOfLegsShort() => EachOfLegsShort(Conjugate.YOU);
+		public string EachOfLegsShort(Conjugate conjugate)
 		{
-			return EachOfLegsShort(pronoun, out bool _);
+			return EachOfLegsShort(conjugate, out bool _);
 		}
 
-		public string EachOfLegsShort(string pronoun, out bool isPlural)
+		public string EachOfLegsShort(Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = legCount != 1;
 
-			return CommonBodyPartStrings.EachOfDescription(legCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.EachOfDescription(legCount > 1, conjugate, ShortDescription());
 		}
 
 		#endregion
@@ -437,8 +440,8 @@ namespace CoC.Backend.BodyParts
 
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				FurColor color = this.defaultColor;
-				FurTexture texture = this.defaultTexture;
+				FurColor color = defaultColor;
+				FurTexture texture = defaultTexture;
 				if (mutable)
 				{
 					if (bodyData.supplementary.usesFurColor && !FurColor.IsNullOrEmpty(bodyData.supplementary.fur))
@@ -544,8 +547,8 @@ namespace CoC.Backend.BodyParts
 
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				FurColor color = this.defaultColor;
-				FurTexture texture = this.defaultTexture;
+				FurColor color = defaultColor;
+				FurTexture texture = defaultTexture;
 				if (!FurColor.IsNullOrEmpty(bodyData.activeFur.fur))
 				{
 					color = bodyData.activeFur.fur;
@@ -626,21 +629,25 @@ namespace CoC.Backend.BodyParts
 
 		public string FullDescriptionAlternate(bool plural = true, bool includeToes = false) => type.FullDescriptionAlternate(this, plural, includeToes);
 
-		public string OneOfLegsShort(string pronoun = "your")
+		public string OneOfLegsShort() => OneOfLegsShort(Conjugate.YOU);
+		public string OneOfLegsShort(Conjugate conjugate)
 		{
-			return CommonBodyPartStrings.OneOfDescription(legCount > 1, pronoun, ShortDescription());
+
+			return CommonBodyPartStrings.OneOfDescription(legCount > 1, conjugate, ShortDescription());
 		}
 
-		public string EachOfLegsShort(string pronoun = "your")
+		public string EachOfLegsShort() => EachOfLegsShort(Conjugate.YOU);
+		public string EachOfLegsShort(Conjugate conjugate)
 		{
-			return EachOfLegsShort(pronoun, out bool _);
+
+			return EachOfLegsShort(conjugate, out bool _);
 		}
 
-		public string EachOfLegsShort(string pronoun, out bool isPlural)
+		public string EachOfLegsShort(Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = legCount != 1;
 
-			return CommonBodyPartStrings.EachOfDescription(legCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.EachOfDescription(legCount > 1, conjugate, ShortDescription());
 		}
 
 		#endregion
@@ -654,5 +661,7 @@ namespace CoC.Backend.BodyParts
 
 			footData = source.feet.AsReadOnlyData();
 		}
+
+		public override LowerBodyType defaultType => LowerBodyType.defaultValue;
 	}
 }

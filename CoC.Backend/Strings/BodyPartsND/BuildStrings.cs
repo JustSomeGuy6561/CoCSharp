@@ -2,10 +2,10 @@
 //Description: Implements the strings for the arm and armtype. separation of concerns.
 //Author: JustSomeGuy
 //1/18/2019, 9:30 PM
+using System.Text;
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
@@ -15,6 +15,62 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Build";
 		}
+
+		public string GenericAdjustThickness(short delta)
+		{
+			if (delta > 0)
+			{
+				return GlobalStrings.NewParagraph() + "Your center of balance changes a little bit as your body noticeably widens. (+" + delta + " body thickness)";
+			}
+			//GET THIN BITCH
+			else if (delta < 0)
+			{
+				return GlobalStrings.NewParagraph() + "Each movement feels a tiny bit easier than the last. Did you just lose a little weight!? (+" + -delta + " thin)";
+			}
+			return "";
+		}
+
+		public string AdjustToneWithLimits(short desiredDelta, short actualDelta)
+		{
+			if (desiredDelta == 0)
+			{
+				return "";
+			}
+			//Lose muscle visibility!
+			else if (desiredDelta < 0 && desiredDelta < actualDelta)
+			{
+				return GlobalStrings.NewParagraph() +"You've lost some tone, but can't lose any more this way. (" + actualDelta + " muscle tone)";
+			}
+			else if (desiredDelta > 0 && desiredDelta > actualDelta)
+			{
+
+				return GlobalStrings.NewParagraph() + "You've gained some muscle tone, but can't gain any more this way. (+" + actualDelta + " muscle tone)";
+			}
+			else
+			{
+				return GenericAdjustTone(actualDelta);
+			}
+		}
+
+		public string GenericAdjustTone(short delta)
+		{
+
+			//DIsplay BITCH I WORK OUT
+			if (delta > 0)
+			{
+				return GlobalStrings.NewParagraph() + "Your body feels a little more solid as you move, and your muscles look slightly more visible. (+" + delta + " muscle tone)";
+			}
+			//Display DERP I HAVE GIRL MUSCLES
+			else if (delta < 0)
+			{
+				return GlobalStrings.NewParagraph() + "Moving brings with it a little more jiggle than you're used to. You don't seem to have gained weight, " +
+					"but your muscles look less visible. (" + delta + " muscle tone)";
+			}
+
+			return "";
+		}
+
+
 	}
 
 	public partial class Hips
@@ -52,12 +108,12 @@ namespace CoC.Backend.BodyParts
 			return "Butt";
 		}
 
-		private string AllTattoosShort(Creature creature, Conjugate conjugate)
+		private string AllTattoosShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosLong(Creature creature, Conjugate conjugate)
+		private string AllTattoosLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -131,12 +187,22 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (size < Butt.NOTICEABLE)
 			{
-				if (singleMemberFormat) return Utils.RandomChoice("a regular ", "an unremarkable ") + noun;
-				else return Utils.RandomChoice("regular ", "unremarkable ") + noun;
+				if (singleMemberFormat)
+				{
+					return Utils.RandomChoice("a regular ", "an unremarkable ") + noun;
+				}
+				else
+				{
+					return Utils.RandomChoice("regular ", "unremarkable ") + noun;
+				}
 			}
 			else if (size < Butt.LARGE)
 			{
-				if (Utils.Rand(3) == 0) return (singleMemberFormat ? "a " : "") + "handful of ass";
+				if (Utils.Rand(3) == 0)
+				{
+					return (singleMemberFormat ? "a " : "") + "handful of ass";
+				}
+
 				return (singleMemberFormat ? "a " : "") + Utils.RandomChoice("full ", "shapely ") + noun;
 			}
 			else if (size < Butt.JIGGLY)
@@ -149,13 +215,26 @@ namespace CoC.Backend.BodyParts
 			}
 			else if (size < Butt.HUGE)
 			{
-				if (Utils.Rand(3) == 0) return (singleMemberFormat ? "a " : "") + "generous amount of ass";
-				else if (singleMemberFormat) return Utils.RandomChoice("an expansive ", "a voluminous ") + noun;
-				else return Utils.RandomChoice("expansive ", "voluminous ") + noun;
+				if (Utils.Rand(3) == 0)
+				{
+					return (singleMemberFormat ? "a " : "") + "generous amount of ass";
+				}
+				else if (singleMemberFormat)
+				{
+					return Utils.RandomChoice("an expansive ", "a voluminous ") + noun;
+				}
+				else
+				{
+					return Utils.RandomChoice("expansive ", "voluminous ") + noun;
+				}
 			}
 			else if (size < Butt.INCONCEIVABLY_BIG)
 			{
-				if (Utils.Rand(3) == 0) return (singleMemberFormat ? "a " : "") + "jiggling expanse of ass";
+				if (Utils.Rand(3) == 0)
+				{
+					return (singleMemberFormat ? "a " : "") + "jiggling expanse of ass";
+				}
+
 				return Utils.RandomChoice("huge ", "vast ") + noun;
 			}
 			else //if (buttSize >= Butt.INCONCEIVABLY_BIG)
@@ -172,7 +251,9 @@ namespace CoC.Backend.BodyParts
 			if (size <= 1)
 			{
 				if (muscleTone >= 60)
+				{
 					return (alternateFormat ? "an " : "") + "incredibly tight, perky " + noun;
+				}
 				else
 				{
 					string softness = (muscleTone <= 30 && Utils.Rand(3) == 0) ? "yet soft " : "";
@@ -229,7 +310,11 @@ namespace CoC.Backend.BodyParts
 				//FLABBAH
 				else
 				{
-					if (Utils.Rand(8) == 0) return (alternateFormat ? "a " : "") + "supple, handful of ass";
+					if (Utils.Rand(8) == 0)
+					{
+						return (alternateFormat ? "a " : "") + "supple, handful of ass";
+					}
+
 					return (alternateFormat ? "a " : "") + Utils.RandomChoice("somewhat jiggly ", "soft, hand-filling ", "cushiony, full ", "plush, shapely ", "full ", "soft, shapely ", "rounded, spongy ") + noun;
 				}
 			}
@@ -288,15 +373,23 @@ namespace CoC.Backend.BodyParts
 				//Nondescript
 				else if (muscleTone >= 30)
 				{
-					if (Utils.Rand(4) == 0) return (alternateFormat ? "an " : "") + "expansive " + noun;
+					if (Utils.Rand(4) == 0)
+					{
+						return (alternateFormat ? "an " : "") + "expansive " + noun;
+					}
+
 					return (alternateFormat ? "a " : "") + Utils.RandomChoice("generous ", "voluminous ", "wide ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					if (Utils.Rand(11) == 4) return (alternateFormat ? "an " : "") + "expansive, squeezable " + noun;
+					if (Utils.Rand(11) == 4)
+					{
+						return (alternateFormat ? "an " : "") + "expansive, squeezable " + noun;
+					}
+
 					return (alternateFormat ? "a " : "") + Utils.RandomChoice("pillow-like ", "generous, cushiony ", "wide, plush ", "soft, generous ",
-						"slappable ", "thickly-padded ", "wide, jiggling ", "wide ", "voluminous ", "soft, padded ") + noun;
+					"slappable ", "thickly-padded ", "wide, jiggling ", "wide ", "voluminous ", "soft, padded ") + noun;
 				}
 			}
 			else if (size < 20)
@@ -309,25 +402,41 @@ namespace CoC.Backend.BodyParts
 				else if (muscleTone >= 30)
 				{
 
-					if (Utils.Rand(5) == 0) return (alternateFormat ? "a " : "") + "jiggling expanse of ass";
-					if (Utils.Rand(4) == 0) return (alternateFormat ? "a " : "") + "copious ass-flesh";
+					if (Utils.Rand(5) == 0)
+					{
+						return (alternateFormat ? "a " : "") + "jiggling expanse of ass";
+					}
+
+					if (Utils.Rand(4) == 0)
+					{
+						return (alternateFormat ? "a " : "") + "copious ass-flesh";
+					}
+
 					return (alternateFormat ? "a " : "") + Utils.RandomChoice("huge ", "vast ", "giant ") + noun;
 				}
 				//FLABBAH
 				else
 				{
-					if (Utils.Rand(11) == 2) return (alternateFormat ? "an " : "") + "expansive, jiggling " + noun;
+					if (Utils.Rand(11) == 2)
+					{
+						return (alternateFormat ? "an " : "") + "expansive, jiggling " + noun;
+					}
+
 					return (alternateFormat ? "a " : "") + Utils.RandomChoice("vast, cushiony ", "huge, plump ", "huge, cushiony ", "huge, slappable ",
-						"seam-bursting ", "plush, vast ", "giant, slappable ", "giant ", "huge ", "swollen, pillow-like ") + noun;
+					"seam-bursting ", "plush, vast ", "giant, slappable ", "giant ", "huge ", "swollen, pillow-like ") + noun;
 				}
 			}
 			else //if (size >= 20)
 			{
 				if (muscleTone >= 65)
 				{
-					if (Utils.Rand(7) == 0) return (alternateFormat ? "a " : "") + "colossal, muscly ass";
+					if (Utils.Rand(7) == 0)
+					{
+						return (alternateFormat ? "a " : "") + "colossal, muscly ass";
+					}
+
 					return (alternateFormat ? "a " : "") + Utils.RandomChoice("ginormous, muscle-bound ", "colossal yet toned ", "strong, tremendously large ", "tremendous, muscled ",
-						"ginormous, toned ", "colossal, well-defined ") + noun;
+					"ginormous, toned ", "colossal, well-defined ") + noun;
 				}
 				//Nondescript
 				else if (muscleTone >= 30)
@@ -450,9 +559,15 @@ namespace CoC.Backend.BodyParts
 				sb.Append(Utils.RandomChoice("broodmother-sized ", "cow-like ", "inhumanly-wide "));
 			}
 			//Taurs
-			if (lowerBody.isQuadruped && Utils.Rand(3) == 0) sb.Append("flanks");
+			if (lowerBody.isQuadruped && Utils.Rand(3) == 0)
+			{
+				sb.Append("flanks");
+			}
 			//Nagas have sides, right?
-			else if (lowerBody.isMonoped && Utils.Rand(3) == 0) sb.Append("sides");
+			else if (lowerBody.isMonoped && Utils.Rand(3) == 0)
+			{
+				sb.Append("sides");
+			}
 			//Non taurs or taurs who didn't roll flanks
 			else
 			{

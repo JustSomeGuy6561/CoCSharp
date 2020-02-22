@@ -446,7 +446,7 @@ namespace CoC.Frontend.Races
 		//the secondary color is currently unused, but it would be possible to use it for the lower body for like fur around groin or something.
 		//naga already does this with its own third color, albeit for the tail.
 
-		//public static const COCKATRICE:Array = [
+		//public const COCKATRICE:Array = [
 
 		//	["blue", "turquoise", "blue"],
 		//   ["orange", "red",  "orange"],
@@ -648,7 +648,7 @@ namespace CoC.Frontend.Races
 			{
 				minoCounter++;
 			}
-			if (source.horns.type == HornType.BULL_LIKE)
+			if (source.horns.type == HornType.BOVINE)
 			{
 				minoCounter++;
 			}
@@ -685,7 +685,7 @@ namespace CoC.Frontend.Races
 			{
 				minoCounter++;
 			}
-			if (source.horns.type == HornType.BULL_LIKE)
+			if (source.horns.type == HornType.BOVINE)
 			{
 				minoCounter++;
 			}

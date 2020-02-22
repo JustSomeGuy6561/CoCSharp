@@ -807,6 +807,8 @@ namespace CoC.Backend.BodyParts
 		public readonly bool usesHair;
 		public readonly bool usesTone;
 
+		public override WingType defaultType => WingType.defaultValue;
+
 		public override string ShortDescription()
 		{
 			return type.ShortDescriptionWithSize(isLarge);

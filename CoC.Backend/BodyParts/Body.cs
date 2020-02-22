@@ -134,7 +134,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class NavelPiercing : Piercing<NavelPiercingLocation>
 	{
-		public NavelPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc)
+		public NavelPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, CreatureStr playerShortDesc, CreatureStr playerLongDesc)
 			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => NavelPiercingLocation.allLocations.Count;
@@ -210,7 +210,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class HipPiercing : Piercing<HipPiercingLocation>
 	{
-		public HipPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc)
+		public HipPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, CreatureStr playerShortDesc, CreatureStr playerLongDesc)
 			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public override int MaxPiercings => HipPiercingLocation.allLocations.Count;
@@ -257,7 +257,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class CoreTattoo : TattooablePart<CoreTattooLocation>
 	{
-		public CoreTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public CoreTattoo(IBodyPart source, CreatureStr allTattoosShort, CreatureStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{ }
 
 		public override int MaxTattoos => CoreTattooLocation.allLocations.Count;
@@ -301,7 +301,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class FullBodyTattoo : TattooablePart<FullBodyTattooLocation>
 	{
-		public FullBodyTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public FullBodyTattoo(IBodyPart source, CreatureStr allTattoosShort, CreatureStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{ }
 
 		public override int MaxTattoos => FullBodyTattooLocation.allLocations.Count;
@@ -2543,6 +2543,11 @@ namespace CoC.Backend.BodyParts
 			return this;
 		}
 
+		public bool IsFurBodyType()
+		{
+			return type == BodyType.SIMPLE_FUR || type == BodyType.UNDERBODY_FUR;
+		}
+
 		internal BodyData(Body source) : base(GetID(source), GetBehavior(source))
 		{
 			main = source.mainEpidermis;
@@ -2588,5 +2593,7 @@ namespace CoC.Backend.BodyParts
 			navelPiercings = new ReadOnlyPiercing<NavelPiercingLocation>();
 			hipPiercings = new ReadOnlyPiercing<HipPiercingLocation>();
 		}
+
+		public override BodyType defaultType => BodyType.defaultValue;
 	}
 }

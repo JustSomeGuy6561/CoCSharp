@@ -61,7 +61,7 @@ namespace CoC.Frontend.Pregnancies
 			return GainItemHelper.GainItemEvent(player, egg, () => BirthStr(gainedOviMax, egg));
 		}
 
-		protected override string NotifyVaginalBirthingProgressed(byte vaginalIndex, float hoursToBirth, float previousHoursToBirth)
+		protected override string NotifyVaginalBirthingProgressed(byte vaginalIndex, double hoursToBirth, double previousHoursToBirth)
 		{
 			return "";
 		}

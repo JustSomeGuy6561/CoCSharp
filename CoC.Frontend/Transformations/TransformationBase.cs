@@ -10,6 +10,8 @@ using System.Text;
 
 namespace CoC.Frontend.Transformations
 {
+
+
 	internal abstract class GenericTransformationBase
 	{
 		//tfs can be applied to any creature, potentially - don't assume it's the target. but you can always check if the target is a Player object,

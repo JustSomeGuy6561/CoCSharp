@@ -68,6 +68,6 @@ namespace CoC.Backend.Perks
 
 		private protected override bool retainOnAscension => false;
 
-		public override bool isEnabled => !(sourceCreature is null);
+		private protected override bool enabled => !(sourceCreature is null);
 	}
 }

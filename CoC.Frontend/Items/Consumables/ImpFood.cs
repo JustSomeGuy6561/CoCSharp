@@ -97,7 +97,7 @@ namespace CoC.Frontend.Items.Consumables
 				return ImpFood.InitialTransformText(target);
 			}
 
-			protected override string OneCockGrewLarger(Creature target, CockData oldData, float delta)
+			protected override string OneCockGrewLarger(Creature target, CockData oldData, double delta)
 			{
 				return target.genitals.allCocks.GenericChangeOneCockLengthText(oldData);
 			}

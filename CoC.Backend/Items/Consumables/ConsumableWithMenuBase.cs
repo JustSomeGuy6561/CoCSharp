@@ -20,7 +20,7 @@ namespace CoC.Backend.Items.Consumables
 		}
 
 		//unused.
-		private protected override CapacityItem UseItemInCombat(CombatCreature target, out bool resultsInLoss, out string resultsOfUseText)
+		private protected override CapacityItem UseItemInCombat(CombatCreature target, CombatCreature opponent, out bool resultsInLoss, out string resultsOfUseText)
 		{
 			resultsOfUseText = null;
 			resultsInLoss = false;
@@ -38,9 +38,9 @@ namespace CoC.Backend.Items.Consumables
 			return BuildMenu(target, postItemUseCallback);
 		}
 
-		private protected override DisplayBase AttemptToUseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		private protected override DisplayBase AttemptToUseItemInCombat(CombatCreature user, CombatCreature opponent, UseItemCombatCallback postItemUseCallback)
 		{
-			return BuildCombatAwareMenu(target, postItemUseCallback);
+			return BuildCombatAwareMenu(user, opponent, postItemUseCallback);
 		}
 
 		/// <summary>
@@ -51,7 +51,7 @@ namespace CoC.Backend.Items.Consumables
 		/// <returns>The initial menu display and any text required for it.</returns>
 		protected abstract DisplayBase BuildMenu(Creature consumer, UseItemCallback postItemUseCallback);
 
-		protected virtual DisplayBase BuildCombatAwareMenu(Creature consumer, UseItemCombatCallback postItemUseCallback)
+		protected virtual DisplayBase BuildCombatAwareMenu(CombatCreature consumer, CombatCreature opponent, UseItemCombatCallback postItemUseCallback)
 		{
 			return BuildMenu(consumer, (success, results, author, replacement) => postItemUseCallback(success, false, results, author, replacement));
 		}

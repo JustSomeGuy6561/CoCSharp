@@ -44,7 +44,7 @@ namespace CoC.Frontend.Items.Wearables.Shield
 		}
 
 
-		protected float DefaultBlock(float baseValue)
+		protected double DefaultBlock(double baseValue)
 		{
 			return baseValue + ((int)tier - 1) * 2;
 		}

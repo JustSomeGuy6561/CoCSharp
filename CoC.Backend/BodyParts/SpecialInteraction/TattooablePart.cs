@@ -92,30 +92,18 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		//protected readonly LocationDescriptor locationHint;
 
 		//tattoos and piercings use creature agnostic descriptions - that is, they will work for the player and all npcs, too.
-		//to handle this, they get a Conjugate class, which stores the various pronouns and adjectives associated with that conjugation.
-		protected readonly GenericCreatureText allTattoosShortDescription;
-		protected readonly GenericCreatureText allTattoosLongDescription;
-		//by default, we assume the gender information from the creature will allow us to determine the correct conjugation, but also optionally allow plural formatting instead.
-		public string ShortCreatureDescription(Creature creature, bool useApparentGender = false, bool isPlural = false)
+		//be sure to use the conjugate properties built in to the creature.
+		protected readonly CreatureStr allTattoosShortDescription;
+		protected readonly CreatureStr allTattoosLongDescription;
+		public string ShortCreatureDescription(Creature creature
 		{
-			return allTattoosShortDescription(creature, Conjugate.FromCreature(creature, useApparentGender, isPlural));
+			return allTattoosShortDescription(creature);
 		}
 
-		public string VerboseCreatureDesription(Creature creature, bool useApparentGender = false, bool isPlural = false)
+		public string VerboseCreatureDesription(Creature creature)
 		{
-			return allTattoosLongDescription(creature, Conjugate.FromCreature(creature, useApparentGender, isPlural));
+			return allTattoosLongDescription(creature);
 		}
-		//but we allow you to explicitely set the conjugate to use, just in case you have a creature with a gender identity that doesn't match their appearance or sexual endowments.
-		public string ShortCreatureDescription(Creature creature, Conjugate conjugate)
-		{
-			return allTattoosShortDescription(creature, conjugate);
-		}
-
-		public string VerboseCreatureDesription(Creature creature, Conjugate conjugate)
-		{
-			return allTattoosLongDescription(creature, conjugate);
-		}
-
 
 		private readonly WeakEventSource<TattooDataChangedEventArgs<Location>> tattooChangeSource = new WeakEventSource<TattooDataChangedEventArgs<Location>>();
 		public event EventHandler<TattooDataChangedEventArgs<Location>> OnTattooChange
@@ -124,7 +112,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 			remove { tattooChangeSource.Unsubscribe(value); }
 		}
 
-		internal TattooablePart(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong)
+		internal TattooablePart(IBodyPart source, CreatureStr allTattoosShort, CreatureStr allTattoosLong)
 		{
 			parent = source ?? throw new ArgumentNullException(nameof(source));
 

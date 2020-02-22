@@ -323,7 +323,7 @@ namespace CoC.Frontend.Transformations
 				Cock shortest = target.genitals.ShortestCock();
 				if (shortest.length < 6 && Utils.Rand(3) == 0)
 				{
-					float increment = shortest.IncreaseLength(1 + Utils.Rand(2));
+					double increment = shortest.IncreaseLength(1 + Utils.Rand(2));
 
 					if (--remainingChanges <= 0)
 					{

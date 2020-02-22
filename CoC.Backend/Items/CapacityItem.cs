@@ -52,9 +52,9 @@ namespace CoC.Backend.Items
 			return AttemptToUseItem(target, postItemUseCallback);
 		}
 
-		public DisplayBase UseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		public DisplayBase UseItemInCombat(CombatCreature user, CombatCreature opponent, UseItemCombatCallback postItemUseCallback)
 		{
-			return AttemptToUseItemInCombat(target, postItemUseCallback);
+			return AttemptToUseItemInCombat(user, opponent, postItemUseCallback);
 		}
 
 		private protected virtual DisplayBase AttemptToUseItem(Creature target, UseItemCallback postItemUseCallback)
@@ -71,16 +71,16 @@ namespace CoC.Backend.Items
 				return null;
 			}
 		}
-		private protected virtual DisplayBase AttemptToUseItemInCombat(CombatCreature target, UseItemCombatCallback postItemUseCallback)
+		private protected virtual DisplayBase AttemptToUseItemInCombat(CombatCreature user, CombatCreature opponent, UseItemCombatCallback postItemUseCallback)
 		{
-			if (!CanUse(target, true, out string whyNot))
+			if (!CanUse(user, true, out string whyNot))
 			{
 				postItemUseCallback(false, false, whyNot, Author(), this);
 				return null;
 			}
 			else
 			{
-				CapacityItem retVal = UseItemInCombat(target, out bool causesLoss, out string resultsOfUse);
+				CapacityItem retVal = UseItemInCombat(user, opponent, out bool causesLoss, out string resultsOfUse);
 				postItemUseCallback(true, causesLoss, resultsOfUse, Author(), retVal);
 				return null;
 			}
@@ -89,7 +89,7 @@ namespace CoC.Backend.Items
 		//Expose these to the end user where useful. I've made whatever i can private protected to hide it from the end user. the less they see
 		//(while still being able to do everything) the better
 		private protected abstract CapacityItem UseItem(Creature target, out string resultsOfUseText);
-		private protected virtual CapacityItem UseItemInCombat(CombatCreature target, out bool resultsInLoss, out string resultsOfUseText)
+		private protected virtual CapacityItem UseItemInCombat(CombatCreature target, CombatCreature opponent, out bool resultsInLoss, out string resultsOfUseText)
 		{
 			resultsInLoss = false;
 			return UseItem(target, out resultsOfUseText);

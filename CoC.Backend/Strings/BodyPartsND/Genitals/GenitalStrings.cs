@@ -151,12 +151,12 @@ namespace CoC.Backend.BodyParts
 			return "Genitals";
 		}
 
-		private string AllTattoosShort(Creature creature, Conjugate conjugate)
+		private string AllTattoosShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTattoosLong(Creature creature, Conjugate conjugate)
+		private string AllTattoosLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

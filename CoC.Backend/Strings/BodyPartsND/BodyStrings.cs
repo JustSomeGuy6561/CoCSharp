@@ -200,19 +200,19 @@ namespace CoC.Backend.BodyParts
 			return "Body";
 		}
 
-		private string AllNavelPiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllNavelPiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllNavelPiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllNavelPiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllHipPiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllHipPiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllHipPiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllHipPiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -221,22 +221,22 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllCoreTattoosShort(Creature creature, Conjugate conjugate)
+		private string AllCoreTattoosShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllCoreTattoosLong(Creature creature, Conjugate conjugate)
+		private string AllCoreTattoosLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string FullBodyTattoosShort(Creature creature, Conjugate conjugate)
+		private string FullBodyTattoosShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string FullBodyTattoosLong(Creature creature, Conjugate conjugate)
+		private string FullBodyTattoosLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

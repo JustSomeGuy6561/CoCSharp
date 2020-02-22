@@ -1237,5 +1237,7 @@ namespace CoC.Backend.BodyParts
 			isSemiTransparent = false;
 			isGrowing = true;
 		}
+
+		public override HairType defaultType => HairType.defaultValue;
 	}
 }

@@ -47,8 +47,7 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 
 		public override string AboutItem()
 		{
-			return "This is an oblong egg, not much different from a" + (isLarge ? "n ostrich" : " chicken") + " egg in appearance (save for the color)." +
-				" Something tells you it's more than just food." + (isLarge ? " For all you know, it could turn you into rubber!" : "");
+			return base.AboutItem() + (isLarge ? " For all you know, it could turn you into rubber!" : "");
 		}
 
 		private string RestoredBodyText(BodyData oldBodyData)

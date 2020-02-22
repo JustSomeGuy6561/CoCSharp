@@ -14,11 +14,11 @@ namespace CoC.Frontend.Items.Wearables.UpperGarment
 		private readonly SimpleDescriptor fullName;
 		private readonly ItemDescriptor descriptor;
 		private readonly SimpleDescriptor about;
-		private readonly float defense;
+		private readonly double defense;
 		private readonly byte sexiness;
 		private readonly int price;
 
-		public GenericUpperGarment(Guid upperGarmentID, SimpleDescriptor abbreviated, SimpleDescriptor fullName, ItemDescriptor descriptor, SimpleDescriptor about, float defense, byte sexiness, int price)
+		public GenericUpperGarment(Guid upperGarmentID, SimpleDescriptor abbreviated, SimpleDescriptor fullName, ItemDescriptor descriptor, SimpleDescriptor about, double defense, byte sexiness, int price)
 		{
 			uniqueID = upperGarmentID;
 			this.abbreviated = abbreviated ?? throw new ArgumentNullException(nameof(abbreviated));

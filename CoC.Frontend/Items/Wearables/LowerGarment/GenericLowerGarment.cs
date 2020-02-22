@@ -14,13 +14,13 @@ namespace CoC.Frontend.Items.Wearables.LowerGarment
 		private readonly SimpleDescriptor fullName;
 		private readonly ItemDescriptor descriptor;
 		private readonly SimpleDescriptor about;
-		private readonly float defense;
+		private readonly double defense;
 		private readonly byte sexiness;
 		private readonly int price;
 
 		private readonly bool allowsNonBipeds;
 
-		public GenericLowerGarment(Guid lowerGarmentID, SimpleDescriptor abbreviated, SimpleDescriptor fullName, ItemDescriptor descriptor, SimpleDescriptor about, float defense, byte sexiness, int price, bool supportsAllLegCounts)
+		public GenericLowerGarment(Guid lowerGarmentID, SimpleDescriptor abbreviated, SimpleDescriptor fullName, ItemDescriptor descriptor, SimpleDescriptor about, double defense, byte sexiness, int price, bool supportsAllLegCounts)
 		{
 			uniqueID = lowerGarmentID;
 			this.abbreviated = abbreviated ?? throw new ArgumentNullException(nameof(abbreviated));
@@ -79,7 +79,7 @@ namespace CoC.Frontend.Items.Wearables.LowerGarment
 	class GenericWellSpringAwareLowerGarment : GenericLowerGarment, ILustWellspring
 	{
 		public GenericWellSpringAwareLowerGarment(Guid lowerGarmentID, SimpleDescriptor abbreviated, SimpleDescriptor fullName, ItemDescriptor descriptor,
-			SimpleDescriptor about, float defense, byte sexiness, int price, bool supportsAllLegCounts, bool hasWellspring = true)
+			SimpleDescriptor about, double defense, byte sexiness, int price, bool supportsAllLegCounts, bool hasWellspring = true)
 			: base(lowerGarmentID, abbreviated, fullName, descriptor, about, defense, sexiness, price, supportsAllLegCounts)
 		{
 			hasWellspringOfLust = hasWellspring;

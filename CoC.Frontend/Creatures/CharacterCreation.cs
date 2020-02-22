@@ -1032,7 +1032,7 @@ namespace CoC.Frontend.Creatures
 			}
 			currentDisplay.ClearOutput();
 			currentDisplay.DeactivateInputField();
-			if (float.TryParse(currentDisplay.GetOutput(), out float parsedInput))
+			if (double.TryParse(currentDisplay.GetOutput(), out double parsedInput))
 			{
 				double parsed = parsedInput;
 				if (Measurement.UsesMetric)
@@ -1052,7 +1052,7 @@ namespace CoC.Frontend.Creatures
 				}
 				else
 				{
-					creator.hairLength = (float)parsed;
+					creator.hairLength = (double)parsed;
 					HairOptions();
 				}
 			}
@@ -1184,7 +1184,7 @@ namespace CoC.Frontend.Creatures
 		//	currentScene.AddButton(9, GlobalStrings.BACK(), menuBeardSettings);
 		//	currentScene.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 		//}
-		//private void chooseBeardLength(float length)
+		//private void chooseBeardLength(double length)
 		//{
 		//	creator.beardLength = length;
 		//	menuBeardSettings();
@@ -1360,12 +1360,12 @@ namespace CoC.Frontend.Creatures
 
 		private void MenuCockLength()
 		{
-			bool buttonMaker(byte index, float val, bool metric) => currentDisplay.AddButton(index, Measurement.ToNearestHalfSmallUnit(val, true, false),
-				() => ChooseCockLength(metric ? (float)(val * Measurement.TO_INCHES) : val));
+			bool buttonMaker(byte index, double val, bool metric) => currentDisplay.AddButton(index, Measurement.ToNearestHalfSmallUnit(val, true, false),
+				() => ChooseCockLength(metric ? (double)(val * Measurement.TO_INCHES) : val));
 			currentDisplay.ClearOutput();
 			currentDisplay.OutputText(CockLengthStr());
 			byte count = 0;
-			float size, max, delta;
+			double size, max, delta;
 			if (Measurement.UsesMetric)
 			{
 				size = MIN_COCK_CM;
@@ -1389,7 +1389,7 @@ namespace CoC.Frontend.Creatures
 			currentDisplay.AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
 		}
 
-		private void ChooseCockLength(float length)
+		private void ChooseCockLength(double length)
 		{
 			creator.cocks[0].length = length;
 			creator.cocks[0].girth = (length / 5) - 0.1f;
@@ -1398,19 +1398,19 @@ namespace CoC.Frontend.Creatures
 		#endregion
 		#region Clit
 		//Shamelessly copied from Cock section, but with slightly different values. Sue Me - JSG
-		private const float MIN_CLIT_IN = 0.25f;
-		private const float MIN_CLIT_CM = 1.5f;
-		private const float MAX_CLIT_IN = 2;
-		private const float MAX_CLIT_CM = 5f;
+		private const double MIN_CLIT_IN = 0.25f;
+		private const double MIN_CLIT_CM = 1.5f;
+		private const double MAX_CLIT_IN = 2;
+		private const double MAX_CLIT_CM = 5f;
 
 		private void MenuClitLength()
 		{
-			bool buttonMaker(byte index, float val, bool metric) => currentDisplay.AddButton(index, Measurement.ToNearestQuarterInchOrHalfCentimeter(val, true),
-				() => ChooseClitLength(metric ? (float)(val * Measurement.TO_INCHES) : val));
+			bool buttonMaker(byte index, double val, bool metric) => currentDisplay.AddButton(index, Measurement.ToNearestQuarterInchOrHalfCentimeter(val, true),
+				() => ChooseClitLength(metric ? (double)(val * Measurement.TO_INCHES) : val));
 			currentDisplay.ClearOutput();
 			currentDisplay.OutputText(ClitLengthStr());
 			byte count = 0;
-			float size, max, delta;
+			double size, max, delta;
 			if (Measurement.UsesMetric)
 			{
 				size = MIN_CLIT_CM;
@@ -1434,7 +1434,7 @@ namespace CoC.Frontend.Creatures
 			currentDisplay.AddButton(14, GlobalStrings.BACK(), GenericStyleCustomizeMenu);
 		}
 
-		private void ChooseClitLength(float length)
+		private void ChooseClitLength(double length)
 		{
 			creator.vaginas[0].clitLength = length;
 			GenericStyleCustomizeMenu();

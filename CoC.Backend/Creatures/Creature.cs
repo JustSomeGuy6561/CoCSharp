@@ -3016,6 +3016,61 @@ namespace CoC.Backend.Creatures
 		#endregion
 
 		#endregion
+
+		public string UpperBodyArmorShort(bool both = true)
+		{
+			if (wearingArmor && both && wearingUpperGarment)
+			{
+				return armor.ItemName() + " and " + upperGarment.ItemName();
+			}
+			else if (wearingArmor)
+			{
+				return armor.ItemName();
+			}
+			else if (wearingUpperGarment)
+			{
+				return upperGarment.ItemName();
+			}
+			return null;
+		}
+
+
+		public string UpperBodyArmorTextHelper(string armorAndUpperGarmentText, string armorText, string upperGarmentText, string nakedText)
+		{
+			if (wearingArmor && wearingUpperGarment)
+			{
+				return armorAndUpperGarmentText;
+			}
+			else if (wearingArmor)
+			{
+				return armorText;
+			}
+			else if (wearingUpperGarment)
+			{
+				return upperGarmentText;
+			}
+			else
+			{
+				return nakedText;
+			}
+		}
+
+		public string UpperBodyArmorTextHelper(string armorText, string upperGarmentText, string nakedText)
+		{
+			if (wearingArmor)
+			{
+				return armorText;
+			}
+			else if (wearingUpperGarment)
+			{
+				return upperGarmentText;
+			}
+			else
+			{
+				return nakedText;
+			}
+		}
+
 		public string LowerBodyArmorShort(bool both = true)
 		{
 			if (wearingArmor && both && wearingLowerGarment)

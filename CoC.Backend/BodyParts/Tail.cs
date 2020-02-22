@@ -2,6 +2,9 @@
 //Description:
 //Author: JustSomeGuy
 //1/6/2019, 1:26 AM
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CoC.Backend.Attacks;
 using CoC.Backend.Attacks.BodyPartAttacks;
 using CoC.Backend.BodyParts.SpecialInteraction;
@@ -11,10 +14,8 @@ using CoC.Backend.Engine;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.SaveData;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CoC.Backend.BodyParts
 {
@@ -50,7 +51,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return Equals(tailPiercing);
 			}
-			else return false;
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool Equals(TailPiercingLocation other)
@@ -75,7 +79,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class TailPiercing : Piercing<TailPiercingLocation>
 	{
-		public TailPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
+		public TailPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, CreatureStr playerShortDesc, CreatureStr playerLongDesc) : base(source, LocationUnlocked, playerShortDesc, playerLongDesc)
 		{
 		}
 
@@ -203,8 +207,8 @@ namespace CoC.Backend.BodyParts
 				return false;
 			}
 
-			var oldValue = type;
-			var oldData = AsReadOnlyData();
+			TailType oldValue = type;
+			TailData oldData = AsReadOnlyData();
 			type = newType;
 
 			CheckDataChanged(oldData);
@@ -263,7 +267,7 @@ namespace CoC.Backend.BodyParts
 			{
 				return false;
 			}
-			var oldData = AsReadOnlyData();
+			TailData oldData = AsReadOnlyData();
 			tailCount++;
 			NotifyDataChanged(oldData);
 			return true;
@@ -276,9 +280,9 @@ namespace CoC.Backend.BodyParts
 				return 0;
 			}
 			byte oldCount = tailCount;
-			var oldData = AsReadOnlyData();
+			TailData oldData = AsReadOnlyData();
 			tailCount = tailCount.add(amount);
-			var result = tailCount.subtract(oldCount);
+			byte result = tailCount.subtract(oldCount);
 			if (result != 0)
 			{
 				NotifyDataChanged(oldData);
@@ -341,7 +345,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return type.TransformFrom(previousTypeData, player, describeOvipositorChangeIfApplicable);
 			}
-			else return "";
+			else
+			{
+				return "";
+			}
 		}
 
 		//overload that lets you control whether or not the ovipositor change text appears. by default, any text from a change in ovipositor will be displayed.
@@ -351,25 +358,31 @@ namespace CoC.Backend.BodyParts
 			{
 				return previousTypeData.type.RestoredString(previousTypeData, player, describeOvipositorChangeIfApplicable);
 			}
-			else return "";
+			else
+			{
+				return "";
+			}
 		}
 
-		public string OneOfTailsShort(string pronoun = "your")
+		public string OneOfTailsShort() => OneOfTailsShort(Conjugate.YOU);
+		public string OneOfTailsShort(Conjugate conjugate)
 		{
 			if (tailCount == 0)
 			{
 				return "";
 			}
 
-			return CommonBodyPartStrings.OneOfDescription(tailCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.OneOfDescription(tailCount > 1, conjugate, ShortDescription());
 		}
 
-		public string EachOfTailsShort(string pronoun = "your")
+		public string EachOfTailsShort() => EachOfTailsShort(Conjugate.YOU);
+		public string EachOfTailsShort(Conjugate conjugate)
 		{
-			return EachOfTailsShort(pronoun, out bool _);
+			string pronoun = conjugate.PossessiveAdjective();
+			return EachOfTailsShort(conjugate, out bool _);
 		}
 
-		public string EachOfTailsShort(string pronoun, out bool isPlural)
+		public string EachOfTailsShort(Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = tailCount != 1;
 
@@ -378,7 +391,7 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 
-			return CommonBodyPartStrings.EachOfDescription(tailCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.EachOfDescription(tailCount > 1, conjugate, ShortDescription());
 		}
 
 		#endregion
@@ -542,8 +555,8 @@ namespace CoC.Backend.BodyParts
 				return LongDescription(x, y);
 			};
 
-			this.initialTailCount = 1;
-			this.maxTailCount = 1;
+			initialTailCount = 1;
+			maxTailCount = 1;
 
 			isLongTail = false;
 
@@ -575,8 +588,8 @@ namespace CoC.Backend.BodyParts
 				return LongDescription(x, y);
 			};
 
-			this.initialTailCount = 1;
-			this.maxTailCount = 1;
+			initialTailCount = 1;
+			maxTailCount = 1;
 
 			isLongTail = longTail;
 
@@ -608,8 +621,8 @@ namespace CoC.Backend.BodyParts
 				return LongDescription(x, y);
 			};
 
-			this.initialTailCount = 1;
-			this.maxTailCount = 1;
+			initialTailCount = 1;
+			maxTailCount = 1;
 
 			isLongTail = longTail;
 
@@ -647,14 +660,20 @@ namespace CoC.Backend.BodyParts
 
 		private static ChangeType<TailData> ParseTransform(TailTransform transform)
 		{
-			if (transform is null) throw new ArgumentNullException(nameof(transform));
+			if (transform is null)
+			{
+				throw new ArgumentNullException(nameof(transform));
+			}
 
 			return (x, y) => transform(x, y);
 		}
 
 		private static RestoreType<TailData> ParseRestore(TailRestore restore)
 		{
-			if (restore is null) throw new ArgumentNullException(nameof(restore));
+			if (restore is null)
+			{
+				throw new ArgumentNullException(nameof(restore));
+			}
 
 			return (x, y) => restore(x, y);
 		}
@@ -771,7 +790,7 @@ namespace CoC.Backend.BodyParts
 			}
 			internal override EpidermalData ParseEpidermis(in BodyData bodyData)
 			{
-				FurColor color = this.defaultFur;
+				FurColor color = defaultFur;
 				if (mutable)
 				{
 					if (bodyData.main.usesFurColor && !FurColor.IsNullOrEmpty(bodyData.main.fur))
@@ -918,14 +937,16 @@ namespace CoC.Backend.BodyParts
 		private class FoxTail : FurryTail
 		{
 			public FoxTail() : base(EpidermisType.FUR, DefaultValueHelpers.defaultFoxTailFur, true, true, 1, 9, FoxShortDesc,
-				FoxSingleDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr) { }
+				FoxSingleDesc, FoxLongDesc, FoxPlayerStr, FoxTransformStr, FoxRestoreStr)
+			{ }
 		}
 
 
 		private class SuccubusTail : ToneTail
 		{
 			public SuccubusTail() : base(EpidermisType.SKIN, DefaultValueHelpers.defaultDemonTone, true, true, DemonShortDesc, DemonLongDesc, DemonPlayerStr,
-				DemonTransformStr, DemonRestoreStr) { }
+				DemonTransformStr, DemonRestoreStr)
+			{ }
 
 			public override bool supportsTailPiercing => true;
 		}
@@ -994,7 +1015,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return type.TransformFrom(previousTypeData, player, describeOvipositorChangeIfApplicable);
 			}
-			else return "";
+			else
+			{
+				return "";
+			}
 		}
 
 		//overload that lets you control whether or not the ovipositor change text appears. by default, any text from a change in ovipositor will be displayed.
@@ -1004,25 +1028,30 @@ namespace CoC.Backend.BodyParts
 			{
 				return previousTypeData.type.RestoredString(previousTypeData, player, describeOvipositorChangeIfApplicable);
 			}
-			else return "";
+			else
+			{
+				return "";
+			}
 		}
 
-		public string OneOfTailsShort(string pronoun = "your")
+		public string OneOfTailsShort() => OneOfTailsShort(Conjugate.YOU);
+		public string OneOfTailsShort(Conjugate conjugate)
 		{
 			if (tailCount == 0)
 			{
 				return "";
 			}
 
-			return CommonBodyPartStrings.OneOfDescription(tailCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.OneOfDescription(tailCount > 1, conjugate, ShortDescription());
 		}
 
-		public string EachOfTailsShort(string pronoun = "your")
+		public string EachOfTailsShort() => EachOfTailsShort(Conjugate.YOU);
+		public string EachOfTailsShort(Conjugate conjugate)
 		{
-			return EachOfTailsShort(pronoun, out bool _);
+			return EachOfTailsShort(conjugate, out bool _);
 		}
 
-		public string EachOfTailsShort(string pronoun, out bool isPlural)
+		public string EachOfTailsShort(Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = tailCount != 1;
 
@@ -1031,7 +1060,7 @@ namespace CoC.Backend.BodyParts
 				return "";
 			}
 
-			return CommonBodyPartStrings.EachOfDescription(tailCount > 1, pronoun, ShortDescription());
+			return CommonBodyPartStrings.EachOfDescription(tailCount > 1, conjugate, ShortDescription());
 		}
 
 		#endregion
@@ -1059,5 +1088,7 @@ namespace CoC.Backend.BodyParts
 			totalPenetratorCount = source.totalPenetratorCount;
 			selfPenetratorCount = source.selfPenetratorCount;
 		}
+
+		public override TailType defaultType => TailType.defaultValue;
 	}
 }

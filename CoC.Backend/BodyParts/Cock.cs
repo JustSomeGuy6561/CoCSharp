@@ -97,7 +97,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class CockPiercing : Piercing<CockPiercingLocation>
 	{
-		public CockPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, GenericCreatureText playerShortDesc, GenericCreatureText playerLongDesc)
+		public CockPiercing(IBodyPart source, PiercingUnlocked LocationUnlocked, CreatureStr playerShortDesc, CreatureStr playerLongDesc)
 			: base(source, LocationUnlocked, playerShortDesc, playerLongDesc) { }
 
 		public int MaxFrenumPiercings => MaxPiercings - 1;
@@ -1188,5 +1188,7 @@ namespace CoC.Backend.BodyParts
 			this.orgasmCount = orgasmCount;
 			this.dryOrgasmCount = dryOrgasmCount;
 		}
+
+		public override CockType defaultType => CockType.defaultValue;
 	}
 }

@@ -157,7 +157,7 @@ namespace CoC.Frontend.Items.Consumables
 			return Environment.NewLine + Environment.NewLine + SafelyFormattedString.FormattedText("Eating the pepper, you realize how dog-like you've become, " +
 				"and you wonder what else the peppers could change" + endText + "...", StringFormats.BOLD);
 		}
-		private static string StatChangeText(Creature target, CanineModifiers modifiers, float strengthIncrease, float speedIncrease, float intelligenceDecrease)
+		private static string StatChangeText(Creature target, CanineModifiers modifiers, double strengthIncrease, double speedIncrease, double intelligenceDecrease)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (modifiers.HasFlag(CanineModifiers.BLACK))
@@ -202,7 +202,7 @@ namespace CoC.Frontend.Items.Consumables
 			return sb.ToString();
 		}
 
-		private static string EnlargedSmallestKnotText(Creature target, int cockIndex, float knotMultiplierDelta, bool hasMoreThanOneDogCock)
+		private static string EnlargedSmallestKnotText(Creature target, int cockIndex, double knotMultiplierDelta, bool hasMoreThanOneDogCock)
 		{
 			var smallestKnot = target.cocks[cockIndex];
 			if (knotMultiplierDelta < .06f)
@@ -294,13 +294,13 @@ namespace CoC.Frontend.Items.Consumables
 			}
 		}
 
-		private static string CouldntConvertDemonCockThickenedInstead(Creature target, int index, float delta)
+		private static string CouldntConvertDemonCockThickenedInstead(Creature target, int index, double delta)
 		{
 			Cock demonSpecialCase = target.cocks[index];
 			return "Your " + demonSpecialCase.LongDescription() + " color shifts red for a moment and begins to swell at the base, but within moments it smooths out, " +
 				"retaining its distinctive demonic shape, only perhaps a bit thicker.";
 		}
-		private static string AddedCumText(Creature target, float delta, bool isMultiplier)
+		private static string AddedCumText(Creature target, double delta, bool isMultiplier)
 		{
 			StringBuilder sb = new StringBuilder(GlobalStrings.NewParagraph());
 			if (!target.hasBalls)
@@ -321,7 +321,7 @@ namespace CoC.Frontend.Items.Consumables
 		private static string GrewSmallestCockText(Creature target, int index, CockData oldData)
 		{
 			var smallest = target.cocks[index];
-			float deltaLength = smallest.length - oldData.length;
+			double deltaLength = smallest.length - oldData.length;
 			if (deltaLength > 2)
 			{
 				return GlobalStrings.NewParagraph() + "Your " + smallest.LongDescription() + " tightens painfully, inches of bulging dick-flesh pouring out from your crotch as it grows longer. " +

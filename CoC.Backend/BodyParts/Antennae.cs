@@ -156,6 +156,8 @@ namespace CoC.Backend.BodyParts
 
 		internal AntennaeData(Antennae source) : base(GetID(source), GetBehavior(source))
 		{ }
+
+		public override AntennaeType defaultType => AntennaeType.defaultValue;
 	}
 
 }

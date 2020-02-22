@@ -5,6 +5,7 @@ using System.Linq;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
@@ -269,8 +270,10 @@ namespace CoC.Backend.BodyParts
 
 		public override bool IsIdenticalTo(CockCollectionData original, bool ignoreSexualMetaData)
 		{
-			if (original is null) return false;
-
+			if (original is null)
+			{
+				return false;
+			}
 
 			return cumMultiplierTrue == original.cumMultiplierTrue && additionalCumTrue == original.additionalCumTrue && totalCum == original.totalCum
 				&& hoursSinceLastCum == original.hoursSinceLastCum && simulatedHoursSinceLastCum == original.simulatedHoursSinceLastCum
@@ -283,7 +286,10 @@ namespace CoC.Backend.BodyParts
 
 		public bool CollectionChanged(CockCollectionData original, bool ignoreSexualMetaData)
 		{
-			if (original is null) return false;
+			if (original is null)
+			{
+				return false;
+			}
 
 			Dictionary<uint, Cock> items = _cocks.ToDictionary(x => x.collectionID, x => x);
 			Dictionary<uint, CockData> dataItems = original.cocks.ToDictionary(x => (uint)x.collectionID, x => x);
@@ -554,7 +560,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				var toRemove = cocks.Skip(numCocks - count);
+				IEnumerable<Cock> toRemove = cocks.Skip(numCocks - count);
 
 				missingCockSexCount += (uint)toRemove.Sum(x => x.totalSexCount);
 				missingCockSelfSexCount += (uint)toRemove.Sum(x => x.selfSexCount);
@@ -798,22 +804,26 @@ namespace CoC.Backend.BodyParts
 		public string AllCocksFullDescription(out bool isPlural) => CockCollectionStrings.AllCocksFullDescription(this, out isPlural);
 
 
-		public string OneCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksNoun(this, pronoun);
+		public string OneCockOrCocksNoun() => CockCollectionStrings.OneCockOrCocksNoun(this);
+		public string OneCockOrCocksNoun(Conjugate conjugate) => CockCollectionStrings.OneCockOrCocksNoun(this, conjugate);
 
 
-		public string OneCockOrCocksShort(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksShort(this, pronoun);
+		public string OneCockOrCocksShort() => CockCollectionStrings.OneCockOrCocksShort(this);
+		public string OneCockOrCocksShort(Conjugate conjugate) => CockCollectionStrings.OneCockOrCocksShort(this, conjugate);
 
 
-		public string EachCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.EachCockOrCocksNoun(this, pronoun);
+		public string EachCockOrCocksNoun() => CockCollectionStrings.EachCockOrCocksNoun(this);
+		public string EachCockOrCocksNoun(Conjugate conjugate) => CockCollectionStrings.EachCockOrCocksNoun(this, conjugate);
 
 
-		public string EachCockOrCocksShort(string pronoun = "your") => CockCollectionStrings.EachCockOrCocksShort(this, pronoun);
+		public string EachCockOrCocksShort() => CockCollectionStrings.EachCockOrCocksShort(this);
+		public string EachCockOrCocksShort(Conjugate conjugate) => CockCollectionStrings.EachCockOrCocksShort(this, conjugate);
 
 
-		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksNoun(this, pronoun, out isPlural);
+		public string EachCockOrCocksNoun(Conjugate conjugate, out bool isPlural) => CockCollectionStrings.EachCockOrCocksNoun(this, conjugate, out isPlural);
 
 
-		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
+		public string EachCockOrCocksShort(Conjugate conjugate, out bool isPlural) => CockCollectionStrings.EachCockOrCocksShort(this, conjugate, out isPlural);
 
 		#endregion
 		internal string AllCocksPlayerDescription()
@@ -865,22 +875,22 @@ namespace CoC.Backend.BodyParts
 
 		public readonly BallsData balls;
 
-		public CockCollectionData(CockCollection source) : base(source?.creatureID?? throw new ArgumentNullException(nameof(source)))
+		public CockCollectionData(CockCollection source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			this.cumMultiplierTrue = source.cumMultiplierTrue;
-			this.additionalCumTrue = source.additionalCumTrue;
-			this.hoursSinceLastCum = source.hoursSinceLastCum;
-			this.simulatedHoursSinceLastCum = source.simulatedHoursSinceLastCum;
-			this.totalCum = source.totalCum;
+			cumMultiplierTrue = source.cumMultiplierTrue;
+			additionalCumTrue = source.additionalCumTrue;
+			hoursSinceLastCum = source.hoursSinceLastCum;
+			simulatedHoursSinceLastCum = source.simulatedHoursSinceLastCum;
+			totalCum = source.totalCum;
 
-			this.totalSoundCount = source.totalSoundCount;
-			this.totalSexCount = source.totalSexCount;
-			this.selfSexCount = source.selfSexCount;
-			this.totalOrgasmCount = source.totalOrgasmCount;
-			this.dryOrgasmCount = source.dryOrgasmCount;
+			totalSoundCount = source.totalSoundCount;
+			totalSexCount = source.totalSexCount;
+			selfSexCount = source.selfSexCount;
+			totalOrgasmCount = source.totalOrgasmCount;
+			dryOrgasmCount = source.dryOrgasmCount;
 
-			this.currentLust = source.currentLust;
-			this.relativeLust = source.relativeLust;
+			currentLust = source.currentLust;
+			relativeLust = source.relativeLust;
 
 			balls = source.balls.AsReadOnlyData();
 			cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x => x.AsReadOnlyData()).ToList());
@@ -919,11 +929,11 @@ namespace CoC.Backend.BodyParts
 		//	additionalCumTrue = source.additionalCumTrue;
 		//	cocks = new ReadOnlyCollection<CockData>(source.cocks.Select(x => x.AsReadOnlyData()).ToList());
 
-			//this.hoursSinceLastCum = source.hoursSinceLastCum;
-			//this.totalCum = source.totalCum;
+		//this.hoursSinceLastCum = source.hoursSinceLastCum;
+		//this.totalCum = source.totalCum;
 
-			//currentLust = source.currentLust;
-			//relativeLust = source.relativeLust;
+		//currentLust = source.currentLust;
+		//relativeLust = source.relativeLust;
 		//}
 		#endregion
 
@@ -1047,22 +1057,26 @@ namespace CoC.Backend.BodyParts
 		public string AllCocksFullDescription(out bool isPlural) => CockCollectionStrings.AllCocksFullDescription(this, out isPlural);
 
 
-		public string OneCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksNoun(this, pronoun);
+		public string OneCockOrCocksNoun() => CockCollectionStrings.OneCockOrCocksNoun(this);
+		public string OneCockOrCocksNoun(Conjugate conjugate) => CockCollectionStrings.OneCockOrCocksNoun(this, conjugate);
 
 
-		public string OneCockOrCocksShort(string pronoun = "your") => CockCollectionStrings.OneCockOrCocksShort(this, pronoun);
+		public string OneCockOrCocksShort() => CockCollectionStrings.OneCockOrCocksShort(this);
+		public string OneCockOrCocksShort(Conjugate conjugate) => CockCollectionStrings.OneCockOrCocksShort(this, conjugate);
 
 
-		public string EachCockOrCocksNoun(string pronoun = "your") => CockCollectionStrings.EachCockOrCocksNoun(this, pronoun);
+		public string EachCockOrCocksNoun() => CockCollectionStrings.EachCockOrCocksNoun(this);
+		public string EachCockOrCocksNoun(Conjugate conjugate) => CockCollectionStrings.EachCockOrCocksNoun(this, conjugate);
 
 
-		public string EachCockOrCocksShort(string pronoun = "your") => CockCollectionStrings.EachCockOrCocksShort(this, pronoun);
+		public string EachCockOrCocksShort() => CockCollectionStrings.EachCockOrCocksShort(this);
+		public string EachCockOrCocksShort(Conjugate conjugate) => CockCollectionStrings.EachCockOrCocksShort(this, conjugate);
 
 
-		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksNoun(this, pronoun, out isPlural);
+		public string EachCockOrCocksNoun(Conjugate conjugate, out bool isPlural) => CockCollectionStrings.EachCockOrCocksNoun(this, conjugate, out isPlural);
 
 
-		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => CockCollectionStrings.EachCockOrCocksShort(this, pronoun, out isPlural);
+		public string EachCockOrCocksShort(Conjugate conjugate, out bool isPlural) => CockCollectionStrings.EachCockOrCocksShort(this, conjugate, out isPlural);
 		#endregion
 
 	}

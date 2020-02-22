@@ -332,12 +332,12 @@ namespace CoC.Frontend.Creatures
 			return "Enter the length of your hair in " + (Measurement.UsesMetric ? "centimeters" : "inches") + " and press Confirm when done.";
 		}
 
-		private string HairTooLongStr(float inputValue)
+		private string HairTooLongStr(double inputValue)
 		{
 			return "The value you entered, " + inputValue + ", is taller than you! Try again, using a smaller value." + Environment.NewLine;
 		}
 
-		private string NegativeNumberHairStr(float inputValue)
+		private string NegativeNumberHairStr(double inputValue)
 		{
 			return "The value you entered, " + inputValue + ", is negative, and last we checked, that's not possible. Try again, with a valid length." + Environment.NewLine;
 		}
@@ -371,7 +371,7 @@ namespace CoC.Frontend.Creatures
 
 			if (creator.hairLength != null && creator.hairLength != 0)
 			{
-				sb.Append(Measurement.ToNearestSmallUnit((float)creator.hairLength, true, false) + " ");
+				sb.Append(Measurement.ToNearestSmallUnit((double)creator.hairLength, true, false) + " ");
 			}
 
 			if (creator.hairStyle != HairStyle.NO_STYLE)
@@ -424,7 +424,7 @@ namespace CoC.Frontend.Creatures
 				creator.nippleLength = creator.breasts.Max(x => x.cupSize) > CupSize.A ? 0.5f : 0.25f;
 			}
 
-			sb.Append("Breast size: " + creator.breasts[0].cupSize.AsText() + " with " + Measurement.ToNearestQuarterInchOrHalfCentimeter((float)creator.nippleLength, true) + " nipples" + Environment.NewLine);
+			sb.Append("Breast size: " + creator.breasts[0].cupSize.AsText() + " with " + Measurement.ToNearestQuarterInchOrHalfCentimeter((double)creator.nippleLength, true) + " nipples" + Environment.NewLine);
 			return sb.ToString();
 		}
 
@@ -524,7 +524,7 @@ namespace CoC.Frontend.Creatures
 
 		private string ClitLengthStr()
 		{
-			float min, max;
+			double min, max;
 			string unit;
 			if (Measurement.UsesMetric)
 			{

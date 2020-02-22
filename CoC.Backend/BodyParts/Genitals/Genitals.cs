@@ -3,17 +3,18 @@
 //Author: JustSomeGuy
 //1/5/2019, 3:16 AM
 
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Pregnancies;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+using CoC.Backend.Strings;
 using WeakEvent;
 
 namespace CoC.Backend.BodyParts
@@ -67,7 +68,7 @@ namespace CoC.Backend.BodyParts
 			if (first == CHEST || second == CHEST)
 			{
 				//check to see if other is left left or left right chest.
-				var other = (first == CHEST) ? second : first;
+				GenitalTattooLocation other = (first == CHEST) ? second : first;
 				return other != LEFT_CHEST && other != RIGHT_CHEST;
 			}
 			//otherwise, we're good.s
@@ -80,7 +81,7 @@ namespace CoC.Backend.BodyParts
 
 	public sealed class GenitalTattoo : TattooablePart<GenitalTattooLocation>
 	{
-		public GenitalTattoo(IBodyPart source, GenericCreatureText allTattoosShort, GenericCreatureText allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
+		public GenitalTattoo(IBodyPart source, CreatureStr allTattoosShort, CreatureStr allTattoosLong) : base(source, allTattoosShort, allTattoosLong)
 		{
 		}
 
@@ -287,7 +288,7 @@ namespace CoC.Backend.BodyParts
 
 		public double nippleLength => allBreasts.nippleLength;
 
-		public bool unlockedDickNipples => allBreasts.unlockedDickNipples;
+		public bool dickNipplesEnabled => allBreasts.dickNipplesEnabled;
 
 
 		#endregion
@@ -445,8 +446,15 @@ namespace CoC.Backend.BodyParts
 			//not noticable assets - go by appearance
 			else if (BiggestCockTotalSize() < 6 && BiggestCupSize() <= CupSize.B)
 			{
-				if (femininity.atLeastSlightlyFeminine) return Gender.FEMALE;
-				else if (femininity.atLeastSlightlyMasculine) return Gender.MALE;
+				if (femininity.atLeastSlightlyFeminine)
+				{
+					return Gender.FEMALE;
+				}
+				else if (femininity.atLeastSlightlyMasculine)
+				{
+					return Gender.MALE;
+				}
+
 				return Gender.GENDERLESS;
 			}
 			//noticable breasts or dick, but too masculine or feminine.
@@ -677,7 +685,7 @@ namespace CoC.Backend.BodyParts
 			return allBreasts.IsIdenticalTo(original.allBreastData, ignoreSexualMetaData) && allCocks.IsIdenticalTo(original.allCockData, ignoreSexualMetaData)
 				&& allVaginas.IsIdenticalTo(original.allVaginaData, ignoreSexualMetaData) && femininity.IsIdenticalTo(original.femininity, ignoreSexualMetaData)
 				&& fertility.IsIdenticalTo(original.fertility, ignoreSexualMetaData) && ass.IsIdenticalTo(original.ass, ignoreSexualMetaData)
-				&& balls.IsIdenticalTo(original.balls) && this.tattoos.IsIdenticalTo(original.tattoos) && this.womb.IsIdenticalTo(original.womb);
+				&& balls.IsIdenticalTo(original.balls) && tattoos.IsIdenticalTo(original.tattoos) && womb.IsIdenticalTo(original.womb);
 		}
 
 		#region Genital Exclusive
@@ -755,7 +763,7 @@ namespace CoC.Backend.BodyParts
 			StringBuilder outputBuilder = new StringBuilder();
 			string outputHelper;
 			//i have no clue how this would work for multi-snatch configs.
-			foreach (var vagina in vaginas)
+			foreach (Vagina vagina in vaginas)
 			{
 				if (DoLazy(vagina, isPlayer, hoursPassed, out outputHelper))
 				{
@@ -864,13 +872,14 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Lactation Update Functions
-		public LactationStatus SetLactationTo(LactationStatus newStatus) => allBreasts.setLactationTo(newStatus);
+		public LactationStatus SetLactationTo(LactationStatus newStatus) => allBreasts.SetLactationTo(newStatus);
 
 
-		public bool clearLactation() => allBreasts.clearLactation();
+		public bool StartLactating() => allBreasts.StartLactating();
+		public bool ClearLactation() => allBreasts.ClearLactation();
 
 
-		public double boostLactation(double byAmount = 0.1f) => allBreasts.boostLactation(byAmount);
+		public double BoostLactation(double byAmount = 0.1f) => allBreasts.BoostLactation(byAmount);
 
 
 		public void StartOrBoostLactation() => allBreasts.StartOrBoostLactation();
@@ -1507,22 +1516,25 @@ namespace CoC.Backend.BodyParts
 		public string AllCocksFullDescription(out bool isPlural) => allCocks.AllCocksFullDescription(out isPlural);
 
 
-		public string OneCockOrCocksNoun(string pronoun = "your") => allCocks.OneCockOrCocksNoun(pronoun);
+		public string OneCockOrCocksNoun() => allCocks.OneCockOrCocksNoun();
+		public string OneCockOrCocksNoun(Conjugate conjugate) => allCocks.OneCockOrCocksNoun(conjugate);
 
 
-		public string OneCockOrCocksShort(string pronoun = "your") => allCocks.OneCockOrCocksShort(pronoun);
+		public string OneCockOrCocksShort() => allCocks.OneCockOrCocksShort();
+		public string OneCockOrCocksShort(Conjugate conjugate) => allCocks.OneCockOrCocksShort(conjugate);
 
 
-		public string EachCockOrCocksNoun(string pronoun = "your") => allCocks.EachCockOrCocksNoun(pronoun);
+		public string EachCockOrCocksNoun() => allCocks.EachCockOrCocksNoun();
+		public string EachCockOrCocksNoun(Conjugate conjugate) => allCocks.EachCockOrCocksNoun(conjugate);
 
 
-		public string EachCockOrCocksShort(string pronoun = "your") => allCocks.EachCockOrCocksShort(pronoun);
+		public string EachCockOrCocksShort() => allCocks.EachCockOrCocksShort();
+		public string EachCockOrCocksShort(Conjugate conjugate) => allCocks.EachCockOrCocksShort(conjugate);
 
 
-		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => allCocks.EachCockOrCocksNoun(pronoun, out isPlural);
+		public string EachCockOrCocksNoun(Conjugate conjugate, out bool isPlural) => allCocks.EachCockOrCocksNoun(conjugate, out isPlural);
 
-
-		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => allCocks.EachCockOrCocksShort(pronoun, out isPlural);
+		public string EachCockOrCocksShort(Conjugate conjugate, out bool isPlural) => allCocks.EachCockOrCocksShort(conjugate, out isPlural);
 
 		#endregion
 
@@ -1534,23 +1546,50 @@ namespace CoC.Backend.BodyParts
 		public string AllVaginasFullDescription() => allVaginas.AllVaginasFullDescription();
 
 
-		public string OneVaginaOrVaginasNoun(string pronoun = "your") => allVaginas.OneVaginaOrVaginasNoun(pronoun);
+		public string OneVaginaOrVaginasNoun() => allVaginas.OneVaginaOrVaginasNoun();
+		public string OneVaginaOrVaginasNoun(Conjugate conjugate) => allVaginas.OneVaginaOrVaginasNoun(conjugate);
 
 
-		public string OneVaginaOrVaginasShort(string pronoun = "your") => allVaginas.OneVaginaOrVaginasShort(pronoun);
+		public string OneVaginaOrVaginasShort() => allVaginas.OneVaginaOrVaginasShort();
+		public string OneVaginaOrVaginasShort(Conjugate conjugate) => allVaginas.OneVaginaOrVaginasShort(conjugate);
 
 
-		public string EachVaginaOrVaginasNoun(string pronoun = "your") => allVaginas.EachVaginaOrVaginasNoun(pronoun);
+		public string EachVaginaOrVaginasNoun() => allVaginas.EachVaginaOrVaginasNoun();
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate) => allVaginas.EachVaginaOrVaginasNoun(conjugate);
 
 
-		public string EachVaginaOrVaginasShort(string pronoun = "your") => allVaginas.EachVaginaOrVaginasShort(pronoun);
+		public string EachVaginaOrVaginasShort() => allVaginas.EachVaginaOrVaginasShort();
+		public string EachVaginaOrVaginasShort(Conjugate conjugate) => allVaginas.EachVaginaOrVaginasShort(conjugate);
 
 
-		public string EachVaginaOrVaginasNoun(string pronoun, out bool isPlural) => allVaginas.EachVaginaOrVaginasNoun(pronoun, out isPlural);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => allVaginas.EachVaginaOrVaginasNoun(conjugate, out isPlural);
 
 
-		public string EachVaginaOrVaginasShort(string pronoun, out bool isPlural) => allVaginas.EachVaginaOrVaginasShort(pronoun, out isPlural);
+		public string EachVaginaOrVaginasShort(Conjugate conjugate, out bool isPlural) => allVaginas.EachVaginaOrVaginasShort(conjugate, out isPlural);
 
+		#endregion
+
+		#region Common Nipple Text
+		public string CommonShortNippleDescription() => allBreasts.CommonShortNippleDescription();
+		public string CommonShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
+			=> allBreasts.CommonShortNippleDescription(plural, allowQuadNippleTextIfApplicable);
+
+		internal string CommonSingleNippleDescription() => allBreasts.CommonSingleNippleDescription();
+		internal string CommonSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => allBreasts.CommonSingleNipplpeDescription(allowQuadNippleIfApplicable);
+
+		internal string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> allBreasts.CommonLongNippleDescription(alternateFormat, plural, usePreciseMeasurements);
+		internal string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> allBreasts.CommonFullNippleDescription(alternateFormat, plural, usePreciseMeasurements);
+
+		internal string CommonOneNippleOrOneOfQuadNipplesShort() => allBreasts.CommonOneNippleOrOneOfQuadNipplesShort();
+		internal string CommonOneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => allBreasts.CommonOneNippleOrOneOfQuadNipplesShort(conjugate);
+
+		internal string CommonOneNippleOrEachOfQuadNipplesShort() => allBreasts.CommonOneNippleOrEachOfQuadNipplesShort();
+		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => allBreasts.CommonOneNippleOrEachOfQuadNipplesShort(conjugate);
+
+		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural)
+			=> allBreasts.CommonOneNippleOrEachOfQuadNipplesShort(conjugate, out isPlural);
 		#endregion
 
 		#region Breast Aggregate Functions
@@ -1752,17 +1791,17 @@ namespace CoC.Backend.BodyParts
 
 		internal GenitalsData(Genitals source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
-			this.allBreastData = source.allBreasts.AsReadOnlyData();
+			allBreastData = source.allBreasts.AsReadOnlyData();
 			allCockData = source.allCocks.AsReadOnlyData();
 			allVaginaData = source.allVaginas.AsReadOnlyData();
 
-			this.gender = source.gender;
-			this.femininity = source.femininity.AsReadOnlyData();
-			this.fertility = source.fertility.AsReadOnlyData();
-			this.ass = source.ass.AsReadOnlyData();
-			this.balls = source.balls.AsReadOnlyData();
+			gender = source.gender;
+			femininity = source.femininity.AsReadOnlyData();
+			fertility = source.fertility.AsReadOnlyData();
+			ass = source.ass.AsReadOnlyData();
+			balls = source.balls.AsReadOnlyData();
 
-			this.relativeLust = source.relativeLust;
+			relativeLust = source.relativeLust;
 
 			tattoos = source.tattoos.AsReadOnlyData();
 
@@ -1800,22 +1839,26 @@ namespace CoC.Backend.BodyParts
 		public string AllCocksFullDescription(out bool isPlural) => allCockData.AllCocksFullDescription(out isPlural);
 
 
-		public string OneCockOrCocksNoun(string pronoun = "your") => allCockData.OneCockOrCocksNoun(pronoun);
+		public string OneCockOrCocksNoun() => allCockData.OneCockOrCocksNoun();
+		public string OneCockOrCocksNoun(Conjugate conjugate) => allCockData.OneCockOrCocksNoun(conjugate);
 
 
-		public string OneCockOrCocksShort(string pronoun = "your") => allCockData.OneCockOrCocksShort(pronoun);
+		public string OneCockOrCocksShort() => allCockData.OneCockOrCocksShort();
+		public string OneCockOrCocksShort(Conjugate conjugate) => allCockData.OneCockOrCocksShort(conjugate);
 
 
-		public string EachCockOrCocksNoun(string pronoun = "your") => allCockData.EachCockOrCocksNoun(pronoun);
+		public string EachCockOrCocksNoun() => allCockData.EachCockOrCocksNoun();
+		public string EachCockOrCocksNoun(Conjugate conjugate) => allCockData.EachCockOrCocksNoun(conjugate);
 
 
-		public string EachCockOrCocksShort(string pronoun = "your") => allCockData.EachCockOrCocksShort(pronoun);
+		public string EachCockOrCocksShort() => allCockData.EachCockOrCocksShort();
+		public string EachCockOrCocksShort(Conjugate conjugate) => allCockData.EachCockOrCocksShort(conjugate);
 
 
-		public string EachCockOrCocksNoun(string pronoun, out bool isPlural) => allCockData.EachCockOrCocksNoun(pronoun, out isPlural);
+		public string EachCockOrCocksNoun(Conjugate conjugate, out bool isPlural) => allCockData.EachCockOrCocksNoun(conjugate, out isPlural);
 
 
-		public string EachCockOrCocksShort(string pronoun, out bool isPlural) => allCockData.EachCockOrCocksShort(pronoun, out isPlural);
+		public string EachCockOrCocksShort(Conjugate conjugate, out bool isPlural) => allCockData.EachCockOrCocksShort(conjugate, out isPlural);
 
 		#endregion
 
@@ -1827,23 +1870,50 @@ namespace CoC.Backend.BodyParts
 		public string AllVaginasFullDescription() => allVaginaData.AllVaginasFullDescription();
 
 
-		public string OneVaginaOrVaginasNoun(string pronoun = "your") => allVaginaData.OneVaginaOrVaginasNoun(pronoun);
+		public string OneVaginaOrVaginasNoun() => allVaginaData.OneVaginaOrVaginasNoun();
+		public string OneVaginaOrVaginasNoun(Conjugate conjugate) => allVaginaData.OneVaginaOrVaginasNoun(conjugate);
 
 
-		public string OneVaginaOrVaginasShort(string pronoun = "your") => allVaginaData.OneVaginaOrVaginasShort(pronoun);
+		public string OneVaginaOrVaginasShort() => allVaginaData.OneVaginaOrVaginasShort();
+		public string OneVaginaOrVaginasShort(Conjugate conjugate) => allVaginaData.OneVaginaOrVaginasShort(conjugate);
 
 
-		public string EachVaginaOrVaginasNoun(string pronoun = "your") => allVaginaData.EachVaginaOrVaginasNoun(pronoun);
+		public string EachVaginaOrVaginasNoun() => allVaginaData.EachVaginaOrVaginasNoun();
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate) => allVaginaData.EachVaginaOrVaginasNoun(conjugate);
 
 
-		public string EachVaginaOrVaginasShort(string pronoun = "your") => allVaginaData.EachVaginaOrVaginasShort(pronoun);
+		public string EachVaginaOrVaginasShort() => allVaginaData.EachVaginaOrVaginasShort();
+		public string EachVaginaOrVaginasShort(Conjugate conjugate) => allVaginaData.EachVaginaOrVaginasShort(conjugate);
 
 
-		public string EachVaginaOrVaginasNoun(string pronoun, out bool isPlural) => allVaginaData.EachVaginaOrVaginasNoun(pronoun, out isPlural);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => allVaginaData.EachVaginaOrVaginasNoun(conjugate, out isPlural);
 
 
-		public string EachVaginaOrVaginasShort(string pronoun, out bool isPlural) => allVaginaData.EachVaginaOrVaginasShort(pronoun, out isPlural);
+		public string EachVaginaOrVaginasShort(Conjugate conjugate, out bool isPlural) => allVaginaData.EachVaginaOrVaginasShort(conjugate, out isPlural);
 
+		#endregion
+
+		#region Common Nipple Text
+		public string CommonShortNippleDescription() => allBreastData.CommonShortNippleDescription();
+		public string CommonShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
+			=> allBreastData.CommonShortNippleDescription(plural, allowQuadNippleTextIfApplicable);
+
+		internal string CommonSingleNippleDescription() => allBreastData.CommonSingleNippleDescription();
+		internal string CommonSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => allBreastData.CommonSingleNipplpeDescription(allowQuadNippleIfApplicable);
+
+		internal string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> allBreastData.CommonLongNippleDescription(alternateFormat, plural, usePreciseMeasurements);
+		internal string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> allBreastData.CommonFullNippleDescription(alternateFormat, plural, usePreciseMeasurements);
+
+		internal string CommonOneNippleOrOneOfQuadNipplesShort() => allBreastData.CommonOneNippleOrOneOfQuadNipplesShort();
+		internal string CommonOneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => allBreastData.CommonOneNippleOrOneOfQuadNipplesShort(conjugate);
+
+		internal string CommonOneNippleOrEachOfQuadNipplesShort() => allBreastData.CommonOneNippleOrEachOfQuadNipplesShort();
+		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => allBreastData.CommonOneNippleOrEachOfQuadNipplesShort(conjugate);
+
+		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural)
+			=> allBreastData.CommonOneNippleOrEachOfQuadNipplesShort(conjugate, out isPlural);
 		#endregion
 
 		#region Breast Aggregate Functions

@@ -2,10 +2,10 @@
 //Description:
 //Author: JustSomeGuy
 //1/7/2019, 9:33 PM
+using System.Text;
 using CoC.Backend.Creatures;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System.Text;
 
 namespace CoC.Backend.BodyParts
 {
@@ -37,29 +37,19 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private string AllTailPiercingsShort(Creature creature, Conjugate conjugate)
+		private string AllTailPiercingsShort(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
-		private string AllTailPiercingsLong(Creature creature, Conjugate conjugate)
+		private string AllTailPiercingsLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-		public string OneTailShortDescription(string pronoun = "your")
-		{
-			if (tailCount == 0)
-			{
-				return "";
-			}
-			else if (tailCount == 1)
-			{
-				return pronoun + " " + ShortDescription();
-			}
-			else return "one of " + pronoun + " " + ShortDescription();
 		}
 
-		public string EachTailShortDescription(string pronoun = "your")
+		public string OneTailShortDescription() => OneTailShortDescription(Conjugate.YOU);
+		public string OneTailShortDescription(Conjugate conjugate)
 		{
+			string pronoun = conjugate.PossessiveAdjective();
 			if (tailCount == 0)
 			{
 				return "";
@@ -68,7 +58,28 @@ namespace CoC.Backend.BodyParts
 			{
 				return pronoun + " " + ShortDescription();
 			}
-			else return "each of " + pronoun + " " + ShortDescription();
+			else
+			{
+				return "one of " + pronoun + " " + ShortDescription();
+			}
+		}
+
+		public string EachTailShortDescription() => EachTailShortDescription(Conjugate.YOU);
+		public string EachTailShortDescription(Conjugate conjugate)
+		{
+			string pronoun = conjugate.PossessiveAdjective();
+			if (tailCount == 0)
+			{
+				return "";
+			}
+			else if (tailCount == 1)
+			{
+				return pronoun + " " + ShortDescription();
+			}
+			else
+			{
+				return "each of " + pronoun + " " + ShortDescription();
+			}
 		}
 
 		public static string Name()
@@ -561,8 +572,14 @@ namespace CoC.Backend.BodyParts
 		protected static string FoxShortDesc(bool treatAsPlural, out bool isPlural)
 		{
 			isPlural = treatAsPlural;
-			if (treatAsPlural) return "kitsune tails";
-			else return "vulpine tail";
+			if (treatAsPlural)
+			{
+				return "kitsune tails";
+			}
+			else
+			{
+				return "vulpine tail";
+			}
 		}
 
 		protected static string FoxSingleDesc()
