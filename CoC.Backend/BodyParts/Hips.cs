@@ -6,6 +6,7 @@ using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using WeakEvent;
@@ -31,7 +32,7 @@ namespace CoC.Backend.BodyParts
 			get => _hipSize;
 			private set
 			{
-				Utils.Clamp(ref value, BOYISH, INHUMANLY_WIDE);
+				Utils.Clamp(ref value, minSize, INHUMANLY_WIDE);
 				if (_hipSize != value)
 				{
 					var oldData = AsReadOnlyData();
@@ -42,8 +43,17 @@ namespace CoC.Backend.BodyParts
 		}
 		private byte _hipSize;
 
-		internal LowerBodyType lowerBodyType => CreatureStore.GetCreatureClean(creatureID)?.lowerBody.type ?? LowerBodyType.defaultValue;
-		internal BodyType bodyType => CreatureStore.GetCreatureClean(creatureID)?.body.type ?? BodyType.defaultValue;
+		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
+
+		private byte minSize => creature?.perks.baseModifiers.minHipsSize.GetValue() ?? BOYISH;
+
+		internal void CheckHips()
+		{
+			size = size;
+		}
+
+		internal LowerBodyType lowerBodyType => creature?.lowerBody.type ?? LowerBodyType.defaultValue;
+		internal BodyType bodyType => creature?.body.type ?? BodyType.defaultValue;
 
 		internal Hips(Guid creatureID) : this(creatureID, AVERAGE)
 		{
@@ -58,6 +68,10 @@ namespace CoC.Backend.BodyParts
 		{
 			return new HipData(this);
 		}
+
+#warning NYI. hook up to perk value.
+		public byte smallestPossibleHipSize { get; private set; }
+
 
 		public byte GrowHips(byte amount = 1)
 		{
@@ -94,18 +108,24 @@ namespace CoC.Backend.BodyParts
 
 		bool IShrinkable.CanReducto()
 		{
-			return size > SLENDER;
+			var min = Math.Max(SLENDER, minSize);
+			return size > min;
 		}
 
-		double IShrinkable.UseReducto()
+		string IShrinkable.UseReducto()
 		{
+			var oldData = AsReadOnlyData();
+			bool nothingHappened = false;
+
 			if (!((IShrinkable)this).CanReducto())
 			{
-				return 0;
+				nothingHappened = true;
 			}
-			byte oldSize = size;
-
-			if (size > CURVY)
+			if (size >= FERTILE)
+			{
+				size -= (byte)(3 + size / 3);
+			}
+			else if (size >= CURVY)
 			{
 				size -= 3;
 			}
@@ -113,7 +133,8 @@ namespace CoC.Backend.BodyParts
 			{
 				size -= Math.Min((byte)(Utils.Rand(3) + 1), size);
 			}
-			return oldSize - size;
+
+			return ReductoHips(oldData, nothingHappened);
 		}
 
 		public override bool IsIdenticalTo(HipData originalData, bool ignoreSexualMetaData)

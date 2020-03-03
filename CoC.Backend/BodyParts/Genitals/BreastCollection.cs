@@ -836,10 +836,10 @@ namespace CoC.Backend.BodyParts
 		/// </summary>
 		/// <param name="newStatus">The new lactation status desired.</param>
 		/// <returns>The lactation status given, or the closest value it can reach do to other factors.</returns>
-		public LactationStatus SetLactationTo(LactationStatus newStatus)
+		public bool SetLactationTo(LactationStatus newStatus)
 		{
 			lactationProductionModifier = newStatus.MinThreshold();
-			return lactationStatus;
+			return lactationStatus == newStatus;
 		}
 
 		public bool StartLactating()
@@ -850,7 +850,8 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return SetLactationTo(LactationStatus.LIGHT) != LactationStatus.NOT_LACTATING;
+				SetLactationTo(LactationStatus.LIGHT);
+				return lactationStatus > LactationStatus.NOT_LACTATING;
 			}
 		}
 
@@ -860,7 +861,7 @@ namespace CoC.Backend.BodyParts
 		/// <returns>True if the character is no longer lactating, false if some other factor prevents this. </returns>
 		public bool ClearLactation()
 		{
-			return SetLactationTo(LactationStatus.NOT_LACTATING) == LactationStatus.NOT_LACTATING;
+			return SetLactationTo(LactationStatus.NOT_LACTATING);
 		}
 
 		/// <summary>
@@ -1177,26 +1178,25 @@ namespace CoC.Backend.BodyParts
 
 		//this is text for all nipples, where the row is unimportant. for the most part, this just excludes 'pierced' if that's applicable.
 		#region Common Nipple Text
-		public string CommonShortNippleDescription() => nippleData.GenericShortNippleDescription();
+		public string CommonShortNippleDescription() => nippleData.GenericShortDescription();
 		public string CommonShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
-			=> nippleData.GenericShortNippleDescription(plural, allowQuadNippleTextIfApplicable);
+			=> nippleData.GenericShortDescription(plural, allowQuadNippleTextIfApplicable);
 
-		internal string CommonSingleNippleDescription() => nippleData.GenericSingleNippleDescription();
-		internal string CommonSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => nippleData.GenericSingleNipplpeDescription(allowQuadNippleIfApplicable);
+		public string CommonSingleNippleDescription() => nippleData.GenericSingleDescription();
+		public string CommonSingleNippleDescription(bool allowQuadNippleIfApplicable) => nippleData.GenericSingleDescription(allowQuadNippleIfApplicable);
 
-		internal string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-			=> nippleData.GenericLongNippleDescription(alternateFormat, plural, usePreciseMeasurements);
-		internal string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-			=> nippleData.GenericFullNippleDescription(alternateFormat, plural, usePreciseMeasurements);
+		public string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> nippleData.GenericLongDescription(alternateFormat, plural, usePreciseMeasurements);
+		public string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> nippleData.GenericFullDescription(alternateFormat, plural, usePreciseMeasurements);
 
-		internal string CommonOneNippleOrOneOfQuadNipplesShort() => nippleData.GenericOneNippleOrOneOfQuadNipplesShort();
-		internal string CommonOneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => nippleData.GenericOneNippleOrOneOfQuadNipplesShort(conjugate);
+		public string CommonOneNippleDescription() => nippleData.GenericOneNippleDescription();
+		public string CommonOneNippleDescription(Conjugate conjugate) => nippleData.GenericOneNippleDescription(conjugate);
 
-		internal string CommonOneNippleOrEachOfQuadNipplesShort() => nippleData.GenericOneNippleOrEachOfQuadNipplesShort();
-		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => nippleData.GenericOneNippleOrEachOfQuadNipplesShort(conjugate);
+		public string CommonEachNippleDescription() => nippleData.GenericEachNippleDescription();
+		public string CommonEachNippleDescription(Conjugate conjugate) => nippleData.GenericEachNippleDescription(conjugate);
 
-		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural)
-			=> nippleData.GenericOneNippleOrEachOfQuadNipplesShort(conjugate, out isPlural);
+		public string CommonEachNippleDescription(Conjugate conjugate, out bool isPlural) => nippleData.GenericEachNippleDescription(conjugate, out isPlural);
 		#endregion
 
 		#region Breast Collection Exclusive Text
@@ -1222,9 +1222,11 @@ namespace CoC.Backend.BodyParts
 			return _breasts.Any(x => (x as IGrowable).CanGroPlus());
 		}
 
-		double IGrowable.UseGroPlus()
+		string IGrowable.UseGroPlus()
 		{
-			return _breasts.Average(x => (x as IGrowable).UseGroPlus());
+			var oldData = AsReadOnlyData();
+			_breasts.ForEach(x => (x as IGrowable).UseGroPlus());
+			return GenericChangeCupSizeText(oldData, false);
 		}
 
 		#endregion
@@ -1236,9 +1238,12 @@ namespace CoC.Backend.BodyParts
 			return _breasts.Any(x => (x as IShrinkable).CanReducto());
 		}
 
-		double IShrinkable.UseReducto()
+		string IShrinkable.UseReducto()
 		{
-			return _breasts.Average(x => (x as IShrinkable).UseReducto());
+			var oldData = AsReadOnlyData();
+			_breasts.ForEach(x => (x as IShrinkable).UseReducto());
+
+			return GenericChangeCupSizeText(oldData, false);
 		}
 
 		#endregion
@@ -1437,26 +1442,25 @@ namespace CoC.Backend.BodyParts
 
 		//this is text for all nipples, where the row is unimportant. for the most part, this just excludes 'pierced' if that's applicable.
 		#region Common Nipple Text
-		public string CommonShortNippleDescription() => nippleData.GenericShortNippleDescription();
+		public string CommonShortNippleDescription() => nippleData.GenericShortDescription();
 		public string CommonShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
-			=> nippleData.GenericShortNippleDescription(plural, allowQuadNippleTextIfApplicable);
+			=> nippleData.GenericShortDescription(plural, allowQuadNippleTextIfApplicable);
 
-		internal string CommonSingleNippleDescription() => nippleData.GenericSingleNippleDescription();
-		internal string CommonSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => nippleData.GenericSingleNipplpeDescription(allowQuadNippleIfApplicable);
+		public string CommonSingleNippleDescription() => nippleData.GenericSingleDescription();
+		public string CommonSingleNippleDescription(bool allowQuadNippleIfApplicable) => nippleData.GenericSingleDescription(allowQuadNippleIfApplicable);
 
-		internal string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-			=> nippleData.GenericLongNippleDescription(alternateFormat, plural, usePreciseMeasurements);
-		internal string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-			=> nippleData.GenericFullNippleDescription(alternateFormat, plural, usePreciseMeasurements);
+		public string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> nippleData.GenericLongDescription(alternateFormat, plural, usePreciseMeasurements);
+		public string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> nippleData.GenericFullDescription(alternateFormat, plural, usePreciseMeasurements);
 
-		internal string CommonOneNippleOrOneOfQuadNipplesShort() => nippleData.GenericOneNippleOrOneOfQuadNipplesShort();
-		internal string CommonOneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => nippleData.GenericOneNippleOrOneOfQuadNipplesShort(conjugate);
+		public string CommonOneNippleDescription() => nippleData.GenericOneNippleDescription();
+		public string CommonOneNippleDescription(Conjugate conjugate) => nippleData.GenericOneNippleDescription(conjugate);
 
-		internal string CommonOneNippleOrEachOfQuadNipplesShort() => nippleData.GenericOneNippleOrEachOfQuadNipplesShort();
-		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => nippleData.GenericOneNippleOrEachOfQuadNipplesShort(conjugate);
+		public string CommonEachNippleDescription() => nippleData.GenericEachNippleDescription();
+		public string CommonEachNippleDescription(Conjugate conjugate) => nippleData.GenericEachNippleDescription(conjugate);
 
-		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural)
-			=> nippleData.GenericOneNippleOrEachOfQuadNipplesShort(conjugate, out isPlural);
+		public string CommonEachNippleDescription(Conjugate conjugate, out bool isPlural) => nippleData.GenericEachNippleDescription(conjugate, out isPlural);
 		#endregion
 	}
 }

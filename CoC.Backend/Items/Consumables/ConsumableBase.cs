@@ -112,7 +112,7 @@ namespace CoC.Backend.Items.Consumables
 			}
 		}
 
-		protected CapacityItem ConsumeItem(Creature target, out string resultsOfUseText, out bool isBadEnd)
+		protected virtual CapacityItem ConsumeItem(Creature target, out string resultsOfUseText, out bool isBadEnd)
 		{
 			bool result = OnConsumeAttempt(target, out resultsOfUseText, out isBadEnd);
 			CapacityItem item = this;
@@ -121,15 +121,15 @@ namespace CoC.Backend.Items.Consumables
 			{
 				if (target is PlayerBase player)
 				{
-					player.refillHunger(sateHungerAmount);
+					player.RefillHunger(sateHungerAmount);
 				}
 				item = null;
 			}
 
-			return null;
+			return item;
 		}
 
-		protected CapacityItem CombatConsumeItem(CombatCreature user, CombatCreature opponent, out string resultsOfUseText, out bool causesCombatLoss, out bool isBadEnd)
+		protected virtual CapacityItem CombatConsumeItem(CombatCreature user, CombatCreature opponent, out string resultsOfUseText, out bool causesCombatLoss, out bool isBadEnd)
 		{
 			bool result = OnCombatConsumeAttempt(user, opponent, out resultsOfUseText, out causesCombatLoss, out isBadEnd);
 			CapacityItem item = this;
@@ -138,12 +138,12 @@ namespace CoC.Backend.Items.Consumables
 			{
 				if (user is PlayerBase player)
 				{
-					player.refillHunger(sateHungerAmount);
+					player.RefillHunger(sateHungerAmount);
 				}
 				item = null;
 			}
 
-			return null;
+			return item;
 		}
 
 		public override byte maxCapacityPerSlot => 10;

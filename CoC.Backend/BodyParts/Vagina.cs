@@ -126,7 +126,7 @@ namespace CoC.Backend.BodyParts
 		private Creature creature => CreatureStore.GetCreatureClean(creatureID);
 
 		private readonly VaginaCollection source;
-		internal readonly uint collectionID;
+		public readonly uint collectionID;
 
 		public int vaginaIndex => source.vaginas.IndexOf(this);
 
@@ -969,6 +969,9 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#region Text
+
+		IClit IVagina.clit => clit;
+
 		public string ShortDescription(bool plural) => type.ShortDescription(plural);
 
 		public string AdjectiveText(bool multipleAdjectives)

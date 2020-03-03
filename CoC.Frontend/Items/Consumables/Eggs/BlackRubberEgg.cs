@@ -8,6 +8,7 @@ using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Perks;
@@ -30,11 +31,6 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 			return isLarge ? "L.BlkEgg" : "BlackEgg";
 		}
 
-		public override string ItemName()
-		{
-			return (isLarge ? "Large " : "") + "Black Egg";
-		}
-
 		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
 			//if your text uses "an" as an article instead of "a", be sure to change that here.
@@ -42,7 +38,7 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 			string sizeText = isLarge ? "large " : "";
 			string eggText = count == 1 ? "egg" : "eggs";
 
-			return $"{count}{sizeText}black {eggText}";
+			return $"{count}{sizeText}rubbery black {eggText}";
 		}
 
 		public override string AboutItem()
@@ -50,25 +46,75 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 			return base.AboutItem() + (isLarge ? " For all you know, it could turn you into rubber!" : "");
 		}
 
-		private string RestoredBodyText(BodyData oldBodyData)
+		private string RestoredBodyText(Creature target, BodyData oldBodyData)
 		{
-			throw new NotImplementedException();
+			return target.body.RestoredText(oldBodyData);
 		}
 
-		private string GainedRubberySkinPerk(bool knewAboutBlackEggs)
+		private string SkinBecameSmoothText(Creature target, BodyData oldBodyData)
 		{
-			throw new NotImplementedException();
+			return "Your skin tingles, though you can't see any major changes. Rubbing your " + target.hands.ShortDescription() + "along it, you notice it's become " +
+				"really smooth - unnatturally smooth, even. Any blemishes or rough spots have been stripped away, as have any other noticable characteristics. Strange";
 		}
 
-		private string NothingHappenedText()
+		private string GainedRubberySkinPerk(Creature consumer, bool knewAboutBlackEggs)
 		{
-			throw new NotImplementedException();
+			if (!knewAboutBlackEggs)
+			{
+				string corruptionText;
+				if (consumer.corruption < 66)
+				{
+					corruptionText = ("Looking like this makes you feel like some kind of freak, but fortunately you can change back whenever you want.");
+				}
+				else
+				{
+					corruptionText = "You feel like some kind of sexy rubber-skinned love-doll, though you can go back to normal if you really want.";
+				}
+
+				return GlobalStrings.NewParagraph() + "Your already flawless smooth skin begins to tingle as it changes again. It becomes shinier as its texture " +
+					"changes subtly. You gasp as you touch yourself and realize your skin is suddenly covered in a strange substance. " +
+					"The stuff is everywhere, obsuring your vision and making it difficult to breathe. Just as you're about to pass out, something clicks in your mind and " +
+					"you gain control of the strange substance, as if it were another muscle in your body, and it receeds into your skin. Cautiously, you let it once again, " +
+					"and this time you retain your ability to see and breathe normally. It seems you can now have a thin layer of a latex-like substance coat your body, " +
+					"like a second skin. " + corruptionText + " You have little doubt you'll find uses for this later, be it in combat or, more kinky situations, if you so choose. "
+					+ Environment.NewLine + SafelyFormattedString.FormattedText("Perk gained: Rubbery Skin. You can now choose to cover your body in a thin layer of latex " +
+					"in certain scenes for unique sexual interactions.", StringFormats.BOLD) + GlobalStrings.NewParagraph() +
+					"Looks like you now know what rubber eggs can do to you, you note with a smirk.";
+			}
+			else
+			{
+				return "A familiar sensation runs through your skin, and you are once again covered in a thin layer of latex. this time, you're prepared, and you gain control " +
+					"over it with little effort. It looks like " + SafelyFormattedString.FormattedText("you've regained the ability to coat your body in latex!",
+					StringFormats.BOLD) + " You knew what these things could do to you, so this isn't really that surprising.";
+			}
+
 		}
 
-		private string StackedRubberySkinText()
+		private string NothingHappenedText(bool hasRubberySkin)
 		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
+			if (isLarge && hasRubberySkin)
+			{
+				return "Thick layers or rubber once again flare out of your body, though it's not anything more than you're already accoustomed to. It seems you can't " +
+					"strengthen your rubbery second layer anymore. what a pity.";
+			}
+			else if (hasRubberySkin)
+			{
+				return "The rubbery substance your body can produce flares out again, but beyond this slight flare-up, it seems these small eggs don't really do anything else."
+					+ " You suppose if you really wanted to see if they'd do anything to you, you should use a large one instead.";
+			}
+			else
+			{
+				return "Your skin tingles, but beyond removing any battle scare or blemishes, nothing happens, and your skin remains as smooth as ever.";
+			}
 		}
+
+		private string StackedRubberySkinText(RubberySkin rubberySkin)
+		{
+			return "The rubbery substance that grants you an extra outer layer flows out of you, though this time it's thicker and tougher than before. " +
+				"Once you get it back under control, you experiment with your newly strengthened ability. You're now able to produce "
+				+ "a thicker substance, granting you a little more protection, and you can probably use your rubbery second skin for longer and in kinkier ways.";
+		}
+
 
 		public override bool Equals(EggBase other)
 		{
@@ -92,9 +138,17 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 				consumer.body.primarySkin.skinTexture != SkinTexture.SMOOTH))
 			{
 				var oldBodyData = consumer.body.AsReadOnlyData();
-				consumer.UpdateBody(BodyType.HUMANOID, SkinTexture.SMOOTH);
+				if (consumer.body.type != BodyType.HUMANOID)
+				{
+					consumer.UpdateBody(BodyType.HUMANOID, SkinTexture.SMOOTH);
+					resultsOfUse = RestoredBodyText(consumer, oldBodyData);
+				}
+				else
+				{
+					consumer.body.ChangeAllSkin(SkinTexture.SMOOTH);
 
-				resultsOfUse = RestoredBodyText(oldBodyData);
+					resultsOfUse = SkinBecameSmoothText(consumer, oldBodyData);
+				}
 			}
 			else if ((isLarge || Utils.Rand(3) == 0) && !consumer.HasPerk<RubberySkin>())
 			{
@@ -109,20 +163,20 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 
 				resultsOfUse = GainedRubberySkinPerk(knewAboutBlackEggs);
 			}
-			else if (isLarge)
+			else if (isLarge && consumer.StackPerk<RubberySkin>())
 			{
-				consumer.StackPerk<RubberySkin>();
-
 				resultsOfUse = StackedRubberySkinText();
 			}
 			else
 			{
-				resultsOfUse = NothingHappenedText();
+				resultsOfUse = NothingHappenedText(consumer.HasPerk<RubberySkin>());
 			}
 
 			isBadEnd = false;
 			return true;
 		}
+
+
 
 		//combat consume is identical to regular consume. no need to override it.
 

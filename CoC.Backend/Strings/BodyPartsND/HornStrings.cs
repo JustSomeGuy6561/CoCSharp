@@ -55,6 +55,28 @@ namespace CoC.Backend.BodyParts
 
 	public partial class HornType
 	{
+		protected string GenericReductoHornIntro(bool plural)
+		{
+			return "You doubt if the reducto is going to work but you apply the foul-smelling paste all over your " + (plural ? "horns" : "horn") + " anyways."
+				+ GlobalStrings.NewParagraph();
+		}
+
+		protected string GenericGroPlusHornIntro(bool plural)
+		{
+			return "You're not entirely sure how you'd go about injecting your "+ (plural ? "horns" : "horn") + ", but you figure you might as well try it " +
+				"right where " + (plural ? "they meet" : "it meets") + " your head and hope for the best..." + GlobalStrings.NewParagraph();
+		}
+
+		protected string GenericGroPlusFailed(bool plural)
+		{
+			return GenericGroPlusHornIntro(plural) + "...Nothing seems to happen. Well, that was pretty much what you expected, at least.";
+		}
+
+		protected string GenericReductoFailed(bool plural)
+		{
+			return GenericReductoHornIntro(plural) + "...Nothing seems to happen. Well, that was pretty much what you expected, at least.";
+		}
+
 		private static string NoHornsShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -176,6 +198,19 @@ namespace CoC.Backend.BodyParts
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
+		private string BullHornsReducto(byte reduceAmount)
+		{
+			if (reduceAmount > 0)
+			{
+				return GenericReductoHornIntro(true) + "Strangely, it seems to work, as your bull-like horns shrink by" +
+					Measurement.ToNearestHalfSmallUnit(reduceAmount, false, true) + ".";
+			}
+			else
+			{
+				return GenericReductoFailed(true);
+			}
+		}
+
 
 		private static string DragonShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
@@ -211,6 +246,50 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private string DragonReductoHorns(byte hornCount, int shrinkAmount)
+		{
+			if (shrinkAmount > 0)
+			{
+				if (hornCount == 4)
+				{
+					return GenericReductoHornIntro(true) + "Strangely, it seems to work, though only on one pair of horns. In total, the first pair shrinks about " +
+						Measurement.ToNearestSmallUnit(shrinkAmount, false, true) + ".";
+				}
+				else
+				{
+					return GenericReductoHornIntro(true) + "Strangely, it seems to work, shrinking your " + DragonShortDesc(true, out _) + " about "
+						+ Measurement.ToNearestSmallUnit(shrinkAmount, false, true) + ".";
+				}
+			}
+			else
+			{
+				return GenericReductoFailed(true);
+			}
+		}
+
+		private string DragonGroPlusHorns(byte hornCount, int growAmount)
+		{
+			if (growAmount > 0)
+			{
+				if (hornCount == 4)
+				{
+					return GenericReductoHornIntro(true) + "Strangely, it seems to work, though only on one pair of horns. In total, the first pair grows about " +
+						Measurement.ToNearestSmallUnit(growAmount, false, true) + ".";
+				}
+				else
+				{
+					return GenericReductoHornIntro(true) + "Strangely, it seems to work, growing your " + DragonShortDesc(true, out _) + " about "
+						+ Measurement.ToNearestSmallUnit(growAmount, false, true) + ".";
+				}
+			}
+			else
+			{
+				return GenericGroPlusFailed(true);
+			}
+		}
+
+
 		private static string DeerShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -263,6 +342,34 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private string ReindeerReductoHorns(int pointsLost, int lengthLost)
+		{
+			if (pointsLost <= 0)
+			{
+				return GenericReductoFailed(true);
+			}
+			else
+			{
+				return GenericReductoHornIntro(true) + "Strangely, it works; Your horns shrink into your head, causing you to lose " + Utils.NumberAsText(pointsLost) +
+					" points in the process. Overall, your rack of antlers is " + Measurement.ToNearestSmallUnit(lengthLost, false, true) + " shorter.";
+			}
+		}
+
+		private string ReindeerGroPlusHorns(int pointsGained, int lengthGained)
+		{
+			if (pointsGained <= 0)
+			{
+				return GenericGroPlusFailed(true);
+			}
+			else
+			{
+				return GenericGroPlusHornIntro(true) + "Strangely, it works; Your horns grow out from into your head, the outermost layers splitting off into "
+					+ Utils.NumberAsText(pointsGained) + " additional points in the process. Overall, your rack of antlers is "
+					+ Measurement.ToNearestSmallUnit(lengthGained, false, true) + " longer.";
+			}
+		}
+
 		private static string GoatShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -285,7 +392,7 @@ namespace CoC.Backend.BodyParts
 			}
 			else
 			{
-				return " A pair of tall-standing goat horns sprout from the sides of your head.  They are curved and patterned with ridges.";
+				return " A pair of tall-standing goat horns sprout from the sides of your head. They are curved and patterned with ridges.";
 			}
 		}
 		private static string GoatTransformStr(HornData previousHornData, PlayerBase player)
@@ -296,6 +403,33 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private string GoatReductoHorns(byte changeAmount)
+		{
+			if (changeAmount <= 0)
+			{
+				return GenericReductoFailed(true);
+			}
+			else
+			{
+				return GenericReductoHornIntro(true) + "Strangely, they seem to respond to the reducto, dropping a total of " + Measurement.ToNearestSmallUnit(changeAmount) +
+					" off their length.";
+			}
+		}
+
+		private string GoatGroPlusHorns(byte changeAmount)
+		{
+			if (changeAmount <= 0)
+			{
+				return GenericGroPlusFailed(true);
+			}
+			else
+			{
+				return GenericGroPlusHornIntro(true) + "Strangely, they seem to respond to the serum, adding a total of " + Measurement.ToNearestSmallUnit(changeAmount) +
+					" to their length.";
+			}
+		}
+
 		private static string UniHornShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -330,6 +464,31 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private string UnicornReductoHorns(double shrinkAmount)
+		{
+			if (shrinkAmount > 0)
+			{
+				return GenericReductoHornIntro(false) + "Strangely, it reacts to the paste, shrinking all the way down to it's smallest size.";
+			}
+			else
+			{
+				return GenericReductoFailed(false);
+			}
+		}
+		private string UnicornGrowPlusHorns(double growAmount)
+		{
+			if (growAmount > 0)
+			{
+				return GenericReductoHornIntro(false) + "Strangely, it reacts to the paste, growing until it's as large as it can be, roughly" +
+					Measurement.ToNearestLargeAndSmallUnit(12, false) + " in length.";
+			}
+			else
+			{
+				return GenericReductoFailed(false);
+			}
+		}
+
 		private static string RhinoShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
@@ -408,6 +567,19 @@ namespace CoC.Backend.BodyParts
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
+
+		private string SheepReductoHorns(byte reduceAmount)
+		{
+			if (reduceAmount == 0)
+			{
+				return GenericReductoFailed(true);
+			}
+			else
+			{
+				return GenericReductoHornIntro(true) + "Incredibly, it works and you can feel your horns receding by " + Measurement.ToNearestSmallUnit(reduceAmount) + ".";
+			}
+		}
+
 		private static string ImpShortDesc(bool pluralIfApplicable, out bool isPlural)
 		{
 			isPlural = pluralIfApplicable;

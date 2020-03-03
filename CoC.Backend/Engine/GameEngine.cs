@@ -347,19 +347,19 @@ namespace CoC.Backend.Engine
 			return timeEngine.simpleMultiTimeListeners.Remove(listener);
 		}
 
-		public static void AddOneOffReaction(OneOffTimeReactionBase reaction)
+		public static void AddOneOffReaction(OneOffTimeReaction reaction)
 		{
 			timeEngine.reactions.Push(reaction);
 		}
 
-		public static bool RemoveOneOffReaction(OneOffTimeReactionBase reaction)
+		public static bool RemoveOneOffReaction(OneOffTimeReaction reaction)
 		{
 			return timeEngine.reactions.Remove(reaction);
 		}
 
 
 
-		public static bool HasOneOffReaction(OneOffTimeReactionBase reaction)
+		public static bool HasOneOffReaction(OneOffTimeReaction reaction)
 		{
 			return timeEngine.reactions.Contains(reaction);
 		}

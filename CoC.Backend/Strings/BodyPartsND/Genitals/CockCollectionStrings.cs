@@ -483,12 +483,6 @@ namespace CoC.Backend.BodyParts
 
 		public string GenericChangeCockLengthText(CockCollectionData oldCockData, bool treatMissingCocksAsRemoved = true, bool displayRemovedText = true)
 		{
-			//handle null checks so we don't have to worry about them.
-			if (creature is null)
-			{
-				throw new ArgumentNullException(nameof(creature));
-			}
-			//var target = creature;
 
 			if (oldCockData == null)
 			{
@@ -524,7 +518,7 @@ namespace CoC.Backend.BodyParts
 			}
 			if (changed.Length == 1)
 			{
-				return GenericChangeOneCockLengthText(changed[0].oldValue, changed[0].newValue is null);
+				return GenericChangeOneCockLengthText(changed[0].oldValue, treatMissingCocksAsRemoved, displayRemovedText);
 			}
 
 			double[] deltas = new double[changed.Length];
@@ -533,11 +527,11 @@ namespace CoC.Backend.BodyParts
 			{
 				if (changed[x].newValue is null)
 				{
-					deltas[x] = changed[x].oldValue.length;
+					deltas[x] = -changed[x].oldValue.length;
 				}
 				else
 				{
-					deltas[x] = changed[x].oldValue.length - changed[x].newValue.length;
+					deltas[x] = changed[x].newValue.length - changed[x].oldValue.length;
 				}
 			}
 
@@ -1056,6 +1050,62 @@ namespace CoC.Backend.BodyParts
 
 					sb.Append("</b>");
 				}
+			}
+
+			return sb.ToString();
+		}
+
+		private string ReductoCocks()
+		{
+			StringBuilder sb = new StringBuilder();
+			if (cocks[0].type == CockType.BEE)
+			{
+				sb.Append("The gel produces an odd effect when you rub it into your " + cocks[0].LongDescription() +
+					". It actually seems to calm the need that usually fills you. In fact, as your " + cocks[0].LongDescription() +
+					" shrinks, its skin tone changes to be more in line with yours and the bee hair that covered it falls out. <b>You now have a human cock!</b>");
+				cocks[0].Restore();
+			}
+			else
+			{
+				sb.Append("You smear the repulsive smelling paste over your " + AllCocksShortDescription() + ". It immediately begins to grow warm, " +
+					"almost uncomfortably so, as your " + AllCocksShortDescription() + " begins to shrink." + GlobalStrings.NewParagraph());
+				if (cocks.Count == 1)
+				{
+					sb.Append("Your " + cocks[0].LongDescription() + " twitches as it shrinks, disappearing steadily into your " + (hasSheath ? "sheath" : "crotch")
+						+ " until it has lost about a third of its old size.");
+				}
+				else
+				{ //MULTI
+					sb.Append("Your " + AllCocksShortDescription() + " twitch and shrink, each member steadily disappearing into your "
+						+ (hasSheath ? "sheath" : "crotch") + " until they've lost about a third of their old size.");
+				}
+			}
+			return sb.ToString();
+		}
+
+		private string GroPlusCocks()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append("You sink the needle into the base of your " + AllCocksShortDescription() + ". It hurts like hell, but as you depress the plunger, " +
+				"the pain vanishes, replaced by a tingling pleasure as the chemicals take effect." + GlobalStrings.NewParagraph());
+			if (cocks.Count == 1)
+			{
+				sb.Append("Your " + cocks[0].LongDescription() + " twitches and thickens, pouring " + (Measurement.UsesMetric ? "several centimeters" : "more than an inch") +
+					" of thick new length from your ");
+			}
+			//MULTI
+			else
+			{
+				sb.Append("Your " + AllCocksShortDescription() + " twitch and thicken, each member pouring out "
+					+ (Measurement.UsesMetric ? "several centimeters" : "more than an inch") + " of new length from your ");
+			}
+			if (hasSheath)
+			{
+				sb.Append("sheath.");
+			}
+			else
+			{
+				sb.Append("crotch.");
 			}
 
 			return sb.ToString();

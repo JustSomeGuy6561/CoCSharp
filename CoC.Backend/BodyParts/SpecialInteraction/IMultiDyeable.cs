@@ -28,7 +28,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		bool isDifferentColor(HairFurColors dyeColor, byte index);
 
 		bool attemptToDye(HairFurColors dye, byte index);
-
+		string LocationDesc();
 	}
 
 	//allows you to override the text displayed during dyeing

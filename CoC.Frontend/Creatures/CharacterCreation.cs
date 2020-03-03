@@ -1729,12 +1729,12 @@ namespace CoC.Frontend.Creatures
 			//			currentDisplay.ClearOutput();
 			//			hideMenus();
 			//			mainView.nameBox.visible = false;
-			//			if (creator.hasVagina()) outputText(images.showImage("camp-ascension-female"));
-			//			else outputText(images.showImage("camp-ascension-male"));
+			//			if (creator.hasVagina()) sb.Append(images.showImage("camp-ascension-female"));
+			//			else sb.Append(images.showImage("camp-ascension-male"));
 			//			kGAMECLASS.displayHeader("Ascension");
-			//			outputText("The world you have departed is irrelevant and you are in an endless black void dotted with tens of thousands of stars. You encompass everything and everything encompasses you.");
-			//			outputText("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
-			//			outputText("\n\n(When you're done, select Reincarnate.)");
+			//			sb.Append("The world you have departed is irrelevant and you are in an endless black void dotted with tens of thousands of stars. You encompass everything and everything encompasses you.");
+			//			sb.Append("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
+			//			sb.Append("\n\n(When you're done, select Reincarnate.)");
 			//			menu();
 			//			addButton(0, "Perk Select", ascensionPerkMenu).hint("Spend Ascension Perk Points on special perks!", "Perk Selection");
 			//			addButton(1, "Perm Perks", ascensionPermeryMenu).hint("Spend Ascension Perk Points to make certain perks permanent.", "Perk Selection");
@@ -1746,8 +1746,8 @@ namespace CoC.Frontend.Creatures
 			//		private void ascensionPerkMenu()
 			//		{
 			//			currentDisplay.ClearOutput();
-			//			outputText("You can spend your Ascension Perk Points on special perks not available at level-up!");
-			//			outputText("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
+			//			sb.Append("You can spend your Ascension Perk Points on special perks not available at level-up!");
+			//			sb.Append("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
 			//			menu();
 			//			addButton(0, "Desires", ascensionPerkSelection, PerkLib.AscensionDesires, MAX_DESIRES_LEVEL, null, PerkLib.AscensionDesires.longDesc + "\n\nCurrent level: " + creator.perkv1(PerkLib.AscensionDesires) + " / " + MAX_DESIRES_LEVEL);
 			//			addButton(1, "Endurance", ascensionPerkSelection, PerkLib.AscensionEndurance, MAX_ENDURANCE_LEVEL, null, PerkLib.AscensionEndurance.longDesc + "\n\nCurrent level: " + creator.perkv1(PerkLib.AscensionEndurance) + " / " + MAX_ENDURANCE_LEVEL);
@@ -1763,14 +1763,14 @@ namespace CoC.Frontend.Creatures
 			//		private void ascensionPerkSelection(perk:* = null, maxLevel:int = 10)
 			//		{
 			//			currentDisplay.ClearOutput();
-			//			outputText("Perk Effect: " + perk.longDesc);
-			//			outputText("\nCurrent level: " + creator.perkv1(perk) + (maxLevel > 0 ? " / " + maxLevel : " (No maximum level)") + "");
-			//			if (creator.perkv1(perk) >= maxLevel && maxLevel > 0) outputText(" <b>(Maximum)</b>");
+			//			sb.Append("Perk Effect: " + perk.longDesc);
+			//			sb.Append("\nCurrent level: " + creator.perkv1(perk) + (maxLevel > 0 ? " / " + maxLevel : " (No maximum level)") + "");
+			//			if (creator.perkv1(perk) >= maxLevel && maxLevel > 0) sb.Append(" <b>(Maximum)</b>");
 			//			var cost:int = creator.perkv1(perk) + 1;
 			//			if (cost > 5) cost = 5;
-			//			if (creator.perkv1(perk) < maxLevel || maxLevel < 0) outputText("\nCost for next level: " + cost);
-			//			else outputText("\nCost for next level: <b>N/A</b>");
-			//			outputText("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
+			//			if (creator.perkv1(perk) < maxLevel || maxLevel < 0) sb.Append("\nCost for next level: " + cost);
+			//			else sb.Append("\nCost for next level: <b>N/A</b>");
+			//			sb.Append("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
 			//			menu();
 			//			if (creator.ascensionPerkPoints >= cost && (creator.perkv1(perk) < maxLevel || maxLevel < 0)) addButton(0, "Add 1 level", addAscensionPerk, perk, maxLevel);
 			//			addButton(4, "Back", ascensionPerkMenu);
@@ -1788,9 +1788,9 @@ namespace CoC.Frontend.Creatures
 			//		private void ascensionPermeryMenu(page:int = 1)
 			//		{
 			//			currentDisplay.ClearOutput();
-			//			outputText("For the price of a few points, you can make certain perks permanent and they will carry over in future ascensions. In addition, if the perks come from transformations, they will stay even if you no longer meet the requirements.");
-			//			outputText("\n\nCurrent Cost: " + permanentizeCost() + " Ascension Points");
-			//			outputText("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
+			//			sb.Append("For the price of a few points, you can make certain perks permanent and they will carry over in future ascensions. In addition, if the perks come from transformations, they will stay even if you no longer meet the requirements.");
+			//			sb.Append("\n\nCurrent Cost: " + permanentizeCost() + " Ascension Points");
+			//			sb.Append("\n\nAscension Perk Points: " + creator.ascensionPerkPoints);
 			//			var button:int = 0;
 			//			var countBeforeAdding:int = (page - 1) * 12;
 			//			menu();
@@ -1841,13 +1841,13 @@ namespace CoC.Frontend.Creatures
 			//			currentDisplay.ClearOutput();
 			//			if (creator.ascensionPerkPoints < 5)
 			//			{
-			//				outputText("You need at least 5 Ascension Perk Points to respec level-up perks. You have " + creator.ascensionPerkPoints + ".");
+			//				sb.Append("You need at least 5 Ascension Perk Points to respec level-up perks. You have " + creator.ascensionPerkPoints + ".");
 			//				doNext(ascensionMenu);
 			//				return;
 			//			}
 			//			if (creator.perkPoints == creator.level - 1)
 			//			{
-			//				outputText("There is no need to respec as you've already resetted your level-up perks.");
+			//				sb.Append("There is no need to respec as you've already resetted your level-up perks.");
 			//				doNext(ascensionMenu);
 			//				return;
 			//			}
@@ -1857,17 +1857,17 @@ namespace CoC.Frontend.Creatures
 			//			for (var i:int = 0; i < creator.perks.length; i++)
 			//				if (isAscensionPerk(creator.perks[i], true)) ascendPerkTemp.push(creator.perks[i]);
 			//			creator.removePerks();
-			//			if (ascendPerkTemp.length > 0)
+			//			if (ascendPerkTemp.Count > 0)
 			//				for (i = 0; i < ascendPerkTemp.length; i++)
 			//					creator.createPerk(ascendPerkTemp[i].ptype, ascendPerkTemp[i].value1, ascendPerkTemp[i].value2, ascendPerkTemp[i].value3, ascendPerkTemp[i].value4);
-			//			outputText("Your level-up perks are now reset and you are refunded the perk points.");
+			//			sb.Append("Your level-up perks are now reset and you are refunded the perk points.");
 			//			doNext(ascensionMenu);
 			//		}
 			//		//Rename
 			//		private void renamePrompt()
 			//		{
 			//			currentDisplay.ClearOutput();
-			//			outputText("You may choose to change your name.");
+			//			sb.Append("You may choose to change your name.");
 			//			mainView.promptCharacterName();
 			//			mainView.nameBox.text = creator.short;
 			//			menu();
@@ -1880,7 +1880,7 @@ namespace CoC.Frontend.Creatures
 			//		private void reincarnatePrompt()
 			//		{
 			//			currentDisplay.ClearOutput();
-			//			outputText("Would you like to reincarnate and start a new life as a Champion?");
+			//			sb.Append("Would you like to reincarnate and start a new life as a Champion?");
 			//			doYesNo(reincarnate, ascensionMenu);
 			//		}
 			//		protected void reincarnate()
@@ -1891,41 +1891,41 @@ namespace CoC.Frontend.Creatures
 			//			currentDisplay.ClearOutput();
 			//			mainView.nameBox.visible = false;
 			//			boxNames.visible = false;
-			//			outputText("Everything fades to white and finally... black. You can feel yourself being whisked back to reality as you slowly awaken in your room. You survey your surroundings and recognize almost immediately; you are in your room inside the inn in Ingnam! You get up and look around. ");
+			//			sb.Append("Everything fades to white and finally... black. You can feel yourself being whisked back to reality as you slowly awaken in your room. You survey your surroundings and recognize almost immediately; you are in your room inside the inn in Ingnam! You get up and look around. ");
 			//			if (creator.hasKeyItem("Camp - Chest") >= 0 || creator.hasKeyItem("Equipment Rack - Weapons") >= 0 || creator.hasKeyItem("Equipment Rack - Armor") >= 0 || creator.hasKeyItem(Inventory.STORAGE_JEWELRY_BOX) >= 0)
 			//			{
 			//				if (creator.hasKeyItem("Camp - Chest") >= 0)
 			//				{
-			//					outputText("\n\nYou take a glance at the chest; you don't remember having it inside your room. You open the chest and look inside. ");
-			//					if (inventory.hasItemsInStorage()) outputText("Something clicks in your mind; they must be the old stuff you had from your previous incarnation");
-			//					else outputText("It's empty and you let out a disappointed sigh.");
+			//					sb.Append("\n\nYou take a glance at the chest; you don't remember having it inside your room. You open the chest and look inside. ");
+			//					if (inventory.hasItemsInStorage()) sb.Append("Something clicks in your mind; they must be the old stuff you had from your previous incarnation");
+			//					else sb.Append("It's empty and you let out a disappointed sigh.");
 			//				}
 			//				if (creator.hasKeyItem("Equipment Rack - Weapons") >= 0)
 			//				{
-			//					outputText("\n\nThere is a weapon rack. You look at it. ");
-			//					if (inventory.weaponRackDescription()) outputText(" Something clicks in your mind; they must be the old weapons you had from your previous incarnation!");
-			//					else outputText("It's empty and you let out a sigh but you know you can bring it to Mareth.");
+			//					sb.Append("\n\nThere is a weapon rack. You look at it. ");
+			//					if (inventory.weaponRackDescription()) sb.Append(" Something clicks in your mind; they must be the old weapons you had from your previous incarnation!");
+			//					else sb.Append("It's empty and you let out a sigh but you know you can bring it to Mareth.");
 			//				}
 			//				if (creator.hasKeyItem("Equipment Rack - Armor") >= 0)
 			//				{
-			//					outputText("\n\nThere is an armor rack. You look at it. ");
-			//					if (inventory.armorRackDescription()) outputText(" Something clicks in your mind; they must be the old armors you had from your previous incarnation!");
-			//					else outputText("It's empty and you let out a sigh but you know you can bring it to Mareth.");
+			//					sb.Append("\n\nThere is an armor rack. You look at it. ");
+			//					if (inventory.armorRackDescription()) sb.Append(" Something clicks in your mind; they must be the old armors you had from your previous incarnation!");
+			//					else sb.Append("It's empty and you let out a sigh but you know you can bring it to Mareth.");
 			//				}
 			//				if (creator.hasKeyItem("Equipment Rack - Shields") >= 0)
 			//				{
-			//					outputText("\n\nThere is a shield rack. You look at it. ");
-			//					if (inventory.shieldRackDescription()) outputText(" Something clicks in your mind; they must be the old shields you had from your previous incarnation!");
-			//					else outputText("It's empty and you let out a sigh but you know you can bring it to Mareth.");
+			//					sb.Append("\n\nThere is a shield rack. You look at it. ");
+			//					if (inventory.shieldRackDescription()) sb.Append(" Something clicks in your mind; they must be the old shields you had from your previous incarnation!");
+			//					else sb.Append("It's empty and you let out a sigh but you know you can bring it to Mareth.");
 			//				}
 			//				if (creator.hasKeyItem(Inventory.STORAGE_JEWELRY_BOX) >= 0)
 			//				{
-			//					outputText("\n\nThere is a jewelry box on the dresser. You walk over to the box, open it, and look inside. ");
-			//					if (inventory.jewelryBoxDescription()) outputText(" It's making sense! The contents must be from your past adventures.");
-			//					else outputText("It's empty and you let out a sigh but you know you can bring it to Mareth.");
+			//					sb.Append("\n\nThere is a jewelry box on the dresser. You walk over to the box, open it, and look inside. ");
+			//					if (inventory.jewelryBoxDescription()) sb.Append(" It's making sense! The contents must be from your past adventures.");
+			//					else sb.Append("It's empty and you let out a sigh but you know you can bring it to Mareth.");
 			//				}
 			//			}
-			//			outputText("\n\nAfter looking around the room for a while, you look into the mirror and begin to recollect who you are...");
+			//			sb.Append("\n\nAfter looking around the room for a while, you look into the mirror and begin to recollect who you are...");
 			//			creator.breastRows = new Vector.< BreastRow > ();
 			//			creator.cocks = new Vector.< Cock > ();
 			//			creator.vaginas = new Vector.< Vagina > ();

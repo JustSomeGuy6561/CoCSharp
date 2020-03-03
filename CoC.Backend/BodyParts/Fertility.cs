@@ -3,7 +3,10 @@
 //Author: JustSomeGuy
 //4/15/2019, 9:13 PM
 
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Engine.Time;
 using CoC.Backend.Tools;
 using System;
 
@@ -17,7 +20,7 @@ namespace CoC.Backend.BodyParts
 {
 	//it wraps a byte. I dunno.
 	//now capping max base fertility to 75. Perks could boost this past the base 75 value.
-	public sealed partial class Fertility : SimpleSaveablePart<Fertility, FertilityData>
+	public sealed partial class Fertility : SimpleSaveablePart<Fertility, FertilityData>, IBodyPartTimeLazy
 	{
 		public override string BodyPartName() => Name();
 
@@ -26,20 +29,43 @@ namespace CoC.Backend.BodyParts
 
 		//byte value => something, idk.
 
-		public bool isInfertile
+		private GameDateTime timeContraceptivesWearOff
 		{
-			get => _isInfertile;
-			private set
+			get => _timeContraceptivesWearOff;
+
+			set
 			{
-				if (_isInfertile != value)
+				if (!_timeContraceptivesWearOff.Equals(value))
 				{
 					var oldData = AsReadOnlyData();
-					_isInfertile = value;
+					_timeContraceptivesWearOff = value;
 					NotifyDataChanged(oldData);
 				}
 			}
 		}
-		private bool _isInfertile;
+		private GameDateTime _timeContraceptivesWearOff;
+
+
+		public int hoursUntilContraceptivesWearOff => timeContraceptivesWearOff?.hoursToNow() ?? 0;
+
+		public bool permanentlyInfertile
+		{
+			get => _permanentlyInfertile;
+			private set
+			{
+				if (_permanentlyInfertile != value)
+				{
+					var oldData = AsReadOnlyData();
+					_permanentlyInfertile = value;
+					NotifyDataChanged(oldData);
+				}
+			}
+		}
+		private bool _permanentlyInfertile = false;
+
+		public bool temporarilyInfertile => hoursUntilContraceptivesWearOff > 0;
+
+		public bool isInfertile => permanentlyInfertile || temporarilyInfertile;
 
 		public byte baseFertility
 		{
@@ -56,21 +82,14 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private byte _baseValue;
-		internal byte perkBonusFertility
-		{
-			get => _perkBonusFertility;
-			set
-			{
-				if (_perkBonusFertility != value)
-				{
-					var oldData = AsReadOnlyData();
-					_perkBonusFertility = value;
-					NotifyDataChanged(oldData);
-				}
-			}
+		private byte perkBonusFertility => CreatureStore.GetCreatureClean(creatureID)?.perks.baseModifiers.bonusFertility.GetValue() ?? 0;
 
+		internal void OnPerkFertilityChange(byte oldValue)
+		{
+			var oldFertilityValue = Math.Min(MAX_TOTAL_FERTILITY, baseFertility.add(oldValue));
+			var oldData = new FertilityData(this, oldFertilityValue);
+			NotifyDataChanged(oldData);
 		}
-		private byte _perkBonusFertility = 0;
 
 		public override FertilityData AsReadOnlyData()
 		{
@@ -93,13 +112,13 @@ namespace CoC.Backend.BodyParts
 				default:
 					baseFertility = 5; break;
 			}
-			isInfertile = artificiallyInfertile;
+			permanentlyInfertile = artificiallyInfertile;
 		}
 
 		internal Fertility(Guid creatureID, byte value, bool artificiallyInfertile = false) : base(creatureID)
 		{
 			baseFertility = value;
-			isInfertile = artificiallyInfertile;
+			permanentlyInfertile = artificiallyInfertile;
 		}
 
 		public byte IncreaseFertility(byte amount = 1, bool increaseIfInfertile = true)
@@ -133,23 +152,55 @@ namespace CoC.Backend.BodyParts
 			return baseFertility;
 		}
 
-		public bool MakeInfertile()
+		public bool MakeTemporarilyInfertile(byte timeout)
 		{
-			if (isInfertile)
+			if (permanentlyInfertile)
 			{
 				return false;
 			}
-			isInfertile = true;
+			if (hoursUntilContraceptivesWearOff > timeout)
+			{
+				return false;
+			}
+			else if (hoursUntilContraceptivesWearOff == timeout)
+			{
+				return true;
+			}
+			else
+			{
+				timeContraceptivesWearOff = GameDateTime.HoursFromNow(timeout);
+				return true;
+			}
+		}
+
+		public bool RemoveTemporaryInfertility()
+		{
+			if (timeContraceptivesWearOff is null)
+			{
+				return false;
+			}
+
+			timeContraceptivesWearOff = null;
 			return true;
 		}
 
-		public bool MakeFertile()
+		public bool MakePermanentlyInfertile()
 		{
-			if (!isInfertile)
+			if (permanentlyInfertile)
 			{
 				return false;
 			}
-			isInfertile = false;
+			permanentlyInfertile = true;
+			return true;
+		}
+
+		public bool ClearPermanentInfertility()
+		{
+			if (!permanentlyInfertile)
+			{
+				return false;
+			}
+			permanentlyInfertile = false;
 			return true;
 		}
 
@@ -164,18 +215,42 @@ namespace CoC.Backend.BodyParts
 			return !(originalData is null) && originalData.currentFertilityValue == totalFertility && isInfertile == originalData.artificiallyInfertile;
 		}
 
+		public string reactToTimePassing(bool isPlayer, byte hoursPassed)
+		{
+			if (timeContraceptivesWearOff.CompareTo(GameDateTime.Now) <= 0)
+			{
+				timeContraceptivesWearOff = null;
+			}
+			return null;
+		}
 	}
 
 	public sealed class FertilityData : SimpleData
 	{
 		public readonly byte currentFertilityValue;
-		public readonly bool artificiallyInfertile;
+		public readonly bool temporarilyInfertile;
+		public readonly bool permanentlyInfertile;
+
+		public bool artificiallyInfertile => temporarilyInfertile || permanentlyInfertile;
+
+		public readonly int hoursUntilContraceptivesWearOff;
+
 		public byte fertility => artificiallyInfertile ? (byte)0 : currentFertilityValue;
 
 		public FertilityData(Fertility source) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
 		{
 			currentFertilityValue = source.currentFertility;
-			artificiallyInfertile = source.isInfertile;
+			temporarilyInfertile = source.temporarilyInfertile;
+			permanentlyInfertile = source.permanentlyInfertile;
+			hoursUntilContraceptivesWearOff = source.hoursUntilContraceptivesWearOff;
+		}
+
+		public FertilityData(Fertility source, byte overrideFertility) : base(source?.creatureID ?? throw new ArgumentNullException(nameof(source)))
+		{
+			currentFertilityValue = overrideFertility;
+			temporarilyInfertile = source.temporarilyInfertile;
+			permanentlyInfertile = source.permanentlyInfertile;
+			hoursUntilContraceptivesWearOff = source.hoursUntilContraceptivesWearOff;
 		}
 
 	}

@@ -3,53 +3,46 @@
 //Author: JustSomeGuy
 //6/27/2019, 6:32 PM
 
-using CoC.Backend.BodyParts;
-using CoC.Backend.Creatures;
-using CoC.Backend.UI;
-using CoC.Backend.Engine.Events;
-using CoC.Backend.Engine.Time;
-using CoC.Backend.Perks;
-using CoC.Backend.Tools;
 using System;
 using System.Linq;
 using System.Text;
+using CoC.Backend.BodyParts;
+using CoC.Backend.BodyParts.EventHelpers;
+using CoC.Backend.CoC_Colors;
+using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Perks;
+using CoC.Backend.Reaction;
+using CoC.Backend.Tools;
 
 namespace CoC.Frontend.Perks
 {
-	public sealed class BimBro : PerkBase
+	//this isn't meant to be removed. if it is, we will simply leave the affected body parts as they are.
+	public sealed class BimBro : StandardPerk
 	{
-		public bool broBody { get; private set; } = false;
-		public bool bimboBody { get; private set; } = false;
+		public bool hasBroEffect { get; private set; } = false;
+		public bool hasBimboEffect { get; private set; } = false;
 
-		public bool futaBody => broBody && bimboBody;
+		public bool futaBody => hasBroEffect && hasBimboEffect;
+		public bool bimboBody => hasBimboEffect && !hasBroEffect;
+		public bool broBody => hasBroEffect && !hasBimboEffect;
 
 		private Gender targetGender
 		{
 			get
 			{
 				Gender curr = Gender.GENDERLESS;
-				curr |= broBody ? Gender.MALE : Gender.GENDERLESS;
-				curr |= bimboBody ? Gender.FEMALE : Gender.GENDERLESS;
+				curr |= hasBroEffect ? Gender.MALE : Gender.GENDERLESS;
+				curr |= hasBimboEffect ? Gender.FEMALE : Gender.GENDERLESS;
 				return curr;
 			}
 		}
 
 		public bool bimbroBrains { get; private set; }
 
-		private sbyte breastDelta = 0;
-		private float cockDelta = 0;
-
-		private CupSize? breastNew = null;
-		private float? cockNew = null;
-
-		private float intGainDelta = 0;
-		private float intLossDelta = 0;
-
 		private bool eventFiring;
 
-		private bool activated = false;
-
-		public BimBro(Gender gender) : base(Name, Text)
+		public BimBro(Gender gender, bool withBrains = true) : base()
 		{
 			if (gender == Gender.GENDERLESS)
 			{
@@ -57,131 +50,272 @@ namespace CoC.Frontend.Perks
 			}
 			if (gender.HasFlag(Gender.MALE))
 			{
-				broBody = true;
+				hasBroEffect = true;
 			}
 			if (gender.HasFlag(Gender.FEMALE))
 			{
-				bimboBody = true;
+				hasBimboEffect = true;
 			}
 
-			bimbroBrains = true;
+			bimbroBrains = withBrains;
 
 			sourceCreature.genitals.onGenderChanged += GenderChangeCheck;
+			sourceCreature.breasts[0].dataChange += BreastChange;
+			sourceCreature.butt.dataChange += ButtChange;
+			sourceCreature.hips.dataChange += HipsChange;
 		}
 
-		private void GenderChangeCheck(object sender, Backend.BodyParts.EventHelpers.GenderChangedEventArgs e)
+		private void HipsChange(object sender, SimpleDataChangeEvent<Hips, HipData> e)
+		{
+			if (hasBimboEffect)
+			{
+				if (e.newValues.size < 12)
+				{
+					FixBadData();
+				}
+			}
+		}
+
+		private void ButtChange(object sender, SimpleDataChangeEvent<Butt, ButtData> e)
+		{
+			if (hasBimboEffect)
+			{
+				if (e.newValues.size < 12)
+				{
+					FixBadData();
+				}
+			}
+		}
+
+		private void BreastChange(object sender, SimpleDataChangeEvent<Breasts, BreastData> e)
+		{
+			if (hasBimboEffect)
+			{
+				if (e.newValues.cupSize < CupSize.DD)
+				{
+					FixBadData();
+				}
+			}
+		}
+
+		private void GenderChangeCheck(object sender, GenderChangedEventArgs e)
 		{
 			if (futaBody)
 			{
 				if (e.newGender != Gender.HERM)
 				{
-					AddCorrectGenderReaction();
+					FixBadData();
 				}
 			}
-			else if (broBody)
+			else if (hasBroEffect)
 			{
 				if (!e.newGender.HasFlag(Gender.MALE))
 				{
-					AddCorrectGenderReaction();
+					FixBadData();
 				}
 			}
-			else if (bimboBody)
+			else if (hasBimboEffect)
 			{
 				if (!e.newGender.HasFlag(Gender.FEMALE))
 				{
-					AddCorrectGenderReaction();
+					FixBadData();
 				}
 			}
 		}
 
-		private void AddCorrectGenderReaction()
+		private void FixBadData()
 		{
 			if (!eventFiring)
 			{
 				eventFiring = true;
-				GameEngine.AddTimeReaction(new TimeReaction(OnCorrectEvent, 4, true));
+				GameEngine.AddOneOffReaction(new OneOffTimeReaction(new GenericSimpleReaction(CorrectGenderReaction), 4, true));
 			}
 		}
 
-		private EventWrapper OnCorrectEvent()
+		private string CorrectGenderReaction(bool currentlyIdling, bool hasIdleHours)
 		{
-			bool grewBalls = false;
-			bool enlargedBreasts = false;
-			//bool shrunkBreasts = false; //add in if event is to fix tits to male size in reaction.
-			bool grewCock = false;
-			bool grewVagina = false;
-			bool enlargedCock = false;
+			StringBuilder sb = new StringBuilder();
+			//male checks.
+			if (hasBroEffect)
+			{ //Futa checks
+				if (!sourceCreature.hasCock)
+				{ //(Dick regrowth)
+					sourceCreature.AddCock(CockType.defaultValue, 10, 2.75);
+					sb.Append(Environment.NewLine + "<b>As time passes, your loins grow itchy for a moment. A split-second later, a column of flesh erupts from your crotch. " +
+						"Your new, 10-inch cock pulses happily.");
+					if (!sourceCreature.balls.hasBalls)
+					{
+						sb.Append(" A pair of heavy balls drop into place below it, churning to produce cum.");
+						sourceCreature.balls.GrowBalls(2, 3);
+					}
 
-			EventWrapper retVal;
-
-			Gender target = targetGender;
-			if (sourceCreature.genitals.gender != target)
+					sourceCreature.DeltaCreatureStats(inte: -1, sens: 5, lus: 15);
+					sb.Append("</b>" + Environment.NewLine);
+				}
+				if (sourceCreature.cocks[0].length < 8)
+				{ //(Dick rebiggening)
+					sb.Append(Environment.NewLine + "<b>As time passes, your cock engorges, flooding with blood and growing until it's at 8 inches long. " +
+						"You really have no control over your dick.</b>" + Environment.NewLine);
+					sourceCreature.cocks[0].SetLength(8);
+					if (sourceCreature.cocks[0].girth < 2)
+					{
+						sourceCreature.cocks[0].SetGirth(2);
+					}
+				}
+				if (sourceCreature.balls.count == 0)
+				{ //(Balls regrowth)
+					sb.Append(Environment.NewLine + "<b>As time passes, a pressure in your loins intensifies to near painful levels. The skin beneath "
+						+ sourceCreature.genitals.AllCocksShortDescription() + " grows loose and floppy, and then two testicles roll down to fill your scrotum.</b>"
+						+ Environment.NewLine);
+					sourceCreature.balls.GrowBalls(2, 3);
+				}
+			}
+			if (hasBimboEffect)
 			{
-				if (targetGender.HasFlag(Gender.MALE)) //male, but could be herm.
-				{
-					if (!sourceCreature.genitals.balls.hasBalls)
+				if (sourceCreature.breasts[0].cupSize < CupSize.DD)
+				{ //Tits!
+					BreastData oldBreastRowData = sourceCreature.breasts[0].AsReadOnlyData();
+					sourceCreature.breasts[0].SetCupSize(CupSize.DD);
+
+					if (bimbroBrains)
 					{
-						grewBalls = true;
-						sourceCreature.genitals.GrowBalls(2, 3);
+						if (hasBroEffect)
+						{
+							sb.Append(Environment.NewLine + "<b>Your tits get nice and full again. You'll have lots of fun now that your breasts are back to being big, " +
+								"swollen knockers!</b>" + Environment.NewLine);
+						}
+						else
+						{
+							sb.Append(Environment.NewLine + "<b>Your boobies like, get all big an' wobbly again! You'll have lots of fun now that your tits are back " +
+								"to being big, yummy knockers!</b>" + Environment.NewLine);
+						}
+
+					}
+					else
+					{
+						sb.Append(Environment.NewLine + "<b>Your " + oldBreastRowData.LongDescription() + " have regained their former bimbo-like size. " +
+						"It looks like you'll be stuck with large, sensitive breasts forever, but at least it'll help you tease your enemies into submission!</b>"
+						+ Environment.NewLine);
 					}
 
-					if (sourceCreature.genitals.numCocks == 0)
+					sourceCreature.DeltaCreatureStats(inte: -1, lus: 15);
+				}
+				if (!sourceCreature.hasVagina)
+				{ //Vagoo
+					sourceCreature.AddVagina();
+
+					if (bimbroBrains && futaBody)
 					{
-						grewCock = true;
-						sourceCreature.genitals.AddCock(CockType.defaultValue, 10, 2);
+						sb.Append(Environment.NewLine + "<b>Your crotch is like, all itchy an' stuff. Damn! There's a wet little slit opening up, and it's all tingly! It feels so good, why would you have ever gotten rid of it?</b>" + Environment.NewLine);
+
 					}
-					else if (sourceCreature.genitals.ShortestCockLength(false) < 8)
+					else if (bimbroBrains)
 					{
-						enlargedCock = true;
-						sourceCreature.cocks.ForEach(x => { if (x.length < 8) x.SetLength(8); });
+						sb.Append(Environment.NewLine + "<b>Your crotch is like, all itchy an' stuff. Omigawsh! There's a wet little slit opening up, and it's all tingly! It feels so good, maybe like, someone could put something inside there!</b>" + Environment.NewLine);
+
 					}
+					else
+					{
+						sb.Append(Environment.NewLine + "<b>Your crotch tingles for a second, and when you reach down to feel, your " + sourceCreature.lowerBody.LongDescription() +
+							" fold underneath you, limp. You've got a vagina - the damned thing won't go away and it feels twice as sensitive this time. ");
+
+						sb.Append((futaBody ? "Fucking futa-causing shit!" : "Fucking bimbo-causing shit!") + "</b>" + Environment.NewLine);
+
+					}
+					sourceCreature.DeltaCreatureStats(inte: -1, sens: 10, lus: 15);
 				}
 
-				if (targetGender.HasFlag(Gender.FEMALE)) //female or herm.
+				if (!futaBody)
 				{
-					if (sourceCreature.genitals.SmallestCupSize() < CupSize.C)
+					if (sourceCreature.hips.size < 12)
 					{
-						enlargedBreasts = true;
-						sourceCreature.breasts.ForEach(x => { if (x.cupSize < CupSize.C) x.setCupSize(CupSize.C); });
+						if (bimbroBrains)
+						{
+							sb.Append(Environment.NewLine + "Whoah! As you move, your " + sourceCreature.build.HipsLongDescription() + " sway farther and farther to each side, " +
+								"expanding with every step, soft new flesh filling in as your hips spread into something more appropriate on a tittering bimbo. " +
+								"You giggle when you realize you can't walk any other way. At least it makes you look, like, super sexy!" + Environment.NewLine);
+						}
+						else
+						{
+							sb.Append(Environment.NewLine + "Oh, no! As you move, your " + sourceCreature.build.HipsLongDescription() + " sway farther and farther " +
+								"to each side, expanding with every step, soft new flesh filling in as your hips spread into something more appropriate for a bimbo. " +
+								"Once you realize that you can't walk any other way, you sigh heavily, your only consolation the fact that your widened hips " +
+								"can be used to tease more effectively." + Environment.NewLine);
+						}
+
+						sourceCreature.DeltaCreatureStats(inte: -1);
+						sourceCreature.hips.SetHipSize(12);
+					}
+					if (sourceCreature.butt.size < 12)
+					{
+						if (bimbroBrains)
+						{
+							sb.Append(Environment.NewLine + "Gradually warming, you find that your " + sourceCreature.build.ButtLongDescription() + " is practically " +
+								"sizzling with erotic energy. You smile to yourself, imagining how much you wish you had a nice, plump, bimbo-butt again, " +
+								"your hands finding their way to the flesh on their own. Like, how did they get down there? You bite your lip when you realize " +
+								"how good your tush feels in your hands, particularly when it starts to get bigger. Are butts supposed to do that? Happy pink thoughts " +
+								"wash that concern away - it feels good, and you want a big, sexy butt! The growth stops eventually, and you pout disconsolately " +
+								"when the lusty warmth's last lingering touches dissipate. Still, you smile when you move and feel your new booty jiggling along behind you. " +
+								"This will be fun!" + Environment.NewLine);
+						}
+						else
+						{
+							sb.Append(Environment.NewLine + "Gradually warming, you find that your " + sourceCreature.build.ButtLongDescription() + " is practically " +
+								"sizzling with erotic energy. Oh, no! You thought that having a big, bloated bimbo-butt was a thing of the past, but with how " +
+								"it's tingling under your groping fingertips, you have no doubt that you're about to see the second coming of your sexy ass. Wait, " +
+								"how did your fingers get down there? You pull your hands away somewhat guiltily as you feel your buttcheeks expanding. Each time " +
+								"you bounce and shake your new derriere, you moan softly in enjoyment. Damnit! You force yourself to stop just as your ass does, " +
+								"but when you set off again, you can feel it bouncing behind you with every step. At least it'll help you tease your foes a " +
+								"little more effectively..." + Environment.NewLine);
+						}
+
+						sourceCreature.DeltaCreatureStats(inte: -1, lus: 10);
+						sourceCreature.butt.SetButtSize(12);
 					}
 
-					if (sourceCreature.genitals.numVaginas == 0)
-					{
-						grewVagina = true;
-						sourceCreature.AddVagina(VaginaType.defaultValue);
-					}
+
 				}
-				//we don't correct tits apparently for male only in player events.
 
-				retVal = (EventWrapper)CorrectedGenderText(grewCock, grewBalls, enlargedCock, enlargedBreasts, grewVagina);
+			}
 
+
+			eventFiring = false;
+			return sb.ToString();
+		}
+
+		public override string Name()
+		{
+			if (futaBody)
+			{
+				return "Futa Form";
+			}
+			else if (hasBimboEffect)
+			{
+				return "Bimbo Body";
 			}
 			else
 			{
-				retVal = EventWrapper.Empty;
+				return "Bro Body";
 			}
-			eventFiring = false;
-			return retVal;
 		}
 
-		private string CorrectedGenderText(bool grewCock, bool grewBalls, bool enlargedCock, bool enlargedBreasts, bool grewVagina)
+		public override string HasPerkText()
 		{
-			throw new NotImplementedException();
+			if (futaBody)
+			{
+				return "Ensures that your body fits the Futa look (Tits DD+, Dick 8\"+, & Pussy). Also keeps your lusts burning bright and improves the tease skill.";
+			}
+			else if (hasBimboEffect)
+			{
+				return "Gives the body of a bimbo. Tits will never stay below a 'DD' cup, libido is raised, lust resistance is raised, and upgrades tease.";
+			}
+			else
+			{
+				return "Grants an ubermasculine body that's sure to impress, and ensures your dick is equally impressive. Raises your lust and upgrades the tease skill.";
+			}
 		}
 
-		public BimBro() : this(Gender.MALE) { }
-
-		private static string Name()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		private static string Text()
-		{
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
-		protected override bool KeepOnAscension => false;
+		protected override bool keepOnAscension => false;
 
 		protected override void OnActivation()
 		{
@@ -189,110 +323,73 @@ namespace CoC.Frontend.Perks
 			{
 				// drop intelligence to 1/5 of current value, minimum of 10.
 				byte intell = (byte)Math.Round(combat.intelligenceTrue / 5);
-				if (intell < 10) intell = 10;
+				if (intell < 10)
+				{
+					intell = 10;
+				}
+
 				combat.SetIntelligence(intell);
 			}
 
-			if (bimboBody && broBody)
+			if (hasBimboEffect && hasBroEffect)
 			{
-				DoFuta();
+				DoFuta(false);
 			}
-			else if (bimboBody)
+			else if (hasBimboEffect)
 			{
-				DoBimbo();
+				DoBimbo(false);
 			}
-			else if (broBody)
+			else if (hasBroEffect)
 			{
-				DoBro();
+				DoBro(false);
 			}
 
 			if (bimbroBrains)
 			{
 				MakeDum();
 			}
-
-
-
-
-			activated = true;
-
-
 		}
 
 		public void Broify(bool withBrains = true)
 		{
-			//if (withBrains && !bimbroBrains)
-			//{
-			//	bimbroBrains = true;
-			//}
-			if (activated)
+			if (hasBimboEffect)
 			{
-				if (bimboBody)
-				{
-					DoFuta();
-				}
-				else
-				{
-					DoBro();
-				}
-				//make dum only fires if not already under the effects of bimbo brain
-				if (withBrains)
-				{
-					MakeDum();
-				}
+				DoFuta(true);
 			}
 			else
 			{
-				bimbroBrains |= withBrains; //if already true, keep true. if not and withbrains, make true.
-				broBody = true;
+				DoBro(hasBroEffect);
+			}
+			//make dum only fires if not already under the effects of bimbo brain
+			if (withBrains)
+			{
+				MakeDum();
 			}
 		}
 
-		public void Bimbify (bool withBrains = true)
+		public void Bimbify(bool withBrains = true)
 		{
-			bimboBody = true;
-
-			if (withBrains)
+			if (hasBroEffect)
 			{
-				bimbroBrains = true;
-			}
-			if (activated)
-			{
-				if (broBody)
-				{
-					DoFuta();
-				}
-				else
-				{
-					DoBimbo();
-				}
-				//make dum only fires if not already under the effects of bimbo brain
-				if (withBrains)
-				{
-					MakeDum();
-				}
+				DoFuta(true);
 			}
 			else
 			{
-				bimbroBrains |= withBrains;
-				bimboBody = true;
+				DoBimbo(hasBimboEffect);
+			}
+			//make dum only fires if not already under the effects of bimbo brain
+			if (withBrains)
+			{
+				MakeDum();
 			}
 		}
 
 		private void MakeDum()
 		{
-			if (!activated || !bimbroBrains)
+			if (!bimbroBrains)
 			{
-				float curr;
-				curr = baseModifiers.IntelligenceGainMultiplier;
-				baseModifiers.IntelligenceGainMultiplier -= 0.5f;
-				intGainDelta = curr - baseModifiers.IntelligenceGainMultiplier;
-
-				curr = baseModifiers.IntelligenceLossMultiplier;
-				baseModifiers.IntelligenceLossMultiplier += 0.5f;
-				intLossDelta = baseModifiers.IntelligenceLossMultiplier - curr;
-
 				bimbroBrains = true;
+				AddModifierToPerk(baseModifiers.intelligenceGainMultiplier, new ValueModifierStore<double>(ValueModifierType.MINIMUM, 0.25));
 			}
 		}
 
@@ -300,45 +397,59 @@ namespace CoC.Frontend.Perks
 		{
 			if (bimbroBrains)
 			{
-				bimbroBrains = false;
-				baseModifiers.IntelligenceGainMultiplier += intGainDelta;
-				baseModifiers.IntelligenceLossMultiplier -= intLossDelta;
+				RemoveModifierFromPerk(baseModifiers.intelligenceGainMultiplier);
 			}
 		}
 
-		private void DoBro()
+		private void DoBro(bool alreadyApplied)
 		{
-			//if we've already applied bro body
-			bool alreadyApplied = activated && broBody;
-
-			//og game had repeats more or less ignored. personally i think it makes more 
+			//og game had repeats more or less ignored. personally i think it makes more
 			//sense to reapply it, so that's what i'm doing here. however, the inessentials
 			//will be skipped over, hence the check above.
 
 			if (sourceCreature.genitals.numCocks == 0)
 			{
-				sourceCreature.genitals.AddCock(CockType.defaultValue, 10, 2);
+				sourceCreature.genitals.AddCock(CockType.defaultValue, 12, 2.75);
+			}
+			else if (sourceCreature.genitals.ShortestCockLength() < 10)
+			{
+				sourceCreature.cocks.ForEach(x =>
+				{
+					if (x.length < 10)
+					{
+						x.SetLength(10);
+					}
+
+					if (x.girth < 2.75)
+					{
+						x.SetGirth(2.75f);
+					}
+				});
 			}
 
 			if (!sourceCreature.genitals.balls.hasBalls)
 			{
 				sourceCreature.genitals.GrowBalls(2, 3);
-			}			
-			else if (sourceCreature.genitals.ShortestCockLength(false) < 10)
-			{
-				sourceCreature.cocks.ForEach(x => 
-				{
-					if (x.length < 10) x.SetLength(10);
-					if (x.girth < 2.75) x.SetGirth(2.75f);
-				});
 			}
 
-			if (sourceCreature.genitals.BiggestCupSize() > sourceCreature.genitals.MaleMinCup)
+			if (sourceCreature.hasVagina)
+			{
+				sourceCreature.RemoveAllVaginas();
+			}
+
+			if (sourceCreature.genitals.BiggestCupSize() > sourceCreature.genitals.smallestPossibleMaleCupSize)
 			{
 				sourceCreature.breasts.ForEach(x => x.MakeMale());
+				sourceCreature.genitals.SetQuadNipples(false);
+				sourceCreature.genitals.SetNippleStatus(NippleStatus.NORMAL);
 			}
 			if (!alreadyApplied)
 			{
+				if (sourceCreature.build.heightInInches < 77)
+				{
+					sourceCreature.build.SetHeight(77);
+				}
+
 				if (sourceCreature.genitals.numBreastRows > 1)
 				{
 					sourceCreature.genitals.RemoveExtraBreastRows();
@@ -351,82 +462,244 @@ namespace CoC.Frontend.Perks
 
 				sourceCreature.build.SetMuscleTone(Build.TONE_PERFECTLY_DEFINED);
 
-				//attempt to reach 80 thickness, by adding 50. if over 80, cap at 80.
-				byte newThickness = Math.Min(sourceCreature.build.thickness.add(50), Build.THICKNESS_HUGE);
-				sourceCreature.build.SetThickness(newThickness);
+				sourceCreature.build.ChangeThicknessToward(80, 50);
 
-				if (sourceCreature is CombatCreature combat)
-				{
-					combat.DeltaCombatCreatureStats(str: 33, tou: 33, lib: 4, lus: 40, ignorePerks: false);
-				}
-				else
-				{
-					sourceCreature.IncreaseCreatureStats(lus: 40, lib: 4, ignorePerks: false);
-				}
+				sourceCreature.DeltaCreatureStats(str: 33, tou: 33, lib: 4, lus: 40, ignorePerks: false);
 
 				//update min size and delta, adding 4.5.
 
-				float temp;
-				temp = baseModifiers.NewCockDefaultSize;
-				baseModifiers.NewCockDefaultSize += 4.5f; //5.5 -> 10. stacks with big cock (12.5)
-				cockNew = baseModifiers.NewCockDefaultSize - temp;
-
-				temp = baseModifiers.NewCockSizeDelta;
-				baseModifiers.NewCockSizeDelta += 4.5f;
-				cockDelta = baseModifiers.NewCockSizeDelta - temp;
-
+				AddModifierToPerk(baseModifiers.newCockSizeDelta, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 4.5));
+				AddModifierToPerk(baseModifiers.minCockSize, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 4.5));
 			}
-			if (this.basicData.HasPerk<Feeder>())
+			if (basicData.HasPerk<Feeder>())
 			{
-				this.basicData.RemovePerk<Feeder>();
+				basicData.RemovePerk<Feeder>();
 			}
+
+			hasBroEffect = true;
 		}
 
-		private void DoBimbo()
+		private void DoBimbo(bool alreadyApplied)
 		{
-			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
+
+			if (!alreadyApplied)
+			{
+				AddModifierToPerk(baseModifiers.femaleMinCupSize, new ValueModifierStore<byte>(ValueModifierType.MINIMUM, (byte)CupSize.DD));
+				AddModifierToPerk(baseModifiers.minButtSize, new ValueModifierStore<byte>(ValueModifierType.MINIMUM, 12));
+				AddModifierToPerk(baseModifiers.minHipsSize, new ValueModifierStore<byte>(ValueModifierType.MINIMUM, 12));
+
+				//restore any hair that would prevent us from growing it.
+				if (!sourceCreature.hair.type.growsOverTime || sourceCreature.hair.type.isFixedLength)
+				{
+					sourceCreature.RestoreHair();
+				}
+
+				//then remove any hair stoppage via artificial means
+				sourceCreature.hair.ResumeNaturalGrowth();
+				sourceCreature.hair.SetHairColor(HairFurColors.PLATINUM_BLONDE);
+
+				if (sourceCreature.hair.length < 36)
+				{
+					sourceCreature.hair.SetHairLength(36);
+				}
+
+				if (sourceCreature.build.heightInInches < 77)
+				{
+					sourceCreature.build.SetHeight(77);
+				}
+
+				if (sourceCreature.relativeStrength > 30)
+				{
+					double temp = (sourceCreature.relativeStrength - 30) / 2 + 5;
+					sourceCreature.DecreaseStrength(temp);
+				}
+
+				sourceCreature.build.SetMuscleTone(Build.TONE_FLABBY);
+
+			}
+
+			if (sourceCreature.breasts[0].cupSize < CupSize.E)
+			{ //Tits!
+				sourceCreature.breasts[0].SetCupSize(CupSize.E);
+				sourceCreature.DeltaCreatureStats(inte: -1, lus: 15);
+			}
+			if (!sourceCreature.hasVagina)
+			{ //Vagoo
+				sourceCreature.AddVagina(0.25, VaginalLooseness.NORMAL, VaginalWetness.SLICK);
+
+			}
+			else if (sourceCreature.genitals.SmallestVaginalWetness() < VaginalWetness.SLICK)
+			{
+				sourceCreature.vaginas.Where(x => x.wetness < VaginalWetness.SLICK).ForEach(x => x.SetVaginalWetness(VaginalWetness.SLICK));
+			}
+			if (sourceCreature.hips.size < 12)
+			{
+				//sb.Append(Environment.NewLine + "Whoah! As you move, your " + sourceCreature.build.HipsLongDescription() + " sway farther and farther to each side, expanding with every step, soft new flesh filling in as your hips spread into something more appropriate on a tittering bimbo. You giggle when you realize you can't walk any other way. At least it makes you look, like, super sexy!" + Environment.NewLine);
+				sourceCreature.DeltaCreatureStats(inte: -1);
+			}
+			if (sourceCreature.butt.size < 12)
+			{
+				//sb.Append(Environment.NewLine + "Gradually warming, you find that your " + sourceCreature.build.ButtLongDescription() + " is practically sizzling with erotic energy. You smile to yourself, imagining how much you wish you had a nice, plump, bimbo-butt again, your hands finding their way to the flesh on their own. Like, how did they get down there? You bite your lip when you realize how good your tush feels in your hands, particularly when it starts to get bigger. Are butts supposed to do that? Happy pink thoughts wash that concern away - it feels good, and you want a big, sexy butt! The growth stops eventually, and you pout disconsolately when the lusty warmth's last lingering touches dissipate. Still, you smile when you move and feel your new booty jiggling along behind you. This will be fun!" + Environment.NewLine);
+				sourceCreature.DeltaCreatureStats(inte: -1, lus: 10);
+			}
+
+
+			hasBimboEffect = true;
 		}
 
-		private void DoFuta()
+		private void DoFuta(bool activatedBefore)
 		{
-			bool appliedBro = activated && broBody;
-			bool appliedBimbo = activated && bimboBody;
-			bool appliedFuta = appliedBimbo && appliedBro;
-
-			if (appliedFuta)
+			//first activation. somehow, an item caused you to directly get the futa perk.
+			if (!activatedBefore)
 			{
+				//restore any hair that would prevent us from growing it.
+				if (!sourceCreature.hair.type.growsOverTime || sourceCreature.hair.type.isFixedLength)
+				{
+					sourceCreature.RestoreHair();
+				}
 
+				//then remove any hair stoppage via artificial means
+				sourceCreature.hair.ResumeNaturalGrowth();
+				sourceCreature.hair.SetHairColor(HairFurColors.PLATINUM_BLONDE);
+
+				if (sourceCreature.hair.length < 36)
+				{
+					sourceCreature.hair.SetHairLength(36);
+				}
+
+				if (sourceCreature.build.heightInInches < 77)
+				{
+					sourceCreature.build.SetHeight(77);
+				}
+				if (sourceCreature.breasts[0].cupSize < CupSize.DD)
+				{ //Tits!
+					sourceCreature.breasts[0].SetCupSize(CupSize.DD);
+					sourceCreature.DeltaCreatureStats(inte: -1, lus: 15);
+				}
+				if (!sourceCreature.hasVagina)
+				{ //Vagoo
+					sourceCreature.AddVagina(0.25, VaginalLooseness.NORMAL, VaginalWetness.SLICK);
+
+				}
+				else if (sourceCreature.genitals.SmallestVaginalWetness() < VaginalWetness.SLICK)
+				{
+					sourceCreature.vaginas.Where(x => x.wetness < VaginalWetness.SLICK).ForEach(x => x.SetVaginalWetness(VaginalWetness.SLICK));
+				}
+				if (sourceCreature.genitals.numCocks == 0)
+				{
+					sourceCreature.genitals.AddCock(CockType.defaultValue, 10, 2);
+				}
+				else if (sourceCreature.genitals.ShortestCockLength() < 10)
+				{
+					foreach (Cock x in sourceCreature.cocks)
+					{
+						if (x.length < 10)
+						{
+							x.SetLength(10);
+						}
+
+						if (x.girth < 2)
+						{
+							x.SetGirth(2);
+						}
+					}
+				}
+
+				if (!sourceCreature.genitals.balls.hasBalls)
+				{
+					sourceCreature.genitals.GrowBalls(2, 3);
+				}
+
+				AddModifierToPerk(baseModifiers.femaleMinCupSize, new ValueModifierStore<byte>(ValueModifierType.MINIMUM, (byte)CupSize.DD));
+				AddModifierToPerk(baseModifiers.newCockSizeDelta, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 4.5));
+				AddModifierToPerk(baseModifiers.minCockSize, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 4.5));
 			}
-			else if (appliedBro)
+			//already active. already a futa.
+			else if (!futaBody)
 			{
+				//already active. already a bimbo, need bro related values.
+				if (hasBimboEffect)
+				{
+					if (sourceCreature.genitals.numCocks == 0)
+					{
+						sourceCreature.genitals.AddCock(CockType.defaultValue, 10, 2);
+					}
+					else if (sourceCreature.genitals.ShortestCockLength() < 10)
+					{
+						foreach (Cock x in sourceCreature.cocks)
+						{
+							if (x.length < 10)
+							{
+								x.SetLength(10);
+							}
 
-			}
-			else
-			{
+							if (x.girth < 2)
+							{
+								x.SetGirth(2);
+							}
+						}
+					}
 
+					if (!sourceCreature.genitals.balls.hasBalls)
+					{
+						sourceCreature.genitals.GrowBalls(2, 3);
+					}
+					//apparently, these aren't required for futas. removing them for now.
+					RemoveModifierFromPerk(baseModifiers.minButtSize);
+					RemoveModifierFromPerk(baseModifiers.minHipsSize);
+					//
+					AddModifierToPerk(baseModifiers.newCockSizeDelta, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 4.5));
+					AddModifierToPerk(baseModifiers.minCockSize, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 4.5));
+				}
+				//already active. already a bro, need bimbo related values.
+				else
+				{
+					//restore any hair that would prevent us from growing it.
+					if (!sourceCreature.hair.type.growsOverTime || sourceCreature.hair.type.isFixedLength)
+					{
+						sourceCreature.RestoreHair();
+					}
+
+					//then remove any hair stoppage via artificial means
+					sourceCreature.hair.ResumeNaturalGrowth();
+					sourceCreature.hair.SetHairColor(HairFurColors.PLATINUM_BLONDE);
+
+					if (sourceCreature.hair.length < 36)
+					{
+						sourceCreature.hair.SetHairLength(36);
+					}
+
+					if (sourceCreature.build.heightInInches < 77)
+					{
+						sourceCreature.build.SetHeight(77);
+					}
+
+
+					if (!sourceCreature.hasVagina)
+					{ //Vagoo
+						sourceCreature.AddVagina(0.25, VaginalLooseness.NORMAL, VaginalWetness.SLICK);
+
+					}
+					else if (sourceCreature.genitals.SmallestVaginalWetness() < VaginalWetness.SLICK)
+					{
+						sourceCreature.vaginas.Where(x => x.wetness < VaginalWetness.SLICK).ForEach(x => x.SetVaginalWetness(VaginalWetness.SLICK));
+					}
+					if (sourceCreature.breasts[0].cupSize < CupSize.DD)
+					{ //Tits!
+						sourceCreature.breasts[0].SetCupSize(CupSize.DD);
+						sourceCreature.DeltaCreatureStats(inte: -1, lus: 15);
+					}
+
+					AddModifierToPerk(baseModifiers.femaleMinCupSize, new ValueModifierStore<byte>(ValueModifierType.MINIMUM, (byte)CupSize.DD));
+				}
 			}
-			throw new Backend.Tools.InDevelopmentExceptionThatBreaksOnRelease();
+			//else, already a futa. do nothing.
+
+			hasBimboEffect = true;
+			hasBroEffect = true;
 		}
 
 		protected override void OnRemoval()
-		{
-			baseModifiers.FemaleNewBreastCupSizeDelta -= breastDelta;
-			baseModifiers.FemaleNewBreastDefaultCupSize -= breastNew ?? 0;
-
-			baseModifiers.NewCockDefaultSize -= cockNew ?? 0;
-			baseModifiers.NewCockSizeDelta -= cockDelta;
-
-			if (bimbroBrains)
-			{
-				bimbroBrains = false;
-				baseModifiers.IntelligenceGainMultiplier += intGainDelta;
-				baseModifiers.IntelligenceLossMultiplier -= intLossDelta;
-			}
-
-			bimboBody = false;
-			broBody = false;
-
-			activated = false;
-		}
+		{ }
 	}
 }

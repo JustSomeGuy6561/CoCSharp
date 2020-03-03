@@ -133,7 +133,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor AnnettaFlavorText => SpecialCharacterStrings.AnnettaText;
 		private static PlayerCreator customAnnetta()
 		{
-			//outputText("You're a rather well-endowed hermaphrodite that sports a thick, dog-knotted cock, an unused pussy, and a nice, stretchy butt-hole. You've also got horns and demonic high-heels on your feet. It makes you wonder why you would ever get chosen to be champion!");
+			//sb.Append("You're a rather well-endowed hermaphrodite that sports a thick, dog-knotted cock, an unused pussy, and a nice, stretchy butt-hole. You've also got horns and demonic high-heels on your feet. It makes you wonder why you would ever get chosen to be champion!");
 			//Specific Character	"Gender: Herm
 			return new PlayerCreator("Annetta")
 			{
@@ -271,7 +271,7 @@ namespace CoC.Frontend.Creatures
 				cockVirgin = true,
 				vaginas = new VaginaCreator[] { new VaginaCreator(0.25f, VaginalWetness.WET, isVirgin: true) }
 			};
-			//outputText("You're quite the foxy herm, and as different as you were compared to the rest of Ingnam, it's no surprise you were sent through first.");
+			//sb.Append("You're quite the foxy herm, and as different as you were compared to the rest of Ingnam, it's no surprise you were sent through first.");
 		}
 
 		private static SimpleDescriptor CeveoFlavorText => SpecialCharacterStrings.CeveoText;
@@ -347,7 +347,7 @@ namespace CoC.Frontend.Creatures
 			//creator.createStatusEffect(StatusEffects.KnowsBlind,0,0,0,0);
 			//creator.createStatusEffect(StatusEffects.KnowsWhitefire,0,0,0,0);
 
-			//outputText("As a wandering mage you had found your way into no small amount of trouble in the search for knowledge. A strange tome here, a ritual there, most people found your pale form unsettling. They would be further troubled if they could see your feet! Lets not even begin on the blood magic. Yes, your interest in examining every aspect of magic has run you down a strange path, so when you wandered into Ingnam and began to hear of the exile of the Champion, and the superstitions that surrounded it you were intrigued, as every little rumor and ritual often had a grain of truth. You snuck into the cave prior to the ritual, where the old man supposedly led every Champion, and there you found a strange portal that emanated a certain degree of spacial transparency - more than the portal's own. Within it must have been a whole new world! Throwing caution to the wind, your curiosities engulfing you, you dove in with nary a thought for the consequences.");
+			//sb.Append("As a wandering mage you had found your way into no small amount of trouble in the search for knowledge. A strange tome here, a ritual there, most people found your pale form unsettling. They would be further troubled if they could see your feet! Lets not even begin on the blood magic. Yes, your interest in examining every aspect of magic has run you down a strange path, so when you wandered into Ingnam and began to hear of the exile of the Champion, and the superstitions that surrounded it you were intrigued, as every little rumor and ritual often had a grain of truth. You snuck into the cave prior to the ritual, where the old man supposedly led every Champion, and there you found a strange portal that emanated a certain degree of spacial transparency - more than the portal's own. Within it must have been a whole new world! Throwing caution to the wind, your curiosities engulfing you, you dove in with nary a thought for the consequences.");
 		}
 
 		private static SimpleDescriptor CharaunFlavorText => SpecialCharacterStrings.CharaunText;
@@ -390,7 +390,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor CharlieFlavorText => SpecialCharacterStrings.CharlieText;
 		private static PlayerCreator customCharlie()
 		{
-			//outputText("You're strong, smart, fast, and tough. It also helps that you've got four dongs well beyond what others have lurking in their trousers. With your wings, bow, weapon, and tough armor, you're a natural for protecting the town.");
+			//sb.Append("You're strong, smart, fast, and tough. It also helps that you've got four dongs well beyond what others have lurking in their trousers. With your wings, bow, weapon, and tough armor, you're a natural for protecting the town.");
 			return new PlayerCreator("Charlie")
 			{
 				defaultGender = Gender.MALE,
@@ -467,7 +467,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor CodyFlavorText => SpecialCharacterStrings.CodyText;
 		private static PlayerCreator customCody()
 		{
-			//outputText("Your orange and black tiger stripes make you cut a more imposing visage than normal, and with your great strength, armor, and claymore, you're a natural pick for champion.");
+			//sb.Append("Your orange and black tiger stripes make you cut a more imposing visage than normal, and with your great strength, armor, and claymore, you're a natural pick for champion.");
 			//well to start off the name would be Cody
 			//-Cat with (black and orange tiger fur if possible) if not just Orange fur
 			return new PlayerCreator("Cody")
@@ -492,7 +492,7 @@ namespace CoC.Frontend.Creatures
 		private static PlayerCreator customGalatea()
 		{
 			//"(Dangit Fenoxo! Stop adding sexy must-have things to the game! If it's not too late to update it I've added in that sexy new armor. Thanks!)
-			//outputText("You've got large breasts prone to lactation. You aren't sure WHY you got chosen as a champion, but with your considerable strength, you're sure you'll do a good job protecting Ingnam.");
+			//sb.Append("You've got large breasts prone to lactation. You aren't sure WHY you got chosen as a champion, but with your considerable strength, you're sure you'll do a good job protecting Ingnam.");
 			return new PlayerCreator("Galatea")
 			{
 				defaultGender = Gender.FEMALE,
@@ -542,7 +542,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor GundamFlavorText => SpecialCharacterStrings.GundamText;
 		private static PlayerCreator customGundam()
 		{
-			//outputText("You're fabulously rich, thanks to a rather well-placed bet on who would be the champion. Hopefully you can buy yourself out of any trouble you might get in.");
+			//sb.Append("You're fabulously rich, thanks to a rather well-placed bet on who would be the champion. Hopefully you can buy yourself out of any trouble you might get in.");
 			return new PlayerCreator("Gundam")
 			{
 				gems = 1000 + Utils.Rand(1501)
@@ -554,7 +554,7 @@ namespace CoC.Frontend.Creatures
 		private static PlayerCreator customHikari()
 		{
 			//Character Creation	If possible I would like a herm with a cat cock that is 10 inches by 4 inches. Anything else is up to you.	I would like a herm catmorph with two large d breasts and shoulder length hair. Also if possible I would like to start with some gel armor. Everything else is fair game.	Hikari
-			//outputText("As a herm with a super-thick cat-cock, D-cup breasts, and out-of-this-world armor, you're a natural pick for champion.");
+			//sb.Append("As a herm with a super-thick cat-cock, D-cup breasts, and out-of-this-world armor, you're a natural pick for champion.");
 
 			return new PlayerCreator("Hikari")
 			{
@@ -586,7 +586,7 @@ namespace CoC.Frontend.Creatures
 				return retVal;
 			};
 
-			//outputText("You were born of a disgraced priestess, who raised you alone until she was taken by illness. Since then, you've worked a number of odd jobs to get by, which ultimately resulted in you being chosen as champion.");
+			//sb.Append("You were born of a disgraced priestess, who raised you alone until she was taken by illness. Since then, you've worked a number of odd jobs to get by, which ultimately resulted in you being chosen as champion.");
 			return new PlayerCreator("Isaac")
 			{
 				defaultGender = Gender.MALE,
@@ -663,7 +663,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor KattiFlavorText => SpecialCharacterStrings.KattiText;
 		private static PlayerCreator customKatti()
 		{
-			//outputText("You have big breasts with big, fuckable nipples on them, and no matter what, your vagina always seems to be there to keep you company.");
+			//sb.Append("You have big breasts with big, fuckable nipples on them, and no matter what, your vagina always seems to be there to keep you company.");
 			return new PlayerCreator("Katti")
 			{
 				defaultGender = Gender.FEMALE,
@@ -731,7 +731,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor LucinaFlavorText => SpecialCharacterStrings.LucinaText;
 		private static PlayerCreator customLucina()
 		{
-			//outputText("You're a blond, fair-skinned lass with a well-made bow and the skills to use it. You have D-cup breasts and a very moist cunt that's seen a little action. You're fit and trim, but not too thin, nor too well-muscled. All in all, you're a good fit for championing your village's cause.");
+			//sb.Append("You're a blond, fair-skinned lass with a well-made bow and the skills to use it. You have D-cup breasts and a very moist cunt that's seen a little action. You're fit and trim, but not too thin, nor too well-muscled. All in all, you're a good fit for championing your village's cause.");
 			return new PlayerCreator("Lucina")
 			{
 				defaultGender = Gender.FEMALE,
@@ -815,7 +815,7 @@ namespace CoC.Frontend.Creatures
 
 				//#226096893686530
 				//For the custom PC Profile can you make a Bimbo Bunny girl (no bunny feet) (named Mara) dont really care about clothes i can get what i want pretty quickly and I change from time to time.
-				//outputText("You're a bunny-girl with bimbo-tier curves, jiggly and soft, a curvy, wet girl with a bit of a flirty past.");
+				//sb.Append("You're a bunny-girl with bimbo-tier curves, jiggly and soft, a curvy, wet girl with a bit of a flirty past.");
 				speed = 18,
 				intelligence = 17,
 				tone = 20,
@@ -849,7 +849,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor MihariFlavorText => SpecialCharacterStrings.MihariText;
 		private static PlayerCreator customMihari()
 		{
-			//outputText("The portal is not something you fear, not with your imposing armor and inscribed spellblade. You're much faster and stronger than every champion that came before you, but will it be enough?");
+			//sb.Append("The portal is not something you fear, not with your imposing armor and inscribed spellblade. You're much faster and stronger than every champion that came before you, but will it be enough?");
 			return new PlayerCreator("Mihari")
 			{
 				defaultGender = Gender.FEMALE,
@@ -914,7 +914,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor MirvannaFlavorText => SpecialCharacterStrings.MirvannaText;
 		private static PlayerCreator customMirvanna()
 		{
-			//outputText("You're an equine dragon-morph with a rather well-proportioned body. Ingnam is certainly going to miss having you whoring yourself out around town. You don't think they'll miss cleaning up all the messy sex, though.");
+			//sb.Append("You're an equine dragon-morph with a rather well-proportioned body. Ingnam is certainly going to miss having you whoring yourself out around town. You don't think they'll miss cleaning up all the messy sex, though.");
 			return new PlayerCreator("Mirvanna")
 			{
 				defaultGender = Gender.HERM,
@@ -1044,8 +1044,8 @@ namespace CoC.Frontend.Creatures
 
 			//creator.itemSlot1.setItemAndQty(consumables.W__BOOK, 1);
 			//creator.itemSlot2.setItemAndQty(consumables.B__BOOK, 1);
-			//clearOutput();
-			//outputText("Your exotic appearance caused you some trouble growing up, but you buried your nose in books until it came time to go through the portal.");
+			//StringBuilder sb = new StringBuilder();
+			//sb.Append("Your exotic appearance caused you some trouble growing up, but you buried your nose in books until it came time to go through the portal.");
 		}
 
 		private static SimpleDescriptor NavornFlavorText => SpecialCharacterStrings.NavornText;
@@ -1055,7 +1055,7 @@ namespace CoC.Frontend.Creatures
 			CockCreator newCock(CockType type) => new CockCreator(type, 15, 3, 2); //knot is ignored if invalid, so i can be lazy and use this for all of them.
 			return new PlayerCreator("Navorn")
 			{
-				//outputText("There's been something special about you since day one, whether it's your numerous sexual endowments or your supernatural abilities. You're a natural pick for champion.");
+				//sb.Append("There's been something special about you since day one, whether it's your numerous sexual endowments or your supernatural abilities. You're a natural pick for champion.");
 				//Character Creation	"Herm same number and types of cocks from email sent earlier.
 				defaultGender = Gender.HERM,
 				forceDefaultGender = false,
@@ -1195,13 +1195,13 @@ namespace CoC.Frontend.Creatures
 
 			////3 starting perk points
 			//creator.perkPoints = 3;
-			//outputText("As a German-Shepherd morph, the rest of the village never really knew what to do with you... until they sent you through the portal to face whatever's on the other side...");
+			//sb.Append("As a German-Shepherd morph, the rest of the village never really knew what to do with you... until they sent you through the portal to face whatever's on the other side...");
 		}
 
 		private static SimpleDescriptor PrismereFlavorText => SpecialCharacterStrings.PrismereText;
 		private static PlayerCreator customPrismere()
 		{
-			//outputText("You're more of a scout than a fighter, but you still feel confident you can handle your responsibilities as champion. After all, what's to worry about when you can outrun everything you encounter? You have olive skin, deep red hair, and a demonic tail and wings to blend in with the locals.");
+			//sb.Append("You're more of a scout than a fighter, but you still feel confident you can handle your responsibilities as champion. After all, what's to worry about when you can outrun everything you encounter? You have olive skin, deep red hair, and a demonic tail and wings to blend in with the locals.");
 			return new PlayerCreator("Prismere")
 			{
 				defaultGender = Gender.FEMALE,
@@ -1246,7 +1246,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor RannRaylaFlavorText => SpecialCharacterStrings.RannRaylaText;
 		private static PlayerCreator customRannRayla()
 		{
-			//outputText("You're a young, fiery redhead who\'s utterly feminine. You've got C-cup breasts and long red hair. Being a champion can\'t be that bad, right?");
+			//sb.Append("You're a young, fiery redhead who\'s utterly feminine. You've got C-cup breasts and long red hair. Being a champion can\'t be that bad, right?");
 			//Specific Character	Virgin female.	Max femininity. Thin with a little muscle. Size C breasts. Long red hair. Light colored skin. 5'5" tall. 	Rann Rayla
 			return new PlayerCreator("Rann Rayla")
 			{
@@ -1273,7 +1273,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor RopeFlavorText => SpecialCharacterStrings.RopeText;
 		private static PlayerCreator customRope()
 		{
-			//outputText("Despite outward appearances, you're actually something of a neuter, with shark-like teeth, an androgynous face, and a complete lack of genitalia.");
+			//sb.Append("Despite outward appearances, you're actually something of a neuter, with shark-like teeth, an androgynous face, and a complete lack of genitalia.");
 			return new PlayerCreator("Rope")
 			{
 				//529315025394020	Character Creation	Neuter (no genitals) "50-50 masculine-feminine ratio. Shark teeth."	Rope
@@ -1289,7 +1289,7 @@ namespace CoC.Frontend.Creatures
 		private static PlayerCreator customSera()
 		{
 
-			//outputText("You're something of a shemale - three rows of C-cup breasts matched with three, plump, juicy cocks. Some decent sized balls, bat wings, and cat-like ears round out the package.");
+			//sb.Append("You're something of a shemale - three rows of C-cup breasts matched with three, plump, juicy cocks. Some decent sized balls, bat wings, and cat-like ears round out the package.");
 
 			return new PlayerCreator("Sera")
 			{
@@ -1340,7 +1340,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor SiveenFlavorText => SpecialCharacterStrings.SiveenText;
 		private static PlayerCreator customSiveen()
 		{
-			//outputText("You are a literal angel from beyond, and you take the place of a vilage's champion for your own reasons...");
+			//sb.Append("You are a literal angel from beyond, and you take the place of a vilage's champion for your own reasons...");
 			return new PlayerCreator("Siveen")
 			{
 				defaultGender = Gender.FEMALE,
@@ -1394,7 +1394,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor SoraFlavorText => SpecialCharacterStrings.SoraText;
 		private static PlayerCreator customSora()
 		{
-			//outputText("As a Kitsune, you always got weird looks, but none could doubt your affinity for magic...");
+			//sb.Append("As a Kitsune, you always got weird looks, but none could doubt your affinity for magic...");
 			return new PlayerCreator("Sora")
 			{
 				defaultGender = Gender.FEMALE,
@@ -1481,7 +1481,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor VahdunbriiFlavorText => SpecialCharacterStrings.VahdunbriiText;
 		private static PlayerCreator customVahdunbrii()
 		{
-			//outputText("You're something of a powerhouse, and you wager that between your odd mutations, power strong enough to threaten the village order, and talents, you're the natural choice to send through the portal.");
+			//sb.Append("You're something of a powerhouse, and you wager that between your odd mutations, power strong enough to threaten the village order, and talents, you're the natural choice to send through the portal.");
 			return new PlayerCreator("Vahdunbrii")
 			{
 				defaultGender = Gender.FEMALE,
@@ -1587,14 +1587,14 @@ namespace CoC.Frontend.Creatures
 				}
 				return retVal;
 			}
-			//outputText("You are young (by kitsune measure) but very talented.");
-			//outputText("\n\nFormer priestess, you abandoned religion and resorted to your hobby - alchemy.");
-			//outputText("\n\nYou tried to improve your body with controlled transformations, and mostly successful. Now you are half-dragon, and while most changes are hidden inside your body, you still possess magnificent wings, imposing horns and incredibly long, prehensile tongue. Otherwise, your body is mostly what you would expect from kitsune - cute, graceful and having a capacity, straightforward impossible for your thin and small 4-foot frame.");
-			//outputText("\n\nWith both religious and alchemical training, you are a skilled healer, able to treat wounds and poisonings alike. Your kitsune's trickster nature and pervert inclinations are making you susceptible to corruption, but at the same time, your enlightenment keeps you from actually turning into a demon, so corruption barely affects your mind. Even with your willpower and religious training you sometimes struggle to restrain your impulse, and you always are ready for something very lewd. With your knowledge of healing and modified body, it is easy for you to enjoy things which would be painful for others, and you are always ready to return a favor. Still, you tend to care about mutual enjoyment - there is a difference between extreme entertainment and torture, and you are mischievous, not evil. Natural gift at magic, extraordinary even by kitsune's measures and complimented by nine tails, makes you able to cast spells without exhausting yourself even without an enchanted robe. Sadly, twisted energies of the new world would make you knowledge almost useless, so you only can use fox fire as an offensive spell.");
-			//outputText("\n\nYour experiments left some strange effects within your body. Some are nice (you have unusually fast regeneration), some are strange (you can shift to incorporeality for a few seconds and even try to possess someone while in this state).");
-			//outputText("\n\nAlso, you are an almost compulsive hoarder, so you developed an ability to carry and store a vast amount of things.");
-			//outputText("\n\nNow you want to give your body thorough test run, and portal to demon infested world looks appealing. No one said that common sense is one of your strong sides...");
-			//outputText("\n\nDespite your comfidence in your transformations, the one you still haven't landed on is your gender, though you currently have just enough materials to make whatever you decide stick.);
+			//sb.Append("You are young (by kitsune measure) but very talented.");
+			//sb.Append("\n\nFormer priestess, you abandoned religion and resorted to your hobby - alchemy.");
+			//sb.Append("\n\nYou tried to improve your body with controlled transformations, and mostly successful. Now you are half-dragon, and while most changes are hidden inside your body, you still possess magnificent wings, imposing horns and incredibly long, prehensile tongue. Otherwise, your body is mostly what you would expect from kitsune - cute, graceful and having a capacity, straightforward impossible for your thin and small 4-foot frame.");
+			//sb.Append("\n\nWith both religious and alchemical training, you are a skilled healer, able to treat wounds and poisonings alike. Your kitsune's trickster nature and pervert inclinations are making you susceptible to corruption, but at the same time, your enlightenment keeps you from actually turning into a demon, so corruption barely affects your mind. Even with your willpower and religious training you sometimes struggle to restrain your impulse, and you always are ready for something very lewd. With your knowledge of healing and modified body, it is easy for you to enjoy things which would be painful for others, and you are always ready to return a favor. Still, you tend to care about mutual enjoyment - there is a difference between extreme entertainment and torture, and you are mischievous, not evil. Natural gift at magic, extraordinary even by kitsune's measures and complimented by nine tails, makes you able to cast spells without exhausting yourself even without an enchanted robe. Sadly, twisted energies of the new world would make you knowledge almost useless, so you only can use fox fire as an offensive spell.");
+			//sb.Append("\n\nYour experiments left some strange effects within your body. Some are nice (you have unusually fast regeneration), some are strange (you can shift to incorporeality for a few seconds and even try to possess someone while in this state).");
+			//sb.Append("\n\nAlso, you are an almost compulsive hoarder, so you developed an ability to carry and store a vast amount of things.");
+			//sb.Append("\n\nNow you want to give your body thorough test run, and portal to demon infested world looks appealing. No one said that common sense is one of your strong sides...");
+			//sb.Append("\n\nDespite your comfidence in your transformations, the one you still haven't landed on is your gender, though you currently have just enough materials to make whatever you decide stick.);
 			return new PlayerCreator("Etis")
 			{
 				// Herm kitsune-dragon.
@@ -1755,8 +1755,8 @@ namespace CoC.Frontend.Creatures
 		//		for (i = 0; i < cocks; i++)
 		//		{
 		//			creator.createCock();
-		//			creator.cocks[i].cockLength = Math.round((rand(220) / 10 + 3) * 10) / 10; // 3-25 inches
-		//			creator.cocks[i].cockThickness = Math.round((rand(creator.cocks[i].cockLength) / 10 + 1) * 10) / 10;
+		//			creator.cocks[i].length = Math.round((rand(220) / 10 + 3) * 10) / 10; // 3-25 inches
+		//			creator.cocks[i].girth = Math.round((rand(creator.cocks[i].length) / 10 + 1) * 10) / 10;
 		//			var type:Number = rand(90);
 		//			if (tent)
 		//				creator.cocks[i].cockType = CockTypesEnum.TENTACLE;
@@ -1952,7 +1952,7 @@ namespace CoC.Frontend.Creatures
 
 		//					creator.gems += 15 + rand(55);
 
-		//					outputText("Your body is wrecked by your own experiments with otherworldly transformation items, and now you have no more money to buy any more from smugglers... But you would make your body as strong as your will. Or die trying.");
+		//					sb.Append("Your body is wrecked by your own experiments with otherworldly transformation items, and now you have no more money to buy any more from smugglers... But you would make your body as strong as your will. Or die trying.");
 		//				}
 
 		//			}

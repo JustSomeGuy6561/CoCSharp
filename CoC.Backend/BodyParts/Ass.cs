@@ -5,6 +5,8 @@
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Perks;
 using CoC.Backend.Tools;
 using System;
 using System.Text;
@@ -39,47 +41,11 @@ namespace CoC.Backend.BodyParts
 
 		private byte buttTightenTimer = 0;
 
-		public AnalLooseness minLooseness
-		{
-			get => _minLooseness;
-			internal set
-			{
-				if (_minLooseness != value)
-				{
-					minLooseness = value;
-					if (looseness < minLooseness)
-					{
-						looseness = minLooseness; //let the looseness change handle the notification handle
-					}
-					if (maxLooseness < minLooseness)
-					{
-						maxLooseness = minLooseness;
-					}
-				}
-			}
-		}
-		private AnalLooseness _minLooseness = AnalLooseness.NORMAL;
+		BasePerkModifiers baseModifiers => CreatureStore.GetCreatureClean(creatureID)?.perks.baseModifiers;
 
-		public AnalLooseness maxLooseness
-		{
-			get => _maxLooseness;
-			internal set
-			{
-				if (value < minLooseness)
-				{
-					value = minLooseness;
-				}
-				if (_maxLooseness != value)
-				{
-					_maxLooseness = value;
-					if (looseness > maxLooseness)
-					{
-						looseness = maxLooseness; //again, let looseness handle firing event.
-					}
-				}
-			}
-		}
-		private AnalLooseness _maxLooseness = AnalLooseness.GAPING;
+		public AnalLooseness minLooseness => baseModifiers?.minAnalLooseness.GetValue() ?? AnalLooseness.NORMAL;
+
+		public AnalLooseness maxLooseness => baseModifiers?.maxAnalLooseness.GetValue() ?? AnalLooseness.GAPING;
 
 		public AnalLooseness looseness
 		{
@@ -100,46 +66,14 @@ namespace CoC.Backend.BodyParts
 		}
 		private AnalLooseness _analLooseness = AnalLooseness.NORMAL;
 
-		public AnalWetness minWetness
+		internal void CheckLooseness()
 		{
-			get => _minWetness;
-			internal set
-			{
-				if (_minWetness != value)
-				{
-					minWetness = value;
-					if (wetness < minWetness)
-					{
-						wetness = minWetness; //let the wetness change handle the notification handle
-					}
-					if (maxWetness < minWetness)
-					{
-						maxWetness = minWetness;
-					}
-				}
-			}
+			looseness = looseness;
 		}
-		private AnalWetness _minWetness = AnalWetness.NORMAL;
-		public AnalWetness maxWetness
-		{
-			get => _maxWetness;
-			internal set
-			{
-				if (value < minWetness)
-				{
-					value = minWetness;
-				}
-				if (_maxWetness != value)
-				{
-					_maxWetness = value;
-					if (wetness > maxWetness)
-					{
-						wetness = maxWetness; //again, let wetness handle firing event.
-					}
-				}
-			}
-		}
-		private AnalWetness _maxWetness = AnalWetness.SLIME_DROOLING;
+
+		public AnalWetness minWetness => baseModifiers?.minAnalWetness.GetValue() ?? AnalWetness.NORMAL;
+
+		public AnalWetness maxWetness => baseModifiers?.maxAnalWetness.GetValue() ?? AnalWetness.SLIME_DROOLING;
 
 		public AnalWetness wetness
 		{
@@ -155,8 +89,12 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-
 		private AnalWetness _analWetness = AnalWetness.NORMAL;
+
+		internal void CheckWetness()
+		{
+			wetness = wetness;
+		}
 
 		public ushort bonusAnalCapacity
 		{
@@ -174,37 +112,37 @@ namespace CoC.Backend.BodyParts
 		private ushort _bonusAnalCapacity = 0;
 
 		//these are wired directly from perk collection, because ass is immutable - it will always exist.
-		internal ushort perkBonusAnalCapacity
+		public ushort perkBonusAnalCapacity => baseModifiers?.perkBasedBonusAnalCapacity.GetValue() ?? 0;
+
+		internal void OnPerkAnalCapacityChanged(ushort oldPerkValue)
 		{
-			get => _perkBonusAnalCapacity;
-			set
-			{
-				if (_perkBonusAnalCapacity != value)
-				{
-					var oldData = AsReadOnlyData();
-					_perkBonusAnalCapacity = value;
-					NotifyDataChanged(oldData);
-				}
-			}
+			var capacity = AnalCapacity((byte)looseness, ((byte)wetness).add(1), bonusAnalCapacity, oldPerkValue, everPracticedAnal);
+			var oldData = new AssData(creatureID, wetness, looseness, capacity, location, totalSexCount, selfSexCount, totalPenetrateCount, selfPenetrateCount,
+				orgasmCount, dryOrgasmCount, totalAnalBirths);
+			NotifyDataChanged(oldData);
 		}
-		private ushort _perkBonusAnalCapacity = 0;
+
+
 
 		public ushort AnalCapacity()
 		{
+			return AnalCapacity((byte)looseness, ((byte)wetness).add(1), bonusAnalCapacity, perkBonusAnalCapacity, everPracticedAnal);
+		}
 
-			byte loose = (byte)looseness;
+		private static ushort AnalCapacity(byte loose, byte wet, ushort bonusCap, ushort perkBonusCap, bool everPracticedAnal)
+		{
 			if (everPracticedAnal)
 			{
 				loose++;
 			}
-			byte wet = ((byte)wetness).add(1);
-			uint cap = (uint)Math.Round(BASE_CAPACITY + bonusAnalCapacity + perkBonusAnalCapacity /*+ experience / 10*/ + 6 * loose * loose * wet / 10.0);
+			uint cap = (uint)Math.Round(BASE_CAPACITY + bonusCap + perkBonusCap /*+ experience / 10*/ + 6 * loose * loose * wet / 10.0);
 			if (cap > MAX_ANAL_CAPACITY)
 			{
 				return MAX_ANAL_CAPACITY;
 			}
 			return (ushort)cap;
 		}
+
 
 		public AssholeLocation location { get; private set; } = AssholeLocation.BUTT;
 
@@ -684,6 +622,22 @@ namespace CoC.Backend.BodyParts
 			dryOrgasmCount = source.dryOrgasmCount;
 
 			totalAnalBirths = source.totalAnalBirths;
+		}
+
+		public AssData(Guid creatureID, AnalWetness wetness, AnalLooseness looseness, ushort analCapacity, AssholeLocation location, uint totalSexCount,
+			uint selfSexCount, uint totalPenetrateCount, uint selfPenetrateCount, uint orgasmCount, uint dryOrgasmCount, uint totalAnalBirths) : base(creatureID)
+		{
+			this.wetness = wetness;
+			this.looseness = looseness;
+			this.analCapacity = analCapacity;
+			this.location = location;
+			this.totalSexCount = totalSexCount;
+			this.selfSexCount = selfSexCount;
+			this.totalPenetrateCount = totalPenetrateCount;
+			this.selfPenetrateCount = selfPenetrateCount;
+			this.orgasmCount = orgasmCount;
+			this.dryOrgasmCount = dryOrgasmCount;
+			this.totalAnalBirths = totalAnalBirths;
 		}
 
 		bool IAss.virgin => virgin;

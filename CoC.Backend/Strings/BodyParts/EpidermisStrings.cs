@@ -38,6 +38,21 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
+		public static string AsAbbreviatedString(this SkinTexture skinTexture)
+		{
+			switch (skinTexture)
+			{
+				case SkinTexture.SEXY: return "sxy";
+				case SkinTexture.ROUGH: return "rgh";
+				case SkinTexture.FRECKLED: return "frkld";
+				case SkinTexture.THICK: return "thk";
+				case SkinTexture.SMOOTH: return "smth";
+				case SkinTexture.SHINY: return "shny";
+				case SkinTexture.SOFT: return "sft";
+				case SkinTexture.NONDESCRIPT:
+				default: return "";
+			}
+		}
 		public static string AsString(this SkinTexture skinTexture, bool singularFormat = false)
 		{
 			if (!singularFormat)
@@ -94,16 +109,34 @@ namespace CoC.Backend.BodyParts
 		#region Common Epidermis Related Strings
 		internal static string JustTexture(IEpidermis epidermis, bool singularFormat = false)
 		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return epidermis.skinTexture.AsString(singularFormat);
-			else return epidermis.furTexture.AsString(singularFormat);
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				return "";
+			}
+			else if (epidermis.epidermisType.usesTone)
+			{
+				return epidermis.skinTexture.AsString(singularFormat);
+			}
+			else
+			{
+				return epidermis.furTexture.AsString(singularFormat);
+			}
 		}
 
 		internal static string JustColor(IEpidermis epidermis, bool singularFormat = false)
 		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return epidermis.tone.AsString(singularFormat);
-			else return epidermis.furColor.AsString(singularFormat);
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				return "";
+			}
+			else if (epidermis.epidermisType.usesTone)
+			{
+				return epidermis.tone.AsString(singularFormat);
+			}
+			else
+			{
+				return epidermis.furColor.AsString(singularFormat);
+			}
 		}
 
 		internal static string DescriptionWithColor(IEpidermis epidermis, out bool isPlural)
@@ -118,9 +151,18 @@ namespace CoC.Backend.BodyParts
 
 		internal static string DescriptionWithoutType(IEpidermis epidermis, bool singularFormat)
 		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
-			else if (epidermis.epidermisType.usesTone) return epidermis.skinTexture.AsString(singularFormat) + epidermis.tone.AsString();
-			else return epidermis.furTexture.AsString(singularFormat) + epidermis.furColor.AsString();
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				return "";
+			}
+			else if (epidermis.epidermisType.usesTone)
+			{
+				return epidermis.skinTexture.AsString(singularFormat) + epidermis.tone.AsString();
+			}
+			else
+			{
+				return epidermis.furTexture.AsString(singularFormat) + epidermis.furColor.AsString();
+			}
 		}
 
 		internal static string LongDescription(IEpidermis epidermis, out bool isPlural)
@@ -152,7 +194,10 @@ namespace CoC.Backend.BodyParts
 
 		internal static string DescriptionWith(IEpidermis epidermis, bool noTexture = false, bool noColor = false)
 		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				return "";
+			}
 			else if (noTexture && noColor)
 			{
 				return epidermis.epidermisType.ShortDescription();
@@ -198,7 +243,10 @@ namespace CoC.Backend.BodyParts
 
 		internal static string AdjectiveWith(IEpidermis epidermis, bool noTexture = false, bool noColor = false, bool singularFormat = false)
 		{
-			if (epidermis.epidermisType == EpidermisType.EMPTY) return "";
+			if (epidermis.epidermisType == EpidermisType.EMPTY)
+			{
+				return "";
+			}
 			else if (noTexture && noColor)
 			{
 				return epidermis.epidermisType.AdjectiveDescription(singularFormat);

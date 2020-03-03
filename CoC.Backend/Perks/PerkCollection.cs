@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Linq;
+using WeakEvent;
 
 namespace CoC.Backend.Perks
 {
@@ -130,6 +131,11 @@ namespace CoC.Backend.Perks
 			{
 				return false;
 			}
+		}
+
+		public bool HasPerkBaseOfType(Type type)
+		{
+			return perks.ContainsKey(type);
 		}
 
 		//checks to see if an instance of this perk type exists in the collection
@@ -287,6 +293,20 @@ namespace CoC.Backend.Perks
 			return false;
 		}
 
+#warning hook up add and removes so they fire an perks changed event.
+
+		private readonly WeakEventSource<EventArgs> dataChangeSource =
+			new WeakEventSource<EventArgs>();
+
+
+		public event EventHandler<EventArgs> perksChanged
+		{
+			add => dataChangeSource.Subscribe(value);
+			remove => dataChangeSource.Unsubscribe(value);
+		}
+
+
+
 		//retrieves a timed perk, so you can update it.
 		public T GetTimedEffectData<T>() where T : TimedPerk
 		{
@@ -313,6 +333,19 @@ namespace CoC.Backend.Perks
 			if (perks.ContainsKey(type) && (!ignoreIfInactive || perks[type].isEnabled))
 			{
 				return (T)perks[type];
+			}
+			return null;
+		}
+
+		public ConditionalPerk GetConditionalPerkData(Type type, bool ignoreIfInactive = true)
+		{
+			if (!type.IsSubclassOf(typeof(ConditionalPerk)))
+			{
+				return null;
+			}
+			if (perks.ContainsKey(type) && (!ignoreIfInactive || perks[type].isEnabled))
+			{
+				return (ConditionalPerk)perks[type];
 			}
 			return null;
 		}

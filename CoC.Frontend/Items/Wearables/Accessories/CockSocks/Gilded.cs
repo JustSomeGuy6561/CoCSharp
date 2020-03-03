@@ -80,39 +80,39 @@ namespace CoC.Frontend.Items.Wearables.Accessories.CockSocks
 		//./classes/PlayerAppearance.as
 		public void sockDescript(int index)
 		{
-			outputText(" ");
+			sb.Append(" ");
 			if (player.cocks[index].sock == "wool")
-				outputText("It's covered by a wooly white cock-sock, keeping it snug and warm despite how cold it might get.");
+				sb.Append("It's covered by a wooly white cock-sock, keeping it snug and warm despite how cold it might get.");
 			else if (player.cocks[index].sock == "alabaster")
-				outputText("It's covered by a white, lacey cock-sock, snugly wrapping around it like a bridal dress around a bride.");
+				sb.Append("It's covered by a white, lacey cock-sock, snugly wrapping around it like a bridal dress around a bride.");
 			else if (player.cocks[index].sock == "cockring")
-				outputText("It's covered by a black latex cock-sock with two attached metal rings, keeping your cock just a little harder and [balls] aching for release.");
+				sb.Append("It's covered by a black latex cock-sock with two attached metal rings, keeping your cock just a little harder and [balls] aching for release.");
 			else if (player.cocks[index].sock == "viridian")
-				outputText("It's covered by a lacey dark green cock-sock accented with red rose-like patterns. Just wearing it makes your body, especially your cock, tingle.");
+				sb.Append("It's covered by a lacey dark green cock-sock accented with red rose-like patterns. Just wearing it makes your body, especially your cock, tingle.");
 			else if (player.cocks[index].sock == "scarlet")
-				outputText("It's covered by a lacey red cock-sock that clings tightly to your member. Just wearing it makes your cock throb, as if it yearns to be larger...");
+				sb.Append("It's covered by a lacey red cock-sock that clings tightly to your member. Just wearing it makes your cock throb, as if it yearns to be larger...");
 			else if (player.cocks[index].sock == "cobalt")
-				outputText("It's covered by a lacey blue cock-sock that clings tightly to your member... really tightly. It's so tight it's almost uncomfortable, and you wonder if any growth might be inhibited.");
+				sb.Append("It's covered by a lacey blue cock-sock that clings tightly to your member... really tightly. It's so tight it's almost uncomfortable, and you wonder if any growth might be inhibited.");
 			else if (player.cocks[index].sock == "gilded")
-				outputText("It's covered by a metallic gold cock-sock that clings tightly to you, its surface covered in glittering gems. Despite the warmth of your body, the cock-sock remains cool.");
+				sb.Append("It's covered by a metallic gold cock-sock that clings tightly to you, its surface covered in glittering gems. Despite the warmth of your body, the cock-sock remains cool.");
 			else if (player.cocks[index].sock == "amaranthine")
 
 			{
-				outputText("It's covered by a lacey purple cock-sock");
+				sb.Append("It's covered by a lacey purple cock-sock");
 				if (player.cocks[index].cockType != CockType.DISPLACER)
-					outputText(" that fits somewhat awkwardly on your member");
+					sb.Append(" that fits somewhat awkwardly on your member");
 				else
-					outputText(" that fits your coeurl cock perfectly");
-				outputText(". Just wearing it makes you feel stronger and more powerful.");
+					sb.Append(" that fits your coeurl cock perfectly");
+				sb.Append(". Just wearing it makes you feel stronger and more powerful.");
 			}
 			else if (player.cocks[index].sock == "red")
-				outputText("It's covered by a red cock-sock that seems to glow. Just wearing it makes you feel a bit powerful.");
+				sb.Append("It's covered by a red cock-sock that seems to glow. Just wearing it makes you feel a bit powerful.");
 			else if (player.cocks[index].sock == "green")
-				outputText("It's covered by a green cock-sock that seems to glow. Just wearing it makes you feel a bit healthier.");
+				sb.Append("It's covered by a green cock-sock that seems to glow. Just wearing it makes you feel a bit healthier.");
 			else if (player.cocks[index].sock == "blue"
-								outputText("It's covered by a blue cock-sock that seems to glow. Just wearing it makes you feel like you can cast spells more effectively.");
+								sb.Append("It's covered by a blue cock-sock that seems to glow. Just wearing it makes you feel like you can cast spells more effectively.");
 
-			else outputText("<b>Yo, this is an error.</b>");
+			else sb.Append("<b>Yo, this is an error.</b>");
 		}*/
 	}
 }

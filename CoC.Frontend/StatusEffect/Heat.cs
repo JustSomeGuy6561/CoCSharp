@@ -75,7 +75,7 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (!e.newGender.HasFlag(Gender.FEMALE))
 			{
-				GameEngine.AddOneOffReaction(new OneOffTimeReactionBase(new GenericSimpleReaction(DoReaction)));
+				GameEngine.AddOneOffReaction(new OneOffTimeReaction(new GenericSimpleReaction(DoReaction)));
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (e.currentSpawnSource != null)
 			{
-				GameEngine.AddOneOffReaction(new OneOffTimeReactionBase(new GenericSimpleReaction(DoReaction)));
+				GameEngine.AddOneOffReaction(new OneOffTimeReaction(new GenericSimpleReaction(DoReaction)));
 			}
 		}
 

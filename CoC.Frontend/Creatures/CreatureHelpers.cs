@@ -163,6 +163,24 @@ namespace CoC.Frontend.Creatures
 			return creature.body.type == BodyType.HUMANOID || creature.body.type == BodyType.KITSUNE;
 		}
 
+		public static string ModifyFemininity(this Creature creature, byte target, byte amount)
+		{
+			var oldFem = creature.femininity.AsReadOnlyData();
+			creature.femininity.ChangeFemininityToward(target, amount);
+			return creature.femininity.FemininityChangedText(oldFem);
+		}
+
+		public static string ModifyTone(this Creature creature, byte target, byte amount)
+		{
+			var delta = creature.build.ChangeMuscleToneToward(target, amount);
+			return creature.build.GenericAdjustTone(delta);
+		}
+
+		public static string ModifyThickness(this Creature creature, byte target, byte amount)
+		{
+			var delta = creature.build.ChangeThicknessToward(target, amount);
+			return creature.build.GenericAdjustThickness(delta);
+		}
 
 		public static bool IsExhibitionist(this Creature creature) => creature.GetPerkData<CeraphFetishesPerk>()?.hasExhibitionistFetish ?? false;
 

@@ -8,7 +8,7 @@ using System;
 namespace CoC.Backend.Tools
 {
 	//Note: the game uses Imperial measurements - I can only assume the creators were American (despite the fact save files were stored using the extended character set.)
-	//an option should be provided somewhere in UI land that allows you to set it to metric. Ideally, meansurements are not hard-coded, so they will convert. 
+	//an option should be provided somewhere in UI land that allows you to set it to metric. Ideally, meansurements are not hard-coded, so they will convert.
 	//while the correct conversion rate is 1 in:2.54 cm, these may be rounded to a more presentable number.
 	public static partial class Measurement
 	{
@@ -29,7 +29,7 @@ namespace CoC.Backend.Tools
 
 
 
-		public static string ToNearestSmallUnit(double measure, bool abbreviate, bool useTextIfSmall, bool? plural = null)
+		public static string ToNearestSmallUnit(double measure, bool abbreviate = false, bool useTextIfSmall = true, bool? plural = null)
 		{
 			string unit;
 			if (UsesMetric)

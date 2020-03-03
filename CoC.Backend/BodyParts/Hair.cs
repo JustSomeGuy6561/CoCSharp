@@ -8,6 +8,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -560,6 +561,11 @@ namespace CoC.Backend.BodyParts
 		#endregion
 		#region Dyeable
 		//hair, highlight, both. all 3 are always available, assuming the creature has hair.
+		string IMultiDyeable.LocationDesc()
+		{
+			return Conjugate.YOU.PossessiveAdjective() + " " + Name();
+		}
+
 		byte IMultiDyeable.numDyeableMembers => 3;
 
 		bool IMultiDyeable.allowsDye(byte index)

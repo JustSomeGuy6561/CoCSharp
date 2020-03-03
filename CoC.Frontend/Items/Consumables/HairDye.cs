@@ -3,7 +3,11 @@
 //Author: JustSomeGuy
 //12/13/2019 1:05:59 AM
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using CoC.Backend;
+using CoC.Backend.BodyParts;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
@@ -13,9 +17,6 @@ using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using CoC.Backend.UI;
 using CoC.Frontend.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -77,34 +78,22 @@ namespace CoC.Frontend.Items.Consumables
 
 
 		private UseItemCallback itemCallback;
-		private ButtonListMaker primaryMenu;
+		private ButtonListMaker buttonMaker;
 		private Creature source;
 		private StandardDisplay display;
+		IEnumerable<IBodyPart> listOfDyeableParts;
+
 
 		protected override DisplayBase BuildMenu(Creature target, UseItemCallback postItemUseCallback)
 		{
-			IEnumerable<object> listOfDyeableParts = target.bodyParts.Where(x => x is IDyeable || x is IMultiDyeable);
+			listOfDyeableParts = target.bodyParts.Where(x => x is IDyeable || x is IMultiDyeable);
 
 			display = new StandardDisplay();
 
 			//set the globals.
-			primaryMenu = new ButtonListMaker(display);
+			buttonMaker = new ButtonListMaker(display);
 			itemCallback = postItemUseCallback;
 			source = target;
-
-
-			foreach (var item in listOfDyeableParts)
-			{
-				if (item is IMultiDyeable multiDyeable)
-				{
-					bool active = Enumerable.Range(0, multiDyeable.numDyeableMembers).Select(x => multiDyeable.isDifferentColor(color, (byte)x)).Any(x => x);
-					primaryMenu.AddButtonToList(multiDyeable.buttonText() + "...", active, () => DoSubMenu(multiDyeable));
-				}
-				else if (item is IDyeable dyeable)
-				{
-					primaryMenu.AddButtonToList(dyeable.buttonText(), dyeable.allowsDye(), () => ApplyDye(dyeable));
-				}
-			}
 
 			RunMainMenu();
 			return display;
@@ -112,47 +101,101 @@ namespace CoC.Frontend.Items.Consumables
 
 		private void RunMainMenu()
 		{
-			primaryMenu.CreateButtons(GlobalStrings.CANCEL(), true, PutBack);
+			display.ClearOutput();
+
+			display.OutputText("Where do you want to apply the " + color.AsString() + " hair dye?");
+
+			foreach (IBodyPart item in listOfDyeableParts)
+			{
+				if (item is IMultiDyeable multiDyeable)
+				{
+					bool active = Enumerable.Range(0, multiDyeable.numDyeableMembers).Select(x => multiDyeable.isDifferentColor(color, (byte)x)).Any(x => x);
+					string tip = active ? "Dye part of your " + item.BodyPartName() + ". This will bring up more options." : "Your " + item.BodyPartName() + "cannot be dyed or is already the same color";
+					buttonMaker.AddButtonToList(multiDyeable.buttonText() + "...", active, () => DoSubMenu(multiDyeable));
+				}
+				else if (item is IDyeable dyeable)
+				{
+					string tip;
+					string location = dyeable.locationDesc(out bool plural);
+
+					if (!dyeable.allowsDye())
+					{
+						tip = location.CapitalizeFirstLetter() + " cannot currently be dyed.";
+					}
+					else if (!dyeable.isDifferentColor(color))
+					{
+						tip = location.CapitalizeFirstLetter() + (plural ? " are" : " is") + " already " + color.AsString() + ".";
+					}
+					else
+					{
+						tip = null;
+					}
+
+					buttonMaker.AddButtonToList(dyeable.buttonText(), dyeable.allowsDye() && dyeable.isDifferentColor(color), () => ApplyDye(dyeable), tip, null);
+				}
+			}
+
+			buttonMaker.CreateButtons(GlobalStrings.CANCEL(), true, PutBack);
 		}
 
-			//if (result)
-			//{
-			//	if (target is PlayerBase target)
-			//	{
-			//		target.refillHunger(sateHungerAmount);
-			//	}
-			//	item = null;
-			//}
-
-			//if (isBadEnd)
-			//{
-			//	throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
-			//	//if we hit a bad end, don't resume whatever we were doing - we treat it as if it was a nightmare and nothing happened, except for the stuff that did happen, because continuity
-			//	//is hard to enforce in this shit. Just lampshade it - it was a nightmare, but you still suffer the effects of it as if it happened, but only up until the point you realized it
-			//	//was a bad end. so, you'll lose any items you were gonna get afterward, etc, but if your butt was stretched to gaping, it'll still be gaping after resuming from the bad end.
-			//	//same with piercings, tfs, etc. No time is lost, however, just resume from camp as soon as possible.
-			//	//example of lampshading: "it was just a nightmare... but it felt so real - and your eyebrow has a piercing in it, just like in the dream. strange..."
-
-			//	//GameEngine.DoBadEnd();
-			//}
-			//else
-			//{
-			//	postItemUseCallback(result, consumeResults, item);
-			//}
+		//if (result)
+		//{
+		//	if (target is PlayerBase target)
+		//	{
+		//		target.refillHunger(sateHungerAmount);
+		//	}
+		//	item = null;
 		//}
+
+		//if (isBadEnd)
+		//{
+		//	throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
+		//	//if we hit a bad end, don't resume whatever we were doing - we treat it as if it was a nightmare and nothing happened, except for the stuff that did happen, because continuity
+		//	//is hard to enforce in this shit. Just lampshade it - it was a nightmare, but you still suffer the effects of it as if it happened, but only up until the point you realized it
+		//	//was a bad end. so, you'll lose any items you were gonna get afterward, etc, but if your butt was stretched to gaping, it'll still be gaping after resuming from the bad end.
+		//	//same with piercings, tfs, etc. No time is lost, however, just resume from camp as soon as possible.
+		//	//example of lampshading: "it was just a nightmare... but it felt so real - and your eyebrow has a piercing in it, just like in the dream. strange..."
+
+		//	//GameEngine.DoBadEnd();
+		//}
+		//else
+		//{
+		//	postItemUseCallback(result, consumeResults, item);
+		//}
+		//}
+
+#warning Implement IPatternable bs when you figure out how to do so and/or actually feel like it.
 
 		private void DoSubMenu(IMultiDyeable multiDyeable)
 		{
+
+			display.OutputText(multiDyeable.LocationDesc() + " has several possible locations or combinations of locations. Where on " + multiDyeable.LocationDesc() +
+				" would you like to apply the " + color.AsString() + " hair dye?" + Environment.NewLine + "You can also go back to the full menu by hitting back.");
+
 			display.ClearOutput();
 
-			ButtonListMaker subMenu = new ButtonListMaker(display);
 
+			buttonMaker.ClearList();
 			for (byte x = 0; x < multiDyeable.numDyeableMembers; x++)
 			{
-				subMenu.AddButtonToList(multiDyeable.memberButtonText(x), multiDyeable.allowsDye(x), () => ApplyDye(multiDyeable, x));
+				string tip;
+				string location = multiDyeable.memberLocationDesc(x, out bool plural);
+				if (!multiDyeable.allowsDye(x))
+				{
+					tip = location.CapitalizeFirstLetter() + " cannot currently be dyed.";
+				}
+				else if (!multiDyeable.isDifferentColor(color, x))
+				{
+					tip = location.CapitalizeFirstLetter() + (plural ? " are" : " is") + " already " + color.AsString() + ".";
+				}
+				else
+				{
+					tip = null;
+				}
+				buttonMaker.AddButtonToList(multiDyeable.memberButtonText(x), multiDyeable.allowsDye(x), () => ApplyDye(multiDyeable, x), tip, null);
 			}
 
-			subMenu.CreateButtons(GlobalStrings.BACK(), true, RunMainMenu);
+			buttonMaker.CreateButtons(new ButtonData(GlobalStrings.BACK(), true, RunMainMenu), new ButtonData(GlobalStrings.CANCEL(), true, PutBack));
 		}
 
 		private void ApplyDye(IMultiDyeable multiDyeable, byte index)
@@ -168,7 +211,7 @@ namespace CoC.Frontend.Items.Consumables
 				results = ResultsOfDyeText(multiDyeable, index, success);
 			}
 
-			finalize(results);
+			CleanupAndReturn(results);
 		}
 
 		private void ApplyDye(IDyeable dyeable)
@@ -184,10 +227,10 @@ namespace CoC.Frontend.Items.Consumables
 				results = ResultsOfDyeText(dyeable, success);
 			}
 
-			finalize(results);
+			CleanupAndReturn(results);
 		}
 
-		private void finalize(string result)
+		private void CleanupAndReturn(string result)
 		{
 			if (source.relativeLust > 50)
 			{
@@ -197,10 +240,10 @@ namespace CoC.Frontend.Items.Consumables
 
 			//clear the globals.
 			source = null;
-			primaryMenu = null;
+			buttonMaker = null;
 			display = null;
 
-			var temp = itemCallback;
+			UseItemCallback temp = itemCallback;
 			itemCallback = null;
 
 			//and resume normal execution.
@@ -209,7 +252,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		private void PutBack()
 		{
-			primaryMenu = null;
+			buttonMaker = null;
 			display = null;
 			source = null;
 
@@ -219,7 +262,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		private string PutBackItemText()
 		{
-			throw new NotImplementedException();
+			return "You put the dye away." + GlobalStrings.NewParagraph();
 		}
 
 		private string ResultsOfDyeText(IDyeable dyeable, bool succeeded)

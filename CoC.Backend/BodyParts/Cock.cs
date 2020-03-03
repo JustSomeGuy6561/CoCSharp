@@ -145,7 +145,7 @@ namespace CoC.Backend.BodyParts
 		public const double DEFAULT_COCK_GIRTH = 1.25f;
 		//public const double DEFAULT_BIG_COCK_GIRTH = 1.5f;
 
-		public const double MIN_URETHRA_WIDTH = (double)(0.5 * Measurement.TO_INCHES);
+		public const double MIN_URETHRA_WIDTH = 0.5 * Measurement.TO_INCHES;
 		public const double MIN_CUM = 2;
 
 		#endregion
@@ -195,7 +195,7 @@ namespace CoC.Backend.BodyParts
 
 		public double urethraWidth => Math.Max(type.UrethraWidth(girth), MIN_URETHRA_WIDTH);
 
-		public double minCumAmount => Math.Max(MIN_CUM, (double)(Math.Pow((urethraWidth * Measurement.TO_CENTIMETERS), 2) * Math.PI * length));
+		public double minCumAmount => Math.Max(MIN_CUM, Math.Pow((urethraWidth * Measurement.TO_CENTIMETERS), 2) * Math.PI * length);
 
 		public double knotMultiplier
 		{
@@ -356,7 +356,7 @@ namespace CoC.Backend.BodyParts
 
 		internal CockSockBase ChangeCockSock(CockSockBase cockSock)
 		{
-			var oldSock = this.cockSock;
+			CockSockBase oldSock = this.cockSock;
 			this.cockSock = cockSock;
 
 			return oldSock;
@@ -650,7 +650,7 @@ namespace CoC.Backend.BodyParts
 		public override bool IsIdenticalTo(CockData original, bool ignoreSexualMetaData)
 		{
 			return !(original is null) && type == original.type && length == original.length && girth == original.girth
-				&& this.hasKnot == original.hasKnot && (!hasKnot || this.knotMultiplier == original.knotMultiplier) && cockSock.Equals(original.cockSock)
+				&& hasKnot == original.hasKnot && (!hasKnot || knotMultiplier == original.knotMultiplier) && cockSock.Equals(original.cockSock)
 				&& cumAmount == original.cumAmount && piercings.IsIdenticalTo(original.cockPiercings)
 				&& (ignoreSexualMetaData || (orgasmCount == original.orgasmCount && dryOrgasmCount == original.dryOrgasmCount
 				&& soundCount == original.soundCount && totalSexCount == original.totalSexCount && selfSexCount == original.selfSexCount));
@@ -721,17 +721,15 @@ namespace CoC.Backend.BodyParts
 			return area > 6;
 		}
 
-		double IShrinkable.UseReducto()
+		string IShrinkable.UseReducto()
 		{
-			if (!((IShrinkable)this).CanReducto())
+			if (((IShrinkable)this).CanReducto())
 			{
-				return 0;
+				double oldLength = length;
+				double multiplier = 2.0f / 3 * cockShrinkMultiplier;
+				updateLength(length * multiplier);
 			}
-			double oldLength = length;
-			double multiplier = 2.0f / 3 * cockShrinkMultiplier;
-			updateLength(length * multiplier);
-			return oldLength - length;
-
+			return null;
 		}
 
 		bool IGrowable.CanGroPlus()
@@ -742,41 +740,40 @@ namespace CoC.Backend.BodyParts
 		//grows cock 1-2 inches, in increments of 0.25.
 		//automatically increases cockGirth to min value.
 		//if possible, will also increase cockGirth, up to 0.5 inches
-		double IGrowable.UseGroPlus()
+		string IGrowable.UseGroPlus()
 		{
-			if (!((IGrowable)this).CanGroPlus())
+			if (((IGrowable)this).CanGroPlus())
 			{
-				return 0;
-			}
-			double oldCockLength = length;
+				double oldCockLength = length;
 
-			if (cockGrowthMultiplier != 1)
-			{
-				double multiplier = cockGrowthMultiplier;
-				int rand;
-				if (multiplier < 1)
+				if (cockGrowthMultiplier != 1)
 				{
-					rand = (int)Math.Floor(multiplier * 4);
+					double multiplier = cockGrowthMultiplier;
+					int rand;
+					if (multiplier < 1)
+					{
+						rand = (int)Math.Floor(multiplier * 4);
+					}
+					else
+					{
+						rand = (int)Math.Ceiling(multiplier * 4) + 1;
+					}
+					updateLength(length + 1 + Utils.Rand(rand) / 4.0f);
 				}
 				else
 				{
-					rand = (int)Math.Ceiling(multiplier * 4) + 1;
+					updateLength(length + 1 + Utils.Rand(4) / 4.0f);
 				}
-				updateLength(length + 1 + Utils.Rand(rand) / 4.0f);
+				if ((girth + 0.5f) < maxGirth)
+				{
+					updateGirth(girth + 0.5f);
+				}
+				else if (girth < maxGirth)
+				{
+					updateGirth(maxGirth);
+				}
 			}
-			else
-			{
-				updateLength(length + 1 + Utils.Rand(4) / 4.0f);
-			}
-			if ((girth + 0.5f) < maxGirth)
-			{
-				updateGirth(girth + 0.5f);
-			}
-			else if (girth < maxGirth)
-			{
-				updateGirth(maxGirth);
-			}
-			return length - oldCockLength;
+			return null;
 		}
 		#endregion
 		#region Helpers

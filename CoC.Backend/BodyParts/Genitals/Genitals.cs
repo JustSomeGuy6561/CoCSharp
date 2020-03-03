@@ -786,6 +786,11 @@ namespace CoC.Backend.BodyParts
 				outputBuilder.Append(outputHelper);
 			}
 
+			if (DoLazy(fertility, isPlayer, hoursPassed, out outputHelper))
+			{
+				outputBuilder.Append(outputHelper);
+			}
+
 			return outputBuilder.ToString();
 
 		}
@@ -872,7 +877,7 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Lactation Update Functions
-		public LactationStatus SetLactationTo(LactationStatus newStatus) => allBreasts.SetLactationTo(newStatus);
+		public bool SetLactationTo(LactationStatus newStatus) => allBreasts.SetLactationTo(newStatus);
 
 
 		public bool StartLactating() => allBreasts.StartLactating();
@@ -1237,8 +1242,14 @@ namespace CoC.Backend.BodyParts
 
 
 		public int RemoveVagina(int count = 1) => allVaginas.RemoveVagina(count);
-
-
+		public int RemoveVaginaAt(int index, int count = 1)
+		{
+			return allVaginas.RemoveVaginaAt(index, count);
+		}
+		public bool RemoveVagina(Vagina vagina)
+		{
+			return allVaginas.RemoveVagina(vagina);
+		}
 		public int RemoveExtraVaginas() => allVaginas.RemoveExtraVaginas();
 
 
@@ -1539,16 +1550,20 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Vagina Text
+		public string AllVaginasNoun() => allVaginas.AllVaginasNoun();
+		public string AllVaginasNoun(out bool isPlural) => allVaginas.AllVaginasNoun(out isPlural);
 		public string AllVaginasShortDescription() => allVaginas.AllVaginasShortDescription();
+		public string AllVaginasShortDescription(out bool isPlural) => allVaginas.AllVaginasShortDescription(out isPlural);
 
 		public string AllVaginasLongDescription() => allVaginas.AllVaginasLongDescription();
+		public string AllVaginasLongDescription(out bool isPlural) => allVaginas.AllVaginasLongDescription(out isPlural);
 
 		public string AllVaginasFullDescription() => allVaginas.AllVaginasFullDescription();
+		public string AllVaginasFullDescription(out bool isPlural) => allVaginas.AllVaginasFullDescription(out isPlural);
 
 
 		public string OneVaginaOrVaginasNoun() => allVaginas.OneVaginaOrVaginasNoun();
 		public string OneVaginaOrVaginasNoun(Conjugate conjugate) => allVaginas.OneVaginaOrVaginasNoun(conjugate);
-
 
 		public string OneVaginaOrVaginasShort() => allVaginas.OneVaginaOrVaginasShort();
 		public string OneVaginaOrVaginasShort(Conjugate conjugate) => allVaginas.OneVaginaOrVaginasShort(conjugate);
@@ -1556,17 +1571,38 @@ namespace CoC.Backend.BodyParts
 
 		public string EachVaginaOrVaginasNoun() => allVaginas.EachVaginaOrVaginasNoun();
 		public string EachVaginaOrVaginasNoun(Conjugate conjugate) => allVaginas.EachVaginaOrVaginasNoun(conjugate);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => allVaginas.EachVaginaOrVaginasNoun(conjugate, out isPlural);
 
 
 		public string EachVaginaOrVaginasShort() => allVaginas.EachVaginaOrVaginasShort();
 		public string EachVaginaOrVaginasShort(Conjugate conjugate) => allVaginas.EachVaginaOrVaginasShort(conjugate);
-
-
-		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => allVaginas.EachVaginaOrVaginasNoun(conjugate, out isPlural);
-
-
 		public string EachVaginaOrVaginasShort(Conjugate conjugate, out bool isPlural) => allVaginas.EachVaginaOrVaginasShort(conjugate, out isPlural);
 
+		public string AllClitsNoun() => allVaginas.AllClitsNoun();
+		public string AllClitsNoun(out bool isPlural) => allVaginas.AllClitsNoun(out isPlural);
+
+		public string AllClitsShortDescription() => allVaginas.AllClitsShortDescription();
+		public string AllClitsShortDescription(out bool isPlural) => allVaginas.AllClitsShortDescription(out isPlural);
+
+
+		public string AllClitsLongDescription() => allVaginas.AllClitsLongDescription();
+		public string AllClitsLongDescription(out bool isPlural) => allVaginas.AllClitsLongDescription(out isPlural);
+
+		public string OneClitOrClitsNoun() => allVaginas.OneClitOrClitsNoun();
+		public string OneClitOrClitsNoun(Conjugate conjugate) => allVaginas.OneClitOrClitsNoun(conjugate);
+
+		public string OneClitOrClitsShort() => allVaginas.OneClitOrClitsShort();
+		public string OneClitOrClitsShort(Conjugate conjugate) => allVaginas.OneClitOrClitsShort(conjugate);
+
+
+		public string EachClitOrClitsNoun() => allVaginas.EachClitOrClitsNoun();
+		public string EachClitOrClitsNoun(Conjugate conjugate) => allVaginas.EachClitOrClitsNoun(conjugate);
+		public string EachClitOrClitsNoun(Conjugate conjugate, out bool isPlural) => allVaginas.EachClitOrClitsNoun(conjugate, out isPlural);
+
+
+		public string EachClitOrClitsShort() => allVaginas.EachClitOrClitsShort();
+		public string EachClitOrClitsShort(Conjugate conjugate) => allVaginas.EachClitOrClitsShort(conjugate);
+		public string EachClitOrClitsShort(Conjugate conjugate, out bool isPlural) => allVaginas.EachClitOrClitsShort(conjugate, out isPlural);
 		#endregion
 
 		#region Common Nipple Text
@@ -1574,22 +1610,21 @@ namespace CoC.Backend.BodyParts
 		public string CommonShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
 			=> allBreasts.CommonShortNippleDescription(plural, allowQuadNippleTextIfApplicable);
 
-		internal string CommonSingleNippleDescription() => allBreasts.CommonSingleNippleDescription();
-		internal string CommonSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => allBreasts.CommonSingleNipplpeDescription(allowQuadNippleIfApplicable);
+		public string CommonSingleNippleDescription() => allBreasts.CommonSingleNippleDescription();
+		public string CommonSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => allBreasts.CommonSingleNippleDescription(allowQuadNippleIfApplicable);
 
-		internal string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		public string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
 			=> allBreasts.CommonLongNippleDescription(alternateFormat, plural, usePreciseMeasurements);
-		internal string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		public string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
 			=> allBreasts.CommonFullNippleDescription(alternateFormat, plural, usePreciseMeasurements);
 
-		internal string CommonOneNippleOrOneOfQuadNipplesShort() => allBreasts.CommonOneNippleOrOneOfQuadNipplesShort();
-		internal string CommonOneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => allBreasts.CommonOneNippleOrOneOfQuadNipplesShort(conjugate);
+		public string CommonOneNippleDescription() => allBreasts.CommonOneNippleDescription();
+		public string CommonOneNippleDescription(Conjugate conjugate) => allBreasts.CommonOneNippleDescription(conjugate);
 
-		internal string CommonOneNippleOrEachOfQuadNipplesShort() => allBreasts.CommonOneNippleOrEachOfQuadNipplesShort();
-		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => allBreasts.CommonOneNippleOrEachOfQuadNipplesShort(conjugate);
+		public string CommonEachNippleDescription() => allBreasts.CommonEachNippleDescription();
+		public string CommonEachNippleDescription(Conjugate conjugate) => allBreasts.CommonEachNippleDescription(conjugate);
 
-		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural)
-			=> allBreasts.CommonOneNippleOrEachOfQuadNipplesShort(conjugate, out isPlural);
+		public string CommonEachNippleDescription(Conjugate conjugate, out bool isPlural) => allBreasts.CommonEachNippleDescription(conjugate, out isPlural);
 		#endregion
 
 		#region Breast Aggregate Functions
@@ -1863,16 +1898,20 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Vagina Text
+		public string AllVaginasNoun() => allVaginaData.AllVaginasNoun();
+		public string AllVaginasNoun(out bool isPlural) => allVaginaData.AllVaginasNoun(out isPlural);
 		public string AllVaginasShortDescription() => allVaginaData.AllVaginasShortDescription();
+		public string AllVaginasShortDescription(out bool isPlural) => allVaginaData.AllVaginasShortDescription(out isPlural);
 
 		public string AllVaginasLongDescription() => allVaginaData.AllVaginasLongDescription();
+		public string AllVaginasLongDescription(out bool isPlural) => allVaginaData.AllVaginasLongDescription(out isPlural);
 
 		public string AllVaginasFullDescription() => allVaginaData.AllVaginasFullDescription();
+		public string AllVaginasFullDescription(out bool isPlural) => allVaginaData.AllVaginasFullDescription(out isPlural);
 
 
 		public string OneVaginaOrVaginasNoun() => allVaginaData.OneVaginaOrVaginasNoun();
 		public string OneVaginaOrVaginasNoun(Conjugate conjugate) => allVaginaData.OneVaginaOrVaginasNoun(conjugate);
-
 
 		public string OneVaginaOrVaginasShort() => allVaginaData.OneVaginaOrVaginasShort();
 		public string OneVaginaOrVaginasShort(Conjugate conjugate) => allVaginaData.OneVaginaOrVaginasShort(conjugate);
@@ -1880,17 +1919,38 @@ namespace CoC.Backend.BodyParts
 
 		public string EachVaginaOrVaginasNoun() => allVaginaData.EachVaginaOrVaginasNoun();
 		public string EachVaginaOrVaginasNoun(Conjugate conjugate) => allVaginaData.EachVaginaOrVaginasNoun(conjugate);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => allVaginaData.EachVaginaOrVaginasNoun(conjugate, out isPlural);
 
 
 		public string EachVaginaOrVaginasShort() => allVaginaData.EachVaginaOrVaginasShort();
 		public string EachVaginaOrVaginasShort(Conjugate conjugate) => allVaginaData.EachVaginaOrVaginasShort(conjugate);
-
-
-		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => allVaginaData.EachVaginaOrVaginasNoun(conjugate, out isPlural);
-
-
 		public string EachVaginaOrVaginasShort(Conjugate conjugate, out bool isPlural) => allVaginaData.EachVaginaOrVaginasShort(conjugate, out isPlural);
 
+		public string AllClitsNoun() => allVaginaData.AllClitsNoun();
+		public string AllClitsNoun(out bool isPlural) => allVaginaData.AllClitsNoun(out isPlural);
+
+		public string AllClitsShortDescription() => allVaginaData.AllClitsShortDescription();
+		public string AllClitsShortDescription(out bool isPlural) => allVaginaData.AllClitsShortDescription(out isPlural);
+
+
+		public string AllClitsLongDescription() => allVaginaData.AllClitsLongDescription();
+		public string AllClitsLongDescription(out bool isPlural) => allVaginaData.AllClitsLongDescription(out isPlural);
+
+		public string OneClitOrClitsNoun() => allVaginaData.OneClitOrClitsNoun();
+		public string OneClitOrClitsNoun(Conjugate conjugate) => allVaginaData.OneClitOrClitsNoun(conjugate);
+
+		public string OneClitOrClitsShort() => allVaginaData.OneClitOrClitsShort();
+		public string OneClitOrClitsShort(Conjugate conjugate) => allVaginaData.OneClitOrClitsShort(conjugate);
+
+
+		public string EachClitOrClitsNoun() => allVaginaData.EachClitOrClitsNoun();
+		public string EachClitOrClitsNoun(Conjugate conjugate) => allVaginaData.EachClitOrClitsNoun(conjugate);
+		public string EachClitOrClitsNoun(Conjugate conjugate, out bool isPlural) => allVaginaData.EachClitOrClitsNoun(conjugate, out isPlural);
+
+
+		public string EachClitOrClitsShort() => allVaginaData.EachClitOrClitsShort();
+		public string EachClitOrClitsShort(Conjugate conjugate) => allVaginaData.EachClitOrClitsShort(conjugate);
+		public string EachClitOrClitsShort(Conjugate conjugate, out bool isPlural) => allVaginaData.EachClitOrClitsShort(conjugate, out isPlural);
 		#endregion
 
 		#region Common Nipple Text
@@ -1898,22 +1958,21 @@ namespace CoC.Backend.BodyParts
 		public string CommonShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
 			=> allBreastData.CommonShortNippleDescription(plural, allowQuadNippleTextIfApplicable);
 
-		internal string CommonSingleNippleDescription() => allBreastData.CommonSingleNippleDescription();
-		internal string CommonSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => allBreastData.CommonSingleNipplpeDescription(allowQuadNippleIfApplicable);
+		public string CommonSingleNippleDescription() => allBreastData.CommonSingleNippleDescription();
+		public string CommonSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => allBreastData.CommonSingleNippleDescription(allowQuadNippleIfApplicable);
 
-		internal string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		public string CommonLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
 			=> allBreastData.CommonLongNippleDescription(alternateFormat, plural, usePreciseMeasurements);
-		internal string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		public string CommonFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
 			=> allBreastData.CommonFullNippleDescription(alternateFormat, plural, usePreciseMeasurements);
 
-		internal string CommonOneNippleOrOneOfQuadNipplesShort() => allBreastData.CommonOneNippleOrOneOfQuadNipplesShort();
-		internal string CommonOneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => allBreastData.CommonOneNippleOrOneOfQuadNipplesShort(conjugate);
+		public string CommonOneNippleDescription() => allBreastData.CommonOneNippleDescription();
+		public string CommonOneNippleDescription(Conjugate conjugate) => allBreastData.CommonOneNippleDescription(conjugate);
 
-		internal string CommonOneNippleOrEachOfQuadNipplesShort() => allBreastData.CommonOneNippleOrEachOfQuadNipplesShort();
-		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => allBreastData.CommonOneNippleOrEachOfQuadNipplesShort(conjugate);
+		public string CommonEachNippleDescription() => allBreastData.CommonEachNippleDescription();
+		public string CommonEachNippleDescription(Conjugate conjugate) => allBreastData.CommonEachNippleDescription(conjugate);
 
-		internal string CommonOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural)
-			=> allBreastData.CommonOneNippleOrEachOfQuadNipplesShort(conjugate, out isPlural);
+		public string CommonEachNippleDescription(Conjugate conjugate, out bool isPlural) => allBreastData.CommonEachNippleDescription(conjugate, out isPlural);
 		#endregion
 
 		#region Breast Aggregate Functions

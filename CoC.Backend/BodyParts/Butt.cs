@@ -5,6 +5,7 @@
 using CoC.Backend.BodyParts.EventHelpers;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,7 @@ namespace CoC.Backend.BodyParts
 		public readonly bool hasButt;// => size >= TIGHT;
 		public int index => size;
 
-		private byte minVal => hasButt ? TIGHT : BUTTLESS;
+		private byte minSize => hasButt ? (CreatureStore.GetCreatureClean(creatureID)?.perks.baseModifiers.minButtSize.GetValue() ?? TIGHT) : BUTTLESS;
 		private byte maxVal => hasButt ? INCONCEIVABLY_BIG : BUTTLESS;
 
 		public byte size
@@ -81,7 +82,7 @@ namespace CoC.Backend.BodyParts
 			private set
 			{
 
-				Utils.Clamp(ref value, minVal, maxVal);
+				Utils.Clamp(ref value, minSize, maxVal);
 				if (_buttSize != value)
 				{
 					var oldData = AsReadOnlyData();
@@ -91,6 +92,11 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 		private byte _buttSize;
+
+		internal void CheckButt()
+		{
+			size = size;
+		}
 
 		public readonly ButtTattoo tattoos;
 
@@ -136,10 +142,11 @@ namespace CoC.Backend.BodyParts
 			return oldSize.subtract(size);
 		}
 
-		public byte SetButtSize(byte newSize)
+		public short SetButtSize(byte newSize)
 		{
+			var oldSize = size;
 			size = newSize;
-			return size;
+			return newSize.delta(oldSize);
 		}
 		#region Text
 		public string SizeAsAdjective() => BuildStrings.ButtAdjective(size);
@@ -164,12 +171,18 @@ namespace CoC.Backend.BodyParts
 
 		bool IShrinkable.CanReducto()
 		{
-			return size > TIGHT;
+			return size > minSize;
 		}
 
-		double IShrinkable.UseReducto()
+		string IShrinkable.UseReducto()
 		{
-			int oldSize = size;
+			var oldData = AsReadOnlyData();
+
+			bool nothingHappened = false;
+			if (!((IShrinkable)this).CanReducto())
+			{
+				nothingHappened = true;
+			}
 			if (size >= HUGE)
 			{
 				size = (byte)Math.Round(size * 2.0 / 3);
@@ -185,7 +198,7 @@ namespace CoC.Backend.BodyParts
 				//increase by 1, as rand returns 0 to (val-1), we want 1 to val
 				size -= (byte)(Utils.Rand(val) + 1);
 			}
-			return oldSize - size;
+			return ReductoButt(oldData, nothingHappened);
 		}
 	}
 

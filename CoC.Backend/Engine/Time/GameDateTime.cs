@@ -13,7 +13,7 @@ namespace CoC.Backend.Engine.Time
 			hour = hr;
 		}
 
-		public int hoursTo(GameDateTime other)
+		public int HoursTo(GameDateTime other)
 		{
 			int days = other.day - day;
 			int hours = other.hour - hour;
@@ -21,7 +21,7 @@ namespace CoC.Backend.Engine.Time
 		}
 		public int hoursToNow()
 		{
-			return hoursTo(Now);
+			return HoursTo(Now);
 		}
 
 		public static GameDateTime Now => new GameDateTime(GameEngine.CurrentDay, GameEngine.CurrentHour);
@@ -72,7 +72,7 @@ namespace CoC.Backend.Engine.Time
 		public int CompareTo(GameDateTime other)
 		{
 			if (other is null) return 1;
-			else return -hoursTo(other);
+			else return -HoursTo(other);
 		}
 
 		public static bool operator >(GameDateTime source, GameDateTime other)

@@ -16,7 +16,7 @@ namespace CoC.Frontend.Items.Consumables
 	{
 		private readonly bool potent;
 
-		public FoxBerry(bool enhanced) : base()
+		public FoxBerry(bool enhanced = false) : base()
 		{
 			potent = enhanced;
 		}

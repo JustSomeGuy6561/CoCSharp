@@ -2,13 +2,13 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 10:11 PM
+using System;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Settings.Gameplay;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System;
 
 namespace CoC.Backend.BodyParts
 {
@@ -87,6 +87,8 @@ namespace CoC.Backend.BodyParts
 		ReadOnlyPiercing<ClitPiercingLocation> piercings { get; }
 
 		Guid creatureID { get; }
+
+		string ShortDescription();
 	}
 
 	public partial class Clit : IClit
@@ -138,19 +140,71 @@ namespace CoC.Backend.BodyParts
 	{
 		public static string ClitNoun(bool withArticle = false)
 		{
-			if (SFW_Settings.SFW_Enabled) return (withArticle ? "a " : "") + Utils.RandomChoice("bump", "button");
-			else return (withArticle ? "a " : "") + Utils.RandomChoice("clit", "clitty", "button", "pleasure-buzzer", "clit", "clitty", "button", "clit", "clit", "button");
+			if (SFW_Settings.SFW_Enabled)
+			{
+				return (withArticle ? "a " : "") + Utils.RandomChoice("bump", "button");
+			}
+			else
+			{
+				return (withArticle ? "a " : "") + Utils.RandomChoice("clit", "clitty", "button", "pleasure-buzzer", "clit", "clitty", "button", "clit", "clit", "button");
+			}
 		}
 
 		public static string PluralClitNoun()
 		{
-			if (SFW_Settings.SFW_Enabled) return Utils.RandomChoice("bumps", "buttons");
-			else return Utils.RandomChoice("clits", "buttons", "pleasure-buzzers", "clits", "buttons", "clits", "clits", "love-buttons");
+			if (SFW_Settings.SFW_Enabled)
+			{
+				return Utils.RandomChoice("bumps", "buttons");
+			}
+			else
+			{
+				return Utils.RandomChoice("clits", "buttons", "pleasure-buzzers", "clits", "buttons", "clits", "clits", "love-buttons");
+			}
 		}
 
 		internal static string ShortDesc(double length)
 		{
 			return Measurement.ToNearestHalfSmallUnit(length, false, true, false) + " clit";
+		}
+
+		internal static string SizeAdjective(double length) => SizeAdjective(length, out _);
+		internal static string SizeAdjective(double length, out string article)
+		{
+			string size;
+			//small clits!
+			if (length <= .5)
+			{
+				article = "a ";
+				size = Utils.RandomChoice("tiny", "little", "petite", "diminutive", "miniature ");
+			}
+			//"average". no comment
+			else if (length < 1.5)
+			{
+				//no size comment
+				article = null;
+				size = "";
+			}
+			//Biggies!
+			else if (length < 4)
+			{
+				article = "a ";
+				size = Utils.RandomChoice("large", "large", "substantial", "substantial", "considerable ");
+			}
+			//'Uge
+			else //if (length >= 4)
+			{
+				size = Utils.RandomChoice("monster", "tremendous", "colossal", "enormous", "bulky ");
+				if (size == "enormous")
+				{
+					article = "an ";
+				}
+				else
+				{
+					article = "a";
+				}
+			}
+
+			return size;
 		}
 
 		//some of these get an oxford comma on full description, some don't. Sue me.
@@ -177,29 +231,10 @@ namespace CoC.Backend.BodyParts
 			//Length Adjective - 50% chance
 			if (Utils.RandBool() || full)
 			{
-				//small clits!
-				if (clit.length <= .5)
+				size = SizeAdjective(clit.length, out string temp);
+				if (article is null)
 				{
-					if (article is null) article = "a ";
-					size = Utils.RandomChoice("tiny", "little", "petite", "diminutive", "miniature ");
-				}
-				//"average". no comment
-				else if (clit.length < 1.5)
-				{
-					//no size comment
-				}
-				//Biggies!
-				else if (clit.length < 4)
-				{
-					if (article is null) article = "a ";
-					size = Utils.RandomChoice("large", "large", "substantial", "substantial", "considerable ");
-				}
-				//'Uge
-				else //if (clit.length >= 4)
-				{
-					size = Utils.RandomChoice("monster", "tremendous", "colossal", "enormous", "bulky ");
-					if (size == "enormous" && article is null) article = "an ";
-					else if (article is null) article = "a";
+					article = temp;
 				}
 			}
 
@@ -224,7 +259,11 @@ namespace CoC.Backend.BodyParts
 				//Horny descriptors - 75% chance
 				if (relativeLust > 70 && Utils.Rand(4) < 3)
 				{
-					if (article is null) article = "a ";
+					if (article is null)
+					{
+						article = "a ";
+					}
+
 					adjective = separator + Utils.RandomChoice("throbbing", "pulsating", "hard");
 				}
 				//High libido - always use if no other descript
@@ -233,12 +272,18 @@ namespace CoC.Backend.BodyParts
 					if (Utils.Rand(4) == 0)
 					{
 						adjective = "insatiable";
-						if (article is null) article = "an ";
+						if (article is null)
+						{
+							article = "an ";
+						}
 					}
 					else
 					{
 						adjective = separator + Utils.RandomChoice("greedy", "demanding", "rapacious");
-						if (article is null) article = "a ";
+						if (article is null)
+						{
+							article = "a ";
+						}
 					}
 				}
 				//else if (clit.clitCockActive && Utils.RandBool())
@@ -264,7 +309,11 @@ namespace CoC.Backend.BodyParts
 			//100% display rate if pierced and we've fallen through to this point, so we dont need to check for full.
 			if (clit.piercings.isPierced)
 			{
-				if (article is null) article = "a ";
+				if (article is null)
+				{
+					article = "a ";
+				}
+
 				return article + size + adjective + "pierced " + ClitNoun();
 			}
 

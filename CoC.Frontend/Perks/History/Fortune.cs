@@ -13,7 +13,7 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			sourceCreature.addGems(250);
+			sourceCreature.AddGems(250);
 			if (hasExtraModifiers)
 			{
 				extraModifiers.gemGainMultiplier += 0.15f;

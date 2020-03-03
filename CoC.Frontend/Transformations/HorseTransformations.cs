@@ -90,15 +90,15 @@ namespace CoC.Frontend.Transformations
 				//MAXXED ALREADY
 				if (target.relativeToughness >= 75)
 				{
-					//outputText("\n\nYour body is as tough and solid as a "));
-					//if (target.gender.HasFlag(Gender.MALE)) outputText("stallion's."));
-					//else outputText("mare's."));
+					//sb.Append("\n\nYour body is as tough and solid as a "));
+					//if (target.gender.HasFlag(Gender.MALE)) sb.Append("stallion's."));
+					//else sb.Append("mare's."));
 				}
 				//NOT MAXXED
 				else
 				{
 					target.IncreaseToughness(1.25f);
-					//outputText("\n\nYour body suddenly feels tougher and more resilient."));
+					//sb.Append("\n\nYour body suddenly feels tougher and more resilient."));
 				}
 			}
 			//INTELLECT

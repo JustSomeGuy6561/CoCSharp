@@ -53,7 +53,7 @@ namespace CoC.Frontend.Encounters.Common
 				}
 				display.OutputText(" As it drags" + helperText1 + ", the sensation forces you to imagine" + helperText2);
 			}
-			else //(player.cocks.length >= 2)
+			else //(player.cocks.Count >= 2)
 			{
 				if (isForest)
 				{

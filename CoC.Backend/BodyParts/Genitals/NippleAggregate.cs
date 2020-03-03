@@ -431,33 +431,35 @@ namespace CoC.Backend.BodyParts
 			return length > MIN_NIPPLE_LENGTH;
 		}
 
-		double IGrowable.UseGroPlus()
+		string IGrowable.UseGroPlus()
 		{
 			if (!((IGrowable)this).CanGroPlus())
 			{
-				return 0;
+				return null;
 			}
-			double oldLength = length;
-			length += Utils.Rand(6) / 20.0f + 0.25f; //ranges from 1/4- 1/2 inch.
-			return length - oldLength; //returns that change in value. limited only if it reaches the max.
+			var oldStatus = nippleStatus;
+
+			length += Utils.Rand(6) / 20.0 + 0.25; //ranges from 1/4- 1/2 inch.
+			return GroPlusNipples(oldStatus);
 		}
 
-		double IShrinkable.UseReducto()
+		string IShrinkable.UseReducto()
 		{
 			if (!((IShrinkable)this).CanReducto())
 			{
-				return 0;
+				return null;
 			}
-			double oldLength = length;
+			var oldStatus = nippleStatus;
+
 			if (length > 0.5f)
 			{
-				length /= 2f;
+				length /= 2;
 			}
 			else
 			{
-				length = 0.25f;
+				length = 0.25;
 			}
-			return oldLength - length;
+			return ReductoNipples(oldStatus);
 		}
 		#endregion
 
@@ -482,85 +484,72 @@ namespace CoC.Backend.BodyParts
 		internal string NippleNoun() => NippleStrings.NounText(this);
 		internal string NippleNoun(bool plural, bool allowQuadNippleIfApplicable = false) => NippleStrings.NounText(this, plural, allowQuadNippleIfApplicable);
 
-		internal string GenericShortNippleDescription() => NippleStrings.GenericShortDescription(this, true, true);
-		internal string GenericShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
+		internal string RowShortDescription(IBreast breast) => NippleStrings.RowShortDescription(this, breast, true, true);
+
+		internal string RowShortDescription(IBreast breast, bool plural, bool allowQuadNippleTextIfApplicable = true) =>
+			NippleStrings.RowShortDescription(this, breast, plural, allowQuadNippleTextIfApplicable);
+
+		internal string GenericShortDescription() => NippleStrings.GenericShortDescription(this, true, true);
+		internal string GenericShortDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
 			=> NippleStrings.GenericShortDescription(this, plural, allowQuadNippleTextIfApplicable);
 
+		internal string RowSingleDescription(IBreast breast) => NippleStrings.RowSingleItemDescription(this, breast, true);
+		internal string RowSingleDescription(IBreast breast, bool allowQuadNippleIfApplicable) => NippleStrings.RowSingleItemDescription(this, breast, allowQuadNippleIfApplicable);
 
 
-		internal string GenericSingleNippleDescription() => NippleStrings.GenericSingleItemDescription(this, true);
-		internal string GenericSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => NippleStrings.GenericSingleItemDescription(this, allowQuadNippleIfApplicable);
+		internal string GenericSingleDescription() => NippleStrings.GenericSingleItemDescription(this, true);
+		internal string GenericSingleDescription(bool allowQuadNippleIfApplicable) => NippleStrings.GenericSingleItemDescription(this, allowQuadNippleIfApplicable);
 
-		internal string GenericLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		internal string RowLongDescription(IBreast breast, bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=>NippleStrings.RowLongDescription(this, breast, alternateFormat, plural, usePreciseMeasurements);
+
+		internal string GenericLongDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> NippleStrings.GenericLongDescription(this, alternateFormat, plural, usePreciseMeasurements);
+
+		internal string RowFullDescription(IBreast breast, bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> NippleStrings.RowFullDescription(this, breast, alternateFormat, plural, usePreciseMeasurements);
+
+		internal string GenericFullDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> NippleStrings.GenericFullDescription(this, alternateFormat, plural, usePreciseMeasurements);
+
+		internal string RowOneNippleDescription(IBreast breast) => RowOneNippleDescription(breast, Conjugate.YOU);
+		internal string RowOneNippleDescription(IBreast breast, Conjugate conjugate)
 		{
-			return NippleStrings.GenericLongDescription(this, alternateFormat, plural, usePreciseMeasurements);
-		}
-		internal string GenericFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.GenericFullDescription(this, alternateFormat, plural, usePreciseMeasurements);
-		}
-
-		internal string GenericOneNippleOrOneOfQuadNipplesShort() => GenericOneNippleOrOneOfQuadNipplesShort(Conjugate.YOU);
-		internal string GenericOneNippleOrOneOfQuadNipplesShort(Conjugate conjugate)
-		{
-
-			return CommonBodyPartStrings.OneOfDescription(hasQuadNipples, conjugate, GenericShortNippleDescription());
-		}
-
-		internal string GenericOneNippleOrEachOfQuadNipplesShort() => GenericOneNippleOrEachOfQuadNipplesShort(Conjugate.YOU);
-		internal string GenericOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate)
-		{
-
-			return GenericOneNippleOrEachOfQuadNipplesShort(conjugate, out bool _);
+			return CommonBodyPartStrings.OneOfDescription(hasQuadNipples, conjugate, RowShortDescription(breast));
 		}
 
-		internal string GenericOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural)
-		{
-			isPlural = hasQuadNipples;
-
-			return CommonBodyPartStrings.EachOfDescription(hasQuadNipples, conjugate, GenericShortNippleDescription());
-		}
-
-
-
-		internal string ShortNippleDescription(IBreast breast) => NippleStrings.ShortDescription(this, breast, true, true);
-
-		internal string ShortNippleDescription(IBreast breast, bool plural, bool allowQuadNippleTextIfApplicable = true) =>
-			NippleStrings.ShortDescription(this, breast, plural, allowQuadNippleTextIfApplicable);
-
-		internal string SingleNippleDescription(IBreast breast) => NippleStrings.SingleItemDescription(this, breast, true);
-		internal string SingleNipplpeDescription(IBreast breast, bool allowQuadNippleIfApplicable) => NippleStrings.SingleItemDescription(this, breast, allowQuadNippleIfApplicable);
-
-		internal string LongNippleDescription(IBreast breast, bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.LongDescription(this, breast, alternateFormat, plural, usePreciseMeasurements);
-		}
-		internal string FullNippleDescription(IBreast breast, bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.FullDescription(this, breast, alternateFormat, plural, usePreciseMeasurements);
-		}
-
-		internal string OneNippleOrOneOfQuadNipplesShort(IBreast breast) => OneNippleOrOneOfQuadNipplesShort(breast, Conjugate.YOU);
-		internal string OneNippleOrOneOfQuadNipplesShort(IBreast breast, Conjugate conjugate)
+		internal string GenericOneNippleDescription() => GenericOneNippleDescription(Conjugate.YOU);
+		internal string GenericOneNippleDescription(Conjugate conjugate)
 		{
 
-			return CommonBodyPartStrings.OneOfDescription(hasQuadNipples, conjugate, ShortNippleDescription(breast));
+			return CommonBodyPartStrings.OneOfDescription(hasQuadNipples, conjugate, GenericShortDescription());
 		}
 
-		internal string OneNippleOrEachOfQuadNipplesShort(IBreast breast) => OneNippleOrEachOfQuadNipplesShort(breast, Conjugate.YOU);
-		internal string OneNippleOrEachOfQuadNipplesShort(IBreast breast, Conjugate conjugate)
+		internal string RowEachNippleDescription(IBreast breast) => RowEachNippleDescription(breast, Conjugate.YOU);
+		internal string RowEachNippleDescription(IBreast breast, Conjugate conjugate)
 		{
-
-			return OneNippleOrEachOfQuadNipplesShort(breast, conjugate, out bool _);
+			return RowEachNippleDescription(breast, conjugate, out bool _);
 		}
 
-		internal string OneNippleOrEachOfQuadNipplesShort(IBreast breast, Conjugate conjugate, out bool isPlural)
+		internal string RowEachNippleDescription(IBreast breast, Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = hasQuadNipples;
 
-			return CommonBodyPartStrings.EachOfDescription(hasQuadNipples, conjugate, ShortNippleDescription(breast));
+			return CommonBodyPartStrings.EachOfDescription(hasQuadNipples, conjugate, RowShortDescription(breast));
 		}
 
+		internal string GenericEachNippleDescription() => GenericEachNippleDescription(Conjugate.YOU);
+		internal string GenericEachNippleDescription(Conjugate conjugate)
+		{
+			return GenericEachNippleDescription(conjugate, out bool _);
+		}
+
+		internal string GenericEachNippleDescription(Conjugate conjugate, out bool isPlural)
+		{
+			isPlural = hasQuadNipples;
+
+			return CommonBodyPartStrings.EachOfDescription(hasQuadNipples, conjugate, GenericShortDescription());
+		}
 		#endregion
 
 	}
@@ -636,79 +625,71 @@ namespace CoC.Backend.BodyParts
 		internal string NippleNoun() => NippleStrings.NounText(this);
 		internal string NippleNoun(bool plural, bool allowQuadNippleIfApplicable = false) => NippleStrings.NounText(this, plural, allowQuadNippleIfApplicable);
 
-		internal string GenericShortNippleDescription() => NippleStrings.GenericShortDescription(this, true, true);
-		internal string GenericShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
+		internal string RowShortDescription(IBreast breast) => NippleStrings.RowShortDescription(this, breast, true, true);
+
+		internal string RowShortDescription(IBreast breast, bool plural, bool allowQuadNippleTextIfApplicable = true) =>
+			NippleStrings.RowShortDescription(this, breast, plural, allowQuadNippleTextIfApplicable);
+
+		internal string GenericShortDescription() => NippleStrings.GenericShortDescription(this, true, true);
+		internal string GenericShortDescription(bool plural, bool allowQuadNippleTextIfApplicable = true)
 			=> NippleStrings.GenericShortDescription(this, plural, allowQuadNippleTextIfApplicable);
 
-		internal string GenericSingleNippleDescription() => NippleStrings.GenericSingleItemDescription(this, true);
-		internal string GenericSingleNipplpeDescription(bool allowQuadNippleIfApplicable) => NippleStrings.GenericSingleItemDescription(this, allowQuadNippleIfApplicable);
+		internal string RowSingleDescription(IBreast breast) => NippleStrings.RowSingleItemDescription(this, breast, true);
+		internal string RowSingleDescription(IBreast breast, bool allowQuadNippleIfApplicable) => NippleStrings.RowSingleItemDescription(this, breast, allowQuadNippleIfApplicable);
 
-		internal string GenericLongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+
+		internal string GenericSingleDescription() => NippleStrings.GenericSingleItemDescription(this, true);
+		internal string GenericSingleDescription(bool allowQuadNippleIfApplicable) => NippleStrings.GenericSingleItemDescription(this, allowQuadNippleIfApplicable);
+
+		internal string RowLongDescription(IBreast breast, bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> NippleStrings.RowLongDescription(this, breast, alternateFormat, plural, usePreciseMeasurements);
+
+		internal string GenericLongDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> NippleStrings.GenericLongDescription(this, alternateFormat, plural, usePreciseMeasurements);
+
+		internal string RowFullDescription(IBreast breast, bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> NippleStrings.RowFullDescription(this, breast, alternateFormat, plural, usePreciseMeasurements);
+
+		internal string GenericFullDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+			=> NippleStrings.GenericFullDescription(this, alternateFormat, plural, usePreciseMeasurements);
+
+		internal string RowOneNippleDescription(IBreast breast) => RowOneNippleDescription(breast, Conjugate.YOU);
+		internal string RowOneNippleDescription(IBreast breast, Conjugate conjugate)
 		{
-			return NippleStrings.GenericLongDescription(this, alternateFormat, plural, usePreciseMeasurements);
-		}
-		internal string GenericFullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.GenericFullDescription(this, alternateFormat, plural, usePreciseMeasurements);
+			return CommonBodyPartStrings.OneOfDescription(hasQuadNipples, conjugate, RowShortDescription(breast));
 		}
 
-		internal string GenericOneNippleOrOneOfQuadNipplesShort() => GenericOneNippleOrOneOfQuadNipplesShort(Conjugate.YOU);
-		internal string GenericOneNippleOrOneOfQuadNipplesShort(Conjugate conjugate)
+		internal string GenericOneNippleDescription() => GenericOneNippleDescription(Conjugate.YOU);
+		internal string GenericOneNippleDescription(Conjugate conjugate)
 		{
 
-			return CommonBodyPartStrings.OneOfDescription(hasQuadNipples, conjugate, GenericShortNippleDescription());
+			return CommonBodyPartStrings.OneOfDescription(hasQuadNipples, conjugate, GenericShortDescription());
 		}
 
-		internal string GenericOneNippleOrEachOfQuadNipplesShort() => GenericOneNippleOrEachOfQuadNipplesShort(Conjugate.YOU);
-		internal string GenericOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate)
+		internal string RowEachNippleDescription(IBreast breast) => RowEachNippleDescription(breast, Conjugate.YOU);
+		internal string RowEachNippleDescription(IBreast breast, Conjugate conjugate)
 		{
-
-			return GenericOneNippleOrEachOfQuadNipplesShort(conjugate, out bool _);
+			return RowEachNippleDescription(breast, conjugate, out bool _);
 		}
 
-		internal string GenericOneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural)
+		internal string RowEachNippleDescription(IBreast breast, Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = hasQuadNipples;
 
-			return CommonBodyPartStrings.EachOfDescription(hasQuadNipples, conjugate, GenericShortNippleDescription());
+			return CommonBodyPartStrings.EachOfDescription(hasQuadNipples, conjugate, RowShortDescription(breast));
 		}
 
-		internal string ShortNippleDescription(IBreast breast) => NippleStrings.ShortDescription(this, breast, true, true);
-
-		internal string ShortNippleDescription(IBreast breast, bool plural, bool allowQuadNippleTextIfApplicable = true) =>
-			NippleStrings.ShortDescription(this, breast, plural, allowQuadNippleTextIfApplicable);
-
-		internal string SingleNippleDescription(IBreast breast) => NippleStrings.SingleItemDescription(this, breast, true);
-		internal string SingleNipplpeDescription(IBreast breast, bool allowQuadNippleIfApplicable) => NippleStrings.SingleItemDescription(this, breast, allowQuadNippleIfApplicable);
-
-		internal string LongNippleDescription(IBreast breast, bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
+		internal string GenericEachNippleDescription() => GenericEachNippleDescription(Conjugate.YOU);
+		internal string GenericEachNippleDescription(Conjugate conjugate)
 		{
-			return NippleStrings.LongDescription(this, breast, alternateFormat, plural, usePreciseMeasurements);
-		}
-		internal string FullNippleDescription(IBreast breast, bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false)
-		{
-			return NippleStrings.FullDescription(this, breast, alternateFormat, plural, usePreciseMeasurements);
+			return GenericEachNippleDescription(conjugate, out bool _);
 		}
 
-		internal string OneNippleOrOneOfQuadNipplesShort(IBreast breast) => OneNippleOrOneOfQuadNipplesShort(breast, Conjugate.YOU);
-		internal string OneNippleOrOneOfQuadNipplesShort(IBreast breast, Conjugate conjugate)
-		{
-
-			return CommonBodyPartStrings.OneOfDescription(hasQuadNipples, conjugate, ShortNippleDescription(breast));
-		}
-
-		internal string OneNippleOrEachOfQuadNipplesShort(IBreast breast) => OneNippleOrEachOfQuadNipplesShort(breast, Conjugate.YOU);
-		internal string OneNippleOrEachOfQuadNipplesShort(IBreast breast, Conjugate conjugate)
-		{
-
-			return OneNippleOrEachOfQuadNipplesShort(breast, conjugate, out bool _);
-		}
-
-		internal string OneNippleOrEachOfQuadNipplesShort(IBreast breast, Conjugate conjugate, out bool isPlural)
+		internal string GenericEachNippleDescription(Conjugate conjugate, out bool isPlural)
 		{
 			isPlural = hasQuadNipples;
 
-			return CommonBodyPartStrings.EachOfDescription(hasQuadNipples, conjugate, ShortNippleDescription(breast));
+			return CommonBodyPartStrings.EachOfDescription(hasQuadNipples, conjugate, GenericShortDescription());
 		}
 
 		#endregion

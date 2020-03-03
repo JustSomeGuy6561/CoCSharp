@@ -14,7 +14,7 @@ namespace CoC.Frontend.Perks.History
 		{
 			baseModifiers.combatDamageModifier += 0.1f;
 
-			sourceCreature.addGems(50);
+			sourceCreature.AddGems(50);
 		}
 
 		protected override void OnRemoval()

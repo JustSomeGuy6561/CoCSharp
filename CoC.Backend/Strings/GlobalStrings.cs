@@ -103,6 +103,7 @@ namespace CoC.Backend.Strings
 		public static string DEFAULT() => DEFAULT(true);
 		public static string NEXT() => NEXT(true);
 		public static string PREVIOUS() => PREVIOUS(true);
+		public static string ALL() => ALL(true);
 		public static string NEXT_PAGE() => NEXT_PAGE(true);
 		public static string PREVIOUS_PAGE() => PREVIOUS_PAGE(true);
 		public static string CONTINUE() => CONTINUE(true);
@@ -175,6 +176,11 @@ namespace CoC.Backend.Strings
 		public static string PREVIOUS(bool capital)
 		{
 			return capital ? "Previous" : "previous";
+		}
+
+		public static string ALL(bool capital)
+		{
+			return capital ? "All" : "all";
 		}
 
 		public static string PREVIOUS_PAGE(bool capital)

@@ -296,10 +296,11 @@ namespace CoC.Backend.BodyParts
 			return oldHeight.subtract(heightInInches);
 		}
 
-		public byte SetHeight(byte newHeightInInches)
+		public short SetHeight(byte newHeightInInches)
 		{
+			var oldHeight = heightInInches;
 			heightInInches = newHeightInInches;
-			return heightInInches;
+			return heightInInches.delta(oldHeight);
 		}
 
 		public override bool IsIdenticalTo(BuildData original, bool ignoreSexualMetaData)

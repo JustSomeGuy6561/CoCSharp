@@ -956,6 +956,10 @@ namespace CoC.Backend.BodyParts
 			return Name();
 		}
 
+		string IMultiDyeable.LocationDesc()
+		{
+			return "your " + BodyPartName();
+		}
 
 		string IMultiDyeable.memberButtonText(byte index)
 		{
@@ -1181,17 +1185,22 @@ namespace CoC.Backend.BodyParts
 		//note that some epidermis types may prevent you from updating the texture. this is respected here.
 		byte IMultiLotionable.numLotionableMembers => 3;
 
-		string IMultiLotionable.buttonText()
+		string IMultiLotionable.ButtonText()
 		{
 			return Name();
 		}
 
-		string IMultiLotionable.memberButtonText(byte index)
+		string IMultiLotionable.LocationDesc()
+		{
+			return "your " + BodyPartName();
+		}
+
+		string IMultiLotionable.MemberButtonText(byte index)
 		{
 			return ButtonText(index, true);
 		}
 
-		string IMultiLotionable.memberLocationDesc(byte index, out bool isPlural)
+		string IMultiLotionable.MemberLocationDesc(byte index, out bool isPlural)
 		{
 			ToneDyeLotionLocations location = (ToneDyeLotionLocations)index;
 			if (!location.IsDefined())
@@ -1213,7 +1222,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		SkinTexture IMultiLotionable.postUseSkinTexture(byte index)
+		SkinTexture IMultiLotionable.PostUseSkinTexture(byte index)
 		{
 			ToneDyeLotionLocations location = (ToneDyeLotionLocations)index;
 			if (!location.IsDefined())
@@ -1235,7 +1244,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		bool IMultiLotionable.canLotion(byte index)
+		bool IMultiLotionable.CanLotion(byte index)
 		{
 			ToneDyeLotionLocations location = (ToneDyeLotionLocations)index;
 			if (!location.IsDefined())
@@ -1252,9 +1261,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		bool IMultiLotionable.isDifferentTexture(SkinTexture lotionTexture, byte index)
+		bool IMultiLotionable.IsDifferentTexture(SkinTexture lotionTexture, byte index)
 		{
-			if (!lotionable.canLotion(index))
+			if (!lotionable.CanLotion(index))
 			{
 				return false;
 			}
@@ -1273,9 +1282,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		bool IMultiLotionable.attemptToLotion(SkinTexture lotionTexture, byte index)
+		bool IMultiLotionable.AttemptToLotion(SkinTexture lotionTexture, byte index)
 		{
-			if (!lotionable.canLotion(index))
+			if (!lotionable.CanLotion(index))
 			{
 				return false;
 			}
@@ -1311,17 +1320,21 @@ namespace CoC.Backend.BodyParts
 		//note that some epidermis types may prevent you from updating the tone. this is respected here.
 		byte IMultiToneable.numToneableMembers => 3;
 
-		string IMultiToneable.buttonText()
+		string IMultiToneable.ButtonText()
 		{
 			return Name();
 		}
+		string IMultiToneable.LocationDesc()
+		{
+			return "your " + BodyPartName();
+		}
 
-		string IMultiToneable.memberButtonText(byte index)
+		string IMultiToneable.MemberButtonText(byte index)
 		{
 			return ButtonText(index, true);
 		}
 
-		string IMultiToneable.memberLocationDesc(byte index, out bool isPlural)
+		string IMultiToneable.MemberLocationDesc(byte index, out bool isPlural)
 		{
 			ToneDyeLotionLocations location = (ToneDyeLotionLocations)index;
 			if (!location.IsDefined())
@@ -1343,7 +1356,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		string IMultiToneable.memberPostToneDescription(byte index)
+		string IMultiToneable.MemberPostToneDescription(byte index)
 		{
 			ToneDyeLotionLocations location = (ToneDyeLotionLocations)index;
 			if (!location.IsDefined())
@@ -1364,7 +1377,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		bool IMultiToneable.canToneOil(byte index)
+		bool IMultiToneable.CanToneOil(byte index)
 		{
 			ToneDyeLotionLocations location = (ToneDyeLotionLocations)index;
 			if (!location.IsDefined())
@@ -1382,9 +1395,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		bool IMultiToneable.isDifferentTone(Tones oilTone, byte index)
+		bool IMultiToneable.IsDifferentTone(Tones oilTone, byte index)
 		{
-			if (!toneable.canToneOil(index))
+			if (!toneable.CanToneOil(index))
 			{
 				return false;
 			}
@@ -1403,9 +1416,9 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		bool IMultiToneable.attemptToTone(Tones oilTone, byte index)
+		bool IMultiToneable.AttemptToTone(Tones oilTone, byte index)
 		{
-			if (!lotionable.canLotion(index))
+			if (!lotionable.CanLotion(index))
 			{
 				return false;
 			}

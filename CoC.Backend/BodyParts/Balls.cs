@@ -379,15 +379,18 @@ namespace CoC.Backend.BodyParts
 			return size > MIN_BALLS_SIZE;
 		}
 
-		double IShrinkable.UseReducto()
+		string IShrinkable.UseReducto()
 		{
-			byte startVal = size;
+			var oldBalls = AsReadOnlyData();
+			var nothingHappened = true;
+
 			//even chance of 2 - 5, or 3-6 if we have a somewhat large shrink multiplier.
 			if (((IShrinkable)this).CanReducto())
 			{
+				nothingHappened = false;
 				size = size.subtract((byte)(Utils.Rand(4) + 2));
 			}
-			return startVal - size;
+			return ReductoBalls(oldBalls, nothingHappened);
 		}
 
 		bool IGrowable.CanGroPlus()
@@ -396,10 +399,16 @@ namespace CoC.Backend.BodyParts
 		}
 
 		//executive deicision: GRO+ always removes uniball. idgaf.
-		double IGrowable.UseGroPlus()
+		string IGrowable.UseGroPlus()
 		{
-			int startVal = size;
-			if (((IGrowable)this).CanGroPlus())
+			var oldData = AsReadOnlyData();
+			bool nothingHappened = false;
+
+			if (!((IGrowable)this).CanGroPlus())
+			{
+				nothingHappened = true;
+			}
+			else
 			{
 				if (uniBall)
 				{
@@ -413,7 +422,8 @@ namespace CoC.Backend.BodyParts
 				else if (randVal < 15) size += 4;
 				else size += 5;
 			}
-			return size - startVal;
+
+			return GroPlusBalls(oldData, nothingHappened);
 		}
 		#endregion
 

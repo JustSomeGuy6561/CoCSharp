@@ -144,6 +144,7 @@ namespace CoC.Backend.BodyParts
 		string FullDescription(bool alternateFormat);
 
 		VaginaType type { get; }
+		IClit clit { get; }
 		#endregion
 
 
@@ -151,6 +152,8 @@ namespace CoC.Backend.BodyParts
 
 	public partial class Vagina : IVagina
 	{
+		IClit IVagina.clit => clit;
+
 		public static string Name()
 		{
 			return "Vagina";

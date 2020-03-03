@@ -28,14 +28,20 @@ namespace CoC.Backend.Creatures
 		}
 		private double _hunger = 0;
 
+		internal void ValidateHunger()
+		{
+			hungerTrue = hungerTrue;
+		}
+
 		internal double hungerGainRate = 1.0f;
 
-		private sbyte bonusMinHunger { get; set; }
-		public byte minHunger => DEFAULT_HUNGER.offset(bonusMinHunger);
+		public byte minHunger => DEFAULT_HUNGER;
 
-		internal sbyte bonusMaxHunger { get; set; }
+		internal sbyte bonusMaxHunger => perks.baseModifiers.maxHungerDelta.GetValue();
 		public byte maxHunger => HandleMaxStat(MAX_HUNGER.offset(bonusMaxHunger), minHunger);
 
+		public double hungerRecoveryModifier => perks.baseModifiers.hungerRecoveryMultiplier.GetValue();
+		public double hungerGainModifier => perks.baseModifiers.hungerGainMultiplier.GetValue();
 
 		public PlayerBase(PlayerCreatorBase creator) : base(creator)
 		{
@@ -50,7 +56,7 @@ namespace CoC.Backend.Creatures
 			//TODO: Add player specific items or whatever.
 		}
 
-		internal void refillHunger(byte sateHungerAmount)
+		public void RefillHunger(byte sateHungerAmount)
 		{
 			throw new NotImplementedException();
 		}
@@ -83,7 +89,7 @@ namespace CoC.Backend.Creatures
 			{
 				double max = 50;
 				max += toughness * 2;
-				max += perks.baseModifiers.bonusMaxHP;
+				max += perks.baseModifiers.perkBonusMaxHp.GetValue();
 				max += GameEngine.difficulties[BackendSessionSave.data.difficulty].basePlayerHP(level);
 				if (max > 9999)
 				{

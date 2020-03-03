@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
@@ -10,7 +11,7 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class CockCollection : BodyParts.SimpleSaveablePart<CockCollection, CockCollectionData>
+	public sealed partial class CockCollection : SimpleSaveablePart<CockCollection, CockCollectionData>, IGrowable, IShrinkable
 	{
 		#region Notes:
 
@@ -836,6 +837,35 @@ namespace CoC.Backend.BodyParts
 			{
 				return "";
 			}
+		}
+
+		bool IShrinkable.CanReducto()
+		{
+			return _cocks.Any(x => (x as IShrinkable).CanReducto());
+		}
+
+		string IShrinkable.UseReducto()
+		{
+			if (cocks[0].type == CockType.BEE)
+			{
+				cocks[0].Restore();
+			}
+			else
+			{
+				_cocks.ForEach(x => (x as IShrinkable).UseReducto());
+			}
+			return ReductoCocks();
+		}
+
+		bool IGrowable.CanGroPlus()
+		{
+			return _cocks.Any(x => (x as IGrowable).CanGroPlus());
+		}
+
+		string IGrowable.UseGroPlus()
+		{
+			_cocks.ForEach(x => (x as IGrowable).UseGroPlus());
+			return GroPlusCocks();
 		}
 	}
 

@@ -18,14 +18,11 @@ namespace CoC.Backend.Creatures
 
 
 		public const byte DEFAULT_FATIGUE = 0;
-		//public const byte DEFAULT_HUNGER = 0;
-
-
 		internal const byte BASE_MAX_FATIGUE = 100;
 
 		public void AddHP(uint flatAmount)
 		{
-			var res = flatAmount * perks.baseModifiers.HungerGainRate;
+			var res = flatAmount * perks.baseModifiers.healthGainMultiplier.GetValue();
 			throw new NotImplementedException();
 		}
 
@@ -71,6 +68,10 @@ namespace CoC.Backend.Creatures
 		}
 		private uint _currentHealth = 0;
 
+		internal void ValidateHP()
+		{
+			currentHealth = currentHealth;
+		}
 
 		public byte fatigue => (byte)Math.Floor(fatigueTrue);
 		public double fatigueTrue
@@ -80,25 +81,31 @@ namespace CoC.Backend.Creatures
 		}
 		private double _fatigue = 0;
 
+		internal void ValidateFatigue()
+		{
+			fatigueTrue = fatigueTrue;
+		}
+
 		public double relativeFatigue => fatigueTrue * (100f / maxFatigue);
 
-
-
-		protected internal virtual sbyte bonusMinFatigue { get; set; }
 		protected virtual byte baseMinFatigue => 0;
-		public byte minFatigue => baseMinFatigue.offset(bonusMinFatigue);
+		public byte minFatigue => baseMinFatigue;
 
 		//public byte minHunger => 0;
 
 		public abstract uint maxHealth { get; }
 
-		protected internal int perkBonusHealth { get; set; }
 
+
+		protected internal int perkBonusHealth => perks.baseModifiers.perkBonusMaxHp.GetValue();
+
+		protected internal virtual sbyte bonusMaxFatigue => perks.baseModifiers.maxFatigueDelta.GetValue();
 		protected internal virtual byte baseMaxFatigue => BASE_MAX_FATIGUE;
-		protected internal virtual sbyte bonusMaxFatigue { get; set; } = 0;
 		public byte maxFatigue => HandleMaxStat(baseMaxFatigue.offset(bonusMaxFatigue), minFatigue);
 
-		protected internal double FatigueRegenRate = 1.0f;
+		protected double fatigueRecoveryRate => perks.baseModifiers.fatigueRecoveryMultiplier.GetValue();
+		protected double fatigueGainRate => perks.baseModifiers.fatigueGainMultiplier.GetValue();
+
 
 		//public virtual byte maxHunger => BASE_MAX_HUNGER.offset(modifiers.bonusMaxHunger);
 
@@ -159,7 +166,7 @@ namespace CoC.Backend.Creatures
 			var oldValue = fatigueTrue;
 			if (!ignorePerks)
 			{
-				amount *= FatigueRegenRate;
+				amount *= fatigueRecoveryRate;
 			}
 			fatigueTrue -= amount;
 			return oldValue - fatigueTrue;

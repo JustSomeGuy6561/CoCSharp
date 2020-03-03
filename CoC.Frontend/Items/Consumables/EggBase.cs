@@ -45,6 +45,11 @@ namespace CoC.Frontend.Items.Consumables
 			isLarge = large;
 		}
 
+		public override string ItemName()
+		{
+			return (isLarge ? "Large " : "") + Color() + " egg";
+		}
+
 		public override string AboutItem()
 		{
 			return "This is an oblong egg, not much different from " + (isLarge ? "an ostrich" : "a chicken") + " egg in appearance (save for the color)."

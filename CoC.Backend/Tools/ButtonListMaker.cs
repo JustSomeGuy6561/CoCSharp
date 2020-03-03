@@ -1,7 +1,7 @@
-﻿using CoC.Backend.Engine;
-using CoC.Backend.Strings;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.UI;
 
 namespace CoC.Backend.Tools
@@ -13,14 +13,27 @@ namespace CoC.Backend.Tools
 
 		private Action[] generatePageCallback;
 
-		private readonly int rowCount = DisplayBase.BUTTON_ROWS;
-		private readonly int columnCount = DisplayBase.BUTTON_COLUMNS;
+		private readonly int rowCount;
+		private readonly int columnCount;
 		private readonly DisplayBase display;
 
 		public ButtonListMaker(DisplayBase currentDisplay)
 		{
+			rowCount = DisplayBase.BUTTON_ROWS;
+			columnCount = DisplayBase.BUTTON_COLUMNS;
+
 			display = currentDisplay ?? throw new ArgumentNullException(nameof(currentDisplay));
 		}
+
+		public ButtonListMaker(DisplayBase currentDisplay, byte customRowCount, byte customColumnCount)
+		{
+			rowCount = Math.Min(customRowCount, DisplayBase.BUTTON_ROWS);
+			columnCount = Math.Min(customColumnCount, DisplayBase.BUTTON_COLUMNS);
+
+			display = currentDisplay ?? throw new ArgumentNullException(nameof(currentDisplay));
+		}
+
+
 
 		public void AddButtonToList(string desc, bool active, Action callback)
 		{
@@ -43,40 +56,67 @@ namespace CoC.Backend.Tools
 			{
 				preserveButton = display.GetButtonData((byte)(rowCount * columnCount - 1));
 			}
-			CreateButtonsPrivate(preserveButton);
+			CreateButtonsPrivate(null, preserveButton);
 		}
+
+		public void CreateButtons(ButtonData returnButton, ButtonData cancelButton)
+		{
+			CreateButtonsPrivate(returnButton, cancelButton);
+		}
+
 		public void CreateButtons(string desc, bool active, Action callback)
 		{
-			if (callback is null) throw new ArgumentNullException(nameof(callback));
-			if (desc is null) throw new ArgumentNullException(nameof(desc));
+			if (callback is null)
+			{
+				throw new ArgumentNullException(nameof(callback));
+			}
 
-			CreateButtonsPrivate(new ButtonData(desc, active, callback));
+			if (desc is null)
+			{
+				throw new ArgumentNullException(nameof(desc));
+			}
+
+			CreateButtonsPrivate(null, new ButtonData(desc, active, callback));
 		}
 
 		public void CreateButtons(string desc, bool active, Action callback, string tip, string replacementTitle)
 		{
-			if (callback is null) throw new ArgumentNullException(nameof(callback));
-			if (desc is null) throw new ArgumentNullException(nameof(desc));
+			if (callback is null)
+			{
+				throw new ArgumentNullException(nameof(callback));
+			}
 
-			CreateButtonsPrivate(new ButtonData(desc, active, callback, tip, replacementTitle));
+			if (desc is null)
+			{
+				throw new ArgumentNullException(nameof(desc));
+			}
+
+			CreateButtonsPrivate(null, new ButtonData(desc, active, callback, tip, replacementTitle));
 		}
 
 
-		private void CreateButtonsPrivate(ButtonData preserveButton)
+		private void CreateButtonsPrivate(ButtonData returnButton, ButtonData cancelButton)
 		{
-			if (numberOfButtons > rowCount * columnCount - (preserveButton is null ? 0 : 1))
+			int maxButtonsPerPage = rowCount * columnCount;
+			if (!(returnButton is null)) maxButtonsPerPage--;
+			if (!(cancelButton is null)) maxButtonsPerPage--;
+
+			if (numberOfButtons > maxButtonsPerPage)
 			{
-				ButtonData[][] buttonGroups = new ButtonData[(int)Math.Ceiling(numberOfButtons / ((rowCount - 1) * columnCount) * 1.0)][];
-				int iter = 0;
+				ButtonData[][] buttonGroups = new ButtonData[(int)Math.Ceiling(numberOfButtons * 1.0 / maxButtonsPerPage)][];
+
+				int remainingButtons = numberOfButtons;
 				for (int x = 0; x < buttonGroups.Length; x++)
 				{
-					if (numberOfButtons - iter > columnCount)
+					var iter = numberOfButtons - remainingButtons;
+					if (remainingButtons >= maxButtonsPerPage)
 					{
-						buttonGroups[x] = new ButtonData[columnCount];
+						buttonGroups[x] = new ButtonData[rowCount * columnCount];
+						remainingButtons -= maxButtonsPerPage;
 					}
 					else
 					{
-						buttonGroups[x] = new ButtonData[numberOfButtons - iter];
+						buttonGroups[x] = new ButtonData[remainingButtons];
 					}
 
 					for (int y = 0; y < buttonGroups[x].Length; y++)
@@ -93,28 +133,30 @@ namespace CoC.Backend.Tools
 					int q = x;
 					generatePageCallback[q] = () =>
 					{
-						GenerateButtons(buttonGroups[q], preserveButton);
+						GenerateButtons(buttonGroups[q], returnButton, cancelButton);
 						if (x > 0)
 						{
-							display.AddButton((byte)((rowCount - 1) * columnCount), new ButtonData(GlobalStrings.PREVIOUS_PAGE(), true, () => GenerateButtons(buttonGroups[q - 1], preserveButton)), true);
+							display.AddButton((byte)((rowCount - 1) * columnCount), new ButtonData(GlobalStrings.PREVIOUS_PAGE(), true,
+								() => GenerateButtons(buttonGroups[q - 1], returnButton, cancelButton)), true);
 						}
 						if (x < generatePageCallback.Length - 1)
 						{
-							display.AddButton((byte)((rowCount - 1) * columnCount + 1), new ButtonData(GlobalStrings.NEXT_PAGE(), true, () => GenerateButtons(buttonGroups[q + 1], preserveButton)), true);
+							display.AddButton((byte)((rowCount - 1) * columnCount + 1), new ButtonData(GlobalStrings.NEXT_PAGE(), true,
+								() => GenerateButtons(buttonGroups[q + 1], returnButton, cancelButton)), true);
 						}
 					};
 				}
 			}
 			else
 			{
-				GenerateButtons(buttons, preserveButton);
+				GenerateButtons(buttons, returnButton, cancelButton);
 			}
 		}
 
-		private void GenerateButtons(IEnumerable<ButtonData> items, ButtonData preserveButton)
+		private void GenerateButtons(IEnumerable<ButtonData> items, ButtonData returnButton, ButtonData cancelButton)
 		{
 			byte y = 0;
-			foreach (var button in items)
+			foreach (ButtonData button in items)
 			{
 				byte x = y;
 				if (button.enabled)
@@ -127,16 +169,20 @@ namespace CoC.Backend.Tools
 				}
 				y++;
 			}
-			if (preserveButton != null)
+
+			if (cancelButton is null && !(returnButton is null))
 			{
-				if (preserveButton.enabled)
-				{
-					display.AddButton((byte)(rowCount * columnCount - 1), new ButtonData(preserveButton.title, true, preserveButton.onClick, preserveButton.tooltip, preserveButton.tooltipTitle));
-				}
-				else
-				{
-					display.AddButton((byte)(rowCount * columnCount - 1), new ButtonData(preserveButton.title, false, null, preserveButton.tooltip, preserveButton.tooltipTitle));
-				}
+				cancelButton = returnButton;
+				returnButton = null;
+			}
+
+			if (returnButton != null)
+			{
+				display.AddButton((byte)(rowCount * columnCount - 2), returnButton);
+			}
+			if (cancelButton != null)
+			{
+				display.AddButton((byte)(rowCount * columnCount - 1), cancelButton);
 			}
 		}
 	}

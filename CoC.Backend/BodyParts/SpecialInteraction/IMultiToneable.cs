@@ -12,19 +12,19 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	{
 		byte numToneableMembers { get; }
 
-		string buttonText();
+		string ButtonText();
+		string LocationDesc();
 
-		string memberButtonText(byte index);
+		string MemberButtonText(byte index);
 
-		string memberLocationDesc(byte index, out bool isPlural);
-		string memberPostToneDescription(byte index);
+		string MemberLocationDesc(byte index, out bool isPlural);
+		string MemberPostToneDescription(byte index);
 
-		bool canToneOil(byte index);
+		bool CanToneOil(byte index);
 
-		bool isDifferentTone(Tones oilTone, byte index);
+		bool IsDifferentTone(Tones oilTone, byte index);
 
-		bool attemptToTone(Tones oilTone, byte index);
-
+		bool AttemptToTone(Tones oilTone, byte index);
 	}
 	public interface IMultiToneableCustomText : IMultiToneable
 	{

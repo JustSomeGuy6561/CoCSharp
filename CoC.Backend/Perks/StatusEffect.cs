@@ -13,9 +13,11 @@ namespace CoC.Backend.Perks
 	//Note that there is no fundamental difference between a Status Effect and a Perk now, aside from how they are removed.
 	public abstract class TimedPerk : PerkBase
 	{
+		private readonly List<IRemovableModifier> currentlyActiveModifiers = new List<IRemovableModifier>();
+
 		protected GameDateTime timeWearsOff;
 
-		public int hoursRemaining => GameDateTime.Now.hoursTo(timeWearsOff);
+		public int hoursRemaining => GameDateTime.Now.HoursTo(timeWearsOff);
 
 		protected TimedPerk(ushort initialTimeout) : base()
 		{
@@ -32,12 +34,44 @@ namespace CoC.Backend.Perks
 			OnRemoval();
 		}
 
+		private protected override bool AddActiveModifier<T>(PerkModifierBase<T> modifier, T value, bool overwriteExisting = false)
+		{
+			if (modifier.AddModifier(this, value, overwriteExisting))
+			{
+				currentlyActiveModifiers.Add(modifier);
+				return true;
+			}
+
+			return false;
+		}
+
+		private protected override bool RemoveActiveModifier<T>(PerkModifierBase<T> modifier)
+		{
+			currentlyActiveModifiers.Remove(modifier);
+			return modifier.RemoveModifier(this);
+		}
+
+		private protected override bool HasActiveModifier<T>(PerkModifierBase<T> modifier)
+		{
+			bool retVal = modifier.HasModifier(this);
+			if (!retVal && currentlyActiveModifiers.Contains(modifier))
+			{
+				currentlyActiveModifiers.Remove(modifier);
+			}
+			else if (retVal && !currentlyActiveModifiers.Contains(modifier))
+			{
+				currentlyActiveModifiers.Add(modifier);
+			}
+
+			return retVal;
+		}
+
 		internal string ReactToTimePassing(byte hoursPassed, out bool removeEffect)
 		{
 			string text = null;
 			if (GameDateTime.Now.CompareTo(timeWearsOff) >= 0)
 			{
-				text = OnStatusEffectWoreOff();
+				text = OnStatusEffectWoreOff(hoursPassed);
 				removeEffect = true;
 			}
 			else
@@ -48,23 +82,44 @@ namespace CoC.Backend.Perks
 		}
 
 
-		//called when the status effect is added to the status effect collection on the character.
+		//called when the status effect is added to the status effect collection on the character. This is responsible for setting any internal values necessary to
+		//make the status effect work properly.
 		protected abstract void OnActivation();
 
-		//called when the status effect is removed from the status effect collection.
+		//The default text to display when this timed perk/status effect is obtained. This is expected to be called immediately after adding this to the creature,
+		//and any other use is not defined and may produce incorrect text (or even untranslated text if that's a thing ever) or even error.
+		//Note that it's possible that this will never be called, as it may simply be ignored, or the content creator may roll out their own, custom text.
+		//If you have a default text to display, override this. if not, leave it alone.
+		public virtual string ObtainText() => "";
+
+		//The following deal with time passing on the timed effect - if the amount of time passing exceeds the remaining time left on the effect,
+		//OnStatusEffectWoreOff is called. otherwise, OnStatusEffectTimePassing is called.
+
+		//update the status effect values as time passes, then return any text that is generated as a result of doing so. Because it's possible some time passing
+		//and other factors may cause the perk to be removed, you are also required to set a flag noting if the effect should be removed.
+		//It's recommended to set this removeEffect flag to false on the first line of the function, then change it to true if needed later.
+
+		//By default, we assume nothing happens when time passes, and you have no text to display. if either are incorrect, override this.
+
+		//Note: This function is for both updating and displaying text - if you need to adjust creature and/or internal values before displaying text, do so.
+		protected virtual string OnStatusEffectTimePassing(byte hoursPassedSinceLastUpdate, out bool removeEffect)
+		{
+			removeEffect = false;
+			return null;
+		}
+
+		//Update the status effect values after enough time has passed that the effect should be removed. note that this works in tandem with the time passing value.
+		//Also note that OnRemoval will be called immediately after this is removed, HOWEVER, this function is for both updating and displaying text, so feel free to
+		//change any values you need to make this happen.
+		protected abstract string OnStatusEffectWoreOff(byte hoursPassedSinceLastUpdate);
+
+
+		//Update the status effect and creature values necessary before removing the perk completely, and otherwise prepare for cleanup. Note that it may be possible
+		//for a content creator to manually remove a status effect, so do not assume OnStatusEffectWoreOff or OnStatusEffectTimePassing has been called before this is.
+		//It may be useful to have a 'cleaned up' flag which WoreOff or TimePassing can set so on remove doesn't do double work.
 		protected abstract void OnRemoval();
 
-		//optionally called when you obtain the status effect. this provides a generic text that things that cause this status effect can use to describe what happened.
-		//of course, they may decide to roll out their own text, but this is necessary in case they don't want to and just want a nice default.
-		public abstract string ObtainText();
 
-		//a timed status effect can optionally output text as time passes, and optionally tell us we should remove it early, if conditions are met that you decide merits early
-		//removal. be sure to set removeEffect to true or false before the function returns - i generally recommend setting it to false as the first line, then updating it to
-		//true later if you need to.
-		protected abstract string OnStatusEffectTimePassing(byte hoursPassedSinceLastUpdate, out bool removeEffect);
-
-		//a timed status effect can explain to its source creature that it has worn off via this function. if you have nothing to say, simply return null or the empty string.
-		protected abstract string OnStatusEffectWoreOff();
 
 		private protected override bool retainOnAscension => false;
 

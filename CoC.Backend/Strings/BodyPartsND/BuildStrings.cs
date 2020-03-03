@@ -39,7 +39,7 @@ namespace CoC.Backend.BodyParts
 			//Lose muscle visibility!
 			else if (desiredDelta < 0 && desiredDelta < actualDelta)
 			{
-				return GlobalStrings.NewParagraph() +"You've lost some tone, but can't lose any more this way. (" + actualDelta + " muscle tone)";
+				return GlobalStrings.NewParagraph() + "You've lost some tone, but can't lose any more this way. (" + actualDelta + " muscle tone)";
 			}
 			else if (desiredDelta > 0 && desiredDelta > actualDelta)
 			{
@@ -79,6 +79,31 @@ namespace CoC.Backend.BodyParts
 		{
 			return "Hips";
 		}
+
+		public string ReductoHips(HipData oldHips, bool nothingHappened)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append("You smear the foul-smelling paste onto your " + oldHips.ShortDescription() + ". It feels cool at first but rapidly warms to an uncomfortable level of heat."
+				+ GlobalStrings.NewParagraph());
+			if (nothingHappened)
+			{
+				sb.Append("Strangely, nothing seems to happen. What a waste!");
+			}
+			if (oldHips.size >= 15)
+			{
+				sb.Append("Within seconds you feel noticeably lighter, and a quick glance at your hips shows they've gotten significantly narrower.");
+			}
+			else if (oldHips.size >= 10)
+			{
+				sb.Append("You feel much lighter as your " + ShortDescription() + " shift slightly, adjusting to their smaller size.");
+			}
+			else
+			{
+				sb.Append("After a few seconds your " + ShortDescription() + " have shrunk to a much smaller size!");
+			}
+
+			return sb.ToString();
+		}
 	}
 
 	public partial class ButtTattooLocation
@@ -103,6 +128,7 @@ namespace CoC.Backend.BodyParts
 
 	public partial class Butt
 	{
+
 		public static string Name()
 		{
 			return "Butt";
@@ -116,6 +142,31 @@ namespace CoC.Backend.BodyParts
 		private string AllTattoosLong(Creature creature)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
+		}
+
+		private string ReductoButt(ButtData oldData, bool nothingHappened)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append("You smear the foul-smelling paste onto your " + oldData.ShortDescription() + ". It feels cool at first but rapidly warms " +
+				"to an uncomfortable level of heat." + GlobalStrings.NewParagraph());
+			if (nothingHappened)
+			{
+				sb.Append("Strangely, nothing seems to happen. What a waste!");
+			}
+			if (oldData.size - size > 3)
+			{
+				sb.Append("Within seconds you feel noticeably lighter, and a quick glance shows your ass is significantly smaller.");
+			}
+			else if (oldData.size - size == 3)
+			{
+				sb.Append("You feel much lighter as your " + ShortDescription() + " jiggles slightly, adjusting to its smaller size.");
+			}
+			else
+			{
+				sb.Append("After a few seconds your " + ShortDescription() + " has shrunk to a much smaller size!");
+			}
+
+			return sb.ToString();
 		}
 	}
 

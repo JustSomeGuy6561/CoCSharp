@@ -3,10 +3,10 @@
 //Author: JustSomeGuy
 //4/15/2019, 9:13 PM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items.Materials;
 using CoC.Backend.Items.Wearables.Piercings;
-using System;
 using WeakEvent;
 
 //most of these are simply bytes, though a few do have extra behavior. An common software engineering practice is to never use primitives directly - this can be
@@ -19,7 +19,6 @@ namespace CoC.Backend.BodyParts
 {
 	[Flags]
 	public enum Gender : byte { GENDERLESS = 0, MALE = 1, FEMALE = 2, HERM = MALE | FEMALE }
-
 
 	public enum LactationStatus { NOT_LACTATING, LIGHT, MODERATE, STRONG, HEAVY, EPIC }
 

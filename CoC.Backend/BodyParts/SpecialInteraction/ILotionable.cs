@@ -8,14 +8,14 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	//a new interface, so that you an get a soft face or freckled face or something, and another complexion or texture on the body.
 	public interface ILotionable
 	{
-		string buttonText();
+		string ButtonText();
 
-		string locationDesc(out bool isPlural);
-		SkinTexture postUseSkinTexture();
+		string LocationDesc(out bool isPlural);
+		SkinTexture PostUseSkinTexture();
 
-		bool canLotion();
-		bool isDifferentTexture(SkinTexture lotionTexture);
-		bool attemptToLotion(SkinTexture lotionTexture);
+		bool CanLotion();
+		bool IsDifferentTexture(SkinTexture lotionTexture);
+		bool AttemptToLotion(SkinTexture lotionTexture);
 
 	}
 

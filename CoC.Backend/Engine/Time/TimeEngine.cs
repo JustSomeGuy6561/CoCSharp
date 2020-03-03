@@ -145,7 +145,7 @@ namespace CoC.Backend.Engine.Time
 
 		//this is a list of special reactions that only run once. They are then removed from the queue.
 		//it is possible to add special reactions at any time, usually as a result of certain conditions being met.
-		internal readonly PriorityQueue<OneOffTimeReactionBase> reactions = new PriorityQueue<OneOffTimeReactionBase>();
+		internal readonly PriorityQueue<OneOffTimeReaction> reactions = new PriorityQueue<OneOffTimeReaction>();
 		#endregion
 
 		#region Data For Time Engine Current Run

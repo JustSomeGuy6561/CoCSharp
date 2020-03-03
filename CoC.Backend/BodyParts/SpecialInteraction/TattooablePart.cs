@@ -95,7 +95,7 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 		//be sure to use the conjugate properties built in to the creature.
 		protected readonly CreatureStr allTattoosShortDescription;
 		protected readonly CreatureStr allTattoosLongDescription;
-		public string ShortCreatureDescription(Creature creature
+		public string ShortCreatureDescription(Creature creature)
 		{
 			return allTattoosShortDescription(creature);
 		}

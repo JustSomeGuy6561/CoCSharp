@@ -10,10 +10,10 @@ using System.Collections.ObjectModel;
 namespace CoC.Backend.UI
 {
 	//Button Data, Like Output, is generated every time. We don't need to know when it updates - we assume it never updates unless language changes.
-	//In the event of a language change, we're already redoing the GUI, so this isn't a problem. 
+	//In the event of a language change, we're already redoing the GUI, so this isn't a problem.
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	public sealed class ButtonData
 	{
@@ -30,7 +30,7 @@ namespace CoC.Backend.UI
 		public readonly bool enabled;
 		public readonly Action onClick;
 
-		internal ButtonData(string desc, bool active, Action callback)
+		public ButtonData(string desc, bool active, Action callback)
 		{
 			titleStr = desc ?? throw new ArgumentNullException();
 			tooltipStr = "";
@@ -39,7 +39,7 @@ namespace CoC.Backend.UI
 			onClick = callback;
 		}
 
-		internal ButtonData(string desc, bool active, Action callback, string tip, string replacementTitle)
+		public ButtonData(string desc, bool active, Action callback, string tip, string replacementTitle)
 		{
 			titleStr = desc ?? throw new ArgumentNullException();
 			tooltipStr = tip ?? "";

@@ -1,9 +1,7 @@
 ﻿using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
-using System;
 using System.Text;
 
 namespace CoC.Backend.BodyParts
@@ -30,13 +28,103 @@ namespace CoC.Backend.BodyParts
 			return "Nipples";
 		}
 
+		private string GroPlusNipples(NippleStatus oldState)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append("You sink the needle into each of your " + GenericShortDescription() + " in turn, dividing the fluid evenly between them. " +
+				"Though each injection hurts, the pain is quickly washed away by the potent chemical cocktail." + GlobalStrings.NewParagraph());
+			//Grow nipples
+			sb.Append("Your nipples engorge, suddenly sensitive to the slightest touch. Abruptly you realize they've grown " +
+				(Measurement.UsesMetric ? "almost a centimeter" : "more than a quarter-inch") + "." + GlobalStrings.NewParagraph());
+
+			if (oldState != nippleStatus)
+			{
+				if (nippleStatus == NippleStatus.FUCKABLE)
+				{
+					sb.Append("Your " + this.source.AllBreastsLongDescription() + " tingle with warmth that slowly migrates to your nipples, " +
+						"filling them with warmth. You pant and moan, rubbing them with your fingers. A trickle of wetness suddenly coats your finger as it slips " +
+						"inside the nipple. Shocked, you pull the finger free. <b>You now have fuckable nipples!</b>" + GlobalStrings.NewParagraph());
+				}
+				else if (nippleStatus == NippleStatus.DICK_NIPPLE)
+				{
+					sb.Append("Your " + this.source.AllBreastsLongDescription() + " tingle with warmth that slowly migrates to your nipples, " +
+						"filling them with warmth. They get shockingly hard, and won't seem to relax. They feel incredible, and you can't fight the desire to " +
+						"rub them sensually. This proves difficult, as they're far too long to pull that off. You begin jerking them as if they were small cocks. " +
+						"Your nipples instantly become more sensitive, and you feel a surging sensation from within. Suddenly, a sticky substance bursts forth, coating your " +
+						"breasts and hands. " + SafelyFormattedString.FormattedText("It seems you have dick-nipples now!", StringFormats.BOLD));
+				}
+				else if (nippleStatus == NippleStatus.SLIGHTLY_INVERTED)
+				{
+					sb.Append("Your nipples tingle, and stick out from your breasts slightly. It appears they've become too long to remain fully inverted, " +
+						"but not long enough to fully work themselves out. " + SafelyFormattedString.FormattedText("Your nipples are now slightly inverted!", StringFormats.BOLD));
+				}
+			}
+
+			return sb.ToString();
+		}
+
+		private string ReductoNipples(NippleStatus oldState)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append("You rub the paste evenly over your " + GenericShortDescription() + ", being sure to cover them completely." + GlobalStrings.NewParagraph());
+			//Shrink
+			if (length < 0.3)
+			{
+				sb.Append("Your nipples continue to shrink down until they stop at "+ Measurement.ToNearestQuarterInchOrHalfCentimeter(length, true) +" long.");
+			}
+			else
+			{
+				sb.Append("Your " + GenericShortDescription() + " get smaller and smaller, stopping when they are roughly half their previous size.");
+			}
+
+			if (oldState != nippleStatus)
+			{
+				if (nippleStatus == NippleStatus.NORMAL)
+				{
+					sb.Append("Your " + this.source.AllBreastsLongDescription() + " tingle with warmth that slowly migrates to your nipples, " +
+						"filling them with warmth, though they don't seem to be as hard as they usually are when they get this kind of sensation. " +
+						"You begin to caress them, waiting for your mutated nipples to cum so you can be on your way. Strangely, nothing happens. " +
+						"It almost feels like your nipples are back to normal... Oh. Further prodding confirms"
+						+ SafelyFormattedString.FormattedText("you've lost your dick-nipples!", StringFormats.BOLD));
+				}
+				else if (nippleStatus == NippleStatus.SLIGHTLY_INVERTED)
+				{
+					sb.Append("Your nipples tingle, strangely stuck partway into your breasts. They crave attention, so you bring a finger to your eager nipple-holes, " +
+						"ready to finger-fuck them until they're satisfied. Strangely, your finger meets resistiance, and your prodding only forces your nipple further in." +
+						" After a few more attempts confirm this wasn't a fluke, you come to the realization " + SafelyFormattedString.FormattedText(
+							"Your nipples are too small to be fuckable!", StringFormats.BOLD) + " Stranger still, they seem to remain stuck partially within your breasts " +
+						"when not stimulated - it seems " + SafelyFormattedString.FormattedText("your nipples are slightly inverted now instead!", StringFormats.BOLD));
+				}
+				else if (nippleStatus == NippleStatus.FULLY_INVERTED)
+				{
+					sb.Append("Your nipples tingle, sucking further into your breasts. They tingle intensely, so you absent-mindedly run your hands across your breasts"
+						+ "to rub across your senstive nubs. That's curious - you can't seem to find them - it seems as though your breasts are competely smooth. ");
+
+					if (this.lactationStatus > LactationStatus.NOT_LACTATING)
+					{
+						sb.Append("A trickle of milk guides you to your seemingly missing nipples, obscured by the tit-flesh surrounding them. ");
+					}
+					else
+					{
+						sb.Append(" Now that your breasts have your full attention, you quickly discover the truth - your nipples aren't gone, " +
+							"it's just they've been surrounded by tit-flesh. ");
+					}
+					sb.Append(SafelyFormattedString.FormattedText("You're nipples are now fully inverted!", StringFormats.BOLD) + "Fortunately, you can still reach " +
+						"your nipples, and they begin to work their way out after sustained stimulation. Still, this might take some getting used to.");
+				}
+
+			}
+
+			return sb.ToString();
+		}
+
 	}
 
 	internal static class NippleStrings
 	{
-		internal static string NounText(INipple nipple, bool plural = true, bool allowQuadNippleText = true) => NippleNoun(nipple, plural, false, allowQuadNippleText);
+		public static string NounText(INipple nipple, bool plural = true, bool allowQuadNippleText = true) => NippleNoun(nipple, plural, false, allowQuadNippleText);
 
-		internal static string SingleFormatNippleText(INipple nipple, bool allowQuadNippleText = true) => NippleNoun(nipple, false, true, allowQuadNippleText);
+		public static string SingleFormatNippleText(INipple nipple, bool allowQuadNippleText = true) => NippleNoun(nipple, false, true, allowQuadNippleText);
 
 		private static string NippleNoun(INipple nipple, bool plural, bool alternateFormatIfSingular, bool allowQuadNippleText)
 		{
@@ -159,31 +247,35 @@ namespace CoC.Backend.BodyParts
 			return Utils.PluralizeIf("nipple", plural);
 		}
 
-		public static string GenericShortDescription(INipple nipple, bool plural, bool allowQuadNippleText) => GenericShortDesc(nipple, plural, false, allowQuadNippleText);
-		public static string ShortDescription(INipple nipple, IBreast breast, bool plural, bool allowQuadNippleText) => ShortDesc(nipple, breast, plural, false, allowQuadNippleText);
+		//the following are split into two formats - one with a specific breast row, one without. this lets us create a text specific to certain rows, but also
+		//a common text that we can use to talk about them without really needing any rows. so we don't need to go 'breasts[0].LongNippleDescription()', we can just go
+		//'CommonLongNippleDescription()'
+		public static string GenericShortDescription(INipple nipple, bool plural, bool allowQuadNippleText) => ShortDesc(nipple, null, plural, false, allowQuadNippleText);
+		public static string RowShortDescription(INipple nipple, IBreast breast, bool plural, bool allowQuadNippleText) => ShortDesc(nipple, breast, plural, false, allowQuadNippleText);
 
-		public static string GenericSingleItemDescription(INipple nipple, bool allowQuadNippleText) => GenericShortDesc(nipple, false, true, allowQuadNippleText);
-		public static string SingleItemDescription(INipple nipple, IBreast breast, bool allowQuadNippleText) => ShortDesc(nipple, breast, false, true, allowQuadNippleText);
+		public static string GenericSingleItemDescription(INipple nipple, bool allowQuadNippleText) => ShortDesc(nipple, null, false, true, allowQuadNippleText);
+		public static string RowSingleItemDescription(INipple nipple, IBreast breast, bool allowQuadNippleText) => ShortDesc(nipple, breast, false, true, allowQuadNippleText);
 
-		private static string ShortDesc(INipple nipple, IBreast breast, bool plural, bool singleMemberFormatIfNotPlural, bool allowQuadNippleText)
+		public static string GenericLongDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
 		{
-			bool needsArticle = !plural && singleMemberFormatIfNotPlural;
-
-			if (Utils.Rand(3) == 0 && breast.piercings.wearingJewelry)
-			{
-				var leftHorJewelry = breast.piercings[NipplePiercingLocation.LEFT_HORIZONTAL];
-				//if (piercing is nipple chain) return "chained " + nount;
-
-				return (needsArticle ? "a " : "") + "pierced " + NounText(nipple, plural, allowQuadNippleText);
-			}
-			else
-			{
-				return GenericShortDesc(nipple, plural, singleMemberFormatIfNotPlural, allowQuadNippleText);
-			}
-
+			return LongFullDesc(nipple, null, alternateFormat, plural, usePreciseMeasurements, false);
+		}
+		public static string RowLongDescription(INipple nipple, IBreast breast, bool alternateFormat, bool plural, bool usePreciseMeasurements)
+		{
+			return LongFullDesc(nipple, breast, alternateFormat, plural, usePreciseMeasurements, false);
 		}
 
-		private static string GenericShortDesc(INipple nipple, bool plural, bool singleMemberFormatIfNotPlural, bool allowQuadNippleText)
+		public static string GenericFullDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
+		{
+			return LongFullDesc(nipple, null, alternateFormat, plural, usePreciseMeasurements, true);
+		}
+		public static string RowFullDescription(INipple nipple, IBreast breast, bool alternateFormat, bool plural, bool usePreciseMeasurements)
+		{
+			return LongFullDesc(nipple, breast, alternateFormat, plural, usePreciseMeasurements, true);
+		}
+
+		//Note: nipple cannot be null, but breast can. make sure to check for null on breast whenever using it.
+		private static string ShortDesc(INipple nipple, IBreast breast, bool plural, bool singleMemberFormatIfNotPlural, bool allowQuadNippleText)
 		{
 
 			bool needsArticle = !plural && singleMemberFormatIfNotPlural;
@@ -208,11 +300,18 @@ namespace CoC.Backend.BodyParts
 			//the original odds were conviluted to say the least, with mixes of  anywhere from 0-75% available in some cases.
 
 			bool isLactating = nipple.lactationStatus > LactationStatus.NOT_LACTATING;
+			bool wearingJewelry = breast?.piercings.wearingJewelry == true;
 
-			if (randVal == 0 && (nipple.bodyType == BodyType.GOO || nipple.blackNipples))
+			if (randVal == 0 && (wearingJewelry || nipple.bodyType == BodyType.GOO || nipple.blackNipples))
 			{
+				if (wearingJewelry)
+				{
+					var leftHorJewelry = breast.piercings[NipplePiercingLocation.LEFT_HORIZONTAL];
+					//if (piercing is nipple chain) return "chained " + nount;
 
-				if (nipple.bodyType == BodyType.GOO)
+					return (needsArticle ? "a " : "") + "pierced " + noun;
+				}
+				else if (nipple.bodyType == BodyType.GOO)
 				{
 					return (needsArticle ? "a " : "") + Utils.RandomChoice("slime-slick ", "goopy ", "slippery ") + noun;
 				}
@@ -307,46 +406,15 @@ namespace CoC.Backend.BodyParts
 
 		}
 
-		internal static string GenericLongDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
-		{
-			return GenericLongFullDesc(nipple, alternateFormat, plural, usePreciseMeasurements, false);
-
-		}
-		internal static string LongDescription(INipple nipple, IBreast breast, bool alternateFormat, bool plural, bool usePreciseMeasurements)
-		{
-			return LongFullDesc(nipple, breast, alternateFormat, plural, usePreciseMeasurements, false);
-		}
-
-
-		internal static string GenericFullDescription(INipple nipple, bool alternateFormat, bool plural, bool usePreciseMeasurements)
-		{
-			return GenericLongFullDesc(nipple, alternateFormat, plural, usePreciseMeasurements, true);
-		}
-		internal static string FullDescription(INipple nipple, IBreast breast, bool alternateFormat, bool plural, bool usePreciseMeasurements)
-		{
-			return LongFullDesc(nipple, breast, alternateFormat, plural, usePreciseMeasurements, true);
-		}
-
-
-
+		//Note: nipple cannot be null, but breast can. make sure to check for null on breast whenever using it.
 		//note: if plural is set to true, with article is ignored. the alternate format for plural is identical to the regular format.
 		private static string LongFullDesc(INipple nipple, IBreast breast, bool withArticle, bool allAvailableNipples, bool preciseMeasurements, bool full)
 		{
-			string pierced = null;
-			if (breast.piercings.wearingJewelry)
-			{
-				pierced = "pierced";
-			}
-
-			return GenericLongFullDesc(nipple, withArticle, allAvailableNipples, preciseMeasurements, full, pierced);
-		}
-		private static string GenericLongFullDesc(INipple nipple, bool withArticle, bool allAvailableNipples, bool preciseMeasurements, bool full, string pierced = null)
-		{
 			StringBuilder sb = new StringBuilder();
 
-			if (full && !string.IsNullOrWhiteSpace(pierced))
+			if (full && breast?.piercings.wearingJewelry == true)
 			{
-				sb.Append(pierced);
+				sb.Append("pierced");
 			}
 
 			if (nipple.blackNipples)

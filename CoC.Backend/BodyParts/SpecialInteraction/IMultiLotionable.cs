@@ -13,18 +13,19 @@ namespace CoC.Backend.BodyParts.SpecialInteraction
 	{
 		byte numLotionableMembers { get; }
 
-		string buttonText();
+		string ButtonText();
+		string LocationDesc();
 
-		string memberButtonText(byte index);
+		string MemberButtonText(byte index);
 
-		string memberLocationDesc(byte index, out bool isPlural);
-		SkinTexture postUseSkinTexture(byte index);
+		string MemberLocationDesc(byte index, out bool isPlural);
+		SkinTexture PostUseSkinTexture(byte index);
 
-		bool canLotion(byte index);
+		bool CanLotion(byte index);
 
-		bool isDifferentTexture(SkinTexture lotionTexture, byte index);
+		bool IsDifferentTexture(SkinTexture lotionTexture, byte index);
 
-		bool attemptToLotion(SkinTexture lotionTexture, byte index);
+		bool AttemptToLotion(SkinTexture lotionTexture, byte index);
 	}
 
 	//allows you to override the text displayed during lotioning

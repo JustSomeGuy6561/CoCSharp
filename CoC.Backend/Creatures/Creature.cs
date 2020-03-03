@@ -66,6 +66,11 @@ namespace CoC.Backend.Creatures
 		}
 		private double _libido = 0;
 
+		internal void ValidateLibido()
+		{
+			libidoTrue = libidoTrue;
+		}
+
 		public double relativeLibido => libidoTrue * (100f / maxLibido);
 
 		public byte sensitivity => (byte)Math.Floor(sensitivityTrue);
@@ -75,6 +80,11 @@ namespace CoC.Backend.Creatures
 			private protected set => _sensitivity = Utils.Clamp2(value, minSensitivity, maxSensitivity);
 		}
 		private double _sensitivity = 0;
+
+		internal void ValidateSensitivity()
+		{
+			sensitivityTrue = sensitivityTrue;
+		}
 
 		public double relativeSensitivity => sensitivityTrue * (100f / maxSensitivity);
 
@@ -86,6 +96,11 @@ namespace CoC.Backend.Creatures
 		}
 		private double _corruption = 0;
 
+		internal void ValidateCorruption()
+		{
+			corruptionTrue = corruptionTrue;
+		}
+
 		public double relativeCorruption => corruptionTrue * (100f / maxCorruption);
 
 		public byte lust => (byte)Math.Floor(lustTrue);
@@ -95,6 +110,11 @@ namespace CoC.Backend.Creatures
 			private protected set => _lust = Utils.Clamp2(value, minLust, maxLust);
 		}
 		private double _lust = 0;
+
+		internal void ValidateLust()
+		{
+			lustTrue = lustTrue;
+		}
 
 		public double relativeLust => lustTrue * (100f / maxLust);
 
@@ -106,6 +126,11 @@ namespace CoC.Backend.Creatures
 		}
 		private double _strength = 0;
 
+		internal void ValidateStrength()
+		{
+			strengthTrue = strengthTrue;
+		}
+
 		public double relativeStrength => strengthTrue * (100f / maxStrength);
 
 		public byte toughness => (byte)Math.Floor(toughnessTrue);
@@ -115,6 +140,11 @@ namespace CoC.Backend.Creatures
 			private protected set => _toughness = Utils.Clamp2(value, minToughness, maxToughness);
 		}
 		private double _toughness = 0;
+
+		internal void ValidateToughness()
+		{
+			toughnessTrue = toughnessTrue;
+		}
 
 		public double relativeToughness => toughnessTrue * (100f / maxToughness);
 
@@ -126,6 +156,11 @@ namespace CoC.Backend.Creatures
 		}
 		private double _speed = 0;
 
+		internal void ValidateSpeed()
+		{
+			speedTrue = speedTrue;
+		}
+
 		public double relativeSpeed => speedTrue * (100f / maxSpeed);
 
 		public byte intelligence => (byte)Math.Floor(intelligenceTrue);
@@ -136,83 +171,89 @@ namespace CoC.Backend.Creatures
 		}
 		private double _intelligence = 0;
 
+		internal void ValidateIntelligence()
+		{
+			intelligenceTrue = intelligenceTrue;
+		}
+
 		public double relativeIntelligence => intelligenceTrue * (100f / maxIntelligence);
 
 
 
 
-		protected internal virtual sbyte bonusMinLibido { get; set; }
+		protected internal virtual sbyte bonusMinLibido => perks.baseModifiers.minLibidoDelta.GetValue();
 		protected virtual byte baseMinLibido => 0;
 		public byte minLibido => baseMinLibido.offset(bonusMinLibido);
 
 
-		protected internal virtual sbyte bonusMinSensitivity { get; set; }
+		protected virtual sbyte bonusMinSensitivity => perks.baseModifiers.minSensitivityDelta.GetValue();
 		protected virtual byte baseMinSensitivity => 0;
 		public byte minSensitivity => baseMinSensitivity.offset(bonusMinSensitivity);
 
 
-		protected internal virtual sbyte bonusMinCorruption { get; set; }
+		protected virtual sbyte bonusMinCorruption => perks.baseModifiers.minCorruptionDelta.GetValue();
 		protected virtual byte baseMinCorruption => 0;
 		public byte minCorruption => baseMinCorruption.offset(bonusMinCorruption);
 
 
-		protected internal virtual sbyte bonusMinLust { get; set; }
+		protected virtual sbyte bonusMinLust => perks.baseModifiers.minLustDelta.GetValue();
 		protected virtual byte baseMinLust => 0;
 		public byte minLust => baseMinLust.offset(bonusMinLust);
 
-		protected internal virtual sbyte bonusMinStrength { get; set; }
+		protected virtual sbyte bonusMinStrength => perks.baseModifiers.minStrengthDelta.GetValue();
 		protected virtual byte baseMinStrength => 0;
 		public byte minStrength => baseMinStrength.offset(bonusMinStrength);
 
 
 
-		protected internal virtual sbyte bonusMinToughness { get; set; }
+		protected internal virtual sbyte bonusMinToughness => perks.baseModifiers.minToughnessDelta.GetValue();
 		protected virtual byte baseMinToughness => 0;
 		public byte minToughness => baseMinToughness.offset(bonusMinToughness);
 
 
 
-		protected internal virtual sbyte bonusMinSpeed { get; set; }
+		protected virtual sbyte bonusMinSpeed => perks.baseModifiers.minSpeedDelta.GetValue();
 		protected virtual byte baseMinSpeed => 0;
 		public byte minSpeed => baseMinSpeed.offset(bonusMinSpeed);
 
 
-		protected internal virtual sbyte bonusMinIntelligence { get; set; }
+		protected virtual sbyte bonusMinIntelligence => perks.baseModifiers.minIntelligenceDelta.GetValue();
 		protected virtual byte baseMinIntelligence => 0;
 		public byte minIntelligence => baseMinIntelligence.offset(bonusMinIntelligence);
 
 
+		protected virtual sbyte bonusMaxLibido => perks.baseModifiers.maxLibidoDelta.GetValue();
 		protected internal virtual byte baseMaxLibido => BASE_MAX_LIBIDO;
-		protected internal virtual sbyte bonusMaxLibido { get; set; } = 0;
 		public byte maxLibido => HandleMaxStat(baseMaxLibido.offset(bonusMaxLibido), minLibido);
 
+		protected virtual sbyte bonusMaxSensitivity => perks.baseModifiers.maxSensitivityDelta.GetValue();
 		protected internal virtual byte baseMaxSensitivity => BASE_MAX_SENSITIVITY;
-		protected internal virtual sbyte bonusMaxSensitivity { get; set; } = 0;
 		public byte maxSensitivity => HandleMaxStat(baseMaxSensitivity.offset(bonusMaxSensitivity), minSensitivity);
 
+		protected virtual sbyte bonusMaxCorruption => perks.baseModifiers.maxCorruptionDelta.GetValue();
 		protected internal virtual byte baseMaxCorruption => BASE_MAX_CORRUPTION;
-		protected internal virtual sbyte bonusMaxCorruption { get; set; } = 0;
 		public byte maxCorruption => HandleMaxStat(baseMaxCorruption.offset(bonusMaxCorruption), minCorruption);
 
+		protected virtual sbyte bonusMaxLust => perks.baseModifiers.maxLustDelta.GetValue();
 		protected internal virtual byte baseMaxLust => BASE_MAX_LUST;
-		protected internal virtual sbyte bonusMaxLust { get; set; } = 0;
 		public byte maxLust => HandleMaxStat(baseMaxLust.offset(bonusMaxLust), minLust);
 
+		protected virtual sbyte bonusMaxStrength => perks.baseModifiers.maxStrengthDelta.GetValue();
 		protected internal virtual byte baseMaxStrength => BASE_MAX_STRENGTH;
-		protected internal virtual sbyte bonusMaxStrength { get; set; } = 0;
 		public byte maxStrength => HandleMaxStat(baseMaxStrength.offset(bonusMaxStrength), minStrength);
 
+		protected virtual sbyte bonusMaxToughness => perks.baseModifiers.maxToughnessDelta.GetValue();
 		protected internal virtual byte baseMaxToughness => BASE_MAX_TOUGHNESS;
-		protected internal virtual sbyte bonusMaxToughness { get; set; } = 0;
 		public byte maxToughness => HandleMaxStat(baseMaxToughness.offset(bonusMaxToughness), minToughness);
 
+		protected virtual sbyte bonusMaxSpeed => perks.baseModifiers.maxSpeedDelta.GetValue();
 		protected internal virtual byte baseMaxSpeed => BASE_MAX_SPEED;
-		protected internal virtual sbyte bonusMaxSpeed { get; set; } = 0;
 		public byte maxSpeed => HandleMaxStat(baseMaxSpeed.offset(bonusMaxSpeed), minSpeed);
 
+		protected virtual sbyte bonusMaxIntelligence => perks.baseModifiers.maxIntelligenceDelta.GetValue();
 		protected internal virtual byte baseMaxIntelligence => BASE_MAX_INTELLIGENCE;
-		protected internal virtual sbyte bonusMaxIntelligence { get; set; } = 0;
 		public byte maxIntelligence => HandleMaxStat(baseMaxIntelligence.offset(bonusMaxIntelligence), minIntelligence);
+
 
 		protected byte HandleMaxStat(byte computedValue, byte minValue)
 		{
@@ -230,42 +271,44 @@ namespace CoC.Backend.Creatures
 			}
 		}
 
-		protected internal double LibidoGainMultiplier = 1.0f;
-		protected internal double LibidoLossMultiplier = 1.0f;
+		protected double libidoGainMultiplier => perks.baseModifiers.libidoGainMultiplier.GetValue();
+		protected double libidoLossMultiplier => perks.baseModifiers.libidoLossMultiplier.GetValue();
 
-		protected internal double SensitivityGainMultiplier = 1.0f;
-		protected internal double SensitivityLossMultiplier = 1.0f;
+		protected double sensitivityGainMultiplier => perks.baseModifiers.sensitivityGainMultiplier.GetValue();
+		protected double sensitivityLossMultiplier => perks.baseModifiers.sensitivityLossMultiplier.GetValue();
 
-		protected internal double CorruptionGainMultiplier = 1.0f;
-		protected internal double CorruptionLossMultiplier = 1.0f;
+		protected double corruptionGainMultiplier => perks.baseModifiers.corruptionGainMultiplier.GetValue();
+		protected double corruptionLossMultiplier => perks.baseModifiers.corruptionLossMultiplier.GetValue();
 
-		protected internal double LustGainMultiplier = 1.0f;
-		protected internal double LustLossMultiplier = 1.0f;
+		protected double lustGainMultiplier => perks.baseModifiers.lustGainMultiplier.GetValue();
+		protected double lustLossMultiplier => perks.baseModifiers.lustLossMultiplier.GetValue();
 
 
-		protected internal double StrengthGainMultiplier = 1.0f;
-		protected internal double StrengthLossMultiplier = 1.0f;
+		protected double strengthGainMultiplier => perks.baseModifiers.strengthGainMultiplier.GetValue();
+		protected double strengthLossMultiplier => perks.baseModifiers.strengthLossMultiplier.GetValue();
 
-		protected internal double ToughnessGainMultiplier = 1.0f;
-		protected internal double ToughnessLossMultiplier = 1.0f;
+		protected double toughnessGainMultiplier => perks.baseModifiers.toughnessGainMultiplier.GetValue();
+		protected double toughnessLossMultiplier => perks.baseModifiers.toughnessLossMultiplier.GetValue();
 
-		protected internal double SpeedGainMultiplier = 1.0f;
-		protected internal double SpeedLossMultiplier = 1.0f;
+		protected double speedGainMultiplier => perks.baseModifiers.speedGainMultiplier.GetValue();
+		protected double speedLossMultiplier => perks.baseModifiers.speedLossMultiplier.GetValue();
 
-		protected internal double IntelligenceGainMultiplier = 1.0f;
-		protected internal double IntelligenceLossMultiplier = 1.0f;
+		protected double intelligenceGainMultiplier => perks.baseModifiers.intelligenceGainMultiplier.GetValue();
+		protected double intelligenceLossMultiplier => perks.baseModifiers.intelligenceLossMultiplier.GetValue();
 		#endregion
 
 		public int gems { get; protected set; }
 
-		public int addGems(uint amount)
+		public double gemsGainRate => perks.baseModifiers.gemsGainRate.GetValue();
+
+		public int AddGems(uint amount)
 		{
 			int oldGems = gems;
 			gems += amount > int.MaxValue ? int.MaxValue : (int)amount;
 			return gems - oldGems;
 		}
 
-		public int removeGems(uint amount, bool canGoNegative = false)
+		public int RemoveGems(uint amount, bool canGoNegative = false)
 		{
 			int lossAmt = amount > int.MaxValue ? int.MaxValue : (int)amount;
 			int oldGems = gems;
@@ -943,7 +986,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= LibidoGainMultiplier;
+				amount *= libidoGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -960,7 +1003,7 @@ namespace CoC.Backend.Creatures
 			double offset = percent * maxLibido;
 			if (!ignorePerks)
 			{
-				offset *= LibidoGainMultiplier;
+				offset *= libidoGainMultiplier;
 			}
 			libidoTrue += offset;
 			return libidoTrue - oldValue;
@@ -970,7 +1013,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= LibidoGainMultiplier;
+				amount *= libidoGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -987,7 +1030,7 @@ namespace CoC.Backend.Creatures
 			double offset = percent * maxLibido;
 			if (!ignorePerks)
 			{
-				offset *= LibidoLossMultiplier;
+				offset *= libidoLossMultiplier;
 			}
 			libidoTrue -= offset;
 			return oldValue - libidoTrue;
@@ -1027,7 +1070,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= SensitivityGainMultiplier;
+				amount *= sensitivityGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1044,7 +1087,7 @@ namespace CoC.Backend.Creatures
 			double offset = percent * maxSensitivity;
 			if (!ignorePerks)
 			{
-				offset *= SensitivityGainMultiplier;
+				offset *= sensitivityGainMultiplier;
 			}
 			sensitivityTrue += offset;
 			return sensitivityTrue - oldValue;
@@ -1054,7 +1097,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= SensitivityGainMultiplier;
+				amount *= sensitivityGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1071,7 +1114,7 @@ namespace CoC.Backend.Creatures
 			double offset = percent * maxSensitivity;
 			if (!ignorePerks)
 			{
-				offset *= SensitivityLossMultiplier;
+				offset *= sensitivityLossMultiplier;
 			}
 			sensitivityTrue -= offset;
 			return oldValue - sensitivityTrue;
@@ -1110,7 +1153,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= CorruptionGainMultiplier;
+				amount *= corruptionGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1127,7 +1170,7 @@ namespace CoC.Backend.Creatures
 			double offset = percent * maxCorruption;
 			if (!ignorePerks)
 			{
-				offset *= CorruptionGainMultiplier;
+				offset *= corruptionGainMultiplier;
 			}
 			corruptionTrue += offset;
 			return corruptionTrue - oldValue;
@@ -1137,7 +1180,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= CorruptionGainMultiplier;
+				amount *= corruptionGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1154,7 +1197,7 @@ namespace CoC.Backend.Creatures
 			double offset = percent * maxCorruption;
 			if (!ignorePerks)
 			{
-				offset *= CorruptionLossMultiplier;
+				offset *= corruptionLossMultiplier;
 			}
 			corruptionTrue -= offset;
 			return oldValue - corruptionTrue;
@@ -1193,7 +1236,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= LustGainMultiplier;
+				amount *= lustGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1210,7 +1253,7 @@ namespace CoC.Backend.Creatures
 			double offset = percent * maxLust;
 			if (!ignorePerks)
 			{
-				offset *= LustGainMultiplier;
+				offset *= lustGainMultiplier;
 			}
 			lustTrue += offset;
 			return lustTrue - oldValue;
@@ -1220,7 +1263,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= LustGainMultiplier;
+				amount *= lustGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1237,7 +1280,7 @@ namespace CoC.Backend.Creatures
 			double offset = percent * maxLust;
 			if (!ignorePerks)
 			{
-				offset *= LustLossMultiplier;
+				offset *= lustLossMultiplier;
 			}
 			lustTrue -= offset;
 			return oldValue - lustTrue;
@@ -1276,7 +1319,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= StrengthGainMultiplier;
+				amount *= strengthGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1293,7 +1336,7 @@ namespace CoC.Backend.Creatures
 			double delta = percent * maxStrength;
 			if (!ignorePerks)
 			{
-				delta *= StrengthGainMultiplier;
+				delta *= strengthGainMultiplier;
 			}
 			strengthTrue += delta;
 			return strengthTrue - oldValue;
@@ -1303,7 +1346,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= StrengthGainMultiplier;
+				amount *= strengthGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1320,7 +1363,7 @@ namespace CoC.Backend.Creatures
 			double delta = percent * maxStrength;
 			if (!ignorePerks)
 			{
-				delta *= StrengthLossMultiplier;
+				delta *= strengthLossMultiplier;
 			}
 			strengthTrue -= delta;
 			return oldValue - strengthTrue;
@@ -1359,7 +1402,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= ToughnessGainMultiplier;
+				amount *= toughnessGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1376,7 +1419,7 @@ namespace CoC.Backend.Creatures
 			double delta = percent * maxToughness;
 			if (!ignorePerks)
 			{
-				delta *= ToughnessGainMultiplier;
+				delta *= toughnessGainMultiplier;
 			}
 			toughnessTrue += delta;
 			return toughnessTrue - oldValue;
@@ -1386,7 +1429,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= ToughnessGainMultiplier;
+				amount *= toughnessGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1403,7 +1446,7 @@ namespace CoC.Backend.Creatures
 			double delta = percent * maxToughness;
 			if (!ignorePerks)
 			{
-				delta *= ToughnessLossMultiplier;
+				delta *= toughnessLossMultiplier;
 			}
 			toughnessTrue -= delta;
 			return oldValue - toughnessTrue;
@@ -1442,7 +1485,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= SpeedGainMultiplier;
+				amount *= speedGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1459,7 +1502,7 @@ namespace CoC.Backend.Creatures
 			double delta = percent * maxSpeed;
 			if (!ignorePerks)
 			{
-				delta *= SpeedGainMultiplier;
+				delta *= speedGainMultiplier;
 			}
 			speedTrue += delta;
 			return speedTrue - oldValue;
@@ -1469,7 +1512,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= SpeedGainMultiplier;
+				amount *= speedGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1486,7 +1529,7 @@ namespace CoC.Backend.Creatures
 			double delta = percent * maxSpeed;
 			if (!ignorePerks)
 			{
-				delta *= SpeedLossMultiplier;
+				delta *= speedLossMultiplier;
 			}
 			speedTrue -= delta;
 			return oldValue - speedTrue;
@@ -1525,7 +1568,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= IntelligenceGainMultiplier;
+				amount *= intelligenceGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1542,7 +1585,7 @@ namespace CoC.Backend.Creatures
 			double delta = percent * maxIntelligence;
 			if (!ignorePerks)
 			{
-				delta *= IntelligenceGainMultiplier;
+				delta *= intelligenceGainMultiplier;
 			}
 			intelligenceTrue += delta;
 			return intelligenceTrue - oldValue;
@@ -1552,7 +1595,7 @@ namespace CoC.Backend.Creatures
 		{
 			if (!ignorePerks)
 			{
-				amount *= IntelligenceGainMultiplier;
+				amount *= intelligenceGainMultiplier;
 			}
 			if (amount <= 0)
 			{
@@ -1569,7 +1612,7 @@ namespace CoC.Backend.Creatures
 			double delta = percent * maxIntelligence;
 			if (!ignorePerks)
 			{
-				delta *= IntelligenceLossMultiplier;
+				delta *= intelligenceLossMultiplier;
 			}
 			intelligenceTrue -= delta;
 			return oldValue - intelligenceTrue;
@@ -1612,7 +1655,7 @@ namespace CoC.Backend.Creatures
 				amount = lus;
 				if (!ignorePerks)
 				{
-					amount *= LustGainMultiplier;
+					amount *= lustGainMultiplier;
 				}
 
 				lustTrue += amount;
@@ -1622,7 +1665,7 @@ namespace CoC.Backend.Creatures
 				amount = lib;
 				if (!ignorePerks)
 				{
-					amount *= LibidoGainMultiplier;
+					amount *= libidoGainMultiplier;
 				}
 
 				libidoTrue += amount;
@@ -1632,7 +1675,7 @@ namespace CoC.Backend.Creatures
 				amount = sens;
 				if (!ignorePerks)
 				{
-					amount *= SensitivityGainMultiplier;
+					amount *= sensitivityGainMultiplier;
 				}
 
 				sensitivityTrue += amount;
@@ -1642,7 +1685,7 @@ namespace CoC.Backend.Creatures
 				amount = corr;
 				if (!ignorePerks)
 				{
-					amount *= CorruptionGainMultiplier;
+					amount *= corruptionGainMultiplier;
 				}
 
 				corruptionTrue += amount;
@@ -1651,25 +1694,25 @@ namespace CoC.Backend.Creatures
 			if (str != 0)
 			{
 				amount = str;
-				if (!ignorePerks) amount *= StrengthGainMultiplier;
+				if (!ignorePerks) amount *= strengthGainMultiplier;
 				strengthTrue += amount;
 			}
 			if (tou != 0)
 			{
 				amount = tou;
-				if (!ignorePerks) amount *= ToughnessGainMultiplier;
+				if (!ignorePerks) amount *= toughnessGainMultiplier;
 				toughnessTrue += amount;
 			}
 			if (spe != 0)
 			{
 				amount = spe;
-				if (!ignorePerks) amount *= SpeedGainMultiplier;
+				if (!ignorePerks) amount *= speedGainMultiplier;
 				speedTrue += amount;
 			}
 			if (inte != 0)
 			{
 				amount = inte;
-				if (!ignorePerks) amount *= IntelligenceGainMultiplier;
+				if (!ignorePerks) amount *= intelligenceGainMultiplier;
 				intelligenceTrue += amount;
 			}
 		}
@@ -1682,7 +1725,7 @@ namespace CoC.Backend.Creatures
 				amount = lus;
 				if (!ignorePerks)
 				{
-					amount *= LustLossMultiplier;
+					amount *= lustLossMultiplier;
 				}
 
 				lustTrue -= amount;
@@ -1692,7 +1735,7 @@ namespace CoC.Backend.Creatures
 				amount = lib;
 				if (!ignorePerks)
 				{
-					amount *= LibidoLossMultiplier;
+					amount *= libidoLossMultiplier;
 				}
 
 				libidoTrue -= amount;
@@ -1702,7 +1745,7 @@ namespace CoC.Backend.Creatures
 				amount = sens;
 				if (!ignorePerks)
 				{
-					amount *= SensitivityLossMultiplier;
+					amount *= sensitivityLossMultiplier;
 				}
 
 				sensitivityTrue -= amount;
@@ -1712,7 +1755,7 @@ namespace CoC.Backend.Creatures
 				amount = corr;
 				if (!ignorePerks)
 				{
-					amount *= CorruptionLossMultiplier;
+					amount *= corruptionLossMultiplier;
 				}
 
 				corruptionTrue -= amount;
@@ -1721,25 +1764,25 @@ namespace CoC.Backend.Creatures
 			if (str != 0)
 			{
 				amount = str;
-				if (!ignorePerks) amount *= StrengthLossMultiplier;
+				if (!ignorePerks) amount *= strengthLossMultiplier;
 				strengthTrue -= amount;
 			}
 			if (tou != 0)
 			{
 				amount = tou;
-				if (!ignorePerks) amount *= ToughnessLossMultiplier;
+				if (!ignorePerks) amount *= toughnessLossMultiplier;
 				toughnessTrue -= amount;
 			}
 			if (spe != 0)
 			{
 				amount = spe;
-				if (!ignorePerks) amount *= SpeedLossMultiplier;
+				if (!ignorePerks) amount *= speedLossMultiplier;
 				speedTrue -= amount;
 			}
 			if (inte != 0)
 			{
 				amount = inte;
-				if (!ignorePerks) amount *= IntelligenceLossMultiplier;
+				if (!ignorePerks) amount *= intelligenceLossMultiplier;
 				intelligenceTrue -= amount;
 			}
 		}
@@ -1789,7 +1832,7 @@ namespace CoC.Backend.Creatures
 				amount = lus;
 				if (!ignorePerks)
 				{
-					amount *= LustLossMultiplier;
+					amount *= lustLossMultiplier;
 				}
 
 				lustTrue += amount;
@@ -1799,7 +1842,7 @@ namespace CoC.Backend.Creatures
 				amount = lus;
 				if (!ignorePerks)
 				{
-					amount *= LustGainMultiplier;
+					amount *= lustGainMultiplier;
 				}
 
 				lustTrue += amount;
@@ -1809,7 +1852,7 @@ namespace CoC.Backend.Creatures
 				amount = lib;
 				if (!ignorePerks)
 				{
-					amount *= LibidoLossMultiplier;
+					amount *= libidoLossMultiplier;
 				}
 
 				libidoTrue += amount;
@@ -1819,7 +1862,7 @@ namespace CoC.Backend.Creatures
 				amount = lib;
 				if (!ignorePerks)
 				{
-					amount *= LibidoGainMultiplier;
+					amount *= libidoGainMultiplier;
 				}
 
 				libidoTrue += amount;
@@ -1829,7 +1872,7 @@ namespace CoC.Backend.Creatures
 				amount = sens;
 				if (!ignorePerks)
 				{
-					amount *= SensitivityLossMultiplier;
+					amount *= sensitivityLossMultiplier;
 				}
 
 				sensitivityTrue += amount;
@@ -1839,7 +1882,7 @@ namespace CoC.Backend.Creatures
 				amount = sens;
 				if (!ignorePerks)
 				{
-					amount *= SensitivityGainMultiplier;
+					amount *= sensitivityGainMultiplier;
 				}
 
 				sensitivityTrue += amount;
@@ -1849,7 +1892,7 @@ namespace CoC.Backend.Creatures
 				amount = corr;
 				if (!ignorePerks)
 				{
-					amount *= CorruptionLossMultiplier;
+					amount *= corruptionLossMultiplier;
 				}
 
 				corruptionTrue += amount;
@@ -1859,7 +1902,7 @@ namespace CoC.Backend.Creatures
 				amount = corr;
 				if (!ignorePerks)
 				{
-					amount *= CorruptionGainMultiplier;
+					amount *= corruptionGainMultiplier;
 				}
 
 				corruptionTrue += amount;
@@ -1868,49 +1911,49 @@ namespace CoC.Backend.Creatures
 			if (str < 0)
 			{
 				amount = str;
-				if (!ignorePerks) amount *= StrengthLossMultiplier;
+				if (!ignorePerks) amount *= strengthLossMultiplier;
 				strengthTrue += amount;
 			}
 			else if (str > 0)
 			{
 				amount = str;
-				if (!ignorePerks) amount *= StrengthGainMultiplier;
+				if (!ignorePerks) amount *= strengthGainMultiplier;
 				strengthTrue += amount;
 			}
 			if (tou < 0)
 			{
 				amount = tou;
-				if (!ignorePerks) amount *= ToughnessLossMultiplier;
+				if (!ignorePerks) amount *= toughnessLossMultiplier;
 				toughnessTrue += amount;
 			}
 			else if (tou > 0)
 			{
 				amount = tou;
-				if (!ignorePerks) amount *= ToughnessGainMultiplier;
+				if (!ignorePerks) amount *= toughnessGainMultiplier;
 				toughnessTrue += amount;
 			}
 			if (spe < 0)
 			{
 				amount = spe;
-				if (!ignorePerks) amount *= SpeedLossMultiplier;
+				if (!ignorePerks) amount *= speedLossMultiplier;
 				speedTrue += amount;
 			}
 			else if (spe > 0)
 			{
 				amount = spe;
-				if (!ignorePerks) amount *= SpeedGainMultiplier;
+				if (!ignorePerks) amount *= speedGainMultiplier;
 				speedTrue += amount;
 			}
 			if (inte < 0)
 			{
 				amount = inte;
-				if (!ignorePerks) amount *= IntelligenceLossMultiplier;
+				if (!ignorePerks) amount *= intelligenceLossMultiplier;
 				intelligenceTrue += amount;
 			}
 			else if (inte > 0)
 			{
 				amount = inte;
-				if (!ignorePerks) amount *= IntelligenceGainMultiplier;
+				if (!ignorePerks) amount *= intelligenceGainMultiplier;
 				intelligenceTrue += amount;
 			}
 		}
@@ -1945,6 +1988,8 @@ namespace CoC.Backend.Creatures
 		}
 		#endregion
 		#region Cock Add/Remove
+		public bool AddCock() => AddCock(CockType.defaultValue);
+
 		public bool AddCock(CockType newCockType)
 		{
 			return genitals.AddCock(newCockType);
@@ -2003,6 +2048,16 @@ namespace CoC.Backend.Creatures
 		public int RemoveVagina(int count = 1)
 		{
 			return genitals.RemoveVagina(count);
+		}
+
+		public bool RemoveVagina(Vagina vagina)
+		{
+			return genitals.RemoveVagina(vagina);
+		}
+
+		public int RemoveVaginaAt(int index, int count = 1)
+		{
+			return genitals.RemoveVaginaAt(index, count);
 		}
 
 		public int RemoveExtraVaginas()

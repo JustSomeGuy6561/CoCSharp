@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
@@ -11,7 +12,7 @@ using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
-	public sealed partial class VaginaCollection : SimpleSaveablePart<VaginaCollection, VaginaCollectionData>
+	public sealed partial class VaginaCollection : SimpleSaveablePart<VaginaCollection, VaginaCollectionData>, IGrowable, IShrinkable
 	{
 		#region Vagina Related Constants
 		//Not gonna lie, supporting double twats is a huge pain in the ass. (PHRASING! BOOM!)
@@ -44,7 +45,7 @@ namespace CoC.Backend.BodyParts
 		{
 			get => _vaginas[index];
 		}
-
+		public bool hasVagina => _vaginas.Count > 0;
 		//Bonus capacity is shared between all vaginas. however, some may have different capacities than others due to their looseness/wetness values, and bonuses by vagina type.
 		//IMO it'd be nice if those were shared as well, but i suppose it doesn't make sense for one hole that sees a lot of action to be as tight as the other that does not.
 
@@ -287,7 +288,46 @@ namespace CoC.Backend.BodyParts
 
 			return lastVagina.type.GrewVaginaText(player, (byte)(_vaginas.Count - 1));
 		}
+		public int RemoveVaginaAt(int index, int count = 1)
+		{
+			if (numVaginas == 0 || count <= 0 || index < 0 || index >= numVaginas)
+			{
+				return 0;
+			}
 
+
+			int oldCount = numVaginas;
+			Gender oldGender = gender;
+
+			var toRemove = vaginas.Skip(index).Take(count);
+
+			missingVaginaSexCount.addIn((uint)toRemove.Sum(x => x.totalSexCount));
+			missingVaginaSelfSexCount.addIn((uint)toRemove.Sum(x => x.selfSexCount));
+
+			missingVaginaOrgasmCount.addIn((uint)toRemove.Sum(x => x.totalOrgasmCount));
+			missingVaginaDryOrgasmCount.addIn((uint)toRemove.Sum(x => x.dryOrgasmCount));
+
+			missingVaginaPenetratedCount.addIn((uint)toRemove.Sum(x => x.totalPenetrationCount));
+			missingVaginaSelfPenetratedCount.addIn((uint)toRemove.Sum(x => x.selfPenetrationCount));
+
+			missingClitPenetrateCount.addIn((uint)toRemove.Sum(x => x.clit.totalPenetrateCount));
+			missingClitSelfPenetrateCount.addIn((uint)toRemove.Sum(x => x.clit.selfPenetrateCount));
+
+			missingVaginaBirthCount.addIn((uint)toRemove.Sum(x => x.totalBirths));
+
+			_vaginas.RemoveRange(index, count);
+
+			source.CheckGenderChanged(oldGender);
+			return oldCount - numVaginas;
+		}
+		public bool RemoveVagina(Vagina vagina)
+		{
+			if (vagina.vaginaIndex >= _vaginas.Count || vagina.vaginaIndex < 0 || _vaginas[vagina.vaginaIndex] != vagina)
+			{
+				return false;
+			}
+			return RemoveVaginaAt(vagina.vaginaIndex, 1) == 1;
+		}
 		public int RemoveVagina(int count = 1)
 		{
 			if (numVaginas == 0 || count <= 0)
@@ -582,11 +622,16 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Vagina Common Text
+		public string AllVaginasNoun() => VaginaCollectionStrings.AllVaginasNoun(this);
+		public string AllVaginasNoun(out bool isPlural) => VaginaCollectionStrings.AllVaginasNoun(this, out isPlural);
 		public string AllVaginasShortDescription() => VaginaCollectionStrings.AllVaginasShortDescription(this);
+		public string AllVaginasShortDescription(out bool isPlural) => VaginaCollectionStrings.AllVaginasShortDescription(this, out isPlural);
 
 		public string AllVaginasLongDescription() => VaginaCollectionStrings.AllVaginasLongDescription(this);
+		public string AllVaginasLongDescription(out bool isPlural) => VaginaCollectionStrings.AllVaginasLongDescription(this, out isPlural);
 
 		public string AllVaginasFullDescription() => VaginaCollectionStrings.AllVaginasFullDescription(this);
+		public string AllVaginasFullDescription(out bool isPlural) => VaginaCollectionStrings.AllVaginasFullDescription(this, out isPlural);
 
 
 		public string OneVaginaOrVaginasNoun() => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this);
@@ -599,17 +644,38 @@ namespace CoC.Backend.BodyParts
 
 		public string EachVaginaOrVaginasNoun() => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this);
 		public string EachVaginaOrVaginasNoun(Conjugate conjugate) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate, out isPlural);
 
 
 		public string EachVaginaOrVaginasShort() => VaginaCollectionStrings.EachVaginaOrVaginasShort(this);
 		public string EachVaginaOrVaginasShort(Conjugate conjugate) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, conjugate);
-
-
-		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate, out isPlural);
-
-
 		public string EachVaginaOrVaginasShort(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, conjugate, out isPlural);
 
+		public string AllClitsNoun() => VaginaCollectionStrings.AllClitsNoun(this);
+		public string AllClitsNoun(out bool isPlural) => VaginaCollectionStrings.AllClitsNoun(this, out isPlural);
+
+		public string AllClitsShortDescription() => VaginaCollectionStrings.AllClitsShortDescription(this);
+		public string AllClitsShortDescription(out bool isPlural) => VaginaCollectionStrings.AllClitsShortDescription(this, out isPlural);
+
+
+		public string AllClitsLongDescription() => VaginaCollectionStrings.AllClitsLongDescription(this);
+		public string AllClitsLongDescription(out bool isPlural) => VaginaCollectionStrings.AllClitsLongDescription(this, out isPlural);
+
+		public string OneClitOrClitsNoun() => VaginaCollectionStrings.OneClitOrClitsNoun(this);
+		public string OneClitOrClitsNoun(Conjugate conjugate) => VaginaCollectionStrings.OneClitOrClitsNoun(this, conjugate);
+
+		public string OneClitOrClitsShort() => VaginaCollectionStrings.OneClitOrClitsShort(this);
+		public string OneClitOrClitsShort(Conjugate conjugate) => VaginaCollectionStrings.OneClitOrClitsShort(this, conjugate);
+
+
+		public string EachClitOrClitsNoun() => VaginaCollectionStrings.EachClitOrClitsNoun(this);
+		public string EachClitOrClitsNoun(Conjugate conjugate) => VaginaCollectionStrings.EachClitOrClitsNoun(this, conjugate);
+		public string EachClitOrClitsNoun(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachClitOrClitsNoun(this, conjugate, out isPlural);
+
+
+		public string EachClitOrClitsShort() => VaginaCollectionStrings.EachClitOrClitsShort(this);
+		public string EachClitOrClitsShort(Conjugate conjugate) => VaginaCollectionStrings.EachClitOrClitsShort(this, conjugate);
+		public string EachClitOrClitsShort(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachClitOrClitsShort(this, conjugate, out isPlural);
 		#endregion
 
 		#region Vagina Collection Exclusive Text
@@ -627,6 +693,34 @@ namespace CoC.Backend.BodyParts
 		}
 
 		#endregion
+
+		//Note: applies to clit(s). done here because it's applied to all of them, idk.
+		#region IGrowShrinkable
+
+		bool IShrinkable.CanReducto()
+		{
+			return _vaginas.Any(x => (x.clit as IShrinkable).CanReducto());
+		}
+
+		string IShrinkable.UseReducto()
+		{
+			ClitData[] oldData = _vaginas.Select(x => x.clit.AsReadOnlyData()).ToArray();
+			_vaginas.ForEach(x => (x.clit as IShrinkable).UseReducto());
+			return ReductoClits(oldData);
+		}
+
+		bool IGrowable.CanGroPlus()
+		{
+			return _vaginas.Any(x => (x.clit as IGrowable).CanGroPlus());
+		}
+
+		string IGrowable.UseGroPlus()
+		{
+			ClitData[] oldData = _vaginas.Select(x => x.clit.AsReadOnlyData()).ToArray();
+			_vaginas.ForEach(x => (x.clit as IGrowable).UseGroPlus());
+			return GroPlusClits(oldData);
+		}
+		#endregion
 	}
 
 	public sealed partial class VaginaCollectionData : SimpleData, IVaginaCollection<VaginaData>
@@ -634,6 +728,7 @@ namespace CoC.Backend.BodyParts
 		//public readonly bool hasClitCock;
 
 		public ReadOnlyCollection<VaginaData> vaginas;
+		public bool hasVagina => vaginas.Count > 0;
 
 		public VaginaData this[int index]
 		{
@@ -824,16 +919,19 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Vagina Common Text
+		public string AllVaginasNoun() => VaginaCollectionStrings.AllVaginasNoun(this);
+		public string AllVaginasNoun(out bool isPlural) => VaginaCollectionStrings.AllVaginasNoun(this, out isPlural);
 		public string AllVaginasShortDescription() => VaginaCollectionStrings.AllVaginasShortDescription(this);
+		public string AllVaginasShortDescription(out bool isPlural) => VaginaCollectionStrings.AllVaginasShortDescription(this, out isPlural);
 
 		public string AllVaginasLongDescription() => VaginaCollectionStrings.AllVaginasLongDescription(this);
+		public string AllVaginasLongDescription(out bool isPlural) => VaginaCollectionStrings.AllVaginasLongDescription(this, out isPlural);
 
 		public string AllVaginasFullDescription() => VaginaCollectionStrings.AllVaginasFullDescription(this);
-
+		public string AllVaginasFullDescription(out bool isPlural) => VaginaCollectionStrings.AllVaginasFullDescription(this, out isPlural);
 
 		public string OneVaginaOrVaginasNoun() => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this);
 		public string OneVaginaOrVaginasNoun(Conjugate conjugate) => VaginaCollectionStrings.OneVaginaOrVaginasNoun(this, conjugate);
-
 
 		public string OneVaginaOrVaginasShort() => VaginaCollectionStrings.OneVaginaOrVaginasShort(this);
 		public string OneVaginaOrVaginasShort(Conjugate conjugate) => VaginaCollectionStrings.OneVaginaOrVaginasShort(this, conjugate);
@@ -841,16 +939,38 @@ namespace CoC.Backend.BodyParts
 
 		public string EachVaginaOrVaginasNoun() => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this);
 		public string EachVaginaOrVaginasNoun(Conjugate conjugate) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate);
+		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate, out isPlural);
 
 
 		public string EachVaginaOrVaginasShort() => VaginaCollectionStrings.EachVaginaOrVaginasShort(this);
 		public string EachVaginaOrVaginasShort(Conjugate conjugate) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, conjugate);
-
-
-		public string EachVaginaOrVaginasNoun(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasNoun(this, conjugate, out isPlural);
-
-
 		public string EachVaginaOrVaginasShort(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachVaginaOrVaginasShort(this, conjugate, out isPlural);
+
+		public string AllClitsNoun() => VaginaCollectionStrings.AllClitsNoun(this);
+		public string AllClitsNoun(out bool isPlural) => VaginaCollectionStrings.AllClitsNoun(this, out isPlural);
+
+		public string AllClitsShortDescription() => VaginaCollectionStrings.AllClitsShortDescription(this);
+		public string AllClitsShortDescription(out bool isPlural) => VaginaCollectionStrings.AllClitsShortDescription(this, out isPlural);
+
+
+		public string AllClitsLongDescription() => VaginaCollectionStrings.AllClitsLongDescription(this);
+		public string AllClitsLongDescription(out bool isPlural) => VaginaCollectionStrings.AllClitsLongDescription(this, out isPlural);
+
+		public string OneClitOrClitsNoun() => VaginaCollectionStrings.OneClitOrClitsNoun(this);
+		public string OneClitOrClitsNoun(Conjugate conjugate) => VaginaCollectionStrings.OneClitOrClitsNoun(this, conjugate);
+
+		public string OneClitOrClitsShort() => VaginaCollectionStrings.OneClitOrClitsShort(this);
+		public string OneClitOrClitsShort(Conjugate conjugate) => VaginaCollectionStrings.OneClitOrClitsShort(this, conjugate);
+
+
+		public string EachClitOrClitsNoun() => VaginaCollectionStrings.EachClitOrClitsNoun(this);
+		public string EachClitOrClitsNoun(Conjugate conjugate) => VaginaCollectionStrings.EachClitOrClitsNoun(this, conjugate);
+		public string EachClitOrClitsNoun(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachClitOrClitsNoun(this, conjugate, out isPlural);
+
+
+		public string EachClitOrClitsShort() => VaginaCollectionStrings.EachClitOrClitsShort(this);
+		public string EachClitOrClitsShort(Conjugate conjugate) => VaginaCollectionStrings.EachClitOrClitsShort(this, conjugate);
+		public string EachClitOrClitsShort(Conjugate conjugate, out bool isPlural) => VaginaCollectionStrings.EachClitOrClitsShort(this, conjugate, out isPlural);
 
 		#endregion
 	}

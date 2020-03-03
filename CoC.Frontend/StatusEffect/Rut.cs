@@ -64,7 +64,7 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (!e.newGender.HasFlag(Gender.MALE))
 			{
-				GameEngine.AddOneOffReaction(new OneOffTimeReactionBase(new GenericSimpleReaction(DoReaction)));
+				GameEngine.AddOneOffReaction(new OneOffTimeReaction(new GenericSimpleReaction(DoReaction)));
 			}
 		}
 

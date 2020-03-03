@@ -499,27 +499,27 @@ namespace CoC.Backend.BodyParts
 		public string NippleNoun() => nippleData.NippleNoun();
 		public string NippleNoun(bool plural, bool allowQuadNippleIfApplicable = false) => nippleData.NippleNoun(plural, allowQuadNippleIfApplicable);
 
-		public string ShortNippleDescription() => nippleData.ShortNippleDescription(this);
+		public string ShortNippleDescription() => nippleData.RowShortDescription(this);
 
-		public string ShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true) => nippleData.ShortNippleDescription(this, plural, allowQuadNippleTextIfApplicable);
+		public string ShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true) => nippleData.RowShortDescription(this, plural, allowQuadNippleTextIfApplicable);
 
-		public string SingleNippleDescription() => nippleData.SingleNippleDescription(this);
-		public string SingleNipplpeDescription(bool allowQuadNippleIfApplicable) => nippleData.SingleNipplpeDescription(this, allowQuadNippleIfApplicable);
+		public string SingleNippleDescription() => nippleData.RowSingleDescription(this);
+		public string SingleNipplpeDescription(bool allowQuadNippleIfApplicable) => nippleData.RowSingleDescription(this, allowQuadNippleIfApplicable);
 
-		public string LongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.LongNippleDescription(this, alternateFormat, plural, usePreciseMeasurements);
+		public string LongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.RowLongDescription(this, alternateFormat, plural, usePreciseMeasurements);
 
-		public string FullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.FullNippleDescription(this, alternateFormat, plural, usePreciseMeasurements);
-
-
-		public string OneNippleOrOneOfQuadNipplesShort() => nippleData.OneNippleOrOneOfQuadNipplesShort(this);
-		public string OneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => nippleData.OneNippleOrOneOfQuadNipplesShort(this, conjugate);
+		public string FullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.RowFullDescription(this, alternateFormat, plural, usePreciseMeasurements);
 
 
-		public string OneNippleOrEachOfQuadNipplesShort() => nippleData.OneNippleOrEachOfQuadNipplesShort(this);
-		public string OneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, conjugate);
+		public string OneNippleDescription() => nippleData.RowOneNippleDescription(this);
+		public string OneNippleDescription(Conjugate conjugate) => nippleData.RowOneNippleDescription(this, conjugate);
 
 
-		public string OneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, conjugate, out isPlural);
+		public string EachNippleDescription() => nippleData.RowEachNippleDescription(this);
+		public string EachNippleDescription(Conjugate conjugate) => nippleData.RowEachNippleDescription(this, conjugate);
+
+
+		public string EachNippleDescription(Conjugate conjugate, out bool isPlural) => nippleData.RowEachNippleDescription(this, conjugate, out isPlural);
 
 
 		#endregion
@@ -598,35 +598,34 @@ namespace CoC.Backend.BodyParts
 			return cupSize > minimumCupSize;
 		}
 
-		double IGrowable.UseGroPlus()
+		//the string here actually isn't used - breast collection handles this, so we don't print anything here.
+		string IGrowable.UseGroPlus()
 		{
-			if (!((IGrowable)this).CanGroPlus())
+			if (((IGrowable)this).CanGroPlus())
 			{
-				return 0;
+				CupSize oldSize = cupSize;
+				cupSize += (byte)(Utils.Rand(2) + 1);
+				//c# is a bitch in that all numbers are treated as ints or doubles unless explicitly cast - byte me
+				cupSize += (byte)(makeBigTits && Utils.RandBool() ? 1 : 0); //add one for big tits perk 50% of the time
 			}
-			CupSize oldSize = cupSize;
-			cupSize += (byte)(Utils.Rand(2) + 1);
-			//c# is a bitch in that all numbers are treated as ints or doubles unless explicitly cast - byte me
-			cupSize += (byte)(makeBigTits && Utils.RandBool() ? 1 : 0); //add one for big tits perk 50% of the time
-			return cupSize - oldSize;
+			return null;
 		}
 
-		double IShrinkable.UseReducto()
+		string IShrinkable.UseReducto()
 		{
-			if (!((IShrinkable)this).CanReducto())
+			if (((IShrinkable)this).CanReducto())
 			{
-				return 0;
+				CupSize oldSize = cupSize;
+				if (cupSize.ByteEnumSubtract(1) == minimumCupSize || !makeSmallTits || Utils.RandBool())
+				{
+					cupSize--;
+				}
+				else
+				{
+					cupSize -= 2;
+				}
 			}
-			CupSize oldSize = cupSize;
-			if (cupSize.ByteEnumSubtract(1) == minimumCupSize || !makeSmallTits || Utils.RandBool())
-			{
-				cupSize--;
-			}
-			else
-			{
-				cupSize -= 2;
-			}
-			return oldSize - cupSize;
+			return null;
 		}
 		#endregion
 		public bool TittyFuckable()
@@ -705,28 +704,27 @@ namespace CoC.Backend.BodyParts
 		public string NippleNoun() => nippleData.NippleNoun();
 		public string NippleNoun(bool plural, bool allowQuadNippleIfApplicable = false) => nippleData.NippleNoun(plural, allowQuadNippleIfApplicable);
 
-		public string ShortNippleDescription() => nippleData.ShortNippleDescription(this);
+		public string ShortNippleDescription() => nippleData.RowShortDescription(this);
 
-		public string ShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true) => nippleData.ShortNippleDescription(this, plural, allowQuadNippleTextIfApplicable);
+		public string ShortNippleDescription(bool plural, bool allowQuadNippleTextIfApplicable = true) => nippleData.RowShortDescription(this, plural, allowQuadNippleTextIfApplicable);
 
-		public string SingleNippleDescription() => nippleData.SingleNippleDescription(this);
-		public string SingleNipplpeDescription(bool allowQuadNippleIfApplicable) => nippleData.SingleNipplpeDescription(this, allowQuadNippleIfApplicable);
+		public string SingleNippleDescription() => nippleData.RowSingleDescription(this);
+		public string SingleNipplpeDescription(bool allowQuadNippleIfApplicable) => nippleData.RowSingleDescription(this, allowQuadNippleIfApplicable);
 
-		public string LongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.LongNippleDescription(this, alternateFormat, plural, usePreciseMeasurements);
+		public string LongNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.RowLongDescription(this, alternateFormat, plural, usePreciseMeasurements);
 
-		public string FullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.FullNippleDescription(this, alternateFormat, plural, usePreciseMeasurements);
-
-
-		public string OneNippleOrOneOfQuadNipplesShort() => nippleData.OneNippleOrOneOfQuadNipplesShort(this);
-		public string OneNippleOrOneOfQuadNipplesShort(Conjugate conjugate) => nippleData.OneNippleOrOneOfQuadNipplesShort(this, conjugate);
+		public string FullNippleDescription(bool alternateFormat = false, bool plural = true, bool usePreciseMeasurements = false) => nippleData.RowFullDescription(this, alternateFormat, plural, usePreciseMeasurements);
 
 
-		public string OneNippleOrEachOfQuadNipplesShort() => nippleData.OneNippleOrEachOfQuadNipplesShort(this);
-		public string OneNippleOrEachOfQuadNipplesShort(Conjugate conjugate) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, conjugate);
+		public string OneNippleDescription() => nippleData.RowOneNippleDescription(this);
+		public string OneNippleDescription(Conjugate conjugate) => nippleData.RowOneNippleDescription(this, conjugate);
 
 
-		public string OneNippleOrEachOfQuadNipplesShort(Conjugate conjugate, out bool isPlural) => nippleData.OneNippleOrEachOfQuadNipplesShort(this, conjugate, out isPlural);
+		public string EachNippleDescription() => nippleData.RowEachNippleDescription(this);
+		public string EachNippleDescription(Conjugate conjugate) => nippleData.RowEachNippleDescription(this, conjugate);
 
+
+		public string EachNippleDescription(Conjugate conjugate, out bool isPlural) => nippleData.RowEachNippleDescription(this, conjugate, out isPlural);
 
 		#endregion
 

@@ -1,9 +1,10 @@
-﻿using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
-using CoC.Backend.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Strings;
+using CoC.Backend.Tools;
 
 namespace CoC.Backend.BodyParts
 {
@@ -41,9 +42,13 @@ namespace CoC.Backend.BodyParts
 					if (count == 1)
 					{
 						if (bodyType == BodyType.GOO)
+						{
 							return "Your " + SackDescription() + " clings tightly to your groin, dripping and holding your" + LongDescription(false, false) + " snugly against you." + fNale;
+						}
 						else
+						{
 							return "Your " + SackDescription() + " clings tightly to your groin, holding your" + LongDescription(false, false) + " snugly against you." + fNale;
+						}
 					}
 					else if (!player.hasCock)
 					{
@@ -84,9 +89,51 @@ namespace CoC.Backend.BodyParts
 						}
 					}
 				}
-				else return "";
+				else
+				{
+					return "";
+				}
 			}
-			else return "";
+			else
+			{
+				return "";
+			}
+		}
+
+		private string ReductoBalls(BallsData oldData, bool nothingHappened)
+		{
+			return "You smear the foul-smelling paste onto your " + oldData.SackDescription() +
+				". It feels cool at first but rapidly warms to an uncomfortable level of heat." + GlobalStrings.NewParagraph()
+
+				+ "You feel your scrotum shift, shrinking down along with your " + ShortDescription() +
+				". Within a few seconds the paste has been totally absorbed and the shrinking stops.";
+		}
+
+		private string GroPlusBalls(BallsData oldData, bool nothingHappened)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append("You sink the needle deep into your " + oldData.SackDescription() + ". It hurts like hell, but you push down the plunger " +
+				"and the pain vanishes as the needles contents flow into you." + GlobalStrings.NewParagraph());
+
+			if (size - oldData.size > 2)
+			{
+				sb.Append("You feel a trembling in your " + oldData.ShortDescription() + " as the chemicals start to go to work. " +
+					"You can tell they're going to be VERY effective." + Environment.NewLine);
+
+				sb.Append("They shift, stretching your " + oldData.SackDescription() + " tight as they gain inches of size. " +
+					"You step to steady yourself as your center of balance shifts due to your newly enlarged " + ShortDescription() + ".");
+			}
+			else
+			{
+				sb.Append("You feel your testicles shift, pulling the skin of your " + oldData.SackDescription() + " a little bit as they grow to "
+					+ ShortDescription() + ".");
+			}
+			if (size > 10)
+			{
+				sb.Append(" Walking gets even tougher with the swollen masses between your legs. Maybe this was a bad idea.");
+			}
+
+			return sb.ToString();
 		}
 	}
 
@@ -108,7 +155,10 @@ namespace CoC.Backend.BodyParts
 	{
 		internal static string SackDescription(IBalls balls)
 		{
-			if (balls.count == 0) return "prostate";
+			if (balls.count == 0)
+			{
+				return "prostate";
+			}
 
 			return Utils.RandomChoice("scrotum", "sack", "nutsack", "ballsack", "beanbag", "pouch");
 		}
@@ -280,24 +330,35 @@ namespace CoC.Backend.BodyParts
 			//Slimy skin
 			if (balls.bodyType == BodyType.GOO)
 			{
-				if (description.Length != 0) description += " ";
+				if (description.Length != 0)
+				{
+					description += " ";
+				}
+
 				description += Utils.RandomChoice("goopey", "gooey", "slimy");
 
 			}
-			if (description.Length != 0) description += " ";
-
-
+			if (description.Length != 0)
+			{
+				description += " ";
+			}
 
 			description += BallsStrings.BallsNoun(balls.count != 1);
 
 			if (uniBall && Utils.RandBool())
 			{
 				if (Utils.Rand(3) == 0)
+				{
 					description += " merged into a cute, spherical package";
+				}
 				else if (Utils.RandBool())
+				{
 					description += " combined into a round, girlish shape";
+				}
 				else
+				{
 					description += " squeezed together into a perky, rounded form";
+				}
 			}
 			isPlural = !uniBall;
 			return description;
@@ -386,33 +447,62 @@ namespace CoC.Backend.BodyParts
 		//size strings
 		internal static string SizeText(IBalls balls, bool precise)
 		{
-			if (precise) return SimpleSizeStr(balls);
-			else return SizeStr(balls);
+			if (precise)
+			{
+				return SimpleSizeStr(balls);
+			}
+			else
+			{
+				return SizeStr(balls);
+			}
 		}
 
 		private static string SizeStr(IBalls balls)
 		{
 			if (balls.size >= 18)
+			{
 				return "hideously swollen and oversized ";
+			}
 			else if (balls.size >= 15)
+			{
 				return "beachball-sized ";
+			}
 			else if (balls.size >= 12)
+			{
 				return "watermelon-sized ";
+			}
 			else if (balls.size >= 9)
+			{
 				return "basketball-sized ";
+			}
 			else if (balls.size >= 7)
+			{
 				return "soccerball-sized ";
+			}
 			else if (balls.size >= 5)
+			{
 				return "cantaloupe-sized ";
+			}
 			else if (balls.size >= 4)
+			{
 				return "grapefruit-sized ";
+			}
 			else if (balls.size >= 3)
+			{
 				return "apple-sized ";
+			}
 			else if (balls.size >= 2)
+			{
 				return "baseball-sized ";
+			}
 			else if (balls.size > 1)
+			{
 				return "large ";
-			else return "";
+			}
+			else
+			{
+				return "";
+			}
 		}
 
 		private static string SimpleSizeStr(IBalls balls)

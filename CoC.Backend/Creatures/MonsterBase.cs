@@ -35,7 +35,7 @@ namespace CoC.Backend.Creatures
 				hp = GetAscensionHP(hp);
 
 				hp += toughness * 2;
-				hp += perks.baseModifiers.bonusMaxHP;
+				hp += perks.baseModifiers.perkBonusMaxHp.GetValue();
 
 				hp *= GameEngine.difficulties[BackendSessionSave.data.difficulty].monsterHPMultiplier();
 				hp = Math.Round(hp);

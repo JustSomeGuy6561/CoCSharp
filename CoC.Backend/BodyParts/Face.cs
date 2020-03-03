@@ -668,19 +668,19 @@ namespace CoC.Backend.BodyParts
 			return piercing.Validate(correctInvalidData);
 		}
 
-		bool ILotionable.canLotion()
+		bool ILotionable.CanLotion()
 		{
 			return type.canChangeComplexion;
 		}
 
-		bool ILotionable.isDifferentTexture(SkinTexture lotionTexture)
+		bool ILotionable.IsDifferentTexture(SkinTexture lotionTexture)
 		{
 			return lotionTexture != skinTexture || !Enum.IsDefined(typeof(SkinTexture), lotionTexture);
 		}
 
-		bool ILotionable.attemptToLotion(SkinTexture lotionTexture)
+		bool ILotionable.AttemptToLotion(SkinTexture lotionTexture)
 		{
-			if (!((ILotionable)this).canLotion() || !((ILotionable)this).isDifferentTexture(lotionTexture))
+			if (!((ILotionable)this).CanLotion() || !((ILotionable)this).IsDifferentTexture(lotionTexture))
 			{
 				return false;
 			}
@@ -688,17 +688,17 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		string ILotionable.buttonText()
+		string ILotionable.ButtonText()
 		{
 			return type.buttonText();
 		}
 
-		string ILotionable.locationDesc(out bool isPlural)
+		string ILotionable.LocationDesc(out bool isPlural)
 		{
 			return type.locationDesc(out isPlural);
 		}
 		//<postLocationDescription>
-		SkinTexture ILotionable.postUseSkinTexture()
+		SkinTexture ILotionable.PostUseSkinTexture()
 		{
 			return skinTexture;
 		}

@@ -1,223 +1,240 @@
-﻿//TestItem.cs
-//Description:
-//Author: JustSomeGuy
-//Note: date follows MMDDYYYY format.
-//10/11/2019 10:18:06 PM
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using CoC.Backend;
 using CoC.Backend.BodyParts;
-using CoC.Backend.BodyParts.BaseClasses;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
-using CoC.Backend.Engine;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using CoC.Backend.UI;
-using CoC.Frontend.Engine;
 using CoC.Frontend.UI;
-using System;
-using System.Text;
 
 namespace CoC.Frontend.Items.Consumables
 {
-	//god, i hope this works lol. 
-	//it's been reworked to work with as many different body parts as support it. 
-	//undoubtedly, there will need to be some efforts to clean it up, but for now
-	//the logic is all in place. unfortunately, anything that requires events
-	//becomes a clusterfuck really quickly. 
 
-	public sealed class BodyLotion : ConsumableWithMenuBase
+
+	/**
+	 * Body lotions, courtesy of Foxxling.
+	 * @author Kitteh6660
+	 */
+	public abstract class BodyLotionBase : ConsumableWithMenuBase, IEquatable<BodyLotionBase>
+
 	{
-		private readonly SkinTexture lotionType;
-		private string lotionStrLower => lotionType.AsString().ToLower();
-		private string lotionStr => lotionType.AsString();
+		private readonly SkinTexture targetTexture;
 
-		public readonly SimpleDescriptor liquidDesc;
-		public readonly DescriptorWithArg<string> applyDesc;
-
-		public BodyLotion(SkinTexture texture, SimpleDescriptor liquidShortDescription, SimpleDescriptor liquidFullDescription,
-			DescriptorWithArg<string> ApplyTextGeneric): base(() => Short(texture),
-			() => Full(texture), GetDesc(texture, liquidFullDescription))
+		public BodyLotionBase(SkinTexture texture)
 		{
-			lotionType = texture;
-			liquidDesc = liquidShortDescription ?? throw new ArgumentNullException(nameof(liquidShortDescription));
-			applyDesc = ApplyTextGeneric ?? throw new ArgumentNullException(nameof(ApplyTextGeneric));
+			targetTexture = texture;
 		}
 
-		private static string Short(SkinTexture texture)
+		public override string AbbreviatedName()
 		{
-			return texture.AsString() + "Ltn";
+			return targetTexture.AsAbbreviatedString() + "Ltn";
 		}
 
-		private static string Full(SkinTexture texture)
+		public override string ItemName()
 		{
-			return "a flask of " + texture.AsString().ToLower() + " lotion";
+			return targetTexture.AsString() + " Lotion";
 		}
 
-		private static SimpleDescriptor GetDesc(SkinTexture texture, SimpleDescriptor fullDesc)
+		public override string ItemDescription(byte count = 1, bool displayCount = false)
 		{
-			if (fullDesc is null) throw new ArgumentNullException(nameof(fullDesc));
-			return () => "A small wooden flask filled with a " + fullDesc() + " . A label across the front says, \"" + texture.AsString() + " Lotion.\"";
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count) + " ") : "";
+			string vialText = count == 1 ? "flask" : "flasks";
+
+			return $"{countText}{vialText} of " + targetTexture.AsString() + " lotion";
 		}
 
-		//does this consumable count as liquid for slimes?
-		public override bool countsAsSlimeLiquid => true;
-		//does this consumable count as cum for succubi?
-		public override bool countsAsCum => false;
-		//how much hunger does consuming this sate?
-		public override byte sateHungerAmount => 0;
+		public override string AboutItem()
+		{
+			return "A small wooden flask filled with a " + LiquidDesc(false) + " . A label across the front says, \"" + targetTexture.AsString() + " Lotion.\"";
+		}
 
 		protected override int monetaryValue => DEFAULT_VALUE;
 
 
-		private UseItemCallback resumeFromThisMadness;
-		private StandardDisplay display => DisplayManager.GetCurrentDisplay();
+		protected abstract string LiquidDesc(bool shortForm = true);
 
-		private string QueryLocationText()
-		{
-			return "Where do you want to apply this lotion?";
-		}
+		public abstract bool Equals(BodyLotionBase other);
 
-		private string CancelLotionContext()
-		{
-			return "You decided not to apply the " + base.fullName() + " after all";
-		}
-
-		private void TryMultiLotionable(Creature target, IMultiLotionable bodyPart, ButtonListMaker buttonMaker)
-		{
-			display.ClearOutput();
-
-			display.OutputText("Try to lotion this shit idk fix me later");
-
-			for (byte x = 0; x < bodyPart.numLotionableMembers; x++)
-			{
-				
-				if (bodyPart.canLotion(x))
-				{
-					string overrideText = null;
-					if (bodyPart is IMultiLotionableCustomText customText)
-					{
-						overrideText = customText.ApplySingleLotion(lotionType, x);
-					}
-					display.AddButton(x, bodyPart.buttonText(x), () => DoApplyLotion(target, q => bodyPart.attemptToLotion(q, x), bodyPart.locationDesc(x), overrideText));
-				}
-				else
-				{
-					display.AddButtonDisabled(x, bodyPart.buttonText(x));
-				}
-			}
-		}
-
-		private void ApplyLotion(Creature target, ILotionable bodyPart)
-		{
-			string overrideText = null;
-			if (bodyPart is ILotionableCustomText customText)
-			{
-				overrideText = customText.ApplyLotion(this.lotionType);
-			}
-			DoApplyLotion(target, bodyPart.attemptToLotion, bodyPart.locationDesc(), overrideText);
-		}
-
-		private void DoApplyLotion(Creature target, Func<SkinTexture,bool> applyCallback, string locationDesc, string overrideText)
-		{
-			bool retVal = applyCallback(this.lotionType);
-
-			display.ClearOutput();
-
-			string result = null;
-			if (!string.IsNullOrEmpty(overrideText))
-			{
-				result = overrideText;
-			}
-			else if (applyCallback(this.lotionType))
-			{
-				result = SuccessTextGeneric(target, locationDesc);
-			}
-			else
-			{
-				result = FailTextGeneric(target, locationDesc);
-			}
-			BodyLotion retItem = retVal ? null : this;
-
-			resumeFromThisMadness(true, result, null);
-		}
-
-		private string SuccessTextGeneric(Creature target, string locationDesc)
-		{
-			StringBuilder sb = StartText(target, locationDesc);
-			sb.Append(" Soon, " + applyDesc(locationDesc));
-			return sb.ToString();
-		}
-
-		private string FailTextGeneric(Creature target, string locationDesc)
-		{
-			StringBuilder sb = StartText(target, locationDesc);
-			sb.Append(" Strangely, nothing seems to happen. What a waste!");
-			return sb.ToString();
-		}
-
-		private StringBuilder StartText(Creature target, string locationDesc)
-		{
-			StringBuilder sb = new StringBuilder();
-			if (!target.wearingAnything)
-			{
-				sb.Append("You uncork the flask of lotion and rub ");
-			}
-			else
-			{
-				sb.Append("You take a second to disrobe before uncorking the flask of lotion and rubbing ");
-			}
-			sb.Append(" the " + liquidDesc() + " on your " + locationDesc + ".");
-			if (target.body.primarySkin.skinTexture == lotionType)
-			{
-				 sb.Append(" Once you've finished you feel reinvigorated. ");
-			}
-			else
-			{
-				sb.Append(" As you rub the mixture into your " + locationDesc +", which begins to tingle pleasantly. ");
-			}
-
-			return sb;
-		}
-
-		public override bool CanUse(Creature target, out string whyNot)
+		public override bool CanUse(Creature target, bool currentlyInCombat, out string whyNot)
 		{
 			whyNot = null;
 			return true;
 		}
 
-		//unused. needs to exist so the code compiles.
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		public override bool countsAsLiquid => true;
+		public override bool countsAsCum => false;
+		public override byte sateHungerAmount => 0;
+
+		private void LotionCancel(Creature consumer, UseItemCallback postItemUseCallback)
 		{
-			resultsOfUse = null;
-			isBadEnd = false;
-			return true;
+			postItemUseCallback(false, "You decided not to use the body lotion", null, this);
+			CleanupItems();
 		}
 
-		protected override void BuildMenu(Creature target, UseItemCallback postItemUseCallback)
+		private List<IBodyPart> validMembers = null;
+		private StandardDisplay display = null;
+		private ButtonListMaker listMaker = null;
+		protected override DisplayBase BuildMenu(Creature consumer, UseItemCallback postItemUseCallback)
 		{
-			StandardDisplay display = DisplayManager.GetCurrentDisplay();
-			resumeFromThisMadness = postItemUseCallback;
+			validMembers = consumer.bodyParts.Where(x => x is ILotionable || x is IMultiLotionable).ToList();
+			display = new StandardDisplay();
+			listMaker = new ButtonListMaker(display);
 
-			display.ClearButtons();
-			display.OutputText(QueryLocationText());
-
-			ButtonListMaker buttonMaker = new ButtonListMaker(display);
-
-			foreach (var bodyPart in target.bodyParts)
+			if (validMembers.Count == 0)
 			{
-				if (bodyPart is ILotionable lotionable)
+				LotionCancel(consumer, postItemUseCallback);
+				return null;
+			}
+			if (validMembers.Count == 1 && validMembers[0] is ILotionable lotionable)
+			{
+				DoLotion(consumer, lotionable, postItemUseCallback);
+			}
+
+			return StandardMenu(consumer, postItemUseCallback);
+		}
+
+		private StandardDisplay StandardMenu(Creature consumer, UseItemCallback postItemUseCallback)
+		{
+			if (validMembers.Count == 1)
+			{
+				return DoMultiLotionMenu(consumer, (IMultiLotionable)validMembers[0], postItemUseCallback);
+			}
+
+			display.ClearOutput();
+			listMaker.ClearList();
+
+			display.OutputText("Where do you want to apply the " + targetTexture.AsString() + " body lotion?");
+
+			foreach (IBodyPart part in consumer.bodyParts)
+			{
+				if (part is ILotionable lotionable)
 				{
-					buttonMaker.AddButtonToList(bodyPart.BodyPartName(), lotionable.canLotion(), () => ApplyLotion(target, lotionable));
+					listMaker.AddButtonToList(part.BodyPartName(), lotionable.CanLotion(), () => DoLotion(consumer, lotionable, postItemUseCallback));
 				}
-				else if (bodyPart is IMultiLotionable multiLotionable)
+				else if (part is IMultiLotionable multiLotionable)
 				{
-					buttonMaker.AddButtonToList(bodyPart.BodyPartName() + "...", true, () => TryMultiLotionable(target, multiLotionable, buttonMaker));
+					listMaker.AddButtonToList(multiLotionable.ButtonText() + "...", multiLotionable.numLotionableMembers > 0, () => DoMultiLotionMenu(consumer, multiLotionable, postItemUseCallback));
+
+				}
+			}
+			listMaker.CreateButtons(GlobalStrings.CANCEL(), true, () => LotionCancel(consumer, postItemUseCallback));
+
+			return display;
+		}
+
+		private StandardDisplay DoMultiLotionMenu(Creature consumer, IMultiLotionable multiLotionable, UseItemCallback postItemUseCallback)
+		{
+			bool canReturnToMenu = display != null;
+
+			display.ClearOutput();
+			listMaker.ClearList();
+
+			display.OutputText(multiLotionable.LocationDesc() + " has several possible locations or combinations of locations. Where on " + multiLotionable.LocationDesc() +
+				" would you like to apply the " + targetTexture.AsString() + " body lotion?" + Environment.NewLine + "You can also go back to the main menu by hitting back.");
+
+			for (byte x = 0; x < multiLotionable.numLotionableMembers; x++)
+			{
+				listMaker.AddButtonToList(multiLotionable.MemberButtonText(x), multiLotionable.CanLotion(x), () => DoLotion(consumer, multiLotionable, x, postItemUseCallback));
+			}
+
+
+			listMaker.CreateButtons(new ButtonData(GlobalStrings.BACK(), true, () => StandardMenu(consumer, postItemUseCallback)),
+				new ButtonData(GlobalStrings.CANCEL(), true, () => LotionCancel(consumer, postItemUseCallback)));
+
+			return display;
+		}
+
+		private void DoLotion(Creature consumer, IMultiLotionable multiLotionable, byte index, UseItemCallback postItemUseCallback)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			if (multiLotionable is IMultiLotionableCustomText customText)
+			{
+				bool succeeded = multiLotionable.AttemptToLotion(targetTexture, index);
+				sb.Append(customText.DisplayResults(targetTexture, index, succeeded));
+			}
+			else if (!multiLotionable.IsDifferentTexture(targetTexture, index))
+			{
+				sb.Append("You " + (consumer.wearingAnything ? "take a second to disrobe before uncorking the flask of lotion and rubbing"
+				: "uncork the flask of lotion and rub") + " the " + LiquidDesc() + " across your " + multiLotionable.MemberLocationDesc(index, out bool isPlural)
+				+ ". Once you've finished you feel reinvigorated. ");
+			}
+			else
+			{
+				string location = multiLotionable.MemberLocationDesc(index, out bool isPlural);
+				sb.Append((consumer.wearingAnything ? "Once you've disrobed you take the lotion and" : "You take the lotion and") + " begin massaging it into your "
+					+ location + ". As you do so," + location +
+					(isPlural ? " begin" : " begins") + " to tingle pleasantly.");
+				if (multiLotionable.AttemptToLotion(targetTexture, index))
+				{
+					sb.Append(SuccessfullyAppliedLotion(location, isPlural));
+				}
+				else
+				{
+					sb.Append(LotionDidNothing(location, isPlural));
 				}
 			}
 
-			buttonMaker.CreateButtons(GlobalStrings.CANCEL(), true, () => resumeFromThisMadness(false, CancelLotionContext(), this));
+			postItemUseCallback(true, sb.ToString(), null, null);
+			CleanupItems();
+		}
+		private void DoLotion(Creature consumer, ILotionable lotionable, UseItemCallback postItemUseCallback)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			if (lotionable is ILotionableCustomText customText)
+			{
+				bool succeeded = lotionable.AttemptToLotion(targetTexture);
+				sb.Append(customText.DisplayResults(targetTexture, succeeded));
+			}
+			else if (!lotionable.IsDifferentTexture(targetTexture))
+			{
+				sb.Append("You " + (consumer.wearingAnything ? "take a second to disrobe before uncorking the flask of lotion and rubbing"
+				: "uncork the flask of lotion and rub") + " the " + LiquidDesc() + " across your " + lotionable.LocationDesc(out bool isPlural)
+				+ ". Once you've finished you feel reinvigorated. ");
+			}
+			else
+			{
+				string location = lotionable.LocationDesc(out bool isPlural);
+				sb.Append((consumer.wearingAnything ? "Once you've disrobed you take the lotion and" : "You take the lotion and") + " begin massaging it into your "
+					+ location + ". As you do so," + location +
+					(isPlural ? " begin" : " begins") + " to tingle pleasantly.");
+				if (lotionable.AttemptToLotion(targetTexture))
+				{
+					sb.Append(SuccessfullyAppliedLotion(location, isPlural));
+				}
+				else
+				{
+					sb.Append(LotionDidNothing(location, isPlural));
+				}
+			}
+
+			postItemUseCallback(true, sb.ToString(), null, null);
+			CleanupItems();
+		}
+
+		private void CleanupItems()
+		{
+			display = null;
+			listMaker = null;
+			validMembers = null;
+		}
+
+		protected abstract bool SuccessfullyAppliedLotion(string location, bool isPlural);
+		protected virtual string LotionDidNothing(string location, bool isPlural)
+		{
+			return "Aside from feeling very warm and pleasant for a while, nothing seems to happen. Well, that's disappointing.";
+		}
+
+		public override bool Equals(CapacityItem other)
+		{
+			return other is BodyLotionBase lotionBase && Equals(lotionBase);
 		}
 	}
 }

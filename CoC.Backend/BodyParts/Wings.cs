@@ -6,6 +6,7 @@ using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
+using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using System;
 using System.Collections.Generic;
@@ -389,15 +390,19 @@ namespace CoC.Backend.BodyParts
 			return type.postDyeText(featherColor);
 		}
 
+		string IMultiToneable.LocationDesc()
+		{
+			return Conjugate.YOU.PossessiveAdjective() + " " + Name();
+		}
 
-		bool IMultiToneable.canToneOil(byte index)
+		bool IMultiToneable.CanToneOil(byte index)
 		{
 			return type.usesTone && type.canChangeColor;
 		}
 
-		bool IMultiToneable.attemptToTone(Tones tone, byte index)
+		bool IMultiToneable.AttemptToTone(Tones tone, byte index)
 		{
-			if (!canTone(index) || Tones.IsNullOrEmpty(tone) || !multiToneable.isDifferentTone(tone, index))
+			if (!canTone(index) || Tones.IsNullOrEmpty(tone) || !multiToneable.IsDifferentTone(tone, index))
 			{
 				return false;
 			}
@@ -412,7 +417,7 @@ namespace CoC.Backend.BodyParts
 			return true;
 		}
 
-		bool IMultiToneable.isDifferentTone(Tones tone, byte index)
+		bool IMultiToneable.IsDifferentTone(Tones tone, byte index)
 		{
 			if (index >= multiToneable.numToneableMembers)
 			{
@@ -430,12 +435,12 @@ namespace CoC.Backend.BodyParts
 
 		byte IMultiToneable.numToneableMembers => 2;
 
-		string IMultiToneable.buttonText()
+		string IMultiToneable.ButtonText()
 		{
 			return Name();
 		}
 
-		string IMultiToneable.memberButtonText(byte index)
+		string IMultiToneable.MemberButtonText(byte index)
 		{
 			if (index >= multiToneable.numToneableMembers)
 			{
@@ -455,7 +460,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		string IMultiToneable.memberLocationDesc(byte index, out bool isPlural)
+		string IMultiToneable.MemberLocationDesc(byte index, out bool isPlural)
 		{
 			if (index >= multiToneable.numToneableMembers)
 			{
@@ -476,7 +481,7 @@ namespace CoC.Backend.BodyParts
 			}
 		}
 
-		string IMultiToneable.memberPostToneDescription(byte index)
+		string IMultiToneable.MemberPostToneDescription(byte index)
 		{
 			return type.postToneText(this, index);
 		}
@@ -484,7 +489,7 @@ namespace CoC.Backend.BodyParts
 		private IMultiToneable multiToneable => this;
 		private IDyeable dyeable => this;
 		private bool canDye => dyeable.allowsDye();
-		private bool canTone(byte index) => multiToneable.canToneOil(index);
+		private bool canTone(byte index) => multiToneable.CanToneOil(index);
 	}
 
 	public partial class WingType : FullBehavior<WingType, Wings, WingData>

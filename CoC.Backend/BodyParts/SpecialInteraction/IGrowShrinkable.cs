@@ -5,16 +5,16 @@
 
 namespace  CoC.Backend.BodyParts.SpecialInteraction
 {
-	interface IGrowable
+	public interface IGrowable
 	{
 		bool CanGroPlus();
-		double UseGroPlus();
+		string UseGroPlus();
 	}
 
-	interface IShrinkable
+	public interface IShrinkable
 	{
 		bool CanReducto();
-		double UseReducto();
+		string UseReducto();
 	}
 
 

@@ -403,8 +403,6 @@ namespace CoC
 			return result;
 		}
 
-
-
 		public static T MinItem<T, U>(this IEnumerable<T> collection, Func<T, U?> getValue) where U : struct, IComparable<U>
 		{
 			if (IsNullOrEmpty(collection))
@@ -419,7 +417,7 @@ namespace CoC
 			});
 		}
 
-		public static int FirstIndexOf<T>(this ReadOnlyCollection<T> collection, Predicate<T> match)
+		public static int FirstIndexOf<T>(this IList<T> collection, Predicate<T> match)
 		{
 			if (collection is null) throw new ArgumentNullException(nameof(collection));
 			if (match is null) throw new ArgumentNullException(nameof(match));
@@ -553,5 +551,79 @@ namespace CoC.LinqHelpers
 
 			return false;
 		}
+
+		public static U MinOrDefault<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : IComparable<U>
+		{
+			if (CollectionHelpers.IsNullOrEmpty(collection))
+			{
+				return default;
+			}
+			else
+			{
+				return collection.Min(getValue);
+			}
+		}
+
+		public static U? MinOrNull<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : struct, IComparable<U>
+		{
+			if (CollectionHelpers.IsNullOrEmpty(collection))
+			{
+				return null;
+			}
+			else
+			{
+				return collection.Min(getValue);
+			}
+		}
+
+		public static U? MinOrDefault<T, U>(this IEnumerable<T> collection, Func<T, U?> getValue) where U : struct, IComparable<U>
+		{
+			if (CollectionHelpers.IsNullOrEmpty(collection))
+			{
+				return default;
+			}
+			else
+			{
+				return collection.Min(getValue);
+			}
+		}
+
+
+		public static U MaxOrDefault<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : IComparable<U>
+		{
+			if (CollectionHelpers.IsNullOrEmpty(collection))
+			{
+				return default;
+			}
+			else
+			{
+				return collection.Max(getValue);
+			}
+		}
+
+		public static U? MaxOrNull<T, U>(this IEnumerable<T> collection, Func<T, U> getValue) where U : struct, IComparable<U>
+		{
+			if (CollectionHelpers.IsNullOrEmpty(collection))
+			{
+				return null;
+			}
+			else
+			{
+				return collection.Max(getValue);
+			}
+		}
+
+		public static U? MaxOrDefault<T, U>(this IEnumerable<T> collection, Func<T, U?> getValue) where U : struct, IComparable<U>
+		{
+			if (CollectionHelpers.IsNullOrEmpty(collection))
+			{
+				return default;
+			}
+			else
+			{
+				return collection.Max(getValue);
+			}
+		}
+
 	}
 }

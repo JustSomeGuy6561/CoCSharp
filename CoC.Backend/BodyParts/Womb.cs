@@ -40,7 +40,7 @@ namespace CoC.Backend.BodyParts
 				}
 			}
 		}
-		internal int pregnancyMultiplierCounter = 0;
+		protected int pregnancyMultiplierCounter => CreatureStore.GetCreatureClean(creatureID)?.perks.baseModifiers.pregnancySpeedModifier.GetValue() ?? 0;
 
 		public bool isPregnant => normalPregnancy?.isPregnant == true || analPregnancy?.isPregnant == true || secondaryNormalPregnancy?.isPregnant == true;
 

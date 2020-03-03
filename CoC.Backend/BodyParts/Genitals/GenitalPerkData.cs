@@ -1,11 +1,23 @@
 ﻿using System;
+using CoC.Backend.Creatures;
+using CoC.Backend.Engine;
+using CoC.Backend.Perks;
 
 namespace CoC.Backend.BodyParts
 {
+#warning ToDo: Finish rewiring all modifiers in here to their base modifiers. Also need to do this for others like butt, hips, infertile conditional.
+
 	//doesn't need to be serialized - it's generated live when we create a creature.
+
+
+	//Update: i don't actually think this class is necessary anymore - with the addition of modifiers, we don't need to calculate any values in the
+	//base perk class manually, so this doesn't need to help handle that. still, i think having all the data aliased here makes it easier to maintain
+	//because the genital related classes only have to update this - the base data can simply keep doing nothing.
 	internal sealed class GenitalPerkData
 	{
 		private readonly Genitals source;
+
+		private BasePerkModifiers baseModifiers => CreatureStore.GetCreatureClean(source.creatureID)?.perks.baseModifiers;
 
 		internal GenitalPerkData(Genitals parent)
 		{
@@ -14,91 +26,33 @@ namespace CoC.Backend.BodyParts
 
 
 		#region Common
-		internal bool TreatAllFluidsAsIfAtMaxLust
-		{
-			get => _treatAllFluidsAsIfAtMaxLust;
-			set => _treatAllFluidsAsIfAtMaxLust = value;
-		}
-		private bool _treatAllFluidsAsIfAtMaxLust;
+		internal bool TreatAllFluidsAsIfAtMaxLust => baseModifiers?.treatCalculationsAsIfAtMaxLust.GetValue() ?? false;
 		#endregion
 
 		#region Cock Perks
-		internal double NewCockSizeDelta
-		{
-			get => _NewCockSizeDelta;
-			set => _NewCockSizeDelta = value;
-		}
-		private double _NewCockSizeDelta = 0;
-		internal double CockGrowthMultiplier
-		{
-			get => _CockGrowthMultiplier;
-			set => _CockGrowthMultiplier = value;
-		}
-		private double _CockGrowthMultiplier = 1;
-		internal double CockShrinkMultiplier
-		{
-			get => _CockShrinkMultiplier;
-			set => _CockShrinkMultiplier = value;
-		}
-		private double _CockShrinkMultiplier = 1;
-		internal double NewCockDefaultSize
-		{
-			get => _NewCockDefaultSize;
-			set => _NewCockDefaultSize = value;
-		}
-		private double _NewCockDefaultSize = Cock.DEFAULT_COCK_LENGTH;
-		internal double MinCockLength
-		{
-			get => _MinCockLength;
-			set => CheckChanged(ref _MinCockLength, value, () => source.cocks.ForEach(x => x.ValidateLength()));
-		}
-		private double _MinCockLength = Cock.MIN_COCK_LENGTH;
+		internal double NewCockSizeDelta => baseModifiers?.newCockSizeDelta.GetValue() ?? 0;
+		internal double CockGrowthMultiplier => baseModifiers?.cockGrowthMultiplier.GetValue() ?? 1;
+		internal double CockShrinkMultiplier => baseModifiers?.cockShrinkMultiplier.GetValue() ?? 1;
+		internal double NewCockDefaultSize => baseModifiers?.newCockDefaultSize.GetValue() ?? Cock.DEFAULT_COCK_LENGTH;
+		internal double MinCockLength => baseModifiers?.minCockSize.GetValue() ?? Cock.MIN_COCK_LENGTH;
 
-		internal double perkBonusVirilityMultiplier
+		internal void CockMinChange(double oldMinCockLen)
 		{
-			get => _perkBonusVirilityMultiplier;
-			set => _perkBonusVirilityMultiplier = value;
+			source.cocks.ForEach(x => x.ValidateLength());
 		}
-		private double _perkBonusVirilityMultiplier;
 
-		internal sbyte perkBonusVirility
-		{
-			get => _perkBonusVirility;
-			set => _perkBonusVirility = value;
-		}
-		private sbyte _perkBonusVirility;
+		internal double perkBonusVirilityMultiplier => baseModifiers?.perkBonusVirilityMultiplier.GetValue() ?? 1;
+
+		internal sbyte perkBonusVirility => baseModifiers?.perkBonusVirility.GetValue() ?? 0;
 
 		#endregion
 
 		#region Cum Perks
-		internal bool alwaysProducesMaxCum
-		{
-			get => _alwaysProducesMaxCum;
-			set
-			{
-				if (value && !_alwaysProducesMaxCum)
-				{
-					_alwaysProducesMaxCum = value;
-					handleCumChange();
-				}
+		internal bool alwaysProducesMaxCum => baseModifiers?.alwaysProducingMaxCum.GetValue() ?? false;
+		internal uint bonusCumAdded => baseModifiers?.bonusAdditionalCum.GetValue() ?? 0;
+		internal double bonusCumMultiplier => baseModifiers?.bonusCumMultiplier.GetValue() ?? 0;
 
-			}
-		}
-		private bool _alwaysProducesMaxCum = false;
-		internal uint bonusCumAdded
-		{
-			get => _bonusCumAdded;
-			set => CheckChanged(ref _bonusCumAdded, value, handleCumChange);
-		}
-		private uint _bonusCumAdded = 0;
-		internal double bonusCumMultiplier
-		{
-			get => _bonusCumMultiplier;
-			set => CheckChanged(ref _bonusCumMultiplier, value, handleCumChange);
-		}
-		private double _bonusCumMultiplier = 1f;
-
-		private void handleCumChange()
+		internal void HandleCumChange()
 		{
 			//throw new Tools.InDevelopmentExceptionThatBreaksOnRelease();
 		}
@@ -106,238 +60,103 @@ namespace CoC.Backend.BodyParts
 		#endregion
 
 		#region Breast Perk Data
-		internal sbyte FemaleNewCupDelta
+		internal sbyte FemaleNewCupDelta => baseModifiers?.femaleNewBreastCupSizeDelta.GetValue() ?? 0;
+		internal CupSize FemaleNewDefaultCup => baseModifiers?.femaleNewBreastDefaultCupSize.GetValue() ?? CupSize.C;
+
+		public CupSize FemaleMinCup => baseModifiers?.femaleMinCupSize.GetValue() ?? CupSize.FLAT;
+
+		internal sbyte MaleNewCupDelta => baseModifiers?.maleNewBreastCupSizeDelta.GetValue() ?? 0;
+		internal CupSize MaleNewDefaultCup => baseModifiers?.maleNewBreastDefaultCupSize.GetValue() ?? CupSize.FLAT;
+
+		public CupSize MaleMinCup => baseModifiers?.maleMinCupSize.GetValue() ?? CupSize.FLAT;
+
+		internal void ValidateCupSize()
 		{
-			get => _FemaleNewCupDelta;
-			set => _FemaleNewCupDelta = value;
+			source.breastRows.ForEach(x => x.ValidateCupSize());
 		}
-		private sbyte _FemaleNewCupDelta = 0;
-		internal CupSize FemaleNewDefaultCup
-		{
-			get => _FemaleNewDefaultCup;
-			set => _FemaleNewDefaultCup = value;
-		}
-		private CupSize _FemaleNewDefaultCup = Breasts.DEFAULT_FEMALE_SIZE;
-		internal sbyte MaleNewCupDelta
-		{
-			get => _MaleNewCupDelta;
-			set => _MaleNewCupDelta = value;
-		}
-		private sbyte _MaleNewCupDelta = 0;
-		internal CupSize MaleNewDefaultCup
-		{
-			get => _MaleNewDefaultCup;
-			set => _MaleNewDefaultCup = value;
-		}
-		private CupSize _MaleNewDefaultCup = Breasts.DEFAULT_MALE_SIZE;
-		public CupSize FemaleMinCup
-		{
-			get => _FemaleMinCup;
-			internal set => CheckChanged(ref _FemaleMinCup, value, () => source.breastRows.ForEach(x => x.ValidateCupSize()));
-		}
-		private CupSize _FemaleMinCup = CupSize.FLAT;
-		public CupSize MaleMinCup
-		{
-			get => _MaleMinCup;
-			internal set => CheckChanged(ref _MaleMinCup, value, () => source.breastRows.ForEach(x => x.ValidateCupSize()));
-		}
-		private CupSize _MaleMinCup = CupSize.FLAT;
-		internal double TitsGrowthMultiplier
-		{
-			get => _TitsGrowthMultiplier;
-			set => _TitsGrowthMultiplier = value;
-		}
-		private double _TitsGrowthMultiplier = 1;
-		internal double TitsShrinkMultiplier
-		{
-			get => _TitsShrinkMultiplier;
-			set => _TitsShrinkMultiplier = value;
-		}
-		private double _TitsShrinkMultiplier = 1;
-		internal double NewNippleSizeDelta
-		{
-			get => _NewNippleSizeDelta;
-			set => _NewNippleSizeDelta = value;
-		}
-		private double _NewNippleSizeDelta = 0;
+
+		internal double TitsGrowthMultiplier => baseModifiers?.titsGrowthMultiplier.GetValue() ?? 1;
+		internal double TitsShrinkMultiplier => baseModifiers?.titsShrinkMultiplier.GetValue() ?? 1;
+
 
 		#endregion
 
 		#region Nipples Perk Data
 
-		internal double NippleGrowthMultiplier
-		{
-			get => _NippleGrowthMultiplier;
-			set => _NippleGrowthMultiplier = value;
-		}
-		private double _NippleGrowthMultiplier = 1;
-		internal double NippleShrinkMultiplier
-		{
-			get => _NippleShrinkMultiplier;
-			set => _NippleShrinkMultiplier = value;
-		}
-		private double _NippleShrinkMultiplier = 1;
-		internal double NewNippleDefaultLength
-		{
-			get => _NewNippleDefaultLength;
-			set => _NewNippleDefaultLength = value;
-		}
-		private double _NewNippleDefaultLength = NippleAggregate.MIN_NIPPLE_LENGTH;
+		internal double NippleGrowthMultiplier => baseModifiers?.nippleGrowthMultiplier.GetValue() ?? 1;
+
+		internal double NippleShrinkMultiplier => baseModifiers?.nippleShrinkMultiplier.GetValue() ?? 1;
+
+		internal double NewNippleDefaultLength => baseModifiers?.newNippleDefaultLength.GetValue() ?? NippleAggregate.MALE_DEFAULT_NIPPLE;
+
+		internal double NewNippleSizeDelta => baseModifiers?.newNippleSizeDelta.GetValue() ?? 0;
+
 		#endregion
 
 		#region Vaginas
 		internal VaginalWetness? defaultNewVaginaWetness
 		{
-			get => _defaultNewVaginaWetness;
-			set => _defaultNewVaginaWetness = value;
+			get
+			{
+				if (baseModifiers is null || !baseModifiers.defaultVaginalWetness.hasAnyActiveMembers)
+				{
+					return null;
+				}
+				else
+				{
+					return baseModifiers.defaultVaginalWetness.GetValue();
+				}
+			}
+
 		}
-		private VaginalWetness? _defaultNewVaginaWetness = null;
 		internal VaginalLooseness? defaultNewVaginaLooseness
 		{
-			get => _defaultNewVaginaLooseness;
-			set => _defaultNewVaginaLooseness = value;
+			get
+			{
+				if (baseModifiers is null || !baseModifiers.defaultVaginalLooseness.hasAnyActiveMembers)
+				{
+					return null;
+				}
+				else
+				{
+					return baseModifiers.defaultVaginalLooseness.GetValue();
+				}
+			}
 		}
-		private VaginalLooseness? _defaultNewVaginaLooseness = null;
-		internal ushort perkBonusVaginalCapacity
+		internal ushort perkBonusVaginalCapacity => baseModifiers?.perkBasedBonusVaginalCapacity.GetValue() ?? 0;
+
+		internal void OnVaginalCapacityChanged()
 		{
-			get => _perkBonusVaginalCapacity;
 			//note: this has no effect, as of this moment. idk if we want an event to fire when capacity changes, so that may be something to handle here.
-			set => CheckChanged(ref _perkBonusVaginalCapacity, value, () => { });
 		}
-		private ushort _perkBonusVaginalCapacity = 0;
-		internal VaginalLooseness minVaginalLooseness
+
+		internal VaginalLooseness minVaginalLooseness => baseModifiers?.minVaginalLooseness.GetValue() ?? VaginalLooseness.TIGHT;
+		internal VaginalLooseness maxVaginalLooseness => baseModifiers?.maxVaginalLooseness.GetValue() ?? VaginalLooseness.CLOWN_CAR_WIDE;
+		internal void ValidateVaginalLooseness()
 		{
-			get => _minVaginalLooseness;
-			set => CheckChanged(ref _minVaginalLooseness, value, () => source.vaginas.ForEach(x => x.OnLoosenessPerkValueChange()));
+			source.vaginas.ForEach(x => x.OnLoosenessPerkValueChange());
 		}
-		private VaginalLooseness _minVaginalLooseness = VaginalLooseness.TIGHT;
-		internal VaginalLooseness maxVaginalLooseness
+		internal VaginalWetness minVaginalWetness => baseModifiers?.minVaginalWetness.GetValue() ?? VaginalWetness.DRY;
+		internal VaginalWetness maxVaginalWetness => baseModifiers?.maxVaginalWetness.GetValue() ?? VaginalWetness.SLAVERING;
+		internal void ValidateVaginalWetness()
 		{
-			get => _maxVaginalLooseness;
-			set => CheckChanged(ref _maxVaginalLooseness, value, () => source.vaginas.ForEach(x => x.OnLoosenessPerkValueChange()));
+			source.vaginas.ForEach(x => x.OnWetnessPerkValueChange());
 		}
-		private VaginalLooseness _maxVaginalLooseness = VaginalLooseness.CLOWN_CAR_WIDE;
-		internal VaginalWetness minVaginalWetness
-		{
-			get => _minVaginalWetness;
-			set => CheckChanged(ref _minVaginalWetness, value, () => source.vaginas.ForEach(x => x.OnWetnessPerkValueChange()));
-		}
-		private VaginalWetness _minVaginalWetness = VaginalWetness.DRY;
-		internal VaginalWetness maxVaginalWetness
-		{
-			get => _maxVaginalWetness;
-			set => CheckChanged(ref _maxVaginalWetness, value, () => source.vaginas.ForEach(x => x.OnWetnessPerkValueChange()));
-		}
-		private VaginalWetness _maxVaginalWetness = VaginalWetness.SLAVERING;
 
 		#region Clits
-		internal double NewClitSizeDelta
-		{
-			get => _NewClitSizeDelta;
-			set => _NewClitSizeDelta = value;
-		}
-		private double _NewClitSizeDelta = 0;
+		internal double NewClitSizeDelta => baseModifiers?.newClitSizeDelta.GetValue() ?? 0;
 
-		internal double ClitGrowthMultiplier
-		{
-			get => _ClitGrowthMultiplier;
-			set => _ClitGrowthMultiplier = value;
-		}
-		private double _ClitGrowthMultiplier = 1f;
-		internal double ClitShrinkMultiplier
-		{
-			get => _ClitShrinkMultiplier;
-			set => _ClitShrinkMultiplier = value;
-		}
-		private double _ClitShrinkMultiplier = 1;
+		internal double ClitGrowthMultiplier => baseModifiers?.clitGrowthMultiplier.GetValue() ?? 1;
+		internal double ClitShrinkMultiplier => baseModifiers?.clitShrinkMultiplier.GetValue() ?? 1;
 
-		internal double DefaultNewClitSize
+		internal double DefaultNewClitSize => baseModifiers?.defaultNewClitSize.GetValue() ?? Clit.DEFAULT_CLIT_SIZE;
+		internal double MinClitSize => baseModifiers?.minClitSize.GetValue() ?? Clit.MIN_CLIT_SIZE;
+
+		internal void ValidateClitLength()
 		{
-			get => _MinNewClitSize;
-			set => _MinNewClitSize = value;
+			source.vaginas.ForEach(x => x.clit.CheckClitSize());
 		}
-		private double _MinNewClitSize;
-		internal double MinClitSize
-		{
-			get => _MinClitSize;
-			set => CheckChanged(ref _MinClitSize, value, () => source.vaginas.ForEach(x => x.clit.CheckClitSize()));
-		}
-		private double _MinClitSize = Clit.MIN_CLIT_SIZE;
 		#endregion
-		#endregion
-
-		#region Helpers
-		private void CheckChanged(ref bool target, bool newValue, Action ifDifferentCallback)
-		{
-			if (target != newValue)
-			{
-				target = newValue;
-				ifDifferentCallback();
-			}
-		}
-
-		private void CheckChanged(ref double target, double newValue, Action ifDifferentCallback)
-		{
-			if (target != newValue)
-			{
-				target = newValue;
-				ifDifferentCallback();
-			}
-		}
-
-		private void CheckChanged(ref byte target, byte newValue, Action ifDifferentCallback)
-		{
-			if (target != newValue)
-			{
-				target = newValue;
-				ifDifferentCallback();
-			}
-		}
-
-		private void CheckChanged(ref ushort target, ushort newValue, Action ifDifferentCallback)
-		{
-			if (target != newValue)
-			{
-				target = newValue;
-				ifDifferentCallback();
-			}
-		}
-
-		private void CheckChanged(ref uint target, uint newValue, Action ifDifferentCallback)
-		{
-			if (target != newValue)
-			{
-				target = newValue;
-				ifDifferentCallback();
-			}
-		}
-
-		private void CheckChanged(ref CupSize target, CupSize newValue, Action ifDifferentCallback)
-		{
-			if (target != newValue)
-			{
-				target = newValue;
-				ifDifferentCallback();
-			}
-		}
-
-		private void CheckChanged(ref VaginalWetness target, VaginalWetness newValue, Action ifDifferentCallback)
-		{
-			if (target != newValue)
-			{
-				target = newValue;
-				ifDifferentCallback();
-			}
-		}
-
-		private void CheckChanged(ref VaginalLooseness target, VaginalLooseness newValue, Action ifDifferentCallback)
-		{
-			if (target != newValue)
-			{
-				target = newValue;
-				ifDifferentCallback();
-			}
-		}
 		#endregion
 	}
 }

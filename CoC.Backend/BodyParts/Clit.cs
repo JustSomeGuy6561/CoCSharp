@@ -2,17 +2,17 @@
 //Description:
 //Author: JustSomeGuy
 //1/5/2019, 6:03 PM
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 using CoC.Backend.BodyParts.SpecialInteraction;
 using CoC.Backend.Creatures;
 using CoC.Backend.Engine;
 using CoC.Backend.Items.Wearables.Piercings;
 using CoC.Backend.SaveData;
 using CoC.Backend.Tools;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
 
 namespace CoC.Backend.BodyParts
 {
@@ -52,7 +52,10 @@ namespace CoC.Backend.BodyParts
 			{
 				return Equals(clitPiercing);
 			}
-			else return false;
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool Equals(ClitPiercingLocation other)
@@ -156,7 +159,7 @@ namespace CoC.Backend.BodyParts
 				Utils.Clamp(ref value, minSize, MAX_CLIT_SIZE);
 				if (_length != value)
 				{
-					var oldData = AsReadOnlyData();
+					ClitData oldData = AsReadOnlyData();
 					_length = value;
 					NotifyDataChanged(oldData);
 				}
@@ -344,26 +347,22 @@ namespace CoC.Backend.BodyParts
 			return length > minSize;
 		}
 
-		double IGrowable.UseGroPlus()
+		string IGrowable.UseGroPlus()
 		{
-			if (!((IGrowable)this).CanGroPlus())
+			if (((IGrowable)this).CanGroPlus())
 			{
-				return 0;
+				length += 1;
 			}
-			double oldLength = length;
-			length += 1;
-			return length - oldLength;
+			return null;
 		}
 
-		double IShrinkable.UseReducto()
+		string IShrinkable.UseReducto()
 		{
-			if (!((IShrinkable)this).CanReducto())
+			if (((IShrinkable)this).CanReducto())
 			{
-				return 0;
+				length /= 1.7f;
 			}
-			double oldLength = length;
-			length /= 1.7f;
-			return oldLength - length;
+			return null;
 		}
 
 
@@ -395,7 +394,7 @@ namespace CoC.Backend.BodyParts
 
 			clitPiercings = source.piercings.AsReadOnlyData();
 
-			this.selfPenetrateCount = source.selfPenetrateCount;
+			selfPenetrateCount = source.selfPenetrateCount;
 			totalPenetrateCount = source.totalPenetrateCount;
 		}
 
