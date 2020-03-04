@@ -106,18 +106,18 @@ namespace CoC.Frontend.Items.Consumables
 			return other is LaBova laBova && laBova.transformation == transformation;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			CowTFs tf = new CowTFs(this, transformation);
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-			return true;
+			consumeItem = true;
+return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
 			CowTFs tf = new CowTFs(this, transformation);
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			consumeItem = true;
+return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		public override byte sateHungerAmount => 20;

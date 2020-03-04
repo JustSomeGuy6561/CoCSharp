@@ -5,6 +5,7 @@
 
 #warning override the combat versions of all remaining transformation items. implement naga tfs. implement remaining items fully. die on inside
 
+using System;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
@@ -13,13 +14,12 @@ using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
 using CoC.Frontend.UI;
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
 	public sealed partial class ImpFood : StandardConsumable
 	{
-		public ImpFood() : base() {}
+		public ImpFood() : base() { }
 
 
 
@@ -42,18 +42,18 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var transform = new ImpFoodTFs();
-			resultsOfUse = transform.DoTransformation(consumer, out isBadEnd);
-			return true;
+			ImpFoodTFs transform = new ImpFoodTFs();
+			consumeItem = true;
+			return transform.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var transform = new ImpFoodTFs();
-			resultsOfUse = transform.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			ImpFoodTFs transform = new ImpFoodTFs();
+			consumeItem = true;
+			return transform.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		private class ImpFoodTFs : ImpTransformation

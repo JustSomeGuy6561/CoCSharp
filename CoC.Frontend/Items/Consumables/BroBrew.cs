@@ -56,7 +56,7 @@ namespace CoC.Frontend.Items.Consumables
 
 		//MOD NOTE: this has been changed to work like bimbo liqueur - it will remove all vaginas and restore breasts to manly defaults if
 		//the futa perk is not active.
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 
@@ -94,7 +94,7 @@ namespace CoC.Frontend.Items.Consumables
 
 				if (consumer.genitals.BiggestCupSize() >= consumer.genitals.smallestPossibleMaleCupSize)
 				{
-					var oldRows = consumer.genitals.allBreasts.AsReadOnlyData();
+					BreastCollectionData oldRows = consumer.genitals.allBreasts.AsReadOnlyData();
 					consumer.RemovePerk<Feeder>();
 					bool stoppedLactation = consumer.genitals.SetLactationTo(LactationStatus.NOT_LACTATING);
 
@@ -196,8 +196,8 @@ namespace CoC.Frontend.Items.Consumables
 			//	consumer.RemovePerk<Feeder>();
 			//}
 
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 
 		private string Intro(Creature creature, BimBro bimBro)
@@ -413,10 +413,10 @@ namespace CoC.Frontend.Items.Consumables
 					"loosen your " + consumer.lowerGarment.ItemName(),
 					"look down");
 
-					return "The beverage isn't done yet, however, and it makes it perfectly clear with a building pleasure in your groin. " +
-						"You can only cry in ecstasy and " + armorText + " just in time for a little penis to spring forth. " +
-						"You watch, enthralled, as blood quickly stiffens the shaft to its full length – then keeps on going! Before long, you have a quivering " +
-						(Measurement.UsesMetric ? "roughly 25-centimeter" : "10-inch") + " maleness, just ready to stuff into a welcoming box." + GlobalStrings.NewParagraph();
+				return "The beverage isn't done yet, however, and it makes it perfectly clear with a building pleasure in your groin. " +
+					"You can only cry in ecstasy and " + armorText + " just in time for a little penis to spring forth. " +
+					"You watch, enthralled, as blood quickly stiffens the shaft to its full length – then keeps on going! Before long, you have a quivering " +
+					(Measurement.UsesMetric ? "roughly 25-centimeter" : "10-inch") + " maleness, just ready to stuff into a welcoming box." + GlobalStrings.NewParagraph();
 			}
 			//should realistically never happen but may occur if a tf item removes your cock and then you drink this before the perk can correct.
 			else

@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/27/2020 11:24:43 PM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
@@ -12,7 +13,6 @@ using CoC.Backend.Tools;
 using CoC.Frontend.StatusEffect;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
 using CoC.Frontend.UI; //used if the item has to deal with menus and such. safe to remove if not.
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -86,7 +86,7 @@ namespace CoC.Frontend.Items.Consumables
 		//what happens when we try to use this item? note that it's unlikely, but possible, for this to be called if CanUse returns false.
 		//you need to handle that, yourself, and you'll probably want to return some unique text saying you cant do it, you tried anyway,
 		//and looked really dumb or something of the like
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			(consumer as CombatCreature)?.AddHP(40 + (uint)Utils.Rand(21));
 
@@ -101,10 +101,10 @@ namespace CoC.Frontend.Items.Consumables
 				consumer.AddTimedEffect<NiamhDrunk>();
 			}
 
-			resultsOfUse = UseItemText(alreadyDrunk);
+			consumeItem = true;
 			isBadEnd = false;
+			return UseItemText(alreadyDrunk);
 
-			return true;
 		}
 
 		//combat consume is identical, so no need to override.

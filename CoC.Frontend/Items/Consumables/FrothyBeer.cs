@@ -50,7 +50,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is FrothyBeer;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 			StringBuilder sb = new StringBuilder();
@@ -79,8 +79,8 @@ namespace CoC.Frontend.Items.Consumables
 				sb.Append(consumer.ModifyFemininity(30, (byte)Utils.Rand(3)));
 			}
 
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 	}
 }

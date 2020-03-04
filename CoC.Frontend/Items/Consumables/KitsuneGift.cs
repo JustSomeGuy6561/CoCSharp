@@ -53,10 +53,10 @@ namespace CoC.Frontend.Items.Consumables
 		//kitsune gift afaik is the only thing to do this. what a pain. luckily fixing my mistake from code cleanup was as easy as marking this virtual - jsg.
 		protected override CapacityItem ConsumeItem(Creature target, out string resultsOfUseText, out bool isBadEnd)
 		{
-			bool result = OnConsumeAttempt(target, out resultsOfUseText, out isBadEnd);
+			resultsOfUseText = OnConsumeAttempt(target, out bool usedItem, out isBadEnd);
 			CapacityItem item = this;
 
-			if (result)
+			if (usedItem)
 			{
 				if (target is PlayerBase player)
 				{
@@ -68,7 +68,7 @@ namespace CoC.Frontend.Items.Consumables
 			replacement = null;
 			return item;
 		}
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 
 			StringBuilder sb = new StringBuilder();
@@ -178,8 +178,8 @@ namespace CoC.Frontend.Items.Consumables
 			}
 
 			isBadEnd = false;
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 
 		}
 	}

@@ -3,12 +3,12 @@
 //Author: JustSomeGuy
 //1/19/2020 3:00:33 AM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -85,18 +85,18 @@ namespace CoC.Frontend.Items.Consumables
 		//what happens when we try to use this item? note that it's unlikely, but possible, for this to be called if CanUse returns false.
 		//you need to handle that, yourself, and you'll probably want to return some unique text saying you cant do it, you tried anyway,
 		//and looked really dumb or something of the like
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new FoxTFs(potent);
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-			return true;
+			FoxTFs tf = new FoxTFs(potent);
+			consumeItem = true;
+			return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new FoxTFs(potent);
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			FoxTFs tf = new FoxTFs(potent);
+			consumeItem = true;
+			return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		public override bool Equals(CapacityItem other)

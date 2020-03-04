@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/23/2020 4:29:40 AM
 
+using System;
 using CoC.Backend;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
@@ -12,7 +13,6 @@ using CoC.Backend.Tools;
 using CoC.Backend.UI;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
 using CoC.Frontend.UI; //used if the item has to deal with menus and such. safe to remove if not.
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -70,20 +70,18 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new IncubiTFs(isPurified);
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-
-			return true;
+			IncubiTFs tf = new IncubiTFs(isPurified);
+			consumeItem = true;
+			return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new IncubiTFs(isPurified);
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-
-			return true;
+			IncubiTFs tf = new IncubiTFs(isPurified);
+			consumeItem = true;
+			return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		private class IncubiTFs : DemonTransformations

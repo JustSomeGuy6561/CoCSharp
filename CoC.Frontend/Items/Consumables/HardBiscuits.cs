@@ -48,11 +48,11 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
-			resultsOfUse = "You eat the flavorless biscuits. It satisfies your hunger a bit, but not much else.";
-			return true;
+			consumeItem = true;
+			return "You eat the flavorless biscuits. It satisfies your hunger a bit, but not much else.";
 		}
 		public override byte sateHungerAmount => 15;
 	}

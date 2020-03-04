@@ -119,11 +119,11 @@ namespace CoC.Frontend.Items.Consumables
 		public override bool countsAsCum => false;
 		public override byte sateHungerAmount => 10;
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			var tf = new BallsTf(transformation);
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-			return true;
+			consumeItem = true;
+return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
 		public override bool Equals(CapacityItem other)

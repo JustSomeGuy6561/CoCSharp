@@ -65,19 +65,20 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
+			isBadEnd = false;
+			consumeItem = true;
 			if (consumer is CombatCreature combat)
 			{
 				combat.AddHP(combat.maxHealth / 4);
-				resultsOfUse = UseThatShit();
+				return UseThatShit();
 			}
 			else
 			{
-				resultsOfUse = "";
+				return "";
 			}
-			isBadEnd = false;
-			return true;
+
 		}
 
 		//a combat consume is identical, so no need to override it.

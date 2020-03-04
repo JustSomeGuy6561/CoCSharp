@@ -3,13 +3,13 @@
 //Author: JustSomeGuy
 //1/21/2020 2:45:33 AM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
 using CoC.Frontend.UI; //used if the item has to deal with menus and such. safe to remove if not.
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -68,20 +68,18 @@ namespace CoC.Frontend.Items.Consumables
 			return other is GoblinAle;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new GoblinTFs();
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-
-			return true;
+			GoblinTFs tf = new GoblinTFs();
+			consumeItem = true;
+			return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new GoblinTFs();
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-
-			return true;
+			GoblinTFs tf = new GoblinTFs();
+			consumeItem = true;
+			return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		private class GoblinTFs : GoblinTransformations

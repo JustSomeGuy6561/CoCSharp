@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //1/31/2020 7:09:47 AM
 
+using System;
+using System.Text;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
@@ -11,8 +13,6 @@ using CoC.Backend.Tools;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
 using CoC.Frontend.UI; //used if the item has to deal with menus and such. safe to remove if not.
-using System;
-using System.Text;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -91,7 +91,7 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 
@@ -117,8 +117,8 @@ namespace CoC.Frontend.Items.Consumables
 				sb.Append(NothingHappened());
 			}
 
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 
 		//combat consume is identical, so no need to override.

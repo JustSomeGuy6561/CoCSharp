@@ -58,15 +58,15 @@ namespace CoC.Frontend.Items.Consumables
 			}
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			resultsOfUse = "You throw the wingstick at the ground absent-mindedly, though fortunately with enough presence of mind not to shatter it while doing so." +
-				"You quickly pick it back up.";
 			isBadEnd = false;
-			return false;
+			consumeItem = false;
+			return "You throw the wingstick at the ground absent-mindedly, though fortunately with enough presence of mind not to shatter it while doing so." +
+				"You quickly pick it back up.";
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 
@@ -88,9 +88,8 @@ namespace CoC.Frontend.Items.Consumables
 				opponent.TakeDamage(damage);
 			}
 
-			resultsOfUse = sb.ToString();
-
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 
 

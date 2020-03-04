@@ -3,13 +3,13 @@
 //Author: JustSomeGuy
 //1/27/2020 11:07:24 PM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
 using CoC.Frontend.UI; //used if the item has to deal with menus and such. safe to remove if not.
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -73,16 +73,16 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			consumer.IncreaseLust(5 + (consumer.corruptionTrue / 5));
 			(consumer as CombatCreature)?.AddHPPercent(25);
 			consumer.DeltaCreatureStats(str: 0.5, tou: 0.5);
 
-			resultsOfUse = UseItemText();
 			isBadEnd = false;
 
-			return true;
+			consumeItem = true;
+			return UseItemText();
 		}
 
 		//combat consume is identical, so no need to override it.

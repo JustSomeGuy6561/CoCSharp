@@ -72,36 +72,36 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
+			consumeItem = true;
 			//fun fact: Ferret Fruit has a 1/100 chance of doing nothing.
 			if (Utils.Rand(100) == 0)
 			{
 				isBadEnd = false;
-				resultsOfUse = RottenFruitOrSomething(consumer);
+				return RottenFruitOrSomething(consumer);
 			}
 			else
 			{
 				FerretTFs tf = new FerretTFs();
-				resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
+				return tf.DoTransformation(consumer, out isBadEnd);
 			}
-			return true;
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
+			consumeItem = true;
 			//fun fact: Ferret Fruit has a 1/100 chance of doing nothing.
 			if (Utils.Rand(100) == 0)
 			{
 				isBadEnd = false;
-				resultsOfUse = RottenFruitOrSomething(consumer);
+				return RottenFruitOrSomething(consumer);
 			}
 			else
 			{
 				FerretTFs tf = new FerretTFs();
-				resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
+				return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 			}
-			return true;
 		}
 
 		public override string Author()

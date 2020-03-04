@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/18/2020 5:50:32 PM
 
+using System;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
@@ -10,7 +11,6 @@ using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
 using CoC.Frontend.UI;
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -19,7 +19,7 @@ namespace CoC.Frontend.Items.Consumables
 	 * @since December 11, 2016
 	 * @author Stadler76
 	 */
-	 //MOD NOTE: removed ember's blood as a hidden item, instead implementing the transform in EmberScene. so the above comment is partially incorrect now.
+	//MOD NOTE: removed ember's blood as a hidden item, instead implementing the transform in EmberScene. so the above comment is partially incorrect now.
 	public sealed class DrakesHeart : StandardConsumable
 	{
 		public DrakesHeart() : base()
@@ -74,22 +74,22 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			return other is DrakesHeart;
 		}
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 #warning when Ember implemented, set these to the correct values.
-			var tf = new DragonTF(false, true);
+			DragonTF tf = new DragonTF(false, true);
 
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-			return true;
+			consumeItem = true;
+			return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
 #warning when Ember implemented, set these to the correct values.
-			var tf = new DragonTF(false, true);
+			DragonTF tf = new DragonTF(false, true);
 
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			consumeItem = true;
+			return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		private sealed class DragonTF : DragonTransformations

@@ -52,7 +52,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is BrownEgg;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 
@@ -80,9 +80,8 @@ namespace CoC.Frontend.Items.Consumables
 					sb.Append(consumer.ModifyThickness(95, 3));
 				}
 			}
-			resultsOfUse = sb.ToString();
-
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 	}
 }

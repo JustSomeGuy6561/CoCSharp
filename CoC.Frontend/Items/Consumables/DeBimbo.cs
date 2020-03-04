@@ -61,15 +61,17 @@ namespace CoC.Frontend.Items.Consumables
 			return false;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			BimBro bimbo = consumer.GetPerkData<BimBro>();
 			BimBroBrains brains = consumer.GetConditionalPerkData<BimBroBrains>(false);
 
 			isBadEnd = false;
+			consumeItem = true;
+
 			if (bimbo is null || !brains.isEnabled)
 			{
-				resultsOfUse = "Your brain is functioning normally. What a waste of such an expensive drug.";
+				return "Your brain is functioning normally. What a waste of such an expensive drug.";
 			}
 			else
 			{
@@ -92,9 +94,8 @@ namespace CoC.Frontend.Items.Consumables
 
 				bimbo.NegateBimbroBrains();
 
-				resultsOfUse = sb.ToString();
+				return sb.ToString();
 			}
-			return true;
 		}
 
 		public override bool Equals(CapacityItem other)

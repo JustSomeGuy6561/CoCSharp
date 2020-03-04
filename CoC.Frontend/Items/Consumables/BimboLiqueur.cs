@@ -58,11 +58,11 @@ namespace CoC.Frontend.Items.Consumables
 			return false;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 
-			var bimbroPerk = consumer.GetPerkData<BimBro>();
+			BimBro bimbroPerk = consumer.GetPerkData<BimBro>();
 
 			StringBuilder sb = new StringBuilder();
 			if (bimbroPerk != null && bimbroPerk.broBody)
@@ -75,7 +75,7 @@ namespace CoC.Frontend.Items.Consumables
 						"taller until finally stopping around... six and a half feet, you assume. Huh. You didn't expect that to happen!");
 					consumer.build.SetHeight(77);
 				}
-				var biggestSize = consumer.genitals.BiggestCupSize();
+				CupSize biggestSize = consumer.genitals.BiggestCupSize();
 				if (biggestSize < CupSize.E)
 				{
 					if (biggestSize == CupSize.FLAT)
@@ -334,9 +334,9 @@ namespace CoC.Frontend.Items.Consumables
 					sb.Append("Like, weirdest of all, your muscles seem to be vanishing! Before your eyes, all muscle tone vanishes, leaving your body soft and gently curvy. " +
 						"You poke yourself and giggle! Everyone's totally going to want to, like, rub up against you at every opportunity. " +
 						"Your thighs are so soft you bet you could squeeze a pair of dicks to orgasm without even touching your moist cunny.");
-						sb.Append(" It does get a bit harder to carry yourself around with your diminished strength, but that's, like, what big strong hunks are for anyways! " +
-							"You can just flirt until one of them volunteers to help out or something! Besides, you don't need to be strong to jerk off cocks " +
-							"or finger slutty pussies!");
+					sb.Append(" It does get a bit harder to carry yourself around with your diminished strength, but that's, like, what big strong hunks are for anyways! " +
+						"You can just flirt until one of them volunteers to help out or something! Besides, you don't need to be strong to jerk off cocks " +
+						"or finger slutty pussies!");
 					sb.Append(GlobalStrings.NewParagraph());
 				}
 				if (bimbroPerk == null)
@@ -368,8 +368,8 @@ namespace CoC.Frontend.Items.Consumables
 				//Max int - 50
 			}
 
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 	}
 }

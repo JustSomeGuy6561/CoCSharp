@@ -85,7 +85,7 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 			StringBuilder sb = new StringBuilder();
@@ -102,7 +102,7 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 			//and let their current size determine their state.
 			if (consumer.genitals.dickNipplesEnabled)
 			{
-				var oldStatus = consumer.genitals.nippleType;
+				NippleStatus oldStatus = consumer.genitals.nippleType;
 				consumer.genitals.SetDickNippleFlag(false);
 				//grow them slightly so the flavor text makes sense.
 				if (consumer.genitals.nippleLength + sizeDelta < 3)
@@ -142,7 +142,7 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 					(consumer.genitals.nippleLength >= BreastCollection.FULLY_INVERTED_THRESHOLD && consumer.genitals.nippleType != NippleStatus.SLIGHTLY_INVERTED)
 					|| (consumer.genitals.nippleLength < BreastCollection.FULLY_INVERTED_THRESHOLD && consumer.genitals.nippleType != NippleStatus.FULLY_INVERTED))
 				{
-					var target = consumer.genitals.nippleLength < BreastCollection.FULLY_INVERTED_THRESHOLD ? NippleStatus.FULLY_INVERTED : NippleStatus.SLIGHTLY_INVERTED;
+					NippleStatus target = consumer.genitals.nippleLength < BreastCollection.FULLY_INVERTED_THRESHOLD ? NippleStatus.FULLY_INVERTED : NippleStatus.SLIGHTLY_INVERTED;
 					if (consumer.genitals.SetNippleStatus(target))
 					{
 						sb.Append(GlobalStrings.NewParagraph() + "Your " + consumer.genitals.AllBreastsLongDescription() + " tingle with warmth " +
@@ -154,8 +154,8 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 				}
 
 			}
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 
 		private string ClearedDickNipplesFlag(Creature consumer, NippleStatus oldStatus)

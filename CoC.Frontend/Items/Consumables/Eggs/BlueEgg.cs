@@ -57,7 +57,7 @@ namespace CoC.Frontend.Items.Consumables
 		//similarly, small eggs will now remove one extra breast row at a time.
 		//a large egg will remove each additional breast row, and will also make the last pair as manly as possible. they will remove fuckable nipples while doing so,
 		//but they will become inverted if fuckable.
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 
@@ -99,8 +99,8 @@ namespace CoC.Frontend.Items.Consumables
 					sb.Append(". Your clit, however, seems to be resisting the change, and instead expands outward. The top flares outward into a distinct mushroom-shape," +
 						"and you quickly realize " + SafelyFormattedString.FormattedText("Your vagina has been replaced with a cock!", StringFormats.BOLD));
 
-					var length = consumer.clits[0].length + 5;
-					var width = length / 5;
+					double length = consumer.clits[0].length + 5;
+					double width = length / 5;
 
 					//also grow a pair of balls if needed.
 					consumer.AddCock(CockType.defaultValue, length, width);
@@ -136,8 +136,8 @@ namespace CoC.Frontend.Items.Consumables
 						"The top flares outward into a distinct mushroom-shape, and you quickly realize " + SafelyFormattedString.FormattedText("Your feminine sexes have been " +
 						"replaced by a cock!", StringFormats.BOLD));
 
-					var length = consumer.clits.Sum(x => x.length) + 5;
-					var width = length / 5;
+					double length = consumer.clits.Sum(x => x.length) + 5;
+					double width = length / 5;
 
 					consumer.AddCock(CockType.defaultValue, length, width);
 
@@ -166,7 +166,7 @@ namespace CoC.Frontend.Items.Consumables
 				CockCollectionData cockCollection = consumer.genitals.allCocks.AsReadOnlyData();
 
 				double averageWidthDelta = 0;
-				foreach (var cock in consumer.cocks)
+				foreach (Cock cock in consumer.cocks)
 				{
 					cock.IncreaseLength(3 + Utils.Rand(isLarge ? 5 : 2));
 					averageWidthDelta += cock.IncreaseThickness(1);
@@ -266,8 +266,8 @@ namespace CoC.Frontend.Items.Consumables
 				sb.Append(consumer.ModifyFemininity(target, delta));
 			}
 
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 
 		public override bool EqualsIgnoreSize(EggBase other)

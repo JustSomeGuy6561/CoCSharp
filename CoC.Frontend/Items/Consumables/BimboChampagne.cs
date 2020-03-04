@@ -51,13 +51,14 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
+			consumeItem = true;
 			//has Bimbo/Futa/Bro perk (or else it'd return null) and bimbo Body flag is true.
 			if (consumer.GetPerkData<BimBro>()?.hasBimboEffect == true)
 			{
-				resultsOfUse = "You could've swore the stuff worked when you saw Niamh do it to others,"
+				return "You could've swore the stuff worked when you saw Niamh do it to others,"
 					 + " but for some reason, it had, like, no effect on you. How weird!";
 			}
 			else if (!consumer.HasTimedEffect<TemporaryBimbification>())
@@ -67,20 +68,19 @@ namespace CoC.Frontend.Items.Consumables
 					+ " Breathing deeply, you open your mouth and begin pouring the ever-effervescent fluid inside."
 					+ " It's sweet and slightly gooey, and the feel of it sliding down your throat is intensely... awesome? Like, totally!";
 
-				resultsOfUse = intro + consumer.GetTimedEffectData<TemporaryBimbification>().ObtainText();
+				return intro + consumer.GetTimedEffectData<TemporaryBimbification>().ObtainText();
 			}
 			else
 			{
-				resultsOfUse = "You find yourself falling even further into the dense bimbo mindset. You do feel, like, super-good and all, though!"
+				consumer.GetTimedEffectData<TemporaryBimbification>().IncreaseEffect();
+
+				return "You find yourself falling even further into the dense bimbo mindset. You do feel, like, super-good and all, though!"
 					+ GlobalStrings.NewParagraph() + "Moaning lewdly, you begin to sway your hips from side to side, putting on a show for anyone "
 					+ "who might manage to see you.  You just feel so... sexy. Too sexy to hide it. Your body aches to show itself and feel the gaze of someone, "
 					+ "anyone upon it. Mmmm, it makes you so wet! You sink your fingers into your sloppy cunt with a groan of satisfaction."
 					+ " Somehow, you feel like you could fuck anyone right now!";
 
-				consumer.GetTimedEffectData<TemporaryBimbification>().IncreaseEffect();
 			}
-
-			return true;
 		}
 	}
 }

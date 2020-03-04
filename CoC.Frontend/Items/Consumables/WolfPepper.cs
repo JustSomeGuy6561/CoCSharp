@@ -52,18 +52,18 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			WolfTfs tfs = new WolfTfs();
-			resultsOfUse = tfs.DoTransformation(consumer, out isBadEnd);
-			return true;
+			consumeItem = true;
+			return tfs.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
 			WolfTfs tfs = new WolfTfs();
-			resultsOfUse = tfs.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			consumeItem = true;
+			return tfs.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		public override byte sateHungerAmount => 10;
@@ -89,7 +89,7 @@ namespace CoC.Frontend.Items.Consumables
 
 				//first, check to see if we grew any rows larger so we could allow this new row.
 				//orderby should be unnecessary, but the cost is low on an already sorted list.
-				var changedItems = target.genitals.allBreasts.ChangedBreastRows(oldBreastData, true).Where(x => x.oldValue.cupSize != x.newValue.cupSize).OrderBy(x=>x.oldValue.currBreastRowIndex);
+				IOrderedEnumerable<ValueDifference<BreastData>> changedItems = target.genitals.allBreasts.ChangedBreastRows(oldBreastData, true).Where(x => x.oldValue.cupSize != x.newValue.cupSize).OrderBy(x => x.oldValue.currBreastRowIndex);
 
 				if (!changedItems.IsEmpty())
 				{
@@ -127,7 +127,7 @@ namespace CoC.Frontend.Items.Consumables
 
 						if (nowAnthro)
 						{
-						sb.Append(", though they get smaller as they go down.");
+							sb.Append(", though they get smaller as they go down.");
 						}
 						else
 						{
@@ -135,7 +135,7 @@ namespace CoC.Frontend.Items.Consumables
 						}
 					}
 
-					foreach (var item in changedItems)
+					foreach (ValueDifference<BreastData> item in changedItems)
 					{
 						if (item.newValue.cupSize > item.oldValue.cupSize)
 						{
@@ -160,7 +160,7 @@ namespace CoC.Frontend.Items.Consumables
 				StringBuilder sb = new StringBuilder();
 
 				//first, check to see if we grew any rows larger so we could allow this new row.
-				var changedItems = target.genitals.allBreasts.ChangedBreastRows(oldBreastData, true).Where(x => x.oldValue.cupSize < x.newValue.cupSize).ToArray();
+				ValueDifference<BreastData>[] changedItems = target.genitals.allBreasts.ChangedBreastRows(oldBreastData, true).Where(x => x.oldValue.cupSize < x.newValue.cupSize).ToArray();
 
 				if (changedItems.Length > 0)
 				{
@@ -181,7 +181,7 @@ namespace CoC.Frontend.Items.Consumables
 						sb.Append(" It is quickly followed by another row, which grows until it is is slightly smaller than the previous row.");
 					}
 				}
-				var lastRow = target.breasts[target.breasts.Count - 1];
+				Breasts lastRow = target.breasts[target.breasts.Count - 1];
 				//Had 1 row to start
 				if (target.breasts.Count == 2)
 				{
@@ -207,7 +207,7 @@ namespace CoC.Frontend.Items.Consumables
 					}
 					else
 					{
-						sb.Append(GlobalStrings.NewParagraph() + "Your abdomen tingles and twitches as a new row of " + lastRow.LongDescription(preciseMeasurements:true)
+						sb.Append(GlobalStrings.NewParagraph() + "Your abdomen tingles and twitches as a new row of " + lastRow.LongDescription(preciseMeasurements: true)
 							+ " sprouts below your others.");
 					}
 
@@ -288,7 +288,7 @@ namespace CoC.Frontend.Items.Consumables
 			protected override string ShrunkRowsText(Creature target, BreastCollectionData oldCollection)
 			{
 				//the easy way to do this is to manually compare row by row, but i'm lazy. this will do that for you, and provide a convenient pair of old and new.
-				var changedItems = target.genitals.allBreasts.ChangedBreastRows(oldCollection, true).Where(x => x.oldValue.cupSize > x.newValue.cupSize).OrderBy(x => x.newValue.currBreastRowIndex);
+				IOrderedEnumerable<ValueDifference<BreastData>> changedItems = target.genitals.allBreasts.ChangedBreastRows(oldCollection, true).Where(x => x.oldValue.cupSize > x.newValue.cupSize).OrderBy(x => x.newValue.currBreastRowIndex);
 
 				if (changedItems.IsEmpty())
 				{
@@ -298,7 +298,7 @@ namespace CoC.Frontend.Items.Consumables
 				StringBuilder sb = new StringBuilder();
 
 				bool firstRow = false;
-				foreach (var item in changedItems)
+				foreach (ValueDifference<BreastData> item in changedItems)
 				{
 					//Big change
 					if (item.oldValue.cupSize > item.newValue.cupSize + 1)
@@ -311,7 +311,7 @@ namespace CoC.Frontend.Items.Consumables
 						}
 						else
 						{
-							sb.Append(" The change moves down to your " + Utils.NumberAsPlace(item.newValue.currBreastRowIndex+1) + " row of "
+							sb.Append(" The change moves down to your " + Utils.NumberAsPlace(item.newValue.currBreastRowIndex + 1) + " row of "
 								+ item.oldValue.ShortDescription() + ". They shrink greatly, losing a couple cup-sizes.");
 						}
 					}
@@ -357,7 +357,7 @@ namespace CoC.Frontend.Items.Consumables
 					"look down "
 					);
 
-				return GlobalStrings.NewParagraph() + "You double over as a pain fills your groin, and you " +  armorText + " just in time to watch a " +
+				return GlobalStrings.NewParagraph() + "You double over as a pain fills your groin, and you " + armorText + " just in time to watch a " +
 					"bulge push out of your body. The skin folds back and bunches up into a sheath, revealing a red, knotted wolf cock drooling pre-cum underneath it. " +
 					"You take a shuddering breath as the pain dies down, leaving you with only a vague sense of lust and quiet admiration for your new endowment. " +
 					SafelyFormattedString.FormattedText("You now have a wolf cock!", StringFormats.BOLD);

@@ -1,4 +1,7 @@
-﻿using CoC.Backend;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using CoC.Backend;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
@@ -7,9 +10,6 @@ using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -27,10 +27,10 @@ namespace CoC.Frontend.Items.Consumables
 			modifiers = canineModifiers;
 			monetaryValue = value;
 
-			this.abbreviated = abbreviatedName ?? throw new ArgumentNullException(nameof(abbreviatedName));
-			this.name = itemName ?? throw new ArgumentNullException(nameof(itemName));
-			this.description = itemDescription ?? throw new ArgumentNullException(nameof(itemDescription));
-			this.appearText = appearance ?? throw new ArgumentNullException(nameof(appearance));
+			abbreviated = abbreviatedName ?? throw new ArgumentNullException(nameof(abbreviatedName));
+			name = itemName ?? throw new ArgumentNullException(nameof(itemName));
+			description = itemDescription ?? throw new ArgumentNullException(nameof(itemDescription));
+			appearText = appearance ?? throw new ArgumentNullException(nameof(appearance));
 		}
 
 
@@ -57,18 +57,18 @@ namespace CoC.Frontend.Items.Consumables
 			return other is CaninePepperGeneric caninePepper && caninePepper.modifiers == this.modifiers;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var transform = new CanineTFs(modifiers);
-			resultsOfUse = transform.DoTransformation(consumer, out isBadEnd);
-			return true;
+			CanineTFs transform = new CanineTFs(modifiers);
+			consumeItem = true;
+			return transform.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var transform = new CanineTFs(modifiers);
-			resultsOfUse = transform.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			CanineTFs transform = new CanineTFs(modifiers);
+			consumeItem = true;
+			return transform.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		public override bool CanUse(Creature target, bool isInCombat, out string whyNot)

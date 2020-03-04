@@ -3,13 +3,13 @@
 //Author: JustSomeGuy
 //1/16/2020 10:42:10 PM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
 using CoC.Frontend.UI;
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -60,20 +60,20 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new GhostTF();
+			GhostTF tf = new GhostTF();
 
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-			return true;
+			consumeItem = true;
+			return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new GhostTF();
+			GhostTF tf = new GhostTF();
 
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			consumeItem = true;
+			return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		private class GhostTF : GhostTransformations

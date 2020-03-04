@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //1/28/2020 1:24:07 AM
 
+using System;
+using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
@@ -14,8 +16,6 @@ using CoC.Frontend.Creatures;
 using CoC.Frontend.Perks;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
 using CoC.Frontend.UI; //used if the item has to deal with menus and such. safe to remove if not.
-using System;
-using System.Text;
 
 namespace CoC.Frontend.Items.Consumables.Eggs
 {
@@ -123,29 +123,32 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 		public override byte sateHungerAmount => (byte)(isLarge ? 60 : 20);
 
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
+			isBadEnd = false;
+			consumeItem = true;
+
 			//gives you unnaturally smooth skin.
 			if (consumer.body.type != BodyType.HUMANOID || (consumer.body.primarySkin.skinTexture != SkinTexture.NONDESCRIPT &&
 				consumer.body.primarySkin.skinTexture != SkinTexture.SMOOTH))
 			{
-				var oldBodyData = consumer.body.AsReadOnlyData();
+				BodyData oldBodyData = consumer.body.AsReadOnlyData();
 				if (consumer.body.type != BodyType.HUMANOID)
 				{
 					consumer.UpdateBody(BodyType.HUMANOID, SkinTexture.SMOOTH);
-					resultsOfUse = RestoredBodyText(consumer, oldBodyData);
+					return RestoredBodyText(consumer, oldBodyData);
 				}
 				else
 				{
 					consumer.body.ChangeAllSkin(SkinTexture.SMOOTH);
 
-					resultsOfUse = SkinBecameSmoothText(consumer, oldBodyData);
+					return SkinBecameSmoothText(consumer, oldBodyData);
 				}
 			}
 			else if ((isLarge || Utils.Rand(3) == 0) && !consumer.HasPerk<RubberySkin>())
 			{
 				consumer.AddPerk<RubberySkin>();
-				var knewAboutBlackEggs = false;
+				bool knewAboutBlackEggs = false;
 				if (consumer is IExtendedCreature extended)
 				{
 					knewAboutBlackEggs = extended.extendedData.knowsAboutBlackEggs;
@@ -153,19 +156,16 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 				}
 				consumer.DeltaCreatureStats(sens: 8, lus: 10, corr: 2);
 
-				resultsOfUse = GainedRubberySkinPerk(consumer, knewAboutBlackEggs);
+				return GainedRubberySkinPerk(consumer, knewAboutBlackEggs);
 			}
 			else if (isLarge && consumer.StackPerk<RubberySkin>())
 			{
-				resultsOfUse = StackedRubberySkinText(consumer.GetPerkData<RubberySkin>());
+				return StackedRubberySkinText(consumer.GetPerkData<RubberySkin>());
 			}
 			else
 			{
-				resultsOfUse = NothingHappenedText(consumer.HasPerk<RubberySkin>());
+				return NothingHappenedText(consumer.HasPerk<RubberySkin>());
 			}
-
-			isBadEnd = false;
-			return true;
 		}
 
 

@@ -50,17 +50,17 @@ namespace CoC.Frontend.Items.Consumables
 			}
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			isBadEnd = false;
 
 #warning Vanill code called this a placeholder. consider fixing?
 			// Placeholder, sue me
-			resultsOfUse = "You chew on the frankly awfully bitter leaves as quickly as possible before swallowing them down.";
 
 			consumer.fertility.MakeTemporarilyInfertile(CONTRACEPTIVE_TIMEOUT);
 
-			return true;
+			consumeItem = true;
+			return "You chew on the frankly awfully bitter leaves as quickly as possible before swallowing them down.";
 		}
 
 		public override bool Equals(CapacityItem other)

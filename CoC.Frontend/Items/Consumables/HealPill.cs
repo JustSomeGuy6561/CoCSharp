@@ -57,16 +57,16 @@ namespace CoC.Frontend.Items.Consumables
 			return other is HealPill;
 		}
 
-		protected override bool OnConsumeAttempt(Creature creature, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var consumer = creature as CombatCreature;
+			var combatCreature = consumer as CombatCreature;
 
 			var rando = Utils.Rand(10);
 
 			StringBuilder sb = new StringBuilder();
 			sb.Append("You pop the small pill into your mouth and swallow. ");
 
-			if (consumer.AddHP((uint)(50 + consumer.toughness)) > 0)
+			if (combatCreature.AddHP((uint)(50 + combatCreature.toughness)) > 0)
 			{
 				sb.Append("Some of your wounds are healed. ");
 			}
@@ -77,22 +77,22 @@ namespace CoC.Frontend.Items.Consumables
 			if (rando == 9)
 			{
 				sb.Append("You shudder as a small orgasm passes through you. When you recover you actually feel more aroused.");
-				consumer.DeltaCreatureStats(lus: 5);
+				combatCreature.DeltaCreatureStats(lus: 5);
 			}
 			else if (rando >= 6)
 			{
 				sb.Append("Your body tingles and feels more sensitive.");
-				consumer.DeltaCreatureStats(sens: 4);
+				combatCreature.DeltaCreatureStats(sens: 4);
 			}
-			else if (consumer.libido < 40)
+			else if (combatCreature.libido < 40)
 			{
 				sb.Append("You feel a sense of warmth spread through your erogenous areas.");
-				consumer.DeltaCreatureStats(lib: 1);
+				combatCreature.DeltaCreatureStats(lib: 1);
 			}
 
 			isBadEnd = false;
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+return sb.ToString();
 		}
 
 		public override byte maxCapacityPerSlot => 5;

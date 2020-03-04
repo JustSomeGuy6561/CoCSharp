@@ -49,7 +49,7 @@ namespace CoC.Frontend.Items.Consumables
 			return other is GodMead;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append("You take a hearty swig of mead, savoring the honeyed taste on your tongue. Emboldened by the first drink, you chug the remainder of the horn's contents in no time flat. You wipe your lips, satisfied, and let off a small belch as you toss the empty horn aside. ");
@@ -97,8 +97,8 @@ namespace CoC.Frontend.Items.Consumables
 			//Grow hair: Your scalp is beset by pins and needles as your hair grows out, stopping after it reaches [medium/long] length.}
 
 			isBadEnd = false;
-			resultsOfUse = sb.ToString();
-			return true;
+			consumeItem = true;
+			return sb.ToString();
 		}
 		public override byte sateHungerAmount => 20;
 

@@ -3,13 +3,13 @@
 //Author: JustSomeGuy
 //1/15/2020 9:00:04 AM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations;
 using CoC.Frontend.UI;
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -64,18 +64,18 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new SheepTFs();
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-			return true;
+			SheepTFs tf = new SheepTFs();
+			consumeItem = true;
+			return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new SheepTFs();
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			SheepTFs tf = new SheepTFs();
+			consumeItem = true;
+			return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		private class SheepTFs : SheepTransformations

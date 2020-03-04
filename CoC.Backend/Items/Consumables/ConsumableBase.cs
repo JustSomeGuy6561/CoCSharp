@@ -57,11 +57,11 @@ namespace CoC.Backend.Items.Consumables
 		/// <param name="consumer"></param>
 		/// <param name="resultsOfUse"></param>
 		/// <returns></returns>
-		protected abstract bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd);
+		protected abstract string OnConsumeAttempt(Creature consumer, out bool usedItem, out bool isBadEnd);
 
-		protected virtual bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected virtual string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool usedItem, out bool isBadEnd)
 		{
-			return OnConsumeAttempt(consumer, out resultsOfUse, out isBadEnd);
+			return OnConsumeAttempt(consumer, out usedItem, out isBadEnd);
 		}
 
 		private protected override DisplayBase AttemptToUseItem(Creature target, UseItemCallback postItemUseCallback)
@@ -112,10 +112,10 @@ namespace CoC.Backend.Items.Consumables
 
 		protected virtual CapacityItem ConsumeItem(Creature target, out string resultsOfUseText, out bool isBadEnd)
 		{
-			bool result = OnConsumeAttempt(target, out resultsOfUseText, out isBadEnd);
+			resultsOfUseText = OnConsumeAttempt(target, out bool consumedItem, out isBadEnd);
 			CapacityItem item = this;
 
-			if (result)
+			if (consumedItem)
 			{
 				if (target is PlayerBase player)
 				{
@@ -129,10 +129,10 @@ namespace CoC.Backend.Items.Consumables
 
 		protected virtual CapacityItem CombatConsumeItem(CombatCreature user, CombatCreature opponent, out string resultsOfUseText, out bool isBadEnd)
 		{
-			bool result = OnCombatConsumeAttempt(user, opponent, out resultsOfUseText, out isBadEnd);
+			resultsOfUseText = OnCombatConsumeAttempt(user, opponent, out bool consumedItem, out isBadEnd);
 			CapacityItem item = this;
 
-			if (result)
+			if (consumedItem)
 			{
 				if (user is PlayerBase player)
 				{

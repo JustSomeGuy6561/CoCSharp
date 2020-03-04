@@ -46,18 +46,18 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var tfs = new ReindeerTFs();
-			resultsOfUse = tfs.DoTransformation(consumer, out isBadEnd);
-			return true;
+			ReindeerTFs tfs = new ReindeerTFs();
+			consumeItem = true;
+			return tfs.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var tfs = new ReindeerTFs();
-			resultsOfUse = tfs.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-			return true;
+			ReindeerTFs tfs = new ReindeerTFs();
+			consumeItem = true;
+			return tfs.DoTransformationFromCombat(consumer, opponent, out isBadEnd); ;
 		}
 
 		public override byte sateHungerAmount => 30;

@@ -3,13 +3,13 @@
 //Author: JustSomeGuy
 //1/23/2020 4:10:22 AM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
 using CoC.Frontend.UI; //used if the item has to deal with menus and such. safe to remove if not.
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -71,20 +71,18 @@ namespace CoC.Frontend.Items.Consumables
 		//what happens when we try to use this item? note that it's unlikely, but possible, for this to be called if CanUse returns false.
 		//you need to handle that, yourself, and you'll probably want to return some unique text saying you cant do it, you tried anyway,
 		//and looked really dumb or something of the like
-		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnConsumeAttempt(Creature consumer, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new DeerTFs();
-			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
-
-			return true;
+			DeerTFs tf = new DeerTFs();
+			consumeItem = true;
+			return tf.DoTransformation(consumer, out isBadEnd);
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
+		protected override string OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out bool consumeItem, out bool isBadEnd)
 		{
-			var tf = new DeerTFs();
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
-
-			return true;
+			DeerTFs tf = new DeerTFs();
+			consumeItem = true;
+			return tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 		}
 
 		private class DeerTFs : DeerTransformations
