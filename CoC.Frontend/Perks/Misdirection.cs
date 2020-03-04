@@ -11,8 +11,6 @@ namespace CoC.Frontend.Perks
 		{
 		}
 
-		public override bool isEnabled => throw new NotImplementedException();
-
 		public override string Name()
 		{
 			throw new NotImplementedException();

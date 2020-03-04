@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //7/12/2019, 11:38 PM
 
+using CoC.Backend.Perks;
+
 namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class Tough : EndowmentPerkBase
@@ -11,14 +13,11 @@ namespace CoC.Frontend.Perks.Endowment
 		{ }
 		protected override void OnActivation()
 		{
-			baseModifiers.minToughness += 5;
-			baseModifiers.ToughnessGainMultiplier += 0.25f;
+			AddModifierToPerk(baseModifiers.minToughnessDelta, new ValueModifierStore<sbyte>(ValueModifierType.FLAT_ADD, 5));
+			AddModifierToPerk(baseModifiers.toughnessGainMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.25));
 		}
 
 		protected override void OnRemoval()
-		{
-			baseModifiers.minToughness -= 5;
-			baseModifiers.ToughnessGainMultiplier -= 0.25f;
-		}
+		{ }
 	}
 }

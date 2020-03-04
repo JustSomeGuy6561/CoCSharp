@@ -15,7 +15,7 @@ namespace CoC.Frontend.Items.Consumables
 
 	public sealed class KitsuneGift : StandardConsumable
 	{
-
+#warning fix me when items are implemented
 		public KitsuneGift() : base()
 		{ }
 
@@ -80,7 +80,7 @@ namespace CoC.Frontend.Items.Consumables
 				case 0:
 					sb.Append("As the paper falls away, you carefully lift the cover of the box, your hands trembling nervously. The inside of the box is lined with purple velvet, and to your delight, sitting in the center is a small teardrop-shaped jewel!");
 					sb.Append(GlobalStrings.NewParagraph() + "<b>You've received a shining Fox Jewel from the kitsune's gift! How generous!</b> ");
-					replacement = new FoxJewel();
+					//replacement = new FoxJewel();
 					break;
 				//[Fox Berries]
 				case 1:
@@ -104,7 +104,7 @@ namespace CoC.Frontend.Items.Consumables
 					sb.Append("As the paper falls away, you carefully lift the cover of the box, your hands trembling nervously. The inside of the box is lined with purple velvet, and to your delight, it contains a small bag of dried tea leaves!");
 					sb.Append(GlobalStrings.NewParagraph() + "<b>You've received a bag of tea from the kitsune's gift! How thoughtful!</b> ");
 					//add Kitsune Tea/Scholar's Tea to inventory
-					replacement = new ScholarsTea();
+					//replacement = new ScholarsTea();
 					break;
 				//[Hair Dye]
 				case 4:
@@ -173,7 +173,7 @@ namespace CoC.Frontend.Items.Consumables
 				default:
 					sb.Append("As the paper falls away, you carefully lift the cover of the box, your hands trembling nervously. The inside of the box is lined with purple velvet, but to your disappointment, the only other contents appear to be nothing more than twigs, leaves, and other forest refuse. Upon further investigation, though, you find a shard of shiny black chitinous plating mixed in with the other useless junk.");
 					sb.Append(GlobalStrings.NewParagraph() + "<b>At least you managed to salvage a shard of black chitin from it...</b> ");
-					replacement = new BlackChitin();
+					//replacement = new BlackChitin();
 					break;
 			}
 

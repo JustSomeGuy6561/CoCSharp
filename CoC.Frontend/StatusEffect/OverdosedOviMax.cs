@@ -41,7 +41,7 @@ namespace CoC.Frontend.StatusEffect
 			return null;
 		}
 
-		protected override string OnStatusEffectWoreOff()
+		protected override string OnStatusEffectWoreOff(byte hoursPassedSinceLastUpdate)
 		{
 			return null;
 		}

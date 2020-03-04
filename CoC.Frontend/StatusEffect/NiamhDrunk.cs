@@ -15,9 +15,6 @@ namespace CoC.Frontend.StatusEffect
 		//you retrieve 90% of this drop when it wears off.
 		private double deltaIntelligence, deltaSpeed, deltaLibido;
 
-		//drops combat damage by 25%. reverts when wears off.
-		private double deltaCombatModifier;
-
 		public NiamhDrunk() : base(TIMER)
 		{
 		}
@@ -31,9 +28,7 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (sourceCreature is CombatCreature combatCreature)
 			{
-				double oldModifier = baseModifiers.combatDamageModifier;
-				baseModifiers.combatDamageModifier *= .75f;
-				deltaCombatModifier = baseModifiers.combatDamageModifier / oldModifier;
+				AddModifierToPerk(baseModifiers.combatDamageModifier, new ValueModifierStore<double>(ValueModifierType.MAXIMUM, 0.75));
 			}
 			deltaIntelligence = sourceCreature.DecreaseSpeed(5, true);
 			deltaSpeed = sourceCreature.DecreaseIntelligence(5, true);
@@ -44,18 +39,9 @@ namespace CoC.Frontend.StatusEffect
 
 		protected override void OnRemoval()
 		{
-			if (sourceCreature is CombatCreature target)
-			{
-				if (deltaCombatModifier != 0)
-				{
-					baseModifiers.combatDamageModifier /= deltaCombatModifier;
-					deltaCombatModifier = 0;
-				}
-			}
-
 			sourceCreature.DecreaseLibido(deltaLibido, true);
-			sourceCreature.IncreaseIntelligence(0.9f * deltaIntelligence, true);
-			sourceCreature.IncreaseSpeed(0.9f * deltaSpeed, true);
+			sourceCreature.IncreaseIntelligence(0.9 * deltaIntelligence, true);
+			sourceCreature.IncreaseSpeed(0.9 * deltaSpeed, true);
 
 			deltaSpeed = 0;
 			deltaIntelligence = 0;
@@ -93,7 +79,7 @@ namespace CoC.Frontend.StatusEffect
 			return null;
 		}
 
-		protected override string OnStatusEffectWoreOff()
+		protected override string OnStatusEffectWoreOff(byte hoursPassedSinceLastUpdate)
 		{
 			return Environment.NewLine + SafelyFormattedString.FormattedText("The warm, fuzzy feeling finally dissipates, leaving you thinking clearer, focusing better, " +
 				"and less horny. It was nice while it lasted, but it's also good to be back to normal. Still, a part of you kind of wants another beer.", StringFormats.BOLD)

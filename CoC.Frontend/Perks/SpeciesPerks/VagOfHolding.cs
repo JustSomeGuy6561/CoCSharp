@@ -27,13 +27,12 @@ namespace CoC.Frontend.Perks.SpeciesPerks
 
 		protected override void OnActivation()
 		{
-			this.baseModifiers.PerkBasedBonusVaginalCapacity += 8000;
+			AddModifierToPerk(baseModifiers.perkBasedBonusVaginalCapacity, new ValueModifierStore<ushort>(ValueModifierType.FLAT_ADD, 8000));
 			//subscribe to some non-existent score check. when it procs, check the kitsune score. if 0, fire a reaction that removes this.
 		}
 
 		protected override void OnRemoval()
 		{
-			this.baseModifiers.PerkBasedBonusVaginalCapacity -= 8000;
 			//unsubscribe from score check.
 		}
 	}

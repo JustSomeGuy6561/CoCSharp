@@ -78,10 +78,10 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
 		{
 			var tf = new IncubiTFs(isPurified);
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 
 			return true;
 		}

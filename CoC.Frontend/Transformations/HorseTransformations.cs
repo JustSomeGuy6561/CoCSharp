@@ -97,7 +97,7 @@ namespace CoC.Frontend.Transformations
 				//NOT MAXXED
 				else
 				{
-					target.IncreaseToughness(1.25f);
+					target.IncreaseToughness(1.25);
 					//sb.Append("\n\nYour body suddenly feels tougher and more resilient."));
 				}
 			}
@@ -260,9 +260,9 @@ namespace CoC.Frontend.Transformations
 				if (Utils.Rand(2) == 0 && target.cocks.Any(x => x.type == CockType.HORSE))
 				{
 					Cock thinnest = target.genitals.ThinnestCock();
-					thinnest.IncreaseThickness(0.5f);
+					thinnest.IncreaseThickness(0.5);
 
-					target.DeltaCreatureStats(lib: 0.5f, lus: 10);
+					target.DeltaCreatureStats(lib: 0.5, lus: 10);
 
 					if (--remainingChanges <= 0)
 					{

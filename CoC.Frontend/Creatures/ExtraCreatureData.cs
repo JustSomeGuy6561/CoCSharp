@@ -30,9 +30,9 @@ namespace CoC.Frontend.Creatures
 			extendedPerkData = extraPerkData ?? throw new ArgumentNullException(nameof(extraPerkData));
 		}
 
-		public sbyte deltaTransforms => extendedPerkData.numTransformsDelta;
+		public sbyte deltaTransforms => extendedPerkData.numTransformsDelta.GetValue();
 
-		public bool resistsTFBadEnds => extendedPerkData.resistsTFBadEnds;
+		public bool resistsTFBadEnds => extendedPerkData.resistsTFBadEnds.GetValue();
 
 	}
 }

@@ -20,10 +20,9 @@ namespace CoC.Backend.Items.Consumables
 		}
 
 		//unused.
-		private protected override CapacityItem UseItemInCombat(CombatCreature target, CombatCreature opponent, out bool resultsInLoss, out string resultsOfUseText)
+		private protected override CapacityItem UseItemInCombat(CombatCreature target, CombatCreature opponent, out string resultsOfUseText)
 		{
 			resultsOfUseText = null;
-			resultsInLoss = false;
 			return null;
 		}
 
@@ -53,7 +52,7 @@ namespace CoC.Backend.Items.Consumables
 
 		protected virtual DisplayBase BuildCombatAwareMenu(CombatCreature consumer, CombatCreature opponent, UseItemCombatCallback postItemUseCallback)
 		{
-			return BuildMenu(consumer, (success, results, author, replacement) => postItemUseCallback(success, false, results, author, replacement));
+			return BuildMenu(consumer, (success, results, author, replacement) => postItemUseCallback(success, results, author, replacement));
 		}
 
 		public override byte maxCapacityPerSlot => 10;

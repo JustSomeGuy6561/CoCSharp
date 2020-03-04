@@ -1,8 +1,8 @@
-﻿using CoC.Backend.Creatures;
+﻿using System;
+using CoC.Backend.Creatures;
 using CoC.Backend.Perks;
 using CoC.Frontend.Creatures;
 using CoC.Frontend.Perks.History;
-using System;
 
 namespace CoC.Frontend.Perks
 {
@@ -17,25 +17,43 @@ namespace CoC.Frontend.Perks
 		{
 			source = parent ?? throw new ArgumentNullException(nameof(parent));
 			parent.womb.onBirth += Womb_onBirth;
+
+			numTransformsDelta = new SignedBytePerkModifier(0, -2, 2);
+
+			itemForgeCostReduction = new BytePerkModifier(0, 0, 2);
+
+
+			replaceMasturbateWithMeditate = new ConditionalPerkModifier(false);
+
+			lustRequiredForSexOffset = new SignedBytePerkModifier(0, -50, 50);
+			corruptionRequiredOffset = new SignedBytePerkModifier(0, -50, 50);
+			purityRequiredOffset = new SignedBytePerkModifier(0, -50, 50);
+
+			teaseStrengthMultiplier = new DoublePerkModifier(1, 0.5, 3);
+
+			isASlut = new ConditionalPerkModifier(false);
+
+			resistsTFBadEnds = new ConditionalPerkModifier(false);
+
 		}
 
-		public sbyte numTransformsDelta;
+		public SignedBytePerkModifier numTransformsDelta;
 
-		public byte itemForgeCostReduction;
+		public BytePerkModifier itemForgeCostReduction;
 
 
 
-		public bool replaceMasturbateWithMeditate = false;
+		public ConditionalPerkModifier replaceMasturbateWithMeditate;
 
-		public sbyte lustRequiredForSexOffset = 0; //isHornyEnough(value) will be offset by this value
-		public sbyte corruptionRequiredOffset = 0; //IsCorruptEnough(value) will be offset by this value
-		public sbyte purityRequiredOffset = 0; //isPureEnough(value) will be offset by this value
+		public SignedBytePerkModifier lustRequiredForSexOffset; //isHornyEnough(value) will be offset by this value
+		public SignedBytePerkModifier corruptionRequiredOffset; //IsCorruptEnough(value) will be offset by this value
+		public SignedBytePerkModifier purityRequiredOffset; //isPureEnough(value) will be offset by this value
 
-		public double teaseStrengthMultiplier = 1.0f;
+		public DoublePerkModifier teaseStrengthMultiplier;
 
-		public bool IsASlut = false;
+		public ConditionalPerkModifier isASlut;
 
-		public bool resistsTFBadEnds = false;
+		public ConditionalPerkModifier resistsTFBadEnds;
 
 		private void Womb_onBirth(object sender, Backend.Pregnancies.BirthEvent e)
 		{
@@ -43,16 +61,6 @@ namespace CoC.Frontend.Perks
 			{
 				source.perks.AddPerk<BroodMotherPerk>();
 			}
-		}
-	}
-
-	public static class ExtraPerkHelper
-	{
-		//it's not uncommon (or unexpected, i suppose) to want to see if the player has slut perks.
-		//right now these are the main two in that, but i suppose others could be added.
-		public static bool HasASlutPerk(this PerkCollection perkCollection)
-		{
-			return perkCollection.HasPerk<Slut>() || perkCollection.HasPerk<Whore>();
 		}
 	}
 }

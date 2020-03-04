@@ -26,7 +26,7 @@ namespace CoC.Frontend.StatusEffect
 			throw new NotImplementedException();
 		}
 
-		protected override string OnStatusEffectWoreOff()
+		protected override string OnStatusEffectWoreOff(byte hoursPassedSinceLastUpdate)
 		{
 			throw new NotImplementedException();
 		}

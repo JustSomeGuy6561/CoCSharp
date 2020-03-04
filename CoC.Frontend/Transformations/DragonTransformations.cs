@@ -77,7 +77,7 @@ namespace CoC.Frontend.Transformations
 				//find all the non-dragon cocks, and choose one randomly. the beauty of linq and useful helper functions.
 				Cock toChange = Utils.RandomChoice(target.cocks.Where(x => x.type != CockType.DRAGON).ToArray());
 				CockData oldData = toChange.AsReadOnlyData();
-				if (target.genitals.UpdateCockWithKnot(toChange, CockType.DRAGON, 1.3f))
+				if (target.genitals.UpdateCockWithKnot(toChange, CockType.DRAGON, 1.3))
 				{
 					//lose lust if sens>=50, gain lust if else
 					target.IncreaseCreatureStats(sens: 10, lus: 10);

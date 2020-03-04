@@ -210,7 +210,7 @@ namespace CoC.Frontend.Transformations
 				HairData oldHairData = target.hair.AsReadOnlyData();
 
 				HairFurColors hairColor = Utils.RandomChoice(Species.IMP.availableHairColors);
-				double hairLength = 1f;
+				double hairLength = 1;
 
 				if (target.hair.type != HairType.NORMAL)
 				{

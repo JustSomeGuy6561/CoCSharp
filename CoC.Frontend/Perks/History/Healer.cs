@@ -3,25 +3,23 @@
 //Author: JustSomeGuy
 //7/10/2019, 6:21 AM
 
+using CoC.Backend.Perks;
+
 namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class Healer : HistoryPerkBase
 	{
-		private double delta;
 		public Healer() : base(HealerStr, HealerBtn, HealerHint, HealerDesc)
 		{
 		}
 
 		protected override void OnActivation()
 		{
-			var oldVal = baseModifiers.healingMultiplier;
-			baseModifiers.healingMultiplier += 0.2;
-			delta = baseModifiers.healingMultiplier - oldVal;
+			AddModifierToPerk(baseModifiers.healthGainMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.2));
 		}
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.healingMultiplier -= delta;
 		}
 	}
 }

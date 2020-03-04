@@ -27,9 +27,8 @@ namespace CoC.Frontend.Transformations
 		//ex: DoTransformationGeneric(Creature target, bool isInCombat, out bool isBadEnd) ...
 		//this can get more complicated if you actually do decide to allow combat losses from tfs, but i don't really think that'll ever happen.
 
-		protected internal virtual string DoTransformationFromCombat(CombatCreature target, out bool isCombatLoss, out bool isBadEnd)
+		protected internal virtual string DoTransformationFromCombat(CombatCreature target, CombatCreature opponent, out bool isBadEnd)
 		{
-			isCombatLoss = false;
 			return DoTransformation(target, out isBadEnd);
 		}
 
@@ -70,7 +69,7 @@ namespace CoC.Frontend.Transformations
 			}
 
 			byte added = 0;
-			while (count-- > 0 && creature.AddCock(CockType.HUMAN, Utils.Rand(3) + 5, 0.75f))
+			while (count-- > 0 && creature.AddCock(CockType.HUMAN, Utils.Rand(3) + 5, 0.75))
 			{
 				added++;
 			}

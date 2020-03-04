@@ -57,10 +57,6 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 		{
 			return other is WhiteEgg;
 		}
-		public override bool Equals(EggBase other)
-		{
-			return other is WhiteEgg egg && egg.isLarge == isLarge;
-		}
 
 		private string GrewNipplesText(Creature source, double amountGrown)
 		{

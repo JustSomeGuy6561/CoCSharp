@@ -41,13 +41,13 @@ namespace CoC.Backend.Items
 		{
 			if (!CanUse(user, true, out string whyNot))
 			{
-				postItemUseCallbackSafe(false, false, whyNot, Author(), (T)this);
+				postItemUseCallbackSafe(false, whyNot, Author(), (T)this);
 				return null;
 			}
 			else
 			{
-				T retVal = UseItemInCombatSafe(user, opponent, out bool causesLoss, out string resultsOfUse);
-				postItemUseCallbackSafe(true, causesLoss, resultsOfUse, Author(), retVal);
+				T retVal = UseItemInCombatSafe(user, opponent, out string resultsOfUse);
+				postItemUseCallbackSafe(true, resultsOfUse, Author(), retVal);
 				return null;
 			}
 		}
@@ -60,13 +60,12 @@ namespace CoC.Backend.Items
 
 		private protected override DisplayBase AttemptToUseItemInCombat(CombatCreature user, CombatCreature opponent, UseItemCombatCallback postItemUseCallback)
 		{
-			return AttemptToUseInCombatSafe(user, opponent, (v, w, x, y, z) => postItemUseCallback(v, w, x, y, z));
+			return AttemptToUseInCombatSafe(user, opponent, (v, x, y, z) => postItemUseCallback(v, x, y, z));
 		}
 
 		private protected abstract T UseItemSafe(Creature target, out string resultsOfUseText);
-		private protected virtual T UseItemInCombatSafe(CombatCreature user, CombatCreature opponent, out bool resultsInLoss, out string resultsOfUseText)
+		private protected virtual T UseItemInCombatSafe(CombatCreature user, CombatCreature opponent, out string resultsOfUseText)
 		{
-			resultsInLoss = false;
 			return UseItemSafe(user, out resultsOfUseText);
 		}
 
@@ -75,9 +74,9 @@ namespace CoC.Backend.Items
 			return UseItemSafe(target, out resultsOfUseText);
 		}
 
-		private protected override CapacityItem UseItemInCombat(CombatCreature target, CombatCreature opponent, out bool resultsInLoss, out string resultsOfUseText)
+		private protected override CapacityItem UseItemInCombat(CombatCreature target, CombatCreature opponent, out string resultsOfUseText)
 		{
-			return UseItemInCombatSafe(target, opponent, out resultsInLoss, out resultsOfUseText);
+			return UseItemInCombatSafe(target, opponent, out resultsOfUseText);
 		}
 
 		public override bool Equals(CapacityItem other)

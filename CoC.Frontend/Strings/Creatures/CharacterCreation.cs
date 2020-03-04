@@ -421,7 +421,7 @@ namespace CoC.Frontend.Creatures
 
 			if (creator.nippleLength is null)
 			{
-				creator.nippleLength = creator.breasts.Max(x => x.cupSize) > CupSize.A ? 0.5f : 0.25f;
+				creator.nippleLength = creator.breasts.Max(x => x.cupSize) > CupSize.A ? 0.5 : 0.25;
 			}
 
 			sb.Append("Breast size: " + creator.breasts[0].cupSize.AsText() + " with " + Measurement.ToNearestQuarterInchOrHalfCentimeter((double)creator.nippleLength, true) + " nipples" + Environment.NewLine);

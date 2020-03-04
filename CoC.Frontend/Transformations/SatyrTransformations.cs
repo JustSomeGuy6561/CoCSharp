@@ -84,7 +84,7 @@ namespace CoC.Frontend.Transformations
 
 			if (target.hasCock && thinnest.girth < 4 && Utils.Rand(3) == 0)
 			{
-				thinnest.IncreaseThickness(0.5f);
+				thinnest.IncreaseThickness(0.5);
 
 				if (--remainingChanges <= 0)
 				{
@@ -102,7 +102,7 @@ namespace CoC.Frontend.Transformations
 
 				if (target.genitals.cumMultiplier < 50)
 				{
-					target.genitals.IncreaseCumMultiplier(0.5f);
+					target.genitals.IncreaseCumMultiplier(0.5);
 				}
 
 				if (--remainingChanges <= 0)

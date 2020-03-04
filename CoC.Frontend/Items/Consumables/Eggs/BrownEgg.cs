@@ -1,10 +1,12 @@
 using System;
 using System.Text;
 using CoC.Backend.BodyParts;
+using CoC.Backend.CoC_Colors;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
+using CoC.Frontend.Creatures;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -14,47 +16,30 @@ namespace CoC.Frontend.Items.Consumables
 	 * @since March 31, 2018
 	 * @author Stadler76
 	 */
-	public class BrownEgg : StandardConsumable
+	public class BrownEgg : EggBase
 	{
-		public const int SMALL = 0;
-		public const int LARGE = 1;
 
-		private bool large;
+		public BrownEgg(bool isLarge) : base(isLarge)
+		{ }
 
-		public BrownEgg(int type)
+		public override string AbbreviatedName()
 		{
-			string id;
-			string shortName;
-			string longName;
-			string description;
-			int value;
+			return isLarge ? "L.BrnEg" : "BrownEg";
+		}
 
-			large = type == LARGE;
+		public override string ItemDescription(byte count = 1, bool displayCount = false)
+		{
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
+			string sizeText = isLarge ? "large " : "";
+			string eggText = count == 1 ? "egg" : "eggs";
 
-			switch (type)
-			{
-				case SMALL:
-					id = "BrownEg";
-					shortName = "BrownEg";
-					longName = "a brown and white mottled egg";
-					description = "This is an oblong egg, not much different from a chicken egg in appearance (save for the color)."
-						   + " Something tells you it's more than just food.";
-					value = DEFAULT_VALUE;
-					break;
+			return $"{count}{sizeText}brown and white mottled {eggText}";
+		}
+		public override byte sateHungerAmount => isLarge ? (byte)60 : (byte)20;
 
-				case LARGE:
-					id = "L.BrnEg";
-					shortName = "L.BrnEg";
-					longName = "a large brown and white mottled egg";
-					description = "This is an oblong egg, not much different from an ostrich egg in appearance (save for the color)."
-						   + " Something tells you it's more than just food.";
-					value = DEFAULT_VALUE;
-					break;
-
-				default: // Remove this if someone manages to get SonarQQbe to not whine about a missing default ... ~Stadler76
-			}
-
-			super(id, shortName, longName, value, description);
+		public override string Color()
+		{
+			return Tones.BROWN.AsString();
 		}
 
 		public override bool CanUse(Creature target, bool currentlyInCombat, out string whyNot)
@@ -62,38 +47,42 @@ namespace CoC.Frontend.Items.Consumables
 			whyNot = null;
 			return true;
 		}
+		public override bool EqualsIgnoreSize(EggBase other)
+		{
+			return other is BrownEgg;
+		}
 
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
+			isBadEnd = false;
+
 			StringBuilder sb = new StringBuilder();
 			sb.Append("You devour the egg, momentarily sating your hunger." + GlobalStrings.NewParagraph());
-			if (!large)
+			if (!isLarge)
 			{
-				sb.Append("You feel a bit of additional weight on your backside as your [butt] gains a bit more padding.");
-				consumer.butt.size++;
-);
+				sb.Append("You feel a bit of additional weight on your backside as your " + consumer.butt.ShortDescription() + " gains a bit more padding.");
+				consumer.butt.GrowButt();
 			}
 			else
 			{
-				sb.Append("Your [butt] wobbles, nearly throwing you off balance as it grows much bigger!");
-				consumer.butt.size += 2 + Utils.Rand(3);
+				sb.Append("Your " + consumer.build.ButtLongDescription() + " wobbles, nearly throwing you off balance as it grows much bigger!");
+				consumer.butt.GrowButt((byte)(2 + Utils.Rand(3)));
 
 			}
 			if (Utils.Rand(3) == 0)
 			{
-				if (large)
+				if (isLarge)
 				{
-					sb.Append(consumer.modThickness(100, 8));
+					sb.Append(consumer.ModifyTone(100, 8));
 				}
 				else
 				{
-					sb.Append(consumer.modThickness(95, 3));
+					sb.Append(consumer.ModifyThickness(95, 3));
 				}
 			}
+			resultsOfUse = sb.ToString();
 
-			return false;
+			return true;
 		}
-		public override byte sateHungerAmount => 60;
-		public override byte sateHungerAmount => 20;
 	}
 }

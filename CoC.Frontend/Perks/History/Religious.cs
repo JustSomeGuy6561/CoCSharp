@@ -3,11 +3,12 @@
 //Author: JustSomeGuy
 //7/10/2019, 6:21 AM
 
+using CoC.Backend.Perks;
+
 namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class Religious : HistoryPerkBase
 	{
-		private byte delta;
 		public Religious() : base(ReligiousStr, ReligiousBtn, ReligiousHint, ReligiousDesc)
 		{
 		}
@@ -16,21 +17,12 @@ namespace CoC.Frontend.Perks.History
 		{
 			if (hasExtraModifiers)
 			{
-				extraModifiers.replaceMasturbateWithMeditate = true;
+				AddModifierToPerk(extraModifiers.replaceMasturbateWithMeditate, true);
 			}
-			sbyte oldMin = baseModifiers.minLibido;
-			baseModifiers.minLibido = baseModifiers.minLibido.subtract(2);
-			delta = oldMin.difference(baseModifiers.minLibido);
+			AddModifierToPerk(baseModifiers.minLibidoDelta, new ValueModifierStore<sbyte>(ValueModifierType.FLAT_ADD, -2));
 		}
 
 		protected override void OnRemoval()
-		{
-			if (hasExtraModifiers)
-			{
-				extraModifiers.replaceMasturbateWithMeditate = false;
-			}
-			baseModifiers.minLibido = (sbyte)(baseModifiers.minLibido + delta);
-			delta = 0;
-		}
+		{ }
 	}
 }

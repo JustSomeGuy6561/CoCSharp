@@ -81,7 +81,7 @@ namespace CoC.Frontend.Transformations
 					//small growth if over 75
 					if (target.relativeStrength >= 75)
 					{
-						target.ChangeStrength(.5f);
+						target.ChangeStrength(.5);
 					}
 					//faster from 50-75
 					else
@@ -117,7 +117,7 @@ namespace CoC.Frontend.Transformations
 					//small growth if over 75
 					if (target.relativeToughness >= 75)
 					{
-						target.ChangeToughness(.5f);
+						target.ChangeToughness(.5);
 					}
 					//faster from 50-75
 					else

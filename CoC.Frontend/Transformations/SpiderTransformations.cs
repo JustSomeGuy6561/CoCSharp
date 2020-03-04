@@ -58,12 +58,12 @@ namespace CoC.Frontend.Transformations
 				//(If speed<70, increases speed)
 				if (target.relativeSpeed < 70)
 				{
-					target.ChangeSpeed(1.5f);
+					target.ChangeSpeed(1.5);
 				}
 				//(If speed>80, decreases speed down to minimum of 80)
 				else if (target.relativeSpeed > 80)
 				{
-					target.ChangeSpeed(-1.5f);
+					target.ChangeSpeed(-1.5);
 				}
 			}
 
@@ -147,7 +147,7 @@ namespace CoC.Frontend.Transformations
 
 			if (toThicken.Length > 0 && Utils.Rand(4) == 0)
 			{
-				int amountChanged = toThicken.Sum(x => x.IncreaseThickness(0.1f) != 0 ? 1 : 0);
+				int amountChanged = toThicken.Sum(x => x.IncreaseThickness(0.1) != 0 ? 1 : 0);
 
 				if (--remainingChanges <= 0)
 				{

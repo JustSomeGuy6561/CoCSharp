@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //7/12/2019, 11:38 PM
 
+using CoC.Backend.Perks;
+
 namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class Fertile : EndowmentPerkBase
@@ -12,12 +14,10 @@ namespace CoC.Frontend.Perks.Endowment
 
 		protected override void OnActivation()
 		{
-			baseModifiers.bonusFertility += 15;
+			AddModifierToPerk(baseModifiers.bonusFertility, new ValueModifierStore<byte>(ValueModifierType.FLAT_ADD, 15));
 		}
 
 		protected override void OnRemoval()
-		{
-			baseModifiers.bonusFertility -= 15;
-		}
+		{ }
 	}
 }

@@ -77,7 +77,7 @@ namespace CoC.Frontend.Items.Consumables
 		{
 			consumer.IncreaseLust(5 + (consumer.corruptionTrue / 5));
 			(consumer as CombatCreature)?.AddHPPercent(25);
-			consumer.DeltaCreatureStats(str: 0.5f, tou: 0.5f);
+			consumer.DeltaCreatureStats(str: 0.5, tou: 0.5);
 
 			resultsOfUse = UseItemText();
 			isBadEnd = false;

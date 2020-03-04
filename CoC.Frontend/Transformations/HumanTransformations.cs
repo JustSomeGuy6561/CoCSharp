@@ -372,10 +372,10 @@ namespace CoC.Frontend.Transformations
 			//Shrink oversized cocks
 			if (target.hasCock && longest.length > targetSize && Utils.Rand(3) == 0)
 			{
-				longest.DecreaseLength((Utils.Rand(10) + 2) / 10f);
+				longest.DecreaseLength((Utils.Rand(10) + 2) / 10.0);
 				if (longest.girth > 1)
 				{
-					longest.DecreaseThickness((Utils.Rand(4) + 1) / 10f);
+					longest.DecreaseThickness((Utils.Rand(4) + 1) / 10.0);
 				}
 				if (--remainingChanges <= 0)
 				{
@@ -456,7 +456,7 @@ namespace CoC.Frontend.Transformations
 			//Cum Multiplier Decrease:
 			if (target.hasCock && target.genitals.cumMultiplier > 5 && Utils.Rand(3) == 0)
 			{
-				target.genitals.DecreaseCumMultiplier(1 + (Utils.Rand(20) / 10f));
+				target.genitals.DecreaseCumMultiplier(1 + (Utils.Rand(20) / 10.0));
 
 				if (--remainingChanges <= 0)
 				{

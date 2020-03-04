@@ -4,6 +4,7 @@
 //7/12/2019, 11:38 PM
 
 using CoC.Backend.BodyParts;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.Perks.Endowment
 {
@@ -13,38 +14,24 @@ namespace CoC.Frontend.Perks.Endowment
 		{ }
 		protected override void OnActivation()
 		{
-			baseModifiers.CockGrowthMultiplier -= 0.2f;
-			baseModifiers.CockShrinkMultiplier += 0.2f;
+			AddModifierToPerk(baseModifiers.cockGrowthMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, -0.2));
+			AddModifierToPerk(baseModifiers.cockShrinkMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.2));
 
-			baseModifiers.ClitGrowthMultiplier -= 0.2f;
-			baseModifiers.ClitShrinkMultiplier += 0.2f;
+			AddModifierToPerk(baseModifiers.clitGrowthMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, -0.2));
+			AddModifierToPerk(baseModifiers.clitShrinkMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.2));
 
-			baseModifiers.BallsGrowthMultiplier -= 0.2f;
-			baseModifiers.BallsShrinkMultiplier += 0.2f;
+			AddModifierToPerk(baseModifiers.ballsGrowthMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, -0.2));
+			AddModifierToPerk(baseModifiers.ballsShrinkMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.2));
 
-			baseModifiers.NippleGrowthMultiplier -= 0.2f;
-			baseModifiers.NippleShrinkMultiplier += 0.2f;
+			AddModifierToPerk(baseModifiers.nippleGrowthMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, -0.2));
+			AddModifierToPerk(baseModifiers.nippleShrinkMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.2));
 
-			baseModifiers.TitsGrowthMultiplier -= 0.2f;
-			baseModifiers.TitsShrinkMultiplier += 0.2f;
+			AddModifierToPerk(baseModifiers.titsGrowthMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, -0.2));
+			AddModifierToPerk(baseModifiers.titsShrinkMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.2));
 		}
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.CockGrowthMultiplier += 0.2f;
-			baseModifiers.CockShrinkMultiplier -= 0.2f;
-
-			baseModifiers.ClitGrowthMultiplier += 0.2f;
-			baseModifiers.ClitShrinkMultiplier -= 0.2f;
-
-			baseModifiers.BallsGrowthMultiplier += 0.2f;
-			baseModifiers.BallsShrinkMultiplier -= 0.2f;
-
-			baseModifiers.NippleGrowthMultiplier += 0.2f;
-			baseModifiers.NippleShrinkMultiplier -= 0.2f;
-
-			baseModifiers.TitsGrowthMultiplier += 0.2f;
-			baseModifiers.TitsShrinkMultiplier -= 0.2f;
 		}
 
 		protected override bool Unlocked(Gender gender)

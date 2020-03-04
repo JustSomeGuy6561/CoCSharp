@@ -6,12 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CoC.Backend;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class Whore : HistoryPerkBase
 	{
-		bool? oldStatus = null;
 		public Whore() : base(WhoreStr, WhoreBtn, WhoreHint, WhoreDesc)
 		{
 		}
@@ -20,25 +20,14 @@ namespace CoC.Frontend.Perks.History
 		{
 			if (hasExtraModifiers)
 			{
-				oldStatus = extraModifiers.IsASlut;
 
-				extraModifiers.teaseStrengthMultiplier += 0.15f;
-				extraModifiers.IsASlut = true;
+				AddModifierToPerk(extraModifiers.teaseStrengthMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.15));
+				AddModifierToPerk(extraModifiers.isASlut, true);
 			}
 		}
 
 		protected override void OnRemoval()
 		{
-			if (hasExtraModifiers)
-			{
-				extraModifiers.teaseStrengthMultiplier -= 0.15f;
-
-				if (oldStatus is bool revert)
-				{
-					extraModifiers.IsASlut = revert;
-				}
-				oldStatus = null;
-			}
 		}
 	}
 }

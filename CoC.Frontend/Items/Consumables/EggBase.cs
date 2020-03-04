@@ -63,7 +63,10 @@ namespace CoC.Frontend.Items.Consumables
 			return other is EggBase egg && this.Equals(egg);
 		}
 
-		public abstract bool Equals(EggBase other);
+		public virtual bool Equals(EggBase other)
+		{
+			return EqualsIgnoreSize(other) && other.isLarge == isLarge;
+		}
 
 		public abstract bool EqualsIgnoreSize(EggBase other);
 

@@ -184,17 +184,17 @@ namespace CoC.Frontend.Transformations
 
 				if (biggestCock.girth * 6 > biggestCock.length)
 				{
-					biggestCock.DecreaseThickness(.4f);
+					biggestCock.DecreaseThickness(.4);
 				}
 
 				else if (biggestCock.girth * 8 > biggestCock.length)
 				{
-					biggestCock.DecreaseThickness(.2f);
+					biggestCock.DecreaseThickness(.2);
 				}
 
 				if (biggestCock.girth < .5)
 				{
-					biggestCock.SetGirth(0.5f);
+					biggestCock.SetGirth(0.5);
 				}
 
 				if (--remainingChanges <= 0)

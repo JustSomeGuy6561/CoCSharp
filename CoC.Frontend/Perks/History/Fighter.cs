@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //7/9/2019, 4:55 PM
 using CoC.Backend.Creatures;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.Perks.History
 {
@@ -12,14 +13,13 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			baseModifiers.combatDamageModifier += 0.1f;
+			AddModifierToPerk(baseModifiers.combatDamageModifier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.1));
 
 			sourceCreature.AddGems(50);
 		}
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.combatDamageModifier -= 0.1f;
 		}
 	}
 }

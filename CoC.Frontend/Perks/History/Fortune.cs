@@ -4,6 +4,7 @@
 //7/10/2019, 6:21 AM
 
 using CoC.Backend.Creatures;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.Perks.History
 {
@@ -14,18 +15,11 @@ namespace CoC.Frontend.Perks.History
 		protected override void OnActivation()
 		{
 			sourceCreature.AddGems(250);
-			if (hasExtraModifiers)
-			{
-				extraModifiers.gemGainMultiplier += 0.15f;
-			}
+			AddModifierToPerk(baseModifiers.gemsGainRate, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.15));
 		}
 
 		protected override void OnRemoval()
 		{
-			if (hasExtraModifiers)
-			{
-				extraModifiers.gemGainMultiplier += 0.15f;
-			}
 		}
 	}
 }

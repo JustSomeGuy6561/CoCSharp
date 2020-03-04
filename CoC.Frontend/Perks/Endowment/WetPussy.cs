@@ -4,6 +4,7 @@
 //7/12/2019, 11:38 PM
 
 using CoC.Backend.BodyParts;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.Perks.Endowment
 {
@@ -13,13 +14,12 @@ namespace CoC.Frontend.Perks.Endowment
 		{ }
 		protected override void OnActivation()
 		{
-			baseModifiers.minVaginalWetness++;
+			AddModifierToPerk(baseModifiers.minVaginalWetness, new ValueModifierStore<byte>(ValueModifierType.FLAT_ADD, 1));
 			//this.sourceCreature.genitals.incre
 		}
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.minVaginalWetness--;
 		}
 
 		protected override bool Unlocked(Gender gender)

@@ -17,12 +17,11 @@ namespace CoC.Frontend.Perks
 
 		protected override void OnActivation()
 		{
-			baseModifiers.incPregSpeedByOne();
+			AddModifierToPerk(baseModifiers.pregnancySpeedModifier, new ValueModifierStore<sbyte>(ValueModifierType.FLAT_ADD, 1));
 		}
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.decPregSpeedByOne();
 		}
 
 		public override string Name()

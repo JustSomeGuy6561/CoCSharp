@@ -10,13 +10,14 @@ namespace CoC.Frontend.Perks
 	internal static class PerkManager
 	{
 		internal static readonly ReadOnlyDictionary<Type, Func<ConditionalPerk>> conditionalPerks;
-		private static readonly Dictionary<Type, Func<ConditionalPerk>> conditionalPerksSource;
+		private static readonly Dictionary<Type, Func<ConditionalPerk>> conditionalPerksSource = new Dictionary<Type, Func<ConditionalPerk>>();
 
 		internal static readonly ReadOnlyDictionary<Type, Func<StandardPerk>> obtainablePerks;
 		private static readonly Dictionary<Type, Func<StandardPerk>> obtainablePerksSource = new Dictionary<Type, Func<StandardPerk>>();
 
 		static PerkManager()
 		{
+
 			obtainablePerks = new ReadOnlyDictionary<Type, Func<StandardPerk>>(obtainablePerksSource);
 			conditionalPerks = new ReadOnlyDictionary<Type, Func<ConditionalPerk>>(conditionalPerksSource);
 			//add your conditional and obtainable perks here;

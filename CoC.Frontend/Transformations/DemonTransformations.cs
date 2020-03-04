@@ -141,7 +141,7 @@ namespace CoC.Frontend.Transformations
 						//grow each clit anywhere from 0.25in to 1in, if they are below the largest normal size.
 						if (vag.clit.length < vag.clit.largestNormalSize)
 						{
-							vag.GrowClit((Utils.Rand(4) + 1) * 0.25f);
+							vag.GrowClit((Utils.Rand(4) + 1) * 0.25);
 							//cap it at the largest normal size.
 							if (vag.clit.length > vag.clit.largestNormalSize)
 							{

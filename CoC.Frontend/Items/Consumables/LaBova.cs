@@ -108,15 +108,15 @@ namespace CoC.Frontend.Items.Consumables
 
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)
 		{
-			var tf = new CowTFs(this, transformation);
+			CowTFs tf = new CowTFs(this, transformation);
 			resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
 			return true;
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
 		{
-			var tf = new CowTFs(this, transformation);
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			CowTFs tf = new CowTFs(this, transformation);
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 			return true;
 		}
 
@@ -234,7 +234,7 @@ namespace CoC.Frontend.Items.Consumables
 
 				if (target.breasts.Count >= 2)
 				{
-					sb.Append("A moment later your second row of " + oldBreasts[1].LongDescription()+ " does the same. <b>You have sixteen nipples now!</b>");
+					sb.Append("A moment later your second row of " + oldBreasts[1].LongDescription() + " does the same. <b>You have sixteen nipples now!</b>");
 				}
 				if (target.breasts.Count >= 3)
 				{
@@ -249,9 +249,12 @@ namespace CoC.Frontend.Items.Consumables
 
 			protected override string BoostedLactationText(Creature target, BreastCollectionData oldBreasts, double nippleLengthDelta)
 			{
-				var delta = target.genitals.lactationProductionModifier - oldBreasts.lactationProductionModifier;
+				double delta = target.genitals.lactationProductionModifier - oldBreasts.lactationProductionModifier;
 
-				if (delta == 0) return "";
+				if (delta == 0)
+				{
+					return "";
+				}
 
 				StringBuilder sb = new StringBuilder();
 

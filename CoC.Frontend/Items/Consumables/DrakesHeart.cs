@@ -83,12 +83,12 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
 		{
 #warning when Ember implemented, set these to the correct values.
 			var tf = new DragonTF(false, true);
 
-			resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 			return true;
 		}
 

@@ -71,7 +71,7 @@ namespace CoC.Frontend.Transformations
 					}
 
 
-					target.DeltaCreatureStats(sens: 0.5f, lus: 5 * crit);
+					target.DeltaCreatureStats(sens: 0.5, lus: 5 * crit);
 					return changed;
 				}
 				return false;
@@ -151,8 +151,8 @@ namespace CoC.Frontend.Transformations
 					//has no cocks. - grow 2
 					if (target.cocks.Count == 0)
 					{
-						target.AddCock(CockType.DOG, 7 + Utils.Rand(7), 1.5f + Utils.Rand(10) / 10f, 1.7f);
-						target.AddCock(CockType.DOG, 7 + Utils.Rand(7), 1.5f + Utils.Rand(10) / 10f, 1.7f);
+						target.AddCock(CockType.DOG, 7 + Utils.Rand(7), 1.5 + Utils.Rand(10) / 10, 1.7);
+						target.AddCock(CockType.DOG, 7 + Utils.Rand(7), 1.5 + Utils.Rand(10) / 10, 1.7);
 
 						sb.Append(GrewTwoDogCocksHadNone(target));
 					}
@@ -161,12 +161,12 @@ namespace CoC.Frontend.Transformations
 					{
 						CockData oldCockData = target.cocks[0].AsReadOnlyData();
 
-						target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5f);
+						target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5);
 						if (target.cocks[0].length < 10)
 						{
 							target.cocks[0].SetLength(10);
 						}
-						target.AddCock(CockType.DOG, 7 + Utils.Rand(7), 1.5f + Utils.Rand(10) / 10f, 1.7f);
+						target.AddCock(CockType.DOG, 7 + Utils.Rand(7), 1.5 + Utils.Rand(10) / 10.0, 1.7);
 
 						sb.Append(ConvertedFirstDogCockGrewSecond(target, oldCockData));
 					}
@@ -176,12 +176,12 @@ namespace CoC.Frontend.Transformations
 						CockData firstOldData = target.cocks[0].AsReadOnlyData();
 						CockData secondOldData = target.cocks[1].AsReadOnlyData();
 
-						target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5f);
+						target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5);
 						if (target.cocks[0].length < 10)
 						{
 							target.cocks[0].SetLength(10);
 						}
-						target.genitals.UpdateCockWithKnot(1, CockType.DOG, 1.5f);
+						target.genitals.UpdateCockWithKnot(1, CockType.DOG, 1.5);
 						if (target.cocks[1].length < 10)
 						{
 							target.cocks[1].SetLength(10);
@@ -194,7 +194,7 @@ namespace CoC.Frontend.Transformations
 				{
 					if (target.cocks.Count == 1)
 					{
-						target.AddCock(CockType.DOG, 7 + Utils.Rand(7), 1.5f + Utils.Rand(10) / 10f, 1.7f);
+						target.AddCock(CockType.DOG, 7 + Utils.Rand(7), 1.5 + Utils.Rand(10) / 10.0, 1.7);
 						sb.Append(GrewSecondDogCockHadOne(target));
 					}
 					else
@@ -202,7 +202,7 @@ namespace CoC.Frontend.Transformations
 						if (target.cocks[0].type == CockType.DOG)
 						{
 							CockData oldData = target.cocks[1].AsReadOnlyData();
-							target.genitals.UpdateCockWithKnot(1, CockType.DOG, 1.5f);
+							target.genitals.UpdateCockWithKnot(1, CockType.DOG, 1.5);
 							if (target.cocks[1].length < 10)
 							{
 								target.cocks[1].SetLength(10);
@@ -213,7 +213,7 @@ namespace CoC.Frontend.Transformations
 						{
 							CockData oldData = target.cocks[0].AsReadOnlyData();
 
-							target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5f);
+							target.genitals.UpdateCockWithKnot(0, CockType.DOG, 1.5);
 							if (target.cocks[0].length < 10)
 							{
 								target.cocks[0].SetLength(10);
@@ -231,7 +231,7 @@ namespace CoC.Frontend.Transformations
 			//however, a knotty pepper modifier has no tf cost, the other check does. also, this will modify a cock if none have a dog knot, the other will not.
 			if (modifiers.HasFlag(CanineModifiers.KNOTTY))
 			{
-				double delta = ((Utils.Rand(2) + 5) / 20f) * crit;
+				double delta = ((Utils.Rand(2) + 5) / 20) * crit;
 
 				if (!DoKnotChanges(delta))
 				{
@@ -239,11 +239,11 @@ namespace CoC.Frontend.Transformations
 					{
 						CockData oldCockData = target.cocks[0].AsReadOnlyData();
 
-						double knotSize = 1.75f;
+						double knotSize = 1.75;
 
 						if (target.cocks[0].hasKnot)
 						{
-							knotSize = Math.Max(2.1f, target.cocks[0].knotMultiplier);
+							knotSize = Math.Max(2.1, target.cocks[0].knotMultiplier);
 						}
 
 						target.genitals.UpdateCockWithKnot(0, CockType.DOG, knotSize);
@@ -337,7 +337,7 @@ namespace CoC.Frontend.Transformations
 			//knot multiplier (but not knotty)
 			if (!modifiers.HasFlag(CanineModifiers.KNOTTY) && target.genitals.CountCocksOfType(CockType.DOG) > 0 && (modifiers.HasFlag(CanineModifiers.LARGE) || Utils.Rand(7) < 5))
 			{
-				double delta = ((Utils.Rand(2) + 1) / 20f) * crit;
+				double delta = ((Utils.Rand(2) + 1) / 20.0) * crit;
 				if (DoKnotChanges(delta))
 				{
 					if (--remainingChanges <= 0)
@@ -389,13 +389,13 @@ namespace CoC.Frontend.Transformations
 			//anymore because i've tried to remove calls to random perks because it's not very future-proof - what happens when a new perk is added that has a
 			//similar effect? do we add that check literally everywhere too? (of course, if a perk is unique enough that nothing else will act in the same way,
 			//that's fine. i dunno, it's difficult to try and clean everything up without being able to predict the future, which is admittedly impossible)
-			if (target.hasCock && (target.genitals.cumMultiplier < 1.5f || target.genitals.additionalCum < 500) && Utils.RandBool())
+			if (target.hasCock && (target.genitals.cumMultiplier < 1.5 || target.genitals.additionalCum < 500) && Utils.RandBool())
 			{
 				double delta;
 				bool wasMultiplier;
-				if (target.genitals.cumMultiplier < 1.5f)
+				if (target.genitals.cumMultiplier < 1.5)
 				{
-					delta = target.genitals.IncreaseCumMultiplier(0.05f * crit);
+					delta = target.genitals.IncreaseCumMultiplier(0.05 * crit);
 					wasMultiplier = true;
 				}
 				else
@@ -507,7 +507,7 @@ namespace CoC.Frontend.Transformations
 			{
 
 				sb.Append(DoggoFantasyText(target));
-				target.IncreaseLust(5 + (target.libidoTrue / 20f));
+				target.IncreaseLust(5 + (target.libidoTrue / 20));
 
 				if (--remainingChanges <= 0)
 				{

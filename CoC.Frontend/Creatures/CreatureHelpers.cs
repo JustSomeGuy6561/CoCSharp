@@ -39,7 +39,7 @@ namespace CoC.Frontend.Creatures
 		{
 			if (creature is IExtendedCreature extended)
 			{
-				return targetCorruption <= creature.corruption + extended.extendedPerkModifiers.corruptionRequiredOffset;
+				return targetCorruption <= creature.corruption + extended.extendedPerkModifiers.corruptionRequiredOffset.GetValue();
 			}
 			else
 			{
@@ -51,7 +51,7 @@ namespace CoC.Frontend.Creatures
 		{
 			if (creature is IExtendedCreature extended)
 			{
-				return targetPurity >= creature.corruption - extended.extendedPerkModifiers.purityRequiredOffset;
+				return targetPurity >= creature.corruption - extended.extendedPerkModifiers.purityRequiredOffset.GetValue();
 			}
 			else
 			{
@@ -184,6 +184,7 @@ namespace CoC.Frontend.Creatures
 
 		public static bool IsExhibitionist(this Creature creature) => creature.GetPerkData<CeraphFetishesPerk>()?.hasExhibitionistFetish ?? false;
 
+		public static bool HasASlutPerk(this Creature creature) => (creature as IExtendedCreature)?.extendedPerkModifiers.isASlut.GetValue() ?? false;
 
 		//public static void AddItem(this Creature creature, CapacityItem item, Action resumeCallback)
 		//{

@@ -53,11 +53,6 @@ namespace CoC.Frontend.Items.Consumables
 			return "This bottle of dye will allow you to change the color of your hair. Of course if you don't have hair, using this would be a waste.";
 		}
 
-#warning Current (lazy) implementation does not display any flavor text. need to add that. also need to store menu string globally so it can be applied when going back to the menu
-		//from a sub-menu.
-		//warn the target in this text when they dye and the current color are the same.
-
-
 		public override bool countsAsLiquid => false; //i mean, it is, but it's not, i guess? vanilla said no.
 		public override bool countsAsCum => false;
 		//how much hunger does consuming this sate?

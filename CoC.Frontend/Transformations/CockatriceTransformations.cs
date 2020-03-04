@@ -214,7 +214,7 @@ namespace CoC.Frontend.Transformations
 
 				if (target.genitals.nippleLength > 1 && Utils.Rand(3) == 0)
 				{
-					target.genitals.SetNippleLength(target.genitals.nippleLength / 2f);
+					target.genitals.SetNippleLength(target.genitals.nippleLength / 2);
 				}
 
 				VaginalWetness desiredWetness = EnumHelper.Min(target.genitals.maxVaginalWetness, VaginalWetness.SLICK);
@@ -281,7 +281,7 @@ namespace CoC.Frontend.Transformations
 
 				if (target.genitals.nippleLength > 1 && Utils.Rand(3) == 0)
 				{
-					target.genitals.SetNippleLength(target.genitals.nippleLength / 2f);
+					target.genitals.SetNippleLength(target.genitals.nippleLength / 2);
 				}
 
 				//Hips > 10 - decrease hip size by 1-3 sizes
@@ -335,10 +335,10 @@ namespace CoC.Frontend.Transformations
 				//Shrink oversized cocks
 				if (longest.length > 16 && Utils.Rand(3) == 0)
 				{
-					longest.DecreaseLength((Utils.Rand(10) + 5) / 10f);
+					longest.DecreaseLength((Utils.Rand(10) + 5) / 10.0);
 					if (longest.girth > 3)
 					{
-						longest.DecreaseThickness((Utils.Rand(4) + 1) / 10f);
+						longest.DecreaseThickness((Utils.Rand(4) + 1) / 10.0);
 					}
 					if (--remainingChanges <= 0)
 					{
@@ -350,7 +350,7 @@ namespace CoC.Frontend.Transformations
 				//Cock thickness <2 - Increase cock thickness
 				if (thinnest.girth < 2 && Utils.Rand(3) == 0)
 				{
-					thinnest.IncreaseThickness(1.5f);
+					thinnest.IncreaseThickness(1.5);
 
 					if (--remainingChanges <= 0)
 					{

@@ -4,6 +4,7 @@
 //7/12/2019, 11:38 PM
 
 using CoC.Backend.BodyParts;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.Perks.Endowment
 {
@@ -13,12 +14,11 @@ namespace CoC.Frontend.Perks.Endowment
 		{ }
 		protected override void OnActivation()
 		{
-			baseModifiers.BonusCumStacked += 0.5f;
+			AddModifierToPerk(baseModifiers.bonusCumMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.5));
 		}
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.BonusCumStacked -= 0.5f;
 		}
 
 		//apprently this is lots of jizz despite being called messy orgasms.

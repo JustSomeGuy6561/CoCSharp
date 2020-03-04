@@ -589,12 +589,6 @@ namespace CoC.Frontend.Transformations
 			return ApplyChangesAndReturn(target, sb, changesPerformed);
 		}
 
-		protected internal override string DoTransformationFromCombat(CombatCreature target, out bool isCombatLoss, out bool isBadEnd)
-		{
-			//implement this as you see fit. if there is no difference between this and the above function, you can safely remove this.
-			throw new InDevelopmentExceptionThatBreaksOnRelease();
-		}
-
 		//the abstract string calls that you create above should be declared here. they should be protected. if it is a body part change or a generic text that has already been
 		//defined by the base class, feel free to make it virtual instead.
 		protected abstract string InitialTransformationText(Creature target);

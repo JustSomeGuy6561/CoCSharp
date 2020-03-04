@@ -150,14 +150,14 @@ namespace CoC.Frontend.Creatures
 				//Skin: Purple
 				complexion = Tones.PURPLE,
 				//Vagina: Tight, virgin, 0.5 inch clitoris
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.5) },
 				//Penis: 13 inch long 3 inch wide penis, dog shaped, 6.5 inch knot
-				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 13, 3, 2.2f) },
+				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 13, 3, 2.2) },
 				cockVirgin = false,
 				cumMultiplier = 20,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.J, 5) },
 				nippleStatus = NippleStatus.FUCKABLE,
-				lactationMultiplier = 20f,
+				lactationMultiplier = 20,
 				//Hair: Back length orange
 				hairLength = 30,
 				hairColor = HairFurColors.ORANGE,
@@ -267,9 +267,9 @@ namespace CoC.Frontend.Creatures
 				tailType = TailType.FOX,
 				tailCount = 1,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.A) },
-				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 8, 1, 1.4f) },
+				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 8, 1, 1.4) },
 				cockVirgin = true,
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.25f, VaginalWetness.WET, isVirgin: true) }
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.25, VaginalWetness.WET, isVirgin: true) }
 			};
 			//sb.Append("You're quite the foxy herm, and as different as you were compared to the rest of Ingnam, it's no surprise you were sent through first.");
 		}
@@ -278,7 +278,7 @@ namespace CoC.Frontend.Creatures
 		private static PlayerCreator customCeveo()
 		{
 			//Pair<CockPiercingLocation, PiercingJewelry> silverAlbert = [CockPiercingLocation.PRINCE_ALBERT] );
-			CockCreator createCock() => new CockCreator(CockType.HUMAN, 12, 5.5f, cockJewelry: new PiercingData<CockPiercingLocation> { [CockPiercingLocation.PRINCE_ALBERT] = new PiercingJewelry(JewelryType.RING, new Silver(), true) });
+			CockCreator createCock() => new CockCreator(CockType.HUMAN, 12, 5.5, cockJewelry: new PiercingData<CockPiercingLocation> { [CockPiercingLocation.PRINCE_ALBERT] = new PiercingJewelry(JewelryType.RING, new Silver(), true) });
 			PiercingJewelry silverStuds() => new PiercingJewelry(JewelryType.BARBELL_STUD, new Silver(), true);
 
 			//finally, a character with a description that can reasonably allow the player to choose their gender.
@@ -295,7 +295,7 @@ namespace CoC.Frontend.Creatures
 				//vagina defined to allow players to override gender and still keep the whole piercing theme. will be ignored if male.
 				vaginas = new VaginaCreator[]
 				{
-					new VaginaCreator(2.0f, isVirgin:true, clitJewelry:new Dictionary<ClitPiercingLocation, PiercingJewelry>(){[ClitPiercingLocation.HOOD_VERTICAL] = new PiercingJewelry(JewelryType.HORSESHOE, new Silver(), true) })
+					new VaginaCreator(2.0, isVirgin:true, clitJewelry:new Dictionary<ClitPiercingLocation, PiercingJewelry>(){[ClitPiercingLocation.HOOD_VERTICAL] = new PiercingJewelry(JewelryType.HORSESHOE, new Silver(), true) })
 				},
 				//"Androgynous face, large brown eyes, long black hair down to about ass level, full lips, pirced with one silver ring ass itself is round and thick, chest is flat, only two nipples, about nickel sized pierced with silver studs, skin of a pale ghostly transparent complexion, rest of the body is not notably muscular or chubby in any definite way, feet seem to taper off into full transparency. Full body housed in the lewd Inquisitor Armor, wielding a Wizard Staff. Starting at level 5 with tank, regeneration, healing, smarts, channeling, mage and incorperability perks, a full knowledge of
 				heightInInches = 72,
@@ -308,7 +308,7 @@ namespace CoC.Frontend.Creatures
 				hipSize = 8,
 				breasts = new BreastCreator[]
 				{
-					new BreastCreator(CupSize.FLAT, 1.0f,new PiercingData<NipplePiercingLocation>()
+					new BreastCreator(CupSize.FLAT, 1.0,new PiercingData<NipplePiercingLocation>()
 					{
 						[NipplePiercingLocation.LEFT_HORIZONTAL] = silverStuds(),
 						[NipplePiercingLocation.RIGHT_HORIZONTAL] = silverStuds()
@@ -359,11 +359,11 @@ namespace CoC.Frontend.Creatures
 				defaultGender = Gender.HERM,
 				forceDefaultGender = true,
 
-				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 27, 1.4f, 3.6f) },
+				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 27, 1.4, 3.6) },
 				numBalls = 0,
 				ballSize = 0,
 				cumMultiplier = 7500,
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f, VaginalWetness.SLAVERING) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.5, VaginalWetness.SLAVERING) },
 				fertility = 15,
 				tailType = TailType.FOX,
 				tailCount = 1,
@@ -378,7 +378,7 @@ namespace CoC.Frontend.Creatures
 				hipSize = 6,
 				buttSize = 3,
 				femininity = 50,
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.D, 3.0f), new BreastCreator(CupSize.C, 3.0f), new BreastCreator(CupSize.B, 3.0f), new BreastCreator(CupSize.A, 3.0f) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.D, 3.0), new BreastCreator(CupSize.C, 3.0), new BreastCreator(CupSize.B, 3.0), new BreastCreator(CupSize.A, 3.0) },
 				nippleStatus = NippleStatus.FUCKABLE,
 				tongueType = TongueType.DEMONIC
 			};
@@ -604,8 +604,8 @@ namespace CoC.Frontend.Creatures
 				//heh, ribbed for their pleasure ;d lol
 				cocks = new CockCreator[]
 				{
-					new CockCreator(CockType.DOG, 12, 2.8f, 1.8f, cockJewelry:ladderPiercings(new Fertite())),
-					new CockCreator(CockType.CAT, 10, 2.5f, null, cockJewelry:ladderPiercings(new Emerald()))
+					new CockCreator(CockType.DOG, 12, 2.8, 1.8, cockJewelry:ladderPiercings(new Fertite())),
+					new CockCreator(CockType.CAT, 10, 2.5, null, cockJewelry:ladderPiercings(new Emerald()))
 				},
 				//- and one tight asshole
 				analLooseness = AnalLooseness.NORMAL,
@@ -629,7 +629,7 @@ namespace CoC.Frontend.Creatures
 				//- 'tone of about 70
 				tone = 70,
 				//- two flat breasts each supporting one 0.2-inch nipple
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.FLAT, 0.2f) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.FLAT, 0.2) },
 				//- three fox tails
 				tailType = TailType.FOX,
 				tailCount = 3,
@@ -677,7 +677,7 @@ namespace CoC.Frontend.Creatures
 				tailType = TailType.RABBIT,
 				//Face: Human
 				//Breasts: H-cup with 4.5 inch fuckable nipples"
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.H, 4.5f) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.H, 4.5) },
 
 				nippleStatus = NippleStatus.FUCKABLE
 			};
@@ -699,7 +699,7 @@ namespace CoC.Frontend.Creatures
 
 
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.D) },
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.5) },
 				fertility = 10,
 				hipSize = 8,
 				buttSize = 8,
@@ -763,7 +763,7 @@ namespace CoC.Frontend.Creatures
 				forceDefaultGender = false,
 				//Specific Character
 				//Male. 11.5 inch dog dick, 4 balls, 2 inches in diameter.
-				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 11.5f, 2, 1.5f) },
+				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 11.5, 2, 1.5) },
 				cockVirgin = false,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.FLAT) },
 				heightInInches = 71,
@@ -821,7 +821,7 @@ namespace CoC.Frontend.Creatures
 				tone = 20,
 				fertility = 10,
 				hairLength = 15,
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f, VaginalWetness.SLICK, VaginalLooseness.LOOSE, false) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.5, VaginalWetness.SLICK, VaginalLooseness.LOOSE, false) },
 				heightInInches = 67,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.E) },
 				hipSize = 12,
@@ -867,12 +867,12 @@ namespace CoC.Frontend.Creatures
 
 				//Body Values:
 				//breastRows
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.DD, 0.5f) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.DD, 0.5) },
 				//-breastRating: 5
 				//-breasts: 2
 				//-nipplesPerBreast: 1
 				buttSize = 2,
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.2f, VaginalWetness.SLAVERING, VaginalLooseness.TIGHT, true) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.2, VaginalWetness.SLAVERING, VaginalLooseness.TIGHT, true) },
 				earType = EarType.CAT,
 				faceType = FaceType.CAT,
 				femininity = 100,
@@ -926,10 +926,10 @@ namespace CoC.Frontend.Creatures
 				strength = 18,
 				fertility = 20,
 				hairLength = 15,
-				vaginas = new VaginaCreator[] { new VaginaCreator(VaginaType.EQUINE, 0.5f, VaginalWetness.SLICK, VaginalLooseness.LOOSE, false) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(VaginaType.EQUINE, 0.5, VaginalWetness.SLICK, VaginalLooseness.LOOSE, false) },
 				assVirgin = false,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.DD) },
-				cocks = new CockCreator[] { new CockCreator(CockType.HORSE, 14, 2.5f) },
+				cocks = new CockCreator[] { new CockCreator(CockType.HORSE, 14, 2.5) },
 				cockVirgin = false,
 				heightInInches = 73,
 				tone = 20,
@@ -964,7 +964,7 @@ namespace CoC.Frontend.Creatures
 				//Tail type = Dragon
 				tailType = TailType.DRACONIC,
 
-				cumMultiplier = 5.5f,
+				cumMultiplier = 5.5,
 
 				//Herm, lots of jizz.
 				perks = new List<StandardPerk>()
@@ -991,7 +991,7 @@ namespace CoC.Frontend.Creatures
 				//Wetness- Above Average
 				//Looseness- Normal Starting Value
 				//Clit-size- Normal Value"
-				vaginas = new VaginaCreator[] { new VaginaCreator(VaginaType.SAND_TRAP, 0.25f, VaginalWetness.SLICK, VaginalLooseness.NORMAL, false) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(VaginaType.SAND_TRAP, 0.25, VaginalWetness.SLICK, VaginalLooseness.NORMAL, false) },
 				analLooseness = AnalLooseness.NORMAL,
 				assVirgin = false,
 				//Face- Canine
@@ -1051,7 +1051,7 @@ namespace CoC.Frontend.Creatures
 		private static SimpleDescriptor NavornFlavorText => SpecialCharacterStrings.NavornText;
 		private static PlayerCreator customNavorn()
 		{
-			BreastCreator newBreastRow() => new BreastCreator(CupSize.D, 4.0f);
+			BreastCreator newBreastRow() => new BreastCreator(CupSize.D, 4.0);
 			CockCreator newCock(CockType type) => new CockCreator(type, 15, 3, 2); //knot is ignored if invalid, so i can be lazy and use this for all of them.
 			return new PlayerCreator("Navorn")
 			{
@@ -1067,7 +1067,7 @@ namespace CoC.Frontend.Creatures
 				cumMultiplier = 500,
 				//(base fertility 20 if possible?)
 				fertility = 20,
-				//Appearence: 7ft 9in tall covered in thick shining silver fur, has a vulpine head and ears, eight breast all the same size at DD, dragon like wings, tail, and legs. With a large mare like pussy, 6 dicks, two equine, two dragon, two vulpine, all 15in long and 3 in wide, and four nuts 5 in across
+				//Appearence: 7t 9in tall covered in thick shining silver fur, has a vulpine head and ears, eight breast all the same size at DD, dragon like wings, tail, and legs. With a large mare like pussy, 6 dicks, two equine, two dragon, two vulpine, all 15in long and 3 in wide, and four nuts 5 in across
 				heightInInches = 93,
 				complexion = Tones.BLACK,
 				bodyType = BodyType.SIMPLE_FUR,
@@ -1131,19 +1131,19 @@ namespace CoC.Frontend.Creatures
 				//no balls
 				//virgin pussy, 0.2"" clit
 				//wetness 2
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.2f, VaginalWetness.WET) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.2, VaginalWetness.WET) },
 				//fertility 30
 				//virgin bum
 				analLooseness = AnalLooseness.NORMAL,
 				assVirgin = true,
 				//anal wetness 1
 				analWetness = AnalWetness.DAMP,
-				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 11, 2, 1.2f) },
+				cocks = new CockCreator[] { new CockCreator(CockType.DOG, 11, 2, 1.2) },
 				numBalls = 0,
 				ballSize = 0,
 
 				//1 pair DD's, 0.5"" nipples"
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.DD, 0.5f) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.DD, 0.5) },
 
 				fertility = 30,
 				hipSize = 6,
@@ -1253,8 +1253,8 @@ namespace CoC.Frontend.Creatures
 				defaultGender = Gender.FEMALE,
 				forceDefaultGender = true,
 
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.25f) },
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.C, 0.5f) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.25) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.C, 0.5) },
 				hairLength = 22,
 				hairColor = HairFurColors.DEEP_RED,
 				complexion = Tones.LIGHT,
@@ -1304,8 +1304,8 @@ namespace CoC.Frontend.Creatures
 				hairColor = HairFurColors.WHITE,
 				//Complexion: light
 				complexion = Tones.LIGHT,
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.C, 0.2f), new BreastCreator(CupSize.C, 0.2f), new BreastCreator(CupSize.C, 0.2f) },
-				cocks = new CockCreator[] { new CockCreator(8, 1.6f), new CockCreator(8, 1.6f), new CockCreator(8, 1.6f) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.C, 0.2), new BreastCreator(CupSize.C, 0.2), new BreastCreator(CupSize.C, 0.2) },
+				cocks = new CockCreator[] { new CockCreator(8, 1.6), new CockCreator(8, 1.6), new CockCreator(8, 1.6) },
 				numBalls = 2,
 				ballSize = 3,
 				//9 foot 5 inches tall
@@ -1320,7 +1320,7 @@ namespace CoC.Frontend.Creatures
 				earType = EarType.CAT,
 				wingType = WingType.BAT_LIKE,
 				largeWings = true,
-				cumMultiplier = 5.5f,
+				cumMultiplier = 5.5,
 				//Gift: Lotz of Jizz
 				//History: Schooling
 				perks = new List<StandardPerk>()
@@ -1458,7 +1458,7 @@ namespace CoC.Frontend.Creatures
 				tailType = TailType.CAT,
 				lowerBodyType = LowerBodyType.CAT,
 				//Breasts: 2 E-cups on top, 2 DD-cups mid, 2 D-cups bottom, 3.5 inch nipples
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.E, 3.5f), new BreastCreator(CupSize.DD_BIG, 3.5f), new BreastCreator(CupSize.D, 3.5f) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.E, 3.5), new BreastCreator(CupSize.DD_BIG, 3.5), new BreastCreator(CupSize.D, 3.5) },
 				nippleStatus = NippleStatus.FUCKABLE,
 				heightInInches = 67,
 				//Perks: Slut and Fertile"
@@ -1487,8 +1487,8 @@ namespace CoC.Frontend.Creatures
 				defaultGender = Gender.FEMALE,
 				forceDefaultGender = false,
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.C) },
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.5f, VaginalWetness.WET) },
-				cocks = new CockCreator[] { new CockCreator(8.5f, 1.5f) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.5, VaginalWetness.WET) },
+				cocks = new CockCreator[] { new CockCreator(8.5, 1.5) },
 				fertility = 10,
 				hipSize = 7,
 				buttSize = 6,
@@ -1602,8 +1602,8 @@ namespace CoC.Frontend.Creatures
 				forceDefaultGender = false,
 
 				fertility = 5,
-				vaginas = new VaginaCreator[] { new VaginaCreator(0.3f, VaginalWetness.WET, VaginalLooseness.NORMAL, false) },
-				breasts = new BreastCreator[] { new BreastCreator(CupSize.A, 0.5f) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(0.3, VaginalWetness.WET, VaginalLooseness.NORMAL, false) },
+				breasts = new BreastCreator[] { new BreastCreator(CupSize.A, 0.5) },
 				nippleStatus = NippleStatus.FULLY_INVERTED,
 
 				cumMultiplier = 500, // don't ask how it works, copyright for this potion was sold for Joey
@@ -1612,7 +1612,7 @@ namespace CoC.Frontend.Creatures
 				analLooseness = AnalLooseness.NORMAL, // not virgin
 				assVirgin = false,
 
-				cocks = new CockCreator[] { new CockCreator(CockType.TENTACLE, 12, 1.3f, 1.5f), new CockCreator(CockType.TENTACLE, 12, 1.3f, 1.5f), new CockCreator(CockType.TENTACLE, 12, 1.3f, 1.5f) },
+				cocks = new CockCreator[] { new CockCreator(CockType.TENTACLE, 12, 1.3, 1.5), new CockCreator(CockType.TENTACLE, 12, 1.3, 1.5), new CockCreator(CockType.TENTACLE, 12, 1.3, 1.5) },
 
 				heightInInches = 48, // 120 cm
 				hipSize = Hips.BOYISH,
@@ -1973,7 +1973,7 @@ namespace CoC.Frontend.Creatures
 				//7 inch cock, relatively normal thickness, well used, with a steel frenum barbell at the top as a result of a drunken dare
 				cocks = new CockCreator[]
 				{
-					new CockCreator(7, 1.2f, null, cockJewelry:new PiercingData<CockPiercingLocation>(){
+					new CockCreator(7, 1.2, null, cockJewelry:new PiercingData<CockPiercingLocation>(){
 					[CockPiercingLocation.FRENUM_UPPER_1] = new PiercingJewelry(JewelryType.BARBELL_STUD, new Steel(), true) })
 				},
 				cockVirgin = false,
@@ -1988,7 +1988,7 @@ namespace CoC.Frontend.Creatures
 
 				//strangely, clit grew slightly with achemical accident. more blood to the area, i guess.
 				//again, stretched via toys, but never had vaginal sex.
-				vaginas = new VaginaCreator[] { new VaginaCreator(1f, VaginalWetness.WET, VaginalLooseness.LOOSE, true) },
+				vaginas = new VaginaCreator[] { new VaginaCreator(1, VaginalWetness.WET, VaginalLooseness.LOOSE, true) },
 
 				//formerly C Cup, shrunk by the accident. Let's make use of that new inverted option - slightly.
 				breasts = new BreastCreator[] { new BreastCreator(CupSize.A, 1) },

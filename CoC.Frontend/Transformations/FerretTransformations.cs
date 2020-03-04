@@ -221,9 +221,9 @@ namespace CoC.Frontend.Transformations
 					shortenedCock |= longestCock.DecreaseLength(Utils.RandBool() ? 2 : 1) > 0;
 				}
 
-				if (longestCock.girth > longestCock.length / 6.0f)
+				if (longestCock.girth > longestCock.length / 6.0)
 				{
-					shortenedCock |= longestCock.SetGirth(longestCock.length / 6.0f) == longestCock.length / 6.0f;
+					shortenedCock |= longestCock.SetGirth(longestCock.length / 6.0) == longestCock.length / 6.0;
 				}
 
 				if (shortenedCock)

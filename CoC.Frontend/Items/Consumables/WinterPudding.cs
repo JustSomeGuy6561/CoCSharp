@@ -53,10 +53,10 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
 		{
 			var tfs = new ReindeerTFs();
-			resultsOfUse = tfs.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			resultsOfUse = tfs.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 			return true;
 		}
 

@@ -75,7 +75,7 @@ namespace CoC.Frontend.Transformations
 				//high speed
 				else
 				{
-					target.ChangeSpeed(.5f);
+					target.ChangeSpeed(.5);
 				}
 			}
 			//Strength raises to 40
@@ -104,7 +104,7 @@ namespace CoC.Frontend.Transformations
 			//Libido gain
 			if (target.relativeLibido < 80 && Utils.Rand(4) == 0)
 			{
-				target.DeltaCreatureStats(lib: 1, sens: .25f);
+				target.DeltaCreatureStats(lib: 1, sens: .25);
 			}
 
 			//Sexual changes would go here if I wasn't a tard.
@@ -189,7 +189,7 @@ namespace CoC.Frontend.Transformations
 					//lose 33% size until under 10, then lose 2" at a time
 					if (catCock.length > 16)
 					{
-						catCock.SetLength(catCock.length * .66f);
+						catCock.SetLength(catCock.length * .66);
 					}
 					else if (catCock.length > 6)
 					{

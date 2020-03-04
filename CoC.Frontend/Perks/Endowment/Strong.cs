@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //7/12/2019, 11:31 PM
 
+using CoC.Backend.Perks;
+
 namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class Strong : EndowmentPerkBase
@@ -12,15 +14,12 @@ namespace CoC.Frontend.Perks.Endowment
 
 		protected override void OnActivation()
 		{
-			baseModifiers.minStrength += 5;
-			baseModifiers.StrengthGainMultiplier += 0.25f;
+			AddModifierToPerk(baseModifiers.minStrengthDelta, new ValueModifierStore<sbyte>(ValueModifierType.FLAT_ADD, 5));
+			AddModifierToPerk(baseModifiers.strengthGainMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.25));
 		}
 
 		protected override void OnRemoval()
-		{
-			baseModifiers.minStrength -= 5;
-			baseModifiers.StrengthGainMultiplier -= 0.25f;
-		}
+		{ }
 	}
 }
 

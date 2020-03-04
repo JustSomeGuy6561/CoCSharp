@@ -61,7 +61,7 @@ namespace CoC.Frontend.Transformations
 			//libido up to 80
 			if (target.relativeLibido < 80)
 			{
-				target.DeltaCreatureStats(lib: .5f + (90 - target.libido) / 10, lus: target.libido / 2);
+				target.DeltaCreatureStats(lib: .5 + (90 - target.libido) / 10, lus: target.libidoTrue / 2);
 			}
 			//sensitivity moves towards 50
 			if (target.relativeSensitivity < 50)
@@ -177,7 +177,7 @@ namespace CoC.Frontend.Transformations
 			//3a. Grow vagina if none
 			if (!target.hasVagina)
 			{
-				target.genitals.AddVagina(VaginaType.defaultValue, 0.4f, VaginalLooseness.GAPING, VaginalWetness.DROOLING);
+				target.genitals.AddVagina(VaginaType.defaultValue, 0.4, VaginalLooseness.GAPING, VaginalWetness.DROOLING);
 
 				if (--remainingChanges <= 0)
 				{

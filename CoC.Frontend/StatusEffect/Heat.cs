@@ -55,13 +55,11 @@ namespace CoC.Frontend.StatusEffect
 			{
 				active = true;
 
-				sbyte oldMinLibido = baseModifiers.minLibido;
-				baseModifiers.minLibido += LIBIDO_STACK;
-				totalAddedLibido = baseModifiers.minLibido.subtract(oldMinLibido);
+				totalAddedLibido = LIBIDO_STACK;
+				totalAddedFertility = FERTILITY_STACK;
 
-				byte oldBonusFertility = baseModifiers.bonusFertility;
-				baseModifiers.bonusFertility += FERTILITY_STACK;
-				totalAddedFertility = baseModifiers.bonusFertility.subtract(oldBonusFertility);
+				AddModifierToPerk(baseModifiers.minLibidoDelta, new ValueModifierStore<sbyte>(ValueModifierType.RELATIVE, totalAddedLibido));
+				AddModifierToPerk(baseModifiers.bonusFertility, new ValueModifierStore<byte>(ValueModifierType.RELATIVE, totalAddedFertility));
 
 				sourceCreature.womb.onKnockup -= Womb_onKnockup;
 				sourceCreature.womb.onKnockup += Womb_onKnockup;
@@ -91,11 +89,8 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (active)
 			{
-				baseModifiers.minLibido -= totalAddedLibido;
-				baseModifiers.bonusFertility -= totalAddedFertility;
-
-				totalAddedLibido = 0;
 				totalAddedFertility = 0;
+				totalAddedLibido = 0;
 
 				sourceCreature.womb.onKnockup -= Womb_onKnockup;
 				sourceCreature.genitals.onGenderChanged -= Genitals_onGenderChanged;
@@ -118,7 +113,7 @@ namespace CoC.Frontend.StatusEffect
 			}
 		}
 
-		protected override string OnStatusEffectWoreOff()
+		protected override string OnStatusEffectWoreOff(byte hoursPassedSinceLastUpdate)
 		{
 
 			return Environment.NewLine + SafelyFormattedString.FormattedText("Your body calms down, at last getting over your heat.", StringFormats.BOLD) + Environment.NewLine;
@@ -132,9 +127,8 @@ namespace CoC.Frontend.StatusEffect
 				byte timeDelta = stack;
 				if (totalAddedLibido < MAX_LIBIDO)
 				{
-					sbyte oldMinLibido = baseModifiers.minLibido;
-					baseModifiers.minLibido += LIBIDO_STACK;
-					totalAddedLibido += baseModifiers.minLibido.subtract(oldMinLibido);
+					totalAddedLibido += LIBIDO_STACK;
+					UpdatePerkModifier(baseModifiers.minLibidoDelta, new ValueModifierStore<sbyte>(ValueModifierType.RELATIVE, totalAddedLibido));
 					increased = true;
 				}
 				else
@@ -144,9 +138,8 @@ namespace CoC.Frontend.StatusEffect
 
 				if (totalAddedFertility < MAX_FERTILITY_BOOST)
 				{
-					byte oldBonusFertility = baseModifiers.bonusFertility;
-					baseModifiers.bonusFertility += FERTILITY_STACK;
-					totalAddedFertility += baseModifiers.bonusFertility.subtract(oldBonusFertility);
+					totalAddedFertility += FERTILITY_STACK;
+					UpdatePerkModifier(baseModifiers.bonusFertility, new ValueModifierStore<byte>(ValueModifierType.RELATIVE, totalAddedFertility));
 					increased = true;
 				}
 				else

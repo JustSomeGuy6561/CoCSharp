@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //1/18/2020 9:05:07 PM
 
+using System;
 using CoC.Backend.Creatures;
 using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
@@ -10,7 +11,6 @@ using CoC.Backend.Strings;
 using CoC.Backend.Tools;
 using CoC.Frontend.Transformations; //use if this is an item that does a transformation. safe to remove if not.
 using CoC.Frontend.UI; //used if the item has to deal with menus and such. safe to remove if not.
-using System;
 
 namespace CoC.Frontend.Items.Consumables
 {
@@ -82,25 +82,24 @@ namespace CoC.Frontend.Items.Consumables
 			}
 			else
 			{
-				var tf = new FerretTFs();
+				FerretTFs tf = new FerretTFs();
 				resultsOfUse = tf.DoTransformation(consumer, out isBadEnd);
 			}
 			return true;
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
 		{
 			//fun fact: Ferret Fruit has a 1/100 chance of doing nothing.
 			if (Utils.Rand(100) == 0)
 			{
 				isBadEnd = false;
-				isCombatLoss = false;
 				resultsOfUse = RottenFruitOrSomething(consumer);
 			}
 			else
 			{
-				var tf = new FerretTFs();
-				resultsOfUse = tf.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+				FerretTFs tf = new FerretTFs();
+				resultsOfUse = tf.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 			}
 			return true;
 		}

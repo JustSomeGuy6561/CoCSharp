@@ -47,7 +47,7 @@ namespace CoC.Frontend.Transformations
 
 			if (Utils.Rand(100) < 15)
 			{
-				crit = Utils.Rand(20) / 10f + 2;
+				crit = Utils.Rand(20) / 10.0 + 2;
 			}
 
 			bool hasCrit() => crit > 1;
@@ -226,7 +226,7 @@ namespace CoC.Frontend.Transformations
 			//MOD: Now respects hyper happy.
 			if (target.gender == Gender.GENDERLESS && !hyperHappy)
 			{
-				target.genitals.AddCock(CockType.WOLF, Utils.Rand(4) + 4, Utils.Rand(8) / 4.0f + 0.25f, 1.5f);
+				target.genitals.AddCock(CockType.WOLF, Utils.Rand(4) + 4, Utils.Rand(8) / 4.0 + 0.25, 1.5);
 
 				sb.Append(BecameMaleByGrowingCock(target));
 
@@ -256,16 +256,16 @@ namespace CoC.Frontend.Transformations
 					}
 					else
 					{
-						firstNonWolf.DecreaseLength(.5f);
+						firstNonWolf.DecreaseLength(.5);
 					}
 
-					firstNonWolf.IncreaseThickness(.5f);
+					firstNonWolf.IncreaseThickness(.5);
 				}
 
 				target.DeltaCreatureStats(sens: 3, lus: 5 * crit);
 
 
-				target.genitals.UpdateCockWithKnot(firstNonWolf, CockType.WOLF, 1.5f);
+				target.genitals.UpdateCockWithKnot(firstNonWolf, CockType.WOLF, 1.5);
 				firstNonWolf.IncreaseThickness(2);
 
 				sb.Append(ChangedCockToWolf(target, oldData, oldData.cockIndex));

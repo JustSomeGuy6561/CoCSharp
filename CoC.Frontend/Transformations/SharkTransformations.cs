@@ -113,7 +113,7 @@ namespace CoC.Frontend.Transformations
 				{
 					target.balls.GrowBalls();
 				}
-				target.genitals.AddCock(CockType.defaultValue, 7, 1.4f);
+				target.genitals.AddCock(CockType.defaultValue, 7, 1.4);
 
 				target.DeltaCreatureStats(lib: 4, sens: 5, lus: 20);
 				if (--remainingChanges <= 0)

@@ -49,10 +49,10 @@ namespace CoC.Frontend.Items.Consumables
 			return true;
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
 		{
 			var transform = new ImpFoodTFs();
-			resultsOfUse = transform.DoTransformationFromCombat(consumer, out isCombatLoss, out isBadEnd);
+			resultsOfUse = transform.DoTransformationFromCombat(consumer, opponent, out isBadEnd);
 			return true;
 		}
 

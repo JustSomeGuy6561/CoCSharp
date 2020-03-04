@@ -73,8 +73,8 @@ namespace CoC.Backend.BodyParts
 		public readonly bool hasButt;// => size >= TIGHT;
 		public int index => size;
 
-		private byte minSize => hasButt ? (CreatureStore.GetCreatureClean(creatureID)?.perks.baseModifiers.minButtSize.GetValue() ?? TIGHT) : BUTTLESS;
-		private byte maxVal => hasButt ? INCONCEIVABLY_BIG : BUTTLESS;
+		public byte smallestPossibleButtSize => hasButt ? (CreatureStore.GetCreatureClean(creatureID)?.perks.baseModifiers.minButtSize.GetValue() ?? TIGHT) : BUTTLESS;
+		public byte largestPossibleButtSize => hasButt ? INCONCEIVABLY_BIG : BUTTLESS;
 
 		public byte size
 		{
@@ -82,7 +82,7 @@ namespace CoC.Backend.BodyParts
 			private set
 			{
 
-				Utils.Clamp(ref value, minSize, maxVal);
+				Utils.Clamp(ref value, smallestPossibleButtSize, largestPossibleButtSize);
 				if (_buttSize != value)
 				{
 					var oldData = AsReadOnlyData();
@@ -171,7 +171,7 @@ namespace CoC.Backend.BodyParts
 
 		bool IShrinkable.CanReducto()
 		{
-			return size > minSize;
+			return size > smallestPossibleButtSize;
 		}
 
 		string IShrinkable.UseReducto()

@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //7/12/2019, 11:38 PM
 
+using CoC.Backend.Perks;
+
 namespace CoC.Frontend.Perks.Endowment
 {
 	public sealed partial class Lusty : EndowmentPerkBase
@@ -11,14 +13,12 @@ namespace CoC.Frontend.Perks.Endowment
 		{ }
 		protected override void OnActivation()
 		{
-			baseModifiers.LustGainMultiplier += 0.25f;
-			baseModifiers.minLibido += 5;
+			AddModifierToPerk(baseModifiers.lustGainMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.25));
+			AddModifierToPerk(baseModifiers.minLibidoDelta, new ValueModifierStore<sbyte>(ValueModifierType.FLAT_ADD, 5));
 		}
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.LustGainMultiplier -= 0.25f;
-			baseModifiers.minLibido -= 5;
 		}
 	}
 }

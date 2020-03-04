@@ -205,11 +205,11 @@ namespace CoC.Frontend.Items.Consumables
 		private static string EnlargedSmallestKnotText(Creature target, int cockIndex, double knotMultiplierDelta, bool hasMoreThanOneDogCock)
 		{
 			var smallestKnot = target.cocks[cockIndex];
-			if (knotMultiplierDelta < .06f)
+			if (knotMultiplierDelta < .06)
 			{
 				return "Your " + smallestKnot.ShortDescription() + " feels unusually tight in your sheath as your knot grows.";
 			}
-			else if (knotMultiplierDelta <= .12f)
+			else if (knotMultiplierDelta <= .12)
 			{
 				return "Your " + smallestKnot.ShortDescription() + " pops free of your sheath, thickening nicely into a bigger knot.";
 			}

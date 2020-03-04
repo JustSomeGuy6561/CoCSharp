@@ -3,6 +3,8 @@
 //Author: JustSomeGuy
 //7/9/2019, 6:58 PM
 
+using CoC.Backend.Perks;
+
 namespace CoC.Frontend.Perks.History
 {
 	public sealed partial class AlchemicalMastery : HistoryPerkBase
@@ -15,16 +17,12 @@ namespace CoC.Frontend.Perks.History
 		{
 			if (hasExtraModifiers)
 			{
-				extraModifiers.itemForgeCostReduction.addIn(1);
+				AddModifierToPerk(extraModifiers.itemForgeCostReduction, new ValueModifierStore<byte>(ValueModifierType.FLAT_ADD, 1));
 			}
 		}
 
 		protected override void OnRemoval()
 		{
-			if (hasExtraModifiers)
-			{
-				extraModifiers.itemForgeCostReduction.subtractOff(1);
-			}
 		}
 	}
 }

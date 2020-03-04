@@ -276,7 +276,7 @@ namespace CoC.Frontend.Creatures
 			if (creator.ballSize == null || creator.ballSize == 0) creator.ballSize = 1;
 			if (creator.cocks == null || creator.cocks.Length == 0)
 			{
-				creator.cocks = new CockCreator[] { new CockCreator(CockType.HUMAN, 5.5f, 1f) };
+				creator.cocks = new CockCreator[] { new CockCreator(CockType.HUMAN, 5.5, 1) };
 			}
 			creator.vaginas = null;
 
@@ -1175,12 +1175,12 @@ namespace CoC.Frontend.Creatures
 		//	//currentDisplay.OutputText(images.showImage("event-question"));
 		//	currentDisplay.OutputText("How long would you like your beard be? \n\nNote: Beard will slowly grow over time, just like in the real world. Unless you have no beard. You can change your beard style later in the game.");
 		//	currentScene.AddButton(0, "No Beard", () => chooseBeardLength(0));
-		//	currentScene.AddButton(1, "Trim", () => chooseBeardLength(0.1f));
-		//	currentScene.AddButton(2, "Short", () => chooseBeardLength(0.2f));
-		//	currentScene.AddButton(3, "Medium", () => chooseBeardLength(5f));
-		//	currentScene.AddButton(4, "Mod. Long", () => chooseBeardLength(5f));
-		//	currentScene.AddButton(5, "Long", () => chooseBeardLength(3f));
-		//	currentScene.AddButton(6, "Very Long", () => chooseBeardLength(6f));
+		//	currentScene.AddButton(1, "Trim", () => chooseBeardLength(0.1));
+		//	currentScene.AddButton(2, "Short", () => chooseBeardLength(0.2));
+		//	currentScene.AddButton(3, "Medium", () => chooseBeardLength(5));
+		//	currentScene.AddButton(4, "Mod. Long", () => chooseBeardLength(5));
+		//	currentScene.AddButton(5, "Long", () => chooseBeardLength(3));
+		//	currentScene.AddButton(6, "Very Long", () => chooseBeardLength(6));
 		//	currentScene.AddButton(9, GlobalStrings.BACK(), menuBeardSettings);
 		//	currentScene.AddButton(14, GlobalStrings.RETURN(), GenericStyleCustomizeMenu);
 		//}
@@ -1376,7 +1376,7 @@ namespace CoC.Frontend.Creatures
 			{
 				size = MIN_COCK_IN;
 				max = MAX_COCK_IN;
-				delta = 0.5f;
+				delta = 0.5;
 			}
 
 			while (count < 14 && size <= max)
@@ -1392,16 +1392,16 @@ namespace CoC.Frontend.Creatures
 		private void ChooseCockLength(double length)
 		{
 			creator.cocks[0].length = length;
-			creator.cocks[0].girth = (length / 5) - 0.1f;
+			creator.cocks[0].girth = (length / 5) - 0.1;
 			GenericStyleCustomizeMenu();
 		}
 		#endregion
 		#region Clit
 		//Shamelessly copied from Cock section, but with slightly different values. Sue Me - JSG
-		private const double MIN_CLIT_IN = 0.25f;
-		private const double MIN_CLIT_CM = 1.5f;
+		private const double MIN_CLIT_IN = 0.25;
+		private const double MIN_CLIT_CM = 1.5;
 		private const double MAX_CLIT_IN = 2;
-		private const double MAX_CLIT_CM = 5f;
+		private const double MAX_CLIT_CM = 5;
 
 		private void MenuClitLength()
 		{
@@ -1415,13 +1415,13 @@ namespace CoC.Frontend.Creatures
 			{
 				size = MIN_CLIT_CM;
 				max = MAX_CLIT_CM;
-				delta = 0.5f;
+				delta = 0.5;
 			}
 			else
 			{
 				size = MIN_COCK_IN;
 				max = MAX_COCK_IN;
-				delta = 0.25f;
+				delta = 0.25;
 			}
 
 			while (count < 14 && size <= max)
@@ -1462,13 +1462,13 @@ namespace CoC.Frontend.Creatures
 			creator.breasts[0].cupSize = size;
 			//remember null < anything is false, and null > anything is false.
 			//so these are fine. woo!
-			if (size > CupSize.C && (creator.nippleLength is null || creator.nippleLength < 0.5f))
+			if (size > CupSize.C && (creator.nippleLength is null || creator.nippleLength < 0.5))
 			{
-				creator.nippleLength = 0.5f;
+				creator.nippleLength = 0.5;
 			}
-			else if (size == CupSize.FLAT && (creator.nippleLength is null || creator.nippleLength < 0.25f))
+			else if (size == CupSize.FLAT && (creator.nippleLength is null || creator.nippleLength < 0.25))
 			{
-				creator.nippleLength = 0.25f;
+				creator.nippleLength = 0.25;
 			}
 			GenericStyleCustomizeMenu();
 		}

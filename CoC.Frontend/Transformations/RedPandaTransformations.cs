@@ -152,7 +152,7 @@ namespace CoC.Frontend.Transformations
 
 				if (target.genitals.nippleLength > 1 && Utils.Rand(3) == 0)
 				{
-					target.genitals.SetNippleLength(target.genitals.nippleLength / 2f);
+					target.genitals.SetNippleLength(target.genitals.nippleLength / 2);
 				}
 
 				if (target.hasVagina && target.vaginas[0].wetness < VaginalWetness.SLICK && Utils.Rand(4) == 0)
@@ -199,7 +199,7 @@ namespace CoC.Frontend.Transformations
 
 				if (target.genitals.nippleLength > 1 && Utils.Rand(3) == 0)
 				{
-					target.genitals.SetNippleLength(target.genitals.nippleLength / 2f);
+					target.genitals.SetNippleLength(target.genitals.nippleLength / 2);
 				}
 
 				//Hips > 10 - decrease hip size by 1-3 sizes
@@ -278,7 +278,7 @@ namespace CoC.Frontend.Transformations
 				//Cock thickness <2 - Increase cock thickness
 				if (smallestArea.area < 10 && Utils.Rand(3) == 0)
 				{
-					smallestArea.IncreaseThickness(1.5f);
+					smallestArea.IncreaseThickness(1.5);
 					if (--remainingChanges <= 0)
 					{
 						return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);

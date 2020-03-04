@@ -115,18 +115,10 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 				+ "a thicker substance, granting you a little more protection, and you can probably use your rubbery second skin for longer and in kinkier ways.";
 		}
 
-
-		public override bool Equals(EggBase other)
-		{
-			return other is BlackRubberEgg && other.isLarge == this.isLarge;
-		}
-
 		public override bool EqualsIgnoreSize(EggBase other)
 		{
 			return other is BlackRubberEgg;
 		}
-
-
 
 		public override byte sateHungerAmount => (byte)(isLarge ? 60 : 20);
 
@@ -161,11 +153,11 @@ namespace CoC.Frontend.Items.Consumables.Eggs
 				}
 				consumer.DeltaCreatureStats(sens: 8, lus: 10, corr: 2);
 
-				resultsOfUse = GainedRubberySkinPerk(knewAboutBlackEggs);
+				resultsOfUse = GainedRubberySkinPerk(consumer, knewAboutBlackEggs);
 			}
 			else if (isLarge && consumer.StackPerk<RubberySkin>())
 			{
-				resultsOfUse = StackedRubberySkinText();
+				resultsOfUse = StackedRubberySkinText(consumer.GetPerkData<RubberySkin>());
 			}
 			else
 			{

@@ -84,7 +84,7 @@ namespace CoC.Frontend.Transformations
 			//Intelligence Boost
 			if (Utils.Rand(2) == 0 && target.relativeIntelligence < 80)
 			{
-				target.IncreaseIntelligence(0.1f * (80 - target.relativeIntelligence));
+				target.IncreaseIntelligence(0.1 * (80 - target.relativeIntelligence));
 			}
 			//bee item corollary:
 			if (target.hair.type == HairType.ANEMONE && Utils.Rand(2) == 0)
@@ -339,7 +339,7 @@ namespace CoC.Frontend.Transformations
 				//one cock. grow it to 100 area total or larger
 				else if (target.cocks[0].area < 100)
 				{
-					target.cocks[0].DeltaLengthAndGirth(Utils.Rand(3) + 4, 0.1f * Utils.Rand(5) + 0.5f);
+					target.cocks[0].DeltaLengthAndGirth(Utils.Rand(3) + 4, 0.1 * Utils.Rand(5) + 0.5);
 				}
 				//
 				else
@@ -356,8 +356,8 @@ namespace CoC.Frontend.Transformations
 					}
 					else
 					{
-						baseLengthChange = 0.1f * Utils.Rand(10) + 1;
-						baseGirthChange = 0.1f * Utils.Rand(2) + 1;
+						baseLengthChange = 0.1 * Utils.Rand(10) + 1;
+						baseGirthChange = 0.1 * Utils.Rand(2) + 1;
 					}
 
 					double mult;
@@ -373,7 +373,7 @@ namespace CoC.Frontend.Transformations
 					if (cock.area > 100)
 					{
 						int offset = (((int)cock.area) - 100) / 40;
-						mult = 1 - 0.2f * offset;
+						mult = 1 - 0.2 * offset;
 					}
 					else
 					{
@@ -389,7 +389,7 @@ namespace CoC.Frontend.Transformations
 
 				if (target.corruption >= 5)
 				{
-					double corrLoss = Math.Min(0.1f * target.corruptionTrue + 5, target.corruptionTrue);
+					double corrLoss = Math.Min(0.1 * target.corruptionTrue + 5, target.corruptionTrue);
 					target.DeltaCreatureStats(corr: -corrLoss, lib: corrLoss); //Lose corruption and gains that much libido
 				}
 				else
@@ -408,7 +408,7 @@ namespace CoC.Frontend.Transformations
 						target.femininity.IncreaseFemininity(3);
 					}
 				}
-				target.ChangeLust(0.2f * target.libidoTrue + 5);
+				target.ChangeLust(0.2 * target.libidoTrue + 5);
 			}
 
 

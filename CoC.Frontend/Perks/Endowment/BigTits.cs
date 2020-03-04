@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //7/12/2019, 11:38 PM
 using CoC.Backend.BodyParts;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.Perks.Endowment
 {
@@ -12,20 +13,15 @@ namespace CoC.Frontend.Perks.Endowment
 		{ }
 		protected override void OnActivation()
 		{
-			baseModifiers.FemaleNewBreastCupSizeDelta += 1;
-			baseModifiers.TitsGrowthMultiplier += 0.25f;
-			baseModifiers.TitsShrinkMultiplier -= 0.25f;
-			baseModifiers.FemaleNewBreastDefaultCupSize += 1;
-			baseModifiers.FemaleMinCupSize += 1;
+			AddModifierToPerk(baseModifiers.femaleNewBreastCupSizeDelta, new ValueModifierStore<sbyte>(ValueModifierType.FLAT_ADD, 1));
+			AddModifierToPerk(baseModifiers.titsGrowthMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, 0.25));
+			AddModifierToPerk(baseModifiers.titsShrinkMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD, -0.25));
+			AddModifierToPerk(baseModifiers.femaleNewBreastDefaultCupSize, new ValueModifierStore<byte>(ValueModifierType.FLAT_ADD, 1));
+			AddModifierToPerk(baseModifiers.femaleMinCupSize, new ValueModifierStore<byte>(ValueModifierType.FLAT_ADD, 1));
 		}
 
 		protected override void OnRemoval()
 		{
-			baseModifiers.FemaleNewBreastCupSizeDelta -= 1;
-			baseModifiers.TitsGrowthMultiplier -= 0.25f;
-			baseModifiers.TitsShrinkMultiplier += 0.25f;
-			baseModifiers.FemaleNewBreastDefaultCupSize -= 1;
-			baseModifiers.FemaleMinCupSize -= 1;
 		}
 
 		protected override bool Unlocked(Gender gender)

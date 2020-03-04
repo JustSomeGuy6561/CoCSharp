@@ -90,8 +90,8 @@ namespace CoC.Frontend.Items.Consumables
 			//if small on only have 1, remove 1.
 			if (consumer.hasVagina && (consumer.vaginas.Count == 1 || !isLarge))
 			{
-				sb.Append(consumer.genitals.OneVaginaOrVaginasNoun(Conjugate.YOU, out bool isPlural).CapitalizeFirstLetter() + (isPlural ? "clench" : "clenches")
-					+ " in pain, doubling you over. You slip a hand down to check on it, only to feel the slit growing smaller and smaller until it disappears");
+				sb.Append(consumer.genitals.OneVaginaOrVaginasNoun(Conjugate.YOU).CapitalizeFirstLetter() + "clenches in pain, doubling you over. " +
+					"You slip a hand down to check on it, only to feel the slit growing smaller and smaller until it disappears");
 
 				//if large, and we don't have a cock, grow one out of old clit.
 				if (isLarge && !consumer.hasCock)
@@ -268,11 +268,6 @@ namespace CoC.Frontend.Items.Consumables
 
 			resultsOfUse = sb.ToString();
 			return true;
-		}
-
-		public override bool Equals(EggBase other)
-		{
-			return other is BlueEgg && other.isLarge == isLarge;
 		}
 
 		public override bool EqualsIgnoreSize(EggBase other)

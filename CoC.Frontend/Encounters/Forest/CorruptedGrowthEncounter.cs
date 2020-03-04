@@ -88,7 +88,7 @@ namespace CoC.Frontend.Encounters.Forest
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}
 
-		private void runCombatEncounter(double baseHealth = 1.0f)
+		private void runCombatEncounter(double baseHealth = 1.0)
 		{
 			throw new InDevelopmentExceptionThatBreaksOnRelease();
 		}

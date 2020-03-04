@@ -49,18 +49,17 @@ namespace CoC.Frontend.Transformations
 
 		protected internal override string DoTransformation(Creature target, out bool isBadEnd)
 		{
-			return DoTransformationCommon(target, false, out bool _, out isBadEnd);
+			return DoTransformationCommon(target, false, out isBadEnd);
 		}
 
-		protected internal override string DoTransformationFromCombat(CombatCreature target, out bool isCombatLoss, out bool isBadEnd)
+		protected internal override string DoTransformationFromCombat(CombatCreature target, CombatCreature opponent, out bool isBadEnd)
 		{
-			return DoTransformationCommon(target, true, out isCombatLoss, out isBadEnd);
+			return DoTransformationCommon(target, true, out isBadEnd);
 		}
 
-		private string DoTransformationCommon(Creature target, bool currentlyInCombat, out bool isCombatLoss, out bool isBadEnd)
+		private string DoTransformationCommon(Creature target, bool currentlyInCombat, out bool isBadEnd)
 		{
 			isBadEnd = false;
-			isCombatLoss = false;
 
 			//by default, this is 2 rolls at 50%, so a 25% chance of 0 additional tfs, 50% chance of 1 additional tf, 25% chance of 2 additional tfs.
 			//also takes into consideration any perks that increase or decrease tf effectiveness. if you need to roll out your own, feel free to do so.
@@ -260,11 +259,8 @@ namespace CoC.Frontend.Transformations
 					target.UpdateBody(BodyType.REPTILE, Tones.GREEN, Tones.LIGHT_GREEN);
 				}
 
-				//now causes the pc to immediately lose if they are in combat.
 				if (--remainingChanges <= 0 || currentlyInCombat)
 				{
-					//if we aren't in combat, this value is ignored, anyway. so we can set it here and not care.
-					isCombatLoss = true;
 					return ApplyChangesAndReturn(target, sb, changeCount - remainingChanges);
 				}
 			}

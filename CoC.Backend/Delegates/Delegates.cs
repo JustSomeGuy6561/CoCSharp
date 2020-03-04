@@ -83,10 +83,12 @@ namespace CoC.Backend
 	//these both have an alternate format for when they are called from combat - it may be possible for an item used in combat to immediately cause the player to lose.
 	//note that for the sake of simplicity, a combat loss caused by an item use will be treated as a hp loss, but your hp will be restored afterward.
 	public delegate void UseItemCallback(bool successfullyUsedItem, string whatHappened, string author, CapacityItem replacementItem);
-	public delegate void UseItemCombatCallback(bool successfullyUsedItem, bool lostCombatFromUse, string whatHappened, string author, CapacityItem replacementItem);
+	//note: combat callback may later have more stuff in it, like altering the combat state (causing attacker/opponent to flee, etc), so it's given its owm callback.
+	public delegate void UseItemCombatCallback(bool successfullyUsedItem, string whatHappened, string author, CapacityItem replacementItem);
 
 	public delegate void UseItemCallbackSafe<T>(bool successfullyUsedItem, string whatHappened, string author, T replacementItem) where T : CapacityItem;
-	public delegate void UseItemCombatCallbackSafe<T>(bool successfullyUsedItem, bool lostCombatFromUse, string whatHappened, string author, T replacementItem) where T : CapacityItem;
+	//see ablve.
+	public delegate void UseItemCombatCallbackSafe<T>(bool successfullyUsedItem, string whatHappened, string author, T replacementItem) where T : CapacityItem;
 
 
 	public delegate string SimpleReactionDelegate(bool currentlyIdling, bool hasIdleHours);

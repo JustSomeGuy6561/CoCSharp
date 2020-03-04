@@ -1,11 +1,11 @@
-﻿using CoC.Backend;
+﻿using System;
+using CoC.Backend;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Engine;
 using CoC.Backend.Engine.Time;
 using CoC.Backend.Perks;
 using CoC.Backend.Reaction;
 using CoC.Backend.Tools;
-using System;
 namespace CoC.Frontend.StatusEffect
 {
 	public sealed class Rut : TimedPerk
@@ -47,16 +47,12 @@ namespace CoC.Frontend.StatusEffect
 			{
 				active = true;
 
-				sbyte oldMinLibido = baseModifiers.minLibido;
-				baseModifiers.minLibido += LIBIDO_STACK;
-				totalAddedLibido = baseModifiers.minLibido.subtract(oldMinLibido);
+				totalAddedVirility = VIRILITY_STACK;
+				totalAddedLibido = LIBIDO_STACK;
 
-				sbyte oldBonusFertility = baseModifiers.perkBonusVirility;
-				baseModifiers.perkBonusVirility += VIRILITY_STACK;
-				totalAddedVirility = baseModifiers.perkBonusVirility.subtract(oldBonusFertility);
+				AddModifierToPerk(baseModifiers.minLibidoDelta, new ValueModifierStore<sbyte>(ValueModifierType.RELATIVE, totalAddedLibido));
+				AddModifierToPerk(baseModifiers.perkBonusVirility, new ValueModifierStore<sbyte>(ValueModifierType.RELATIVE, totalAddedVirility));
 
-				sourceCreature.genitals.onGenderChanged -= Genitals_onGenderChanged;
-				sourceCreature.genitals.onGenderChanged += Genitals_onGenderChanged;
 			}
 		}
 
@@ -72,8 +68,7 @@ namespace CoC.Frontend.StatusEffect
 		{
 			if (active)
 			{
-				baseModifiers.minLibido -= totalAddedLibido;
-				baseModifiers.perkBonusVirility -= totalAddedVirility;
+
 
 				totalAddedLibido = 0;
 				totalAddedVirility = 0;
@@ -106,10 +101,10 @@ namespace CoC.Frontend.StatusEffect
 				byte timeDelta = stack;
 				if (totalAddedLibido < MAX_LIBIDO)
 				{
-					sbyte oldMinLibido = baseModifiers.minLibido;
-					baseModifiers.minLibido += LIBIDO_STACK;
-					totalAddedLibido += baseModifiers.minLibido.subtract(oldMinLibido);
+					totalAddedLibido += LIBIDO_STACK;
+					UpdatePerkModifier(baseModifiers.minLibidoDelta, new ValueModifierStore<sbyte>(ValueModifierType.RELATIVE, totalAddedLibido));
 					increased = true;
+
 				}
 				else
 				{
@@ -118,9 +113,10 @@ namespace CoC.Frontend.StatusEffect
 
 				if (totalAddedVirility < MAX_VIRILITY_BOOST)
 				{
-					sbyte oldBonusVirility = baseModifiers.perkBonusVirility;
-					baseModifiers.perkBonusVirility += VIRILITY_STACK;
-					totalAddedVirility += baseModifiers.perkBonusVirility.subtract(oldBonusVirility);
+					totalAddedVirility += VIRILITY_STACK;
+					//update the modifier value with the new stack amount.
+					UpdatePerkModifier(baseModifiers.perkBonusVirility, new ValueModifierStore<sbyte>(ValueModifierType.RELATIVE, totalAddedVirility));
+
 					increased = true;
 				}
 				else
@@ -165,7 +161,7 @@ namespace CoC.Frontend.StatusEffect
 				SafelyFormattedString.FormattedText("you've sunken deeper into rut", StringFormats.BOLD) + ", but all that really matters is unloading into a cum-hungry cunt.";
 		}
 
-		protected override string OnStatusEffectWoreOff()
+		protected override string OnStatusEffectWoreOff(byte hoursPassedSinceLastUpdate)
 		{
 			return RemoveText();
 		}

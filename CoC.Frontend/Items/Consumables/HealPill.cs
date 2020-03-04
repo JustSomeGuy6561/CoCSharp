@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using CoC.Backend.BodyParts;
 using CoC.Backend.Creatures;
+using CoC.Backend.Items;
 using CoC.Backend.Items.Consumables;
 using CoC.Backend.Strings;
 using CoC.Backend.Tools;
@@ -24,14 +25,18 @@ namespace CoC.Frontend.Items.Consumables
 		public override string ItemName() => "Heal Pill";
 		public override string ItemDescription(byte count, bool displayCount = false)
 		{
-			throw;
-			//"a small healing pill";
+			string itemText = count != 1 ? "pills" : "pill";
+
+			string countText = displayCount ? (count == 1 ? "a " : Utils.NumberAsText(count)) + " " : "";
+
+			return $"{count}small healing {itemText}";
 		}
 		public override string AboutItem() => "A small healing pill that's guaranteed to heal you by a bit.";
 		protected override int monetaryValue => DEFAULT_VALUE;
 
 		public override bool countsAsLiquid => false;
 		public override bool countsAsCum => false;
+		public override byte sateHungerAmount => 0;
 
 		public override bool CanUse(Creature target, bool currentlyInCombat, out string whyNot)
 		{
@@ -47,6 +52,11 @@ namespace CoC.Frontend.Items.Consumables
 			}
 		}
 
+		public override bool Equals(CapacityItem other)
+		{
+			return other is HealPill;
+		}
+
 		protected override bool OnConsumeAttempt(Creature creature, out string resultsOfUse, out bool isBadEnd)
 		{
 			var consumer = creature as CombatCreature;
@@ -56,7 +66,7 @@ namespace CoC.Frontend.Items.Consumables
 			StringBuilder sb = new StringBuilder();
 			sb.Append("You pop the small pill into your mouth and swallow. ");
 
-			if (consumer.AddHP(50 + consumer.toughness, true))
+			if (consumer.AddHP((uint)(50 + consumer.toughness)) > 0)
 			{
 				sb.Append("Some of your wounds are healed. ");
 			}

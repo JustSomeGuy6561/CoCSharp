@@ -3,6 +3,7 @@
 //Author: JustSomeGuy
 //7/10/2019, 6:22 AM
 using CoC.Backend;
+using CoC.Backend.Perks;
 
 namespace CoC.Frontend.Perks.History
 {
@@ -14,12 +15,10 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			baseModifiers.armorEffectivenessMultiplier += 0.1f;
+			AddModifierToPerk(baseModifiers.armorEffectivenessMultiplier, new ValueModifierStore<double>(ValueModifierType.FLAT_ADD,  0.1));
 		}
 
 		protected override void OnRemoval()
-		{
-			baseModifiers.armorEffectivenessMultiplier -= 0.1f;
-		}
+		{ }
 	}
 }

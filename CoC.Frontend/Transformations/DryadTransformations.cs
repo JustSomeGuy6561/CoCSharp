@@ -124,7 +124,7 @@ namespace CoC.Frontend.Transformations
 
 					if (!target.hasCock && !target.hasVagina)
 					{
-						target.AddVagina(.25f);
+						target.AddVagina(.25);
 						target.IncreaseCorruption();
 
 						BallsData oldBalls = target.balls.AsReadOnlyData();

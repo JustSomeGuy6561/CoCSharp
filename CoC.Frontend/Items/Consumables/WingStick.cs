@@ -66,9 +66,8 @@ namespace CoC.Frontend.Items.Consumables
 			return false;
 		}
 
-		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isCombatLoss, out bool isBadEnd)
+		protected override bool OnCombatConsumeAttempt(CombatCreature consumer, CombatCreature opponent, out string resultsOfUse, out bool isBadEnd)
 		{
-			isCombatLoss = false;
 			isBadEnd = false;
 
 			StringBuilder sb = new StringBuilder();

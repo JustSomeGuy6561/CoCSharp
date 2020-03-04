@@ -4,6 +4,8 @@
 //7/10/2019, 6:22 AM
 
 
+using CoC.Backend.Perks;
+
 namespace CoC.Frontend.Perks.History
 {
 	//minor rework/buff: in addition to bonus capacity, it now allows voluntary sex at lower lust levels (-5).
@@ -16,22 +18,17 @@ namespace CoC.Frontend.Perks.History
 
 		protected override void OnActivation()
 		{
-			baseModifiers.PerkBasedBonusAnalCapacity += 20;
-			baseModifiers.PerkBasedBonusVaginalCapacity += 20;
+			AddModifierToPerk(baseModifiers.perkBasedBonusAnalCapacity, new ValueModifierStore<ushort>(ValueModifierType.FLAT_ADD, 20));
+			AddModifierToPerk(baseModifiers.perkBasedBonusVaginalCapacity, new ValueModifierStore<ushort>(ValueModifierType.FLAT_ADD, 20));
+
 			if (hasExtraModifiers)
 			{
-				extraModifiers.lustRequiredForSexOffset -= 5;
+				AddModifierToPerk(extraModifiers.lustRequiredForSexOffset, new ValueModifierStore<sbyte>(ValueModifierType.FLAT_ADD, -5));
+				AddModifierToPerk(extraModifiers.isASlut, true);
 			}
 		}
 
 		protected override void OnRemoval()
-		{
-			baseModifiers.PerkBasedBonusAnalCapacity -= 20;
-			baseModifiers.PerkBasedBonusVaginalCapacity -= 20;
-			if (hasExtraModifiers)
-			{
-				extraModifiers.lustRequiredForSexOffset += 5;
-			}
-		}
+		{ }
 	}
 }

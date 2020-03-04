@@ -38,9 +38,16 @@ namespace CoC.Frontend.Items.Consumables
 
 		public override bool CanUse(Creature target, bool currentlyInCombat, out string whyNot)
 		{
-#warning could make this return false if you're already permanently infertile.
-			whyNot = null;
-			return true;
+			if (target.fertility.permanentlyInfertile)
+			{
+				whyNot = "Considering you're already barren, this feels like a waste. Best find someone else who could use these.";
+				return false;
+			}
+			else
+			{
+				whyNot = null;
+				return true;
+			}
 		}
 
 		protected override bool OnConsumeAttempt(Creature consumer, out string resultsOfUse, out bool isBadEnd)

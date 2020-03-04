@@ -231,7 +231,7 @@ namespace CoC.Frontend.Transformations
 				{
 					temp += 1 + Utils.Rand(10);
 				}
-				temp *= 0.1f;
+				temp *= 0.1;
 
 				target.genitals.IncreaseCumMultiplier(temp);
 				//Flavor text

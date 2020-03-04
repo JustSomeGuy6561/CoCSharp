@@ -245,7 +245,7 @@ namespace CoC.Frontend.Transformations
 				if (toChange.type == CockType.HUMAN)
 				{
 
-					toChange.IncreaseThickness(.3f);
+					toChange.IncreaseThickness(.3);
 					target.DeltaCreatureStats(sens: 10, lus: 5);
 				}
 				//Horse
@@ -261,10 +261,10 @@ namespace CoC.Frontend.Transformations
 					}
 					else
 					{
-						deltaLength = -.5f;
+						deltaLength = -.5;
 					}
 
-					toChange.SetLengthAndGirth(toChange.length + deltaLength, toChange.girth + 0.5f);
+					toChange.SetLengthAndGirth(toChange.length + deltaLength, toChange.girth + 0.5);
 					target.DeltaCreatureStats(sens: 4, lus: 5);
 				}
 				else

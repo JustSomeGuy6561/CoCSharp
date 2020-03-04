@@ -20,13 +20,13 @@ namespace CoC.Backend.Creatures
 		public const byte DEFAULT_FATIGUE = 0;
 		internal const byte BASE_MAX_FATIGUE = 100;
 
-		public void AddHP(uint flatAmount)
+		public uint AddHP(uint flatAmount)
 		{
 			var res = flatAmount * perks.baseModifiers.healthGainMultiplier.GetValue();
 			throw new NotImplementedException();
 		}
 
-		public void AddHPPercent(double percent)
+		public uint AddHPPercent(double percent)
 		{
 			throw new NotImplementedException();
 		}
@@ -227,7 +227,7 @@ namespace CoC.Backend.Creatures
 			}
 			else
 			{
-				onUseItemReturn(false, false, whyNot, item.Author(), item);
+				onUseItemReturn(false, whyNot, item.Author(), item);
 				return null;
 			}
 		}
@@ -246,12 +246,12 @@ namespace CoC.Backend.Creatures
 
 			if (inventory[index].isEmpty)
 			{
-				onUseItemReturn(false, false, NoItemInSlotErrorText(), string.Empty, null);
+				onUseItemReturn(false, NoItemInSlotErrorText(), string.Empty, null);
 				return null;
 			}
 			else if (!inventory[index].item.CanUse(this, true, out string whyNot))
 			{
-				onUseItemReturn(false, false, whyNot, inventory[index].item.Author(), null);
+				onUseItemReturn(false, whyNot, inventory[index].item.Author(), null);
 				return null;
 			}
 			else
@@ -265,12 +265,12 @@ namespace CoC.Backend.Creatures
 		{
 			if (ArmorBase.IsNullOrNothing(armor))
 			{
-				postEquipCallback(false, false, YouGaveMeANull(), null, null);
+				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
 			}
 			else if (!armor.CanUse(this, true, out string whyNot))
 			{
-				postEquipCallback(false, false, whyNot, armor.Author(), armor);
+				postEquipCallback(false, whyNot, armor.Author(), armor);
 				return null;
 			}
 			else
@@ -283,17 +283,17 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postEquipCallback(false, false, NoItemInSlotErrorText(), string.Empty, null);
+				postEquipCallback(false, NoItemInSlotErrorText(), string.Empty, null);
 				return null;
 			}
 			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
-				postEquipCallback(false, false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
 				return null;
 			}
 			else if (!armorItem.CanUse(this, true, out string whyNot))
 			{
-				postEquipCallback(false, false, whyNot, armorItem.Author(), null);
+				postEquipCallback(false, whyNot, armorItem.Author(), null);
 				return null;
 			}
 			else
@@ -311,12 +311,12 @@ namespace CoC.Backend.Creatures
 			if (ArmorBase.IsNullOrNothing(armor))
 			{
 				ArmorBase item = RemoveArmorManual(out string removeText);
-				postReplaceArmorCallback(true, false, removeText, item.Author(), item);
+				postReplaceArmorCallback(true, removeText, item.Author(), item);
 				return null;
 			}
 			else if (!armor.CanUse(this, true, out string whyNot))
 			{
-				postReplaceArmorCallback(false, false, whyNot, armor.Author(), armor);
+				postReplaceArmorCallback(false, whyNot, armor.Author(), armor);
 				return null;
 			}
 			else
@@ -329,17 +329,17 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postReplaceArmorCallback(false, false, NoItemInSlotErrorText(), string.Empty, null);
+				postReplaceArmorCallback(false, NoItemInSlotErrorText(), string.Empty, null);
 				return null;
 			}
 			else if (!(inventory[index].item is ArmorBase armorItem))
 			{
-				postReplaceArmorCallback(false, false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
+				postReplaceArmorCallback(false, InCorrectTypeErrorText(typeof(ArmorBase)), string.Empty, null);
 				return null;
 			}
 			else if (!armorItem.CanUse(this, true, out string whyNot))
 			{
-				postReplaceArmorCallback(false, false, whyNot, armorItem.Author(), null);
+				postReplaceArmorCallback(false, whyNot, armorItem.Author(), null);
 				return null;
 			}
 			else
@@ -353,12 +353,12 @@ namespace CoC.Backend.Creatures
 		{
 			if (UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
-				postEquipCallback(false, false, YouGaveMeANull(), null, null);
+				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
 			}
 			else if (!upperGarment.CanUse(this, true, out string whyNot))
 			{
-				postEquipCallback(false, false, whyNot, upperGarment.Author(), upperGarment);
+				postEquipCallback(false, whyNot, upperGarment.Author(), upperGarment);
 				return null;
 			}
 			else
@@ -371,17 +371,17 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postEquipCallback(false, false, NoItemInSlotErrorText(), string.Empty, null);
+				postEquipCallback(false, NoItemInSlotErrorText(), string.Empty, null);
 				return null;
 			}
 			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
-				postEquipCallback(false, false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), string.Empty, null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), string.Empty, null);
 				return null;
 			}
 			else if (!upperGarmentItem.CanUse(this, true, out string whyNot))
 			{
-				postEquipCallback(false, false, whyNot, upperGarmentItem.Author(), null);
+				postEquipCallback(false, whyNot, upperGarmentItem.Author(), null);
 				return null;
 			}
 			else
@@ -396,12 +396,12 @@ namespace CoC.Backend.Creatures
 			if (UpperGarmentBase.IsNullOrNothing(upperGarment))
 			{
 				UpperGarmentBase item = RemoveUpperGarmentManual(out string removeText);
-				postReplaceUpperGarmentCallback(true, false, removeText, item.Author(), item);
+				postReplaceUpperGarmentCallback(true, removeText, item.Author(), item);
 				return null;
 			}
 			else if (!upperGarment.CanUse(this, true, out string whyNot))
 			{
-				postReplaceUpperGarmentCallback(false, false, whyNot, upperGarment.Author(), upperGarment);
+				postReplaceUpperGarmentCallback(false, whyNot, upperGarment.Author(), upperGarment);
 				return null;
 			}
 			else
@@ -414,17 +414,17 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postReplaceUpperGarmentCallback(false, false, NoItemInSlotErrorText(), "", null);
+				postReplaceUpperGarmentCallback(false, NoItemInSlotErrorText(), "", null);
 				return null;
 			}
 			else if (!(inventory[index].item is UpperGarmentBase upperGarmentItem))
 			{
-				postReplaceUpperGarmentCallback(false, false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), "", null);
+				postReplaceUpperGarmentCallback(false, InCorrectTypeErrorText(typeof(UpperGarmentBase)), "", null);
 				return null;
 			}
 			else if (!upperGarmentItem.CanUse(this, true, out string whyNot))
 			{
-				postReplaceUpperGarmentCallback(false, false, whyNot, upperGarmentItem.Author(), null);
+				postReplaceUpperGarmentCallback(false, whyNot, upperGarmentItem.Author(), null);
 				return null;
 			}
 			else
@@ -438,12 +438,12 @@ namespace CoC.Backend.Creatures
 		{
 			if (LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
-				postEquipCallback(false, false, YouGaveMeANull(), null, null);
+				postEquipCallback(false, YouGaveMeANull(), null, null);
 				return null;
 			}
 			else if (!lowerGarment.CanUse(this, true, out string whyNot))
 			{
-				postEquipCallback(false, false, whyNot, lowerGarment.Author(), lowerGarment);
+				postEquipCallback(false, whyNot, lowerGarment.Author(), lowerGarment);
 				return null;
 			}
 			else
@@ -456,17 +456,17 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postEquipCallback(false, false, NoItemInSlotErrorText(), "", null);
+				postEquipCallback(false, NoItemInSlotErrorText(), "", null);
 				return null;
 			}
 			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
-				postEquipCallback(false, false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
+				postEquipCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
 				return null;
 			}
 			else if (!lowerGarmentItem.CanUse(this, true, out string whyNot))
 			{
-				postEquipCallback(false, false, whyNot, lowerGarmentItem.Author(), null);
+				postEquipCallback(false, whyNot, lowerGarmentItem.Author(), null);
 				return null;
 			}
 			else
@@ -481,12 +481,12 @@ namespace CoC.Backend.Creatures
 			if (LowerGarmentBase.IsNullOrNothing(lowerGarment))
 			{
 				LowerGarmentBase item = RemoveLowerGarmentManual(out string removeText);
-				postReplaceLowerGarmentCallback(true, false, removeText, "", item);
+				postReplaceLowerGarmentCallback(true, removeText, "", item);
 				return null;
 			}
 			else if (!lowerGarment.CanUse(this, true, out string whyNot))
 			{
-				postReplaceLowerGarmentCallback(false, false, whyNot, lowerGarment.Author(), lowerGarment);
+				postReplaceLowerGarmentCallback(false, whyNot, lowerGarment.Author(), lowerGarment);
 				return null;
 			}
 			else
@@ -499,17 +499,17 @@ namespace CoC.Backend.Creatures
 		{
 			if (inventory[index].isEmpty)
 			{
-				postReplaceLowerGarmentCallback(false, false, NoItemInSlotErrorText(), "", null);
+				postReplaceLowerGarmentCallback(false, NoItemInSlotErrorText(), "", null);
 				return null;
 			}
 			else if (!(inventory[index].item is LowerGarmentBase lowerGarmentItem))
 			{
-				postReplaceLowerGarmentCallback(false, false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
+				postReplaceLowerGarmentCallback(false, InCorrectTypeErrorText(typeof(LowerGarmentBase)), "", null);
 				return null;
 			}
 			else if (!lowerGarmentItem.CanUse(this, true, out string whyNot))
 			{
-				postReplaceLowerGarmentCallback(false, false, whyNot, lowerGarmentItem.Author(), null);
+				postReplaceLowerGarmentCallback(false, whyNot, lowerGarmentItem.Author(), null);
 				return null;
 			}
 			else

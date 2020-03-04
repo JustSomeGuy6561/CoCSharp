@@ -422,7 +422,7 @@ namespace CoC.Frontend.Perks
 
 					if (x.girth < 2.75)
 					{
-						x.SetGirth(2.75f);
+						x.SetGirth(2.75);
 					}
 				});
 			}
